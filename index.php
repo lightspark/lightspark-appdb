@@ -14,7 +14,7 @@ apidb_header("Wine Application Database");
 
     <img src="images/appdb_montage.jpg" width=391 height=266 border=0 align=right alt="Wine AppDB">
     
-	<p><big><b>Welcome</b></big></p>
+	<h1>Welcome</h1>
 	
 	<p>This is the Wine Application Database. From here you get info on application
 	compatibility with Wine. For developers, you can get information on the APIs used in an
@@ -27,7 +27,8 @@ apidb_header("Wine Application Database");
 		<li>Ability to Vote on Favorite Applications</li>
 		<li>Access to the Application Rating System. Rate the apps that "Don't Suck"</li>
 		<li>Ability to customize the View of the Apps DB and Comment System</li>
-		<li>Take Credit for your witty posts.</li>
+		<li>Take Credit for your witty posts</li>
+		<li>Ability to sign up to be an application maintainer.</li>
 	</ul>
 
 	<p>So what are you waiting for, [<a href="account.php?cmd=login">login now</a>]. Your help in
@@ -61,14 +62,14 @@ apidb_header("Wine Application Database");
 
 
 ?>
-<h1>Wine 0.9 Supported Applications List</h1>
+<h2>Wine 0.9 Supported Applications List</h2>
 
 <p>This is a working version of the application lists which we hope to
 support 'officially' for Wine 0.9. Please send comments, and suggestions,
 about the list to <a href="mailto:clozano@andago.com">Carlos Lozano</a>;
 direct formatting related flames to <a href="mailto:dpaun@rogers.com">Dimitrie O. Paun</a>.</p>
 
-<h2>The Gold List</h2> 
+<h3>The Gold List</h3> 
 <p>Applications which install and run virtually flawless on a 
         out-of-the-box Wine installation make it to the Gold list: <br>
 <table class=gold>
@@ -175,115 +176,112 @@ direct formatting related flames to <a href="mailto:dpaun@rogers.com">Dimitrie O
         <td><span class=todo>[TODO]</span></td>
     </tr>
 </table>
-
-<h2>The Silver List</h2> 
+</p>
+<h3>The Silver List</h3> 
 <p>The Silver list contains apps which we hope we can easily fix so they make it
-   to Gold status:
-<dl class=color4>
+   to Gold status:<br>
+<table class=silver>
+    <tr class=rowtitle>
+    <th>Application</th><th>Version</th><th>Description</th><th>Tucows top</th><th>Notes</th><th>Screenshot</th>
+    </tr>
 
+    <tr class=white>
 <?
-echo "<dt class=ltgrey><b><a href='".$apidb_root."appview.php?appId=2'>WinZip</a></b>";
+				echo "<td><a href='".$apidb_root."appview.php?appId=2'>WinZip</a></td>";
 ?>
- - The most popular compression utility for Windows just got better.</dt>
-<dd>
-   <ul class=white>
-     <li> VERSION 8.1
-     <li> Install: Yes. (Dlls installed none)
-     <li> Run: Yes,(but it needs riched20.dll to shown the text in zipped files what
-        includes a message, zipped files without messages works fine)
-     <li> Tucows top 100 ladder: 4
-  </ul>
-</dd>
+        <td>8.1</td>
+        <td>The most popular compression utility for Windows just got better.</td>
+        <td>4</td>
+        <td> Install: Yes. (Dlls installed none)<br />
+      	Run: Yes,(but it needs riched20.dll to shown the text in zipped files what
+        includes a message, zipped files without messages works fine)</td>
+        <td><span class=todo>[TODO]</span></td>
+    </tr>
 
+    <tr class=white>
 <?
-echo "<dt class=ltgrey><b><a href='".$apidb_root."appview.php?appId=55'>ICQ for Windows</a></b>";
+				echo "<td><a href='".$apidb_root."appview.php?appId=55'>ICQ</a></td>";
 ?>
- - The new and improved ICQ is here with all the great
-features you've come to expect -- plus a whole new set!</dt>
-<dd>
-   <ul class=white>
-   <li> VERSION 2002a
-   <li> Install: Yes, but it need "touch /c/windows/system/setupapi.dll"
-     (Dlls installed atl.dll,msvcrt.dll)
-   <li> Run: No, required comctl32 (imagelist proble) and riched32 native.
+        <td>2002a</td>
+        <td>The new and improved ICQ is here with all the great features you've come to expect -- plus a whole new set!</td>
+        <td>5</td>
+        <td> Install: Yes, but it need "touch /c/windows/system/setupapi.dll"
+     (Dlls installed atl.dll,msvcrt.dll)<br />
+    Run: No, required comctl32 (imagelist proble) and riched32 native.
      (it wasn't able to add users to contact list even with this native
-      dlls, i don't know if it was a different problem, or wine related)
-   <li> Tucows top 100 ladder: 5
-  </ul>
-</dd>
+      dlls, i don't know if it was a different problem, or wine related)</td>
+        <td><span class=todo>[TODO]</span></td>
+    </tr>
 
+    <tr class=white>
 <?
-echo "<dt class=ltgrey><b><a href='".$apidb_root."appview.php?appId=5'>Winamp</a></b>";
+				echo "<td><a href='".$apidb_root."appview.php?appId=5'>Winamp</a></td>";
 ?>
- - This program has so many possibilities and offers such a wide
-range of interfaces, you'll need no other player.</dt>
-<dd>
-   <ul class=white>
-    <li> VERSION 3.0
-    <li> Install: Yes. (Dlls installed none)
-    <li> Run: No. (Need native msvcrt.dll then works)
-    <li> Tucows top 100 ladder: 10
-  </ul>
-</dd>
+        <td>3.0</td>
+        <td>This program has so many possibilities and offers such a wide
+range of interfaces, you'll need no other player.</td>
+        <td>10</td>
+        <td>Install: Yes. (Dlls installed none)<br />
+    Run: No. (Need native msvcrt.dll then works)</td>
+        <td><span class=todo>[TODO]</span></td>
+    </tr>
 
+    <tr class=white>
 <?
- echo "<dt class=ltgrey><b><a href='".$apidb_root."appview.php?appId=391'>WinRAR</a></b>";
+ 				echo "<td><a href='".$apidb_root."appview.php?appId=391'>WinRAR</a></td>";
 ?>
- - This is a version of the popular RAR compression format, offering
-significantly improved compression ratios.</dt>
-<dd>
-   <ul class=white>
-    <li> VERSION 3.00
-    <li> Install: Yes. (It will install winrar in the directory what you are
+        <td>3.00</td>
+        <td>This is a version of the popular RAR compression format, offering significantly improved compression ratios.</td>
+        <td>11</td>
+        <td>Install: Yes. (It will install winrar in the directory what you are
       when run the installer, it is a buggy because you must stop the
       installation with ctrl+c when it will ask by "overwrite files", but
-      it works).
-    <li> Run: Yes. (minor glitches in bugzilla)
-    <li> Tucows top 100 ladder: 11
-  </ul>
-</dd>
+      it works).<br />
+    Run: Yes. (minor glitches in bugzilla)
+    </td>
+        <td><span class=todo>[TODO]</span></td>
+    </tr>
 
+    <tr class=white>
 <?
-    echo "<dt class=ltgrey><b><a href='".$apidb_root."appview.php?appId=288'>WinMX</a></b>";
+ 			 echo "<td><a href='".$apidb_root."appview.php?appId=288'>WinMX</a></td>";
 ?>
- - Take file sharing to a new level.</dt>
-<dd>
-   <ul class=white>
-    <li> VERSION 3.22
-    <li> Install: Yes (Dlls installed none)
-    <li> Run: Yes. (listbox is not working in it (comctl32))
-    <li> Tucows top 100 ladder: 50
-  </ul>
-</dd>
+        <td>3.22</td>
+        <td>Take file sharing to a new level.</td>
+        <td>50</td>
+        <td>Install: Yes (Dlls installed none)<br />
+    Run: Yes. (listbox is not working in it (comctl32))
+			  </td>
+        <td><span class=todo>[TODO]</span></td>
+    </tr>
 
+    <tr class=white>
 <?
-    echo "<dt class=ltgrey><b><a href='".$apidb_root."appview.php?appId=1757'>SnagIt</a></b>";
+   		echo "<td><a href='".$apidb_root."appview.php?appId=1757'>SnagIt</a></td>";
 ?>
- - Use this to capture and manage images, text, and video.</dt>
-<dd>
-   <ul class=white>
-    <li> VERSION 6.1.1
-    <li> Install: Yes. (Dlls installed advpack.dll, setupapi.dll, w95inf16.dll,
-      cfgmgr32.dll,shfolder.dll,w95inf32.dll)
-    <li> Run: Partial. (it has too options, some options like capture avi, or
-      capture web are not working)
-    <li> Tucows top 100 ladder: No
-  </ul>
-</dd>
+        <td>6.1.1</td>
+        <td>Use this to capture and manage images, text, and video.</td>
+        <td>n/a</td>
+        <td>    Install: Yes. (Dlls installed advpack.dll, setupapi.dll, w95inf16.dll,
+      cfgmgr32.dll,shfolder.dll,w95inf32.dll)<br />
+    Run: Partial. (it has too options, some options like capture avi, or
+      capture web are not working)</td>
+        <td><span class=todo>[TODO]</span></td>
+    </tr>
+</table>
+</p>
 
-</dl>
 
-<h1>Other Wine Application Compatibility Sites</h1>
-
+<h2>Other Wine Application Compatibility Sites</h2>
 <p>
 <a href="http://frankscorner.org"><b>Frank's Corner</b></a>:  Frank has a fantastic Wine
 application site. The site contains tips and howtos on getting listed apps to run.
 </p>
+<p>
+<a href="http://sidenet.ddo.jp/winetips/config.html"><b>Sidenet wine configuration utility</b></a>:  Installs Internet Explorer 6 and Windows Media Player 7 automatically (works also with MSN Messenger and RealPlayer).
+</p>
+<p>&nbsp;</p>
 
 <?
-    echo "<p>&nbsp;</p>\n";
-
 apidb_footer();
-
-
 ?>
