@@ -21,6 +21,7 @@ function global_admin_menu() {
     $g->addmisc("&nbsp;");
     $g->add("Users Management", BASE."admin/adminUsers.php");
     $g->add("Comments Management", BASE."admin/adminCommentView.php");
+    $g->add("Screenshots Management", BASE."admin/adminScreenshots.php");
     $g->done();
 
 }

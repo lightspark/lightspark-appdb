@@ -5,6 +5,7 @@
 
 include("path.php");
 require(BASE."include/"."incl.php");
+require(BASE."include/"."screenshot.php");
 require(BASE."include/"."tableve.php");
 require(BASE."include/"."category.php");
 
@@ -123,18 +124,19 @@ if (!$_REQUEST['queueId'])
         //data
         if($obj_row->type == "image") 
         {
+           $oScreenshot = new Screenshot($obj_row->queueId,true);
            echo '<tr valign=top><td class=color0><b>Submited image</b></td>',"\n";
            echo '<td>';
-           $imgSRC = '<img width="'.APPDB_THUMBNAIL_WIDTH.'" height="'.APPDB_THUMBNAIL_HEIGHT.'" src="screenshotQueue.php?queueId='.$obj_row->queueId.'" />';
+           $imgSRC = '<img width="'.$oScreenshot->oThumbnailImage->width.'" height="'.$oScreenshot->oThumbnailImage->height.'" src="../appimage.php?queued=true&id='.$obj_row->queueId.'" />';
            // generate random tag for popup window
            $randName = generate_passwd(5);
            // set image link based on user pref
-           $img = '<a href="javascript:openWin(\'screenshotQueue.php?queueId='.$obj_row->queueId.'\',\''.$randName.'\','.APPDB_SCREENSHOT_MAXWIDTH.','.APPDB_SCREENSHOT_MAXHEIGHT.');">'.$imgSRC.'</a>';
+           $img = '<a href="javascript:openWin(\'../appimage.php?queued=true&id='.$obj_row->queueId.'\',\''.$randName.'\','.$oScreenshot->oScreenshotImage->width.','.($oScreenshot->oScreenshotImage->height+4).');">'.$imgSRC.'</a>';
            if (loggedin())
            {
                if ($_SESSION['current']->getpref("window:screenshot") == "no")
                { 
-                   $img = '<a href="screenshotQueue.php?queueId='.$obj_row->queueId.'">'.$imgSRC.'</a>';
+                   $img = '<a href="../appimage.php?queued=true&id='.$obj_row->queueId.'">'.$imgSRC.'</a>';
                }
            }
            echo $img;
@@ -171,13 +173,15 @@ if (!$_REQUEST['queueId'])
             $sQuery = "INSERT INTO appData VALUES (null, ".$obj_row->appId.", ".$obj_row->versionId.", 'image', ".
                      "'".addslashes($_REQUEST['description'])."', '')";
             query_appdb($sQuery);
-            $int_id = mysql_insert_id();
+            $iId = mysql_insert_id();
  
             // we move the content in the live directory
-            rename("../data/queued/screenshots/".$obj_row->queueId, "../data/screenshots/".$int_id);
+            rename("../data/queued/screenshots/".$obj_row->queueId, "../data/screenshots/".$iId);
+            rename("../data/queued/screenshots/originals/".$obj_row->queueId, "../data/screenshots/originals/".$iId);
+            rename("../data/queued/screenshots/thumbnails/".$obj_row->queueId, "../data/screenshots/thumbnails/".$iId);
 
             // we have to update the entry now that we know its name
-            $sQuery = "UPDATE appData SET url = '".$int_id."' WHERE id = '".$int_id."'";
+            $sQuery = "UPDATE appData SET url = '".$iId."' WHERE id = '".$iId."'";
    
         }
         elseif ($obj_row->type == "url") {
@@ -229,6 +233,8 @@ if (!$_REQUEST['queueId'])
        //delete main item
        $sQuery = "DELETE from appDataQueue where queueId = ".$obj_row->queueId.";";
        unlink("../data/queued/screenshots/".$obj_row->queueId);
+       unlink("../data/queued/screenshots/originals/".$obj_row->queueId);
+       unlink("../data/queued/screenshots/thumbnails/".$obj_row->queueId);
 
        $hResult = query_appdb($sQuery);
        echo html_frame_start("Delete application data submission",400,"",0);
