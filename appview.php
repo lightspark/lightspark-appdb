@@ -1,4 +1,4 @@
-<?
+<?php
 /**********************************/
 /* code to display an application */
 /**********************************/
@@ -84,10 +84,7 @@ function get_screenshot_img($appId, $versionId="")
     }
     
     $img = html_frame_start("",'128','',2);
-    if($versionId)
-        $img .= "<a href='screenshots.php?appId=$appId&versionId=$versionId'>$imgFile</a>";
-    else 
-        $img .= $imgFile;
+    $img .= "<a href='screenshots.php?appId=$appId&versionId=$versionId'>$imgFile</a>";
     $img .= html_frame_end()."<br />";
     
     return $img;
