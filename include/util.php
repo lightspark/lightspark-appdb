@@ -22,16 +22,6 @@ function opendb()
     return $dbcon;
 }
 
-function closedb()
-{
-    global $dbcon, $dbref;
-
-    if(--$dbref)
-	return;
-
-    mysql_close($dbcon);
-}
-
 function build_urlarg($vars)
 {
 	$arr = array();
@@ -122,51 +112,15 @@ function get_xml_tag ($file, $mode = null)
 }
 
 /* bugzilla functions */
-
-function openbugzilladb()
-{
-    global $dbcon, $dbref;
-
-    $dbref++;
-
-    if($dbcon)
-        return $dbcon;
-
-    $dbcon = mysql_connect(BUGZILLA_DBHOST, BUGZILLA_DBUSER, BUGZILLA_DBPASS);
-    if(!$dbcon) 
-	{
-	    echo "An error occurred: ".mysql_error()."<p>\n";
-	    exit;
-	}
-    mysql_select_db(BUGZILLA_DB);
-    return $dbcon;
-}
-
-function closebugzilladb()
-{
-    global $dbcon, $dbref;
-
-    if(--$dbref)
-        return;
-
-    mysql_close($adbcon);
-}
-
 function make_bugzilla_version_list($varname, $cvalue)
 {
     $table = BUGZILLA_DB.".versions";
     $where = "WHERE product_id=".BUGZILLA_PRODUCT_ID;
     $query = "SELECT value FROM $table $where ORDER BY value";
 
-    openbugzilladb();
+    $result = query_bugzilladb($query);
+    if(!$result) return;
 
-    $result = mysql_query($query);
-
-    if(!$result)
-    {
-        closebugzilladb();
-        return; // Oops
-    }
     echo "<select name='$varname'>\n";
     echo "<option value=0>Choose ...</option>\n";
     while(list($value) = mysql_fetch_row($result))
@@ -177,7 +131,6 @@ function make_bugzilla_version_list($varname, $cvalue)
             echo "<option value=$value>$value\n";
     }
     echo "</select>\n";
-    closebugzilladb();
 }
 
 function make_maintainer_rating_list($varname, $cvalue)
