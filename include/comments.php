@@ -240,8 +240,11 @@ function view_app_comments($appId, $versionId, $threadId = 0)
     echo '</tr></table></td></tr>',"\n";  
     echo '</table>',"\n";
     echo html_frame_end();
-
-    echo '<p align="center">The following comments are owned by whoever posted them. WineHQ is not responsible for what they say.</p>'."\n";
+    
+    if( $messageCount > 0 )
+    {
+        echo '<p align="center">The following comments are owned by whoever posted them. WineHQ is not responsible for what they say.</p>'."\n";
+    }
 
     //start comments
     echo '<table width="100%" border=0 cellpadding=2 cellspacing=1"><tr><td>',"\n";
