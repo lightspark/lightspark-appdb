@@ -15,6 +15,9 @@ require(BASE."include/category.php");
 require(BASE."include/maintainer.php");
 
 
+$oApp = new Application($_REQUEST['appId']);
+$oVersion = new Version($_REQUEST['versionId']);
+
 /**
  * display the full path of the Category we are looking at
  */
@@ -70,7 +73,8 @@ function display_bundle($appId)
 
 /* Show note */
 function show_note($sType,$oData){
-    
+    global $oVersion;
+
     switch($sType)
     {
         case 'WARNING':
@@ -101,7 +105,7 @@ function show_note($sType,$oData){
     $s .= $oData->noteDesc;
     $s .= "</td></tr>\n";
 
-    if ($_SESSION['current']->hasPriv("admin") || $_SESSION['current']->isMaintainer($_REQUEST['versionId']))
+    if ($_SESSION['current']->hasPriv("admin") || $_SESSION['current']->isMaintainer($oVersion->iVersionId) || $_SESSION['current']->isSuperMaintainer($oVersion->iAppId))
     {
         $s .= "<tr class=\"color1\" align=\"center\" valign=\"top\"><td>";
         $s .= "<form method=\"post\" name=\"message\" action=\"admin/editAppNote.php?noteId={$oData->noteId}\">";
