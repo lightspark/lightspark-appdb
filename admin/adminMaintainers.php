@@ -70,6 +70,7 @@ if ($sub)
         echo "    <td><font color=white>Application Name</font></td>\n";
         echo "    <td><font color=white>Version</font></td>\n";
         echo "    <td><font color=white>Super maintainer?</font></td>\n";
+        echo "    <td><font color=white>Email address</font></td>\n";
         echo "    <td></td>\n";
         echo "    <td>&nbsp;</td>\n";
         echo "</tr>\n\n";
@@ -86,15 +87,16 @@ if ($sub)
             {
                 echo "    <td><a href='".$apidb_root."appview.php?appId=$ob->appId'>".appIdToName($ob->appId)."</a></td>\n";
                 echo "    <td>".versionIdToName($ob->versionId)."&nbsp;</td>\n";
+                echo "    <td>Yes</td>\n";
             } else
             {
                 echo "    <td>".appIdToName($ob->appId)."</td>\n";
                 echo "    <td><a href='".$apidb_root."appview.php?appId=$ob->appId&versionId=$ob->versionId'>".versionIdToName($ob->versionId)."</a>&nbsp;</td>\n";
+                echo "    <td>No</td>\n";
             }
 
             echo "    <td>".lookupEmail($ob->userId)." &nbsp;</td>\n";
             echo "    <td>[<a href='adminMaintainers.php?sub=delete&maintainerId=$ob->maintainerId'>delete</a>]</td>\n";
-            echo "    <td>
             echo "</tr>\n\n";
             $c++;
         }
