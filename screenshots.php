@@ -1,4 +1,4 @@
-<?php
+ <?php
 /*******************************************************************/
 /* this script expects appId and optionally versionId as arguments */
 /* OR                                                              */
@@ -26,7 +26,7 @@ if($_REQUEST['cmd'])
 
             if(debugging()) addmsg("<p align=center><b>query:</b> $str_query </p>","green");
     
-            if (mysql_query($str_query))
+            if (query_appdb($str_query))
             {
                 $int_id = mysql_insert_id();
     
@@ -35,13 +35,13 @@ if($_REQUEST['cmd'])
                     // whoops, copy failed. do something
                     errorpage("debug: copy failed; (".$_FILES['imagefile']['tmp_name'].";".$_FILES['imagefile']['name']);
                     $str_query = "DELETE FROM appData WHERE id = '".$int_id."'";
-                    mysql_query($str_query);
+                    query_appdb($str_query);
                     exit;
                 } else 
                 {   
                     // we have to update the entry now that we know it's name
                     $str_query = "UPDATE appData SET url = '".$int_id."' WHERE id = '".$int_id."'";
-                    if (mysql_query($str_query))
+                    if (query_appdb($str_query))
                     {
                         //success
                         $email = getNotifyEmailAddressList($_REQUEST['appId'], $_REQUEST['versionId']);
@@ -80,7 +80,7 @@ if($_REQUEST['cmd'])
 
             if(debugging()) addmsg("<p align=center><b>query:</b> $str_query </p>","green");
     
-            if (mysql_query($str_query))
+            if (query_appdb($str_query))
             {
                 $int_queueId = mysql_insert_id();
     
@@ -89,13 +89,13 @@ if($_REQUEST['cmd'])
                     // whoops, copy failed. do something
                     errorpage("debug: copy failed; (".$_FILES['imagefile']['tmp_name'].";".$_FILES['imagefile']['name']);
                     $str_query = "DELETE FROM appDataQueue WHERE queueId = '".$int_queueId."'";
-                    mysql_query($str_query);
+                    query_appdb($str_query);
                     exit;
                 } else 
                 {   
                     // we have to update the queued entry now that we know its name
                     $str_query = "UPDATE appDataQueue SET url = '".$int_queueId."' WHERE queueId = '".$int_queueId."'";
-                    if (mysql_query($str_query))
+                    if (query_appdb($str_query))
                     {
                         //success
                         $email = getNotifyEmailAddressList($_REQUEST['appId'], $_REQUEST['versionId']);
@@ -133,7 +133,7 @@ if($_REQUEST['cmd'])
               $_SESSION['current']->is_maintainer($_REQUEST['appId'], 
                                                   $_REQUEST['versionId']))
         {     
-            $result = mysql_query("DELETE FROM appData WHERE id = ".$_REQUEST['imageId']);
+            $result = query_appdb("DELETE FROM appData WHERE id = ".$_REQUEST['imageId']);
             if($result)
             {
                 $email = getNotifyEmailAddressList($_REQUEST['appId'], $_REQUEST['versionId']);
@@ -167,9 +167,9 @@ if($_REQUEST['cmd'])
 
 // we didn't issue any command
 if($_REQUEST['versionId'])
-    $result = mysql_query("SELECT * FROM appData WHERE type = 'image' AND appId = ".$_REQUEST['appId']." AND versionId = ".$_REQUEST['versionId']);
+    $result = query_appdb("SELECT * FROM appData WHERE type = 'image' AND appId = ".$_REQUEST['appId']." AND versionId = ".$_REQUEST['versionId']);
 else
-    $result = mysql_query("SELECT * FROM appData WHERE type = 'image' AND appId = ".$_REQUEST['appId']." ORDER BY versionId");
+    $result = query_appdb("SELECT * FROM appData WHERE type = 'image' AND appId = ".$_REQUEST['appId']." ORDER BY versionId");
      
 $app=new Application($_REQUEST['appId']);
 apidb_header("Screenshots");

@@ -61,7 +61,7 @@ if($catId != 0)
     {
         $catQuery = "SELECT appCategory.catName, appCategory.catParent ".
             "FROM appCategory WHERE appCategory.catId = '$currentCatId';";
-        $result = mysql_query($catQuery);
+        $result = query_appdb($catQuery);
 
         if($result)
         {

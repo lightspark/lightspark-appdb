@@ -29,7 +29,7 @@ function display_catpath($catId, $appId, $versionId = '')
 /* display the SUB apps that belong to this app */
 function display_bundle($appId)
 {
-    $result = mysql_query("SELECT appFamily.appId, appName, description FROM appBundle, appFamily ".
+    $result = query_appdb("SELECT appFamily.appId, appName, description FROM appBundle, appFamily ".
 			  "WHERE bundleId = $appId AND appBundle.appId = appFamily.appId");
     if(!$result || mysql_num_rows($result) == 0)
 	{

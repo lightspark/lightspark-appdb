@@ -86,14 +86,7 @@ if($_REQUEST['maintainReason'])
             addslashes($_REQUEST['superMaintainer'])."',".
             "NOW()".");";
 
-    mysql_query($query);
-
-    if ($error = mysql_error())
-    {
-        echo "<p><font color=red><b>Error:</b></font></p>\n";
-        echo "<p>$error</p>\n";
-    }
-    else
+    if (query_appdb($query))
     {
         echo "<p>Your maintainer request has been submitted for Review. You should hear back\n";
         echo "soon about the status of your submission</p>\n";

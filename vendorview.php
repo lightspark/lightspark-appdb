@@ -20,7 +20,7 @@ if(!$vendorId) {
 }
 
 //get vendor, die with error if no match
-$result = mysql_query("SELECT * FROM vendor WHERE vendorId = $vendorId");
+$result = query_appdb("SELECT * FROM vendor WHERE vendorId = $vendorId");
 if(!$result || mysql_num_rows($result) != 1) {
     errorpage("Invalid vendor ID!");
     exit;
@@ -44,7 +44,7 @@ if ($vendor->vendorURL) {
 	echo "Vendor URL:  <a href='$vendor->vendorURL'>$vendor->vendorURL</a> <br />\n";
 }
 
-$result = mysql_query("SELECT * FROM appFamily WHERE vendorId = $vendorId ORDER BY appName");
+$result = query_appdb("SELECT * FROM appFamily WHERE vendorId = $vendorId ORDER BY appName");
 if($result)
 {
     echo "<br />Applications by $vendor->vendorName<br /><ol>\n";

@@ -14,7 +14,7 @@ $search = str_replace("'", "\\'", $_REQUEST['q']);
 $search = "%$search%";
 
 $query = "SELECT * FROM appFamily WHERE appName != 'NONAME' AND appName LIKE '$search' ORDER BY appName";
-$result = mysql_query($query);
+$result = query_appdb($query);
 
 apidb_header("Search Results");
 
@@ -47,7 +47,7 @@ else
 		$bgcolor = ($c % 2) ? 'color0' : 'color1';
 		
 		//count versions
-		$query = mysql_query("SELECT count(*) as versions FROM appVersion WHERE appId = $ob->appId AND versionName != 'NONAME'");
+		$query = query_appdb("SELECT count(*) as versions FROM appVersion WHERE appId = $ob->appId AND versionName != 'NONAME'");
 	        $y = mysql_fetch_object($query);
 		
 		//format desc

@@ -46,10 +46,10 @@ if( ( $width AND !is_numeric($width) ) || ( $height AND !is_numeric($height) ) )
 }
 
 if($imageId AND is_numeric($imageId) )
-    $result = mysql_query("SELECT * FROM appData WHERE id = $imageId");
+    $result = query_appdb("SELECT * FROM appData WHERE id = $imageId");
 
 else if($appId AND $versionId AND is_numeric($appId) AND is_numeric($versionId) )
-    $result = mysql_query("SELECT * FROM appData WHERE appId = $appId AND ".
+    $result = query_appdb("SELECT * FROM appData WHERE appId = $appId AND ".
                           "versionId = $versionId AND type = 'image' LIMIT 1");
 else
 	handle_error("IDs wrong");

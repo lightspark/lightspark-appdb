@@ -110,7 +110,7 @@ if($apps)
 	   $bgcolor = ($c % 2) ? "color0" : "color1";
         
         //get number of versions
-	   $query = mysql_query("SELECT count(*) as versions FROM appVersion WHERE appId = $id AND versionName != 'NONAME'");
+	   $query = query_appdb("SELECT count(*) as versions FROM appVersion WHERE appId = $id AND versionName != 'NONAME'");
 	   $ob = mysql_fetch_object($query);
 	
 	   //format desc

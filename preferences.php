@@ -19,7 +19,7 @@ function build_prefs_list()
 {
     opendb();
 
-    $result = mysql_query("SELECT * FROM prefs_list ORDER BY id");
+    $result = query_appdb("SELECT * FROM prefs_list ORDER BY id");
     while($r = mysql_fetch_object($result))
         {
             //skip admin options

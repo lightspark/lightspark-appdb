@@ -20,7 +20,7 @@ if(!havepriv("admin"))
     exit;
 }
     $user = new User();
-    $result = mysql_query("SELECT stamp, userid, username, realname, ".
+    $result = query_appdb("SELECT stamp, userid, username, realname, ".
 			      "created, status, perm FROM user_list WHERE ".
 			      "userid = '$userid'", $user->link);
     if(!$result)

@@ -40,7 +40,7 @@ if($confirmed)
     }
 /*   echo html_frame_start("Removing",400,"",0);
 */
-    $result = mysql_query($query);
+    $result = query_appdb($query);
     if($result)
     {
         if($superMaintainer)
