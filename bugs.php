@@ -13,15 +13,9 @@ require(BASE."include/"."appdb.php");
 require(BASE."include/"."rating.php");
 require(BASE."include/"."category.php");
 
-global $apidb_root;
-
-
-
 
 function get_screenshot_img($appId, $versionId)
 {
-    global $apidb_root;
-
     if(!$versionId)
 	$versionId = 0;
 
@@ -29,7 +23,7 @@ function get_screenshot_img($appId, $versionId)
     
     if(!$result || !mysql_num_rows($result))
     {
-	$imgFile = "<img src='".$apidb_root."images/no_screenshot.gif' alt='No Screenshot'>";
+	$imgFile = "<img src='".BASE."images/no_screenshot.gif' alt='No Screenshot'>";
     }
     else
     {
@@ -248,4 +242,3 @@ echo p();
 apidb_footer();
 
 ?>
-

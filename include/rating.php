@@ -27,10 +27,9 @@ function rating_current_for_user($versionId, $system)
  */
 function rating_menu()
 {
-    global $apidb_root;
 
-    $s = '<img src="'.$apidb_root.'images/s1.gif" alt="s1">';
-    $n = '<img src="'.$apidb_root.'images/s0.gif" alt="s0">';
+    $s = '<img src="'.BASE.'images/s1.gif" alt="s1">';
+    $n = '<img src="'.BASE.'images/s0.gif" alt="s0">';
     
     $j = new htmlmenu("Compatibility Rating","updaterating.php");
 
@@ -68,7 +67,7 @@ function rating_menu()
     $j->addmisc("<input type=submit value='  Rate it!  ' class=ratebutton>","center");
     $j->addmisc("<input type=hidden name=versionId value=".$_REQUEST['versionId'].">");
     
-    $j->add("Rating Help", $apidb_root."help/?topic=ratings");
+    $j->add("Rating Help", BASE."help/?topic=ratings");
     
     $j->done(1);
 }
@@ -97,13 +96,12 @@ function rating_for_version($versionId, $system)
  */
 function rating_stars_for_version($versionId, $system)
 {
-    global $apidb_root;
 
     $r = rating_for_version($versionId, $system);
 
-    $s = '<img src="'.$apidb_root.'images/s1.gif" alt="s1">';
-    $n = '<img src="'.$apidb_root.'images/s0.gif" alt="s0">';
-    $h = '<img src="'.$apidb_root.'images/s2.gif" alt="s2">';
+    $s = '<img src="'.BASE.'images/s1.gif" alt="s1">';
+    $n = '<img src="'.BASE.'images/s0.gif" alt="s0">';
+    $h = '<img src="'.BASE.'images/s2.gif" alt="s2">';
 
     if ($system == "fake")
     {

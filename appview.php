@@ -23,32 +23,30 @@ require(BASE."include/"."maintainer.php");
 // NOTE: app Owners will see this menu too, make sure we don't show admin-only options
 function admin_menu()
 {
-    global $apidb_root;
-
     $m = new htmlmenu("Admin");
     if($_REQUEST['versionId']) {
-        $m->add("Add Note", $apidb_root."admin/addAppNote.php?appId=$appId&versionId=".$_REQUEST['versionId']);
+        $m->add("Add Note", BASE."admin/addAppNote.php?appId=$appId&versionId=".$_REQUEST['versionId']);
         $m->addmisc("&nbsp;");
 
-        $m->add("Edit Version", $apidb_root."admin/editAppVersion.php?appId=$appId&versionId=".$_REQUEST['versionId']);
+        $m->add("Edit Version", BASE."admin/editAppVersion.php?appId=$appId&versionId=".$_REQUEST['versionId']);
 
-        $url = $apidb_root."admin/deleteAny.php?what=appVersion&versionId=".$_REQUEST['versionId']."&confirmed=yes";
+        $url = BASE."admin/deleteAny.php?what=appVersion&versionId=".$_REQUEST['versionId']."&confirmed=yes";
         $m->add("Delete Version", "javascript:deleteURL(\"Are you sure?\", \"".$url."\")");
     } else
     {
-        $m->add("Add Version", $apidb_root."admin/addAppVersion.php?appId=".$_REQUEST['appId']);
+        $m->add("Add Version", BASE."admin/addAppVersion.php?appId=".$_REQUEST['appId']);
         $m->addmisc("&nbsp;");
   
-        $m->add("Edit App", $apidb_root."admin/editAppFamily.php?appId=".$_REQUEST['appId']);
+        $m->add("Edit App", BASE."admin/editAppFamily.php?appId=".$_REQUEST['appId']);
   
         // global admin options
         if(havepriv("admin"))
         {
-            $url = $apidb_root."admin/deleteAny.php?what=appFamily&appId=".$_REQUEST['appId']."&confirmed=yes";
+            $url = BASE."admin/deleteAny.php?what=appFamily&appId=".$_REQUEST['appId']."&confirmed=yes";
             $m->add("Delete App", "javascript:deleteURL(\"Are you sure?\", \"".$url."\")");
             $m->addmisc("&nbsp;");
-            $m->add("Edit Owners", $apidb_root."admin/editAppOwners.php?appId=".$_REQUEST['appId']);
-            $m->add("Edit Bundle", $apidb_root."admin/editBundle.php?bundleId=".$_REQUEST['appId']);
+            $m->add("Edit Owners", BASE."admin/editAppOwners.php?appId=".$_REQUEST['appId']);
+            $m->add("Edit Bundle", BASE."admin/editBundle.php?bundleId=".$_REQUEST['appId']);
         }
     }
     
@@ -62,8 +60,6 @@ function admin_menu()
  */
 function get_screenshot_img($appId, $versionId="") 
 {
-    global $apidb_root;
-
     if($versionId) 
     {
         $result = mysql_query("SELECT *, RAND() AS rand FROM appData WHERE appId = $appId AND versionId = $versionId AND type = 'image' ORDER BY rand");
@@ -74,7 +70,7 @@ function get_screenshot_img($appId, $versionId="")
     
     if(!$result || !mysql_num_rows($result))
     {
-        $imgFile = "<img src='".$apidb_root."images/no_screenshot.gif' alt='No Screenshot' />";
+        $imgFile = "<img src='".BASE."images/no_screenshot.gif' alt='No Screenshot' />";
     }
     else
     {

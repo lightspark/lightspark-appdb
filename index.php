@@ -81,7 +81,7 @@ direct formatting related flames to <a href="mailto:dpaun@rogers.com">Dimitrie O
 
     <tr class=white>
 <?php
-        echo "<td><a href='".$apidb_root."appview.php?appId=134'>Acrobat Reader</a></td>";
+        echo "<td><a href='".BASE."appview.php?appId=134'>Acrobat Reader</a></td>";
 ?>
         <td>5.0.5</td>
         <td>This is the solution to your PDF troubles.</td>
@@ -92,7 +92,7 @@ direct formatting related flames to <a href="mailto:dpaun@rogers.com">Dimitrie O
 
     <tr class=white>
 <?php
-        echo "<td><a href='".$apidb_root."appview.php?appId=145'>WS-FTP LE</a></td>";
+        echo "<td><a href='".BASE."appview.php?appId=145'>WS-FTP LE</a></td>";
 ?>
         <td>5.08</td>
         <td>A great application that allows remote file edits, chmods on UNIX boxes and file moves.</td>
@@ -103,7 +103,7 @@ direct formatting related flames to <a href="mailto:dpaun@rogers.com">Dimitrie O
 
     <tr class=white>
 <?php
-        echo "<td><a href='".$apidb_root."appview.php?appId=77'>mIRC</a></td>";
+        echo "<td><a href='".BASE."appview.php?appId=77'>mIRC</a></td>";
 ?>
         <td>6.03</td>
         <td>This is a popular IRC client.</td>
@@ -114,7 +114,7 @@ direct formatting related flames to <a href="mailto:dpaun@rogers.com">Dimitrie O
 
     <tr class=white>
 <?php
-        echo "<td><a href='".$apidb_root."appview.php?appId=356'>Putty</a></td>";
+        echo "<td><a href='".BASE."appview.php?appId=356'>Putty</a></td>";
 ?>
         <td>0.52</td>
         <td>Simple Telnet/SSH client & console.</td>
@@ -125,7 +125,7 @@ direct formatting related flames to <a href="mailto:dpaun@rogers.com">Dimitrie O
 
     <tr class=white>
 <?php
-        echo "<td><a href='".$apidb_root."appview.php?appId=1110'>FTP Commander</a></td>";
+        echo "<td><a href='".BASE."appview.php?appId=1110'>FTP Commander</a></td>";
 ?>
         <td>5.58</td>
         <td>A remote file management and command-line FTP client.</td>
@@ -136,7 +136,7 @@ direct formatting related flames to <a href="mailto:dpaun@rogers.com">Dimitrie O
 
     <tr class=white>
 <?php
-        echo "<td><a href='".$apidb_root."appview.php?appId=284'>Pegasus Mail</a></td>";
+        echo "<td><a href='".BASE."appview.php?appId=284'>Pegasus Mail</a></td>";
 ?>
         <td>4.02</td>
         <td>E-mail client of choice for many beginner and advanced users.</td>
@@ -147,7 +147,7 @@ direct formatting related flames to <a href="mailto:dpaun@rogers.com">Dimitrie O
 
     <tr class=white>
 <?php
-        echo "<td><a href='".$apidb_root."appview.php?appId=1756'>12Ghosts Zip</a></td>";
+        echo "<td><a href='".BASE."appview.php?appId=1756'>12Ghosts Zip</a></td>";
 ?>
         <td>XP/31</td>
         <td>This is a fast compression utility.</td>
@@ -158,7 +158,7 @@ direct formatting related flames to <a href="mailto:dpaun@rogers.com">Dimitrie O
 
     <tr class=white>
 <?php
-        echo "<td><a href='".$apidb_root."appview.php?appId=1755'>WinMerge</a></td>";
+        echo "<td><a href='".BASE."appview.php?appId=1755'>WinMerge</a></td>";
 ?>
         <td>2.1.4</td>
         <td>A visual text file differencing and merging tool for Win32 platforms.</td>
@@ -169,7 +169,7 @@ direct formatting related flames to <a href="mailto:dpaun@rogers.com">Dimitrie O
 
     <tr class=white>
 <?php
-        echo "<td><a href='".$apidb_root."appview.php?appId=868'>FileZilla</a></td>";
+        echo "<td><a href='".BASE."appview.php?appId=868'>FileZilla</a></td>";
 ?>
         <td>2.2.2</td>
         <td>FileZilla is a fast FTP client for Windows with a lot of features.</td>
@@ -189,7 +189,7 @@ direct formatting related flames to <a href="mailto:dpaun@rogers.com">Dimitrie O
 
     <tr class=white>
 <?php
-echo "<td><a href='".$apidb_root."appview.php?appId=2'>WinZip</a></td>";
+echo "<td><a href='".BASE."appview.php?appId=2'>WinZip</a></td>";
 ?>
         <td>8.1</td>
         <td>The most popular compression utility for Windows just got better.</td>
@@ -202,7 +202,7 @@ echo "<td><a href='".$apidb_root."appview.php?appId=2'>WinZip</a></td>";
 
     <tr class=white>
 <?php
-echo "<td><a href='".$apidb_root."appview.php?appId=55'>ICQ</a></td>";
+echo "<td><a href='".BASE."appview.php?appId=55'>ICQ</a></td>";
 ?>
         <td>2002a</td>
         <td>The new and improved ICQ is here with all the great features you've come to expect -- plus a whole new set!</td>
@@ -217,7 +217,7 @@ echo "<td><a href='".$apidb_root."appview.php?appId=55'>ICQ</a></td>";
 
     <tr class=white>
 <?php
-echo "<td><a href='".$apidb_root."appview.php?appId=5'>Winamp</a></td>";
+echo "<td><a href='".BASE."appview.php?appId=5'>Winamp</a></td>";
 ?>
         <td>3.0</td>
         <td>This program has so many possibilities and offers such a wide
@@ -230,7 +230,7 @@ range of interfaces, you'll need no other player.</td>
 
     <tr class=white>
 <?php
-echo "<td><a href='".$apidb_root."appview.php?appId=391'>WinRAR</a></td>";
+echo "<td><a href='".BASE."appview.php?appId=391'>WinRAR</a></td>";
 ?>
         <td>3.00</td>
         <td>This is a version of the popular RAR compression format, offering significantly improved compression ratios.</td>
@@ -246,7 +246,7 @@ echo "<td><a href='".$apidb_root."appview.php?appId=391'>WinRAR</a></td>";
 
     <tr class=white>
 <?php
-echo "<td><a href='".$apidb_root."appview.php?appId=288'>WinMX</a></td>";
+echo "<td><a href='".BASE."appview.php?appId=288'>WinMX</a></td>";
 ?>
         <td>3.22</td>
         <td>Take file sharing to a new level.</td>
@@ -259,7 +259,7 @@ echo "<td><a href='".$apidb_root."appview.php?appId=288'>WinMX</a></td>";
 
     <tr class=white>
 <?php
-   echo "<td><a href='".$apidb_root."appview.php?appId=1757'>SnagIt</a></td>";
+   echo "<td><a href='".BASE."appview.php?appId=1757'>SnagIt</a></td>";
 ?>
         <td>6.1.1</td>
         <td>Use this to capture and manage images, text, and video.</td>

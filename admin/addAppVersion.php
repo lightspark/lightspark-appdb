@@ -41,7 +41,7 @@ else
     $t->create($query, $table, "versionId");
 }
 
-echo html_back_link(1,$apidb_root."appview.php?appId=$appId");
+echo html_back_link(1,BASE."appview.php?appId=$appId");
 
 apidb_footer();
 

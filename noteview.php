@@ -6,15 +6,12 @@
 include("path.php");
 require(BASE."include/"."incl.php");
 
-global $apidb_root;
-
 function admin_menu()
 {
     global $noteId;
-    global $apidb_root;
 
     $m = new htmlmenu("Admin");
-    $m->add("Edit this Note", $apidb_root."admin/editAppNote.php?noteId=$noteId");
+    $m->add("Edit this Note", BASE."admin/editAppNote.php?noteId=$noteId");
     $m->done();
 }
 

@@ -86,13 +86,13 @@ if ($sub)
             
             if($ob->superMaintainer)
             {
-                echo "    <td><a href='".$apidb_root."appview.php?appId=$ob->appId'>".appIdToName($ob->appId)."</a></td>\n";
+                echo "    <td><a href='".BASE."appview.php?appId=$ob->appId'>".appIdToName($ob->appId)."</a></td>\n";
                 echo "    <td>".versionIdToName($ob->versionId)."&nbsp;</td>\n";
                 echo "    <td>Yes</td>\n";
             } else
             {
                 echo "    <td>".appIdToName($ob->appId)."</td>\n";
-                echo "    <td><a href='".$apidb_root."appview.php?appId=$ob->appId&versionId=$ob->versionId'>".versionIdToName($ob->versionId)."</a>&nbsp;</td>\n";
+                echo "    <td><a href='".BASE."appview.php?appId=$ob->appId&versionId=$ob->versionId'>".versionIdToName($ob->versionId)."</a>&nbsp;</td>\n";
                 echo "    <td>No</td>\n";
             }
 

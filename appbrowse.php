@@ -15,8 +15,8 @@ function admin_menu()
     else $catId="";
 
     $m = new htmlmenu("Admin");
-    $m->add("Edit this Category", $apidb_root."admin/editCategory.php?catId=$catId");
-    $url = $apidb_root."admin/deleteAny.php?what=category&catId=$catId&confirmed=yes";
+    $m->add("Edit this Category", BASE."admin/editCategory.php?catId=$catId");
+    $url = BASE."admin/deleteAny.php?what=category&catId=$catId&confirmed=yes";
     $m->add("Delete this Category", "javascript:deleteURL(\"Are you sure?\", \"".$url."\")");
 
 

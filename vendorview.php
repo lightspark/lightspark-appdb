@@ -8,8 +8,6 @@ require(BASE."include/"."incl.php");
 require(BASE."include/"."application.php");
 require(BASE."include/"."comments.php");
 
-global $apidb_root;
-
 $vendorId = $_REQUEST['vendorId'];
 
 //exit with error if no vendor

@@ -6,15 +6,13 @@ include(BASE."include/"."incl.php");
 include(BASE."include/"."tableve.php");
 include(BASE."include/"."qclass.php");
 
-global $apidb_root;
-
 if(!loggedin() || (!havepriv("admin") && !$_SESSION['current']->ownsApp($appId)) )
 {
     errorpage("Insufficient Privileges!");
     exit;
 }
 
-if($HTTP_POST_VARS)
+if($_POST)
 {
     $statusMessage = '';
     // commit changes of form to database
@@ -204,7 +202,7 @@ if($HTTP_POST_VARS)
     echo '</table>',"\n";
     echo html_frame_end();
 
-    echo html_back_link(1,$apidb_root."appview.php?appId=$appId");
+    echo html_back_link(1,BASE."appview.php?appId=$appId");
 
 }
 

@@ -5,7 +5,6 @@ $dbref = 0;
 
 function opendb()
 {
-    global $apidb_dbuser, $apidb_dbpass, $apidb_dbhost, $apidb_db;
     global $dbcon, $dbref;
 
     $dbref++;
@@ -13,13 +12,13 @@ function opendb()
     if($dbcon)
 	return $dbcon;
 
-    $dbcon = mysql_connect($apidb_dbhost, $apidb_dbuser, $apidb_dbpass);
+    $dbcon = mysql_connect(APPS_DBHOST, APPS_DBUSER, APPS_DBPASS);
     if(!$dbcon) 
 	{
 	    echo "An error occurred: ".mysql_error()."<p>\n";
 	    exit;
 	}
-    mysql_select_db($apidb_db);
+    mysql_select_db(APPS_DB);
     return $dbcon;
 }
 
@@ -175,7 +174,6 @@ function get_xml_tag ($file, $mode = null)
 
 function openbugzilladb()
 {
-    global $bugzilla_dbuser, $bugzilla_dbpass, $bugzilla_dbhost, $bugzilla_db, $bugzilla_product_id;
     global $dbcon, $dbref;
 
     $dbref++;
@@ -183,13 +181,13 @@ function openbugzilladb()
     if($dbcon)
         return $dbcon;
 
-    $dbcon = mysql_connect($bugzilla_dbhost, $bugzilla_dbuser, $bugzilla_dbpass);
+    $dbcon = mysql_connect(BUGZILLA_DBHOST, BUGZILLA_DBUSER, BUGZILLA_DBPASS);
     if(!$dbcon) 
 	{
 	    echo "An error occurred: ".mysql_error()."<p>\n";
 	    exit;
 	}
-    mysql_select_db($bugzilla_db);
+    mysql_select_db(BUGZILLA_DB);
     return $dbcon;
 }
 
@@ -205,10 +203,8 @@ function closebugzilladb()
 
 function make_bugzilla_version_list($varname, $cvalue)
 {
-    global $bugzilla_db, $bugzilla_product_id;
-
-    $table = $bugzilla_db.".versions";
-    $where = "WHERE product_id=".$bugzilla_product_id;
+    $table = BUGZILLA_DB.".versions";
+    $where = "WHERE product_id=".BUGZILLA_PRODUCT_ID;
     $query = "SELECT value FROM $table $where ORDER BY value";
 
     openbugzilladb();

@@ -3,7 +3,6 @@ class htmlmenu {
 
     function htmlmenu($name, $form = null)
     {
-        global $apidb_root;
 
         if ($form)
             echo "<form action='$form' method=get>\n";
@@ -16,14 +15,14 @@ class htmlmenu {
     <table width="100%" border="0" cellpadding="0" cellspacing="0" class="topMenu">
       <tr>
         <td width="100%" rowspan="3" align="left"><span class="menuTitle">&nbsp; '.$name.'</span></td>
-        <td rowspan="3" valign="middle" align="right"><img src="'.$apidb_root.'images/winehq_border_dot_right.gif" alt=""></td>
-        <td valign="top" align="left"><img src="'.$apidb_root.'images/winehq_border_top_right.gif" alt=""></td>
+        <td rowspan="3" valign="middle" align="right"><img src="'.BASE.'images/winehq_border_dot_right.gif" alt=""></td>
+        <td valign="top" align="left"><img src="'.BASE.'images/winehq_border_top_right.gif" alt=""></td>
       </tr>
       <tr>
-        <td><img src="'.$apidb_root.'images/blank.gif" width="1" height="1" alt=""></td>
+        <td><img src="'.BASE.'images/blank.gif" width="1" height="1" alt=""></td>
       </tr>
       <tr>
-        <td valign="bottom" align="right"><img src="'.$apidb_root.'images/winehq_border_bottom_right.gif" alt=""></td>
+        <td valign="bottom" align="right"><img src="'.BASE.'images/winehq_border_bottom_right.gif" alt=""></td>
       </tr>
     </table>
 </td>
@@ -56,14 +55,12 @@ class htmlmenu {
 
     function done($form = null)
     {
-        global $apidb_root;
-
         echo '
         </table>
         </td></tr>
         </table>
         </td>
-        <td><img src="'.$apidb_root.'images/blank.gif" width=5 height=1 alt="-"></td>
+        <td><img src="'.BASE.'images/blank.gif" width=5 height=1 alt="-"></td>
         </tr>
         </table>
         </div>

@@ -33,7 +33,6 @@ function forum_lookup_user ($userid)
  */
 function view_app_comment($ob)
 {
-    global $apidb_root;
 
     echo html_frame_start('','98%');
     echo '<table width="100%" border=0 cellpadding=2 cellspacing=1">',"\n";
@@ -67,7 +66,7 @@ function view_app_comment($ob)
     if(havepriv("admin") || $_SESSION['current']->is_maintainer($ob->appId, $ob->versionId))
     {
         echo "<tr>";
-        echo "<td><form method=\"post\" name=\"message\" action=\"".$apidb_root."deletecomment.php\"><input type=submit value='Delete' class=button>\n";
+        echo "<td><form method=\"post\" name=\"message\" action=\"".BASE."deletecomment.php\"><input type=submit value='Delete' class=button>\n";
         echo "<input type=\"hidden\" name=\"commentId\" value=\"$ob->commentId\" />";
         echo "<input type=\"hidden\" name=\"appId\" value=\"$ob->appId\" />";
         echo "<input type=\"hidden\" name=\"versionId\" value=\"$ob->versionId\" /></form></td>","\n";

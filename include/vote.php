@@ -112,7 +112,6 @@ function vote_get_user_votes($userId = null)
 function vote_menu()
 {
     global $appId;
-    global $apidb_root;
 
     $m = new htmlmenu("Votes","updatevote.php");
     
@@ -149,8 +148,8 @@ function vote_menu()
     
     $m->addmisc("<input type=hidden name=appId value=$appId>");
     
-    $m->add("View Results", $apidb_root."votestats.php");
-    $m->add("Voting Help", $apidb_root."help/?topic=voting");
+    $m->add("View Results", BASE."votestats.php");
+    $m->add("Voting Help", BASE."help/?topic=voting");
     
     $m->done(1);    
 }

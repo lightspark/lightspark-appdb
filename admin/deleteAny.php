@@ -92,7 +92,7 @@ if($what)
 	}
 
     //FIXME need to redirect to the page before the confirmation page
-    redirect($apidb_root."appbrowse.php");
+    redirect(BASE."appbrowse.php");
 }
 
 

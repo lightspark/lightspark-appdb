@@ -11,9 +11,8 @@
 function banner_display ()
 {
     // import banner paths from config
-    global $apidb_root;
-    $banner_path_468x60 = $apidb_root."banner/468x60/";
-    $banner_path_xml = $apidb_root."banner/xml/";
+    $banner_path_468x60 = BASE."banner/468x60/";
+    $banner_path_xml = BASE."banner/xml/";
 
     // opening html
     $banner = "";

@@ -8,7 +8,7 @@ echo html_frame_start("List Users","400","",0)
 
 <!-- start of users query -->
 
-      <form ACTION="<?php echo $apidb_root; ?>stdquery.php" METHOD="get">
+      <form ACTION="<?php echo BASE ?>stdquery.php" METHOD="get">
 	
       <table width="100%" border=0 cellpadding=0 cellspacing=0>
 	

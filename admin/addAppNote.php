@@ -7,8 +7,6 @@ include("path.php");
 include(BASE."include/"."incl.php");
 require(BASE."include/"."application.php");
 
-global $apidb_root;
-
 //check for admin privs
 if(!loggedin() || (!havepriv("admin") && !$_SESSION['current']->is_maintainer($appId,$versionId)) )
 {
@@ -101,7 +99,7 @@ else
     echo html_table_end();
     echo html_frame_end();
     
-    echo html_back_link(1,$apidb_root."appview.php?appId=$appId".$versionLink);
+    echo html_back_link(1,BASE."appview.php?appId=$appId".$versionLink);
     apidb_footer();
 }
 

@@ -6,7 +6,7 @@
 include("path.php");
 include(BASE."include/"."incl.php");
 
-$help_path = $apidb_root."/help";
+$help_path = BASE."/help";
 
 if($_GET['topic'])
 {
@@ -18,7 +18,6 @@ if($_GET['topic'])
 function display_index ()
 {
     global $help_path;
-    global $apidb_root;
 
     apidb_header("Documentation Index");
 
@@ -47,7 +46,7 @@ function display_index ()
         $id    = $arr[1];
         $title = get_help_title("$help_path/$file");
 
-        echo "  <li> <a href='".$apidb_root."help?topic=$id'> $title </a><p /></li>\n";
+        echo "  <li> <a href='".BASE."help?topic=$id'> $title </a><p /></li>\n";
     }
 
     echo "</ul><hr noshade>\n";
