@@ -11,7 +11,7 @@ function rating_current_for_user($versionId, $system)
 
     $userId = $_SESSION['current']->userid;
 
-    $result = mysql_query("SELECT score FROM appRating WHERE versionId = $versionId AND system = '$system' AND userId = $userId");
+    $result = query_appdb("SELECT score FROM appRating WHERE versionId = $versionId AND system = '$system' AND userId = $userId");
     if(!$result)
         return 0;
     $ob = mysql_fetch_object($result);
@@ -80,10 +80,10 @@ function rating_menu()
  */
 function rating_for_version($versionId, $system)
 {
-    $result = mysql_query("SELECT avg(score) as rating, count(id) as hits FROM appRating ".
+    $result = query_appdb("SELECT avg(score) as rating, count(id) as hits FROM appRating ".
                           "WHERE versionId = $versionId and system = '$system'");
     if(!$result)
-	return 0;
+	   return 0;
     $ob = mysql_fetch_object($result);
     return $ob;
 }
@@ -155,41 +155,67 @@ function rating_update($vars)
 	}
 
     $userId = $_SESSION['current']->userid;
-    $versionId = $vars["versionId"];
-    $score_w = $vars["score_w"];
-    $score_f = $vars["score_f"];
+    
+    if(is_numeric($vars['versionId']))
+        $versionId = $vars["versionId"];
+    else 
+        return;
+    
+    if(is_numeric($vars['score_w']))
+        $score_w = $vars["score_w"];
+    else 
+        return;
+    
+    if(is_numeric($vars['score_f']))
+        $score_f = $vars["score_f"];
+    else 
+        return;
 
     if($score_w)
-	{
-	    $result = mysql_query("SELECT * FROM appRating WHERE versionId = $versionId AND ".
-				  "userId = $userId AND system = 'windows'");
-	    if($result && mysql_num_rows($result))
-		{
-		    $ob = mysql_fetch_object($result);
-		    mysql_query("UPDATE appRating SET score = $score_w WHERE id = $ob->id");
-		}
-	    else
-		mysql_query("INSERT INTO appRating VALUES (null, null, $versionId, $userId, 'windows', $score_w)");
+    {
+        $result = query_appdb("SELECT * FROM appRating WHERE versionId = $versionId AND ".
+                              "userId = $userId AND system = 'windows'");
+        
+        if($result && mysql_num_rows($result))
+        {
+            $ob = mysql_fetch_object($result);
+            query_appdb("UPDATE appRating SET score = $score_w WHERE id = $ob->id");
+        }
+        else
+        {
+            $aInsert = compile_insert_string( array( 'versionId' => $versionId,
+                                                     'userId' => $userId,
+                                                     'system' => 'windows',
+                                                     'score' => $score_w));
+            
+            query_appdb("INSERT INTO appRating ({$aInsert['FIELDS']}) VALUES ({$aInsert['VALUES']})");
+        }
 
-	    $r = rating_for_version($versionId, "windows");
-	    mysql_query("UPDATE appVersion SET rating_windows = $r->rating WHERE versionId = $versionId");
-	}
+        $r = rating_for_version($versionId, "windows");
+        query_appdb("UPDATE appVersion SET rating_windows = $r->rating WHERE versionId = $versionId");
+    }
 
     if($score_f)
+    {
+        $result = query_appdb("SELECT * FROM appRating WHERE versionId = $versionId AND ".
+                              "userId = $userId AND system = 'fake'");
+        if($result && mysql_num_rows($result))
         {
-            $result = mysql_query("SELECT * FROM appRating WHERE versionId = $versionId AND ".
-                                  "userId = $userId AND system = 'fake'");
-            if($result && mysql_num_rows($result))
-                {
-                    $ob = mysql_fetch_object($result);
-                    mysql_query("UPDATE appRating SET score = $score_f WHERE id = $ob->id");
-                }
-            else
-                mysql_query("INSERT INTO appRating VALUES (null, null, $versionId, $userId, 'fake', $score_f)");
-        
-	    $r = rating_for_version($versionId, "fake");
-            mysql_query("UPDATE appVersion SET rating_fake = $r->rating WHERE versionId = $versionId");
-	}
+            $ob = mysql_fetch_object($result);
+            query_appdb("UPDATE appRating SET score = $score_f WHERE id = $ob->id");
+        }
+        else
+        {
+            $aInsert = compile_insert_string( array( 'versionId' => $versionId,
+                                                     'userId' => $userId,
+                                                     'system' => 'fake',
+                                                     'score' => $score_f));
+            query_appdb("UPDATE appVersion SET rating_windows = $r->rating WHERE versionId = $versionId");
+        }
+
+        $r = rating_for_version($versionId, "fake");
+        query_appdb("UPDATE appVersion SET rating_fake = $r->rating WHERE versionId = $versionId");
+    }
 }
 
 ?>
