@@ -325,7 +325,11 @@ if($appId && !$versionId)
 		    }
 		echo "</td></tr>\n";
 	    }
-	    
+
+        echo "<tr><td colspan = 2><center>";
+        echo "<a href='appsubmit.php?appId=$data->appId&apptype=2'> Submit New Version </a> &nbsp;\n";
+        echo "</center></td></tr>";
+
 	echo "</table></td><td class=color2 valign=top width='100%'>\n";
 
 	//Desc
