@@ -1,39 +1,48 @@
 <?php
 /*************************/
-/* config file for appDB */
+/* config file for AppDB */
 /*************************/
 
 
 /*
  * global params
  */
-$apidb_debug = 0;   //turns debugging on/off
+define("APPDB_DEBUG","0"); //turns debugging on/off
+define("APPDB_THUMBNAIL_WIDTH","100"); // width of the screenshot's thumbnails
+define("APPDB_THUMBNAIL_WIDTH","75"); // height of the screenshot's thumbnails
+define("APPDB_ROOT", "http://appdb.winehq.org/");  // path to AppDB
+define("STANDARD_NOTIFY_FOOTER","------- You are receiving this mail because: -------\n".
+"You are an maintainer of this application or an AppDB administrator\n".
+"to change your preferences go to: ".APPDB_ROOT."preferences.php\n");
+define("APPDB_OWNER","WineHQ"); // with what product/company is this AppDB related ?
+define("APPDB_OWNER_URL","http://www.winehq.org/"); // website of this product/company
+define("BUGZILLA_ROOT","http://bugs.winehq.org/"); // path to bugzilla
+
 
 /*
- * api database info
+ * apps database info
  */
-$apidb_dbuser = "wineowner";
-$apidb_dbpass = "lemonade";
-$apidb_dbhost = "localhost";
-$apidb_db     = "apidb";
+define("APPS_DBUSER","wineowner");
+define("APPS_DBPASS","lemonade");
+define("APPS_DBHOST","localhost");
+define("APPS_DB","apidb");
 
 
 /*
- * user database info
+ * users database info
  */
-$userdb_dbuser = "wineowner";
-$userdb_dbpass = "lemonade";
-$userdb_dbhost = "localhost";
-$userdb_db     = "apidb";
+define("USERS_DBUSER","wineowner");
+define("USERS_DBPASS","lemonade");
+define("USERS_DBHOST","localhost");
+define("USERS_DB","apidb");
+
 
 /*
- * Bugzilla database info
+ * bugzilla database info
  */
-$bugzilla_dbuser = "root";
-$bugzilla_dbpass = "";
-$bugzilla_dbhost = "localhost";
-$bugzilla_db     = "bugs";
-/* $bugzilla_db_port = 3306; is this needed? I dont think so.*/
-$bugzilla_product_id = 1;
-
+define("BUGZILLA_DBUSER","root");
+define("BUGZILLA_DBPASS","");
+define("BUGZILLA_DBHOST","localhost");
+define("BUGZILLA_DB","bugs");
+define("BUGZILLA_PRODUCT_ID","1");
 ?>
