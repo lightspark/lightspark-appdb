@@ -1,0 +1,66 @@
+<!--TITLE: Application Database FAQ -->
+
+<h3>Application Database FAQ</h3>
+
+<p>This FAQ answers questions related to the usage of the
+Application Database.</p>
+
+<ul>
+
+<p><b>Q: What is the Application Database?</b></p>
+<blockquote>
+<p><b>A:</b> The Application Database is a repository for
+compatibility information of applications for Microsoft Windows
+running on Wine.<p>
+</blockquote>
+
+<p><b>Q: What is Wine?</b></p>
+<blockquote>
+<p><b>A:</b> Wine is an execution layer that allows Windows programs to be run
+on Linux Systems. More information can be found at the
+<a href="http://www.winehq.com/fom-meta/cache/3.html">Wine FAQ</a>.<p>
+</blockquote>
+
+<p><b>Q: What is the benefit Application Database?</b></p>
+<blockquote>
+<p><b>A:</b> The Application database will give the Wine developers a
+resource for compatibility information. This will allow them to focus their
+efforts on those applications the community most wants to see working. It also
+provides end-user support. Users can find out before they even install Wine if
+their application is supported.<p>
+</blockquote>
+
+<p><b>Q: How does a new application get added to the database?</b></p>
+<blockquote>
+<p><b>A:</b> In order to ensure consistency, only authorized application database
+maintainers are permitted to add new applications to the database.
+Anyone can comment on, or rate a particular application.</p>
+<p>Anyone can request that an application be added to the database,
+but the application is not actually added until after it has been
+reviewed and categorized by a maintainer.</p>
+</blockquote>
+
+<p><b>Q: How can I submit HowTo's and Screenshots?</b></p>
+<blockquote>
+<p><b>A:</b> We love to hear from our users. Send those helpful HowTo's and
+Screenshots right on over to <a href="mailto:appdb@winehq.com">appdb@winehq.com</a>.
+We'll be happy to post them, and give you proper credit for your great contribution.</p>
+</blockquote>
+
+
+<p><b>Q: How do I become an authorized application database maintainer.</b></p>
+<blockquote>
+<p><b>A:</b> Pretty much anyone with an established reputation supporting Wine
+is welcome (begged?) to be an application maintainer.
+Simply send email to <a href="mailto:appdb@winehq.com">appdb@winehq.com</a>
+to apply. Once we have a community of maintainers, we hope that community
+will further refine the policies and procedures.</p>
+</blockquote>
+
+</ul>
+
+If you have more questions you would like to add to our FAQ, please contact us
+at <a href="mailto:appdb@winehq.com">appdb@winehq.com</a>.
+
+<p>&nbsp;</p>
+

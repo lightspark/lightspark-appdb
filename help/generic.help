@@ -1,0 +1,54 @@
+<!--TITLE: Additional Wine Help -->
+
+This is meant as generic instructions in case an AppDB entry
+for a certain program doesn't exist.
+
+<ol>
+
+<li> Make sure your Wine release is pretty recent.
+Current possibilities are:</li><p>
+
+	<ul>
+	<li> <a href="http://www.codeweavers.com">CodeWeavers Wine</a> Preview
+	simple, complete configuration</li>
+	<li><a href="http://sourceforge.net/projects/winex">TransGaming WineX</a>, 
+	Wine version with special DirectX support, use this one for games.</li>
+	<li> Misc. Wine packages/versions downloadable via
+	<a href="http://www.winehq.com">WineHQ</a></li>
+	</ul>
+	<p>
+
+<li> Run <a href="http://home.nexgo.de/andi.mohr/download/winecheck">winecheck</a>
+(chmod +x winecheck; ./winecheck)
+to verify the most important aspects of Wine environment
+configuration</li><p>
+
+<li> Run your program</li><p>
+
+<li> In case of failure, try different builtin, native DLL settings:
+Run Wine with --debugmsg +loaddll to find out which
+DLLs are loaded as native or builtin ones.
+Then make sure appropriate native versions are in the
+c:\windows\system directory as configured in your wine
+config file, and then use either --dll DLL1, DLL2,...=n or
+--dll DLL1,DLL2,...=b
+to use native or builtin setting for certain DLLs, respectively.</li><p>
+
+<li> In case of persisting failure, check out
+<a href="http://www.winehq.com/Trouble/">Wine Troubleshooting Guide</a>
+and read all of the available documentation at
+<a href="http://www.winehq.com/support.shtml">WineHQ Support</a></li><p>
+
+<li> If that doesn't help, then ask people on
+<a href="http://irc.openprojects.net">irc.openprojects.net</a>
+channel #WineHQ or on the
+<a href="http://www.winehq.com/mailman/listinfo/wine-users">wine-users</a>
+mailing list. </li><p>
+
+<li> If you have more questions, please contact us
+at <a href="mailto:appdb@codeweavers.com">appdb@codeweavers.com</a>.</li><p>
+
+</ol>
+
+<p>&nbsp;</p>
+
