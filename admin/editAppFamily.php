@@ -55,7 +55,7 @@ if(isset($_REQUEST['submit']))
             $bAppChanged = true;
         }
 
-        if ($old_description <> $description)
+        if ($old_description <> $_REQUEST['description'])
         {
             $sWhatChanged .= " Description: Old Value:\n";
             $sWhatChanged .= "-----------------------:\n";
