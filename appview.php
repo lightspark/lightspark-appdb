@@ -267,9 +267,12 @@ if($appId && !$versionId)
     echo "        <tr class=color1 valign=top><td align=right> <b>Vendor</b></td><td> ".
          "        <a href='vendorview.php?vendorId=$vendor->vendorId'> ".stripslashes($vendor->vendorName)." </a> &nbsp;\n";
     echo "        <tr class=color0 valign=top><td align=right> <b>BUGS</b></td><td> ".
-         "        <a href='bugs.php?appId=$data->appId.'> Check for bugs in bugzilla </a> &nbsp;\n";        
+         "        <a href='bugs.php?appId=$data->appId.'> Check for bugs in bugzilla </a> &nbsp;\n";
     echo "        </td></tr>\n";
-  
+    echo "        <tr class=color0 valign=top><td align=right> <b>Votes</b></td><td> ";
+    echo vote_count_app_total($data->appId);
+    echo "        </td></tr>\n";
+    
     // display notes
     display_notes($appId);
   
