@@ -5,6 +5,7 @@
 
 require_once(BASE."include/version.php");
 require_once(BASE."include/vendor.php");
+require_once(BASE."include/url.php");
 
 /**
  * Application class for handling applications.
@@ -22,6 +23,7 @@ class Application {
     var $sSubmitTime;
     var $iSubmitterId;
     var $aVersionsIds;  // an array that contains the versionId of every version linked to this app.
+    var $aUrlsIds;            // an array that contains the screenshotId of every url linked to this version
 
     /**    
      * constructor, fetches the data.
@@ -37,7 +39,7 @@ class Application {
             $sQuery = "SELECT appFamily.*, appVersion.versionId AS versionId
                        FROM appFamily, appVersion 
                        WHERE appFamily.appId = appVersion.appId 
-                       AND appFamily.appId = ".$iAppId;
+                       AND appFamily.appId = ".$iAppId." ORDER BY versionName";
             if($hResult = query_appdb($sQuery))
             {
                 $this->aVersionsIds = array();
@@ -83,6 +85,23 @@ class Application {
                     $this->sDescription = $oRow->description;
                     $this->sWebpage = $oRow->webPage;
                     $this->bQueued = $oRow->queued;
+                }
+            }
+
+            /*
+             * We fetch urlsIds. 
+             */
+            $this->aUrlsIds = array();
+            $sQuery = "SELECT id
+                       FROM appData
+                       WHERE type = 'url'
+                       AND appId = ".$iAppId;
+
+            if($hResult = query_appdb($sQuery))
+            {
+                while($oRow = mysql_fetch_object($hResult))
+                {
+                    $this->aUrlsIds[] = $oRow->id;
                 }
             }
         }
@@ -210,6 +229,11 @@ class Application {
             {
                 $oVersion = new Version($iVersionId);
                 $oVersion->delete($bSilent);
+            }
+            foreach($this->aUrlsIds as $iUrlId)
+            {
+                $oUrl = new Url($iUrlId);
+                $oUrl->delete($bSilent);
             }
         }
         if(!$bSilent)

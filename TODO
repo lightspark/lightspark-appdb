@@ -8,8 +8,6 @@ WineHQ Application Database TODO List
 
 # check for existing email when user is creating a new account
 
-# when deleting an application or version we should delete linked entries (screenshots, comments, etc.)
-
 # add a system that will allow users to monitor an app without becoming a maintainer.
 
 # add wineversion, distro, source/package fields to the user_list table.

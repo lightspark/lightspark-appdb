@@ -5,6 +5,7 @@
 
 require_once(BASE."include/note.php");
 require_once(BASE."include/comment.php");
+require_once(BASE."include/url.php");
 
 /**
  * Version class for handling versions.
@@ -77,6 +78,7 @@ class Version {
             /*
              * We fetch commentsIds. 
              */
+            $this->aCommentsIds = array();
             $sQuery = "SELECT commentId
                        FROM appComments
                        WHERE versionId = ".$iVersionId;
@@ -193,7 +195,7 @@ class Version {
         if ($iAppId && $iAppId!=$this->iAppId)
         {
             $sUpdate = compile_update_string(array('appId'    => $iAppId));
-            if (!query_appdb("UPDATE appVersion SET ".$sUpdate." WHERE appId = ".$this->iAppId))
+            if (!query_appdb("UPDATE appVersion SET ".$sUpdate." WHERE versionId = ".$this->iVersionId))
                 return false;
             $oAppBefore = new Application($this->iAppId);
             $oAppAfter = new Application($iAppId);
@@ -217,25 +219,25 @@ class Version {
                    LIMIT 1";
         if($hResult = query_appdb($sQuery))
         {
-            foreach($aNotesIds as $iNoteId)
+            foreach($this->aNotesIds as $iNoteId)
             {
                 $oNote = new Note($iNoteId);
                 $oNote->delete($bSilent);
             }
-            foreach($aCommentsIds as $iCommentId)
+            foreach($this->aCommentsIds as $iCommentId)
             {
-                $oComment = new Note($iCommentId);
+                $oComment = new Comment($iCommentId);
                 $oComment->delete($bSilent);
             }
-            foreach($aScreenshotsIds as $iScreenshotId)
+            foreach($this->aScreenshotsIds as $iScreenshotId)
             {
                 $oScreenshot = new Screenshot($iScreenshotId);
                 $oScreenshot->delete($bSilent);
             }
-            foreach($aUrlsIds as $iUrlId)
+            foreach($this->aUrlsIds as $iUrlId)
             {
-                #FIXME: NOT IMPLEMENTED $oUrl = new Note($iUrlId);
-                #FIXME: NOT IMPLEMENTED $oUrl->delete($bSilent);
+                $oUrl = new Url($iUrlId);
+                $oUrl->delete($bSilent);
             }
         }
         if(!$bSilent)
