@@ -125,54 +125,71 @@ class Application {
 
     /**
      * Update application.
-     * FIXME: Informs interested people about the modification.
-     * FIXME: tell what changed in the email.
-     * FIXME: get rid of addslashes and use compile_update_string
      * Returns true on success and false on failure.
      */
     function update($sName=null, $sDescription=null, $sKeywords=null, $sWebpage=null, $iVendorId=null, $iCatId=null)
     {
-        if ($sName)
+        $sWhatChanged = "";
+
+        if ($sName && $sName!=$this->sName)
         {
-            if (!query_appdb("UPDATE appFamily SET appName = '".addslashes($sName)."' WHERE appId = ".$this->iAppId))
+            $sUpdate = compile_update_string(array('appName'    => sName));
+            if (!query_appdb("UPDATE appFamily SET ".$sUpdate." WHERE appId = ".$this->iAppId))
                 return false;
+            $sWhatChanged .= "Name was changed from ".$this->sName." to ".$sName.".\n\n";
             $this->sName = $sName;
         }     
 
-        if ($sDescription)
+        if ($sDescription && $sDescription!=$this->sDescription)
         {
-            if (!query_appdb("UPDATE appFamily SET description = '".addslashes($sDescription)."' WHERE appId = ".$this->iAppId))
+            $sUpdate = compile_update_string(array('description'    => $sDescription));
+            if (!query_appdb("UPDATE appFamily SET ".$sUpdate." WHERE appId = ".$this->iAppId))
                 return false;
+            $sWhatChanged .= "Description was changed from\n ".$this->sDescription."\n to \n".$sDescription.".\n\n";
             $this->sDescription = $sDescription;
         }
 
-        if ($sKeywords)
+        if ($sKeywords && $sKeywords!=$this->sKeywords)
         {
-            if (!query_appdb("UPDATE appFamily SET keywords = '".addslashes($sKeywords)."' WHERE appId = ".$this->iAppId))
+            $sUpdate = compile_update_string(array('keywords'    => $sKeywords));
+            if (!query_appdb("UPDATE appFamily SET ".$sUpdate." WHERE appId = ".$this->iAppId))
                 return false;
+            $sWhatChanged .= "Keywords were changed from\n ".$this->sKeywords."\n to \n".$sKeywords.".\n\n";
             $this->sKeywords = $sKeywords;
         }
 
-        if ($sWebpage)
+        if ($sWebpage && $sWebpage!=$this->sWebpage)
         {
-            if (!query_appdb("UPDATE appFamily SET webPage = '".addslashes($sWebpage)."' WHERE appId = ".$this->iAppId))
+            $sUpdate = compile_update_string(array('webPage'    => $sWebpage));
+            if (!query_appdb("UPDATE appFamily SET ".$sUpdate." WHERE appId = ".$this->iAppId))
                 return false;
+            $sWhatChanged .= "Web page was changed from ".$this->sWebpage." to ".$sWebpage.".\n\n";
             $this->sWebpage = $sWebpage;
         }
      
-        if ($iVendorId)
+        if ($iVendorId && $iVendorId!=$this->iVendorId)
         {
-            if (!query_appdb("UPDATE appFamily SET vendorId = '".$iVendorId."' WHERE appId = ".$this->iAppId))
+            $sUpdate = compile_update_string(array('vendorId'    => $iVendorId));
+            if (!query_appdb("UPDATE appFamily SET ".$sUpdate." WHERE appId = ".$this->iAppId))
                 return false;
+            $oVendorBefore = new Vendor($this->iVendorId);
+            $oVendorAfter = new Vendor($iVendorId);
+            $sWhatChanged .= "Vendor was changed from ".$oVendorBefore->sName." to ".$oVendorBefore->sName.".\n\n";
             $this->iVendorId = $iVendorId;
         }
 
-        if ($iCatId)
+        if ($iCatId && $iCatId!=$this->iCatId)
         {
-            if (!query_appdb("UPDATE appFamily SET catId = '".$iCatId."' WHERE appId = ".$this->iAppId))
+            $sUpdate = compile_update_string(array('catId'    => $iCatId));
+            if (!query_appdb("UPDATE appFamily SET ".$sUpdate." WHERE appId = ".$this->iAppId))
                 return false;
+            $oCatBefore = new Category($this->iCatId);
+            $oCatAfter = new Category($iCatId);
+            $sWhatChanged .= "Vendor was changed from ".$oCatBefore->sName." to ".$oCatAfter->sName.".\n\n";
             $this->iCatId = $iCatId;
         }
+        if($sWhatChanged)
+            $this->mailSupermaintainers("edit",$sWhatChanged);
         return true;
     }
 
@@ -244,38 +261,43 @@ class Application {
     }
 
  
-    function mailSupermaintainers($bDeleted=false)
+    function mailSupermaintainers($sAction="add",$sMsg=null)
     {
-        if(!$bDeleted)
+        switch($sAction)
         {
-            if(!$this->bQueued)
-            {
-                $sSubject = "Application ".$this->sName." added by ".$_SESSION['current']->sRealname;
-                $sMsg  = APPDB_ROOT."appview.php?appId=".$this->iAppId."\n";
-                if($this->iSubmitterId)
+            case "add":
+                if(!$this->bQueued)
                 {
-                    $oSubmitter = new User($this->iSubmitterId);
-                    $sMsg .= "This application has been submitted by ".$oSubmitter->sRealname.".";
+                    $sSubject = $this->sName." has been added by ".$_SESSION['current']->sRealname;
+                    $sMsg  = APPDB_ROOT."appview.php?appId=".$this->iAppId."\n";
+                    if($this->iSubmitterId)
+                    {
+                        $oSubmitter = new User($this->iSubmitterId);
+                        $sMsg .= "This application has been submitted by ".$oSubmitter->sRealname.".";
+                        $sMsg .= "\n";
+                    }
+                    addmsg("The application was successfully added into the database.", "green");
+                } else // Application queued.
+                {
+                    $sSubject = $this->sName." has been submitted by ".$_SESSION['current']->sRealname;
+                    $sMsg .= "This application has been queued.";
                     $sMsg .= "\n";
+                    addmsg("The application you submitted will be added to the database database after being reviewed.", "green");
                 }
-                addmsg("The application was successfully added into the database.", "green");
-            } else // Application queued.
-            {
-                $sSubject = "Application ".$this->sName." submitted by ".$_SESSION['current']->sRealname;
-                $sMsg .= "This application has been queued.";
-                $sMsg .= "\n";
-                addmsg("The application you submitted will be added to the database database after being reviewed.", "green");
-            }
-        } else // Application deleted.
-        {
-            $sSubject = "Application ".$this->sName." deleted by ".$_SESSION['current']->sRealname;
-            addmsg("Application deleted.", "green");
+            break;
+            case "edit":
+                $sSubject =  $this->sName." has been modified by ".$_SESSION['current']->sRealname;
+                addmsg("Application modified.", "green");
+            break;
+            case "delete":
+                $sSubject = $this->sName." has been deleted by ".$_SESSION['current']->sRealname;
+                addmsg("Application deleted.", "green");
+            break;
         }
         $sEmail = get_notify_email_address_list($this->iAppId);
         if($sEmail)
             mail_appdb($sEmail, $sSubject ,$sMsg);
     } 
-
 }
 
 
