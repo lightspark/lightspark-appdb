@@ -74,4 +74,4 @@ Order allow,deny
 Allow from all
 </Directory>
 
-# edit local config as nessary to allow access.
+# edit local config as necessary to allow access.

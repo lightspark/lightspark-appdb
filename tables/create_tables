@@ -12,7 +12,7 @@ mysql -p -u root < user_list.sql
 echo Creating user preferences
 mysql -p -u root < user_prefs.sql
 
-echo Creating user privilages
+echo Creating user privileges
 mysql -p -u root < user_privs.sql
 
 echo Creating session table

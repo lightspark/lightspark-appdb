@@ -12,7 +12,7 @@ for a certain program doesn't exist.
           for Linux Red Hat, Mandrake, SuSE, Slackware and FreeBSD, hosted by 
        <a href="http://sourceforge.net/project/showfiles.php?group_id=6241">SourceForge.net</a>.</li>
    <li><a href="http://www.winehq.org/site/cvs">Official WineHQ Source</a> for information on how to
-          build and install wine via source read over the 
+          build and install Wine via source read over the 
        <a href="http://www.winehq.org/site/howto"> Wine HowTo</a>.</li>
        </ul>
 	<p>
@@ -27,9 +27,9 @@ to verify the most important aspects of Wine environment configuration.</li><p>
 Run Wine with --debugmsg +loaddll to find out which
 DLLs are loaded as native or builtin ones.
 Then make sure appropriate native versions are in the
-c:\windows\system directory as configured in your wine
+c:\windows\system directory as configured in your Wine
 config file. There are five options you can choose from when setting
-dll overrides, I will use commctrl here as a example.</li><p>
+dll overrides, I will use commctrl here as an example.</li><p>
 
 <pre>
 "commctrl" = "native, builtin"

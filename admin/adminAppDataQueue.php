@@ -37,8 +37,8 @@ if (!$_REQUEST['queueId'])
     {
         //help
         echo "<div align=center><table width='90%' border=0 cellpadding=3 cellspacing=0><tr><td>\n\n";
-        echo "<p>This is a list of app data submitted by users.\n";
-        echo "Please inspect carefully these data before to accept it.\n";
+        echo "<p>This is a list of application data submitted by users.\n";
+        echo "Please inspect carefully this data before accepting it.\n";
         echo "</td></tr></table></div>\n\n";
     
         //show applist
@@ -86,7 +86,7 @@ if (!$_REQUEST['queueId'])
              $_SESSION['current']->is_maintainer($obj_row->queueAppId,
                                                  $obj_row->queueVersionId)))
     {
-        errorpage("You don't have sufficient priviledges to use this page.");
+        errorpage("You don't have sufficient privileges to use this page.");
         exit;
     }
     

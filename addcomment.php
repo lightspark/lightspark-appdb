@@ -66,8 +66,8 @@ if(isset($_REQUEST['body']))
                 $ms .= $_REQUEST['body']."\n";
                 $ms .= "\n";
                 $ms .= "------- You are receiving this mail because: -------\n";
-                $ms .= "Someone posted a comment in responce to your comment\n";
-                $ms .= "to change your preverences go to: http://appdb.winehq.org/preferences.php\n";
+                $ms .= "Someone posted a comment in response to your comment\n";
+                $ms .= "to change your preferences go to: http://appdb.winehq.org/preferences.php\n";
 
                 mail(stripslashes($email), "[AppDB] (Comment Reply): ".$fullAppName ,$ms);
                 

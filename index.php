@@ -237,7 +237,7 @@ echo "<td><a href='".BASE."appview.php?appId=55'>ICQ</a></td>";
      (Dlls installed atl.dll,msvcrt.dll)<br />
     Run: No, required comctl32 (imagelist proble) and riched32 native.
      (it wasn't able to add users to contact list even with this native
-      dlls, i don't know if it was a different problem, or wine related)</td>
+      dlls, I don't know if it was a different problem, or Wine related)</td>
         <td><span class=todo>[TODO]</span></td>
     </tr>
 
@@ -261,9 +261,9 @@ echo "<td><a href='".BASE."appview.php?appId=391'>WinRAR</a></td>";
         <td>3.00</td>
         <td>This is a version of the popular RAR compression format, offering significantly improved compression ratios.</td>
         <td>11</td>
-        <td>Install: Yes. (It will install winrar in the directory what you are
-      when run the installer, it is a buggy because you must stop the
-      installation with ctrl+c when it will ask by "overwrite files", but
+        <td>Install: Yes. (It will install winrar in the directory where you are
+      when you run the installer, it is buggy because you must stop the
+      installation with ctrl+c when it asks to "overwrite files", but
       it works).<br />
     Run: Yes. (minor glitches in bugzilla)
     </td>
@@ -306,9 +306,9 @@ echo "<td><a href='".BASE."appview.php?appId=288'>WinMX</a></td>";
 application site. The site contains tips and howtos on getting listed apps to run.
 </p>
 <p>
-<a href="http://sidenet.ddo.jp/winetips/config.html"><b>Sidenet wine configuration utility</b></a>:  Installs Internet Explorer 6 and Windows Media Player 7 automatically (works also with MSN Messenger and RealPlayer).
+<a href="http://sidenet.ddo.jp/winetips/config.html"><b>Sidenet Wine configuration utility</b></a>:  Installs Internet Explorer 6 and Windows Media Player 7 automatically (works also with MSN Messenger and RealPlayer).
 </p>
-<a href="http://www.von-thadden.de/Joachim/WineTools/"><b>WineTools</b></a>: WineTools is an menu driven installer for installing Windows programs under wine (DCOM98, IE6, Windows Core Fonts, Windows System Software, Office & Office Viewer, Adobe Photoshop 7, Illustrator 9, Acrobat Reader 5.1, ...).
+<a href="http://www.von-thadden.de/Joachim/WineTools/"><b>WineTools</b></a>: WineTools is an menu driven installer for installing Windows programs under Wine (DCOM98, IE6, Windows Core Fonts, Windows System Software, Office & Office Viewer, Adobe Photoshop 7, Illustrator 9, Acrobat Reader 5.1, ...).
 </p>
 <p>&nbsp;</p>
 

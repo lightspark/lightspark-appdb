@@ -1,6 +1,6 @@
 <?php
 /*******************************************************************/
-/* this script expects appId and optionnaly versionId as arguments */
+/* this script expects appId and optionally versionId as arguments */
 /* OR                                                              */
 /* cmd and imageId                                                 */
 /*******************************************************************/
@@ -93,7 +93,7 @@ if($_REQUEST['cmd'])
                     exit;
                 } else 
                 {   
-                    // we have to update the queued entry now that we know it's name
+                    // we have to update the queued entry now that we know its name
                     $str_query = "UPDATE appDataQueue SET url = '".$int_queueId."' WHERE queueId = '".$int_queueId."'";
                     if (mysql_query($str_query))
                     {

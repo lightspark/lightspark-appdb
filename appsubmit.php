@@ -119,9 +119,9 @@ else if (isset($_REQUEST['apptype']))
   echo "and you will be notified via email if this application will be added to\n";
   echo "the database.</p>\n";
   echo "<p>Please don't forget to mention which Wine version you used, how well it worked\n";
-  echo "and if any workaround were needed. Haveing app descriptions just sponsoring the app\n";
-  echo "(Yes, some vendor want to use the appdb for this) or saying \"I haven't tried this app with wine\" ";
-  echo "won't help wine development or wine users.</p>\n";
+  echo "and if any workaround were needed. Having app descriptions just sponsoring the app\n";
+  echo "(Yes, some vendor want to use the appdb for this) or saying \"I haven't tried this app with Wine\" ";
+  echo "won't help Wine development or Wine users.</p>\n";
   echo "<p>To submit screenshots, please email them to ";
   echo "<a href='mailto:appdb@winehq.org'>appdb@winehq.org</a></p>\n";
 
