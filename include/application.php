@@ -79,6 +79,31 @@ class Application {
     }
 }
 
+function deleteAppFamily($appId)
+{
+    $r = mysql_query("DELETE FROM appFamily WHERE appId = $appId");
+    if($r)
+    {
+        $r = mysql_query("DELETE FROM appVersion WHERE appId = $appId");
+        if($r)
+            addmsg("Application and versions deleted", "green");
+        else
+            addmsg("Failed to delete appVersions: " . mysql_error(), "red");
+    }
+    else
+        addmsg("Failed to delete appFamily $appId: " . mysql_error(), "red");
+    
+}
+
+function deleteAppVersion($versionId)
+{
+    $r = mysql_query("DELETE FROM appVersion WHERE versionId = $versionId");
+    if($r)
+        addmsg("Application Version $versionId deleted", "green");
+    else
+        addmsg("Failed to delete appVersion $versionId: " . mysql_error(), "red");
+}
+
 function lookupVersionName($appId, $versionId)
 {
     $result = mysql_query("SELECT versionName FROM appVersion WHERE versionId = $versionId and appId = $appId");

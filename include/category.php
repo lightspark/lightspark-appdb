@@ -207,4 +207,22 @@ function make_cat_path($path)
     return $str;
 }
 
+function deleteCategory($catId)
+{
+    $r = mysql_query("SELECT appId FROM appFamily WHERE catId = $catId");
+    if($r)
+    {
+        while($ob = mysql_fetch_object($r))
+            deleteAppFamily($ob->appId);
+        $r = mysql_query("DELETE FROM appCategory WHERE catId = $catId");
+       
+        if($r)
+            addmsg("Category $catId deleted", "green");
+        else
+            addmsg("Failed to delete category $catId:".mysql_error(), "red");
+    } else
+    {
+        addmsg("Failed to delete category $catId: ".mysql_error(), "red");
+    }
+}
 ?>

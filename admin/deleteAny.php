@@ -1,8 +1,15 @@
 <?php
+/****************************************************/
+/* code to delete versions, families and categories */
+/****************************************************/
 
-
+/*
+ * application environment
+ */
 include("path.php");
-include(BASE."include/"."incl.php");
+include(BASE."include/incl.php");
+include(BASE."include/category.php");
+include(BASE."include/application.php");
 
 
 if(!loggedin() || !havepriv("admin"))
@@ -11,7 +18,7 @@ if(!loggedin() || !havepriv("admin"))
     exit;
 }
 
-if($confirmed != "yes")
+if($_REQUEST['confirmed'] != "yes")
 {
     // ask for confirmation
     // could do some Real Damage if someone accidently hits the delete button on the main category :)
@@ -21,57 +28,9 @@ if($confirmed != "yes")
     errorpage("Not confirmed");
 }
 
-
-function deleteCategory($catId)
+if($_REQUEST['what'])
 {
-    $r = mysql_query("SELECT appId FROM appFamily WHERE catId = $catId");
-    if($r)
-	{
-	    while($ob = mysql_fetch_object($r))
-		deleteAppFamily($ob->appId);
-	    $r = mysql_query("DELETE FROM appCategory WHERE catId = $catId");
-       
-	    if($r)
-		addmsg("Category $catId deleted", "green");
-	    else
-		addmsg("Failed to delete category $catId:".mysql_error(), "red");
-	}
-    else
-	{
-	    addmsg("Failed to delete category $catId: ".mysql_error(), "red");
-	}
-}
-
-function deleteAppFamily($appId)
-{
-    $r = mysql_query("DELETE FROM appFamily WHERE appId = $appId");
-    if($r)
-	{
-	    $r = mysql_query("DELETE FROM appVersion WHERE appId = $appId");
-	    if($r)
-		addmsg("Application and versions deleted", "green");
-	    else
-		addmsg("Failed to delete appVersions: " . mysql_error(), "red");
-	}
-    else
-	addmsg("Failed to delete appFamily $appId: " . mysql_error(), "red");
-    
-}
-
-function deleteAppVersion($versionId)
-{
-    $r = mysql_query("DELETE FROM appVersion WHERE versionId = $versionId");
-    if($r)
-	addmsg("Application Version $versionId deleted", "green");
-    else
-	addmsg("Failed to delete appVersion $versionId: " . mysql_error(), "red");
-}
-
-
-
-if($what)
-{
-    switch($what)
+    switch($_REQUEST['what'])
 	{
 	case "comment":
 	    // delete a comment
@@ -79,21 +38,19 @@ if($what)
 	    break;
 	case "category":
 	    // delete category and the apps in it
-	    deleteCategory($catId);
+	    deleteCategory($_REQUEST['catId']);
 	    break;
 	case "appFamily":
 	    // delete app family & all its versions
-	    deleteAppFamily($appId);
+	    deleteAppFamily($_REQUEST['appId']);
 	    break;
 	case "appVersion":
 	    // delete a version
-	    deleteAppVersion($versionId);
+	    deleteAppVersion($_REQUEST['versionId']);
 	    break;
 	}
 
     //FIXME need to redirect to the page before the confirmation page
     redirect(BASE."appbrowse.php");
 }
-
-
 ?>
