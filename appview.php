@@ -1,11 +1,11 @@
 <?
+/**********************************/
+/* code to display an application */
+/**********************************/
 
-
-/*
- * Application Database - appview.php
- *
+/**
+ * APPLICATION ENVIRONMENT
  */
-
 include("path.php");
 require(BASE."include/"."incl.php");
 require(BASE."include/"."application.php");
@@ -18,41 +18,37 @@ require(BASE."include/"."category.php");
 
 require(BASE."include/"."maintainer.php");
 
-global $apidb_root;
 
 
 // NOTE: app Owners will see this menu too, make sure we don't show admin-only options
 function admin_menu()
 {
-    global $appId;
-    global $versionId;
     global $apidb_root;
 
     $m = new htmlmenu("Admin");
-    if($versionId)
-    {
-        $m->add("Add Note", $apidb_root."admin/addAppNote.php?appId=$appId&versionId=$versionId");
+    if($_REQUEST[versionId]) {
+        $m->add("Add Note", $apidb_root."admin/addAppNote.php?appId=$appId&versionId=".$_REQUEST['versionId']);
         $m->addmisc("&nbsp;");
 
-        $m->add("Edit Version", $apidb_root."admin/editAppVersion.php?appId=$appId&versionId=$versionId");
+        $m->add("Edit Version", $apidb_root."admin/editAppVersion.php?appId=$appId&versionId=".$_REQUEST['versionId']);
 
-        $url = $apidb_root."admin/deleteAny.php?what=appVersion&versionId=$versionId&confirmed=yes";
+        $url = $apidb_root."admin/deleteAny.php?what=appVersion&versionId=".$_REQUEST['versionId']."&confirmed=yes";
         $m->add("Delete Version", "javascript:deleteURL(\"Are you sure?\", \"".$url."\")");
     } else
     {
-        $m->add("Add Version", $apidb_root."admin/addAppVersion.php?appId=$appId");
+        $m->add("Add Version", $apidb_root."admin/addAppVersion.php?appId=".$_REQUEST['appId']);
         $m->addmisc("&nbsp;");
-	
-        $m->add("Edit App", $apidb_root."admin/editAppFamily.php?appId=$appId");
-	
+  
+        $m->add("Edit App", $apidb_root."admin/editAppFamily.php?appId=".$_REQUEST['appId']);
+  
         // global admin options
         if(havepriv("admin"))
         {
-            $url = $apidb_root."admin/deleteAny.php?what=appFamily&appId=$appId&confirmed=yes";
+            $url = $apidb_root."admin/deleteAny.php?what=appFamily&appId=".$_REQUEST['appId']."&confirmed=yes";
             $m->add("Delete App", "javascript:deleteURL(\"Are you sure?\", \"".$url."\")");
             $m->addmisc("&nbsp;");
-            $m->add("Edit Owners", $apidb_root."admin/editAppOwners.php?appId=$appId");
-            $m->add("Edit Bundle", $apidb_root."admin/editBundle.php?bundleId=$appId");
+            $m->add("Edit Owners", $apidb_root."admin/editAppOwners.php?appId=".$_REQUEST['appId']);
+            $m->add("Edit Bundle", $apidb_root."admin/editBundle.php?bundleId=".$_REQUEST['appId']);
         }
     }
     
@@ -60,34 +56,47 @@ function admin_menu()
 }
 
 
-function get_screenshot_img($appId, $versionId)
+/**
+ * Get a random image for a particular version of an app.
+ * If the version is not set, get a random app image 
+ */
+function get_screenshot_img($appId, $versionId="") 
 {
     global $apidb_root;
 
-    if(!$versionId)
-	$versionId = 0;
-
-    $result = mysql_query("SELECT * FROM appData WHERE appId = $appId AND versionId = $versionId AND type = 'image'");
+    if($versionId) 
+    {
+        $result = mysql_query("SELECT *, RAND() AS rand FROM appData WHERE appId = $appId AND versionId = $versionId AND type = 'image' ORDER BY rand");
+    }
+    else {
+       $result = mysql_query("SELECT *, RAND() AS rand FROM appData WHERE appId = $appId AND type = 'image' ORDER BY rand");
+    }
     
     if(!$result || !mysql_num_rows($result))
     {
-        $imgFile = "<img src='".$apidb_root."images/no_screenshot.gif' border=0 alt='No Screenshot'>";
+        $imgFile = "<img src='".$apidb_root."images/no_screenshot.gif' border=0 alt='No Screenshot' />";
     }
     else
     {
         $ob = mysql_fetch_object($result);
         $imgFile = "<img src='appimage.php?imageId=$ob->id&width=128&height=128' ".
-                   "border=0 alt='$ob->description'>";
+                   "border=0 alt='$ob->description' />";
     }
     
     $img = html_frame_start("",'128','',2);
-    $img .= "<a href='screenshots.php?appId=$appId&versionId=$versionId'>$imgFile</a>";
-    $img .= html_frame_end()."<br>";
+    if($versionId)
+        $img .= "<a href='screenshots.php?appId=$appId&versionId=$versionId'>$imgFile</a>";
+    else 
+        $img .= $imgFile;
+    $img .= html_frame_end()."<br />";
     
     return $img;
 }
 
 
+/**
+ * TODO: what does it do ? 
+ */
 function display_catpath($catId)
 {
     $cat = new Category($catId);
@@ -98,16 +107,18 @@ function display_catpath($catId)
     echo html_frame_end();
 }
 
-/* display the SUB apps that belong to this app */
+
+/**
+ * display the SUB apps that belong to this app 
+ */
 function display_bundle($appId)
 {
     $result = mysql_query("SELECT appFamily.appId, appName, description FROM appBundle, appFamily ".
-			  "WHERE bundleId = $appId AND appBundle.appId = appFamily.appId");
+                        "WHERE bundleId = $appId AND appBundle.appId = appFamily.appId");
     if(!$result || mysql_num_rows($result) == 0)
-	{
-	    // do nothing
-	    return;
-	}
+    {
+         return; // do nothing
+    }
 
     echo html_frame_start("","98%","",0);
     echo "<table width='100%' border=0 cellpadding=3 cellspacing=1>\n\n";
@@ -118,36 +129,36 @@ function display_bundle($appId)
     echo "</tr>\n\n";
 
     $c = 0;
-    while($ob = mysql_fetch_object($result))
-	{
-	    //set row color
-	    $bgcolor = ($c % 2 == 0) ? "color0" : "color1";
+    while($ob = mysql_fetch_object($result)) {
+        //set row color
+        $bgcolor = ($c % 2 == 0) ? "color0" : "color1";
 
-	    //format desc
-	    $desc = substr(stripslashes($ob->description),0,50);
-	    if(strlen($desc) == 50)
-		$desc .= " ...";
+        //format desc
+        $desc = substr(stripslashes($ob->description),0,50);
+        if(strlen($desc) == 50) $desc .= " ...";
 
-	    //display row
-	    echo "<tr class=$bgcolor>\n";
-	    echo "    <td><a href='appview.php?appId=$ob->appId'>".stripslashes($ob->appName)."</a></td>\n";
-	    echo "    <td>$desc &nbsp;</td>\n";
-	    echo "</tr>\n\n";
+        //display row
+        echo "<tr class=$bgcolor>\n";
+        echo "    <td><a href='appview.php?appId=$ob->appId'>".stripslashes($ob->appName)."</a></td>\n";
+        echo "    <td>$desc &nbsp;</td>\n";
+        echo "</tr>\n\n";
 
-	    $c++;
-	}
+        $c++;
+    }
 
     echo "</table>\n\n";
     echo html_frame_end();
 }
 
 
-/* display the notes for the app */
+/**
+ * display the notes for the app 
+ */
 function display_notes($appId, $versionId = 0)
 {
     $result = mysql_query("SELECT noteId,noteTitle FROM appNotes ".
-			  "WHERE appId = $appId AND versionId = $versionId");
-			  
+        "WHERE appId = $appId AND versionId = $versionId");
+        
     if(!$result || mysql_num_rows($result) == 0)
     {
         // do nothing
@@ -158,61 +169,63 @@ function display_notes($appId, $versionId = 0)
     
     $c = 1;
     while($ob = mysql_fetch_object($result))
-	{
-	    //skip if NONAME
-	    if ($ob->noteTitle == "NONAME" || $ob->noteTitle == "WARNING" || $ob->noteTitle == "HOWTO") { continue; }
-	    
-	    //set link for version
-	    if ($versionId != 0)
-	    {
-	        $versionLink = "&versionId=$versionId";
-	    }
-	    
-	    //display row
+    {
+        // skip if NONAME
+        if ($ob->noteTitle == "NONAME" || $ob->noteTitle == "WARNING" || $ob->noteTitle == "HOWTO") { continue; }
+      
+        // set link for version
+        if ($versionId != 0)
+        {
+            $versionLink = "&versionId=$versionId";
+        }
+      
+        // display row
         if (havepriv("admin") || isMaintainer($appId,$versionId) )
             echo "    <a href='admin/editAppNote.php?noteId=".$ob->noteId."&appId=$appId".$versionLink."'> $c. ".substr(stripslashes($ob->noteTitle),0,30)."</a><br>\n";
         else
             echo "    <a href='noteview.php?noteId=".$ob->noteId."&appId=$appId".$versionLink."'> $c. ".substr(stripslashes($ob->noteTitle),0,30)."</a><br>\n";
-	    $c++;
-	}
+        $c++;
+    }
 
     echo "</td></tr>\n";
 }
 
-/* display the versions */
+/**
+ * display the versions 
+ */
 function display_versions($appId, $versions)
 {
-	if ($versions)
-	{
-		 echo html_frame_start("","98%","",0);
-		 echo "<table width='100%' border=0 cellpadding=3 cellspacing=1>\n\n";
+    if ($versions)
+    {
+        echo html_frame_start("","98%","",0);
+        echo "<table width='100%' border=0 cellpadding=3 cellspacing=1>\n\n";
 
-		 echo "<tr class=color4>\n";
-		 echo "    <td width=80><font color=white>Version</font></td>\n";
-		 echo "    <td><font color=white>Description</font></td>\n";
-		 echo "    <td width=80><font color=white class=small>Rating With Windows</font></td>\n";
-		 echo "    <td width=80><font color=white class=small>Rating Without Windows</font></td>\n";
-		 echo "    <td width=40><font color=white class=small>Comments</font></td>\n";
-		 echo "</tr>\n\n";
-    	
-         $c = 0;
-         while(list($idx, $ver) = each($versions))
-         {
+        echo "<tr class=color4>\n";
+        echo "    <td width=80><font color=white>Version</font></td>\n";
+        echo "    <td><font color=white>Description</font></td>\n";
+        echo "    <td width=80><font color=white class=small>Rating With Windows</font></td>\n";
+        echo "    <td width=80><font color=white class=small>Rating Without Windows</font></td>\n";
+        echo "    <td width=40><font color=white class=small>Comments</font></td>\n";
+        echo "</tr>\n\n";
+      
+        $c = 0;
+        while(list($idx, $ver) = each($versions))
+        {
             //set row color
             $bgcolor = ($c % 2 == 0) ? "color0" : "color1";
 
             //format desc
             $desc = substr(stripslashes($ver->description),0,75);
             if(strlen($desc) == 75)
-                $desc .= " ...";		
-		
+                $desc .= " ...";    
+    
             //get ratings
             $r_win = rating_stars_for_version($ver->versionId, "windows");
             $r_fake = rating_stars_for_version($ver->versionId, "fake");
-		   
+       
             //count comments
             $r_count = count_comments($appId,$ver->versionId);
-		
+    
             //display row
             echo "<tr class=$bgcolor>\n";
             echo "    <td><a href='appview.php?appId=$appId&versionId=$ver->versionId'>".$ver->versionName."</a></td>\n";
@@ -222,23 +235,25 @@ function display_versions($appId, $versions)
             echo "    <td align=center>$r_count</td>\n";
             echo "</tr>\n\n";
 
-            $c++;		
-		}
-		
-		echo "</table>\n";
-		echo html_frame_end("Click the Version Name to view the details of that Version");
-	}
+            $c++;   
+    }
+    
+    echo "</table>\n";
+    echo html_frame_end("Click the Version Name to view the details of that Version");
+    }
 }
 
-/* code to VIEW an application & versions */
 
 $appId = $_REQUEST['appId'];
 $versionId = $_REQUEST['versionId'];
 
+/**
+ * We want to see an application family (=no version) 
+ */
 if(!is_numeric($appId))
 {
-	errorpage("Something went wrong with the IDs");
-	exit;
+    errorpage("Something went wrong with the IDs");
+    exit;
 }
 
 if($appId && !$versionId)
@@ -247,37 +262,34 @@ if($appId && !$versionId)
     $data = $app->data;
     if(!$data)
     {
-        // Oops! application not found or other error. do something
+        // oops! application not found or other error. do something
         errorpage('Internal Database Access Error');
         exit;
     }
 
-    // Show Vote Menu
+    // show Vote Menu
     if(loggedin())
         apidb_sidebar_add("vote_menu");
 
-    // Show Admin Menu
+    // show Admin Menu
     if(loggedin() && (havepriv("admin") || $current->ownsApp($appId)))
         apidb_sidebar_add("admin_menu");
 
     // header
     apidb_header("Viewing App - ".$data->appName);
 
-    //cat display
+    // cat display
     display_catpath($app->data->catId);
 
-    //set Vendor
+    // set Vendor
     $vendor = $app->getVendor();
 
-    //set URL
+    // set URL
     $appLinkURL = ($data->webPage) ? "<a href='$data->webPage'>".substr(stripslashes($data->webPage),0,30)."</a>": "&nbsp;";
-	
-    //set Image
-    $img = get_screenshot_img($appId, $versionId);
-	
-    //start display application
+  
+    // start display application
     echo html_frame_start("","98%","",0);
-	
+  
     echo "<tr><td class=color4 valign=top>\n";
     echo "  <table>\n";
     echo "    <tr><td>\n";
@@ -289,41 +301,45 @@ if($appId && !$versionId)
     echo "        <tr class=color0 valign=top><td align=right> <b>BUGS</b></td><td> ".
          "        <a href='bugs.php?appId=$data->appId.'> Check for bugs in bugzilla </a> &nbsp;\n";        
     echo "        </td></tr>\n";
-	
-	//display notes
-	display_notes($appId);
-	
-	//main URL
-	echo "        <tr class=color1 valign=top><td align=right> <b>URL</b></td><td>".$appLinkURL."</td></tr>\n";
+  
+    // display notes
+    display_notes($appId);
+  
+    // main URL
+    echo "        <tr class=color1 valign=top><td align=right> <b>URL</b></td><td>".$appLinkURL."</td></tr>\n";
 
-	//optional links
-	$result = mysql_query("SELECT * FROM appData WHERE appId = $appId AND type = 'url'");
-	if($result && mysql_num_rows($result) > 0)
+    // optional links
+    $result = mysql_query("SELECT * FROM appData WHERE appId = $appId AND type = 'url'");
+    if($result && mysql_num_rows($result) > 0)
     {
-		echo "        <tr class=color1><td valign=top align=right> <b>Links</b></td><td>\n";
-		while($ob = mysql_fetch_object($result))
+        echo "        <tr class=color1><td valign=top align=right> <b>Links</b></td><td>\n";
+        while($ob = mysql_fetch_object($result))
         {
-			echo "        <a href='$ob->url'>".substr(stripslashes($ob->description),0,30)."</a> <br>\n";
+            echo "        <a href='$ob->url'>".substr(stripslashes($ob->description),0,30)."</a> <br>\n";
         }
-		echo "        </td></tr>\n";
-    }
-
-	// display app owner
-	$result = mysql_query("SELECT * FROM appOwners WHERE appId = $appId");
-	if($result && mysql_num_rows($result) > 0)
+            echo "        </td></tr>\n";
+        }
+  
+    // image
+    $img = get_screenshot_img($appId);
+    echo "<tr><td align=center colspan=2>$img</td></tr>\n";
+    
+    // display app owner
+    $result = mysql_query("SELECT * FROM appOwners WHERE appId = $appId");
+    if($result && mysql_num_rows($result) > 0)
     {
-		echo "        <tr class=color0><td valign=top align=right> <b>Owner</b></td>\n";
+        echo "        <tr class=color0><td valign=top align=right> <b>Owner</b></td>\n";
         echo "        <td>\n";
-		while($ob = mysql_fetch_object($result))
+        while($ob = mysql_fetch_object($result))
         {
             $inResult = mysql_query("SELECT username,email FROM user_list WHERE userid = $ob->ownerId");
-			if ($inResult && mysql_num_rows($inResult) > 0)
-			{
-				$foo = mysql_fetch_object($inResult);
-				echo "        <a href='mailto:$foo->email'>".substr(stripslashes($foo->username),0,30)."</a> <br>\n";
+            if ($inResult && mysql_num_rows($inResult) > 0)
+            {
+                $foo = mysql_fetch_object($inResult);
+                echo "        <a href='mailto:$foo->email'>".substr(stripslashes($foo->username),0,30)."</a> <br>\n";
             }
         }
-		echo "        </td></tr>\n";
+        echo "        </td></tr>\n";
     }
     echo "      </table>\n"; /* close of name/vendor/bugs/url table */
 
@@ -380,7 +396,7 @@ if($appId && !$versionId)
 
     echo "  </table>\n"; /* close the table that contains the whole left hand side of the upper table */
 
-    //Desc
+    // description
     echo "  <td class=color2 valign=top width='100%'>\n";
     echo "    <table width='100%' border=0><tr><td width='100%' valign=top><b>Description</b><br>\n";
     echo add_br(stripslashes($data->description));
@@ -389,24 +405,28 @@ if($appId && !$versionId)
 
     echo html_frame_end("For more details and user comments, view the versions of this application.");
 
-    //display versions
+    // display versions
     display_versions($appId,$app->getAppVersionList());
 
-    //display bundle
+    // display bundle
     display_bundle($appId);
 
     // disabled for now
     //log_application_visit($appId);
 }
+
+#######################################
+# We want to see a particular version #
+#######################################
 else if($appId && $versionId)
 {
     $app = new Application($appId);
     $data = $app->data;
-    if(!$data ) 
+    if(!$data) 
     {
         // Oops! application not found or other error. do something
         errorpage('Internal Database Access Error. No App found.');
-	exit;
+        exit;
     }
 
     $ver = $app->getAppVersion($versionId);
@@ -414,7 +434,7 @@ else if($appId && $versionId)
     {
         // Oops! Version not found or other error. do something
         errorpage('Internal Database Access Error. No Version Found.');
-	exit;
+        exit;
     }
 
     // rating menu
@@ -432,37 +452,36 @@ else if($appId && $versionId)
     // header
      apidb_header("Viewing App Version - ".$data->appName);
 
-    //cat
+    // cat
     display_catpath($app->data->catId);
-	
-    //set URL
+  
+    // set URL
     $appLinkURL = ($ver->webPage) ? "<a href='$ver->webPage'>".substr(stripslashes($ver->webPage),0,30)."</a>": "&nbsp;";
 
-    //start version display
+    // start version display
     echo html_frame_start("","98%","",0);
-	
+  
     echo '<tr><td class=color4 valign=top>',"\n";
     echo '<table width="250" border=0 cellpadding=3 cellspacing=1">',"\n";
     echo "<tr class=color0 valign=top><td width=100> <b>Name</b></td><td width='100%'>".stripslashes($data->appName)."</td>\n";
     echo "<tr class=color1 valign=top><td> <b>Version</b></td><td>".stripslashes($ver->versionName)."</td></tr>\n";
     echo "<tr class=color0 valign=top><td> <b>URL</b></td><td>".stripslashes($appLinkURL)."</td></tr>\n";
 
-    //Rating Area
+    // rating Area
     $r_win = rating_stars_for_version($versionId, "windows");
     $r_fake = rating_stars_for_version($versionId, "fake");
 
     echo "<tr class=color1 valign=top><td> <b>Rating</b></td><td> $r_win \n";
     echo "<br> $r_fake </td></tr>\n";
 
-    //notes
+    // notes
     display_notes($appId, $versionId);
 
-    //Image
+    // image
     $img = get_screenshot_img($appId, $versionId);
-
     echo "<tr><td align=center colspan=2>$img</td></tr>\n";
 
-    // Display all maintainers of this application
+    // display all maintainers of this application
     echo "<tr class=color0><td align=left colspan=2><b>Maintainers of this application:</b>\n";
     echo "<table width=250 border=0>";
     $other_maintainers = getMaintainersUserIdsFromAppIdVersionId($appId, $versionId);
@@ -480,7 +499,7 @@ else if($appId && $versionId)
     }
     echo "</table></td></tr>";
 
-    // Display the app maintainer button
+    // display the app maintainer button
     echo "<tr><td colspan = 2><center>";
     if(loggedin())
     {
@@ -575,7 +594,7 @@ else if($appId && $versionId)
         }
     }
 
-    //Show How tos
+    // show How tos
     $result = mysql_query("SELECT * FROM appNotes WHERE appId = $appId and versionId = $versionId and noteTitle = 'HOWTO'");
     if($result && mysql_num_rows($result))
     {
@@ -601,24 +620,24 @@ else if($appId && $versionId)
         }
     }
     //TODO: code to view/add user experience record
-//    if(!$versionId) 
-//    {
-//        $versionId = 0;
-//    }
+    //    if(!$versionId) 
+    //    {
+    //        $versionId = 0;
+    //    }
 
     // Comments Section
     view_app_comments($appId, $versionId);
-	
-}
-else
+  
+} else 
 {
-	// Oops! Called with no params, bad llamah!
-	errorpage('Page Called with No Params!');
-	exit;
+    // Oops! Called with no params, bad llamah!
+    errorpage('Page Called with No Params!');
+    exit;
 }
+?>
 
-echo p();
+<p>&nbsp;</p>
 
+<?
 apidb_footer();
-
 ?>
