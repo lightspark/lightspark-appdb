@@ -185,7 +185,7 @@ if(isset($_REQUEST['submit']))
             $fullAppName = "Application: ".lookupAppName($_REQUEST['appId']);
             $ms .= APPDB_ROOT."appview.php?appId=".$_REQUEST['appId']."\n";
             $ms .= "\n";
-            $ms .= ($_SESSION['current']->username ? $_SESSION['current']->username : "Anonymous")." changed ".$fullAppName."\n";
+            $ms .= ($_SESSION['current']->realname ? $_SESSION['current']->realname : "Anonymous")." changed ".$fullAppName."\n";
             $ms .= "\n";
             $ms .= $sWhatChanged."\n";
             $ms .= "\n";
