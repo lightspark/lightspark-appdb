@@ -45,11 +45,34 @@ if($body)
         exit;
     } else
     {
+        if ($originator)
+        {
+            if (UserWantsEmail($originator))
+            {
+                $email = lookupEmail($originator);
+                $fullAppName = "Application: ".lookupAppName($appId)." Version: ".lookupVersionName($appId, $versionId);
+                $ms .= APPDB_ROOT."appview.php?appId=$appId&versionId=$versionId"."\n";
+                $ms .= "\n";
+                $ms .= ($current->username ? $current->username : "Anonymous")." added comment to ".$fullAppName."\n";
+                $ms .= "\n";
+                $ms .= "Subject: ".$subject."\n";
+                $ms .= "\n";
+                $ms .= $body."\n";
+                $ms .= "\n";
+                $ms .= "------- You are receiving this mail because: -------\n";
+                $ms .= "Someone posted a comment in responce to your comment\n";
+                $ms .= "to change your preverences go to: http://appdb.winehq.org/preferences.php\n";
+
+                mail(stripslashes($email), "[AppDB] (Comment Reply): ".$fullAppName ,$ms);
+                
+                addmsg("Comment message sent to original poster", "green");                   
+            }
+        }
         $email = getNotifyEmailAddressList($appId, $versionId);
         if($email)
         {
             $fullAppName = "Application: ".lookupAppName($appId)." Version: ".lookupVersionName($appId, $versionId);
-            $ms .= apidb_fullurl("appview.php?appId=$appId&versionId=$versionId")."\n";
+            $ms = APPDB_ROOT."appview.php?appId=$appId&versionId=$versionId"."\n";
             $ms .= "\n";
             $ms .= ($current->username ? $current->username : "Anonymous")." added comment to ".$fullAppName."\n";
             $ms .= "\n";
@@ -80,11 +103,12 @@ else
 
     if($thread)
 	{
-	    $result = mysql_query("SELECT subject,body FROM appComments WHERE commentId = $thread");
+	    $result = mysql_query("SELECT * FROM appComments WHERE commentId = $thread");
 	    $ob = mysql_fetch_object($result);
 	    if($ob)
 		{
 		    $mesTitle = "<b>Replying To ...</b> $ob->subject\n";
+                    $originator = $ob->userId;
 		    echo html_frame_start($ob->subject,500);
     	            echo htmlify_urls($ob->body), "<br><br>\n";
 		    echo html_frame_end();
@@ -112,6 +136,10 @@ else
     echo "<input type=HIDDEN name=thread value=$thread>\n";
     echo "<input type=HIDDEN name=appId value=$appId>\n";
     echo "<input type=HIDDEN name=versionId value=$versionId>\n";
+    if ($thread)
+    {
+        echo "<input type=HIDDEN name=originator value=$originator>\n";
+    }
     echo "</form><p>&nbsp;</p>\n";
 
     apidb_footer();
