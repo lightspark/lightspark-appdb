@@ -10,7 +10,6 @@ include("path.php");
 require(BASE."include/incl.php");
 require(BASE."include/application.php");
 require(BASE."include/mail.php");
-require(BASE."include/comment.php");
 
 // you must be logged in to submit comments
 if(!$_SESSION['current']->isLoggedIn())

@@ -7,7 +7,6 @@ include("path.php");
 require(BASE."include/incl.php");
 require(BASE."include/application.php");
 require(BASE."include/mail.php");
-require(BASE."include/note.php");
 
 if(!is_numeric($_REQUEST['noteId']))
 {

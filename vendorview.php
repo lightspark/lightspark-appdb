@@ -9,7 +9,6 @@
 include("path.php");
 require(BASE."include/incl.php");
 require(BASE."include/application.php");
-require(BASE."include/comment.php");
 
 $vendorId = $_REQUEST['vendorId'];
 

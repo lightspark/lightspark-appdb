@@ -7,7 +7,6 @@ include("path.php");
 require(BASE."include/incl.php");
 require(BASE."include/application.php");
 require(BASE."include/mail.php");
-require(BASE."include/note.php");
 
 //FIXME: get rid of appId references everywhere, as version is enough.
 $sQuery = "SELECT appId FROM appVersion WHERE versionId = '".$_REQUEST['versionId']."'";

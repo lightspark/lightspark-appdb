@@ -10,6 +10,7 @@ include("path.php");
 include(BASE."include/incl.php");
 include(BASE."include/category.php");
 include(BASE."include/application.php");
+include(BASE."include/mail.php");
 
 if(!$_SESSION['current']->hasPriv("admin"))
 {
