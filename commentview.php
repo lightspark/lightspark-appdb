@@ -14,7 +14,13 @@ require(BASE."include/"."comments.php");
 
 apidb_header("Comments");
 
-view_app_comments($appId, $versionId, $threadId);
+if(!is_numeric($_REQUEST['appId']) OR !is_numeric($_REQUEST['versionId']) OR (isset($_REQUEST['threadId']) AND !is_numeric($_REQUEST['threadId'])))
+{
+    errorpage("Wrong IDs");
+    exit;
+}
+
+view_app_comments($_REQUEST['appId'], $_REQUEST['versionId'], $_REQUEST['threadId']);
 
 apidb_footer();
 ?>
