@@ -18,7 +18,7 @@ function banner_display ()
     // opening html
     $banner = "";
     $banner .= "\n\n".'<!-- START BANNER AD -->'."\n";
-    $banner .= '<div align=center>'."\n";
+    $banner .= "<div align=center class=\"black\">\n";
 
     // read dir and get list of banners
     $ads = array();
@@ -38,7 +38,7 @@ function banner_display ()
 
     // da banner
     $banner .= '<a href="'.$url.'">';	
-    $banner .= '<img src="'.$banner_path_468x60.$img.'.gif" border=0 width=468 height=60 alt="'.$alt.'">';
+    $banner .= '<img src="'.$banner_path_468x60.$img.'.gif" width=468 height=60 alt="'.$alt.'">';
     $banner .= '</a>'."\n";
     
     // closing html
@@ -46,7 +46,6 @@ function banner_display ()
     $banner .= '<!-- END BANNER AD -->'."\n\n";
 
     return $banner;
-
 }
 
 ?>
