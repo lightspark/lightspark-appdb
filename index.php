@@ -17,26 +17,49 @@ apidb_header("Wine Application Database");
 <p>This is the Wine Application Database. From here you get info on application
 compatibility with Wine. For developers, you can get information on the APIs used in an
 application.</p>
+<?php
+$str_benefits="
+    <ul>
+        <li>Ability to Vote on Favorite Applications</li>
+        <li>Access to the Application Rating System. Rate the apps that \"Don't Suck\"</li>
+        <li>Ability to customize the View of the Apps DB and Comment System</li>
+        <li>Take Credit for your witty posts</li>
+        <li>Ability to sign up to be an application maintainer.</li>
+        <li>Submit new applications and versions.</li>
+    </ul>
+";
+if(!loggedin()) 
+{
+    echo "
+    <p>Most of the features of the Application database require that you have a user account and
+    are logged in. Some of the benefits of membership are:<p>
 
-<p>Most of the features of the Application database require that you have a user account and
-are logged in. Some of the benefits of membership are:<p>
+    $str_benefits
 
-<ul>
-    <li>Ability to Vote on Favorite Applications</li>
-    <li>Access to the Application Rating System. Rate the apps that "Don't Suck"</li>
-    <li>Ability to customize the View of the Apps DB and Comment System</li>
-    <li>Take Credit for your witty posts</li>
-    <li>Ability to sign up to be an application maintainer.</li>
-</ul>
+    <p>So what are you waiting for, [<a href=\"account.php?cmd=login\">login now</a>]. Your help in
+    stomping out Wine issues will be greatly appreciated.</p>";
+} else 
+{
+    echo "
+    <p>As an Application database member you enjoy some exclusive benefits like:<p>
 
-<p>So what are you waiting for, [<a href="account.php?cmd=login">login now</a>]. Your help in
-stomping out Wine issues will be greatly appreciated.</p>
+    $str_benefits
 
+    <p>We'd like to thank your for being a member and being logged in the system. Your help in
+    stomping out Wine issues will be greatly appreciated.</p>";
+
+}
+?>
 <p>
 If you have screenshots or links to contribute, please browse the database and use the AppDB interface to send us your contributions.
 </p>
+<?php
+# FIXME: This is too "wine-specific" and must be replaced.
+# (for example user could submit how-to's, etc using a form and an admin or app maintainer 
+# could accept or reject the how-to in the same way we are now handling screenshots.)
+?>
 <p>
-If you have anything else to contribute (howtos, etc.), contact us at:
+If you have anything else to contribute (howtos, etc.), enroll to be an application maintainer or contact us at:
 <a href="mailto:appdb@winehq.org">appdb@winehq.org</a><br />
 Note that this address is not for end-user support, for end user support please contact the
 wine-users mailing list or the wine newsgroup, for more information visit
