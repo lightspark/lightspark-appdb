@@ -7,15 +7,14 @@
  * application environment
  */
 include("path.php");
-require(BASE."include/"."incl.php");
-require(BASE."include/"."application.php");
-require(BASE."include/"."comments.php");
-require(BASE."include/"."appdb.php");
-
-require(BASE."include/"."vote.php");
-require(BASE."include/"."category.php");
-require(BASE."include/"."screenshot.php");
-require(BASE."include/"."maintainer.php");
+require(BASE."include/incl.php");
+require(BASE."include/application.php");
+require(BASE."include/comments.php");
+require(BASE."include/appdb.php");
+require(BASE."include/vote.php");
+require(BASE."include/category.php");
+require(BASE."include/screenshot.php");
+require(BASE."include/maintainer.php");
 
 
 /**
@@ -224,24 +223,24 @@ if($appId && !$versionId)
     echo "    <tr><td>\n";
 
     echo '      <table width="250" border=0 cellpadding=3 cellspacing=1">',"\n";
-    echo "        <tr class=color0 valign=top><td width='100' align=right> <b>Name</b></td><td width='100%'> ".stripslashes($data->appName)." </td>\n";
-    echo "        <tr class=color1 valign=top><td align=right> <b>Vendor</b></td><td> ".
+    echo "        <tr class=color0 valign=top><td width=\"100\"><b>Name</b></td><td width='100%'> ".stripslashes($data->appName)." </td>\n";
+    echo "        <tr class=\"color1\"><td><b>Vendor</b></td><td> ".
          "        <a href='vendorview.php?vendorId=$vendor->vendorId'> ".stripslashes($vendor->vendorName)." </a> &nbsp;\n";
-    echo "        <tr class=color0 valign=top><td align=right> <b>BUGS</b></td><td> ".
-         "        <a href='bugs.php?appId=$data->appId.'> Check for bugs in bugzilla </a> &nbsp;\n";
+    echo "        <tr class=\"color0\"><td><b>BUGS</b></td><td> ".
+         "        <a href='bugs.php?appId=$data->appId.'>Check for bugs in bugzilla </a> &nbsp;\n";
     echo "        </td></tr>\n";
-    echo "        <tr class=color0 valign=top><td align=right> <b>Votes</b></td><td> ";
+    echo "        <tr class=\"color0\"><td><b>Votes</b></td><td> ";
     echo vote_count_app_total($data->appId);
     echo "        </td></tr>\n";
     
     // main URL
-    echo "        <tr class=color1 valign=top><td align=right> <b>URL</b></td><td>".$appLinkURL."</td></tr>\n";
+    echo "        <tr class=\"color1\"><td><b>URL</b></td><td>".$appLinkURL."</td></tr>\n";
 
     // optional links
-    $result = query_appdb("SELECT * FROM appData WHERE appId = $appId AND type = 'url'");
+    $result = query_appdb("SELECT * FROM appData WHERE appId = $appId AND versionID = 0 AND type = 'url'");
     if($result && mysql_num_rows($result) > 0)
     {
-        echo "        <tr class=color1><td valign=top align=right> <b>Links</b></td><td>\n";
+        echo "        <tr class=\"color1\"><td> <b>Links</b></td><td>\n";
         while($ob = mysql_fetch_object($result))
         {
             echo "        <a href='$ob->url'>".substr(stripslashes($ob->description),0,30)."</a> <br />\n";
@@ -376,11 +375,22 @@ else if($appId && $versionId)
     echo '<table width="250" border=0 cellpadding=3 cellspacing=1">',"\n";
     echo "<tr class=color0 valign=top><td width=100> <b>Name</b></td><td width='100%'>".stripslashes($data->appName)."</td>\n";
     echo "<tr class=color1 valign=top><td> <b>Version</b></td><td>".stripslashes($ver->versionName)."</td></tr>\n";
-    echo "<tr class=color0 valign=top><td> <b>URL</b></td><td>".stripslashes($appLinkURL)."</td></tr>\n";
+
+    // links
+    $result = query_appdb("SELECT * FROM appData WHERE appId = $appId AND versionID = $versionId AND type = 'url'");
+    if($result && mysql_num_rows($result) > 0)
+    {
+        echo "        <tr class=\"color1\"><td><b>Links</b></td><td>\n";
+        while($ob = mysql_fetch_object($result))
+        {
+            echo "        <a href='$ob->url'>".substr(stripslashes($ob->description),0,30)."</a> <br />\n";
+        }
+            echo "        </td></tr>\n";
+    }    
 
     // rating Area
-    echo "<tr class=color1 valign=top><td> <b>Maintainer Rating</b></td><td>".stripslashes($ver->maintainer_rating)."</td></tr>\n";
-    echo "<tr class=color0 valign=top><td> <b>Maintainers Version</b></td><td>".stripslashes($ver->maintainer_release)."</td></tr>\n";
+    echo "<tr class=\"color1\" valign=\"top\"><td> <b>Maintainer Rating</b></td><td>".stripslashes($ver->maintainer_rating)."</td></tr>\n";
+    echo "<tr class=\"color0\" valign=\"top\"><td> <b>Maintainers Version</b></td><td>".stripslashes($ver->maintainer_release)."</td></tr>\n";
 
     // image
     $img = get_screenshot_img($appId, $versionId);

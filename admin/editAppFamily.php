@@ -238,10 +238,11 @@ else
 
     echo html_table_end();
     echo html_frame_end();
-
+    echo "</form>";
 
     // url edit form
     echo '<form enctype="multipart/form-data" action="editAppFamily.php" method="post">',"\n";
+    echo '<input type=hidden name="appId" value='.$ob->appId.'>';
     echo html_frame_start("Edit URL","90%","",0);
     echo '<table border=0 cellpadding=6 cellspacing=0 width="100%">',"\n";
             
@@ -282,7 +283,7 @@ else
          
     echo '</table>',"\n";
     echo html_frame_end();
-
+    echo "</form>";
     echo html_back_link(1,BASE."appview.php?appId=$ob->appId");
 
 }

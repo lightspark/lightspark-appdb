@@ -200,10 +200,15 @@ function make_cat_path($path, $appId = '', $versionId = '')
 
     if(!empty($appId))
     {
-        $str .= " &gt; ".html_ahref(appIdToName($appId),"appview.php?appId=$appId");
-
         if(!empty($versionId))
-            $str .= " &gt; ".html_ahref(versionIdToName($versionId),"appview.php?appId=".$appId."&versionId=".$versionId);
+        {
+            $str .= " &gt; ".html_ahref(appIdToName($appId),"appview.php?appId=$appId");
+            $str .= " &gt; ".versionIdToName($versionId);
+        }
+        else
+        {
+            $str .= " &gt; ".appIdToName($appId);
+        }
     }
 
     return $str;
