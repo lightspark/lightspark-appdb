@@ -36,7 +36,7 @@ if($_REQUEST['what'])
             } else
             {
                 $oComment->delete();
-                redirect(BASE."appview.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']);
+                redirect(BASE."appview.php?versionId=".$oComment->iVersionId);
             }
 	    break;
 	case "category":

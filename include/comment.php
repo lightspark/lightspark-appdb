@@ -225,13 +225,16 @@ function view_app_comment($ob)
     echo "</td></tr>\n";
 
     // delete message button, for admins
-    if ($_SESSION['current']->isLoggedIn() && ($_SESSION['current']->hasPriv("admin") || $_SESSION['current']->isMaintainer($ob->appId,$ob->versionId) ))
+    if ($_SESSION['current']->hasPriv("admin")
+     || $_SESSION['current']->isMaintainer($ob->versionId) 
+     || $_SESSION['current']->isSuperMaintainer($ob->appId))
     {
         echo "<tr>";
-        echo "<td><form method=\"post\" name=\"message\" action=\"".BASE."deletecomment.php\"><input type=\"submit\" value=\"Delete\" class=\"button\">\n";
+        echo "<td><form method=\"post\" name=\"message\" action=\"".BASE."admin/deleteAny.php\"><input type=\"submit\" value=\"Delete\" class=\"button\">\n";
         echo "<input type=\"hidden\" name=\"commentId\" value=\"$ob->commentId\" />";
-        echo "<input type=\"hidden\" name=\"appId\" value=\"$ob->appId\" />";
-        echo "<input type=\"hidden\" name=\"versionId\" value=\"$ob->versionId\" /></form>","\n";
+        echo "<input type=\"hidden\" name=\"confirmed\" value=\"yes\" />";
+        echo "<input type=\"hidden\" name=\"what\" value=\"comment\" />";
+        echo "</form>\n";
         echo "</td></tr>";
     }
 
