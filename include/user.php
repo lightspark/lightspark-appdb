@@ -229,8 +229,7 @@ class User {
 	    return 1;
 
 	$result = mysql_query("INSERT INTO user_privs VALUES ($this->userid, '$priv')", $this->link);
-    
-	return mysql_affected_rows($result);
+        return $result;
     }
 
     function delpriv($priv)
@@ -239,7 +238,7 @@ class User {
             return 0;
 
         $result = mysql_query("DELETE FROM user_privs WHERE userid = $this->userid AND priv = '$priv'", $this->link);
-	return mysql_num_rows($result);
+	return $result;
     }
 
     

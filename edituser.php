@@ -1,55 +1,116 @@
 <?
-
+    
 include("path.php");
 include(BASE."include/"."incl.php");
-include(BASE."include/"."tableve.php");
-include(BASE."include/"."qclass.php");
 
-if(!havepriv("admin"))
+if(!loggedin())
 {
-    errorpage();
+    errorpage("You must be logged in to edit preferences");
     exit;
 }
-
-
-$user_fields = array("stamp", "userid", "username", "password", "realname", "email", "created", "status");
-
-function make_fields($fields, $prefix)
+if(!havepriv("admin"))
 {
-    $arr = array();
-    while(list($idx, $field) = each($fields))
-	$arr[] = "$prefix.$field";
-    return $arr;
+    errorpage("You do not have sufficient rights to edit users");
+    exit;
 }
+    $user = new User();
+    $result = mysql_query("SELECT stamp, userid, username, realname, ".
+			      "created, status, perm FROM user_list WHERE ".
+			      "userid = '$userid'", $user->link);
+    if(!$result)
+    {
+        errorpage("You must be logged in to edit preferences");
+        exit;
+    }
 
 
+    list($user->stamp, $user->userid, $user->username, $user->realname, 
+	 $user->created, $status, $perm) = mysql_fetch_row($result);
 
-apidb_header("Edit User");
-
-$t = new TableVE("edit");
+    global $ext_username, $ext_password1, $ext_password2, $ext_realname, $ext_email, $ext_hasadmin;
 
 if($HTTP_POST_VARS)
 {
-    $t->update($HTTP_POST_VARS);
-}
-else
-{
-    $qc = new qclass();
-    $qc->add_fields(make_fields($user_fields, "user_list"));
-    if($username)
-	$qc->add_where("username = '$username'");
+    if ($ext_password == $ext_password2)
+    {
+        $passwd = $ext_password;
+    }
+    else if ($ext_password)
+    {
+        addmsg("The Passwords you entered did not match.", "red");
+    }
+    
+    if ($user->update($userid, $passwd, $ext_realname, $ext_email))
+    {
+        addmsg("Preferences Updated", "green");
+    }
     else
-	$qc->add_where("userid = $userid");
-    $qc->resolve();
+    {
+        addmsg("There was a problem updating the user's info", "red");
+    }
+    if($ext_hasadmin=="on")
+        $user->addpriv("admin");
+    else
+        $user->delpriv("admin");
+}
 
-    $query = $qc->get_query();
+{
+    // show form
 
-    if(debugging())
-	echo "$query <br><br>\n";
 
-    $t->edit($query);
+    apidb_header("Edit User");
+
+    echo "<form method=post action='edituser.php'>\n";
+    echo html_frame_start("Data for user ID $userid", "80%");
+    echo html_table_begin("width='100%' border=0 align=left cellspacing=0 class='box-body'");
+    
+
+   
+    $ext_username = $user->lookup_username($userid);
+    $ext_realname = $user->lookup_realname($userid);
+    $ext_email    = $user->lookup_email($userid);
+    if($user->checkpriv("admin"))
+        $ext_hasadmin = 'checked="true"';
+    else
+        $ext_hasadmin = "";
+      
+
+?>
+    <input type="hidden" name="userid" value="<?=$userid?>">
+    <tr>
+        <td> &nbsp; User Name </td>
+	<td> <b> <?=$ext_username?> </b> </td>
+    </tr>
+    <tr>
+	<td> &nbsp; Password </td>
+	<td> <input type="password" name="ext_password"> </td>
+    </tr>
+    <tr>
+        <td> &nbsp; Password (again) </td>
+	<td> <input type="password" name="ext_password2"> </td>
+    </tr>
+    <tr>
+	<td> &nbsp; Real Name </td>
+	<td> <input type="text" name="ext_realname" value="<?=$ext_realname?>"> </td>
+    </tr>
+    <tr>
+	<td> &nbsp; Email Address </td>
+	<td> <input type="text" name="ext_email" value="<?=$ext_email?>"> </td>
+    </tr>
+    <tr>
+	<td> &nbsp; Administrator </td>
+	<td> <input type="checkbox" name="ext_hasadmin" "<?=$ext_hasadmin?>"> </td>
+    </tr>
+    <tr>
+	<td colspan=2>&nbsp;</td>
+    </tr>
+<?
+
+    echo html_table_end();
+    echo html_frame_end();
+    echo "<br> <div align=center> <input type=submit value='Update'> </div> <br>\n";
+    echo "</form>\n";
 }
 
 apidb_footer();
-
 ?>
