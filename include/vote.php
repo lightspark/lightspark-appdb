@@ -1,7 +1,7 @@
 <?php
 
-    /* max votes per user */
-    $MAX_VOTES = 3;
+/* max votes per user */
+define('MAX_VOTES',3);
 
 
 /**
@@ -54,8 +54,6 @@ function vote_count_app_total($appId)
  */
 function vote_add($appId, $slot, $userId = null)
 {
-    global $MAX_VOTES;
-
     if(!$userId)
         {
             if(loggedin())
@@ -64,20 +62,20 @@ function vote_add($appId, $slot, $userId = null)
                 return;
         }
 
-    //if(vote_count_user_total($userId) >= $MAX_VOTES)
-    //   return;
-    vote_remove($appId, $slot, $userId);
+    if($slot > MAX_VOTES)
+        return;
+    
+    vote_remove($slot, $userId);
     mysql_query("INSERT INTO appVotes VALUES (null, null, $appId, $userId, $slot)");
 }
 
 
 /**
- * remove vote for appId
+ * remove vote for a slot
  */
-function vote_remove($appId, $slot, $userId = null)
+function vote_remove($slot, $userId = null)
 {
     
-
     if(!$userId)
         {
             if(loggedin())
@@ -85,7 +83,7 @@ function vote_remove($appId, $slot, $userId = null)
             else
                 return;
         }
-    mysql_query("DELETE FROM appVotes WHERE appId = $appId AND userId = $userId AND slot = $slot");
+    mysql_query("DELETE FROM appVotes WHERE userId = $userId AND slot = $slot");
 }
 
 
@@ -177,7 +175,7 @@ function vote_update($vars)
     if($vars["clear"])
 	{
 	    addmsg("Removed vote for App #".$vars["appId"], "green");
-        vote_remove($vars["appId"], $vars["slot"]);
+        vote_remove($vars["slot"]);
 	}
 }
 
