@@ -119,14 +119,13 @@ function cmd_do_new()
  */
 function cmd_send_passwd()
 {
-    $user = new User();
-    
-    $userid = $user->lookup_userid($_POST['ext_email']);
+   
+    $userid = user_exists($_POST['ext_email']);
     $passwd = generate_passwd();
-    
+    $user = new User($userid);
     if ($userid)
     {
-        if ($user->update($userid, $passwd))
+        if ($user->update(null, $passwd))
         {
             $sSubject =  "Application DB Lost Password";
             $sMsg  = "We have received a request that you lost your password.\r\n";
@@ -135,7 +134,7 @@ function cmd_send_passwd()
             $sMsg .= "Your new password is: ".$passwd."\r\n";
             
 
-            if (mail_appdb($user->lookup_email($userid), $sSubject ,$sMsg))
+            if (mail_appdb($user->sEmail, $sSubject ,$sMsg))
             {
                 addmsg("Your new password has been emailed to you.", "green");
             }

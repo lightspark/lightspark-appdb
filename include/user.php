@@ -409,13 +409,17 @@ function get_active_users_within_days($days)
 
 /**
  * Check if a user exists.
- * returns TRUE if the user exists
+ * returns the userid if the user exists
  */
 function user_exists($sEmail)
 {
-    $result = query_appdb("SELECT * FROM user_list WHERE email = '$sEmail'");
+    $result = query_appdb("SELECT userid FROM user_list WHERE email = '$sEmail'");
     if(!$result || mysql_num_rows($result) != 1)
         return 0;
-    return 1;
+    else
+    {
+        $oRow = mysql_fetch_object($result);
+        return $oRow->userid;
+    }
 }
 ?>
