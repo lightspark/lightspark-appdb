@@ -72,7 +72,7 @@ if($_REQUEST['maintainReason'])
     $query = "INSERT INTO appMaintainerQueue VALUES (null, '".
             addslashes($_REQUEST['appId'])."', '".
             addslashes($_REQUEST['versionId'])."', '".
-            addslashes($current->userid)."', '".
+            addslashes($_SESSION['current']->userid)."', '".
             addslashes($_REQUEST['maintainReason'])."', '".
             addslashes($_REQUEST['superMaintainer'])."',".
             "NOW()".");";

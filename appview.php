@@ -269,7 +269,7 @@ if($appId && !$versionId)
         apidb_sidebar_add("vote_menu");
 
     // show Admin Menu
-    if(loggedin() && (havepriv("admin") || $current->ownsApp($appId)))
+    if(loggedin() && (havepriv("admin") || $_SESSION['current']->ownsApp($appId)))
         apidb_sidebar_add("admin_menu");
 
     // header
