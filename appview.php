@@ -394,6 +394,7 @@ else if($appId && $versionId)
     {
         while(list($index, list($userIdValue)) = each($other_maintainers))
         {
+            $oUser = new User($userIdValue);
             echo "<tr class=color0><td align=left colspan=2>";
             echo "<li>".$oUser->sRealname."</td></tr>\n";
         }
