@@ -292,7 +292,7 @@ if($_REQUEST['appId'])
         if($_SESSION['current']->hasPriv("admin"))
         {
             $url = BASE."admin/deleteAny.php?what=appFamily&appId=".$_REQUEST['appId']."&confirmed=yes";
-            echo "        <form method=\"post\" name=\"edit\" action=\"javascript:deleteURL(\"Are you sure?\", \"".$url."\")\"><input type=\"submit\" value=\"Delete App\" class=\"button\"></form>";
+            echo "        <form method=\"post\" name=\"edit\" action=\"javascript:deleteURL('Are you sure?', '".$url."')\"><input type=\"submit\" value=\"Delete App\" class=\"button\"></form>";
             echo '        <form method="post" name="edit" action="admin/editBundle.php"><input type="hidden" name="bundleId" value="'.$_REQUEST['appId'].'"><input type="submit" value="Edit Bundle" class="button"></form>';
         }
     } else
