@@ -212,6 +212,9 @@ TD.stub { color: #0000B1; font-style: italic; text-align: center }
 /* Search Field */
 .searchfield	{ background-color: #E0E0E0; color: #666666; font-family: Helvetica, Arial; font-size: 10pt; padding: 0; }
 
+/* Note box */
+.note { padding: 7px; }
+
 /*******************************************************************/
 /* Specific elements                                               */
 /*******************************************************************/

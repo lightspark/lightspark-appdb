@@ -110,44 +110,51 @@ function display_bundle($appId)
     echo html_frame_end();
 }
 
+/* Show note */
+function show_note($sType,$oData){
+    
+    switch($sType)
+    {
+        case 'WARNING':
+        $color = 'red';
+        $title = 'Warning';
+        break;
 
-/**
- * display the notes for the app 
- */
-function display_notes($appId, $versionId = 0)
-{
-    $result = mysql_query("SELECT noteId,noteTitle FROM appNotes ".
-        "WHERE appId = $appId AND versionId = $versionId");
+        case 'HOWTO';
+        $color = 'green';
+        $title = 'HOWTO';
+        break;
+
+        default:
         
-    if(!$result || mysql_num_rows($result) == 0)
-    {
-        // do nothing
-        return;
+        if(!empty($oData->noteTitle))
+            $title = $oData->noteTitle;
+        else 
+            $title = 'Note';
+            
+        $color = 'blue';
     }
     
-    echo "<tr class=color1><td valign=top align=right> <b>Notes</b></td><td>\n";
-    
-    $c = 1;
-    while($ob = mysql_fetch_object($result))
+    $s = html_frame_start("","98%",'',0);
+
+    $s .= "<table width='100%' border=0 cellspacing=0>\n";
+    $s .= "<tr width='100%' bgcolor='$color' align=center valign=top><td><b>$title</b></td></tr>\n";
+    $s .= "<tr><td class='note'>\n";
+    $s .= add_br(stripslashes($oData->noteDesc));
+    $s .= "</td></tr>\n";
+
+    if (loggedin() && (havepriv("admin") || $_SESSION['current']->is_maintainer($_REQUEST['appId'], $_REQUEST['versionId'])))
     {
-        // skip if NONAME
-        if ($ob->noteTitle == "NONAME" || $ob->noteTitle == "WARNING" || $ob->noteTitle == "HOWTO") { continue; }
-      
-        // set link for version
-        if ($versionId != 0)
-        {
-            $versionLink = "&versionId=$versionId";
-        }
-      
-        // display row
-        if (havepriv("admin") || $_SESSION['current']->is_maintainer($appId,$versionId) )
-            echo "    <a href='admin/editAppNote.php?noteId=".$ob->noteId."&appId=$appId".$versionLink."'> $c. ".substr(stripslashes($ob->noteTitle),0,30)."</a><br>\n";
-        else
-            echo "    <a href='noteview.php?noteId=".$ob->noteId."&appId=$appId".$versionLink."'> $c. ".substr(stripslashes($ob->noteTitle),0,30)."</a><br>\n";
-        $c++;
+        $s .= "<tr width='100%' class=color1 align=center valign=top><td>";
+        $s .= "<form method=post name=message action=admin/editAppNote.php?noteId={$oData->noteId}&appId={$_REQUEST['appId']}&versionId='{$_REQUEST['versionId']}'>";
+        $s .= '<input type=submit value="Edit How to Info" class=button>';
+        $s .= '</form></td></tr>';
     }
 
-    echo "</td></tr>\n";
+    $s .= "</table>\n";
+    $s .= html_frame_end();
+
+    return $s;
 }
 
 /**
@@ -273,9 +280,6 @@ if($appId && !$versionId)
     echo vote_count_app_total($data->appId);
     echo "        </td></tr>\n";
     
-    // display notes
-    display_notes($appId);
-  
     // main URL
     echo "        <tr class=color1 valign=top><td align=right> <b>URL</b></td><td>".$appLinkURL."</td></tr>\n";
 
@@ -445,9 +449,6 @@ else if($appId && $versionId)
     echo "<tr class=color1 valign=top><td> <b>Rating</b></td><td> $r_win \n";
     echo "<br> $r_fake </td></tr>\n";
 
-    // notes
-    display_notes($appId, $versionId);
-
     // image
     $img = get_screenshot_img($appId, $versionId);
     echo "<tr><td align=center colspan=2>$img</td></tr>\n";
@@ -539,57 +540,13 @@ else if($appId && $versionId)
 
     echo html_frame_end();
 
-    //Show Warnings
-    $result = mysql_query("SELECT * FROM appNotes WHERE appId = $appId and versionId = $versionId and noteTitle = 'WARNING'");
-    if($result && mysql_num_rows($result))
+    $rNotes = mysql_query("SELECT * FROM appNotes WHERE appId = $appId and versionId = $versionId");
+    
+    while( $oNote = mysql_fetch_object($rNotes) )
     {
-        while($ob = mysql_fetch_object($result))
-        {
-            echo html_frame_start("","98%",'',0);
-
-            echo "<table width='100%' border=0 cellspacing=0>","\n";
-            echo "<tr width='100%' bgcolor=red align=center valign=top><td><b>Warning</b><br></td></tr>\n";
-            echo "<tr><td>\n";
-            echo add_br(stripslashes($ob->noteDesc));
-            echo "</td></tr>\n";
-
-            if (loggedin() && (havepriv("admin") || $_SESSION['current']->is_maintainer($appId, $versionId)))
-            {
-                echo "<tr width='100%' class=color1 align=center valign=top><td>";
-                echo '<form method=post name=message action=admin/editAppNote.php?noteId='.$ob->noteId.'&appId='.$appId.'&versionId='.$versionId.'>';
-                echo '<input type=submit value="Edit Warning Info" class=button>';
-                echo '</form></td></tr>';
-            }
-            echo "</table>\n";
-            echo html_frame_end();
-        }
+        echo show_note($oNote->noteTitle,$oNote);
     }
-
-    // show How tos
-    $result = mysql_query("SELECT * FROM appNotes WHERE appId = $appId and versionId = $versionId and noteTitle = 'HOWTO'");
-    if($result && mysql_num_rows($result))
-    {
-        while($ob = mysql_fetch_object($result))
-        {
-            echo html_frame_start("","98%",'',0);
-
-            echo "<table width='100%' border=0 cellspacing=0>","\n";
-            echo "<tr width='100%' bgcolor=green align=center valign=top><td><b>How To</b><br></td></tr>\n";
-            echo "<tr><td>\n";
-            echo add_br(stripslashes($ob->noteDesc));
-            echo "</td></tr>\n";
-
-            if (loggedin() && (havepriv("admin") || $_SESSION['current']->is_maintainer($appId, $versionId)))
-            {
-                echo "<tr width='100%' class=color1 align=center valign=top><td>";
-                echo '<form method=post name=message action=admin/editAppNote.php?noteId='.$ob->noteId.'&appId='.$appId.'&versionId='.$versionId.'>';
-                echo '<input type=submit value="Edit How to Info" class=button>';
-                echo '</form></td></tr>';
-            }
-            echo "</table>\n";
-            echo html_frame_end();
-        }
-    }
+    
     //TODO: code to view/add user experience record
     //    if(!$versionId) 
     //    {
