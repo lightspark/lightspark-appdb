@@ -1,16 +1,25 @@
+create database if not exists apidb;
+
 use apidb;
 
-drop table vendor;
-drop table appFamily;
-drop table appVersion;
-drop table userExperience;
-drop table apiUsage;
-drop table appCategory;
-drop table appHitStats;
-drop table catHitStats;
-drop table appOwners;
-drop table appComments;
-drop table appData;
+drop table if exists vendor;
+drop table if exists appFamily;
+drop table if exists appVersion;
+drop table if exists userExperience;
+drop table if exists apiUsage;
+drop table if exists appCategory;
+drop table if exists appHitStats;
+drop table if exists catHitStats;
+drop table if exists appOwners;
+drop table if exists appComments;
+drop table if exists appData;
+drop table if exists appQueue;
+drop table if exists appCrosslink;
+drop table if exists appBundle;
+drop table if exists appVotes;
+drop table if exists appRating;
+drop table if exists appNotes;
+drop table if exists sessionMessages;
 
 
 /*

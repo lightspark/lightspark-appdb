@@ -13,7 +13,7 @@ $apidb_debug = 0;   //turns debugging on/off
 $apidb_dbuser = "wineowner";
 $apidb_dbpass = "lemonade";
 $apidb_dbhost = "localhost";
-$apidb_db     = "winehq_appdb";
+$apidb_db     = "apidb";
 
 
 /*
@@ -22,6 +22,6 @@ $apidb_db     = "winehq_appdb";
 $userdb_dbuser = "wineowner";
 $userdb_dbpass = "lemonade";
 $userdb_dbhost = "localhost";
-$userdb_db     = "winehq_appdb";
+$userdb_db     = "apidb";
 
 ?>

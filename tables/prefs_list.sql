@@ -1,3 +1,7 @@
+use apidb;
+
+drop table if exists prefs_list;
+
 CREATE TABLE prefs_list (
 	id		int auto_increment not null,
 	name		varchar(32),

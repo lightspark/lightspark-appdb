@@ -1,3 +1,6 @@
+use apidb;
+
+drop table if exists user_list;
 
 create table user_list (
 	stamp           timestamp not null,
