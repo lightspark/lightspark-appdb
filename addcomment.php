@@ -10,6 +10,7 @@ include("path.php");
 require(BASE."include/incl.php");
 require(BASE."include/application.php");
 require(BASE."include/mail.php");
+require(BASE."include/comment.php");
 
 // you must be logged in to submit comments
 if(!$_SESSION['current']->isLoggedIn())
@@ -19,15 +20,10 @@ if(!$_SESSION['current']->isLoggedIn())
   exit;
 }
 
-if(!is_numeric($_REQUEST['appId']))
+if(!is_numeric($_REQUEST['versionId']))
 {
   errorpage('Internal Database Access Error');
   exit;
-}
-
-if(!is_numeric($_REQUEST['versionId']))
-{
-  $_REQUEST['versionId'] = 0;
 }
 
 if(!is_numeric($_REQUEST['thread']))
@@ -40,47 +36,9 @@ if(!is_numeric($_REQUEST['thread']))
 ############################
 if(isset($_REQUEST['body']))
 {
-    $hostname = get_remote();
-    
-    // get current userid
-    $userId = $_SESSION['current']->userid;
-
-    $aInsert = compile_insert_string(array( 'parentId' => $_REQUEST['thread'],
-                                            'appId' => $_REQUEST['appId'],
-                                            'versionId' => $_REQUEST['versionId'],
-                                            'userId' => $userId,
-                                            'hostname' => $hostname,
-                                            'subject' => $_REQUEST['subject'],
-                                            'body' => $_REQUEST['body']));
-                                            
-    $result = query_appdb("INSERT INTO appComments (`time`, {$aInsert['FIELDS']}) VALUES (NOW(), {$aInsert['VALUES']})");
-    
-    if ($result)
-    {
-        $sEmail = $oOriginator->sEmail;
-        $sFullAppName = "Comment added to ".lookupAppName($_REQUEST['appId'])." ".lookupVersionName($_REQUEST['appId'], $_REQUEST['versionId']);
-        $sMsg  = APPDB_ROOT."appview.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId'].".\n";
-        $sMsg .= "\n";
-        $sMsg .= $_SESSION['current']->sRealname." added comment to ".$sFullAppName."\n";
-        $sMsg .= "\n";
-        $sMsg .= "Subject: ".$_REQUEST['subject']."\n";
-        $sMsg .= $_REQUEST['body']."\n";
-
-        $oOriginator = new User($_REQUEST['originator']);
-        if ($oOriginator->wantsEmail())
-        {
-            mail_appdb($sEmail, $sFullAppName ,$sMsg);
-            addmsg("Comment message sent to original poster", "green");                   
-        }
-    
-        $sEmail = get_notify_email_address_list($_REQUEST['appId'], $_REQUEST['versionId']);
-        if($sEmail)
-        {
-            mail_appdb($sEmail, $sFullAppName ,$sMsg);
-        } 
-        addmsg("New comment posted.", "green");
-    }
-    redirect(apidb_fullurl("appview.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']));
+    $oComment = new Comment();
+    $oComment->create($_REQUEST['subject'], $_REQUEST['body'], $_REQUEST['thread'], $_REQUEST['versionId']);
+    redirect(apidb_fullurl("appview.php?versionId=".$oComment->iVersionId));
 }
 
 ################################
@@ -133,10 +91,6 @@ else
   }
   echo "</form>";
 }
-?>
 
-<p>&nbsp;</p>
-
-<?
 apidb_footer();
 ?>

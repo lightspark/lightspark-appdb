@@ -9,7 +9,7 @@
 include("path.php");
 require(BASE."include/incl.php");
 require(BASE."include/application.php");
-require(BASE."include/comments.php");
+require(BASE."include/comment.php");
 require(BASE."include/appdb.php");
 require(BASE."include/vote.php");
 require(BASE."include/category.php");
@@ -142,8 +142,8 @@ function display_versions($appId, $versions)
             //set row color
             $bgcolor = ($c % 2 == 0) ? "color0" : "color1";
 
-            //format desc
-            $desc = substr(stripslashes($ver->description),0,75);
+            // Description
+            $desc = trim_description($ver->description);
             if(strlen($desc) == 75)
                 $desc .= " ...";    
          
@@ -152,7 +152,7 @@ function display_versions($appId, $versions)
     
             //display row
             echo "<tr class=$bgcolor>\n";
-            echo "    <td><a href='appview.php?appId=$appId&versionId=$ver->versionId'>".$ver->versionName."</a></td>\n";
+            echo "    <td><a href='appview.php?versionId=$ver->versionId'>".$ver->versionName."</a></td>\n";
             echo "    <td>$desc &nbsp;</td>\n";
             echo "    <td align=center>$ver->maintainer_rating</td>\n";
             echo "    <td align=center>$ver->maintainer_release</td>\n";
@@ -172,25 +172,16 @@ function display_versions($appId, $versions)
 /**
  * We want to see an application family (=no version) 
  */
-if(!is_numeric($_REQUEST['appId']))
+if(!is_numeric($_REQUEST['appId']) && !is_numeric($_REQUEST['versionId']))
 {
-    errorpage("Something went wrong with the application ID");
+    errorpage("Something went wrong with the application or version id");
     exit;
 }
 
-$appId = $_REQUEST['appId'];
 
-if(!empty($_REQUEST['versionId']) AND !is_numeric($_REQUEST['versionId']))
+if($_REQUEST['appId'])
 {
-    errorpage("Something went wrong with the version ID");
-    exit;
-}
-
-$versionId = $_REQUEST['versionId'];
-
-if($appId && !$versionId)
-{
-    $app = new Application($appId);
+    $app = new Application($_REQUEST['appId']);
     $data = $app->data;
     if(!$data)
     {
@@ -207,7 +198,7 @@ if($appId && !$versionId)
     apidb_header("Viewing App - ".$data->appName);
 
     // cat display
-    display_catpath($app->data->catId, $appId);
+    display_catpath($app->data->catId, $_REQUEST['appId']);
 
     // set Vendor
     $vendor = $app->getVendor();
@@ -217,7 +208,7 @@ if($appId && !$versionId)
   
     // start display application
     echo html_frame_start("","98%","",0);
-  
+    echo "<link rel=\"stylesheet\" href=\"./application.css\" type=\"text/css\">";
     echo "<tr><td class=color4 valign=top>\n";
     echo "  <table>\n";
     echo "    <tr><td>\n";
@@ -237,7 +228,7 @@ if($appId && !$versionId)
     echo "        <tr class=\"color1\"><td><b>URL</b></td><td>".$appLinkURL."</td></tr>\n";
 
     // optional links
-    $result = query_appdb("SELECT * FROM appData WHERE appId = $appId AND versionID = 0 AND type = 'url'");
+    $result = query_appdb("SELECT * FROM appData WHERE appId = ".$_REQUEST['appId']." AND versionID = 0 AND type = 'url'");
     if($result && mysql_num_rows($result) > 0)
     {
         echo "        <tr class=\"color1\"><td> <b>Links</b></td><td>\n";
@@ -249,7 +240,7 @@ if($appId && !$versionId)
         }
   
     // image
-    $img = get_screenshot_img($appId);
+    $img = get_screenshot_img($_REQUEST['appId']);
     echo "<tr><td align=center colspan=2>$img</td></tr>\n";
     
     echo "      </table>\n"; /* close of name/vendor/bugs/url table */
@@ -260,7 +251,7 @@ if($appId && !$versionId)
     // Display all supermaintainers maintainers of this application
     echo "      <table class=color4 width=250 border=1>\n";
     echo "        <tr><td align=left><b>Super maintainers:</b></td></tr>\n";
-    $other_maintainers = getSuperMaintainersUserIdsFromAppId($appId);
+    $other_maintainers = getSuperMaintainersUserIdsFromAppId($_REQUEST['appId']);
     if($other_maintainers)
     {
         while(list($index, list($userIdValue)) = each($other_maintainers))
@@ -279,7 +270,7 @@ if($appId && !$versionId)
     if($_SESSION['current']->isLoggedIn())
     {
         /* are we already a maintainer? */
-        if($_SESSION['current']->isSuperMaintainer($appId)) /* yep */
+        if($_SESSION['current']->isSuperMaintainer($_REQUEST['appId'])) /* yep */
         {
             echo '        <form method=post name=message action="maintainerdelete.php"><input type=submit value="Remove yourself as a super maintainer" class=button>';
         } else /* nope */
@@ -287,14 +278,13 @@ if($appId && !$versionId)
             echo '        <form method=post name=message action="maintainersubmit.php"><input type=submit value="Be a super maintainer of this app" class=button>';
         }
 
-        echo "        <input type=hidden name='appId' value=$appId>";
-        echo "        <input type=hidden name='versionId' value=$versionId>";
-        echo "        <input type=hidden name='superMaintainer' value=1>"; /* set superMaintainer to 1 because we are at the appFamily level */
+        echo "        <input type=\"hidden\" name=\"appId\" value=\"".$_REQUEST['appId']."\">";
+        echo "        <input type=\"hidden\" name=\"superMaintainer\" value=\"1\">"; /* set superMaintainer to 1 because we are at the appFamily level */
         echo "        </form>";
 
-        if($_SESSION['current']->isSuperMaintainer($appId) || $_SESSION['current']->hasPriv("admin"))
+        if($_SESSION['current']->isSuperMaintainer($_REQUEST['appId']) || $_SESSION['current']->hasPriv("admin"))
         {
-            echo '        <form method="post" name="edit" action="admin/editAppFamily.php"><input type="hidden" name="appId" value="'.$appId.'"><input type="submit" value="Edit App" class="button"></form>';
+            echo '        <form method="post" name="edit" action="admin/editAppFamily.php"><input type="hidden" name="appId" value="'.$_REQUEST['appId'].'"><input type="submit" value="Edit App" class="button"></form>';
             echo '<form method="post" name="message" action="appsubmit.php?appId='.$_REQUEST['appId'].'&apptype=2">';
             echo '<input type=submit value="Add Version" class="button">';
             echo '</form>';
@@ -303,7 +293,7 @@ if($appId && !$versionId)
         {
             $url = BASE."admin/deleteAny.php?what=appFamily&appId=".$_REQUEST['appId']."&confirmed=yes";
             echo "        <form method=\"post\" name=\"edit\" action=\"javascript:deleteURL(\"Are you sure?\", \"".$url."\")\"><input type=\"submit\" value=\"Delete App\" class=\"button\"></form>";
-            echo '        <form method="post" name="edit" action="admin/editBundle.php"><input type="hidden" name="bundleId" value="'.$appId.'"><input type="submit" value="Edit Bundle" class="button"></form>';
+            echo '        <form method="post" name="edit" action="admin/editBundle.php"><input type="hidden" name="bundleId" value="'.$_REQUEST['appId'].'"><input type="submit" value="Edit Bundle" class="button"></form>';
         }
     } else
     {
@@ -320,29 +310,33 @@ if($appId && !$versionId)
 
     // description
     echo "  <td class=color2 valign=top width='100%'>\n";
-    echo "    <table width='100%' border=0><tr><td width='100%' valign=top><b>Description</b><br />\n";
-    echo add_br(stripslashes($data->description));
-
+    echo "    <table width='100%' border=0><tr><td width='100%' valign=top><span class=\"title\">Description</span>\n";
+    echo $data->description;
     echo "    </td></tr></table>\n";
-
     echo html_frame_end("For more details and user comments, view the versions of this application.");
 
     // display versions
-    display_versions($appId,$app->getAppVersionList());
+    display_versions($_REQUEST['appId'],$app->getAppVersionList());
 
     // display bundle
-    display_bundle($appId);
+    display_bundle($_REQUEST['appId']);
 
     // disabled for now
-    //log_application_visit($appId);
+    //log_application_visit($_REQUEST['appId']);
 }
 
 #######################################
 # We want to see a particular version #
 #######################################
-else if($appId && $versionId)
+else if($_REQUEST['versionId'])
 {
-    $app = new Application($appId);
+    //FIXME: get rid of appId references everywhere, as version is enough.
+    $sQuery = "SELECT appId FROM appVersion WHERE versionId = '".$_REQUEST['versionId']."'";
+    $hResult = query_appdb($sQuery);
+    $oRow = mysql_fetch_object($hResult);
+    $appId = $oRow->appId; 
+
+    $app = new Application($oRow->appId);
     $data = $app->data;
     if(!$data) 
     {
@@ -351,7 +345,7 @@ else if($appId && $versionId)
         exit;
     }
 
-    $ver = $app->getAppVersion($versionId);
+    $ver = $app->getAppVersion($_REQUEST['versionId']);
     if(!$ver) 
     {
         // Oops! Version not found or other error. do something
@@ -360,24 +354,24 @@ else if($appId && $versionId)
     }
 
     // header
-     apidb_header("Viewing App Version - ".$data->appName);
+    apidb_header("Viewing App Version - ".$data->appName);
 
     // cat
-    display_catpath($app->data->catId, $appId, $versionId);
+    display_catpath($app->data->catId, $appId, $_REQUEST['versionId']);
   
     // set URL
     $appLinkURL = ($ver->webPage) ? "<a href='$ver->webPage'>".substr(stripslashes($ver->webPage),0,30)."</a>": "&nbsp;";
 
     // start version display
     echo html_frame_start("","98%","",0);
-  
+    echo "<link rel=\"stylesheet\" href=\"./application.css\" type=\"text/css\">";  
     echo '<tr><td class=color4 valign=top>',"\n";
     echo '<table width="250" border=0 cellpadding=3 cellspacing=1">',"\n";
     echo "<tr class=color0 valign=top><td width=100> <b>Name</b></td><td width='100%'>".stripslashes($data->appName)."</td>\n";
     echo "<tr class=color1 valign=top><td> <b>Version</b></td><td>".stripslashes($ver->versionName)."</td></tr>\n";
 
     // links
-    $result = query_appdb("SELECT * FROM appData WHERE appId = $appId AND versionID = $versionId AND type = 'url'");
+    $result = query_appdb("SELECT * FROM appData WHERE appId = $appId AND versionID = ".$_REQUEST['versionId']." AND type = 'url'");
     if($result && mysql_num_rows($result) > 0)
     {
         echo "        <tr class=\"color1\"><td><b>Links</b></td><td>\n";
@@ -393,13 +387,13 @@ else if($appId && $versionId)
     echo "<tr class=\"color0\" valign=\"top\"><td> <b>Maintainers Version</b></td><td>".stripslashes($ver->maintainer_release)."</td></tr>\n";
 
     // image
-    $img = get_screenshot_img($appId, $versionId);
+    $img = get_screenshot_img($appId, $_REQUEST['versionId']);
     echo "<tr><td align=center colspan=2>$img</td></tr>\n";
 
     // display all maintainers of this application
     echo "<tr class=color0><td align=left colspan=2><b>Maintainers of this application:</b>\n";
     echo "<table width=250 border=0>";
-    $other_maintainers = getMaintainersUserIdsFromAppIdVersionId($appId, $versionId);
+    $other_maintainers = getMaintainersUserIdsFromAppIdVersionId($appId, $_REQUEST['versionId']);
     if($other_maintainers)
     {
         while(list($index, list($userIdValue)) = each($other_maintainers))
@@ -428,7 +422,7 @@ else if($appId && $versionId)
         } else
         {
             /* are we already a maintainer? */
-            if($_SESSION['current']->isMaintainer($appId, $versionId)) /* yep */
+            if($_SESSION['current']->isMaintainer($appId, $_REQUEST['versionId'])) /* yep */
             {
                 echo '<form method=post name=message action="maintainerdelete.php"><input type=submit value="Remove yourself as a maintainer" class=button>';
                 echo "<input type=hidden name='superMaintainer' value=0>";
@@ -438,8 +432,8 @@ else if($appId && $versionId)
             }
         }
 
-        echo "<input type=hidden name='appId' value=$appId>";
-        echo "<input type=hidden name='versionId' value=$versionId>";
+        echo "<input type=hidden name=\"appId\" value=\"".$appId."\">";
+        echo "<input type=hidden name=\"versionId\" value=\"".$_REQUEST['versionId']."\">";
         echo "</form>";
     } else
     {
@@ -450,26 +444,26 @@ else if($appId && $versionId)
     
     echo "</center></td></tr>";
 
-    if ($_SESSION['current']->isLoggedIn() && ($_SESSION['current']->hasPriv("admin") || $_SESSION['current']->isMaintainer($appId, $versionId)))
+    if ($_SESSION['current']->isLoggedIn() && ($_SESSION['current']->hasPriv("admin") || $_SESSION['current']->isMaintainer($appId, $_REQUEST['versionId'])))
     {
         echo "<tr><td colspan = 2><center>";
-        echo '<form method=post name=message action=admin/editAppVersion.php?appId='.$appId.'&versionId='.$versionId.'>';
+        echo '<form method=post name=message action=admin/editAppVersion.php?appId='.$appId.'&versionId='.$_REQUEST['versionId'].'>';
         echo '<input type=submit value="Edit Version Info" class=button>';
         echo '</form>';
         $url = BASE."admin/deleteAny.php?what=appVersion&appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']."&confirmed=yes";
         echo "<form method=\"post\" name=\"delete\" action=\"javascript:deleteURL('Are you sure?', '".$url."')\">";
         echo '<input type=submit value="Delete Version" class="button">';
         echo '</form>';
-        echo '<form method=post name=message action=admin/addAppNote.php?appId='.$appId.'&versionId='.$versionId.'>';
+        echo '<form method=post name=message action=admin/addAppNote.php?versionId='.$_REQUEST['versionId'].'>';
         echo '<input type=submit value="Add Note" class=button>';
         echo '</form>';
         echo '</form>';
-        echo '<form method=post name=message action=admin/addAppNote.php?appId='.$appId.'&versionId='.$versionId.'>';
+        echo '<form method=post name=message action=admin/addAppNote.php?versionId='.$_REQUEST['versionId'].'>';
         echo '<input type=hidden name="noteTitle" value="HOWTO">';
         echo '<input type=submit value="Add How To" class=button>';
         echo '</form>';
         echo '</form>';
-        echo '<form method=post name=message action=admin/addAppNote.php?appId='.$appId.'&versionId='.$versionId.'>';
+        echo '<form method=post name=message action=admin/addAppNote.php?versionId='.$versionId.'>';
         echo '<input type=hidden name="noteTitle" value="WARNING">';
         echo '<input type=submit value="Add Warning" class=button>';
         echo '</form>';
@@ -478,9 +472,9 @@ else if($appId && $versionId)
 
     echo "</table><td class=color2 valign=top width='100%'>\n";
 
-    //Desc Image
+    // description
     echo "<table width='100%' border=0><tr><td width='100%' valign=top> <b>Description</b><br />\n";
-    echo add_br(stripslashes($ver->description));
+    echo $ver->description;
     echo "</td></tr>";
 
     /* close the table */
@@ -488,21 +482,15 @@ else if($appId && $versionId)
 
     echo html_frame_end();
 
-    $rNotes = query_appdb("SELECT * FROM appNotes WHERE appId = $appId and versionId = $versionId");
+    $rNotes = query_appdb("SELECT * FROM appNotes WHERE versionId = ".$_REQUEST['versionId']);
     
     while( $oNote = mysql_fetch_object($rNotes) )
     {
         echo show_note($oNote->noteTitle,$oNote);
     }
     
-    //TODO: code to view/add user experience record
-    //    if(!$versionId) 
-    //    {
-    //        $versionId = 0;
-    //    }
-
     // Comments Section
-    view_app_comments($appId, $versionId);
+    view_app_comments($_REQUEST['versionId']);
   
 } else 
 {
@@ -510,10 +498,6 @@ else if($appId && $versionId)
     errorpage('Page Called with No Params!');
     exit;
 }
-?>
 
-<p>&nbsp;</p>
-
-<?php
 apidb_footer();
 ?>

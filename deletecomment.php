@@ -10,6 +10,7 @@ include("path.php");
 require(BASE."include/incl.php");
 require(BASE."include/application.php");
 require(BASE."include/mail.php");
+require(BASE."include/comment.php");
 
 
 $_REQUEST['appId'] = strip_tags($_REQUEST['appId']);
@@ -26,42 +27,24 @@ if(!$_SESSION['current']->isLoggedIn())
 /* if we aren't an admin or the maintainer of this app we shouldn't be */
 /* allowed to delete any comments */
 if(!$_SESSION['current']->hasPriv("admin") && 
-        !$_SESSION['current']->isMaintainer($_REQUEST['appId'], 
-                                             $_REQUEST['versionId']))
+   !$_SESSION['current']->isMaintainer($_REQUEST['appId'], $_REQUEST['versionId']))
 {
-    errorpage('You don\'t have admin privileges');
+    errorpage('You don\'t have sufficient privileges to delete this comment.');
     exit;
 }
 
-/* retrieve the parentID of the comment we are deleting */
-/* so we can fix up the parentIds of this comments children */
-$result = query_appdb("SELECT parentId FROM appComments WHERE commentId = '".$_REQUEST['commentId']."'");
-if (!$result)
-{
-    errorpage('Internal error retrieving parent of commentId');
-    exit;
-}
+$oComment = new Comment($_REQUEST['commentId']);
 
-$ob = mysql_fetch_object($result);
-$deletedParentId = $ob->parentId;
 
-/* get the subject and body from the comment */
-$result = query_appdb("select * FROM appComments WHERE commentId = '".$_REQUEST['commentId']."'");
-if (!$result) redirect(apidb_fullurl("appview.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']));
-$ob = mysql_fetch_object($result);
-$body = $ob->body;
-$subject = $ob->subject;
-
-if($_SESSION['current']->getpref("confirm_comment_deletion") != "no" && 
-   !isset($_REQUEST['int_delete_it']))
+if($_SESSION['current']->getPref("confirm_comment_deletion") != "no" && !isset($_REQUEST['int_delete_it']))
 {
     apidb_header("Delete Comment");
     $mesTitle = "<b>Please state why you are deleting the following comment</b>";
     echo "<form method=\"POST\" action=\"".$_SERVER['PHP_SELF']."\">\n";
     echo html_frame_start($mesTitle,500,"",0);
     echo "<br />";
-    echo html_frame_start($ob->subject,500);
-    echo htmlify_urls($ob->body), "<br /><br />\n";
+    echo html_frame_start($oComment->sSubject,500);
+    echo htmlify_urls($oComment->sBody), "<br /><br />\n";
     echo html_frame_end();
     echo '<table width="100%" border=0 cellpadding=0 cellspacing=1>',"\n";
     echo "<tr class=color1><td colspan=2><textarea name=\"str_why\" cols=\"70\" rows=\"15\" wrap=\"virtual\"></textarea></td></tr>\n";
@@ -84,46 +67,7 @@ if($_SESSION['current']->getpref("confirm_comment_deletion") != "no" &&
     apidb_footer();
 } else
 {
-    /* delete the comment from the database */
-    $result = query_appdb("DELETE FROM appComments WHERE commentId = '".$_REQUEST['commentId']."'");
-    if ($result)
-    {
-        /* fixup the child comments so the parentId points to a valid parent comment */
-        $result = query_appdb("UPDATE appComments set parentId = '$deletedParentId' WHERE parentId = '".$_REQUEST['commentId']."'");
-        if(!$result)
-        {
-            errorpage('Internal database error fixing up the parentId of child comments');
-            exit;
-        } else 
-        {
-            $sEmail = get_notify_email_address_list($_REQUEST['appId'], $_REQUEST['versionId']);
-            $oUser = new User($ob->userId);
-            $notify_user_email=$oUser->sEmail;
-            $notify_user_realname=$oUser->sRealname;
-            $sEmail .= $notify_user_email;
-            if($sEmail)
-            {
-                $sFullAppName = "Application: ".lookupAppName($_REQUEST['appId'])." Version: ".lookupVersionName($_REQUEST['appId'], $_REQUEST['versionId']);
-                $sMsg  = APPDB_ROOT."appview.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']."\r\n";
-                $sMsg .= "\r\n";
-                $sMsg .= $_SESSION['current']->realname." deleted comment from ".$sFullAppName."\r\n";
-                $sMsg .= "\n";
-                $sMsg .= "This comment was made on ".substr($ob->time,0,10)." by $notify_user_realname \r\n";
-                $sMsg .= "\r\n";
-                $sMsg .= "Subject: ".$subject."\r\n";
-                $sMsg .= "\r\n";
-                $sMsg .= $body."\r\n";
-                $sMsg .= "\r\n";
-                $sMsg .= "Because:\r\n";
-                if($_REQUEST['str_why'])
-                    $sMsg .= stripslashes($_REQUEST['str_why'])."\r\n";
-                else
-                    $sMsg .= "No reason given.\r\n";
-                mail_appdb($sEmail, $sFullAppName ,$sMsg);
-            } 
-            addmsg("Comment deleted", "green");
-            redirect(apidb_fullurl("appview.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']));
-        }
-    }
+    $oComment->delete($_REQUEST['str_why']);
+    redirect(apidb_fullurl("appview.php?versionId=".$_REQUEST['versionId']));
 }
 ?>

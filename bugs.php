@@ -9,7 +9,7 @@
 include("path.php");
 require(BASE."include/incl.php");
 require(BASE."include/application.php");
-require(BASE."include/comments.php");
+require(BASE."include/comment.php");
 require(BASE."include/appdb.php");
 require(BASE."include/screenshot.php");
 require(BASE."include/category.php");

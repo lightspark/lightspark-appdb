@@ -5,8 +5,8 @@
 /************************************************************/
 
 include("path.php");
-include(BASE."include/"."incl.php");
-require(BASE."include/"."comments.php");
+include(BASE."include/incl.php");
+require(BASE."include/comment.php");
 
 apidb_header("Comments");
 
