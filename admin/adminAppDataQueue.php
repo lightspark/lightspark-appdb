@@ -61,7 +61,10 @@ if (!$_REQUEST['queueId'])
         $c = 1;
         while($ob = mysql_fetch_object($result))
         {   
-            if(isMaintainer($ob->queueappId,$ob->queueversionId) || havepriv("admin")) {
+            if($_SESSION['current']->is_maintainer($ob->queueappId,
+                                                   $ob->queueversionId) 
+                    || havepriv("admin"))
+             {
                 if ($c % 2 == 1) { $bgcolor = 'color0'; } else { $bgcolor = 'color1'; }
                 echo "<tr class=$bgcolor>\n";
                 echo "    <td>".date("Y-n-t h:i:sa", $ob->submitTime)." &nbsp;</td>\n";
@@ -83,7 +86,10 @@ if (!$_REQUEST['queueId'])
         
 } else // shows a particular appdata
 {
-    if(!(havepriv("admin") || isMaintainer($obj_row->queueAppId,$obj_row->queueVersionId))) {
+    if(!(havepriv("admin") ||
+             $_SESSION['current']->is_maintainer($obj_row->queueAppId,
+                                                 $obj_row->queueVersionId)))
+    {
         errorpage("You don't have sufficient priviledges to use this page.");
         exit;
     }

@@ -17,7 +17,9 @@ if($_REQUEST['cmd'])
     //process screenshot upload
     if($_REQUEST['cmd'] == "screenshot_upload")
     {   
-        if(havepriv("admin") || isMaintainer($_REQUEST['appId'], $_REQUEST['versionId']))
+        if(havepriv("admin") || 
+            $_SESSION['current']->is_maintainer($_REQUEST['appId'], 
+                                                $_REQUEST['versionId']))
         {     
             if(!copy($_FILES['imagefile']['tmp_name'], "data/screenshots/".$_REQUEST['appId']."-".$_REQUEST['versionId']."-".basename($_FILES['imagefile']['name'])))
             {
@@ -105,7 +107,9 @@ if($_REQUEST['cmd'])
         }
     } elseif($_REQUEST['cmd'] == "delete")
     {
-        if(havepriv("admin") || isMaintainer($_REQUEST['appId'], $_REQUEST['versionId']))
+        if(havepriv("admin") ||
+              $_SESSION['current']->is_maintainer($_REQUEST['appId'], 
+                                                  $_REQUEST['versionId']))
         {     
             $result = mysql_query("DELETE FROM appData WHERE id = ".$_REQUEST['imageId']);
             if($result)
@@ -193,7 +197,9 @@ if($result && mysql_num_rows($result))
         echo $img;
 
         //show admin delete link
-        if(loggedin() && (havepriv("admin") || isMaintainer($_REQUEST['appId'], $_REQUEST['versionId'])))
+        if(loggedin() && (havepriv("admin") || 
+               $_SESSION['current']->is_maintainer($_REQUEST['appId'],
+                                                   $_REQUEST['versionId'])))
         {
             echo "<div align=center>[<a href='screenshots.php?cmd=delete&imageId=$ob->id&appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']."'>Delete Image</a>]</div>";
         }

@@ -217,7 +217,7 @@ class User {
      */
     function is_maintainer($appId, $versionId)
     {
-        if(!loggedin() || !$this->userid)
+        if(!$this->userid)
             return false;
 
         /* if this user is a super maintainer of this appid then they */
@@ -240,7 +240,7 @@ class User {
      */
     function is_super_maintainer($appId)
     {
-        if(!loggedin() || !$this->userid)
+        if(!$this->userid)
             return false;
 
         $query = "SELECT * FROM appMaintainers WHERE userid = '$this->userid' AND appId = '$appId' AND superMaintainer = '1'";
@@ -303,25 +303,6 @@ function havepriv($priv)
         return false;
     return $_SESSION['current']->checkpriv($priv);
 }
-
-
-function isMaintainer($appId, $versionId)
-{
-    if(!loggedin())
-        return false;
-
-    return $_SESSION['current']->is_maintainer($appId, $versionId);
-}
-
-
-function isSuperMaintainer($appId)
-{
-    if(!loggedin())
-        return false;
-
-    return $_SESSION['current']->is_super_maintainer($appId);
-}
-
 
 function debugging()
 {

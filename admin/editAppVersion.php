@@ -9,7 +9,7 @@ require(BASE."include/"."application.php");
 
 
 //check for admin privs
-if(!loggedin() || (!havepriv("admin") && !isMaintainer($_REQUEST['appId'], $_REQUEST['versionId'])) )
+if(!loggedin() || (!havepriv("admin") && !$_SESSION['current']->is_maintainer($_REQUEST['appId'], $_REQUEST['versionId'])) )
 {
     errorpage("Insufficient Privileges!");
     exit;

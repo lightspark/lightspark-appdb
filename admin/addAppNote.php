@@ -10,7 +10,7 @@ require(BASE."include/"."application.php");
 global $apidb_root;
 
 //check for admin privs
-if(!loggedin() || (!havepriv("admin") && !isMaintainer($appId,$versionId)) )
+if(!loggedin() || (!havepriv("admin") && !$_SESSION['current']->is_maintainer($appId,$versionId)) )
 {
     errorpage("Insufficient Privileges!");
     exit;

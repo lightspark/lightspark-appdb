@@ -10,9 +10,17 @@ $_REQUEST['versionId'] = strip_tags($_REQUEST['versionId']);
 $_REQUEST['commentId'] = strip_tags($_REQUEST['commentId']);
 $_REQUEST['commentId'] = mysql_escape_string($_REQUEST['commentId']);
 
+if(!loggedin())
+{
+    errorpage("You need to be logged in to delete a comment.");
+    exit;
+}
+
 /* if we aren't an admin or the maintainer of this app we shouldn't be */
 /* allowed to delete any comments */
-if(!havepriv("admin") && !isMaintainer($_REQUEST['appId'], $_REQUEST['versionId']))
+if(!havepriv("admin") && 
+        !$_SESSION['current']->is_maintainer($_REQUEST['appId'], 
+                                             $_REQUEST['versionId']))
 {
     errorpage('You don\'t have admin privilages');
     exit;

@@ -180,7 +180,7 @@ function display_notes($appId, $versionId = 0)
         }
       
         // display row
-        if (havepriv("admin") || isMaintainer($appId,$versionId) )
+        if (havepriv("admin") || $_SESSION['current']->is_maintainer($appId,$versionId) )
             echo "    <a href='admin/editAppNote.php?noteId=".$ob->noteId."&appId=$appId".$versionLink."'> $c. ".substr(stripslashes($ob->noteTitle),0,30)."</a><br>\n";
         else
             echo "    <a href='noteview.php?noteId=".$ob->noteId."&appId=$appId".$versionLink."'> $c. ".substr(stripslashes($ob->noteTitle),0,30)."</a><br>\n";
@@ -367,7 +367,7 @@ if($appId && !$versionId)
     if(loggedin())
     {
         /* are we already a maintainer? */
-        if(isSuperMaintainer($appId, $versionId)) /* yep */
+        if($_SESSION['current']->is_super_maintainer($appId) /* yep */
         {
             echo '        <form method=post name=message action="maintainerdelete.php"><input type=submit value="Remove yourself as a super maintainer" class=button>';
         } else /* nope */
@@ -505,14 +505,14 @@ else if($appId && $versionId)
     {
         /* is this user a maintainer of this version by virtue of being a super maintainer */
         /* of this app family? */
-        if(isSuperMaintainer($appId) && !isMaintainer($appId, $versionId))
+        if($_SESSION['current']->is_super_maintainer($appId) && !$_SESSION['current']->is_maintainer($appId, $versionId))
         {
             echo '<form method=post name=message action="maintainerdelete.php"><input type=submit value="Remove yourself as a supermaintainer" class=button>';
             echo "<input type=hidden name='superMaintainer' value=1>";
         } else
         {
             /* are we already a maintainer? */
-            if(isMaintainer($appId, $versionId)) /* yep */
+            if($_SESSION['current']->is_maintainer($appId, $versionId)) /* yep */
             {
                 echo '<form method=post name=message action="maintainerdelete.php"><input type=submit value="Remove yourself as a maintainer" class=button>';
                 echo "<input type=hidden name='superMaintainer' value=0>";
@@ -534,7 +534,7 @@ else if($appId && $versionId)
     
     echo "</center></td></tr>";
 
-    if (loggedin() && (havepriv("admin") || isMaintainer($appId, $versionId)))
+    if (loggedin() && (havepriv("admin") || $_SESSION['current']->is_maintainer($appId, $versionId)))
     {
         echo "<tr><td colspan = 2><center>";
         echo '<form method=post name=message action=admin/editAppVersion.php?appId='.$appId.'&versionId='.$versionId.'>';
@@ -582,7 +582,7 @@ else if($appId && $versionId)
             echo add_br(stripslashes($ob->noteDesc));
             echo "</td></tr>\n";
 
-            if (loggedin() && (havepriv("admin") || isMaintainer($appId, $versionId)))
+            if (loggedin() && (havepriv("admin") || $_SESSION['current']->is_maintainer($appId, $versionId)))
             {
                 echo "<tr width='100%' class=color1 align=center valign=top><td>";
                 echo '<form method=post name=message action=admin/editAppNote.php?noteId='.$ob->noteId.'&appId='.$appId.'&versionId='.$versionId.'>';
@@ -608,7 +608,7 @@ else if($appId && $versionId)
             echo add_br(stripslashes($ob->noteDesc));
             echo "</td></tr>\n";
 
-            if (loggedin() && (havepriv("admin") || isMaintainer($appId, $versionId)))
+            if (loggedin() && (havepriv("admin") || $_SESSION['current']->is_maintainer($appId, $versionId)))
             {
                 echo "<tr width='100%' class=color1 align=center valign=top><td>";
                 echo '<form method=post name=message action=admin/editAppNote.php?noteId='.$ob->noteId.'&appId='.$appId.'&versionId='.$versionId.'>';
