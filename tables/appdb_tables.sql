@@ -19,8 +19,6 @@ drop table if exists appBundle;
 drop table if exists appVotes;
 drop table if exists appRating;
 drop table if exists appNotes;
-drop table if exists appMaintainers;
-drop table if exists appMaintainerQueue;
 drop table if exists sessionMessages;
 
 
@@ -244,37 +242,6 @@ create table appNotes (
 	appId           int not null,
 	versionId       int not null,
 	key(noteId)
-);
-
-
-/*
- * List of the application maintainers.  These users have the rights
- * to delete comments, edit the application description and otherwise
- * care for an application.
- */
-create table appMaintainers (
-    maintainerId    int not null auto_increment,
-    appId           int,
-    versionId       int,
-    userId          int,
-    superMaintainer bool,
-    submitTime      datetime,
-    key(maintainerId)
-);
-
-/*
- * Queue where users names will go if they request to become an application
- * maintainer.  This includes the reason they want to become a maintainer.
- */
-create table appMaintainerQueue (
-    queueId         int not null auto_increment,
-    appId           int,
-    versionId       int,
-    userId          int,
-    maintainReason  text,
-    superMaintainer bool,
-    submitTime	    datetime,
-    key(queueId)
 );
 
 
