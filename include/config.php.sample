@@ -9,7 +9,7 @@
  */
 define("APPDB_DEBUG","0"); //turns debugging on/off
 define("APPDB_THUMBNAIL_WIDTH","100"); // width of the screenshot's thumbnails
-define("APPDB_THUMBNAIL_WIDTH","75"); // height of the screenshot's thumbnails
+define("APPDB_THUMBNAIL_HEIGHT","75"); // height of the screenshot's thumbnails
 define("APPDB_ROOT", "http://appdb.winehq.org/");  // path to AppDB
 define("STANDARD_NOTIFY_FOOTER","------- You are receiving this mail because: -------\n".
 "You are an maintainer of this application or an AppDB administrator\n".
