@@ -7,15 +7,10 @@
  * application environment
  */ 
 include("path.php");
-include(BASE."include/"."incl.php");
-include(BASE."include/"."vote.php");
+include(BASE."include/incl.php");
+include(BASE."include/vote.php");
 
-redirectref();
-
-apidb_header("Testing");
-
-vote_update($_GET);
+vote_update($_POST);
 
 apidb_footer();
-
 ?>

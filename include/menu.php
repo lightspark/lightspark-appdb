@@ -5,7 +5,7 @@ class htmlmenu {
     {
 
         if ($form)
-            echo "<form action='$form' method=get>\n";
+            echo "<form action=\"$form\" method=\"post\">\n";
 
         echo '
 <div align=left>

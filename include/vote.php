@@ -139,15 +139,6 @@ function vote_menu()
 }
 
 
-function dump($arr)
-{
-    while(list($key, $val) = each($arr))
-    {
-        echo "$key  =>  $val <br>\n";
-    }
-}
-
-
 function vote_update($vars)
 {
     if(!$_SESSION['current']->isLoggedIn())
@@ -156,9 +147,6 @@ function vote_update($vars)
         return;
     }
 
-    dump($vars);
-    echo "<br>\n";
-    
     if( !is_numeric($vars['appId']) OR !is_numeric($vars['slot']))
     {
         addmsg("No application or vote slot selected", "red");
@@ -169,12 +157,14 @@ function vote_update($vars)
 	{
 	    addmsg("Registered vote for App #".$vars["appId"], "green");
 	    vote_add($vars["appId"], $vars["slot"]);
+            redirect(apidb_fullurl("appview.php?appId=".$vars["appId"]));
 	}
     else
     if($vars["clear"])
 	{
 	    addmsg("Removed vote for App #".$vars["appId"], "green");
-        vote_remove($vars["slot"]);
+            vote_remove($vars["slot"]);
+            redirect(apidb_fullurl("appview.php?appId=".$vars["appId"]));
 	}
 }
 
