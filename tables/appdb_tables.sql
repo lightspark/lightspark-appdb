@@ -10,7 +10,6 @@ drop table if exists apiUsage;
 drop table if exists appCategory;
 drop table if exists appHitStats;
 drop table if exists catHitStats;
-drop table if exists appOwners;
 drop table if exists appComments;
 drop table if exists appData;
 drop table if exists appDataQueue;
@@ -151,17 +150,6 @@ create table catHitStats (
 	catId		int not null,
 	count		int,
 	key(catHitId)
-);
-
-
-
-/*
- * application <> owner mapping
- */
-create table appOwners (
-	appId		int not null,
-	ownerId		int not null,
-	key(appId)
 );
 
 

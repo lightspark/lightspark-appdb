@@ -45,7 +45,6 @@ function admin_menu()
             $url = BASE."admin/deleteAny.php?what=appFamily&appId=".$_REQUEST['appId']."&confirmed=yes";
             $m->add("Delete App", "javascript:deleteURL(\"Are you sure?\", \"".$url."\")");
             $m->addmisc("&nbsp;");
-            $m->add("Edit Owners", BASE."admin/editAppOwners.php?appId=".$_REQUEST['appId']);
             $m->add("Edit Bundle", BASE."admin/editBundle.php?bundleId=".$_REQUEST['appId']);
         }
     }
@@ -247,7 +246,7 @@ if($appId && !$versionId)
         apidb_sidebar_add("vote_menu");
 
     // show Admin Menu
-    if(loggedin() && (havepriv("admin") || $_SESSION['current']->ownsApp($appId)))
+    if(loggedin() && ((havepriv("admin") || $_SESSION['current']->is_super_maintainer($appId))))
         apidb_sidebar_add("admin_menu");
 
     // header
@@ -299,23 +298,6 @@ if($appId && !$versionId)
     $img = get_screenshot_img($appId);
     echo "<tr><td align=center colspan=2>$img</td></tr>\n";
     
-    // display app owner
-    $result = mysql_query("SELECT * FROM appOwners WHERE appId = $appId");
-    if($result && mysql_num_rows($result) > 0)
-    {
-        echo "        <tr class=color0><td valign=top align=right> <b>Owner</b></td>\n";
-        echo "        <td>\n";
-        while($ob = mysql_fetch_object($result))
-        {
-            $inResult = mysql_query("SELECT username,email FROM user_list WHERE userid = $ob->ownerId");
-            if ($inResult && mysql_num_rows($inResult) > 0)
-            {
-                $foo = mysql_fetch_object($inResult);
-                echo "        <a href='mailto:$foo->email'>".substr(stripslashes($foo->username),0,30)."</a> <br />\n";
-            }
-        }
-        echo "        </td></tr>\n";
-    }
     echo "      </table>\n"; /* close of name/vendor/bugs/url table */
 
     echo "    </td></tr>\n";

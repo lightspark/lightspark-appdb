@@ -272,21 +272,7 @@ class User {
         $result = mysql_query("DELETE FROM user_privs WHERE userid = $this->userid AND priv = '$priv'");
         return $result;
     }
-
-
-    /**
-     * App Owners
-     *
-     */
-    function ownsApp($appId)
-    {
-        $result = mysql_query("SELECT * FROM appOwners WHERE ownerId = $this->userid AND appId = $appId");
-        if($result && mysql_num_rows($result))
-            return 1; // OK
-        return 0; // NOPE!
-    }
 }
-
 
 
 function loggedin()

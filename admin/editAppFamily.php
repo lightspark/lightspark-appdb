@@ -6,7 +6,7 @@ include(BASE."include/"."incl.php");
 include(BASE."include/"."tableve.php");
 include(BASE."include/"."qclass.php");
 
-if(!loggedin() || (!havepriv("admin") && !$_SESSION['current']->ownsApp($appId)) )
+if(!(havepriv("admin") || $_SESSION['current']->is_super_maintainer($_REQUEST['appId'])))
 {
     errorpage("Insufficient Privileges!");
     exit;
