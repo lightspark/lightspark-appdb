@@ -14,7 +14,7 @@ Try to make your content validate nicely (http://validator.w3.org/)
 # PHP #
 #######
 - functions are written this way (that way {}'s are lined up):
-<?
+<?php
 function foo() 
 {
     if(isset($var))
