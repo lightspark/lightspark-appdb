@@ -43,125 +43,170 @@ if ($sub)
     if ($sub == 'view' && $queueId)
     {
         $x = new TableVE("view");
-    
-        //help
-        echo "<div align=center><table width='90%' border=0 cellpadding=3 cellspacing=0><tr><td>\n\n";
-        echo "<p>This is the full view of the application waiting to be approved. \n";
-        echo "You need to pick a category before submitting \n";
-        echo "it into the database. If you approve this application,\n";
-        echo "an email will be sent to the author of the submission.<p>\n";
-        echo "<p>There are two kinds of applications in this database:</p>\n";
-        echo "<ol>\n";
-        echo "    <li><b>App Family</b> This is a parent group application, that will have multiple versions under it.<br>\n";
-        echo "    To add this submission as a Family, choose 'Application' from the type drop down. Then set the category.\n";
-        echo "    The version and app parent fields will be ignored in this type.<br>\n";
-        echo "    If the vendor does not exist, leave the vendor drop down unset, and the field will be used.</li><p>\n";
-        echo "    <li><b>App Version</b> This type of application will be nested under the selected application parent.\n";
-        echo "    The category, name, and vendor fields will be ignored.</li>\n";
-        echo "</td></tr></table></div>\n\n";    
-    
-        //view application details
-        echo html_frame_start("New Application Form",400,"",0);
-        echo "<table width='100%' border=0 cellpadding=2 cellspacing=0>\n";
-        
-        //type
-        echo '<tr valign=top><td class=color0><b>Type</b></td><td>',"\n";
-        echo '<select name=type><option value=app>Application</option><option value=ver>Version</option></select>',"\n";
-        echo '</td></tr>',"\n";        
-        
-        //category
+        If ($ob->queueCatId == -1)
+        { 
+            //help
+            echo "<div align=center><table width='90%' border=0 cellpadding=3 cellspacing=0><tr><td>\n\n";
+            echo "<p>This is the full view of the application waiting to be approved. \n";
+            echo "If you approve this application,\n";
+            echo "an email will be sent to the author of the submission.<p>\n";
 
-        $query = "select * from appCategory where catId = '$ob->queueCatId';";
-        $result = mysql_query($query);
-        if($result)
-        {
-            
-            $ob2 = mysql_fetch_object($result);
-                        
-            echo '<tr valign=top><td class=color0><b>Category</b></td><td>',"\n";
-            $x->make_option_list("cat",stripslashes($ob2->catId),"appCategory","catId","catName");
-            echo '</td></tr>',"\n";
-        } else
-        {
-            echo '<tr valign=top><td class=color0><b>Category</b></td><td>',"\n";
-            $x->make_option_list("cat","","appCategory","catId","catName");
-            echo '</td></tr>',"\n";
-        }
-        //app parent
-        echo '<tr valign=top><td class=color0><b>App Parent</b></td><td>',"\n";
-        $x->make_option_list("appParent","","appFamily","appId","appName");
-        echo '</td></tr>',"\n";
-                
-        //name
-        echo '<tr valign=top><td class=color0><b>App Name</b></td>',"\n";
-        echo '<td><input type=text name="queueName" value="'.stripslashes($ob->queueName).'" size=20></td></tr>',"\n";
+            echo "      <b>App Version</b> This type of application will be nested under the selected application parent.\n";
+            echo "</td></tr></table></div>\n\n";    
 
-        //version
-        echo '<tr valign=top><td class=color0><b>App Version</b></td>',"\n";
-        echo '<td><input type=text name="queueVersion" value="'.stripslashes($ob->queueVersion).'" size=20></td></tr>',"\n";
-         
-        //vendor/alt vendor fields
-        // try for an exact match
-        // Use the first match if we found one and clear out the vendor field,
-        // otherwise don't pick a vendor
-        $query = "select * from vendor where vendorname = '$ob->queueVendor';";
-        $result = mysql_query($query);
-        $checkvendor = 0;
-        if($result)
-        {
-            $ob2 = mysql_fetch_object($result);
-            $checkvendor = $ob2->vendorId;
+            echo '<input type=hidden name=type value="ver">',"\n"; 
+
+            echo html_frame_start("New Application Form",400,"",0);
+            echo "<table width='100%' border=0 cellpadding=2 cellspacing=0>\n";
+
+            //app parent
+            echo '<tr valign=top><td class=color0><b>App Parent</b></td><td>',"\n";
+            $x->make_option_list("appParent",stripslashes($ob->queueName),"appFamily","appId","appName");
+            echo '</td></tr>',"\n";
+
+            //version
+            echo '<tr valign=top><td class=color0><b>App Version</b></td>',"\n";
+            echo '<td><input type=text name="queueVersion" value="'.stripslashes($ob->queueVersion).'" size=20></td></tr>',"\n";
+
+            //url
+            echo '<tr valign=top><td class=color0><b>App URL</b></td>',"\n";
+            echo '<td><input type=text name="queueURL" value="'.stripslashes($ob->queueURL).'" size=20></td></tr>',"\n";
+        
+            //desc
+            echo '<tr valign=top><td class=color0><b>App Desc</b></td>',"\n";
+            echo '<td><textarea name="queueDesc" rows=10 cols=35>'.stripslashes($ob->queueDesc).'</textarea></td></tr>',"\n";
+        
+            //echo '<tr valign=top><td bgcolor=class=color0><b>Email</b></td>,"\n";
+            //echo '<td><input type=text name="queueEmail" value="'.$ob->queueEmail.'" size=20></td></tr>',"\n";
+            //echo '<tr valign=top><td bgcolor=class=color0><b>Image</b></td>,"\n";
+            //echo '<td><input type=file name="queueImage" value="'.$ob->.'" size=15></td></tr>',"\n";
+
+            echo '<tr valign=top><td class=color3 align=center colspan=2>' ,"\n";
+            echo '<input type=submit value=" Submit App Into Database " class=button> </td></tr>',"\n";
+            echo '</table>',"\n";
+
         }
-        if(!$checkvendor)
-        {
-            // try for a partial match
-            $query = "select * from vendor where vendorname like '%$ob->queueVendor%';";
+        else
+        { 
+    
+            //help
+            echo "<div align=center><table width='90%' border=0 cellpadding=3 cellspacing=0><tr><td>\n\n";
+            echo "<p>This is the full view of the application waiting to be approved. \n";
+            echo "You need to pick a category before submitting \n";
+            echo "it into the database. If you approve this application,\n";
+            echo "an email will be sent to the author of the submission.<p>\n";
+            echo "<p>There are two kinds of applications in this database:</p>\n";
+            echo "<ol>\n";
+            echo "    <li><b>App Family</b> This is a parent group application, that will have multiple versions under it.<br>\n";
+            echo "    To add this submission as a Family, choose 'Application' from the type drop down. Then set the category.\n";
+            echo "    The version and app parent fields will be ignored in this type.<br>\n";
+            echo "    If the vendor does not exist, leave the vendor drop down unset, and the field will be used.</li><p>\n";
+            echo "    <li><b>App Version</b> This type of application will be nested under the selected application parent.\n";
+            echo "    The category, name, and vendor fields will be ignored.</li>\n";
+            echo "</td></tr></table></div>\n\n";    
+    
+            //view application details
+            echo html_frame_start("New Application Form",400,"",0);
+            echo "<table width='100%' border=0 cellpadding=2 cellspacing=0>\n";
+
+            //type        
+            echo '<tr valign=top><td class=color0><b>Type</b></td><td>',"\n";
+            echo '<select name=type><option value=app>Application</option><option value=ver>Version</option></select>',"\n";
+            echo '</td></tr>',"\n";        
+
+            //category
+
+            $query = "select * from appCategory where catId = '$ob->queueCatId';";
             $result = mysql_query($query);
+            if($result)
+            {
+                $ob2 = mysql_fetch_object($result);
+                        
+                echo '<tr valign=top><td class=color0><b>Category</b></td><td>',"\n";
+                $x->make_option_list("cat",stripslashes($ob2->catId),"appCategory","catId","catName");
+                echo '</td></tr>',"\n";
+            } else
+            {
+                echo '<tr valign=top><td class=color0><b>Category</b></td><td>',"\n";
+                $x->make_option_list("cat","","appCategory","catId","catName");
+                echo '</td></tr>',"\n";
+            }
+            //app parent
+            echo '<tr valign=top><td class=color0><b>App Parent</b></td><td>',"\n";
+            $x->make_option_list("appParent","","appFamily","appId","appName");
+            echo '</td></tr>',"\n";
+                
+            //name
+            echo '<tr valign=top><td class=color0><b>App Name</b></td>',"\n";
+            echo '<td><input type=text name="queueName" value="'.stripslashes($ob->queueName).'" size=20></td></tr>',"\n";
+
+            //version
+            echo '<tr valign=top><td class=color0><b>App Version</b></td>',"\n";
+            echo '<td><input type=text name="queueVersion" value="'.stripslashes($ob->queueVersion).'" size=20></td></tr>',"\n";
+         
+            //vendor/alt vendor fields
+            // try for an exact match
+            // Use the first match if we found one and clear out the vendor field,
+            // otherwise don't pick a vendor
+            $query = "select * from vendor where vendorname = '$ob->queueVendor';";
+            $result = mysql_query($query);
+            $checkvendor = 0;
             if($result)
             {
                 $ob2 = mysql_fetch_object($result);
                 $checkvendor = $ob2->vendorId;
             }
-        }
-        if(checkvendor)
-        {
-            $ob->queueVendor = '';
+            if(!$checkvendor)
+            {
+                // try for a partial match
+                $query = "select * from vendor where vendorname like '%$ob->queueVendor%';";
+                $result = mysql_query($query);
+                if($result)
+                {
+                    $ob2 = mysql_fetch_object($result);
+                    $checkvendor = $ob2->vendorId;
+                }
+            }
+            if(checkvendor)
+            {
+                $ob->queueVendor = '';
     
-            //vendor field
-            echo '<tr valign=top><td class=color0><b>App Vendor</b></td>',"\n";
-            echo '<td><input type=text name="queueVendor" value="'.stripslashes($ob->queueVendor).'" size=20></td></tr>',"\n";
+                //vendor field
+                echo '<tr valign=top><td class=color0><b>App Vendor</b></td>',"\n";
+                echo '<td><input type=text name="queueVendor" value="'.stripslashes($ob->queueVendor).'" size=20></td></tr>',"\n";
             
-            echo '<tr valign=top><td class=color0>&nbsp;</td><td>',"\n";
-            $x->make_option_list("altvendor", $checkvendor ,"vendor","vendorId","vendorName");
-            echo '</td></tr>',"\n";
-        } else
-        {
-            //vendor field
-            echo '<tr valign=top><td class=color0><b>App Vendor</b></td>',"\n";
-            echo '<td><input type=text name="queueVendor" value="'.stripslashes($ob->queueVendor).'" size=20></td></tr>',"\n";
+                echo '<tr valign=top><td class=color0>&nbsp;</td><td>',"\n";
+                $x->make_option_list("altvendor", $checkvendor ,"vendor","vendorId","vendorName");
+                echo '</td></tr>',"\n";
+            } else
+            {
+                //vendor field
+                echo '<tr valign=top><td class=color0><b>App Vendor</b></td>',"\n";
+                echo '<td><input type=text name="queueVendor" value="'.stripslashes($ob->queueVendor).'" size=20></td></tr>',"\n";
         
-            echo '<tr valign=top><td class=color0>&nbsp;</td><td>',"\n";
-            $x->make_option_list("altvendor","","vendor","vendorId","vendorName");
-            echo '</td></tr>',"\n";
-        }
+                echo '<tr valign=top><td class=color0>&nbsp;</td><td>',"\n";
+                $x->make_option_list("altvendor","","vendor","vendorId","vendorName");
+                echo '</td></tr>',"\n";
+            }
     
                 
-        //url
-        echo '<tr valign=top><td class=color0><b>App URL</b></td>',"\n";
-        echo '<td><input type=text name="queueURL" value="'.stripslashes($ob->queueURL).'" size=20></td></tr>',"\n";
+            //url
+            echo '<tr valign=top><td class=color0><b>App URL</b></td>',"\n";
+            echo '<td><input type=text name="queueURL" value="'.stripslashes($ob->queueURL).'" size=20></td></tr>',"\n";
         
-        //desc
-        echo '<tr valign=top><td class=color0><b>App Desc</b></td>',"\n";
-        echo '<td><textarea name="queueDesc" rows=10 cols=35>'.stripslashes($ob->queueDesc).'</textarea></td></tr>',"\n";
+            //desc
+            echo '<tr valign=top><td class=color0><b>App Desc</b></td>',"\n";
+            echo '<td><textarea name="queueDesc" rows=10 cols=35>'.stripslashes($ob->queueDesc).'</textarea></td></tr>',"\n";
         
-        //echo '<tr valign=top><td bgcolor=class=color0><b>Email</b></td>,"\n";
-        //echo '<td><input type=text name="queueEmail" value="'.$ob->queueEmail.'" size=20></td></tr>',"\n";
-        //echo '<tr valign=top><td bgcolor=class=color0><b>Image</b></td>,"\n";
-        //echo '<td><input type=file name="queueImage" value="'.$ob->.'" size=15></td></tr>',"\n";
+            //echo '<tr valign=top><td bgcolor=class=color0><b>Email</b></td>,"\n";
+            //echo '<td><input type=text name="queueEmail" value="'.$ob->queueEmail.'" size=20></td></tr>',"\n";
+            //echo '<tr valign=top><td bgcolor=class=color0><b>Image</b></td>,"\n";
+            //echo '<td><input type=file name="queueImage" value="'.$ob->.'" size=15></td></tr>',"\n";
 
-        echo '<tr valign=top><td class=color3 align=center colspan=2>' ,"\n";
-        echo '<input type=submit value=" Submit App Into Database " class=button> </td></tr>',"\n";
-        echo '</table>',"\n";
+            echo '<tr valign=top><td class=color3 align=center colspan=2>' ,"\n";
+            echo '<input type=submit value=" Submit App Into Database " class=button> </td></tr>',"\n";
+            echo '</table>',"\n";
+        }
         echo '<input type=hidden name="sub" value="add">',"\n"; 
         echo '<input type=hidden name="queueId" value="'.$queueId.'">',"\n";  
 
@@ -309,7 +354,7 @@ else
 {
     //get available apps
     $query = "SELECT queueId, queueName, queueVendor,".
-                     "queueVersion, queueEmail,".
+                     "queueVersion, queueEmail, queueCatId,".
                      "UNIX_TIMESTAMP(submitTime) as submitTime ".
                      "from appQueue;";
     $result = mysql_query($query);
@@ -351,7 +396,22 @@ else
             if ($c % 2 == 1) { $bgcolor = 'color0'; } else { $bgcolor = 'color1'; }
             echo "<tr class=$bgcolor>\n";
             echo "    <td>".date("Y-n-t h:i:sa", $ob->submitTime)." &nbsp;</td>\n";
-            echo "    <td><a href='adminAppQueue.php?sub=view&queueId=$ob->queueId'>$ob->queueName</a></td>\n";
+            if ($ob->queueCatId == -1)
+            {
+                $query2 = "select * from appFamily where appId = '$ob->queueName';";
+                $result2 = mysql_query($query2);
+                if($result2)
+                {
+                    $ob2 = mysql_fetch_object($result2);
+                    echo "    <td><a href='adminAppQueue.php?sub=view&queueId=$ob->queueId'>$ob2->appName</a></td>\n";
+                } else
+                {
+                    echo "    <td><a href='adminAppQueue.php?sub=view&queueId=$ob->queueId'>App not found</a></td>\n";
+                }
+            } else
+            {
+                echo "    <td><a href='adminAppQueue.php?sub=view&queueId=$ob->queueId'>$ob->queueName</a></td>\n";
+            }
             echo "    <td>".stripslashes($ob->queueVersion)." &nbsp;</td>\n";
             echo "    <td>".stripslashes($ob->queueVendor)." &nbsp;</td>\n";
             echo "    <td>".stripslashes($ob->queueEmail)." &nbsp;</td>\n";

@@ -35,7 +35,9 @@ function checkInput( $fields )
     }
 
     // Not empty and an invalid e-mail address
-    if ( !empty( $fields['queueEmail']) AND !preg_match('/^[A-Za-z0-9\._-]+[@][A-Za-z0-9_-]+([.][A-Za-z0-9_-]+)+[A-Za-z]$/',$fields['queueEmail']) )
+    if ( !empty( $fields['queueEmail'])
+       AND !preg_match('/^[A-Za-z0-9\._-]+[@][A-Za-z0-9_-]+([.][A-Za-z0-9_-]+)+[A-Za-z]$/',
+       $fields['queueEmail']) )
     {
         $errors .= "<li>Please enter a valid e-mail address.</li>\n";
     }
@@ -107,7 +109,7 @@ if ($_REQUEST['queueName'])
         echo "soon about the status of your submission</p>\n";
     }
 }
-else
+else if ($_REQUEST['apptype'])
 {
     // set email field if logged in
     if ($current && loggedin())
@@ -133,38 +135,107 @@ else
 	echo "<p>To submit screenshots, please email them to ";
 	echo "<a href='mailto:appdb@winehq.org'>appdb@winehq.org</a></p>\n";
 
+        if ($apptype == 1)
+            {
 	    echo html_frame_start("New Application Form",400,"",0);
-
 	    echo "<table width='100%' border=0 cellpadding=2 cellspacing=0>\n";
-	    echo '<tr valign=top><td class=color0><b>App Name</b></td><td><input type=text name="queueName" value="" size=20></td></tr>',"\n";
-	    echo '<tr valign=top><td class=color0><b>App Version</b></td><td><input type=text name="queueVersion" value="" size=20></td></tr>',"\n";
 
-        // app Category
-        $w = new TableVE("view");
-        echo '<tr valign=top><td class=color0><b>Category</b></td><td>',"\n";
-        $w->make_option_list("queueCatId","","appCategory","catId","catName");
-        echo '</td></tr>',"\n";
+	    echo '<tr valign=top><td class=color0><b>App Name</b></td>',"\n";
+            echo '<td><input type=text name="queueName" value="" size=20></td></tr>',"\n";
 
 
-	    echo '<tr valign=top><td class=color0><b>App Vendor</b></td><td><input type=text name="queueVendor" value="" size=20></td></tr>',"\n";
+	    echo '<tr valign=top><td class=color0><b>App Version</b></td>',"\n";
+            echo '<td><input type=text name="queueVersion" value="" size=20></td></tr>',"\n";
+
+            // app Category
+            $w = new TableVE("view");
+            echo '<tr valign=top><td class=color0><b>Category</b></td><td>',"\n";
+            $w->make_option_list("queueCatId","","appCategory","catId","catName");
+            echo '</td></tr>',"\n";
 
 
-        //alt vendor
-        $x = new TableVE("view");
-        echo '<tr valign=top><td class=color0>&nbsp;</td><td>',"\n";
-        $x->make_option_list("altvendor","","vendor","vendorId","vendorName");
-        echo '</td></tr>',"\n";
+	    echo '<tr valign=top><td class=color0><b>App Vendor</b></td>',"\n";
+	    echo '<td><input type=text name="queueVendor" value="" size=20></td></tr>',"\n";
 
-	    echo '<tr valign=top><td class=color0><b>App URL</b></td><td><input type=text name="queueURL" value="" size=20></td></tr>',"\n";
-	    echo '<tr valign=top><td class=color0><b>App Desc</b></td><td><textarea name="queueDesc" rows=10 cols=35></textarea></td></tr>',"\n";
-	    echo '<tr valign=top><td class=color0><b>Email</b></td><td><input type=text name="queueEmail" value="'.$email.'" size=20></td></tr>',"\n";
-	    echo '<tr valign=top><td class=color3 align=center colspan=2> <input type=submit value=" Submit New Application " class=button> </td></tr>',"\n";
+
+            //alt vendor
+            $x = new TableVE("view");
+            echo '<tr valign=top><td class=color0>&nbsp;</td><td>',"\n";
+            $x->make_option_list("altvendor","","vendor","vendorId","vendorName");
+            echo '</td></tr>',"\n";
+
+	    echo '<tr valign=top><td class=color0><b>App URL</b></td>',"\n";
+	    echo '<td><input type=text name="queueURL" value="" size=20></td></tr>',"\n";
+
+	    echo '<tr valign=top><td class=color0><b>App Desc</b></td>',"\n";
+	    echo '<td><textarea name="queueDesc" rows=10 cols=35></textarea></td></tr>',"\n";
+
+	    echo '<tr valign=top><td class=color0><b>Email</b></td>',"\n";
+	    echo '<td><input type=text name="queueEmail" value="'.$email.'" size=20></td></tr>',"\n";
+
+	    echo '<tr valign=top><td class=color3 align=center colspan=2>',"\n";
+	    echo '<input type=submit value=" Submit New Application " class=button> </td></tr>',"\n";
 	    echo '</table>',"\n";    
 
 	    echo html_frame_end();
 
-	echo "</form>";
+            echo "</form>";
+            }
+        else 
+            {
+            echo html_frame_start("New Version Form",400,"",0);
+
+	    echo "<table width='100%' border=0 cellpadding=2 cellspacing=0>\n";
+
+            //app parent
+            $x = new TableVE("view");
+            echo '<tr valign=top><td class=color0><b>App Parent</b></td><td>',"\n";
+            $x->make_option_list("queueName","","appFamily","appId","appName");
+            echo '</td></tr>',"\n";
+
+	    echo '<tr valign=top><td class=color0><b>App Version</b></td>',"\n";
+            echo '<td><input type=text name="queueVersion" value="" size=20></td></tr>',"\n";
+
+	    echo '<tr valign=top><td class=color0><b>App URL</b></td>',"\n";
+	    echo '<td><input type=text name="queueURL" value="" size=20></td></tr>',"\n";
+
+	    echo '<tr valign=top><td class=color0><b>App Desc</b></td>',"\n";
+	    echo '<td><textarea name="queueDesc" rows=10 cols=35></textarea></td></tr>',"\n";
+
+	    echo '<tr valign=top><td class=color0><b>Email</b></td>',"\n";
+	    echo '<td><input type=text name="queueEmail" value="'.$email.'" size=20></td></tr>',"\n";
+
+	    echo '<input type=hidden name="queueVendor" value="">',"\n";
+	    echo '<input type=hidden name="queueCatId" value=-1>',"\n";
+
+
+	    echo '<tr valign=top><td class=color3 align=center colspan=2>',"\n";
+	    echo '<input type=submit value=" Submit New Version" class=button> </td></tr>',"\n";
+	    echo '</table>',"\n";    
+
+	    echo html_frame_end();
+
+            echo "</form>";
+        }
 }
+else
+{ 
+     // choose type of app
+     apidb_header("Choose Application Type");
+	
+     echo '<form name="ChooseApp" >',"\n";
+        echo "Please search through the database first. If you cannot find your application in the database select ","\n";
+        echo "<b>New Application</b>.","\n";
+        echo "If you have found your application but have not found your version then choose <b>New Version</b>.","\n";
+	echo "<table width='100%' border=0 cellpadding=2 cellspacing=0>\n";
+	echo "<tr valign=top><td class=color0 align=center><a href='appsubmit.php?apptype=1'>New Application</a></td>","\n";
+	echo "<td class=color0 align=center><a href='appsubmit.php?apptype=2'>New Version</a></td></tr>","\n";
+        echo '</table>',"\n";    
+
+
+     echo "</form>";
+}
+
 
 apidb_footer();
 
