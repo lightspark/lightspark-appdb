@@ -1,0 +1,20 @@
+echo Creating appdb tables
+mysql -u root < appdb_tables.sql
+
+echo Creating preferences list
+mysql -u root < prefs_list.sql
+
+echo Creating user list
+mysql -u root < user_list.sql
+
+echo Creating user preferences
+mysql -u root < user_prefs.sql
+
+echo Creating user privilages
+mysql -u root < user_privs.sql
+
+echo Creating session table
+mysql -u root < session_list.sql
+
+echo Adding categories
+mysql -u root < app_category.sql
