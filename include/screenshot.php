@@ -45,7 +45,7 @@ class Screenshot {
                 $this->iAppId = $oRow->appId;
                 $this->iVersionId = $oRow->versionId;
                 $this->sUrl = $oRow->url;
-                $this->bQueued = $oRow->queued;
+                $this->bQueued = ($oRow->queued=="true")?true:false;
                 $this->sSubmitTime = $oRow->submitTime;
                 $this->iSubmitterId = $oRow->submitterId;
            }
@@ -92,12 +92,23 @@ class Screenshot {
             } else // we managed to copy the file, now we have to process the image
             {   
                 $this->sUrl = $this->iScreenshotId;
-                $this->generate();
-                // we have to update the entry now that we know its name
-                $sQuery = "UPDATE appData 
-                           SET url = '".$this->iScreenshotId."' 
-                           WHERE id = '".$this->iScreenshotId."'";
-                if (!query_appdb($sQuery)) return false;
+                if($this->generate())
+                {
+                    // we have to update the entry now that we know its name
+                    $sQuery = "UPDATE appData 
+                               SET url = '".$this->iScreenshotId."' 
+                               WHERE id = '".$this->iScreenshotId."'";
+                    if (!query_appdb($sQuery)) return false;
+                } else
+                {
+                    addmsg("Unable to generate image or thumbnail. The file format might not be recognized. Please use PNG or JPEG only.","red");
+                    $sQuery = "DELETE
+                               FROM appData 
+                               WHERE id = '".$this->iScreenshotId."'";
+                    query_appdb($sQuery);
+                    return false;
+                }
+                 
             }
 
             $this->screenshot($this->iScreenshotId,$this->bQueued);
@@ -182,6 +193,7 @@ class Screenshot {
     /**
      * This method generates a watermarked screenshot and thumbnail from the original file.
      * Usefull when changing thumbnail, upgrading GD, adding an image, etc.
+     * Return false if an image could not be loaded.
      */
     function generate() 
     {
@@ -189,6 +201,11 @@ class Screenshot {
         // first we will create the thumbnail
         // load the screenshot
         $this->oThumbnailImage  = new Image("/data/screenshots/originals/".$this->sUrl);
+        if(!$this->oThumbnailImage->isLoaded()) 
+        {
+            $this->oThumbnailImage->delete(); // if we cannot load the original file we delete it from the filesystem
+            return false;
+        }
         $this->oThumbnailImage->make_thumb(0,0,1,'#000000');
         // store the image
         $this->oThumbnailImage->output_to_file($_SERVER['DOCUMENT_ROOT']."/data/screenshots/thumbnails/".$this->sUrl);
@@ -196,17 +213,21 @@ class Screenshot {
         // now we'll process the screenshot image for watermarking
         // load the screenshot
         $this->oScreenshotImage  = new Image("/data/screenshots/originals/".$this->sUrl);
+        if(!$this->oScreenshotImage->isLoaded()) return false;
         // resize the image
         $this->oScreenshotImage->make_full();
         // store the resized image
         $this->oScreenshotImage->output_to_file($_SERVER['DOCUMENT_ROOT']."/data/screenshots/".$this->sUrl);
         // reload the resized screenshot
         $this->oScreenshotImage  = new Image("/data/screenshots/".$this->sUrl);
+        if(!$this->oScreenshotImage->isLoaded()) return false;
 
         // add the watermark to the screenshot
         $this->oScreenshotImage->add_watermark($watermark->get_image_resource());
         // store the watermarked image
         $this->oScreenshotImage->output_to_file($_SERVER['DOCUMENT_ROOT']."/data/screenshots/".$this->sUrl);
+         
+        return true;
     }
 
 

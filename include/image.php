@@ -16,7 +16,7 @@ class Image {
     
     /**
      * Constructor:
-     * $file is the full path to the image. $this->is_loaded()
+     * $file is the full path to the image. $this->isLoaded()
      * should really be checked after making a new object.
      */
     function Image($sRelativePath)
@@ -58,12 +58,12 @@ class Image {
     }
     
     /**
-     * is_loaded()
+     * isLoaded()
      * This function should always be checked after loading a file
      * with the constructor. Rteturns true if the image has been
      * succesfully loaded.
      */ 
-    function is_loaded()
+    function isLoaded()
     {
         if($this->width > 0 AND $this->height > 0)
             return true;
