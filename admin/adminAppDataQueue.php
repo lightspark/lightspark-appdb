@@ -83,7 +83,10 @@ if (!$_REQUEST['queueId'])
     }      
 } else // shows a particular appdata
 {
-    $sQuery = "SELECT * FROM appDataQueue WHERE queueId='".$_REQUEST['queueId']."'";
+    $sQuery = "SELECT appDataQueue.*, appVersion.appId AS appId 
+               FROM appDataQueue,appVersion 
+               WHERE appVersion.versionId = appDataQueue.versionId 
+               AND queueId='".$_REQUEST['queueId']."'";
     $hResult = query_appdb($sQuery);
     $obj_row = mysql_fetch_object($hResult);
     
