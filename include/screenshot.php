@@ -63,8 +63,8 @@ class Screenshot {
                 $this->iAppId = $oRow->appId;
                 $this->iVersionId = $oRow->versionId;
                 $this->sUrl = $oRow->url;
-                if(!$this->iSubmitterId && $oRow->queueuserid)
-                    $this->iSubmitterId = $oRow->queueuserid;
+                if(!$this->iSubmitterId && $oRow->userId)
+                    $this->iSubmitterId = $oRow->userId;
            }
         }
     }
@@ -256,15 +256,15 @@ class Screenshot {
             {
                 $sSubject =  "Submitted screenshot accepted";
                 $sMsg  = "The screenshot you submitted for ".lookup_app_name($this->appId)." ".lookup_version_name($this->versionId)." has been accepted.";
-             } else
-             {
+            } else
+            {
                  $sSubject =  "Submitted screenshot rejected";
-                 $sMsg  = "The screenshot you submitted for ".lookup_app_name($this->appId)." ".lookup_version_name($this->versionId)." has been accepted.";
-             }
-             $sMsg .= $_REQUEST['replyText']."\n";
-             $sMsg .= "We appreciate your help in making the Application Database better for all users.";
+                 $sMsg  = "The screenshot you submitted for ".lookup_app_name($this->appId)." ".lookup_version_name($this->versionId)." has been rejected.";
+            }
+            $sMsg .= $_REQUEST['replyText']."\n";
+            $sMsg .= "We appreciate your help in making the Application Database better for all users.";
                 
-             mail_appdb($oSubmitter->sEmail, $sSubject ,$sMsg);
+            mail_appdb($oSubmitter->sEmail, $sSubject ,$sMsg);
         }
         
         // the screenshot has been unqueued
