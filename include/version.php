@@ -57,7 +57,7 @@ class Version {
                     $this->sTestedRelease = $oRow->maintainer_release;
                     $this->sTestedRating = $oRow->maintainer_rating;
                     $this->sWebpage = $oRow->webPage;
-                    $this->bQueued = $oRow->queued;
+                    $this->bQueued = ($oRow->queued=="true")?true:false;
                 }
             }
 

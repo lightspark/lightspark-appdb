@@ -58,7 +58,7 @@ class Application {
                         $this->sKeywords = $oRow->keywords;
                         $this->sDescription = $oRow->description;
                         $this->sWebpage = $oRow->webPage;
-                        $this->bQueued = $oRow->queued;
+                        $this->bQueued = ($oRow->queued=="true")?true:false;
                     }
                     $this->aVersionsIds[] = $oRow->versionId;
                 }
@@ -86,7 +86,7 @@ class Application {
                     $this->sKeywords = $oRow->keywords;
                     $this->sDescription = $oRow->description;
                     $this->sWebpage = $oRow->webPage;
-                    $this->bQueued = $oRow->queued;
+                    $this->bQueued = ($oRow->queued=="true")?true:false;
                 }
             }
 
