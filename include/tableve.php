@@ -1,4 +1,4 @@
-<?
+<?php
 
 require(BASE."include/"."parsedate.php");
 

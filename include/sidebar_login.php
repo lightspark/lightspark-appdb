@@ -1,13 +1,12 @@
-<?
+<?php
+/*****************/
+/* Login SideBar */
+/*****************/
 
 require_once(BASE."include/"."maintainer.php");
 require_once(BASE."include/"."category.php");
 
-/*
- * Login SideBar
- *
- */
-  
+
 function global_sidebar_login() {
   
     global $apidb_root;

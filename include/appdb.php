@@ -1,4 +1,4 @@
-<?
+<?php
 
 function log_category_visit($catId)
 {

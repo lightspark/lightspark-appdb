@@ -1,9 +1,7 @@
-<?
-
-//
-// Admin Script for API Db
-// last modified 04-20-01
-//
+<?php
+/***************************/
+/* Admin Script for API Db */
+/***************************/
 
 include("path.php");
 include(BASE."include/"."incl.php");

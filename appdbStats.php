@@ -1,6 +1,7 @@
-<?
-
+<?php
+/****************************************************************/
 /* Code to view all kinds of interesting statistics about appdb */
+/****************************************************************/
 
 include("path.php");
 require(BASE."include/"."incl.php");

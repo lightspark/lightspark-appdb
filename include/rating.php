@@ -1,18 +1,8 @@
-<?
-
-    /* 
-     *
-     * App Compatibility Rating
-     *
-     */
-
-
-
-/*=========================================================================
- *
- *
- *
+<?php
+/**
+ * App Compatibility Rating
  */
+
 function rating_current_for_user($versionId, $system)
 {
 

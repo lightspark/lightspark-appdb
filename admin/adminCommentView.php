@@ -1,7 +1,8 @@
-<?
-
-/* Page for managing all of the comments in the apidb */
+<?php
+/************************************************************/
+/* Page for managing all of the comments in the apidb       */
 /* Without having go into each application version to do so */
+/************************************************************/
 
 include("path.php");
 include(BASE."include/"."incl.php");

@@ -1,4 +1,4 @@
-<?
+<?php
     
 include("path.php");
 include(BASE."include/"."incl.php");
@@ -76,10 +76,10 @@ if($HTTP_POST_VARS)
       
 
 ?>
-    <input type="hidden" name="userid" value="<?=$userid?>">
+    <input type="hidden" name="userid" value="<?php echo $userid; ?>">
     <tr>
         <td> &nbsp; User Name </td>
-	<td> <b> <?=$ext_username?> </b> </td>
+	<td> <b> <?php echo $ext_username; ?> </b> </td>
     </tr>
     <tr>
 	<td> &nbsp; Password </td>
@@ -91,15 +91,16 @@ if($HTTP_POST_VARS)
     </tr>
     <tr>
 	<td> &nbsp; Real Name </td>
-	<td> <input type="text" name="ext_realname" value="<?=$ext_realname?>"> </td>
+	<td> <input type="text" name="ext_realname" value="<?php echo $ext_realname; ?>"> </td>
     </tr>
     <tr>
 	<td> &nbsp; Email Address </td>
-	<td> <input type="text" name="ext_email" value="<?=$ext_email?>"> </td>
+	<td> <input type="text" name="ext_email" value="<?php echo $ext_email; ?>"> </td>
     </tr>
     <tr>
 	<td> &nbsp; Administrator </td>
-	<td> <input type="checkbox" name="ext_hasadmin" "<?=$ext_hasadmin?>"> </td>
+	<td> <input type="checkbox" name="ext_hasadmin" "<?php echo $ext_hasadmin; ?>"> </td>
+
     </tr>
     <tr>
 	<td colspan=2>&nbsp;</td>

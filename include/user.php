@@ -1,12 +1,11 @@
-<?
+<?php
+/******************************************/ 
+/* This class represents a logged in user */
+/******************************************/
 
-/* 
- * This class represents a logged in user
- */
 class User {
 
     var $link; // database connection
-
     var $stamp;
     var $userid;
     var $username;
@@ -15,32 +14,32 @@ class User {
     var $status;
     var $perm;
 
-    /*
+    /**
      * constructor
      * opens a connection to the user database
      */
     function User()
     {
-	$this->connect();
+        $this->connect();
     }
 
 
     function connect()
     {
-	$this->link = opendb();
+        $this->link = opendb();
     }
 
 
-    /*
+    /**
      * check if a user exists
      * returns TRUE if the user exists
      */
     function exists($username)
     {
-	$result = mysql_query("SELECT * FROM user_list WHERE username = '$username'", $this->link);
-	if(!$result || mysql_num_rows($result) != 1)
-	    return 0;
-	return 1;
+        $result = mysql_query("SELECT * FROM user_list WHERE username = '$username'", $this->link);
+        if(!$result || mysql_num_rows($result) != 1)
+            return 0;
+         return 1;
     }
 
 
@@ -58,21 +57,24 @@ class User {
         return $ob->userid;
     }
 
+
     function lookup_realname($userid)
     {
-	$result = mysql_query("SELECT realname FROM user_list WHERE userid = $userid");
-	if(!$result || mysql_num_rows($result) != 1)
-	    return null;
-	$ob = mysql_fetch_object($result);
-	return $ob->realname;
+        $result = mysql_query("SELECT realname FROM user_list WHERE userid = $userid");
+        if(!$result || mysql_num_rows($result) != 1)
+            return null;
+        $ob = mysql_fetch_object($result);
+        return $ob->realname;
     }
+
 
     function lookup_email($userid)
     {
         return lookupEmail($userid);
     }
 
-    /*
+
+    /**
      * restore a user from the database
      * returns 0 on success and an error msg on failure
      */
@@ -82,7 +84,6 @@ class User {
                               "created, status, perm FROM user_list WHERE ".
                               "username = '$username' AND ".
                               "password = password('$password')", $this->link);
-        //echo "RESTORE($username, $password)  result=$result  rows=".mysql_num_rows($result)."<br>\n";
         if(!$result)
             return "Error: ".mysql_error($this->link);
 
@@ -92,7 +93,6 @@ class User {
         list($this->stamp, $this->userid, $this->username, $this->realname, 
              $this->created, $status, $perm) = mysql_fetch_row($result);
 
-        //echo "<br> User: $this->userid ($this->username, $this->realname) <br>\n";
         return 0;
     }
 
@@ -105,14 +105,13 @@ class User {
         if($result != null)
             return $result;
 
-        //echo "<br>LOGIN($this->username)<br>\n";
-
         /* update the 'stamp' field in the users account to reflect the last time */
         /* they logged in */
         $myUserId = $this->lookup_userid($username);
         $result = mysql_query("UPDATE user_list SET stamp=null WHERE userid=$myUserId;");
         return 0;
     }
+
 
     /*
      * create a new user
@@ -123,13 +122,15 @@ class User {
         $result = mysql_query("INSERT INTO user_list VALUES ( NOW(), 0, ".
                               "'$username', password('$password'), ".
                               "'$realname', '$email', NOW(), 0, 0)", $this->link);
-        //echo "error: ".mysql_error();
         if(!$result)
             return mysql_error($this->link);
         return $this->restore($username, $password);
     }
 
-    // Update User Account;
+
+    /**
+     * Update User Account;
+     */
     function update($userid = 0, $password = null, $realname = null, $email = null)
     {
         if (!$userid)
@@ -139,13 +140,13 @@ class User {
             if (!mysql_query("UPDATE user_list SET password = password('$password') WHERE userid = $userid"))
                 return 0;
         }
-	
+
         if ($realname)
         {
             if (!mysql_query("UPDATE user_list SET realname = '".addslashes($realname)."' WHERE userid = $userid"))
                 return 0;
         }
-	
+
         if ($email)
         {
             if (!mysql_query("UPDATE user_list SET email = '".addslashes($email)."' WHERE userid = $userid"))
@@ -154,7 +155,7 @@ class User {
         return 1;
     }
 
-    /* 
+    /**
      * remove the current, or specified user from the database
      * returns 0 on success and an error msg on failure
      */
@@ -191,6 +192,7 @@ class User {
         return $ob->value; 
     }
 
+
     function setpref($key, $value)
     {
         if(!$this->userid || !$key || !$value)
@@ -201,9 +203,9 @@ class User {
         echo mysql_error();
         return $result ? true : false;
     }
-    
 
-    /*
+
+    /**
      * check if this user has $priv
      */
     function checkpriv($priv)
@@ -217,7 +219,8 @@ class User {
         return mysql_num_rows($result);
     }
 
-    /*
+
+    /**
      * check if this user is an maintainer of a given appId/versionId
      */
     function is_maintainer($appId, $versionId)
@@ -239,6 +242,7 @@ class User {
         return mysql_num_rows($result);
     }
 
+
     /*
      * check if this user is an maintainer of a given appId/versionId
      */
@@ -254,6 +258,7 @@ class User {
         return mysql_num_rows($result);
     }
 
+
     function addpriv($priv)
     {
         if(!$this->userid || !$priv)
@@ -266,6 +271,7 @@ class User {
         return $result;
     }
 
+
     function delpriv($priv)
     {
         if(!$this->userid || !$priv)
@@ -275,9 +281,8 @@ class User {
         return $result;
     }
 
-    
-    /*=========================================================================
-     *
+
+    /**
      * App Owners
      *
      */
@@ -292,22 +297,21 @@ class User {
 
 
 
-
 function loggedin()
 {
     if(isset($_SESSION['current']) && $_SESSION['current']->userid)
-	return true;
-
+        return true;
     return false;
 }
+
 
 function havepriv($priv)
 {
     if(!loggedin())
         return false;
-
     return $_SESSION['current']->checkpriv($priv);
 }
+
 
 function isMaintainer($appId, $versionId)
 {
@@ -317,6 +321,7 @@ function isMaintainer($appId, $versionId)
     return $_SESSION['current']->is_maintainer($appId, $versionId);
 }
 
+
 function isSuperMaintainer($appId)
 {
     if(!loggedin())
@@ -325,10 +330,11 @@ function isSuperMaintainer($appId)
     return $_SESSION['current']->is_super_maintainer($appId);
 }
 
+
 function debugging()
 {
     if(!loggedin())
-	return false;
+        return false;
     return $_SESSION['current']->getpref("debug") == "yes";
 }
 
@@ -343,7 +349,10 @@ function makeurl($text, $url, $pref = null)
     return "<a href='$url' $extra> $text </a>\n";
 }
 
-// create a new random password
+
+/**
+ * create a new random password
+ */
 function generate_passwd($pass_len = 10)
 {
     $nps = "";
@@ -356,6 +365,7 @@ function generate_passwd($pass_len = 10)
     return ($nps);
 }
 
+
 function lookupUsername($userid)
 {
     $result = mysql_query("SELECT username FROM user_list WHERE userid = $userid");
@@ -365,6 +375,7 @@ function lookupUsername($userid)
     return $ob->username;
 }
 
+
 function lookupEmail($userid)
 {
     $result = mysql_query("SELECT email FROM user_list WHERE userid = $userid");
@@ -373,6 +384,7 @@ function lookupEmail($userid)
     $ob = mysql_fetch_object($result);
     return $ob->email;
 }
+
 
 function UserWantsEmail($userid)
 {
@@ -385,7 +397,8 @@ function UserWantsEmail($userid)
     return ($ob->value == 'no' ? false : true); 
 }
 
-/*
+
+/**
  * get the email address of people to notify for this appId and versionId
  */
 function getNotifyEmailAddressList($appId, $versionId)
@@ -431,7 +444,10 @@ function getNotifyEmailAddressList($appId, $versionId)
     return $retval;
 }
 
-/* Get the number of users in the database */
+
+/**
+ * Get the number of users in the database 
+ */
 function getNumberOfUsers()
 {
     $result = mysql_query("SELECT count(*) as num_users FROM user_list;");
@@ -439,7 +455,10 @@ function getNumberOfUsers()
     return $row->num_users;
 }
 
-/* Get the number of active users within $days of the current day */
+
+/**
+ * Get the number of active users within $days of the current day
+ */
 function getActiveUsersWithinDays($days)
 {
     $result = mysql_query("SELECT count(*) as num_users FROM user_list WHERE stamp >= DATE_SUB(CURDATE(), interval $days day);");

@@ -1,8 +1,10 @@
-<?
-    // query class
-    // (de)compose/exec queries
-    // this should have query_inc.php's query preprocessing etc.
-    
+<?php
+/*************************************************************/
+/* query class                                               */
+/* (de)compose/exec queries                                  */
+/* this should have query_inc.php's query preprocessing etc. */
+/*************************************************************/
+
 class qclass {
 
     var $fields;

@@ -1,5 +1,7 @@
-<?
-    /* config file for apidb */
+<?php
+/*************************/
+/* config file for appDB */
+/*************************/
 
 
 /*

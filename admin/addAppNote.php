@@ -1,9 +1,7 @@
-<?
-
-/*
- * Add Application Note
- *
- */
+<?php
+/************************/
+/* Add Application Note */
+/************************/
 
 include("path.php");
 include(BASE."include/"."incl.php");

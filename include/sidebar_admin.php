@@ -1,9 +1,7 @@
-.<?
-
-/*
- * sidebar_admin
- *
- */
+<?php
+/*****************/
+/* sidebar_admin */
+/*****************/
 
 function global_admin_menu() {
 

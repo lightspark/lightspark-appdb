@@ -1,11 +1,9 @@
-<?
+<?php
+/*************************************************/
+/* Main Include Library for Application Database */
+/*************************************************/
 
-/*
- * Main Include Library for Application Database
- *
- */
-
-//set global path
+// set global path
 $apidb_root = BASE;
 
 //get modules
@@ -20,7 +18,7 @@ require(BASE."include/"."html.php");
 $sidebar_func_list = array();
 $help_list = array();
 
-// Start session ...
+// start session ...
 apidb_session_start();
 
 
@@ -66,7 +64,7 @@ function apidb_header($title = 0)
     // Set Page Title
     $page_title = $title;
     if ($title)
-	    $title = " - $title";
+         $title = " - $title";
 
     // banner ad
     include(BASE."include/"."banner.php");
@@ -118,8 +116,8 @@ function apidb_sidebar()
     //TURN on GLOBAL ADMIN MENU
     if (havepriv("admin"))
     {
-    	include(BASE."include/"."sidebar_admin.php");
-    	apidb_sidebar_add("global_admin_menu");
+        include(BASE."include/"."sidebar_admin.php");
+        apidb_sidebar_add("global_admin_menu");
     }
 
     // Login Menu
@@ -133,13 +131,14 @@ function apidb_sidebar()
     //LOOP and display menus
     for($i = 0; $i < sizeof($sidebar_func_list); $i++)
     {
-	    $func = $sidebar_func_list[$i];
-	    $func();
+        $func = $sidebar_func_list[$i];
+        $func();
     }
 }
 
 
-/* register a sidebar menu function
+/**
+ * register a sidebar menu function
  * the supplied function is called when the sidebar is built
  */
 function apidb_sidebar_add($funcname)
@@ -156,13 +155,13 @@ function apidb_image($name)
 }
 
 
-/*
+/**
  * display an error page
  */
 function errorpage($text = null, $message = null)
 {
     if (!$text) {
-	$text = "You must be logged in to perform that operation.";
+        $text = "You must be logged in to perform that operation.";
     }
     apidb_header("Oops");
     echo "<div align=center><font color=red><b>$text</b></font></div>\n";
@@ -172,7 +171,7 @@ function errorpage($text = null, $message = null)
 
 
 
-/*
+/**
  * redirect to $url
  */
 function redirect($url)
@@ -180,22 +179,20 @@ function redirect($url)
     header("Location: ".$url);
 }
 
-/*
+/**
  * redirect back to referer, or else to the main page
  */
 function redirectref($url = null)
 {
-    global $HTTP_REFERER;
-
     if(!$url)
-	$url = $HTTP_REFERER;
+        $url = $_SERVER['HTTP_REFERER'];
     if(!$url)
-	$url = apidb_fullurl();
+        $url = apidb_fullurl();
     redirect($url);
 }
 
 
-/*
+/**
  * msgs will be displayed on the Next page view of the same user
  */
 function addmsg($text, $color = "black")
@@ -203,7 +200,7 @@ function addmsg($text, $color = "black")
     global $PHPSESSID;
 
     if($color)
-	$text = "<font color='$color'> $text </font>\n";
+        $text = "<font color='$color'> $text </font>\n";
 
     $text = str_replace("'", "\\'", $text);
     mysql_query("INSERT INTO sessionMessages VALUES (null, null, '$PHPSESSID', '$text')");
@@ -212,7 +209,7 @@ function addmsg($text, $color = "black")
 
 
 
-/*
+/**
  * output msg_buffer and clear it.
  */
 function dumpmsgbuffer()
@@ -221,20 +218,20 @@ function dumpmsgbuffer()
     
     $result = mysql_query("SELECT * FROM sessionMessages WHERE sessionId = '$PHPSESSID'");
     if(!$result)
-	return;
+        return;
 
     while($r = mysql_fetch_object($result))
-	{
-	    echo html_frame_start("","300","",5);
-	    echo "<div align=center> $r->message </div>";
-	    echo html_frame_end("&nbsp;");
+    {
+        echo html_frame_start("","300","",5);
+        echo "<div align=center> $r->message </div>";
+        echo html_frame_end("&nbsp;");
         echo "<br>\n";
-	}
+    }
 
     mysql_query("DELETE FROM sessionMessages WHERE sessionId = '$PHPSESSID'");
 }
 
-/*
+/**
  * Statics
  */
 define("APPDB_ROOT", "http://appdb.winehq.org/");

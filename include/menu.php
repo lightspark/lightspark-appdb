@@ -1,14 +1,14 @@
-<?
+<?php
 class htmlmenu {
 
     function htmlmenu($name, $form = null)
     {
-    	global $apidb_root;
+        global $apidb_root;
 
-    	if ($form)
-	        echo "<form action='$form' method=get>\n";
+        if ($form)
+            echo "<form action='$form' method=get>\n";
 
-echo '
+        echo '
 <div align=left>
 <table width="160" border="0" cellspacing="0" cellpadding="0">
 <tr>
@@ -40,38 +40,38 @@ echo '
     /* add a table row */
     function add($name, $url = null)
     {
-	if($url)
-	{
-	    echo "  <tr class=sideMenu><td width='100%'><span class=menuItem>&nbsp;<a href='$url' class=menuItem>$name</a></span></td></tr>\n";
-	} else {
-	    echo "  <tr class=sideMenu><td width='100%'><span class=menuItem>&nbsp;$name</span></td></tr>\n";
-	}
+        if($url)
+        {
+            echo "  <tr class=sideMenu><td width='100%'><span class=menuItem>&nbsp;<a href='$url' class=menuItem>$name</a></span></td></tr>\n";
+        } else 
+        {
+            echo "  <tr class=sideMenu><td width='100%'><span class=menuItem>&nbsp;$name</span></td></tr>\n";
+        }
     }
 
     function addmisc($stuff, $align = "left")
     {
-	echo " <tr class=sideMenu><td width='100%' align=$align><span class=menuItem>&nbsp;$stuff</span></td></tr>\n";
+        echo " <tr class=sideMenu><td width='100%' align=$align><span class=menuItem>&nbsp;$stuff</span></td></tr>\n";
     }
 
     function done($form = null)
     {
-	global $apidb_root;
+        global $apidb_root;
 
-echo '
-      </table>
-    </td></tr>
-    </table>
-</td>
-<td><img src="'.$apidb_root.'images/blank.gif" border=0 width=5 height=1 alt="-"></td>
-</tr>
-</table>
-</div>
-<br>
-';
+        echo '
+        </table>
+        </td></tr>
+        </table>
+        </td>
+        <td><img src="'.$apidb_root.'images/blank.gif" border=0 width=5 height=1 alt="-"></td>
+        </tr>
+        </table>
+        </div>
+        <br>
+        ';
 
-	if ($form)
-	    echo "</form>\n";
-	
+        if ($form)
+            echo "</form>\n";
     }
 }
 ?>

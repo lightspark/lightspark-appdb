@@ -1,6 +1,8 @@
-<?
-
+<?php
+/***********************************************************/
 /* this class represents an application incl. all versions */
+/***********************************************************/
+
 class Application {
 
     var $data;

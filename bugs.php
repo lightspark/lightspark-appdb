@@ -1,6 +1,4 @@
-<?
-
-
+<?php
 /*
  * Application Database - appview.php
  *

@@ -1,7 +1,7 @@
-<?
-
+<?php
+/**********************************/
 /* code to BROWSE categories/apps */
-
+/**********************************/
 
 include("path.php");
 require(BASE."include/"."incl.php");

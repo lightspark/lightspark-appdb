@@ -1,23 +1,23 @@
-<?
+<?php
+/*************************************************************/
+/* app image handler                                         */
+/*                                                           */
+/* valid arguments:                                          */
+/*                                                           */
+/*   appId          (required)                               */
+/*   versionId                                               */
+/*                                                           */
+/*   imageId        (no appId required if this is specified) */
+/*                                                           */
+/*   width                                                   */
+/*   height                                                  */
+/*                                                           */
+/* When both width/height are specified, the image is scaled */
+/*************************************************************/
 
 include("path.php");
 require(BASE."include/"."incl.php");
 
-/*
- * app image handler
- *
- * valid arguments:
- *
- *   appId          (required)
- *   versionId
- *
- *   imageId        (no appId required if this is specified)
- *
- *   width
- *   height
- *
- * When both width/height are specified, the image is scaled
- */
 
 function handle_error($text)
 {
@@ -41,8 +41,8 @@ opendb();
 // We have input, but wrong input
 if( ( $width AND !is_numeric($width) ) || ( $height AND !is_numeric($height) ) )
 {
-	$width = 100;
-	$height = 75;
+    $width = 100;
+    $height = 75;
 }
 
 if($imageId AND is_numeric($imageId) )
@@ -50,7 +50,7 @@ if($imageId AND is_numeric($imageId) )
 
 else if($appId AND $versionId AND is_numeric($appId) AND is_numeric($versionId) )
     $result = mysql_query("SELECT * FROM appData WHERE appId = $appId AND ".
-			              "versionId = $versionId AND type = 'image' LIMIT 1");
+                          "versionId = $versionId AND type = 'image' LIMIT 1");
 else
 	handle_error("IDs wrong");
 

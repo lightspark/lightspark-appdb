@@ -1,4 +1,4 @@
-<?
+<?php
 
 include("path.php");
 require(BASE."include/"."incl.php");

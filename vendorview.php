@@ -1,9 +1,7 @@
-<?
-
-/*
- * code to view vendors & their apps
- *
- */
+<?php
+/*************************************/
+/* code to view vendors & their apps */
+/*************************************/
 
 include("path.php");
 require(BASE."include/"."incl.php");

@@ -1,10 +1,8 @@
-<?
+<?php
+/***************************/
+/* get user info for posts */
+/***************************/
 
-/*=========================================================================
- *
- * get user info for posts
- *
- */
 function forum_lookup_user ($userid)
 {
     $mailto = '';
@@ -30,10 +28,8 @@ function forum_lookup_user ($userid)
     return $mailto;
 }
 
-/*=========================================================================
- *
+/**
  * display a single comment (in $ob)
- *
  */
 function view_app_comment($ob)
 {
@@ -84,9 +80,7 @@ function view_app_comment($ob)
         
 }
 
-
-/*=========================================================================
- *
+/**
  * grab comments for appId / versionId
  * if parentId is not -1 only comments for that thread are returned
  */
@@ -94,7 +88,7 @@ function grab_comments($appId, $versionId, $parentId = -1)
 {
     $extra = "";
     if($parentId != -1)
-	$extra = "AND parentId = $parentId ";
+        $extra = "AND parentId = $parentId ";
 
     $qstring = "SELECT from_unixtime(unix_timestamp(time), \"%W %M %D %Y, %k:%i\") as time, ".
                "commentId, parentId, appId, versionId, userid, subject, body ".
@@ -107,39 +101,34 @@ function grab_comments($appId, $versionId, $parentId = -1)
     return $result;
 }
 
-/*=========================================================================
- *
+/**
  * grab comments for appId / versionId
  * if parentId is not -1 only comments for that thread are returned
  */
 function count_comments($appId, $versionId)
 {
-
     $qstring = "SELECT count(commentId) as hits FROM appComments WHERE appId = $appId AND versionId = $versionId";   
     $result = mysql_query($qstring);
     $ob = mysql_fetch_object($result);
     return $ob->hits;
 }
 
-/*=========================================================================
- *
+/**
  * display nested comments
- *
  * handle is a db result set
- *
  */
 function do_display_comments_nested($handle)
 {
     while($ob = mysql_fetch_object($handle))
+    {
+        view_app_comment($ob);
+        $result = grab_comments($ob->appId, $ob->versionId, $ob->commentId);
+        if($result && mysql_num_rows($result))
         {
-            view_app_comment($ob);
-	    $result = grab_comments($ob->appId, $ob->versionId, $ob->commentId);
-	    if($result && mysql_num_rows($result))
-		{
-		    echo "<blockquote>\n";
-		    do_display_comments_nested($result);
-		    echo "</blockquote>\n";
-		}
+            echo "<blockquote>\n";
+            do_display_comments_nested($result);
+            echo "</blockquote>\n";
+        }
         }
 }
 
@@ -151,28 +140,24 @@ function display_comments_nested($appId, $versionId, $threadId)
 }
 
 
-/*=========================================================================
- *
+/**
  * display threaded comments
- *
  * handle is a db result set
- *
  */
 function do_display_comments_threaded($handle, $is_main)
 {
     if (!$is_main)
-	    echo "<ul>\n";
+        echo "<ul>\n";
 
     while ($ob = mysql_fetch_object($handle))
     {
         if ($is_main)
         {
             view_app_comment($ob);
-        }
-	    else
+        } else
         {
-		    echo '<li><a href="commentview.php?appId='.$ob->appId.'&versionId='.$ob->versionId.'&threadId='.$ob->parentId.'"> '.
-		         $ob->subject.' </a> by '.forum_lookup_user($ob->userid).' on '.$ob->time.' </li>'."\n";
+            echo '<li><a href="commentview.php?appId='.$ob->appId.'&versionId='.$ob->versionId.'&threadId='.$ob->parentId.'"> '.
+            $ob->subject.' </a> by '.forum_lookup_user($ob->userid).' on '.$ob->time.' </li>'."\n";
         }
         
         $result = grab_comments($ob->appId, $ob->versionId, $ob->commentId);
@@ -188,6 +173,7 @@ function do_display_comments_threaded($handle, $is_main)
         echo "</ul>\n";
 }
 
+
 function display_comments_threaded($appId, $versionId, $threadId = 0)
 {
     $result = grab_comments($appId, $versionId, $threadId);
@@ -196,10 +182,8 @@ function display_comments_threaded($appId, $versionId, $threadId = 0)
 }
 
 
-/*=========================================================================
- *
+/**
  * display flat comments
- *
  */
 function display_comments_flat($appId, $versionId)
 {
@@ -212,7 +196,7 @@ function display_comments_flat($appId, $versionId)
         }
     }
 }
-    
+
 
 function view_app_comments($appId, $versionId, $threadId = 0)
 {
@@ -231,20 +215,20 @@ function view_app_comments($appId, $versionId, $threadId = 0)
     // message display mode changer
     if (loggedin())
     {
-	    //FIXME we need to change this so not logged in users can change current view as well
+    // FIXME we need to change this so not logged in users can change current view as well
         if ($cmode)
-    		$_SESSION[current]->setpref("comments:mode", $cmode);
-	
-        $sel[$_SESSION['current']->getpref("comments:mode")] = 'selected';
-	    echo '<td><form method=get name=smode action="appview.php">',"\n";
-        echo "<b>Application Comments</b> $messageCount total comments ";
-	    echo '<b>Mode</b> <select name="cmode" onchange="document.smode.submit();">',"\n";
-	    echo '   <option value=flat '.$sel['flat'].'>Flat</option>',"\n";
-	    echo '   <option value=threaded '.$sel['threaded'].'>Threaded</option>',"\n";
-	    echo '   <option value=nested '.$sel['nested'].'>Nested</option>',"\n";
-	    echo '   <option value=off '.$sel['off'].'>No Comments</option>',"\n";
-	    echo '</select><input type=hidden name="appId" value="'.$appId.'">',"\n";
-	    echo '<input type=hidden name="versionId" value="'.$versionId.'"></form></td>',"\n";
+            $_SESSION['current']->setpref("comments:mode", $cmode);
+
+            $sel[$_SESSION['current']->getpref("comments:mode")] = 'selected';
+            echo '<td><form method=get name=smode action="appview.php">',"\n";
+            echo "<b>Application Comments</b> $messageCount total comments ";
+            echo '<b>Mode</b> <select name="cmode" onchange="document.smode.submit();">',"\n";
+            echo '   <option value=flat '.$sel['flat'].'>Flat</option>',"\n";
+            echo '   <option value=threaded '.$sel['threaded'].'>Threaded</option>',"\n";
+            echo '   <option value=nested '.$sel['nested'].'>Nested</option>',"\n";
+            echo '   <option value=off '.$sel['off'].'>No Comments</option>',"\n";
+            echo '</select><input type=hidden name="appId" value="'.$appId.'">',"\n";
+            echo '<input type=hidden name="versionId" value="'.$versionId.'"></form></td>',"\n";
     }
     
     // blank space
@@ -266,25 +250,24 @@ function view_app_comments($appId, $versionId, $threadId = 0)
     
     //hide or display depending on pref
     if (loggedin())
-	    $mode = $_SESSION['current']->getpref("comments:mode");
+        $mode = $_SESSION['current']->getpref("comments:mode");
     else
-	    $mode = "flat";
+        $mode = "flat";
 
     switch ($mode)
     {
         case "flat":
-	        display_comments_flat($appId, $versionId);
-            break;
+            display_comments_flat($appId, $versionId);
+        break;
         case "nested":
-	        display_comments_nested($appId, $versionId, $threadId);
-            break;
+            display_comments_nested($appId, $versionId, $threadId);
+        break;
         case "threaded":
-	        display_comments_threaded($appId, $versionId, $threadId);
-            break;
+            display_comments_threaded($appId, $versionId, $threadId);
+        break;
     }
 
     echo '</td></tr></table>',"\n";
-      
 }    
 
 

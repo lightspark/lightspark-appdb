@@ -1,9 +1,7 @@
-<?
-
-/*
- * Application Database Documentation Center
- *
- */
+<?php
+/*********************************************/
+/* Application Database Documentation Center */
+/*********************************************/
 
 include("path.php");
 include(BASE."include/"."incl.php");

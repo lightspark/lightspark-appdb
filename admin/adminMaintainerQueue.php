@@ -1,6 +1,7 @@
-<?
-
+<?php
+/********************************************************/
 /* code to View and approve new application maintainers */
+/********************************************************/
 
 include("path.php");
 require(BASE."include/"."incl.php");

@@ -7,12 +7,12 @@
   <tr>
     <td class="box-body">
       <form ACTION="stdquery.php" METHOD="get">
-	Vendor Name:
-	<input TYPE="TEXT"   NAME="searchfor"> (leave blank to match all)
-<?
-	include(BASE."include/"."appbyvendor_inc.php");
+      Vendor Name:
+      <input TYPE="TEXT" NAME="searchfor" /> (leave blank to match all)
+<?php
+include(BASE."include/"."appbyvendor_inc.php");
 
-	output_appbyvendor_forminputs();
+output_appbyvendor_forminputs();
 
 ?>
     <br><br>
@@ -20,18 +20,17 @@
     <? if(havepriv("admin")) echo "<input type=checkbox name=mode value=edit> Edit mode <br>\n"; ?>
 
         <br>Entries Per Page:
-	<select NAME="linesPerPage">
-	  <option>50
-	  <option>100
-	  <option>150
-	  <option>200
-	  <option>500
-	  <option>ALL
-	</select>
-	<br> <input TYPE="SUBMIT" VALUE="List Apps">
+<select NAME="linesPerPage">
+  <option>50
+  <option>100
+  <option>150
+  <option>200
+  <option>500
+  <option>ALL
+</select>
+<br /> <input TYPE="SUBMIT" VALUE="List Apps" />
       </form>
     </td>
   </tr>
 </table>
 <!-- end of App query -->
-

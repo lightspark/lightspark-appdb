@@ -1,8 +1,7 @@
-<?
-
-/*
- * Edit AppNote
- */
+<?php
+/****************/
+/* Edit AppNote */
+/****************/
 
 include("path.php");
 include(BASE."include/"."incl.php");

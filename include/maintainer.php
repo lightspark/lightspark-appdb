@@ -1,13 +1,16 @@
-<?
+<?php
+/*****************************/
+/* functions for maintainers */
+/*****************************/
 
-/*
- * get the applications and versions that this userId maintains
+/**
+ * get the applications and versions that this userId maintains 
  */
 function getAppsFromUserId($userId)
 {
     $result = mysql_query("SELECT appId, versionId, superMaintainer FROM ".
                           "appMaintainers WHERE userId = '$userId'");
-    if(mysql_num_rows($result) == 0)
+    if(!$result || mysql_num_rows($result) == 0)
         return;
 
     $retval = array();
@@ -53,7 +56,7 @@ function getSuperMaintainersUserIdsFromAppId($appId)
                           "appMaintainers WHERE appId = '$appId' " .
                           "AND superMaintainer = '1';";
     $result = mysql_query($query);
-    if(mysql_num_rows($result) == 0)
+    if(!$result || mysql_num_rows($result) == 0)
         return; // no sub categories
 
     $retval = array();

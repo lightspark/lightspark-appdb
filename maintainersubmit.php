@@ -1,4 +1,4 @@
-<?
+<?php
 
 // Check the input of a submitted form. And output with a list
 // of errors. (<ul></ul>)

@@ -1,10 +1,7 @@
-<?
-
-/*
- * Application Database Index Page
- *
- */
-
+<?php
+/***********************************/
+/* Application Database Index Page */
+/***********************************/
 include("path.php");
 require(BASE."include/"."incl.php");
 
@@ -14,34 +11,34 @@ apidb_header("Wine Application Database");
 
     <img src="images/appdb_montage.jpg" width=391 height=266 border=0 align=right alt="Wine AppDB">
     
-	<h1>Welcome</h1>
-	
-	<p>This is the Wine Application Database. From here you get info on application
-	compatibility with Wine. For developers, you can get information on the APIs used in an
-	application.</p>
-	
-	<p>Most of the features of the Application database require that you have a user account and
-	are logged in. Some of the benefits of membership are:<p>
-	
-	<ul>
-		<li>Ability to Vote on Favorite Applications</li>
-		<li>Access to the Application Rating System. Rate the apps that "Don't Suck"</li>
-		<li>Ability to customize the View of the Apps DB and Comment System</li>
-		<li>Take Credit for your witty posts</li>
-		<li>Ability to sign up to be an application maintainer.</li>
-	</ul>
+<h1>Welcome</h1>
 
-	<p>So what are you waiting for, [<a href="account.php?cmd=login">login now</a>]. Your help in
-	stomping out Wine issues will be greatly appreciated.</p>
+<p>This is the Wine Application Database. From here you get info on application
+compatibility with Wine. For developers, you can get information on the APIs used in an
+application.</p>
 
-	<p>
-	If you have anything to contribute (screenshots, howtos), contact us at:
-	<a href="mailto:appdb@winehq.org">appdb@winehq.org</a><br>
-	Note that this address is not for end-user support, for end user support please contact the
-	wine-users mailing list or the wine newsgroup, for more information visit
-	<a href="http://www.winehq.com/site/forums">this page</a>
-	</p>
-<?
+<p>Most of the features of the Application database require that you have a user account and
+are logged in. Some of the benefits of membership are:<p>
+
+<ul>
+    <li>Ability to Vote on Favorite Applications</li>
+    <li>Access to the Application Rating System. Rate the apps that "Don't Suck"</li>
+    <li>Ability to customize the View of the Apps DB and Comment System</li>
+    <li>Take Credit for your witty posts</li>
+    <li>Ability to sign up to be an application maintainer.</li>
+</ul>
+
+<p>So what are you waiting for, [<a href="account.php?cmd=login">login now</a>]. Your help in
+stomping out Wine issues will be greatly appreciated.</p>
+
+<p>
+If you have anything to contribute (screenshots, howtos), contact us at:
+<a href="mailto:appdb@winehq.org">appdb@winehq.org</a><br>
+Note that this address is not for end-user support, for end user support please contact the
+wine-users mailing list or the wine newsgroup, for more information visit
+<a href="http://www.winehq.com/site/forums">this page</a>
+</p>
+<?php
 
     $numApps = getNumberOfVersions();
 
@@ -78,7 +75,7 @@ direct formatting related flames to <a href="mailto:dpaun@rogers.com">Dimitrie O
     </tr>
 
     <tr class=white>
-<?
+<?php
         echo "<td><a href='".$apidb_root."appview.php?appId=134'>Acrobat Reader</a></td>";
 ?>
         <td>5.0.5</td>
@@ -89,7 +86,7 @@ direct formatting related flames to <a href="mailto:dpaun@rogers.com">Dimitrie O
     </tr>
 
     <tr class=white>
-<?
+<?php
         echo "<td><a href='".$apidb_root."appview.php?appId=145'>WS-FTP LE</a></td>";
 ?>
         <td>5.08</td>
@@ -100,7 +97,7 @@ direct formatting related flames to <a href="mailto:dpaun@rogers.com">Dimitrie O
     </tr>
 
     <tr class=white>
-<?
+<?php
         echo "<td><a href='".$apidb_root."appview.php?appId=77'>mIRC</a></td>";
 ?>
         <td>6.03</td>
@@ -111,7 +108,7 @@ direct formatting related flames to <a href="mailto:dpaun@rogers.com">Dimitrie O
     </tr>
 
     <tr class=white>
-<?
+<?php
         echo "<td><a href='".$apidb_root."appview.php?appId=356'>Putty</a></td>";
 ?>
         <td>0.52</td>
@@ -122,7 +119,7 @@ direct formatting related flames to <a href="mailto:dpaun@rogers.com">Dimitrie O
     </tr>
 
     <tr class=white>
-<?
+<?php
         echo "<td><a href='".$apidb_root."appview.php?appId=1110'>FTP Commander</a></td>";
 ?>
         <td>5.58</td>
@@ -133,7 +130,7 @@ direct formatting related flames to <a href="mailto:dpaun@rogers.com">Dimitrie O
     </tr>
 
     <tr class=white>
-<?
+<?php
         echo "<td><a href='".$apidb_root."appview.php?appId=284'>Pegasus Mail</a></td>";
 ?>
         <td>4.02</td>
@@ -144,7 +141,7 @@ direct formatting related flames to <a href="mailto:dpaun@rogers.com">Dimitrie O
     </tr>
 
     <tr class=white>
-<?
+<?php
         echo "<td><a href='".$apidb_root."appview.php?appId=1756'>12Ghosts Zip</a></td>";
 ?>
         <td>XP/31</td>
@@ -155,7 +152,7 @@ direct formatting related flames to <a href="mailto:dpaun@rogers.com">Dimitrie O
     </tr>
 
     <tr class=white>
-<?
+<?php
         echo "<td><a href='".$apidb_root."appview.php?appId=1755'>WinMerge</a></td>";
 ?>
         <td>2.1.4</td>
@@ -166,7 +163,7 @@ direct formatting related flames to <a href="mailto:dpaun@rogers.com">Dimitrie O
     </tr>
 
     <tr class=white>
-<?
+<?php
         echo "<td><a href='".$apidb_root."appview.php?appId=868'>FileZilla</a></td>";
 ?>
         <td>2.2.2</td>
@@ -186,8 +183,8 @@ direct formatting related flames to <a href="mailto:dpaun@rogers.com">Dimitrie O
     </tr>
 
     <tr class=white>
-<?
-				echo "<td><a href='".$apidb_root."appview.php?appId=2'>WinZip</a></td>";
+<?php
+echo "<td><a href='".$apidb_root."appview.php?appId=2'>WinZip</a></td>";
 ?>
         <td>8.1</td>
         <td>The most popular compression utility for Windows just got better.</td>
@@ -199,8 +196,8 @@ direct formatting related flames to <a href="mailto:dpaun@rogers.com">Dimitrie O
     </tr>
 
     <tr class=white>
-<?
-				echo "<td><a href='".$apidb_root."appview.php?appId=55'>ICQ</a></td>";
+<?php
+echo "<td><a href='".$apidb_root."appview.php?appId=55'>ICQ</a></td>";
 ?>
         <td>2002a</td>
         <td>The new and improved ICQ is here with all the great features you've come to expect -- plus a whole new set!</td>
@@ -214,8 +211,8 @@ direct formatting related flames to <a href="mailto:dpaun@rogers.com">Dimitrie O
     </tr>
 
     <tr class=white>
-<?
-				echo "<td><a href='".$apidb_root."appview.php?appId=5'>Winamp</a></td>";
+<?php
+echo "<td><a href='".$apidb_root."appview.php?appId=5'>Winamp</a></td>";
 ?>
         <td>3.0</td>
         <td>This program has so many possibilities and offers such a wide
@@ -227,8 +224,8 @@ range of interfaces, you'll need no other player.</td>
     </tr>
 
     <tr class=white>
-<?
- 				echo "<td><a href='".$apidb_root."appview.php?appId=391'>WinRAR</a></td>";
+<?php
+echo "<td><a href='".$apidb_root."appview.php?appId=391'>WinRAR</a></td>";
 ?>
         <td>3.00</td>
         <td>This is a version of the popular RAR compression format, offering significantly improved compression ratios.</td>
@@ -243,21 +240,21 @@ range of interfaces, you'll need no other player.</td>
     </tr>
 
     <tr class=white>
-<?
- 			 echo "<td><a href='".$apidb_root."appview.php?appId=288'>WinMX</a></td>";
+<?php
+echo "<td><a href='".$apidb_root."appview.php?appId=288'>WinMX</a></td>";
 ?>
         <td>3.22</td>
         <td>Take file sharing to a new level.</td>
         <td>50</td>
         <td>Install: Yes (Dlls installed none)<br />
     Run: Yes. (listbox is not working in it (comctl32))
-			  </td>
+        </td>
         <td><span class=todo>[TODO]</span></td>
     </tr>
 
     <tr class=white>
-<?
-   		echo "<td><a href='".$apidb_root."appview.php?appId=1757'>SnagIt</a></td>";
+<?php
+   echo "<td><a href='".$apidb_root."appview.php?appId=1757'>SnagIt</a></td>";
 ?>
         <td>6.1.1</td>
         <td>Use this to capture and manage images, text, and video.</td>
@@ -282,6 +279,6 @@ application site. The site contains tips and howtos on getting listed apps to ru
 </p>
 <p>&nbsp;</p>
 
-<?
+<?php
 apidb_footer();
 ?>

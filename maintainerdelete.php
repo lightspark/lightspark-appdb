@@ -1,4 +1,4 @@
-<?
+<?php
 
 include("path.php");
 require(BASE."include/"."incl.php");
@@ -27,14 +27,12 @@ else
 
 if($confirmed)
 {
-    global $current;
-
     echo html_frame_start("Removing",400,"",0);
 
     if($superMaintainer)
-        $query = "DELETE FROM appMaintainers WHERE userId = '$current->userid' AND appId = '$appId' AND superMaintainer = '$superMaintainer';";
+        $query = "DELETE FROM appMaintainers WHERE userId = '$_SESSION['current']->userid' AND appId = '$appId' AND superMaintainer = '$superMaintainer';";
     else
-        $query = "DELETE FROM appMaintainers WHERE userId = '$current->userid' AND appId = '$appId' AND versionId = '$versionId' AND superMaintainer = '$superMaintainer';";
+        $query = "DELETE FROM appMaintainers WHERE userId = '$_SESSION['current']->userid' AND appId = '$appId' AND versionId = '$versionId' AND superMaintainer = '$superMaintainer';";
 
     echo "$query";
 

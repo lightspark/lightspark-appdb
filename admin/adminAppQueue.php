@@ -1,7 +1,7 @@
 <?php
-/**
- * code to View and approve new Apps 
- */
+/*************************************/
+/* code to View and approve new Apps */
+/*************************************/
  
 include("path.php");
 require(BASE."include/"."incl.php");

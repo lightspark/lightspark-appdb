@@ -1,12 +1,9 @@
-<?
-
-/*=========================================================================
- *
- * view comments
- *
- * script expects appId, versionId and threadId as argument
- *
- */
+<?php
+/************************************************************/
+/* view comments                                            */
+/*                                                          */
+/* script expects appId, versionId and threadId as argument */
+/************************************************************/
 
 include("path.php");
 include(BASE."include/"."incl.php");
@@ -17,5 +14,4 @@ apidb_header("Comments");
 view_app_comments($appId, $versionId, $threadId);
 
 apidb_footer();
-
 ?>

@@ -1,9 +1,7 @@
-<?
-
-/*
- * Application Database - Note Viewer
- *
- */
+<?php
+/**************************************/
+/* Application Database - Note Viewer */
+/**************************************/
 
 include("path.php");
 require(BASE."include/"."incl.php");
