@@ -208,6 +208,9 @@ class User {
         if($iAppId && $iVersionId)
         {
             $sQuery = "SELECT * FROM appMaintainers WHERE userid = '".$this->iUserId."' AND appId = '".$iAppId."' AND versionId = '$iVersionId'";
+        } elseif($iAppId) // isMaintainer ? and we only provided appId => isSupermaintainer.
+        {
+            return $this->isSuperMaintainer($iAppId);
         } else
         {
             $sQuery = "SELECT * FROM appMaintainers WHERE userid = '".$this->iUserId."'";

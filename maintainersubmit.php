@@ -7,9 +7,9 @@
  * application environment
  */ 
 include("path.php");
-require(BASE."include/"."incl.php");
-require(BASE."include/"."tableve.php");
-require(BASE."include/"."category.php");
+require(BASE."include/incl.php");
+require(BASE."include/tableve.php");
+require(BASE."include/category.php");
 
 /**
  * Check the input of a submitted form. And output with a list
@@ -79,7 +79,7 @@ if($_REQUEST['maintainReason'])
     $query = "INSERT INTO appMaintainerQueue VALUES (null, '".
             addslashes($_REQUEST['appId'])."', '".
             addslashes($_REQUEST['versionId'])."', '".
-            addslashes($_SESSION['current']->userid)."', '".
+            addslashes($_SESSION['current']->iUserId)."', '".
             addslashes($_REQUEST['maintainReason'])."', '".
             addslashes($_REQUEST['superMaintainer'])."',".
             "NOW()".");";
