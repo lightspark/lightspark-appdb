@@ -9,7 +9,7 @@ function query_appdb($sQuery,$sComment="")
         mysql_select_db(APPS_DB);
     }
     $hResult = mysql_query($sQuery, $hAppdbLink);
-    if(!$hResult) query_error($sComment);
+    if(!$hResult) query_error($sQuery, $sComment);
     return $hResult;
 }
 
@@ -24,14 +24,15 @@ function query_bugzilladb($sQuery,$sComment="")
         mysql_select_db(BUGZILLA_DB);
     }
     $hResult = mysql_query($sQuery, $hBugzillaLink);
-    if(!$hResult) query_error($sComment);
+    if(!$hResult) query_error($sQuery, $sComment);
     return $hResult;
 }
 
 
-function query_error($sComment="")
+function query_error($sQuery, $sComment="")
 {
     $sStatusMessage  = "<p><b>Database Error!</b><br />";
+    $sStatusMessage .= "Query: ".$sQuery;
     $sStatusMessage .= $sComment ? $sComment."<br />" : "";
     $sStatusMessage .= mysql_error()."</p>\n";
     addmsg($sStatusMessage, "red");
