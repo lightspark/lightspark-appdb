@@ -21,6 +21,7 @@ class User {
      */
     function User($iUserId="")
     {
+        $this->sRealname = "an anonymous user";
         if($iUserId)
         {
             $sQuery = "SELECT *
