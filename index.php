@@ -106,6 +106,7 @@ wine-users mailing list or the wine newsgroup, for more information visit
 $sQuery = "SELECT appVotes.appId AS appId, COUNT( appVotes.appId ) AS c
            FROM appVotes, appVersion
            WHERE appVersion.maintainer_rating = 'Gold'
+           AND appVersion.appId = appVotes.appId
            GROUP BY appVotes.appId
            ORDER BY c DESC
            LIMIT 10";
@@ -136,6 +137,7 @@ while($oRow = mysql_fetch_object($hResult))
 $sQuery = "SELECT appVotes.appId AS appId, COUNT( appVotes.appId ) AS c
            FROM appVotes, appVersion
            WHERE appVersion.maintainer_rating = 'Silver'
+           AND appVersion.appId = appVotes.appId
            GROUP BY appVotes.appId
            ORDER BY c DESC
            LIMIT 10";
