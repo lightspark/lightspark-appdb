@@ -1,65 +1,118 @@
 <?
 
 /* code to Submit a new application */
-/*   last modified 06-06-01 by Jeremy Newman */
 
+// Check the input of a submitted form. And output with a list
+// of errors. (<ul></ul>)
+function checkInput( $fields )
+{
+    $errors = "";
+
+    if ( strlen($fields['queueName']) > 200 )
+    {
+        $errors .= "<li>Your application name is too long.</li>\n";
+    }
+
+    if ( empty( $fields['queueName']) )
+    {
+        $errors .= "<li>Please enter an application name.</li>\n";
+    }
+
+    if ( empty( $fields['queueVersion']) )
+    {
+        $errors .= "<li>Please enter an application version.</li>\n";
+    }
+
+    if ( empty( $fields['queueVendor']) )
+    {
+        $errors .= "<li>Please enter a vendor.</li>\n";
+    }
+
+    if ( empty( $fields['queueDesc']) )
+    {
+        $errors .= "<li>Please enter a description of your application.</li>\n";
+    }
+
+    // Not empty and an invalid e-mail address
+    if ( !empty( $fields['queueEmail']) AND !preg_match('/^[A-Za-z0-9\._-]+[@][A-Za-z0-9_-]+([.][A-Za-z0-9_-]+)+[A-Za-z]$/',$fields['queueEmail']) )
+    {
+        $errors .= "<li>Please enter a valid e-mail address.</li>\n";
+    }
+
+    if ( empty($errors) )
+    {
+        return "";
+    }
+    else
+    {
+        return $errors;
+    }
+}
 
 include("path.php");
 require(BASE."include/"."incl.php");
 global $current;
 
-// set email field if logged in
-if ($current && loggedin())
-{
-    $email = $current->lookup_email($current->userid);
-}
-
-//header
-apidb_header("Submit Application");
-
-
-if ($queueName)
+if ($_REQUEST['queueName'])
 {
 	// add to queue
-	
-	//FIXME: need to get image upload in
-	
-	$query = "INSERT INTO appQueue VALUES (null, '".
-			addslashes($queueName)."', '".
-			addslashes($queueVersion)."', '".
-			addslashes($queueVendor)."', '".
-            addslashes($queueDesc)."', '".
-			addslashes($queueEmail)."', '".
-			addslashes($queueURL)."', '".
-			addslashes($queueImage)."');";
-		 
-	mysql_query($query);
+    
+    // Check input and exit if we found errors
+    $errors = checkInput($_REQUEST);
+    if( !empty($errors) )
+    {
+        errorpage("We found the following errors:","<ul>$errors</ul><br>Please go back and correct them.");
+        exit;
+    }
+    
+    // header
+    apidb_header("Submit Application");    
+    
+    $query = "INSERT INTO appQueue VALUES (null, '".
+            addslashes($_REQUEST['queueName'])."', '".
+            addslashes($_REQUEST['queueVersion'])."', '".
+            addslashes($_REQUEST['queueVendor'])."', '".
+            addslashes($_REQUEST['queueDesc'])."', '".
+            addslashes($_REQUEST['queueEmail'])."', '".
+            addslashes($_REQUEST['queueURL'])."', '".
+            addslashes($_REQUEST['queueImage'])."');";
+    mysql_query($query);
 
-	
-	if ($error = mysql_error())
-	{
-		echo "<p><font color=red><b>Error:</b></font></p>\n";
-		echo "<p>$error</p>\n";
-	}
-	else
-	{
-		echo "<p>Your application has been submitted for Review. You should hear back\n";
-		echo "soon about the status of your submission</p>\n";
-	}
-	
+    if ($error = mysql_error())
+    {
+        echo "<p><font color=red><b>Error:</b></font></p>\n";
+        echo "<p>$error</p>\n";
+    }
+    else
+    {
+        echo "<p>Your application has been submitted for Review. You should hear back\n";
+        echo "soon about the status of your submission</p>\n";
+    }
+    
 }
 else
 {
-	// show add to queue form
+    // set email field if logged in
+    if ($current && loggedin())
+	{
+        $email = $current->lookup_email($current->userid);
+    }
+
+	// header
+    apidb_header("Submit Application");
+
+    // show add to queue form
 	
-	echo '<form name="newApp" action="appsubmit.php" method="post" enctype="multipart/form-data">',"\n";
+    echo '<form name="newApp" action="appsubmit.php" method="post" enctype="multipart/form-data">',"\n";
 
 	echo "<p>This page is for submitting new applications to be added to this\n";
 	echo "database. The application will be reviewed by the AppDB Administrator\n";
 	echo "and you will be notified via email if this application will be added to\n";
 	echo "the database.</p>\n";
-	echo "<p>Please don't forget to mention whether you actually tested this\n";
-	echo "application under Wine, which Wine version you used and how well it worked. Thank you !</p>\n";
+	echo "<p>Please don't forget to mention which Wine version you used, how well it worked\n";
+	echo "and if any workaround were needed. Haveing app descriptions just sponsoring the app\n";
+	echo "(Yes, some vendor want to use the appdb for this) or saying \"I haven't tried this app with wine\" ";
+	echo "won't help wine development or wine users.</p>\n";
 	echo "<p>To submit screenshots, please email them to ";
 	echo "<a href='mailto:appdb@winehq.com'>appdb@winehq.com</a></p>\n";
 
@@ -72,7 +125,6 @@ else
 	    echo '<tr valign=top><td class=color0><b>App URL</b></td><td><input type=text name="queueURL" value="" size=20></td></tr>',"\n";
 	    echo '<tr valign=top><td class=color0><b>App Desc</b></td><td><textarea name="queueDesc" rows=10 cols=35></textarea></td></tr>',"\n";
 	    echo '<tr valign=top><td class=color0><b>Email</b></td><td><input type=text name="queueEmail" value="'.$email.'" size=20></td></tr>',"\n";
-	    //echo '<tr valign=top><td class=color0><b>Image</b></td><td><input type=file name="queueImage" value="" size=15></td></tr>',"\n";
 	    echo '<tr valign=top><td class=color3 align=center colspan=2> <input type=submit value=" Submit New Application " class=button> </td></tr>',"\n";
 	    echo '</table>',"\n";    
 
@@ -80,6 +132,7 @@ else
 
 	echo "</form>";
 }
+
 apidb_footer();
 
 ?>
