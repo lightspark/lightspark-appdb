@@ -23,8 +23,3 @@ WineHQ Application Database TODO List
 ##################
 
 # add distro table and administration screens for it. (Chris)
-
-# write a Comment class in include/comment.php (Jonathan)
-
-# when a user responds to a comment a reply is only sent to the person who wrote the comment being responded to but 
-an email should be sent to everyone in that thread. (Jonathan)
