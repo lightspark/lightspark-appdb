@@ -9,6 +9,8 @@ BODY                {
                      margin: 0;
                      font-size: 12px;
                     }
+/* img */
+img                 { border: 0; }
 
 /* Link Colors */
 A                   { color: #A50D0D; }
@@ -120,18 +122,18 @@ p.indent            { padding-left: 1em; padding-right: 1em;}
 /* ToDo colors */
 .todo               { background-color: red; }
 .inprogress         { background-color: yellow; }
-.done               { background-color: limegreen; }
+.done               { background-color: #32CD32; }
 .invalid            { color: gray; text-decoration: line-through; }
 
 /* Fun Projects */
-.works              { background-color: lightblue; }
+.works              { background-color: #68838B; }
 .abandoned          { background-color: gray; }
 .modified           { font-weight: bold; }
 .submitted          { font-style: italic; }
 .committed          { font-style: italic; color: gray; }
 
 /* App Support status */
-.gold               { background-color: wheat; }
+.gold               { background-color: #8B7E66; }
 .silver             { background-color: silver; }
 
 
@@ -187,9 +189,9 @@ TD.button2 { background-color: #ABB2D5; }
 TD.label { font-weight: bold }
 
 /* for inwine/intwine */
-TD.yes { color: #00B100; font-weight: italic; text-align: center }
-TD.no  { color: #B10000; font-weight: italic; text-align: center }
-TD.stub { color: #0000B1; font-weight: italic; text-align: center }
+TD.yes { color: #00B100; font-style: italic; text-align: center }
+TD.no  { color: #B10000; font-style: italic; text-align: center }
+TD.stub { color: #0000B1; font-style: italic; text-align: center }
 
 
 /* Rating Number */
@@ -197,19 +199,15 @@ TD.stub { color: #0000B1; font-weight: italic; text-align: center }
 
 
 /* Vote Button */
-.votebutton	{ background-color: #666666; color: #ffffff; font-family: Helvetica, Arial; font-size: 8pt;
-                   groove #000000; padding: 0; }
+.votebutton	{ background-color: #666666; color: #ffffff; font-family: Helvetica, Arial; font-size: 8pt; padding: 0; }
 
 
 /* Rate Button */
-.ratebutton	{ background-color: #666666; color: #ffffff; font-family: Helvetica, Arial; font-size: 8pt;
-                   groove #000000; padding: 0; }
+.ratebutton	{ background-color: #666666; color: #ffffff; font-family: Helvetica, Arial; font-size: 8pt; padding: 0; }
 
 
 /* Search Button */
-.searchbutton	{ background-color: #666666; color: #ffffff; font-family: Helvetica, Arial; font-size: 10pt;
-                  groove #000000; padding: 0; }
+.searchbutton	{ background-color: #666666; color: #ffffff; font-family: Helvetica, Arial; font-size: 10pt; padding: 0; }
 
 /* Search Field */
-.searchfield	{ background-color: #EOEOEO; color: #666666; font-family: Helvetica, Arial; font-size: 10pt;
-                  groove #000000; padding: 0; }
+.searchfield	{ background-color: #E0E0E0; color: #666666; font-family: Helvetica, Arial; font-size: 10pt; padding: 0; }
