@@ -9,7 +9,6 @@
 include("path.php");
 require(BASE."include/incl.php");
 require(BASE."include/application.php");
-require(BASE."include/comment.php");
 require(BASE."include/appdb.php");
 require(BASE."include/vote.php");
 require(BASE."include/category.php");
@@ -144,19 +143,13 @@ function display_versions($iAppId, $aVersionsIds)
             // set row color
             $bgcolor = ($c % 2 == 0) ? "color0" : "color1";
 
-            // description
-            $desc = trim_description($oVersion->sDescription);
-
-            // count comments
-            $r_count = count_comments($iAppId,$iVersionId);
-
             //display row
             echo "<tr class=$bgcolor>\n";
             echo "    <td><a href=\"appview.php?versionId=".$iVersionId."\">".$oVersion->sName."</a></td>\n";
-            echo "    <td>$desc &nbsp;</td>\n";
+            echo "    <td>".trim_description($oVersion->sDescription)."</td>\n";
             echo "    <td align=center>".$oVersion->sTestedRating."</td>\n";
             echo "    <td align=center>".$oVersion->sTestedVersion."</td>\n";
-            echo "    <td align=center>$r_count</td>\n";
+            echo "    <td align=center>".sizeof($oVersion->aCommentsIds)."</td>\n";
             echo "</tr>\n\n";
 
             $c++;   

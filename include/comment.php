@@ -264,19 +264,6 @@ function grab_comments($versionId, $parentId = -1)
 
 
 /**
- * grab comments for appId / versionId
- * if parentId is not -1 only comments for that thread are returned
- */
-function count_comments($versionId)
-{
-    $qstring = "SELECT count(commentId) as hits FROM appComments WHERE versionId = $versionId";   
-    $result = query_appdb($qstring);
-    $ob = mysql_fetch_object($result);
-    return $ob->hits;
-}
-
-
-/**
  * display nested comments
  * handle is a db result set
  */
@@ -294,6 +281,7 @@ function do_display_comments_nested($handle)
         }
         }
 }
+
 
 function display_comments_nested($versionId, $threadId)
 {

@@ -9,7 +9,6 @@
 include("path.php");
 require(BASE."include/incl.php");
 require(BASE."include/application.php");
-require(BASE."include/comment.php");
 require(BASE."include/appdb.php");
 require(BASE."include/screenshot.php");
 require(BASE."include/category.php");
@@ -40,8 +39,8 @@ function display_bundle($appId)
     echo "<table width='100%' border=0 cellpadding=3 cellspacing=1>\n\n";
 
     echo "<tr class=color4>\n";
-    echo "    <td><font color=white>Application Name</font></td>\n";
-    echo "    <td><font color=white>Description</font></td>\n";
+    echo "    <td>Application Name</td>\n";
+    echo "    <td>Description</td>\n";
     echo "</tr>\n\n";
 
     $c = 0;
@@ -70,53 +69,49 @@ function display_bundle($appId)
 
 
 
-/* display the versions */
-function display_versions($appId, $versions)
+/**
+ * display the versions 
+ */
+function display_versions($iAppId, $aVersionsIds)
 {
-	if ($versions)
-	{
-	
-		 echo html_frame_start("","98%","",0);
-		 echo "<table width='100%' border=0 cellpadding=3 cellspacing=1>\n\n";
+    if ($aVersionsIds)
+    {
+        echo html_frame_start("","98%","",0);
+        echo "<table width='100%' border=0 cellpadding=3 cellspacing=1>\n\n";
 
-		 echo "<tr class=color4>\n";
-		 echo "    <td width=80><font color=white>Version</font></td>\n";
-		 echo "    <td><font color=white>Description</font></td>\n";
-		 echo "    <td width=80><font color=white class=small>Rating With Windows</font></td>\n";
-		 echo "    <td width=80><font color=white class=small>Rating Without Windows</font></td>\n";
-		 echo "    <td width=40><font color=white class=small>Comments</font></td>\n";
-		 echo "</tr>\n\n";
-    	
-	        $c = 0;
-		while(list($idx, $ver) = each($versions))
-		{
-	             //set row color
-	            $bgcolor = (($c % 2) ? "color0" : "color1");
+        echo "<tr class=color4>\n";
+        echo "    <td width=80>Version</td>\n";
+        echo "    <td>Description</td>\n";
+        echo "    <td width=80>Rating</td>\n";
+        echo "    <td width=80>Wine version</td>\n";
+        echo "    <td width=40>Comments</td>\n";
+        echo "</tr>\n\n";
+      
+        $c = 0;
+        foreach($aVersionsIds as $iVersionId)
+        {
+            $oVersion = new Version($iVersionId);
 
-	            //format desc
-	            $desc = trim_description($ver->description);
-	            if(strlen($desc) == 75)
-		    $desc .= " ...";		
-		
-		   //count comments
-		   $r_count = count_comments($appId,$ver->versionId);
-		
-	           //display row
-	           echo "<tr class=$bgcolor>\n";
-	           echo "    <td><a href='appview.php?appId=$appId&versionId=$ver->versionId'>".$ver->versionName."</a></td>\n";
-	           echo "    <td>$desc &nbsp;</td>\n";
-		   echo "    <td align=center>$r_win</td>\n";
-		   echo "    <td align=center>$r_fake</td>\n";
-		   echo "    <td align=center>$r_count</td>\n";
-	           echo "</tr>\n\n";
+            // set row color
+            $bgcolor = ($c % 2 == 0) ? "color0" : "color1";
 
-	           $c++;		
-		}
-		
-		echo "</table>\n";
-		echo html_frame_end("Click the Version Name to view the details of that Version");
-	}
+            //display row
+            echo "<tr class=$bgcolor>\n";
+            echo "    <td><a href=\"appview.php?versionId=".$iVersionId."\">".$oVersion->sName."</a></td>\n";
+            echo "    <td>".trim_description($oVersion->sDescription)."</td>\n";
+            echo "    <td align=center>".$oVersion->sTestedRating."</td>\n";
+            echo "    <td align=center>".$oVersion->sTestedVersion."</td>\n";
+            echo "    <td align=center>".sizeof($oVersion->aCommentsIds)."</td>\n";
+            echo "</tr>\n\n";
+
+            $c++;   
+
+        }
+        echo "</table>\n";
+        echo html_frame_end("Click the Version Name to view the details of that Version");
+    }
 }
+
 
 /* code to View an application's Bugs */
 $appId = $_REQUEST['appId'];
