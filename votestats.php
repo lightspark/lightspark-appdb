@@ -25,7 +25,7 @@ if($result)
     while($row = mysql_fetch_object($result))
     {
         if ($c % 2 == 1) { $bgcolor = "color0"; } else { $bgcolor = "color1"; }
-        $link = "<a href='../appview.php?appId=$row->appId'>$row->appName</a>";
+        $link = "<a href='appview.php?appId=$row->appId'>$row->appName</a>";
 	echo "<tr class='".$bgcolor."'><td width='90%'>$c. $link </td> <td> $row->count </td></tr>\n";
 	$c++;
     }
