@@ -282,8 +282,7 @@ if($appId && !$versionId)
 	echo '<tr><td class=color4 valign=top>',"\n";	
 	echo '<table width="250" border=0 cellpadding=3 cellspacing=1">',"\n";
 	echo "<tr class=color0 valign=top><td width='100' align=right> <b>Name</b></td><td width='100%'> ".stripslashes($data->appName)." </td>\n";
-	echo "<tr class=color1 valign=top><td width='100' align=right> <b>App Id</b></td><td width='100%'> ".$data->appId." </td>\n";
-	echo "<tr class=color0 valign=top><td align=right> <b>Vendor</b></td><td> ".
+	echo "<tr class=color1 valign=top><td align=right> <b>Vendor</b></td><td> ".
 	     "   <a href='vendorview.php?vendorId=$vendor->vendorId'> ".stripslashes($vendor->vendorName)." </a> &nbsp;\n";
         echo "<tr class=color0 valign=top><td align=right> <b>BUGS</b></td><td> ".
 	     "   <a href='bugs.php?appId=$data->appId.'> Check for bugs in bugzilla </a> &nbsp;\n";        
@@ -293,7 +292,7 @@ if($appId && !$versionId)
 	display_notes($appId);
 	
 	//main URL
-	echo "<tr class=color0 valign=top><td align=right> <b>URL</b></td><td>".$appLinkURL."</td></tr>\n";
+	echo "<tr class=color1 valign=top><td align=right> <b>URL</b></td><td>".$appLinkURL."</td></tr>\n";
 
 	//optional links
 	$result = mysql_query("SELECT * FROM appData WHERE appId = $appId AND type = 'url'");
@@ -390,15 +389,14 @@ else if($appId && $versionId)
     echo '<tr><td class=color4 valign=top>',"\n";
     echo '<table width="250" border=0 cellpadding=3 cellspacing=1">',"\n";
     echo "<tr class=color0 valign=top><td width=100> <b>Name</b></td><td width='100%'>".stripslashes($data->appName)."</td>\n";
-    echo "<tr class=color1 valign=top><td width=100> <b>Ver Id</b></td><td width='100%'> $ver->versionId</td>\n";
-    echo "<tr class=color0 valign=top><td> <b>Version</b></td><td>".stripslashes($ver->versionName)."</td></tr>\n";
-    echo "<tr class=color1 valign=top><td> <b>URL</b></td><td>".stripslashes($appLinkURL)."</td></tr>\n";
+    echo "<tr class=color1 valign=top><td> <b>Version</b></td><td>".stripslashes($ver->versionName)."</td></tr>\n";
+    echo "<tr class=color0 valign=top><td> <b>URL</b></td><td>".stripslashes($appLinkURL)."</td></tr>\n";
 
     //Rating Area
     $r_win = rating_stars_for_version($versionId, "windows");
     $r_fake = rating_stars_for_version($versionId, "fake");
 
-    echo "<tr class=color0 valign=top><td> <b>Rating</b></td><td> $r_win \n";
+    echo "<tr class=color1 valign=top><td> <b>Rating</b></td><td> $r_win \n";
     echo "<br> $r_fake </td></tr>\n";
 
     //notes
