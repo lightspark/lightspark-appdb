@@ -52,6 +52,8 @@ class Version {
                     $this->sName = $oRow->versionName;
                     $this->sKeywords = $oRow->keywords;
                     $this->sDescription = $oRow->description;
+                    $this->sTestedRelease = $oRow->maintainer_release;
+                    $this->sTestedRating = $oRow->maintainer_rating;
                     $this->sWebpage = $oRow->webPage;
                     $this->bQueued = $oRow->queued;
                 }
