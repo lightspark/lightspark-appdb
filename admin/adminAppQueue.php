@@ -17,6 +17,12 @@ if(!havepriv("admin"))
 
 if ($_REQUEST['sub'])
 {
+    if(!is_numeric($_REQUEST['queueId']))
+    {
+        errorpage("Wrong ID");
+        exit;
+    }
+
     if ($_REQUEST['queueId'])
     {
         //get data
@@ -212,16 +218,20 @@ if ($_REQUEST['sub'])
             if ($_REQUEST['altvendor'] == 0 && $_REQUEST['queueVendor'])
             {
                 //add new vendor
-                mysql_query("INSERT into vendor VALUES (null, '".addslashes($_REQUEST['queueVendor'])."', '');");
+                $aInsert = compile_insert_string( array('vendorName' => $_REQUEST['queueVendor'],
+                                                        'vendorURL' => $_REQUEST['queueURL']));
+
+                query_appdb("INSERT INTO `vendor` ({$aInsert['FIELDS']}) VALUES ({$aInsert['VALUES']})");
                 $_REQUEST['altvendor'] = mysql_insert_id();
             }
-            
-            $query = "INSERT into appFamily VALUES (null, '".
-                                    addslashes($_REQUEST['queueName'])."', ".$_REQUEST['altvendor'].", '', '".
-                                addslashes($_REQUEST['queueDesc'])."', '".
-                                addslashes($_REQUEST['queueURL'])."', ".$_REQUEST['cat'].");"; 
-               
-            if (mysql_query($query))
+            $aInsert = compile_insert_string( array('AppName' => $_REQUEST['queueName'],
+                                                    'vendorId' => $_REQUEST['altvendor'],
+                                                    'description' => $_REQUEST['queueDesc'],
+                                                    'webPage' => $_REQUEST['queueURL'],
+                                                    'keywords' => "",
+                                                    'catId' =>  $_REQUEST['cat']));
+
+            if (query_appdb("INSERT INTO `appFamily` ({$aInsert['FIELDS']}) VALUES ({$aInsert['VALUES']})"))
             {
                     //get the id of the app just added    
                 $_REQUEST['appParent'] = mysql_insert_id();
@@ -234,13 +244,15 @@ if ($_REQUEST['sub'])
                 if (!$_REQUEST['queueDesc'])
                     $_REQUEST['queueDesc'] = 'released version';
 
-                $verQuery = "INSERT into appVersion VALUES (null, ".$_REQUEST['appParent'].", '".
-                addslashes($_REQUEST['queueVersion'])."', '', '".
-                addslashes($_REQUEST['queueDesc'])."', '".
-                addslashes($_REQUEST['queueURL'])."', 0.0, 0.0);";
-                
                 //Now add a version
-                if (mysql_query($verQuery))
+                $aInsert = compile_insert_string( array('appId' => $_REQUEST['appParent'],
+                                                        'versionName' => $_REQUEST['queueVersion'],
+                                                        'description' => $_REQUEST['queueDesc'],
+                                                        'webPage' => $_REQUEST['queueURL'],
+                                                        'keywords' => "",
+                                                        'maintainer_rating' => "",
+                                                        'maintainer_release' =>  ""));
+                if (query_appdb("INSERT INTO `appVersion` ({$aInsert['FIELDS']}) VALUES ({$aInsert['VALUES']})"))
                 {
                     //successful
                     $_REQUEST['appVersion'] = mysql_insert_id();
@@ -268,12 +280,15 @@ if ($_REQUEST['sub'])
             //process as application version
             if ($_REQUEST['appParent'])
             {
-                $query = "INSERT into appVersion VALUES (null, ".$_REQUEST['appParent'].", '".
-                addslashes($_REQUEST['queueVersion'])."', '', '".
-                addslashes($_REQUEST['queueDesc'])."', '".
-                addslashes($_REQUEST['queueURL'])."', 0.0, 0.0);";
-                
-                if (mysql_query($query))
+                $aInsert = compile_insert_string( array('appId' => $_REQUEST['appParent'],
+                                                        'versionName' => $_REQUEST['queueVersion'],
+                                                        'description' => $_REQUEST['queueDesc'],
+                                                        'webPage' => $_REQUEST['queueURL'],
+                                                        'keywords' => "",
+                                                        'maintainer_rating' => "",
+                                                        'maintainer_release' =>  ""));
+
+                if (query_appdb("INSERT INTO `appVersion` ({$aInsert['FIELDS']}) VALUES ({$aInsert['VALUES']})"))
                 {
                     //successful
                     $_REQUEST['appVersion'] = mysql_insert_id();
