@@ -99,7 +99,7 @@ function make_bugzilla_version_list($varname, $cvalue)
     if(!$result) return;
 
     echo "<select name='$varname'>\n";
-    echo "<option value=0>Choose ...</option>\n";
+    echo "<option value=" ">Choose ...</option>\n";
     while(list($value) = mysql_fetch_row($result))
     {
         if($value == $cvalue)
@@ -114,7 +114,7 @@ function make_maintainer_rating_list($varname, $cvalue)
 {
     
     echo "<select name='$varname'>\n";
-    echo "<option value=0>Choose ...</option>\n";
+    echo "<option value=" ">Choose ...</option>\n";
     $aRating = array("Gold", "Silver", "Bronze", "Garbage");
     $iMax = count($aRating);
 
