@@ -1,31 +1,42 @@
 <?
+/********************************/
+/* code to submit a new comment */
+/********************************/
     
+# APPLICATION ENVIRONMENT
 include("path.php");
 require(BASE."include/"."incl.php");
 require(BASE."include/"."application.php");
 
-
-
-if(!$appId) {
-    errorpage('Internal Database Access Error');
-    exit;
-}
-
-if(!$versionId) {
-    $versionId = 0;
-}
-
-if(!$thread) {
-    $thread = 0;
-}
-
-opendb();
-
-
-if($body)
+// you must be logged in to submit comments
+if(!loggedin())
 {
-    // add comment to db
-    
+  unset($_REQUEST['body']);
+  apidb_header("Please login");
+  echo "To submit a comment for an application you must be logged in. Please <a href=\"account.php?cmd=login\">login now</a> or create a <a href=\"account.php?cmd=new\">new account</a>.","\n";
+}
+
+if(!isset($_REQUEST['appId']))
+{
+  errorpage('Internal Database Access Error');
+  exit;
+}
+
+if(!$_REQUEST['versionId'])
+{
+  $versionId = 0;
+}
+
+if(!$_REQUEST['thread'])
+{
+  $thread = 0;
+}
+
+############################
+# ADDS COMMENT TO DATABASE #
+############################
+if($_REQUEST[body])
+{
     $hostname = get_remote();
     
     $subject = strip_tags($subject);
@@ -33,7 +44,7 @@ if($body)
     $body1 = mysql_escape_string($body);
 
     // get current userid
-    $userId = (loggedin()) ? $_SESSION['current']->userid : 0;
+    $userId = $_SESSION['current']->userid;
 
     $result = mysql_query("INSERT INTO appComments VALUES (NOW(), null, $thread, ".
 			   "$appId, $versionId, $userId, '$hostname', '$subject', ".
@@ -74,7 +85,7 @@ if($body)
             $fullAppName = "Application: ".lookupAppName($appId)." Version: ".lookupVersionName($appId, $versionId);
             $ms = APPDB_ROOT."appview.php?appId=$appId&versionId=$versionId"."\n";
             $ms .= "\n";
-            $ms .= ($_SESSION['current']->username ? $_SESSION['current']->username : "Anonymous")." added comment to ".$fullAppName."\n";
+            $ms .= $_SESSION['current']->username." added comment to ".$fullAppName."\n";
             $ms .= "\n";
             $ms .= "Subject: ".$subject."\n";
             $ms .= "\n";
@@ -83,7 +94,6 @@ if($body)
             $ms .= STANDARD_NOTIFY_FOOTER;
 
             mail(stripslashes($email), "[AppDB] ".$fullAppName ,$ms);
-
         } else
         {
             $email = "no one";
@@ -94,56 +104,61 @@ if($body)
         redirect(apidb_fullurl("appview.php?appId=$appId&versionId=$versionId"));
     }
 }
-else
+
+################################
+# USER WANTS TO SUBMIT COMMENT #
+################################
+else if(loggedin())
 {
+  apidb_header("Add Comment");
 
-    apidb_header("Add Comment");
+  $mesTitle = "<b>Post New Comment</b>";
 
-    $mesTitle = "<b>Post New Comment</b>";
-
-    if($thread)
-	{
-	    $result = mysql_query("SELECT * FROM appComments WHERE commentId = $thread");
-	    $ob = mysql_fetch_object($result);
-	    if($ob)
-		{
-		    $mesTitle = "<b>Replying To ...</b> $ob->subject\n";
-                    $originator = $ob->userId;
-		    echo html_frame_start($ob->subject,500);
-    	            echo htmlify_urls($ob->body), "<br><br>\n";
-		    echo html_frame_end();
-		}
-	}
-
-    echo "<form method=POST action='addcomment.php'>\n";
-
-    echo html_frame_start($mesTitle,500,"",0);
-    
-    echo '<table width="100%" border=0 cellpadding=0 cellspacing=1>',"\n";
-    echo "<tr bgcolor=#E0E0E0><td align=right><b>From:</b>&nbsp;</td>\n";
-    echo "	<td>&nbsp;". ($_SESSION['current']->username ? $_SESSION['current']->username : "Anonymous") ." </td></tr>\n";
-    echo "<tr bgcolor=#E0E0E0><td align=right><b>Subject:</b>&nbsp;</td>\n";
-    echo "	<td>&nbsp;<input type=text size=35 name=subject value='$subject'> </td></tr>\n";
-    echo "<tr bgcolor=#C0C0C0><td colspan=2><textarea name=body cols=70 rows=15 wrap=virtual>$body</textarea></td></tr>\n";
-    echo "<tr bgcolor=#C0C0C0><td colspan=2 align=center>\n";
-    echo "  <input type=SUBMIT value='Post Comment' class=button>\n";
-    echo "  <input type=RESET value='Reset' class=button>\n";
-    echo "</td></tr>\n";
-    echo "</table>\n";
-
-    echo html_frame_end();
-
-    echo "<input type=HIDDEN name=thread value=$thread>\n";
-    echo "<input type=HIDDEN name=appId value=$appId>\n";
-    echo "<input type=HIDDEN name=versionId value=$versionId>\n";
-    if ($thread)
+  if($_REQUEST['thread'])
+  {
+    $result = mysql_query("SELECT * FROM appComments WHERE commentId = $thread");
+    $ob = mysql_fetch_object($result);
+    if($ob)
     {
-        echo "<input type=HIDDEN name=originator value=$originator>\n";
+      $mesTitle = "<b>Replying To ...</b> $ob->subject\n";
+      $originator = $ob->userId;
+      echo html_frame_start($ob->subject,500);
+      echo htmlify_urls($ob->body), "<br /><br />\n";
+      echo html_frame_end();
     }
-    echo "</form><p>&nbsp;</p>\n";
+  }
 
-    apidb_footer();
+  echo "<form method=POST action='addcomment.php'>\n";
 
+  echo html_frame_start($mesTitle,500,"",0);
+    
+  echo '<table width="100%" border=0 cellpadding=0 cellspacing=1>',"\n";
+  echo "<tr bgcolor=#E0E0E0><td align=right><b>From:</b>&nbsp;</td>\n";
+  echo "	<td>&nbsp;".$_SESSION['current']->username."</td></tr>\n";
+  echo "<tr bgcolor=#E0E0E0><td align=right><b>Subject:</b>&nbsp;</td>\n";
+  echo "	<td>&nbsp;<input type=text size=35 name=subject value='$subject'> </td></tr>\n";
+  echo "<tr bgcolor=#C0C0C0><td colspan=2><textarea name=body cols=70 rows=15 wrap=virtual>$body</textarea></td></tr>\n";
+  echo "<tr bgcolor=#C0C0C0><td colspan=2 align=center>\n";
+  echo "  <input type=SUBMIT value='Post Comment' class=button>\n";
+  echo "  <input type=RESET value='Reset' class=button>\n";
+  echo "</td></tr>\n";
+  echo "</table>\n";
+
+  echo html_frame_end();
+
+  echo "<input type=HIDDEN name=thread value=$thread>\n";
+  echo "<input type=HIDDEN name=appId value=$appId>\n";
+  echo "<input type=HIDDEN name=versionId value=$versionId>\n";
+  if ($thread)
+  {
+    echo "<input type=HIDDEN name=originator value=$originator>\n";
+  }
+  echo "</form>";
 }
+?>
 
+<p>&nbsp;</p>
+
+<?
+apidb_footer();
 ?>
