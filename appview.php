@@ -171,6 +171,7 @@ function display_versions($appId, $versions)
         echo "    <td><font color=white>Description</font></td>\n";
         echo "    <td width=80><font color=white class=small>Rating With Windows</font></td>\n";
         echo "    <td width=80><font color=white class=small>Rating Without Windows</font></td>\n";
+        echo "    <td width=80><font color=white class=small>Maintainer Rating</font></td>\n";
         echo "    <td width=40><font color=white class=small>Comments</font></td>\n";
         echo "</tr>\n\n";
       
@@ -198,6 +199,7 @@ function display_versions($appId, $versions)
             echo "    <td>$desc &nbsp;</td>\n";
             echo "    <td align=center>$r_win</td>\n";
             echo "    <td align=center>$r_fake</td>\n";
+            echo "    <td align=center>$ver->maintainer_rating</td>\n";
             echo "    <td align=center>$r_count</td>\n";
             echo "</tr>\n\n";
 
@@ -425,10 +427,13 @@ else if($appId && $versionId)
     echo "<tr class=color0 valign=top><td> <b>URL</b></td><td>".stripslashes($appLinkURL)."</td></tr>\n";
 
     // rating Area
+    echo "<tr class=color1 valign=top><td> <b>Maintainer Rating</b></td><td>".stripslashes($ver->maintainer_rating)."</td></tr>\n";
+    echo "<tr class=color0 valign=top><td> <b>Maintainers Version</b></td><td>".stripslashes($ver->maintainer_release)."</td></tr>\n";
+
     $r_win = rating_stars_for_version($versionId, "windows");
     $r_fake = rating_stars_for_version($versionId, "fake");
 
-    echo "<tr class=color1 valign=top><td> <b>Rating</b></td><td> $r_win \n";
+    echo "<tr class=color1 valign=top><td> <b>User Rating</b></td><td> $r_win \n";
     echo "<br /> $r_fake </td></tr>\n";
 
     // image
