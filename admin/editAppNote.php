@@ -53,7 +53,8 @@ if(isset($_REQUEST['sub']))
             $ms .= "\n";
             $ms .= STANDARD_NOTIFY_FOOTER;
 
-            mail(stripslashes($sEmail), "[AppDB] ".$sFullAppName ,$ms);
+            mail( "", "[AppDB] ".$sFullAppName ,$ms, "Bcc: ".stripslashes( $sEmail));
+
         } else
         {
             $sEmail = "no one";
@@ -84,7 +85,7 @@ if(isset($_REQUEST['sub']))
             $ms .= "\n";
             $ms .= STANDARD_NOTIFY_FOOTER;
 
-            mail(stripslashes($sEmail), "[AppDB] ".$sFullAppName ,$ms);
+            mail( "", "[AppDB] ".$sFullAppName ,$ms, "Bcc: ".stripslashes( $sEmail));
 
         } else
         {
