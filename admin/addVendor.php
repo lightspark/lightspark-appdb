@@ -1,41 +1,44 @@
 <?php
-
 include("path.php");
-include(BASE."include/"."incl.php");
-include(BASE."include/"."tableve.php");
+require(BASE."include/incl.php");
+require(BASE."include/vendor.php");
 
 if(!$_SESSION['current']->hasPriv("admin"))
 {
     errorpage();
     exit;
 }
+$oVendor = new Vendor($_REQUEST['vendorId']);
+if($_REQUEST['submit'])
+{
+    $oVendor->update($_REQUEST['name'],$_REQUEST['webpage']);
+    redirect(apidb_fullurl("admin/adminVendors.php"));
+}
 else
 {
-    global $admin_mode;
-    $admin_mode = 1;
-}
-
 apidb_header("Add Vendor");
-
-$t = new TableVE("create");
-
-if($_POST)
-{
-    $t->update($_POST);
+echo "<form method=\"post\" action=\"addVendor.php\">
+      <input type=\"hidden\" name=\"vendorId\" value=\"".$oVendor->iVendorId."\" /> 
+      <table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"2\">
+        <tr>
+          <td width=\"15%\" class=\"box-label\"><b>Vendor name</b></td>
+          <td class=\"box-body\">
+            <input type=\"text\" size=\"50\" name=\"name\" value=\"".$oVendor->sName."\" /> 
+          </td>
+        </tr>
+        <tr>
+          <td width=\"15%\" class=\"box-label\"><b>Vendor URL</b></td>
+          <td class=\"box-body\">
+            <input type=\"text\" size=\"50\" name=\"webpage\" value=\"".$oVendor->sWebpage."\" /> 
+          </td>
+        </tr>
+        <tr>
+          <td colspan=\"2\" class=\"box-body\">
+            <input type=\"submit\" name=\"submit\" value=\"Submit\" />
+          </td>
+        </tr>
+      </table>
+      </form>";
 }
-else
-{
-    $table = "vendor";
-    $query = "INSERT INTO $table VALUES(0, 'NONAME', null)";
-
-    query_appdb("DELETE FROM $table WHERE vendorName = 'NONAME'");
-
-    if(debugging())
-	echo "$query <br /><br />\n";
-
-    $t->create($query, $table, "vendorId");
-}
-
 apidb_footer();
-
 ?>

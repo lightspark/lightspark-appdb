@@ -81,14 +81,17 @@ class Vendor {
      */
     function update($sName=null, $sWebpage=null)
     {
-        if ($sName)
+        if(!$this->iVendorId)
+            return $this->create($sName, $sWebpage);
+
+        if($sName)
         {
             if (!query_appdb("UPDATE vendor SET vendorName = '".$sName."' WHERE vendorId = ".$this->iVendorId))
                 return false;
             $this->sName = $sName;
         }     
 
-        if ($sWebpage)
+        if($sWebpage)
         {
             if (!query_appdb("UPDATE vendor SET vendorURL = '".$sWebpage."' WHERE vendorId = ".$this->iVendorId))
                 return false;
@@ -104,9 +107,17 @@ class Vendor {
      */
     function delete($bSilent=false)
     {
-        $sQuery = "DELETE FROM vendor 
-                   WHERE vendorId = ".$this->iVendorId." 
-                   LIMIT 1";
+        if(sizeof($this->aApplicationsIds)>0)
+        {
+            addmsg("The vendor has not been deleted because there are still applications linked to it.", "red");
+        } else 
+        {
+            $sQuery = "DELETE FROM vendor 
+                       WHERE vendorId = ".$this->iVendorId." 
+                       LIMIT 1";
+            query_appdb($sQuery);
+            addmsg("The vendor has been deleted.", "green");
+        }
     }
 }
 ?>
