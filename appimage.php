@@ -26,10 +26,11 @@ function handle_error($text)
     exit;
 }
 
-if(!$appId && !$imageId) {
-    handle_error("No appId");
-    return;
-}
+$appId = $_GET['appid'];
+$imageId = $_GET['imageId'];
+$versionId = $_GET['versionId'];
+$width = $_GET['width'];
+$height = $_GET['height'];
 
 if(!$versionId) {
     $versionId = 0;
@@ -37,11 +38,14 @@ if(!$versionId) {
 
 opendb();
 
-if($imageId)
+if($imageId AND is_numeric($imageId) )
     $result = mysql_query("SELECT * FROM appData WHERE id = $imageId");
-else
+
+else if($appId AND $versionId AND is_numeric($appId) AND is_numeric($versionId) )
     $result = mysql_query("SELECT * FROM appData WHERE appId = $appId AND ".
-			  "versionId = $versionId AND type = 'image' LIMIT 1");
+			              "versionId = $versionId AND type = 'image' LIMIT 1");
+else
+	handle_error("IDs wrong");
 
 if(mysql_num_rows($result) == 0)
     handle_error("No image found");
@@ -55,42 +59,45 @@ if(!ereg("/", $ob->url))
 else
     $url = $ob->url;
 
-if(eregi(".+\\.(jpg|jpeg)$", $url))
-    $type = "jpeg";
+$imageInfo = getimagesize($url);
+
+if( $imageInfo[2] == 2 )
+{
+	$type = 'jpeg';
+	$im = imagecreatefromjpeg($url);
+}
+else if( $imageInfo[2] == 3 )
+{
+	$type = 'png';
+	$im = imagecreatefrompng($url);
+}
 else
-if(eregi(".+\\.(png)$", $url))
-    $type = "png";
+	handle_error("Unhandeled image type");
 
-if(!$type)
-    handle_error("Unknown Image Type");
+if( !$imageInfo || !$im)
+    handle_error("Error handeling file.");
 
-if($type == "png")
-    $im = ImageCreateFromPNG($url);
-else
-if($type == "jpeg")
-    $im = ImageCreateFromJpeg($url);
-
-if(!$im)
-    handle_error("Error");
-
-if($width && $height) {
+if($width && $height)
+{
     // do scaling
     $sim = ImageCreate($width, $height);
     ImageCopyResized($sim, $im, 0, 0, 0, 0, $width, $height, ImageSX($im), ImageSY($im));
-    $im = $sim;
 }
 
 // output the image
 if($type == "png")
 {
     header("Content-type: image/png");
-    ImagePNG($im);
+    ImagePNG($sim);
 }
 else
 if($type == "jpeg")
 {
     header("Content-type: image/jpeg");
-    ImageJPEG($im);
+    ImageJPEG($sim);
 }
 
+// Clear the memory
+imagedestroy($im);
+imagedestroy($sim);
 ?>
