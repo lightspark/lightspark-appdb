@@ -8,9 +8,9 @@ include(BASE."include/"."incl.php");
 
 $help_path = $apidb_root."/help";
 
-if($topic)
+if($_GET['topic'])
 {
-    display_help($topic);
+    display_help($_GET['topic']);
 } else {
     display_index();    
 }

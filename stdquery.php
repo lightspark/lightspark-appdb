@@ -25,7 +25,7 @@ if(loggedin())
 
 
 // create $vars object
-$vars = $HTTP_GET_VARS;
+$vars = $_GET;
 $qc = new qclass();
 $qc->process($vars);
 $query = $qc->get_query();
