@@ -3,8 +3,8 @@
 /* Login SideBar */
 /*****************/
 
-require_once(BASE."include/"."maintainer.php");
-require_once(BASE."include/"."category.php");
+require_once(BASE."include/maintainer.php");
+require_once(BASE."include/category.php");
 
 
 function global_sidebar_login() {
@@ -19,7 +19,7 @@ function global_sidebar_login() {
         
         /* if this user maintains any applications list them */
         /* in their sidebar */
-        $apps_user_maintains = getAppsFromUserId($_SESSION['current']->userid);
+        $apps_user_maintains = getAppsFromUserId($_SESSION['current']->iUserid);
         if($apps_user_maintains)
         {
             $g->addmisc("");
@@ -29,7 +29,7 @@ function global_sidebar_login() {
                 if($superMaintainer)
                     $g->addmisc("<a href='".BASE."appview.php?appId=$appId'>".appIdToName($appId)."*</a>", "center");
                 else
-                    $g->addmisc("<a href='".BASE."appview.php?appId=$appId&versionId=$versionId'>".appIdToName($appId)." ".versionIdToName($versionId)."</a>", "center");
+                    $g->addmisc("<a href='".BASE."appview.php?versionId=$versionId'>".appIdToName($appId)." ".versionIdToName($versionId)."</a>", "center");
             }
         }
     }
