@@ -116,8 +116,8 @@ while($oRow = mysql_fetch_object($hResult))
     $img = get_screenshot_img($oRow->appId);
     echo '
     <tr class="white">
-      <td><a href="appview.php?appId='.$oRow->appId.'">'.$oApp->data->appName.'</a></td>
-        <td>'.trim_description($oApp->data->description).'</td>
+      <td><a href="appview.php?appId='.$oRow->appId.'">'.$oApp->sName.'</a></td>
+        <td>'.trim_description($oApp->sDescription).'</td>
         <td>'.$img.'</td>
     </tr>';
 }
@@ -144,11 +144,10 @@ while($oRow = mysql_fetch_object($hResult))
     $oApp = new Application($oRow->appId);
     // image
     $img = get_screenshot_img($oRow->appId);
-    $aDesc = explode("\n",$oApp->data->description,2);
     echo '
     <tr class="white">
-      <td><a href="appview.php?appId='.$oRow->appId.'">'.$oApp->data->appName.'</a></td>
-        <td>'.$aDesc[0].'</td>
+      <td><a href="appview.php?appId='.$oRow->appId.'">'.$oApp->sName.'</a></td>
+        <td>'.trim_description($oApp->sDescription).'</td>
         <td>'.$img.'</td>
     </tr>';
 }
