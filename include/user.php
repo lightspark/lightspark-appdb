@@ -120,11 +120,20 @@ class User {
      */
     function create($username, $password, $realname, $email, $CVSrelease)
     {
-        $result = mysql_query("INSERT INTO user_list VALUES ( NOW(), 0, ".
-                              "'$username', password('$password'), ".
-                              "'$realname', '$email', NOW(), 0, 0, '$CVSrelease')");
-        if(!$result)
+        $aInsert = compile_insert_string(array( 'username' => $username,
+                                                'realname' => $realname,
+                                                'email' => $email,
+                                                'status' => 0,
+                                                'perm' => 0,
+                                                'CVSrelease' => $CVSrelease ));
+
+        $sFields = "({$aInsert['FIELDS']}, `password`, `stamp`, `created`)";
+        $sValues = "({$aInsert['VALUES']}, password('".$password."'), NOW(), NOW() )";
+
+        if (!query_userdb("INSERT INTO user_list $sFields VALUES $sValues"))
+        {
             return mysql_error();
+        }
         return $this->restore($username, $password);
     }
 
