@@ -149,7 +149,7 @@ if(strcasecmp($categoryId, "any") == 0)
     c.catId =29
     OR c.catParent =29)*/
     
-    $sVoteQuery = "SELECT v.appId, f.appName, count( v.userid ) AS count
+    $sVoteQuery = "SELECT v.appId, f.appName, count( v.appId ) AS count
                   FROM appFamily AS f, appCategory AS c, appVotes AS v
                   WHERE v.appId = f.appId
                   AND f.catId = c.catId
@@ -157,7 +157,7 @@ if(strcasecmp($categoryId, "any") == 0)
                         c.catId = '$categoryId'
                         OR c.catParent = '$categoryId'
                       )
-                  GROUP BY v.userId
+                  GROUP BY appId
                   ORDER BY count DESC LIMIT $topNumber";
 }
 
