@@ -3,9 +3,9 @@
 <h3>Maintainers Ratings System Help</h3>
 
 <p>
-The Application Database features a Maintainers rating system that allows us and you to see
+The Application Database features a Maintainers rating system that allows you to see
 which applications work the best in Wine. This rating system is designed to assist
-users by giving a rating based on an "experts" experience.
+users by giving a rating based on an "expert's" experience.
 </p>
 
 <ul>
@@ -19,9 +19,9 @@ An application can be rated as Gold if it installs and runs "out of the box".
 <li>Silver</li>
 
 <p>
-If an application needs DLL overrides (native DLL's from a Windows instalation) to install and
-run but runs flawlessly otherwise can be rated as silver. There should be an accompanying "HowTo" 
-written to allow users to get this app to run.
+If an application needs DLL overrides (native DLL's from a Windows installation) to install and
+run but runs flawlessly otherwise, then it can be rated as silver. There should be an accompanying "HowTo" 
+written to allow users to get this application to run.
 </p>
 
 <li>Bronze</li>

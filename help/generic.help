@@ -25,7 +25,7 @@ to verify the most important aspects of Wine environment configuration.</li><p>
 
 <li> In case of failure, try different builtin, native DLL settings:
 Run Wine with --debugmsg +loaddll to find out which
-DLLs are loaded as native or builtin ones.
+DLLs are loaded as native or builtin.
 Then make sure appropriate native versions are in the
 c:\windows\system directory as configured in your Wine
 config file. There are five options you can choose from when setting
