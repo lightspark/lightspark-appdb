@@ -173,8 +173,8 @@ if($_REQUEST['versionId'])
     echo html_frame_start("Upload Screenshot","400","",0);
     echo '<table border=0 cellpadding=6 cellspacing=0 width="100%">',"\n";
       
-    echo '<tr><td class=color1>Image</td><td class=color0><input name="imagefile" type="file"></td></tr>',"\n";
-    echo '<tr><td class=color1>Description</td><td class=color0><input type="text" name="screenshot_desc"></td></tr>',"\n";
+    echo '<tr><td class=color1>Image</td><td class=color0><input name="imagefile" type="file" size="24"></td></tr>',"\n";
+    echo '<tr><td class="color1">Description</td><td class="color0"><input type="text" name="screenshot_desc" maxlength="20" size="24"></td></tr>',"\n";
        
     echo '<tr><td colspan=2 align=center class=color3><input type="submit" value="Send File"></td></tr>',"\n";
        
