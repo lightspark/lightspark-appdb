@@ -10,6 +10,7 @@ require(BASE."include/"."user.php");
 require(BASE."include/"."session.php");
 require(BASE."include/"."menu.php");
 require(BASE."include/"."html.php");
+require(BASE."include/db.php");
 
 // create arrays
 $sidebar_func_list = array();
