@@ -5,6 +5,7 @@
 include("path.php");
 require(BASE."include/"."incl.php");
 require(BASE."include/"."tableve.php");
+require(BASE."include/"."application.php");
 
 //deny access if not logged in
 if(!loggedin())
@@ -18,8 +19,6 @@ else if (!havepriv("admin"))
     exit;
 }
 
-apidb_header("Admin App Queue");
-echo '<form name="qform" action="adminAppQueue.php" method="post" enctype="multipart/form-data">',"\n";
 
 if ($sub)
 {
@@ -34,16 +33,22 @@ if ($sub)
     else
     {
         //error no Id!
-        echo html_frame_start("Error","300");
-        echo '<p><b>Application Not Found!</b></p>',"\n";
-        echo html_frame_end("&nbsp;"); 
+        addmsg("Application Not Found!", "red");
+        redirect(apidb_fullurl("admin/adminAppQueue.php"));
+        exit;
     }
 
     //process according to sub flag
     if ($sub == 'view' && $queueId)
     {
         $x = new TableVE("view");
-        If ($ob->queueCatId == -1)
+        apidb_header("Admin App Queue");
+        echo '<form name="qform" action="adminAppQueue.php" method="post" enctype="multipart/form-data">',"\n";
+
+        echo '<input type=hidden name="sub" value="add">',"\n"; 
+        echo '<input type=hidden name="queueId" value="'.$queueId.'">',"\n";  
+
+        If ($ob->queueCatId == -1) //app version
         { 
             //help
             echo "<div align=center><table width='90%' border=0 cellpadding=3 cellspacing=0><tr><td>\n\n";
@@ -52,6 +57,8 @@ if ($sub)
             echo "an email will be sent to the author of the submission.<p>\n";
 
             echo "      <b>App Version</b> This type of application will be nested under the selected application parent.\n";
+            echo "<p>Click delete to remove the selected item from the queue. An email will automatically be sent to the\n";
+            echo "submitter to let them know the item was deleted.</p>\n\n";        
             echo "</td></tr></table></div>\n\n";    
 
             echo '<input type=hidden name=type value="ver">',"\n"; 
@@ -67,23 +74,6 @@ if ($sub)
             //version
             echo '<tr valign=top><td class=color0><b>App Version</b></td>',"\n";
             echo '<td><input type=text name="queueVersion" value="'.stripslashes($ob->queueVersion).'" size=20></td></tr>',"\n";
-
-            //url
-            echo '<tr valign=top><td class=color0><b>App URL</b></td>',"\n";
-            echo '<td><input type=text name="queueURL" value="'.stripslashes($ob->queueURL).'" size=20></td></tr>',"\n";
-        
-            //desc
-            echo '<tr valign=top><td class=color0><b>App Desc</b></td>',"\n";
-            echo '<td><textarea name="queueDesc" rows=10 cols=35>'.stripslashes($ob->queueDesc).'</textarea></td></tr>',"\n";
-        
-            //echo '<tr valign=top><td bgcolor=class=color0><b>Email</b></td>,"\n";
-            //echo '<td><input type=text name="queueEmail" value="'.$ob->queueEmail.'" size=20></td></tr>',"\n";
-            //echo '<tr valign=top><td bgcolor=class=color0><b>Image</b></td>,"\n";
-            //echo '<td><input type=file name="queueImage" value="'.$ob->.'" size=15></td></tr>',"\n";
-
-            echo '<tr valign=top><td class=color3 align=center colspan=2>' ,"\n";
-            echo '<input type=submit value=" Submit App Into Database " class=button> </td></tr>',"\n";
-            echo '</table>',"\n";
 
         }
         else
@@ -103,6 +93,8 @@ if ($sub)
             echo "    If the vendor does not exist, leave the vendor drop down unset, and the field will be used.</li><p>\n";
             echo "    <li><b>App Version</b> This type of application will be nested under the selected application parent.\n";
             echo "    The category, name, and vendor fields will be ignored.</li>\n";
+            echo "<p>Click delete to remove the selected item from the queue. An email will automatically be sent to the\n";
+            echo "submitter to let them know the item was deleted.</p>\n\n";        
             echo "</td></tr></table></div>\n\n";    
     
             //view application details
@@ -142,7 +134,8 @@ if ($sub)
 
             //version
             echo '<tr valign=top><td class=color0><b>App Version</b></td>',"\n";
-            echo '<td><input type=text name="queueVersion" value="'.stripslashes($ob->queueVersion).'" size=20></td></tr>',"\n";
+            echo '<td><input type=text name="queueVersion" value="'.stripslashes($ob->queueVersion).'" size=20></td>',"\n";
+            echo '</tr>',"\n";
          
             //vendor/alt vendor fields
             // try for an exact match
@@ -173,7 +166,8 @@ if ($sub)
     
                 //vendor field
                 echo '<tr valign=top><td class=color0><b>App Vendor</b></td>',"\n";
-                echo '<td><input type=text name="queueVendor" value="'.stripslashes($ob->queueVendor).'" size=20></td></tr>',"\n";
+                echo '<td><input type=text name="queueVendor" value="'.stripslashes($ob->queueVendor).'" size=20></td>',"\n";
+                echo '</tr>',"\n";
             
                 echo '<tr valign=top><td class=color0>&nbsp;</td><td>',"\n";
                 $x->make_option_list("altvendor", $checkvendor ,"vendor","vendorId","vendorName");
@@ -182,33 +176,32 @@ if ($sub)
             {
                 //vendor field
                 echo '<tr valign=top><td class=color0><b>App Vendor</b></td>',"\n";
-                echo '<td><input type=text name="queueVendor" value="'.stripslashes($ob->queueVendor).'" size=20></td></tr>',"\n";
+                echo '<td><input type=text name="queueVendor" value="'.stripslashes($ob->queueVendor).'" size=20></td>',"\n";
+                echo '</tr>',"\n";
         
                 echo '<tr valign=top><td class=color0>&nbsp;</td><td>',"\n";
                 $x->make_option_list("altvendor","","vendor","vendorId","vendorName");
                 echo '</td></tr>',"\n";
             }
-    
-                
-            //url
-            echo '<tr valign=top><td class=color0><b>App URL</b></td>',"\n";
-            echo '<td><input type=text name="queueURL" value="'.stripslashes($ob->queueURL).'" size=20></td></tr>',"\n";
-        
-            //desc
-            echo '<tr valign=top><td class=color0><b>App Desc</b></td>',"\n";
-            echo '<td><textarea name="queueDesc" rows=10 cols=35>'.stripslashes($ob->queueDesc).'</textarea></td></tr>',"\n";
-        
-            //echo '<tr valign=top><td bgcolor=class=color0><b>Email</b></td>,"\n";
-            //echo '<td><input type=text name="queueEmail" value="'.$ob->queueEmail.'" size=20></td></tr>',"\n";
-            //echo '<tr valign=top><td bgcolor=class=color0><b>Image</b></td>,"\n";
-            //echo '<td><input type=file name="queueImage" value="'.$ob->.'" size=15></td></tr>',"\n";
-
-            echo '<tr valign=top><td class=color3 align=center colspan=2>' ,"\n";
-            echo '<input type=submit value=" Submit App Into Database " class=button> </td></tr>',"\n";
-            echo '</table>',"\n";
         }
-        echo '<input type=hidden name="sub" value="add">',"\n"; 
-        echo '<input type=hidden name="queueId" value="'.$queueId.'">',"\n";  
+        //url
+        echo '<tr valign=top><td class=color0><b>App URL</b></td>',"\n";
+        echo '<td><input type=text name="queueURL" value="'.stripslashes($ob->queueURL).'" size=20></td></tr>',"\n";
+        
+        //desc
+        echo '<tr valign=top><td class=color0><b>App Desc</b></td>',"\n";
+        echo '<td><textarea name="queueDesc" rows=10 cols=35>'.stripslashes($ob->queueDesc).'</textarea></td></tr>',"\n";
+        
+        //email message text
+        if ($ob->queueEmail)
+        {
+            echo '<tr valign=top><td class=color0><b>email Text</b></td>',"\n";
+            echo '<td><textarea name="emailtext" rows=10 cols=35></textarea></td></tr>',"\n";
+        }
+        echo '<tr valign=top><td class=color3 align=center colspan=2>' ,"\n";
+        echo '<input type=submit value=" Submit App Into Database " class=button>&nbsp',"\n";
+        echo '<input name="sub" type=submit value="Delete" class=button> </td></tr>',"\n";
+        echo '</table>',"\n";
 
         echo html_frame_end("&nbsp;");
         echo html_back_link(1,'adminAppQueue.php');
@@ -237,7 +230,6 @@ if ($sub)
             {
                     //get the id of the app just added    
                 $appParent = mysql_insert_id();
-
                 //delete queue item
                 mysql_query("DELETE from appQueue where queueId = $queueId;");
                                             
@@ -246,7 +238,7 @@ if ($sub)
                     $queueVersion = '1.0';
                 if (!$queueDesc)
                     $queueDesc = 'released version';
-                
+
                 $verQuery = "INSERT into appVersion VALUES (null, $appParent, '".
                 addslashes($queueVersion)."', '', '".
                 addslashes($queueDesc)."', '".
@@ -256,7 +248,8 @@ if ($sub)
                 if (mysql_query($verQuery))
                 {
                     //successful
-                    $statusMessage = "<p>The application $queueName was successfully added into the database</p>\n";
+                    $appVersion = mysql_insert_id();
+                    addmsg("The application $queueName was successfully added into the database", "green");
                     $goodtogo = 1;
                 }
                 else
@@ -264,6 +257,7 @@ if ($sub)
                     //error
                     $statusMessage = "<p><b>Database Error!<br>".mysql_error()."</b></p>\n";
                     $statusMessage .= "<p><b>Note:</b> The application family was successfully added.</p>\n";
+                    addmsg($statusMessage, "red");
                 }
                 
             }
@@ -271,6 +265,7 @@ if ($sub)
             {
                //error
                $statusMessage = "<p><b>Database Error!<br>".mysql_error()."</b></p>\n";
+               addmsg($statusMessage, "red");
             }
         }
         else if ($type == 'ver')
@@ -278,7 +273,7 @@ if ($sub)
             //process as application version
             if ($appParent)
             {
-                    $query = "INSERT into appVersion VALUES (null, $appParent, '".
+                $query = "INSERT into appVersion VALUES (null, $appParent, '".
                 addslashes($queueVersion)."', '', '".
                 addslashes($queueDesc)."', '".
                 addslashes($queueURL)."', 0.0, 0.0);";
@@ -286,7 +281,9 @@ if ($sub)
                 if (mysql_query($query))
                 {
                     //successful
+                    $appVersion = mysql_insert_id();
                     $statusMessage = "<p>The application $queueName was successfully added into the database</p>\n";
+                    addmsg($statusMessage,Green);
                     mysql_query("DELETE from appQueue where queueId = $queueId;");
                     $goodtogo = 1;
                                         
@@ -295,11 +292,15 @@ if ($sub)
                 {
                     //error
                     $statusMessage = "<p><b>Database Error!<br>".mysql_error()."</b></p>\n";
+                    addmsg($statusMessage,red);
                 }
             }
             else
             {
-                $statusMessage = "<p><b>Error<br>You did not pick an application Parent!</b></p>\n";
+                addmsg("You did not pick an application Parent!",red);
+                redirect(apidb_fullurl("admin/adminAppQueue.php?cat=view&queueId=$queueId"));
+                exit;
+
             }
             
         }
@@ -307,51 +308,96 @@ if ($sub)
         //Send Status Email
         if ($ob->queueEmail && $goodtogo)
         {
+            $fullAppName = lookupAppName($appParent)." Version: ".lookupVersionName($appParent, $appVersion);
+             
+            $ms =  "Application Database Status Report\n";
+            $ms .= "----------------------------------\n\n";
+            $ms .= "Your application: ".$fullAppName." has been entered ";
+            $ms .= "into the application database.\n\n";
+            $ms .= APPDB_ROOT."appView.php?appId=$appParent&versionId=$appVersion"."\n\n";
+            $ms .= "Thanks!\n\n";
+            $ms .= $emailtext;
+
+            mail(stripslashes($ob->queueEmail),'[AppDB] Status Report',$ms);
+        }
+        if ($goodtogo)
+        {
+            $email = getNotifyEmailAddressList($appParent, $appVersion);
+            if($email)
+            {
+                $fullAppName = "Application: ".lookupAppName($appParent).
+                    " Version: ".lookupVersionName($appParent, $appVersion);
+                $ms = APPDB_ROOT."appview.php?appId=$appParent&versionId=$appVersion"."\n\n";
+                $ms .= "New Application added to database:\n\n";
+                $ms .= $fullAppName."\n\n";
+                $ms .= STANDARD_NOTIFY_FOOTER;
+    
+                mail(stripslashes($email), "[AppDB] NEW ".$fullAppName ,$ms);
+    
+            } else
+            {
+                $email = "no one";
+            }
+            addmsg("mesage sent to: ".$email, green);
+
+        }
+        //done
+        addmsg("<a href=".apidb_fullurl("appview.php")."?appId=".$appParent."&versionId=".$appVersion.">Veiw App</a>", "green");
+        redirect(apidb_fullurl("admin/adminAppQueue.php"));
+        exit;
+    }
+    else if ($sub == 'Delete' && $queueId)
+    {
+        //delete main item
+        $query = "DELETE from appQueue where queueId = $queueId;";
+        $result = mysql_query($query);
+        if(!$result)
+        {
+            //error
+            addmsg("Internal Error: unable to delete selected application!", "red");
+            redirect(apidb_fullurl("admin/adminAppQueue.php?appId=$appId&versionId=$versionId"));
+        }
+        else
+        {   
+            //Send Status Email
+            if ($ob->queueEmail)
+            {
+                if($ob->queueCatId == -1) //app version
+                {
+                    $fullAppName = lookupAppName($appParent)." Version: ".$ob->queueVersion;
+                } else
+                {
+                    $fullAppName = $ob->queueName." Version: ".$ob->queueVersion;
+                }
+            
                 $ms =  "Application Database Status Report\n";
                 $ms .= "----------------------------------\n\n";
-                $ms .= "Your application ".stripslashes($ob->queueName)." has been entered ";
+                $ms .= "Your application: ".$fullAppName." has not been entered ";
                 $ms .= "into the application database.\n\n";
-                $ms .= "Thanks!\n";
-                
+                $ms .= "Sorry!\n\n";
+                $ms .= $emailtext;
+
                 mail(stripslashes($ob->queueEmail),'[AppDB] Status Report',$ms);
+            }
+            //success
+            addmsg("Application was successfully deleted from the Queue.", "green");
+            redirect(apidb_fullurl("admin/adminAppQueue.php?appId=$appId&versionId=$versionId"));
         }
-        
-        //done
-        echo html_frame_start("Submit Application","300");
-        echo "<p><b>$statusMessage</b></p>\n";
-        echo html_frame_end("&nbsp;");
-        echo html_back_link(1,'adminAppQueue.php'); 
-    }
-    else if ($sub == 'delete' && $queueId)
-    {
-       //delete main item
-       $query = "DELETE from appQueue where queueId = $queueId;";
-       $result = mysql_query($query);
-       echo html_frame_start("Delete Application: $ob->queueName",400,"",0);
-       if(!$result)
-       {
-           //error
-           echo "<p>Internal Error: unable to delete selected application!</p>\n";
-       }
-       else
-       {
-           //success
-           echo "<p>Application was successfully deleted from the Queue.</p>\n";
-       }
-       echo html_frame_end("&nbsp;");
-       echo html_back_link(1,'adminAppQueue.php');
     }
     else
     {
         //error no sub!
-        echo html_frame_start("Error","300");
-        echo '<p><b>Internal Routine Not Found!</b></p>',"\n";        
-        echo html_frame_end("&nbsp;");
-        echo html_back_link(1,'adminAppQueue.php'); 
+        addmsg("Internal Routine Not Found!!", "red");
+        redirect(apidb_fullurl("admin/adminAppQueue.php"));
+
     }
+    exit;
 }
 else
 {
+    apidb_header("Admin App Queue");
+    echo '<form name="qform" action="admin/adminAppQueue.php" method="post" enctype="multipart/form-data">',"\n";
+
     //get available apps
     $query = "SELECT queueId, queueName, queueVendor,".
                      "queueVersion, queueEmail, queueCatId,".
@@ -372,9 +418,8 @@ else
         //help
         echo "<div align=center><table width='90%' border=0 cellpadding=3 cellspacing=0><tr><td>\n\n";
         echo "<p>This is the list of applications waiting for your approval, or to be annihilated from existence.</p>\n";
-        echo "<p>To view a submission, click on its name. From that page you can edit, and approve it into the AppDB.<br>\n";
-        echo "Click the delete link to remove the selected item from the queue. An email will automatically be sent to the\n";
-        echo "submitter to let them know the item was deleted.</p>\n";        
+        echo "<p>To view a submission, click on its name. From that page you can edit, delete or approve it into \n";
+        echo "the AppDB .<br>\n";
         echo "</td></tr></table></div>\n\n";
     
         //show applist
@@ -415,18 +460,16 @@ else
             echo "    <td>".stripslashes($ob->queueVersion)." &nbsp;</td>\n";
             echo "    <td>".stripslashes($ob->queueVendor)." &nbsp;</td>\n";
             echo "    <td>".stripslashes($ob->queueEmail)." &nbsp;</td>\n";
-            echo "    <td>[<a href='adminAppQueue.php?sub=delete&queueId=$ob->queueId'>delete</a>]</td>\n";
             echo "</tr>\n\n";
             $c++;
         }
         echo "</table>\n\n";
         echo html_frame_end("&nbsp;");
+
     }
-        
+    echo "</form>";
+    apidb_footer();
+       
 }
-
-echo "</form>";
-apidb_footer();
-
 
 ?>
