@@ -2,13 +2,12 @@
 
 function apidb_session_start()
 {
-    global $current;
 
     session_set_cookie_params(time() + 3600 * 48);
     session_start();
 
-    if($current)
-	$current->connect();
+    if(isset($_SESSION['current']))
+      $_SESSION['current']->connect();
 }
 
 
@@ -19,12 +18,10 @@ function apidb_session_destroy()
 
 
 
-/*
+/**
  * session handler functions
  * sessions are stored in a mysql table
- *
  */
-
 function _session_open($save_path, $session_name)
 {
     opendb();
@@ -57,7 +54,6 @@ function _session_read($key)
 
 function _session_write($key, $value)
 {
-    global $current;
     global $msg_buffer;
     global $apidb_debug;
 
@@ -79,8 +75,8 @@ function _session_write($key, $value)
         mysql_query("INSERT INTO debug VALUES(null, '$key = $messages')");
 
 
-    if($current)
-	mysql_query("REPLACE session_list VALUES ('$key', $current->userid, '".get_remote()."', '$value', '$messages', NOW())");
+    if(isset($_SESSION['current']))
+       mysql_query("REPLACE session_list VALUES ('$key', ".$_SESSION['current']->userid.", '".get_remote()."', '$value', '$messages', NOW())");
     else
 	mysql_query("REPLACE session_list VALUES ('$key', 0, '".get_remote()."', null, '$messages', NOW())");
 
