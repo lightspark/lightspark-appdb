@@ -111,23 +111,22 @@ class User {
      * create a new user
      * returns 0 on success and an error msg on failure
      */
-    function create($username, $password, $realname, $email, $CVSrelease)
+    function create($sEmail, $sPassword, $sRealname, $sCVSrelease)
     {
-        $aInsert = compile_insert_string(array( 'username' => $username,
-                                                'realname' => $realname,
-                                                'email' => $email,
+        $aInsert = compile_insert_string(array( 'realname' => $sRealname,
+                                                'email' => $sEmail,
                                                 'status' => 0,
                                                 'perm' => 0,
-                                                'CVSrelease' => $CVSrelease ));
+                                                'CVSrelease' => $sCVSrelease ));
 
         $sFields = "({$aInsert['FIELDS']}, `password`, `stamp`, `created`)";
-        $sValues = "({$aInsert['VALUES']}, password('".$password."'), NOW(), NOW() )";
+        $sValues = "({$aInsert['VALUES']}, password('".$sPassword."'), NOW(), NOW() )";
 
         if (!query_userdb("INSERT INTO user_list $sFields VALUES $sValues"))
         {
             return mysql_error();
         }
-        return $this->restore($username, $password);
+        return $this->restore($sEmail, $sPassword);
     }
 
 
