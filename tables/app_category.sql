@@ -1,5 +1,7 @@
 use apidb;
 
+INSERT INTO appCategory VALUES ('0', 'MAIN', 'Root category', NULL);
+UPDATE appCategory SET catId = '0' WHERE catName = 'MAIN' LIMIT 1;
 INSERT INTO appCategory VALUES (1, 'Audio', 'Audio related applications', 29);
 INSERT INTO appCategory VALUES (2, 'Games', 'Games', 0);
 INSERT INTO appCategory VALUES (3, 'Graphics', 'Graphics viewers, editors, graphics demos, screensavers etc.', 29);

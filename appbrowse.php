@@ -15,7 +15,7 @@ function admin_menu()
     else $catId="";
 
     $m = new htmlmenu("Admin");
-    $m->add("Edit this Category", BASE."admin/editCategory.php?catId=$catId");
+    $m->add("Edit this Category", BASE."admin/addCategory.php?catId=$catId");
     $url = BASE."admin/deleteAny.php?what=category&catId=$catId&confirmed=yes";
     $m->add("Delete this Category", "javascript:deleteURL(\"Are you sure?\", \"".$url."\")");
 
@@ -34,7 +34,7 @@ if( !is_numeric($catId) )
 // list sub categories
 $cat = new Category($catId);
 $catFullPath = make_cat_path($cat->getCategoryPath());
-$subs = $cat->getCategoryList();
+$subs = $cat->aSubcatsIds;
 
 //display admin box
 if($_SESSION['current']->hasPriv("admin") && $catId != 0)
@@ -53,31 +53,30 @@ if($subs)
     echo "<table width='100%' border=0 cellpadding=3 cellspacing=1>\n\n";
     
     echo "<tr class=color4>\n";
-    echo "    <td><font color=white>Sub Category</font></td>\n";
-    echo "    <td><font color=white>Description</font></td>\n";
-    echo "    <td><font color=white>No. Apps</font></td>\n";
+    echo "    <td>Sub Category</td>\n";
+    echo "    <td>Description</td>\n";
+    echo "    <td>No. Apps</td>\n";
     echo "</tr>\n\n";
     
-    $c = 0;
-    while(list($id, list($name, $desc)) = each($subs))
+    while(list($i,$iSubcatId) = each($subs))
     {
+        $oSubCat= new Category($iSubcatId);
+
         //set row color
-        $bgcolor = ($c % 2) ? "color0" : "color1"; 
+        $bgcolor = ($i % 2) ? "color0" : "color1"; 
 	
 	   //get number of apps
-        $appcount = $cat->getAppCount($id);
+           $appcount = sizeof($oSubCat->aApplicationsIds);
 
 	   //format desc
-	   $desc = substr(stripslashes($desc),0,70);
+	   $desc = substr(stripslashes($oSubCat->sDescription),0,70);
 
 	   //display row
 	   echo "<tr class=$bgcolor>\n";
-	   echo "    <td><a href='appbrowse.php?catId=$id'>".stripslashes($name)."</a></td>\n";
+	   echo "    <td><a href='appbrowse.php?catId=$iSubcatId'>".$oSubCat->sName."</a></td>\n";
 	   echo "    <td>$desc &nbsp;</td>\n";
 	   echo "    <td>$appcount &nbsp;</td>\n";
 	   echo "</tr>\n\n";
-			    
-	   $c++;
     }
     
     echo "</table>\n\n";
@@ -87,7 +86,7 @@ if($subs)
 
 
 // list applications in this category
-$apps = $cat->getAppList($catId);
+$apps = $cat->aApplicationsIds;
 if($apps)
 {
     echo html_frame_start("",'98%','',2);
@@ -98,32 +97,27 @@ if($apps)
     echo "<table width='100%' border=0 cellpadding=3 cellspacing=1>\n\n";
     
     echo "<tr class=color4>\n";
-    echo "    <td><font color=white>Application Name</font></td>\n";
-    echo "    <td><font color=white>Description</font></td>\n";
-    echo "    <td><font color=white>No. Versions</font></td>\n";
+    echo "    <td>Application Name</td>\n";
+    echo "    <td>Description</td>\n";
+    echo "    <td>No. Versions</td>\n";
     echo "</tr>\n\n";
 	    
-    $c = 0;
-    while(list($id, list($name, $desc)) = each($apps))
+    while(list($i, $iAppId) = each($apps))
     {
-	   //set row color
-	   $bgcolor = ($c % 2) ? "color0" : "color1";
+        $oApp = new Application($iAppId);
+
+	//set row color
+	$bgcolor = ($i % 2) ? "color0" : "color1";
         
-        //get number of versions
-	   $query = query_appdb("SELECT count(*) as versions FROM appVersion WHERE appId = $id AND versionName != 'NONAME'");
-	   $ob = mysql_fetch_object($query);
+        //format desc
+	$desc = trim_description($oApp->sDescription);
 	
-	   //format desc
-	   $desc = substr(stripslashes($desc),0,70);
-	
-	   //display row
-	   echo "<tr class=$bgcolor>\n";
-	   echo "    <td><a href='appview.php?appId=$id'>".stripslashes($name)."</a></td>\n";
-	   echo "    <td>$desc &nbsp;</td>\n";
-	   echo "    <td>$ob->versions &nbsp;</td>\n";
-	   echo "</tr>\n\n";
-			
-	   $c++;
+        //display row
+        echo "<tr class=$bgcolor>\n";
+        echo "    <td><a href='appview.php?appId=$iAppId'>".$oApp->sName."</a></td>\n";
+        echo "    <td>$desc &nbsp;</td>\n";
+        echo "    <td>".sizeof($oApp->aVersionsIds)."</td>\n";
+        echo "</tr>\n\n";
     }
     
     echo "</table>\n\n";

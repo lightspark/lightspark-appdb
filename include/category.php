@@ -3,114 +3,147 @@
 /* this class represents a category + its children */
 /***************************************************/
 
+/**
+ * Category class for handling categories.
+ */
 class Category {
-    
-    var $name;
-    var $id;
-    var $subcat;
+    var $iCatId;
+    var $iParentId;
+    var $sName;
+    var $sDescription;
+    var $aApplicationsIds;  // an array that contains the appId of every application linked to this category
+    var $aSubcatsIds;        // an array that contains the appId of every application linked to this category
+
+
+    /**    
+     * constructor, fetches the data.
+     */
+    function Category($iCatId = null)
+    {
+        // we are working on an existing vendor
+        if($iCatId=="0" || $iCatId)
+        {
+            /*
+             * We fetch the data related to this vendor.
+             */
+            $sQuery = "SELECT *
+                       FROM appCategory
+                       WHERE catId = ".$iCatId;
+            if($hResult = query_appdb($sQuery))
+            {
+                $oRow = mysql_fetch_object($hResult);
+                $this->iCatId = $iCatId;
+                $this->iParentId = $oRow->catParent;
+                $this->sName = $oRow->catName;
+                $this->sDescription = $oRow->catDescription;
+
+            }
+
+            /*
+             * We fetch applicationsIds. 
+             */
+            $sQuery = "SELECT appId
+                       FROM appFamily
+                       WHERE catId = ".$iCatId;
+            if($hResult = query_appdb($sQuery))
+            {
+                while($oRow = mysql_fetch_object($hResult))
+                {
+                    $this->aApplicationsIds[] = $oRow->appId;
+                }
+            }
+
+            /*
+             * We fetch subcatIds. 
+             */
+            $sQuery = "SELECT catId
+                       FROM appCategory
+                       WHERE catParent = ".$iCatId;
+            if($hResult = query_appdb($sQuery))
+            {
+                while($oRow = mysql_fetch_object($hResult))
+                {
+                    $this->aSubcatsIds[] = $oRow->catId;
+                }
+            }
+        }
+    }
 
 
     /**
-     * the special name "ROOT" is the top category
+     * Creates a new category.
      */
-    function Category($id = 0)
+    function create($sName=null, $sDescription=null, $iParentId=null)
     {
-        $this->id = $id;
-        $this->load($id);
+        $aInsert = compile_insert_string(array( 'catName'=> $sName,
+                                                'catDescription' => $sDescription,
+                                                'catParent' => $iParentId  ));
+        $sFields = "({$aInsert['FIELDS']})";
+        $sValues = "({$aInsert['VALUES']})";
+
+        if(query_appdb("INSERT INTO appCategory $sFields VALUES $sValues", "Error while creating a new vendor."))
+        {
+            $this->iCatId = mysql_insert_id();
+            $this->category($this->iCatId);
+            return true;
+        }
+        else
+            return false;
     }
 
-    
+
+    /**
+     * Update category.
+     * Returns true on success and false on failure.
+     */
+    function update($sName=null, $sDescription=null, $iParentId=null)
+    {
+        if(!$this->iCatId)
+            return $this->create($sName, $sDescription, $iParentId);
+
+        if($sName)
+        {
+            if (!query_appdb("UPDATE appCategory SET catName = '".$sName."' WHERE catId = ".$this->iCatId))
+                return false;
+            $this->sName = $sName;
+        }     
+
+        if($sDescription)
+        {
+            if (!query_appdb("UPDATE appCategory SET catDescription = '".$sDescription."' WHERE catId = ".$this->iCatId))
+                return false;
+            $this->sDescription = $sDescription;
+        }
+
+        if($iParentId)
+        {
+            if (!query_appdb("UPDATE appCategory SET catParent = '".$iParentId."' WHERE catId = ".$this->iCatId))
+                return false;
+            $this->iParentId = $iParentId;
+        }
+       
+        return true;
+    }
+
+
     /**    
      * Deletes the category from the database. 
-     * and request the deletion of linked elements.
      */
-    function delete()
+    function delete($bSilent=false)
     {
-        $r = query_appdb("SELECT appId FROM appFamily WHERE catId = ".$this->id,"Failed to delete category ".$this->id);
-        if($r)
+        if(sizeof($this->aApplicationsIds)>0)
         {
-            while($ob = mysql_fetch_object($r))
-            {
-                $oApp = new Application($ob->appId);
-                $oApp->delete();
-            }
-            $r = query_appdb("DELETE FROM appCategory WHERE catId = $catId","Failed to delete category $catId");
-            if($r)
-                addmsg("Category $catId deleted.", "green");
+            addmsg("The category has not been deleted because there are still applications linked to it.", "red");
+        } else 
+        {
+            $sQuery = "DELETE FROM appCategory 
+                       WHERE catId = ".$this->iCatId." 
+                       LIMIT 1";
+            query_appdb($sQuery);
+            addmsg("The category has been deleted.", "green");
         }
     }
 
-    /**
-     * load the category data into this class 
-     */
-    function load($id)
-    {
-        $this->id = $id;
-
-        if($id == 0)
-        {
-            $this->name = "ROOT";
-        } else
-        {
-            $result = query_appdb("SELECT * FROM appCategory WHERE catId = $id");
-            if(!$result)
-            {
-                // category not found! 
-                errorpage("Internal Error: Category not found!");
-                return;
-            }
-
-            $ob = mysql_fetch_object($result);
-            $this->name = $ob->catName;
-        }
-
-        $result = query_appdb("SELECT catId, catName, catDescription FROM ".
-                              "appCategory WHERE catParent = $this->id " .
-                              "ORDER BY catName");
-        if(mysql_num_rows($result) == 0)
-            return; // no sub categories
-
-        $this->subcat = array();
-        while($row = mysql_fetch_object($result))
-        {
-            // ignore NONAME categories
-            if($row->catName == "NONAME")
-                continue;
-            $this->subcat[$row->catId] = array($row->catName, $row->catDescription);
-        }
-    }
-
-
-    /**
-     * resolve the category id by name
-     */
-    function getCategoryId($name)
-    {
-        if($name == "ROOT")
-            return 0;
-
-        $result = query_appdb("SELECT catId FROM appCategory WHERE ".
-                              "catName = '$name'");
-        if(!$result)
-            return -1;
-        if(mysql_num_rows($result) != 1)
-             return -1;
-        $row = mysql_fetch_object($result);
-        return $row->catId;
-    }
-
-
-    /**
-     * returns the list of sub categories
-     *
-     * category list has the following format:
-     *
-     *     {  { catId => { catName, catDescription } }, ...  }
-     */
-    function getCategoryList()
-    {
-        return $this->subcat;
-    }
 
     /**
      * returns a path like:
@@ -120,67 +153,25 @@ class Category {
     function getCategoryPath()
     {
         $path = array();
-        $id   = $this->id;
-        while(1)
+        $iCatId  = $this->iCatId;
+        while($iCatId != 0)
         {
-            $result = query_appdb("SELECT catName, catId, catParent FROM appCategory WHERE catId = $id");
+            $result = query_appdb("SELECT catName, catId, catParent FROM appCategory WHERE catId = $iCatId");
             if(!$result || mysql_num_rows($result) != 1)
                 break;
             $cat = mysql_fetch_object($result);
             $path[] = array($cat->catId, $cat->catName);
-            $id = $cat->catParent;
+            $iCatId = $cat->catParent;
         }
         $path[] = array(0, "ROOT");
         return array_reverse($path);
     }
-
-    
-    /**
-     * returns a list of applications in the specified category
-     */
-    function getAppList($id)
-    {
-        $result = query_appdb("SELECT appId, appName, description FROM ".
-                              "appFamily WHERE catId = $id ".
-                              "ORDER BY appName");
-        if(!$result || mysql_num_rows($result) == 0)
-            return array();
-
-        $list = array();
-        while($row = mysql_fetch_object($result))
-        {
-            if($row->appName == "NONAME")
-                continue;
-            $list[$row->appId] = array($row->appName, $row->description);
-        }
-        return $list;
-    }
+}
 
 
-    /**
-     * returns the number of apps in the specified category
-     */
-    function getAppCount($id, $recurse = 1)
-    {
-        $total = 0;
-
-        $result = query_appdb("SELECT appId FROM appFamily WHERE catId = $id");
-        if($result)
-            $total += mysql_num_rows($result);
-
-        if($recurse)
-        {
-            $result = query_appdb("SELECT catId FROM appCategory WHERE catParent = $id");
-            if($result)
-            {
-                 while($ob = mysql_fetch_object($result))
-                     $total += $this->getAppCount($ob->catId, 1);
-            }
-        }
-        return $total;
-    }
-};
-
+/*
+ * Application functions that are not part of the class
+ */
 
 /**
  * create the Category: line at the top of appdb pages$
@@ -189,7 +180,7 @@ function make_cat_path($path, $appId = '', $versionId = '')
 {
     $str = "";
     $catCount = 0;
-    while(list($idx, list($id, $name)) = each($path))
+    while(list($iCatIdx, list($iCatId, $name)) = each($path))
     {
         if($name == "ROOT")
             $catname = "Main";
@@ -197,7 +188,7 @@ function make_cat_path($path, $appId = '', $versionId = '')
             $catname = $name;
 
         if ($catCount > 0) $str .= " &gt; ";
-        $str .= html_ahref($catname,"appbrowse.php?catId=$id");
+        $str .= html_ahref($catname,"appbrowse.php?catId=$iCatId");
         $catCount++;
     }
 
@@ -218,16 +209,4 @@ function make_cat_path($path, $appId = '', $versionId = '')
 
     return $str;
 }
-
-function lookupCategoryName($catId)
-{
-    $sResult = query_appdb("SELECT * FROM appCategory ".
-               "WHERE catId = ".$catId);
-    if(!$sResult || mysql_num_rows($sResult) != 1)
-        return "Unknown category";
-
-    $ob = mysql_fetch_object($sResult);
-    return $ob->catName;
-}
-
 ?>
