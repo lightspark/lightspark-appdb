@@ -39,8 +39,6 @@ In particular globally registered vars should be replaced by superglobals (nearl
 
 # add distro table and administration screens for it. (Chris)
 
-# We need an administration screen for vendors.
-
 # add wineversion, distro, source/package fields to the user_list table.
 
 # add wineversion, distro, source/package fields to the appComments table.

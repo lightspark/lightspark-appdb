@@ -265,6 +265,15 @@ function getMaintainerCount()
     return $ob->maintainers;
 }
 
+/* get the total number of vendors from the vendor table */
+function getVendorCount()
+{
+    $qstring = "SELECT count(*) as vendors FROM vendor";
+    $result = mysql_query($qstring);
+    $ob = mysql_fetch_object($result);
+    return $ob->vendors;
+}
+
 /* Get the number of users in the database */
 function getNumberOfComments()
 {

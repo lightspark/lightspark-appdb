@@ -17,6 +17,7 @@ function global_admin_menu() {
     $g->add("View App Data Queue (".getQueuedAppDataCount().")", BASE."admin/adminAppDataQueue.php");
     $g->add("View Maintainer Queue (".getQueuedMaintainerCount().")", BASE."admin/adminMaintainerQueue.php");
     $g->add("View Maintainers (".getMaintainerCount().")", BASE."admin/adminMaintainers.php");
+    $g->add("View Vendors (".getVendorCount().")", BASE."admin/adminVendors.php");
 
     $g->addmisc("&nbsp;");
     $g->add("Comment manager", BASE."admin/adminCommentView.php");
