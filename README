@@ -3,16 +3,30 @@ WineHQ Application Database
 Authors:
     Jeremy Newman <jnewman@codeweavers.com>
     Charles Leop <charles@codeweavers.com>
+    
+Contributors:
+    Paul van Schayck <info@wwwdesign.tmfweb.nl>
+    Chris Morgan <cmorgan@alum.wpi.edu>
+
 
 To install locally for testing/hacking:
+------------------------------------------------------------------------
+
 - Symlink from /var/www to the appdb directory
+
 - Copy include/config.php.sample to include/config.php
+
 - Edit include/config.php as you see fit, the default name of the database 
   used in the table creation step below is "apidb", you'll have to modify 
   these files if you change this in config.php
+
 - cd tables, run ./create_tables to create the database tables
+
 - Try to open up localhost/appdb, if you get a directory listing
   Edit your /etc/apache/httpd.conf "DirectoryIndex" to include index.php 
   so apache will open index.php after not finding index.html/index.htm etc
-- Check your /etc/php/php.ini to ensure that 'register_globals = On' as the 
-  appdb uses globals and won't work correctly without this
+
+- Check your /etc/php/php.ini to ensure that
+  'register_globals = On' (variables won't get passed)
+  'magic_quotes_gpc = Off' (you would end up with \ everywhere)
+  'session.bug_compat_42' = On' (Problem with auto-globals and session variables)
