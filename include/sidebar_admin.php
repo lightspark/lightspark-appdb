@@ -20,6 +20,9 @@ function global_admin_menu() {
     $g->add("View App Queue (".getQueuedAppCount().")", $apidb_root."admin/adminAppQueue.php");
     $g->add("View Maintainer Queue (".getQueuedMaintainerCount().")", $apidb_root."admin/adminMaintainerQueue.php");
     $g->add("View Maintainers", $apidb_root."admin/adminMaintainers.php");
+
+    $g->addmisc("&nbsp;");
+    $g->add("Comment manager", $apidb_root."admin/adminCommentView.php");
     $g->done();
 
 }
