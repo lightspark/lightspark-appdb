@@ -265,6 +265,7 @@ class User {
         return $hRresult;
     }
 
+
     /**
      * Checks if the current user is valid.
      */
@@ -276,11 +277,19 @@ class User {
 
     /**
      * Checks if user should see debugging infos.
-     *
      */
      function showDebuggingInfos()
      {
          return (($this->isLoggedIn() && $this->getPref("debug") == "yes") || APPDB_DEBUG == 1);
+     }
+
+
+    /**
+     * Checks if user wants to get e-mails.
+     */    
+     function wantsEmail()
+     {
+         return ($this->isLoggedIn() && $this->getPref("send_email","yes")=="yes");
      }
 }
 
@@ -347,7 +356,7 @@ function get_notify_email_address_list($appId, $versionId = 0)
         while(list($index, list($userIdValue)) = each($aUserId))
         {
             $oUser = new User($userIdValue);
-            if ($oUser->getPref("send_email")=="yes")
+            if ($oUser->wantsEmail())
                 $retval .= $oUser->sEmail." ";
         }
     }
