@@ -3,22 +3,21 @@
 /* get user info for posts */
 /***************************/
 
-function forum_lookup_user ($userid)
+function forum_lookup_user($iUserId)
 {
     $mailto = '';
-    if ($userid > 0)
+    if ($iUserId > 0)
     {
-        $qstring = "SELECT email FROM user_list WHERE userid = '".$userid."' LIMIT 1";   
-        $result = mysql_query($qstring);
-        $usr = mysql_fetch_object($result);
-        $mailto = '<a href="mailto:' . $usr->email . '">' . $usr->realname . '</a>';
-        unset($qstring, $result, $usr);
+        $sQuery = "SELECT email,realname FROM user_list WHERE userId = '".$iUserId."' LIMIT 1";   
+        $hResult = query_appdb($sQuery);
+        $oUsr = mysql_fetch_object($hResult);
+        $sMailto = '<a href="mailto:' . $oUsr->email . '">' . $oUsr->realname . '</a>';
     }
     else
     {
-        $mailto = '<font color="#999999">Anonymous</font>';
+        $sMailto = '<font color="#999999">Anonymous</font>';
     }
-    return $mailto;
+    return $sMailto;
 }
 
 /**
@@ -36,7 +35,7 @@ function view_app_comment($ob)
     // message header
     echo "<tr bgcolor=#E0E0E0><td>\n";
     echo " <b>".$ob->subject."</b><br>\n";
-    echo " by  ".forum_lookup_user($ob->userid)." on ".$ob->time."<br>\n";
+    echo " by  ".forum_lookup_user($ob->userId)." on ".$ob->time."<br>\n";
     echo "</td></tr><tr><td>\n";
     
     // body
@@ -83,7 +82,7 @@ function grab_comments($appId, $versionId, $parentId = -1)
         $extra = "AND parentId = $parentId ";
 
     $qstring = "SELECT from_unixtime(unix_timestamp(time), \"%W %M %D %Y, %k:%i\") as time, ".
-               "commentId, parentId, appId, versionId, userid, subject, body ".
+               "commentId, parentId, appId, versionId, userId, subject, body ".
                "FROM appComments WHERE appId = '$appId' AND versionId = '$versionId' ".
                $extra.
                "ORDER BY appComments.time ASC";
@@ -149,7 +148,7 @@ function do_display_comments_threaded($handle, $is_main)
         } else
         {
             echo '<li><a href="commentview.php?appId='.$ob->appId.'&versionId='.$ob->versionId.'&threadId='.$ob->parentId.'"> '.
-            $ob->subject.' </a> by '.forum_lookup_user($ob->userid).' on '.$ob->time.' </li>'."\n";
+            $ob->subject.' </a> by '.forum_lookup_user($ob->userId).' on '.$ob->time.' </li>'."\n";
         }
         
         $result = grab_comments($ob->appId, $ob->versionId, $ob->commentId);
