@@ -4,6 +4,8 @@
 /******************************************/
 
 require(BASE."include/"."image.php");
+// load the watermark
+$watermark = new image("/images/watermark.png");
 
 /**
  * Screenshot class for handling screenshots and thumbnails
@@ -128,6 +130,7 @@ class Screenshot {
      */
     function generate() 
     {
+        global $watermark;
         // first we will create the thumbnail
         // load the screenshot
         $this->oThumbnailImage  = new Image("/data/".$this->sDirectory."/originals/".$this->sUrl);
@@ -144,12 +147,9 @@ class Screenshot {
         $this->oScreenshotImage->output_to_file($_SERVER['DOCUMENT_ROOT']."/data/".$this->sDirectory."/".$this->sUrl);
         // reload the resized screenshot
         $this->oScreenshotImage  = new Image("/data/".$this->sDirectory."/".$this->sUrl);
-        // load the watermark
-        $watermark = new image("/images/watermark.png");
+
         // add the watermark to the screenshot
         $this->oScreenshotImage->add_watermark($watermark->get_image_resource());
-        // clean up the memory
-        $watermark->destroy();
         // store the watermarked image
         $this->oScreenshotImage->output_to_file($_SERVER['DOCUMENT_ROOT']."/data/".$this->sDirectory."/".$this->sUrl);
     }
@@ -182,8 +182,8 @@ function get_screenshot_img($appId, $versionId="")
     else
     {
         $ob = mysql_fetch_object($result);
-        $imgFile = "<img src='appimage.php?imageId=$ob->id&width=128&height=128' ".
-                   "alt='$ob->description' />";
+        $imgFile = "<img src=\"appimage.php?thumbnail=true&id=".$ob->id."\" ".
+                   "alt=\"".$ob->description."\" />";
     }
     
     $img = html_frame_start("",'128','',2);
