@@ -169,7 +169,7 @@ function do_display_comments_threaded($handle, $is_main)
         }
 	    else
         {
-		    echo '<li><a href="commentview.php?appId='.$ob->appId.'&versionId='.$ob->versionId.'&threadId='.$ob->commentId.'"> '.
+		    echo '<li><a href="commentview.php?appId='.$ob->appId.'&versionId='.$ob->versionId.'&threadId='.$ob->parentId.'"> '.
 		         $ob->subject.' </a> by '.forum_lookup_user($ob->userid).' on '.$ob->time.' </li>'."\n";
         }
         
