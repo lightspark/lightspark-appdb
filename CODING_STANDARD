@@ -1,0 +1,65 @@
+WineHQ Application Database Coding Practice
+
+########
+# HTML #
+########
+- Respect html coding standards. The current doctype is HTML 4.01 transitional (http://www.w3.org/TR/REC-html40/)
+Try to make your content validate nicely (http://validator.w3.org/)
+
+- Think about upward compatibility. Some day we might choose another doctype like XHTML 1.0
+(i.e. <br /> instead of <br>, avoid using styles tag and properties (bgcolor, borders & Co) and use stylesheets instead)
+
+
+#######
+# PHP #
+#######
+- functions are written this way (that way {}'s are lined up):
+<?
+function foo() 
+{
+    if(isset($var))
+    {
+        echo "bar";
+    }    
+}
+?>
+
+- indentation is made of 4 spaces (no tabs please)
+
+- line length should be no more than 130 characters, preferably < 80
+
+- comments: Muli line code should look like this.
+
+/**
+ * This functions does nothing interesing.
+ * More comments to come here...
+ */
+function bar()
+{
+    foo();
+}
+
+/**
+ * If you want to highlight some thing this is permissable. for a single line
+ */
+
+if(!isset($appId))
+{
+    /* a single comment should be like this */
+} else
+{
+
+    /* Shows a particular version. */
+    if($versionId) 
+    {
+        /* Code comes here */
+    }
+    
+    /* Shows an apps summary */
+    else 
+    {
+       /* Another code comes here */
+    }
+}
+
+

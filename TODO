@@ -1,9 +1,23 @@
-WineHQ Application Database
- TODO List
+WineHQ Application Database TODO List
 
-+ appdb engine
-  - clean up the php backend
+# appdb engine - clean up the php backend (???)
 
-+ app queue
-  - add a form, so the admin can enter a custom response to the submitter
+# app queue - add a form, so the admin can enter a custom response to the submitter (done)
 
+# main App should have a random screenshot from it's versions. (patch sent to wine-patches)
+
+# when we delete a comment there should be a box to explain why you are deleting this comment and an email should be sent to the submitter 
+
+# Super Maintainers should be able to edit the main app and send a notify message like the versions have.
+
+# Add Maintainer rating system to the app verision (tony's working on it).
+
+# stop annoymous comments (patch sent to wine-patches) 
+
+# stop annoymous applications submitions (patch sent to wine-patches)
+
+# revamp the star rating system
+
+# once maintainer rating system is in place revamp the front page to use a dynamic list of maintainer rated apps.
+
+# add a system that well allow users to monitor an app without becoming a maintainer.
