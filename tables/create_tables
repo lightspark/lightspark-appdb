@@ -20,3 +20,6 @@ mysql -u root < session_list.sql
 
 echo Adding categories
 mysql -u root < app_category.sql
+
+echo Adding maintainers
+mysql -u root < maintainers.sql
