@@ -17,9 +17,9 @@ opendb();
 
 if(loggedin())
 {
-    if($current->getpref("query:hide_header") == "yes")
+    if($_SESSION['current']->getpref("query:hide_header") == "yes")
 	disable_header();
-    if($current->getpref("query:hide_sidebar") == "yes")
+    if($_SESSION['current']->getpref("query:hide_sidebar") == "yes")
 	disable_sidebar();
 }
 

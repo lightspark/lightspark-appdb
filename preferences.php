@@ -11,8 +11,6 @@ if(!loggedin())
 
 function build_prefs_list()
 {
-    global $current;
-
     opendb();
 
     $result = mysql_query("SELECT * FROM prefs_list ORDER BY id");
@@ -37,19 +35,19 @@ function build_prefs_list()
 		}
 		
 	    $input = html_select("pref_$r->name", explode('|', $r->value_list), 
-				 $current->getpref($r->name, $r->def_value));
+				 $_SESSION['current']->getpref($r->name, $r->def_value));
 	    echo html_tr(array("&nbsp; $r->description", $input));
 	}
 }
 
 function show_user_fields()
 {
-	global $current;
+	
 	$user = new User();
 	
-	$ext_username = $current->username;
-	$ext_realname = $user->lookup_realname($current->userid);
-	$ext_email = $user->lookup_email($current->userid);
+	$ext_username = $_SESSION['current']->username;
+	$ext_realname = $user->lookup_realname($_SESSION['current']->userid);
+	$ext_email = $user->lookup_email($_SESSION['current']->userid);
 	
 	include(BASE."include/"."form_edit.php");
 }
@@ -57,7 +55,7 @@ function show_user_fields()
 if($HTTP_POST_VARS)
 {
     global $ext_username, $ext_password1, $ext_password2, $ext_realname, $ext_email;
-    global $current;
+    
     
     $user = new User();
     
@@ -65,7 +63,7 @@ if($HTTP_POST_VARS)
 	{
 	    if(!ereg("^pref_(.+)$", $key, $arr))
 		continue;
-	    $current->setpref($arr[1], $value);
+	    $_SESSION['current']->setpref($arr[1], $value);
 	}
     
     if ($ext_password == $ext_password2)
@@ -77,7 +75,7 @@ if($HTTP_POST_VARS)
         addmsg("The Passwords you entered did not match.", "red");
     }
     
-    if ($user->update($current->userid, $passwd, $ext_realname, $ext_email))
+    if ($user->update($_SESSION['current']->userid, $passwd, $ext_realname, $ext_email))
     {
         addmsg("Preferences Updated", "green");
     }
@@ -90,7 +88,7 @@ if($HTTP_POST_VARS)
 apidb_header("User Preferences");
 
 echo "<form method=post action='preferences.php'>\n";
-echo html_frame_start("Preferences for $current->username", "80%");
+echo html_frame_start("Preferences for ".$_SESSION['current']->username, "80%");
 echo html_table_begin("width='100%' border=0 align=left cellspacing=0 class='box-body'");
 
 show_user_fields();

@@ -6,7 +6,6 @@
  */
 
 //set global path
-global $apidb_root;
 $apidb_root = BASE;
 
 //get modules
@@ -60,9 +59,9 @@ function apidb_fullpath($path)
  */
 function apidb_header($title = 0)
 {
-    global $apidb_root, $current;
+    global $apidb_root;
 
-    $username = $current->username;
+    $username = isset($_SESSION['current'])?$_SESSION['current']->username:"";
 
     // Set Page Title
     $page_title = $title;
@@ -97,7 +96,6 @@ function apidb_header($title = 0)
 function apidb_footer()
 {
     global $apidb_root;
-    global $current;
 
     echo html_frame_end();
 
@@ -105,7 +103,7 @@ function apidb_footer()
     echo "<br></td></tr></table>\n";
     
     // Display Footer
-    if(!$header_disabled)
+    if(!isset($header_disabled))
     include(BASE."include/"."footer.php");
 }
 
@@ -202,7 +200,6 @@ function redirectref($url = null)
  */
 function addmsg($text, $color = "black")
 {
-    global $current;
     global $PHPSESSID;
 
     if($color)
@@ -220,7 +217,6 @@ function addmsg($text, $color = "black")
  */
 function dumpmsgbuffer()
 {
-    global $current;
     global $PHPSESSID;
     
     $result = mysql_query("SELECT * FROM sessionMessages WHERE sessionId = '$PHPSESSID'");

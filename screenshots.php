@@ -4,7 +4,7 @@ include("path.php");
 require(BASE."include/"."incl.php");
 require(BASE."include/"."application.php");
 
-global $current;
+
 
 /*=========================================================================
  *
@@ -44,7 +44,7 @@ if($cmd)
                     $fullAppName = "Application: ".lookupAppName($appId)." Version: ".lookupVersionName($appId, $versionId);
                     $ms .= APPDB_ROOT."screenshots.php?appId=$appId&versionId=$versionId"."\n";
                     $ms .= "\n";
-                    $ms .= ($current->username ? $current->username : "Anonymous")." added screenshot ".$screenshot_desc." to ".$fullAppName."\n";
+                    $ms .= ($_SESSION['current']->username ? $_SESSION['current']->username : "Anonymous")." added screenshot ".$screenshot_desc." to ".$fullAppName."\n";
                     $ms .= "\n";
                     $ms .= STANDARD_NOTIFY_FOOTER;
 
@@ -79,7 +79,7 @@ if($cmd)
                         $fullAppName = "Application: ".lookupAppName($appId)." Version: ".lookupVersionName($appId, $versionId);
                         $ms .= APPDB_ROOT."screenshots.php?appId=$appId&versionId=$versionId"."\n";
                         $ms .= "\n";
-                        $ms .= ($current->username ? $current->username : "Anonymous")." deleted screenshot from ".$fullAppName."\n";
+                        $ms .= ($_SESSION['current']->username ? $_SESSION['current']->username : "Anonymous")." deleted screenshot from ".$fullAppName."\n";
                         $ms .= "\n";
                         $ms .= STANDARD_NOTIFY_FOOTER;
    
@@ -137,7 +137,7 @@ else
 	    $img = '<a href="javascript:openWin(\'appimage.php?imageId='.$ob->id.'\',\''.$randName.'\','.$size[0].','.$size[1].');">'.$imgSRC.'</a>';
 	    if (loggedin())
 	    {
-	        if ($current->getpref("window:screenshot") == "no")
+	        if ($_SESSION['current']->getpref("window:screenshot") == "no")
 	        {
 	            $img = '<a href="appimage.php?imageId='.$ob->id.'">'.$imgSRC.'</a>';
 	        }

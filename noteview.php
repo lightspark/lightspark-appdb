@@ -33,7 +33,7 @@ if(!$result || mysql_num_rows($result) == 0)
 }
 
 //display admin menu
-if(loggedin() && (havepriv("admin") || $current->ownsApp($appId))) {
+if(loggedin() && (havepriv("admin") || $_SESSION['current']->ownsApp($appId))) {
     apidb_sidebar_add("admin_menu");
 }
 

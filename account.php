@@ -13,13 +13,14 @@ header("Pragma: no-cache");
 header("Cache-control: no-cache");
 
 //check command and process
-do_account($cmd);
+if(isset($_POST['cmd']))
+ do_account($_POST['cmd']);
+else
+ do_account($_GET['cmd']);
 
 //process according to $cmd from URL
 function do_account($cmd = null)
 {
-    global $ext_username, $ext_password, $ext_password2, $ext_realname, $ext_email;
-
 	if (! $cmd) return 0;
 	switch($cmd)
 	{
@@ -68,58 +69,56 @@ function retry($cmd, $msg)
 //create new account
 function cmd_do_new()
 {
-    global $ext_username, $ext_password, $ext_password2, $ext_realname, $ext_email;
-    global $current;
-
-    if(ereg("^.+@.+\\..+$", $ext_username))
+    
+    if(ereg("^.+@.+\\..+$", $_POST['ext_username']))
 	{
-	    $ext_username = "";
+	    $_POST['ext_username'] = "";
 	    retry("new", "Invalid Username, must not contain special characters");
 	    return;
 	}
-    if(strlen($ext_username) < 3)
+    if(strlen($_POST['ext_username']) < 3)
 	{
-	    $ext_username = "";
+	    $_POST['ext_username'] = "";
 	    retry("new", "Username must be at least 3 characters");
 	    return;
 	}
-    if(strlen($ext_password) < 5)
+    if(strlen($_POST['ext_password']) < 5)
 	{
 	    retry("new", "Password must be at least 5 characters");
 	    return;
 	}
-    if($ext_password != $ext_password2)
+    if($_POST['ext_password'] != $_POST['ext_password2'])
 	{
 	    retry("new", "Passwords don't match");
 	    return;
 	}
-    if(strlen($ext_realname) == 0)
+    if(!isset($_POST['ext_realname']))
 	{
 	    retry("new", "You don't have a Real name?");
 	    return;
 	}
-    if(!ereg("^.+@.+\\..+$", $ext_email))
+    if(!ereg("^.+@.+\\..+$", $_POST['ext_email']))
 	{
-	    $ext_email = "";
+	    $_POST['ext_email'] = "";
 	    retry("new", "Invalid email address");
 	    return;
 	}
 
     $user = new User();
 
-    if($user->exists($ext_username))
+    if($user->exists($_POST['ext_username']))
 	{
-	    $ext_username = "";
+	    $_POST['ext_username'] = "";
 	    retry("new", "That username is already in use");
 	    return;
 	}
 
-    $result = $user->create($ext_username, $ext_password, $ext_realname, $ext_email);
+    $result = $user->create($_POST['ext_username'], $_POST['ext_password'], $_POST['ext_realname'], $_POST['ext_email']);
 
     if($result == null)
 	{
-	    $user->login($ext_username, $ext_password);
-	    addmsg("Account created! ($ext_username)", "green");
+	    $user->login($_POST['ext_username'], $_POST['ext_password']);
+	    addmsg("Account created! (".$_POST['ext_username'].")", "green");
 	    redirect(apidb_fullurl());
 	}
     else
@@ -129,11 +128,9 @@ function cmd_do_new()
 //email lost password
 function cmd_send_passwd()
 {
-    global $ext_username;
-
     $user = new User();
     
-    $userid = $user->lookup_userid($ext_username);
+    $userid = $user->lookup_userid($_POST['ext_username']);
     $passwd = generate_passwd();
     
     if ($userid)
@@ -163,7 +160,7 @@ function cmd_send_passwd()
     }
     else
     {
-        addmsg("Sorry, that username [$ext_username] does not exist.", "red");
+        addmsg("Sorry, that username (".$_POST['ext_username'].") does not exist.", "red");
     }
     
     redirect(apidb_fullurl("account.php?cmd=login"));
@@ -172,23 +169,19 @@ function cmd_send_passwd()
 //on login handler
 function cmd_do_login()
 {
-    global $ext_username, $ext_password;
-    global $ext_referer;
-    global $current;
-
     $user = new User();
-    $result = $user->login($ext_username, $ext_password);
+    $result = $user->login($_POST['ext_username'], $_POST['ext_password']);
 
     if($result == null)
 	{
-	    $current = $user;
+	    $_SESSION['current'] = $user;
 	    addmsg("You are successfully logged in as '$user->username'.", "green");
 	    redirect(apidb_fullurl("index.php"));    	    
 	}
     else
 	{
 	    retry("login","Login failed ($result)");
-	    $current = 0;
+	    $_SESSION['current'] = "";
 	}
 }
 

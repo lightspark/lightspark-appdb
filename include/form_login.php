@@ -24,7 +24,7 @@ function cmd_send_passwd() {
     <table border="0" width="100%" cellspacing=0 cellpadding="10">  
       <tr>
 	<td class=color1> User Name </td> 
-	<td class=color0> <input type="text" name="ext_username" value='<?=$ext_username?>'> </td>
+	<td class=color0> <input type="text" name="ext_username" value='<?if(isset($_POST['ext_username'])) echo $_POST['ext_username']?>'> </td>
       </tr>
       <tr>
 	<td class=color1> Password </td> 
@@ -43,7 +43,7 @@ function cmd_send_passwd() {
 
 echo html_frame_end("&nbsp;");
 echo '<input type="hidden" name="cmd" value="do_login">',"\n";
-echo '<input type="hidden" name="ext_referer" value="'.$HTTP_REFERER.'">',"\n";
+echo '<input type="hidden" name="ext_referer" value="'.$_SERVER['HTTP_REFERER'].'">',"\n";
 echo '</form>',"\n";
 
 ?>

@@ -20,12 +20,12 @@ else if (!havepriv("admin"))
 }
 
 
-if ($sub)
+if ($_REQUEST['sub'])
 {
-    if ($queueId)
+    if ($_REQUEST['queueId'])
     {
         //get data
-        $query = "SELECT * from appQueue where queueId = $queueId;";
+        $query = "SELECT * from appQueue where queueId = ".$_REQUEST['queueId'].";";
         $result = mysql_query($query);
         $ob = mysql_fetch_object($result);
         mysql_free_result($result);
@@ -39,14 +39,14 @@ if ($sub)
     }
 
     //process according to sub flag
-    if ($sub == 'view' && $queueId)
+    if ($_REQUEST['sub'] == 'view' && $_REQUEST['queueId'])
     {
         $x = new TableVE("view");
         apidb_header("Admin App Queue");
         echo '<form name="qform" action="adminAppQueue.php" method="post" enctype="multipart/form-data">',"\n";
 
         echo '<input type=hidden name="sub" value="add">',"\n"; 
-        echo '<input type=hidden name="queueId" value="'.$queueId.'">',"\n";  
+        echo '<input type=hidden name="queueId" value="'.$_REQUEST['queueId'].'">',"\n";  
 
         If ($ob->queueCatId == -1) //app version
         { 
@@ -160,7 +160,7 @@ if ($sub)
                     $checkvendor = $ob2->vendorId;
                 }
             }
-            if(checkvendor)
+            if($checkvendor)
             {
                 $ob->queueVendor = '';
     
@@ -206,50 +206,50 @@ if ($sub)
         echo html_frame_end("&nbsp;");
         echo html_back_link(1,'adminAppQueue.php');
     }
-    else if ($sub == 'add' && $queueId)
+    else if ($_REQUEST['sub'] == 'add' && $_REQUEST['queueId'])
     {
         //add item to main db
         $statusMessage = "";
         $goodtogo = 0;
-        if ($type == 'app')
+        if ($_REQUEST['type'] == 'app')
         {
             //process as application family
-            if ($altvendor == 0 && $queueVendor)
+            if ($_REQUEST['altvendor'] == 0 && $_REQUEST['queueVendor'])
             {
                 //add new vendor
-                mysql_query("INSERT into vendor VALUES (null, '".addslashes($queueVendor)."', '');");
-                $altvendor = mysql_insert_id();
+                mysql_query("INSERT into vendor VALUES (null, '".addslashes($_REQUEST['queueVendor'])."', '');");
+                $_REQUEST['altvendor'] = mysql_insert_id();
             }
             
             $query = "INSERT into appFamily VALUES (null, '".
-                                    addslashes($queueName)."', $altvendor, '', '".
-                                addslashes($queueDesc)."', '".
-                                addslashes($queueURL)."', $cat);"; 
+                                    addslashes($_REQUEST['queueName'])."', ".$_REQUEST['altvendor'].", '', '".
+                                addslashes($_REQUEST['queueDesc'])."', '".
+                                addslashes($_REQUEST['queueURL'])."', ".$_REQUEST['cat'].");"; 
                
             if (mysql_query($query))
             {
                     //get the id of the app just added    
-                $appParent = mysql_insert_id();
+                $_REQUEST['appParent'] = mysql_insert_id();
                 //delete queue item
-                mysql_query("DELETE from appQueue where queueId = $queueId;");
+                mysql_query("DELETE from appQueue where queueId = ".$_REQUEST['queueId'].";");
                                             
                 //set ver if not set
-                if (!$queueVersion)
-                    $queueVersion = '1.0';
-                if (!$queueDesc)
-                    $queueDesc = 'released version';
+                if (!$_REQUEST['queueVersion'])
+                    $_REQUEST['queueVersion'] = '1.0';
+                if (!$_REQUEST['queueDesc'])
+                    $_REQUEST['queueDesc'] = 'released version';
 
-                $verQuery = "INSERT into appVersion VALUES (null, $appParent, '".
-                addslashes($queueVersion)."', '', '".
-                addslashes($queueDesc)."', '".
-                addslashes($queueURL)."', 0.0, 0.0);";
+                $verQuery = "INSERT into appVersion VALUES (null, ".$_REQUEST['appParent'].", '".
+                addslashes($_REQUEST['queueVersion'])."', '', '".
+                addslashes($_REQUEST['queueDesc'])."', '".
+                addslashes($_REQUEST['queueURL'])."', 0.0, 0.0);";
                 
                 //Now add a version
                 if (mysql_query($verQuery))
                 {
                     //successful
-                    $appVersion = mysql_insert_id();
-                    addmsg("The application $queueName was successfully added into the database", "green");
+                    $_REQUEST['appVersion'] = mysql_insert_id();
+                    addmsg("The application ".$_REQUEST['queueName']." was successfully added into the database", "green");
                     $goodtogo = 1;
                 }
                 else
@@ -268,23 +268,23 @@ if ($sub)
                addmsg($statusMessage, "red");
             }
         }
-        else if ($type == 'ver')
+        else if ($_REQUEST['type'] == 'ver')
         {
             //process as application version
-            if ($appParent)
+            if ($_REQUEST['appParent'])
             {
-                $query = "INSERT into appVersion VALUES (null, $appParent, '".
-                addslashes($queueVersion)."', '', '".
-                addslashes($queueDesc)."', '".
-                addslashes($queueURL)."', 0.0, 0.0);";
+                $query = "INSERT into appVersion VALUES (null, ".$_REQUEST['appParent'].", '".
+                addslashes($_REQUEST['queueVersion'])."', '', '".
+                addslashes($_REQUEST['queueDesc'])."', '".
+                addslashes($_REQUEST['queueURL'])."', 0.0, 0.0);";
                 
                 if (mysql_query($query))
                 {
                     //successful
-                    $appVersion = mysql_insert_id();
-                    $statusMessage = "<p>The application $queueName was successfully added into the database</p>\n";
-                    addmsg($statusMessage,Green);
-                    mysql_query("DELETE from appQueue where queueId = $queueId;");
+                    $_REQUEST['appVersion'] = mysql_insert_id();
+                    $statusMessage = "<p>The application ".$_REQUEST['queueName']." was successfully added into the database</p>\n";
+                    addmsg($statusMessage,"Green");
+                    mysql_query("DELETE from appQueue where queueId = ".$_REQUEST['queueId'].";");
                     $goodtogo = 1;
                                         
                 }
@@ -292,13 +292,13 @@ if ($sub)
                 {
                     //error
                     $statusMessage = "<p><b>Database Error!<br>".mysql_error()."</b></p>\n";
-                    addmsg($statusMessage,red);
+                    addmsg($statusMessage,"red");
                 }
             }
             else
             {
                 addmsg("You did not pick an application Parent!",red);
-                redirect(apidb_fullurl("admin/adminAppQueue.php?cat=view&queueId=$queueId"));
+                redirect(apidb_fullurl("admin/adminAppQueue.php?cat=view&queueId=".$_REQUEST['queueId']));
                 exit;
 
             }
@@ -308,13 +308,13 @@ if ($sub)
         //Send Status Email
         if ($ob->queueEmail && $goodtogo)
         {
-            $fullAppName = lookupAppName($appParent)." Version: ".lookupVersionName($appParent, $appVersion);
+            $fullAppName = lookupAppName($_REQUEST['appParent'])." Version: ".lookupVersionName($_REQUEST['appParent'], $_REQUEST['appVersion']);
              
             $ms =  "Application Database Status Report\n";
             $ms .= "----------------------------------\n\n";
             $ms .= "Your application: ".$fullAppName." has been entered ";
             $ms .= "into the application database.\n\n";
-            $ms .= APPDB_ROOT."appview.php?appId=$appParent&versionId=$appVersion"."\n\n";
+            $ms .= APPDB_ROOT."appview.php?appId=".$_REQUEST['appParent']."&versionId=".$_REQUEST['appVersion']."\n\n";
             $ms .= "Thanks!\n\n";
             $ms .= $emailtext;
 
@@ -322,12 +322,12 @@ if ($sub)
         }
         if ($goodtogo)
         {
-            $email = getNotifyEmailAddressList($appParent, $appVersion);
+            $email = getNotifyEmailAddressList($_REQUEST['appParent'], $_REQUEST['appVersion']);
             if($email)
             {
-                $fullAppName = "Application: ".lookupAppName($appParent).
-                    " Version: ".lookupVersionName($appParent, $appVersion);
-                $ms = APPDB_ROOT."appview.php?appId=$appParent&versionId=$appVersion"."\n\n";
+                $fullAppName = "Application: ".lookupAppName($_REQUEST['appParent']).
+                    " Version: ".lookupVersionName($_REQUEST['appParent'], $_REQUEST['appVersion']);
+                $ms = APPDB_ROOT."appview.php?appId=".$_REQUEST['appParent']."&versionId=".$_REQUEST['appVersion']."\n\n";
                 $ms .= "New Application added to database:\n\n";
                 $ms .= $fullAppName."\n\n";
                 $ms .= STANDARD_NOTIFY_FOOTER;
@@ -338,24 +338,24 @@ if ($sub)
             {
                 $email = "no one";
             }
-            addmsg("mesage sent to: ".$email, green);
+            addmsg("mesage sent to: ".$email, "green");
 
         }
         //done
-        addmsg("<a href=".apidb_fullurl("appview.php")."?appId=".$appParent."&versionId=".$appVersion.">Veiw App</a>", "green");
+        addmsg("<a href=".apidb_fullurl("appview.php")."?appId=".$_REQUEST['appParent']."&versionId=".$_REQUEST['appVersion'].">Veiw App</a>", "green");
         redirect(apidb_fullurl("admin/adminAppQueue.php"));
         exit;
     }
-    else if ($sub == 'Delete' && $queueId)
+    else if ($_REQUEST['sub'] == 'Delete' && $_REQUEST['queueId'])
     {
         //delete main item
-        $query = "DELETE from appQueue where queueId = $queueId;";
+        $query = "DELETE from appQueue where queueId = ".$_REQUEST['queueId'].";";
         $result = mysql_query($query);
         if(!$result)
         {
             //error
             addmsg("Internal Error: unable to delete selected application!", "red");
-            redirect(apidb_fullurl("admin/adminAppQueue.php?appId=$appId&versionId=$versionId"));
+            redirect(apidb_fullurl("admin/adminAppQueue.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']));
         }
         else
         {   
@@ -364,7 +364,7 @@ if ($sub)
             {
                 if($ob->queueCatId == -1) //app version
                 {
-                    $fullAppName = lookupAppName($appParent)." Version: ".$ob->queueVersion;
+                    $fullAppName = lookupAppName($_REQUEST['appParent'])." Version: ".$ob->queueVersion;
                 } else
                 {
                     $fullAppName = $ob->queueName." Version: ".$ob->queueVersion;
@@ -381,7 +381,7 @@ if ($sub)
             }
             //success
             addmsg("Application was successfully deleted from the Queue.", "green");
-            redirect(apidb_fullurl("admin/adminAppQueue.php?appId=$appId&versionId=$versionId"));
+            redirect(apidb_fullurl("admin/adminAppQueue.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']));
         }
     }
     else

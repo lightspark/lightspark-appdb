@@ -217,7 +217,6 @@ function display_comments_flat($appId, $versionId)
 
 function view_app_comments($appId, $versionId, $threadId = 0)
 {
-    global $current;
     global $cmode;
 
     // count posts
@@ -235,9 +234,9 @@ function view_app_comments($appId, $versionId, $threadId = 0)
     {
 	    //FIXME we need to change this so not logged in users can change current view as well
         if ($cmode)
-    		$current->setpref("comments:mode", $cmode);
+    		$_SESSION[current]->setpref("comments:mode", $cmode);
 	
-        $sel[$current->getpref("comments:mode")] = 'selected';
+        $sel[$_SESSION['current']->getpref("comments:mode")] = 'selected';
 	    echo '<td><form method=get name=smode action="appview.php">',"\n";
         echo "<b>Application Comments</b> $messageCount total comments ";
 	    echo '<b>Mode</b> <select name="cmode" onchange="document.smode.submit();">',"\n";
@@ -268,7 +267,7 @@ function view_app_comments($appId, $versionId, $threadId = 0)
     
     //hide or display depending on pref
     if (loggedin())
-	    $mode = $current->getpref("comments:mode");
+	    $mode = $_SESSION['current']->getpref("comments:mode");
     else
 	    $mode = "flat";
 

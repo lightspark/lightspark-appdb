@@ -15,12 +15,11 @@
  */
 function rating_current_for_user($versionId, $system)
 {
-    global $current;
 
     if(!loggedin())
 	return 0;
 
-    $userId = $current->userid;
+    $userId = $_SESSION['current']->userid;
 
     $result = mysql_query("SELECT score FROM appRating WHERE versionId = $versionId AND system = '$system' AND userId = $userId");
     if(!$result)
@@ -38,7 +37,6 @@ function rating_current_for_user($versionId, $system)
  */
 function rating_menu()
 {
-    global $versionId;
     global $apidb_root;
 
     $s = '<img src="'.$apidb_root.'images/s1.gif" border=0 alt="s1">';
@@ -46,8 +44,8 @@ function rating_menu()
     
     $j = new htmlmenu("Compatibility Rating","updaterating.php");
 
-    $r_win = rating_current_for_user($versionId, "windows");
-    $r_fake = rating_current_for_user($versionId, "fake");
+    $r_win = rating_current_for_user($_REQUEST['versionId'], "windows");
+    $r_fake = rating_current_for_user($_REQUEST['versionId'], "fake");
 
     $wchk = array('checked',' ',' ',' ',' ',' ');
     $fchk = array('checked',' ',' ',' ',' ',' ');
@@ -78,7 +76,7 @@ function rating_menu()
 
     
     $j->addmisc("<input type=submit value='  Rate it!  ' class=ratebutton>","center");
-    $j->addmisc("<input type=hidden name=versionId value=$versionId>");
+    $j->addmisc("<input type=hidden name=versionId value=".$_REQUEST['versionId'].">");
     
     $j->add("Rating Help", $apidb_root."help/?topic=ratings");
     
@@ -161,7 +159,6 @@ function rating_stars_for_version($versionId, $system)
  */
 function rating_update($vars)
 {
-    global $current;
 
     if(!loggedin())
 	{
@@ -169,7 +166,7 @@ function rating_update($vars)
 	    return;
 	}
 
-    $userId = $current->userid;
+    $userId = $_SESSION[current]->userid;
     $versionId = $vars["versionId"];
     $score_w = $vars["score_w"];
     $score_f = $vars["score_f"];

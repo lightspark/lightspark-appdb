@@ -11,7 +11,8 @@ require(BASE."include/"."category.php");
 
 function admin_menu()
 {
-    global $catId;
+    if(isset($_REQUEST['catId'])) $catId=$_REQUEST['catId'];
+    else $catId="";
 
     $m = new htmlmenu("Admin");
     $m->add("Edit this Category", $apidb_root."admin/editCategory.php?catId=$catId");
@@ -22,10 +23,8 @@ function admin_menu()
     $m->done();
 }
 
-$catId = $_REQUEST['catId'];
-
-if(!$catId)
-    $catId = 0; // ROOT
+if(isset($_REQUEST['catId'])) $catId=$_REQUEST['catId'];
+else $catId=0; // ROOT
 
 if( !is_numeric($catId) )
 {

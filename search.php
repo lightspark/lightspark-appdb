@@ -4,7 +4,7 @@ include("path.php");
 require(BASE."include/"."incl.php");
 require(BASE."include/"."application.php");
 
-$search = str_replace("'", "\\'", $q);
+$search = str_replace("'", "\\'", $_REQUEST['q']);
 $search = "%$search%";
 
 $query = "SELECT * FROM appFamily WHERE appName != 'NONAME' AND appName LIKE '$search' ORDER BY appName";

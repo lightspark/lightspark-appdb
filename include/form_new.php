@@ -15,7 +15,7 @@ echo html_frame_start("Create New Application DB Account","400","",0)
     <table border=0 width="100%" cellspacing=0 cellpadding=20>
       <tr>
 	<td class=color1> User Name </td>
-	<td class=color0> <input type="text" name="ext_username" value='<?=$ext_username?>'> </td>
+	<td class=color0> <input type="text" name="ext_username" value='<?if(isset($_POST['ext_username'])) echo $_POST['ext_username']?>'> </td>
       </tr>
       <tr>
 	<td class=color1> Password </td>
@@ -27,11 +27,11 @@ echo html_frame_start("Create New Application DB Account","400","",0)
       </tr>
       <tr>
 	<td class=color1> Real Name </td>
-	<td class=color0> <input type="text" name="ext_realname" value='<?=$ext_realname?>'> </td>
+	<td class=color0> <input type="text" name="ext_realname" value='<?if(isset($_POST['ext_realname'])) echo $_POST['ext_realname']?>'> </td>
       </tr>
       <tr>
 	<td class=color1> Email Address </td>
-	<td class=color0> <input type="text" name="ext_email" value='<?=$ext_email?>'> </td>
+	<td class=color0> <input type="text" name="ext_email" value='<?if(isset($_POST['ext_email'])) echo $_POST['ext_email']?>'> </td>
       </tr>
       
       <tr>

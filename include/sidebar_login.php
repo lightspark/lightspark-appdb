@@ -16,14 +16,13 @@ function global_sidebar_login() {
     
     if(loggedin())
     {
-        global $current;
 
         $g->add("Logout", $apidb_root."account.php?cmd=logout");
         $g->add("Preferences", $apidb_root."preferences.php");
         
         /* if this user maintains any applications list them */
         /* in their sidebar */
-        $apps_user_maintains = getAppsFromUserId($current->userid);
+        $apps_user_maintains = getAppsFromUserId($_SESSION['current']->userid);
         if($apps_user_maintains)
         {
             $g->addmisc("");

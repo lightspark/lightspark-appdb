@@ -33,7 +33,7 @@ function global_sidebar_menu() {
 function app_search_box($q = '')
 {
    global $apidb_root;
-   $str .= '<form method="get" action="'.$apidb_root.'search.php">'."\n";
+   $str = '<form method="get" action="'.$apidb_root.'search.php">'."\n";
    $str .= "<input type=text name=q value='$q' size=8 class=searchfield>";
    $str .= "<input type=submit value='Search' class=searchbutton>\n";
    $str .= "</form>\n";

@@ -222,7 +222,6 @@ class User {
      */
     function is_maintainer($appId, $versionId)
     {
-        global $current;
         if(!loggedin() || !$this->userid)
             return false;
 
@@ -297,9 +296,7 @@ class User {
 
 function loggedin()
 {
-    global $current;
-
-    if($current && $current->userid)
+    if(isset($_SESSION['current']) && $_SESSION['current']->userid)
 	return true;
 
     return false;

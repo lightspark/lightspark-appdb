@@ -9,12 +9,11 @@
  */
 function vote_count($appId, $userId = null)
 {
-    global $current;
 
     if(!$userId)
 	{
 	    if(loggedin())
-		$userId = $current->userid;
+		$userId = $_SESSION['current']->userid;
 	    else
 		return 0;
 	}
@@ -27,12 +26,10 @@ function vote_count($appId, $userId = null)
  */
 function vote_count_user_total($userId = null)
 {
-    global $current;
-
     if(!$userId)
         {
             if(loggedin())
-                $userId = $current->userid;
+                $userId = $_SESSION['current']->userid;
             else
                 return 0;
         }
@@ -57,13 +54,12 @@ function vote_count_app_total($appId)
  */
 function vote_add($appId, $slot, $userId = null)
 {
-    global $current;
     global $MAX_VOTES;
 
     if(!$userId)
         {
             if(loggedin())
-                $userId = $current->userid;
+                $userId = $_SESSION['current']->userid;
             else
                 return;
         }
@@ -80,12 +76,12 @@ function vote_add($appId, $slot, $userId = null)
  */
 function vote_remove($appId, $slot, $userId = null)
 {
-    global $current;
+    
 
     if(!$userId)
         {
             if(loggedin())
-                $userId = $current->userid;
+                $userId = $_SESSION['current']->userid;
             else
                 return;
         }
@@ -94,12 +90,12 @@ function vote_remove($appId, $slot, $userId = null)
 
 function vote_get_user_votes($userId = null)
 {
-    global $current;
+    
 
     if(!$userId)
         {
             if(loggedin())
-                $userId = $current->userid;
+                $userId = $_SESSION['current']->userid;
 	    if(!$userId)
                 return array();
         }
@@ -170,10 +166,10 @@ function dump($arr)
 
 function vote_update($vars)
 {
-    global $current;
+    
 
     //FIXME this doesn't work since msgs only work when logged in
-    if(!$current)
+    if(!$_SESSION['current'])
 	{
 	    addmsg("You must be logged in to vote", "red");
 	    return;

@@ -193,7 +193,7 @@ class TableVE {
     {
     
 	$result = mysql_query("SELECT $idField, $nameField FROM $table $where ORDER BY $nameField");
-	if(!result)
+	if(!$result)
 	    return; // Oops
 
 	echo "<select name='$varname'>\n";
@@ -396,7 +396,6 @@ class TableVE {
      */
     function update($vars)
     {
-	global $current;
 
 	$tables = array();
 	$fieldnames = array();
@@ -474,7 +473,7 @@ class TableVE {
 			if(ereg("^impl_.+$", $table))
 			    {
 				$value = $fieldnames["apiid"][$i];
-				mysql_query("UPDATE $table SET lastmodby = $current->userid WHERE apiid = $value");
+				mysql_query("UPDATE $table SET lastmodby = ".$_SESSION['current']->userid." WHERE apiid = $value");
 			    }
 		    }
 	    }
