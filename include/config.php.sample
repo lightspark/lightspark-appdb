@@ -26,4 +26,14 @@ $userdb_dbpass = "lemonade";
 $userdb_dbhost = "localhost";
 $userdb_db     = "apidb";
 
+/*
+ * Bugzilla database info
+ */
+$bugzilla_dbuser = "root";
+$bugzilla_dbpass = "";
+$bugzilla_dbhost = "localhost";
+$bugzilla_db     = "bugs";
+/* $bugzilla_db_port = 3306; is this needed? I dont think so.*/
+$bugzilla_product_id = 1;
+
 ?>

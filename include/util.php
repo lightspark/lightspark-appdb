@@ -171,6 +171,68 @@ function get_xml_tag ($file, $mode = null)
     }
 }
 
+/* bugzilla functions */
+
+function openbugzilladb()
+{
+    global $bugzilla_dbuser, $bugzilla_dbpass, $bugzilla_dbhost, $bugzilla_db, $bugzilla_product_id;
+    global $dbcon, $dbref;
+
+    $dbref++;
+
+    if($dbcon)
+        return $dbcon;
+
+    $dbcon = mysql_connect($bugzilla_dbhost, $bugzilla_dbuser, $bugzilla_dbpass);
+    if(!$dbcon) 
+	{
+	    echo "An error occurred: ".mysql_error()."<p>\n";
+	    exit;
+	}
+    mysql_select_db($bugzilla_db);
+    return $dbcon;
+}
+
+function closebugzilladb()
+{
+    global $dbcon, $dbref;
+
+    if(--$dbref)
+        return;
+
+    mysql_close($adbcon);
+}
+
+function make_bugzilla_version_list($varname, $cvalue)
+{
+    global $bugzilla_db, $bugzilla_product_id;
+
+    $table = $bugzilla_db.".versions";
+    $where = "WHERE product_id=".$bugzilla_product_id;
+    $query = "SELECT value FROM $table $where ORDER BY value";
+
+    openbugzilladb();
+
+    $result = mysql_query($query);
+
+    if(!$result)
+    {
+        closebugzilladb();
+        return; // Oops
+    }
+    echo "<select name='$varname'>\n";
+    echo "<option value=0>Choose ...</option>\n";
+    while(list($value) = mysql_fetch_row($result))
+    {
+        if($id == $cvalue)
+            echo "<option value=$value selected>$value\n";
+        else
+            echo "<option value=$value>$value\n";
+    }
+    echo "</select>\n";
+    closebugzilladb();
+}
+
 /* get the number of applications in the appQueue table */
 function getQueuedAppCount()
 {

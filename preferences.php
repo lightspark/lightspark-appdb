@@ -15,41 +15,46 @@ function build_prefs_list()
 
     $result = mysql_query("SELECT * FROM prefs_list ORDER BY id");
     while($r = mysql_fetch_object($result))
-	{
-	    //skip admin options
-	    //TODO: add a field to prefs_list to flag the user level for the pref
-	    if(!havepriv("admin"))
-		{
-		    if($r->name == "query:mode")
-			continue;
-		    if($r->name == "sidebar")
-			continue;
-		    if($r->name == "window:query")
-			continue;
-		    if($r->name == "query:hide_header")
-			continue;
-		    if($r->name == "query:hide_sidebar")
-			continue;
-		    if($r->name == "debug")
-			continue;
-		}
-		
-	    $input = html_select("pref_$r->name", explode('|', $r->value_list), 
-				 $_SESSION['current']->getpref($r->name, $r->def_value));
-	    echo html_tr(array("&nbsp; $r->description", $input));
-	}
+        {
+            //skip admin options
+            //TODO: add a field to prefs_list to flag the user level for the pref
+            if(!havepriv("admin"))
+                {
+                    if($r->name == "query:mode")
+                        continue;
+                    if($r->name == "sidebar")
+                        continue;
+                    if($r->name == "window:query")
+                        continue;
+                    if($r->name == "query:hide_header")
+                        continue;
+                    if($r->name == "query:hide_sidebar")
+                        continue;
+                    if($r->name == "debug")
+                        continue;
+                }
+                
+            $input = html_select("pref_$r->name", explode('|', $r->value_list), 
+                                 $_SESSION['current']->getpref($r->name, $r->def_value));
+            echo html_tr(array("&nbsp; $r->description", $input));
+        }
 }
 
 function show_user_fields()
 {
-	
-	$user = new User();
-	
-	$ext_username = $_SESSION['current']->username;
-	$ext_realname = $user->lookup_realname($_SESSION['current']->userid);
-	$ext_email = $user->lookup_email($_SESSION['current']->userid);
-	
-	include(BASE."include/"."form_edit.php");
+        
+        $user = new User();
+        
+        $ext_username = $_SESSION['current']->username;
+        $ext_realname = $user->lookup_realname($_SESSION['current']->userid);
+        $ext_email = $user->lookup_email($_SESSION['current']->userid);
+        
+        include(BASE."include/"."form_edit.php");
+        $version = "unspecified";
+        echo "<tr><td>&nbsp; wine version </td><td>";
+        make_bugzilla_version_list("version", $version);
+        echo "</td></tr>";
+
 }
 
 if($HTTP_POST_VARS)
@@ -60,11 +65,11 @@ if($HTTP_POST_VARS)
     $user = new User();
     
     while(list($key, $value) = each($HTTP_POST_VARS))
-	{
-	    if(!ereg("^pref_(.+)$", $key, $arr))
-		continue;
-	    $_SESSION['current']->setpref($arr[1], $value);
-	}
+        {
+            if(!ereg("^pref_(.+)$", $key, $arr))
+                continue;
+            $_SESSION['current']->setpref($arr[1], $value);
+        }
     
     if ($ext_password == $ext_password2)
     {
