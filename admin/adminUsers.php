@@ -4,7 +4,7 @@
 /********************/
 
 include("path.php");
-include(BASE."include/"."incl.php");
+include(BASE."include/incl.php");
 
 apidb_header("Admin Users Management");
 
@@ -18,11 +18,7 @@ if(!$_SESSION['current']->hasPriv("admin"))
 if($_REQUEST['action'] == "delete" && is_numeric($_REQUEST['userId']))
 {
     $oUser = new User($_REQUEST['userId']);
-    $sEmail = $oUser->sEmail;
-    if($sEmail)
-    {
-        $oUser->delete();
-    }
+    $oUser->delete();
 }
 
 // search form

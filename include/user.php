@@ -141,9 +141,9 @@ class User {
     function delete()
     {
         if(!$this->isLoggedIn()) return false;
-        $hResult2 = query_appdb("DELETE FROM user_privs WHERE id = '".$this->iUserId."'");
-        $hResult3 = query_appdb("DELETE FROM user_prefs WHERE id = '".$this->iUserId."'");
-        return($hResult = query_appdb("DELETE FROM user_list WHERE id = '".$this->iUserId."'"));
+        $hResult2 = query_appdb("DELETE FROM user_privs WHERE userid = '".$this->iUserId."'");
+        $hResult3 = query_appdb("DELETE FROM user_prefs WHERE userid = '".$this->iUserId."'");
+        return($hResult = query_appdb("DELETE FROM user_list WHERE userid = '".$this->iUserId."'"));
     }
 
 
@@ -198,7 +198,6 @@ class User {
     function isMaintainer($iVersionId=null)
     {
         if(!$this->isLoggedIn()) return false;
-
         if($iVersionId)
         {
             $sQuery = "SELECT * FROM appMaintainers WHERE userid = '".$this->iUserId."' AND versionId = '$iVersionId'";
