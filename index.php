@@ -7,7 +7,9 @@
  * application environment
  */ 
 include("path.php");
-require(BASE."include/"."incl.php");
+require(BASE."include/incl.php");
+require(BASE."include/application.php");
+require(BASE."include/screenshot.php");
 
 apidb_header("Wine Application Database");
 
@@ -90,212 +92,60 @@ wine-users mailing list or the wine newsgroup, for more information visit
 
 <br /><br />
 
-<h2>Wine 0.9 Supported Applications List</h2>
+<h2>Top Voted Applications</h2>
 
-<p>This is a working version of the application lists which we hope to
-support 'officially' for Wine 0.9. Please send comments, and suggestions,
-about the list to <a href="mailto:clozano@andago.com">Carlos Lozano</a>;
-direct formatting related flames to <a href="mailto:dpaun@rogers.com">Dimitrie O. Paun</a>.</p>
+<p>This is a list of applications that are known to be working well and for which many AppDB users voted.</p>
 
-<h3>The Gold List</h3> 
-<p>Applications which install and run virtually flawless on a 
-        out-of-the-box Wine installation make it to the Gold list: </p>
-<table class=gold>
-    <tr class=rowtitle>
-    <th>Application</th><th>Version</th><th>Description</th><th>Tucows top</th><th>Notes</th><th>Screenshot</th>
+<h3>The top-10 Gold List</h3> 
+<p>Applications which install and run virtually flawless on a out-of-the-box Wine installation make it to the Gold list: </p>
+<table class="gold">
+    <tr class="rowtitle">
+    <th>Application</th><th>Version</th><th>Description</th><th>Screenshot</th>
     </tr>
-
-    <tr class=white>
 <?php
-        echo "<td><a href='".BASE."appview.php?appId=134'>Acrobat Reader</a></td>";
+$sQuery = "SELECT appVotes.appId AS appId, COUNT(appVotes.appId) AS c, appVersion.versionId AS versionId FROM appVotes, appVersion WHERE appVotes.appId = appVersion.appId AND appVersion.maintainer_rating = 'Gold' GROUP BY appVotes.appId ORDER BY c LIMIT 10";
+$hResult = query_appdb($sQuery);
+while($oRow = mysql_fetch_object($hResult))
+{
+    $oApp = new Application($oRow->appId);
+    $oVersion = $oApp->getAppVersion($oRow->versionId);
+    // image
+    $img = get_screenshot_img($oRow->appId, $oRow->versionId);
+    echo '
+    <tr class="white">
+      <td><a href="appview.php?appId='.$oRow->appId.'&versionId='.$oRow->versionId.'">'.$oApp->data->appName.'</a></td>
+        <td>'.$oVersion->versionName.'</td>
+        <td>'.trim(substr($oApp->data->description,0,88)).'...</td>
+        <td>'.$img.'</td>
+    </tr>';
+}
 ?>
-        <td>5.0.5</td>
-        <td>This is the solution to your PDF troubles.</td>
-        <td>6</td>
-        <td>Dlls installed by the program: advpack.dll, msvcrt.dll, shfolder.dll, w95inf32.dll, msvcp60.dll, oleaut32.dll, w95inf16.dll</td>
-        <td><span class=todo>[TODO]</span></td>
-    </tr>
-
-    <tr class=white>
-<?php
-        echo "<td><a href='".BASE."appview.php?appId=145'>WS-FTP LE</a></td>";
-?>
-        <td>5.08</td>
-        <td>A great application that allows remote file edits, chmods on UNIX boxes and file moves.</td>
-        <td>9</td>
-        <td>No dlls installed.</td>
-        <td><span class=todo>[TODO]</span></td>
-    </tr>
-
-    <tr class=white>
-<?php
-        echo "<td><a href='".BASE."appview.php?appId=77'>mIRC</a></td>";
-?>
-        <td>6.03</td>
-        <td>This is a popular IRC client.</td>
-        <td>25</td>
-        <td>No dlls installed.</td>
-        <td><span class=todo>[TODO]</span></td>
-    </tr>
-
-    <tr class=white>
-<?php
-        echo "<td><a href='".BASE."appview.php?appId=356'>Putty</a></td>";
-?>
-        <td>0.52</td>
-        <td>Simple Telnet/SSH client & console.</td>
-        <td>29</td>
-        <td>No install needed.</td>
-        <td><span class=todo>[TODO]</span></td>
-    </tr>
-
-    <tr class=white>
-<?php
-        echo "<td><a href='".BASE."appview.php?appId=1110'>FTP Commander</a></td>";
-?>
-        <td>5.58</td>
-        <td>A remote file management and command-line FTP client.</td>
-        <td>83</td>
-        <td>No dlls installed.</td>
-        <td><span class=todo>[TODO]</span></td>
-    </tr>
-
-    <tr class=white>
-<?php
-        echo "<td><a href='".BASE."appview.php?appId=284'>Pegasus Mail</a></td>";
-?>
-        <td>4.02</td>
-        <td>E-mail client of choice for many beginner and advanced users.</td>
-        <td>96</td>
-        <td>You may need to mark WINSOCK.DLL as "On demand only" in Tools-&gt;Options-&gt;Advanced</td>
-        <td><span class=todo>[TODO]</span></td>
-    </tr>
-
-    <tr class=white>
-<?php
-        echo "<td><a href='".BASE."appview.php?appId=1756'>12Ghosts Zip</a></td>";
-?>
-        <td>XP/31</td>
-        <td>This is a fast compression utility.</td>
-        <td>N/A</td>
-        <td>No dlls installed.</td>
-        <td><span class=todo>[TODO]</span></td>
-    </tr>
-
-    <tr class=white>
-<?php
-        echo "<td><a href='".BASE."appview.php?appId=1755'>WinMerge</a></td>";
-?>
-        <td>2.1.4</td>
-        <td>A visual text file differencing and merging tool for Win32 platforms.</td>
-        <td>10@SF</td>
-        <td>No dlls installed.</td>
-        <td><span class=todo>[TODO]</span></td>
-    </tr>
-
-    <tr class=white>
-<?php
-        echo "<td><a href='".BASE."appview.php?appId=868'>FileZilla</a></td>";
-?>
-        <td>2.2.2</td>
-        <td>FileZilla is a fast FTP client for Windows with a lot of features.</td>
-        <td>11@SF</td>
-        <td>No dlls installed.</td>
-        <td><span class=todo>[TODO]</span></td>
-    </tr>
 </table>
 <br />
-<h3>The Silver List</h3> 
-<p>The Silver list contains apps which we hope we can easily fix so they make it
-   to Gold status:</p>
+<h3>The top-10 Silver List</h3> 
+<p>The Silver list contains apps which we hope we can easily fix so they make it to Gold status:</p>
 <table class=silver>
     <tr class=rowtitle>
-    <th>Application</th><th>Version</th><th>Description</th><th>Tucows top</th><th>Notes</th><th>Screenshot</th>
+      <th>Application</th><th>Version</th><th>Description</th><th>Screenshot</th>
     </tr>
-
-    <tr class=white>
 <?php
-echo "<td><a href='".BASE."appview.php?appId=2'>WinZip</a></td>";
+$sQuery = "SELECT appVotes.appId AS appId, COUNT(appVotes.appId) AS c, appVersion.versionId AS versionId FROM appVotes, appVersion WHERE appVotes.appId = appVersion.appId AND appVersion.maintainer_rating = 'Silver' GROUP BY appVotes.appId ORDER BY c LIMIT 10";
+$hResult = query_appdb($sQuery);
+while($oRow = mysql_fetch_object($hResult))
+{
+    $oApp = new Application($oRow->appId);
+    $oVersion = $oApp->getAppVersion($oRow->versionId);
+    // image
+    $img = get_screenshot_img($oRow->appId, $oRow->versionId);
+    echo '
+    <tr class="white">
+      <td><a href="appview.php?appId='.$oRow->appId.'&versionId='.$oRow->versionId.'">'.$oApp->data->appName.'</a></td>
+        <td>'.$oVersion->versionName.'</td>
+        <td>'.trim(substr($oApp->data->description,0,88)).'...</td>
+        <td>'.$img.'</td>
+    </tr>';
+}
 ?>
-        <td>8.1</td>
-        <td>The most popular compression utility for Windows just got better.</td>
-        <td>4</td>
-        <td> Install: Yes. (Dlls installed none)<br />
-      	Run: Yes,(but it needs riched20.dll to shown the text in zipped files what
-        includes a message, zipped files without messages works fine)</td>
-        <td><span class=todo>[TODO]</span></td>
-    </tr>
-
-    <tr class=white>
-<?php
-echo "<td><a href='".BASE."appview.php?appId=55'>ICQ</a></td>";
-?>
-        <td>2002a</td>
-        <td>The new and improved ICQ is here with all the great features you've come to expect -- plus a whole new set!</td>
-        <td>5</td>
-        <td> Install: Yes, but it need "touch /c/windows/system/setupapi.dll"
-     (Dlls installed atl.dll,msvcrt.dll)<br />
-    Run: No, required comctl32 (imagelist proble) and riched32 native.
-     (it wasn't able to add users to contact list even with this native
-      dlls, I don't know if it was a different problem, or Wine related)</td>
-        <td><span class=todo>[TODO]</span></td>
-    </tr>
-
-    <tr class=white>
-<?php
-echo "<td><a href='".BASE."appview.php?appId=5'>Winamp</a></td>";
-?>
-        <td>3.0</td>
-        <td>This program has so many possibilities and offers such a wide
-range of interfaces, you'll need no other player.</td>
-        <td>10</td>
-        <td>Install: Yes. (Dlls installed none)<br />
-    Run: No. (Need native msvcrt.dll then works)</td>
-        <td><span class=todo>[TODO]</span></td>
-    </tr>
-
-    <tr class=white>
-<?php
-echo "<td><a href='".BASE."appview.php?appId=391'>WinRAR</a></td>";
-?>
-        <td>3.00</td>
-        <td>This is a version of the popular RAR compression format, offering significantly improved compression ratios.</td>
-        <td>11</td>
-        <td>Install: Yes. (It will install winrar in the directory where you are
-      when you run the installer, it is buggy because you must stop the
-      installation with ctrl+c when it asks to "overwrite files", but
-      it works).<br />
-    Run: Yes. (minor glitches in bugzilla)
-    </td>
-        <td><span class=todo>[TODO]</span></td>
-    </tr>
-
-    <tr class=white>
-<?php
-echo "<td><a href='".BASE."appview.php?appId=288'>WinMX</a></td>";
-?>
-        <td>3.22</td>
-        <td>Take file sharing to a new level.</td>
-        <td>50</td>
-        <td>Install: Yes (Dlls installed none)<br />
-    Run: Yes. (listbox is not working in it (comctl32))
-        </td>
-        <td><span class=todo>[TODO]</span></td>
-    </tr>
-
-    <tr class=white>
-<?php
-   echo "<td><a href='".BASE."appview.php?appId=1757'>SnagIt</a></td>";
-?>
-        <td>6.1.1</td>
-        <td>Use this to capture and manage images, text, and video.</td>
-        <td>n/a</td>
-        <td>    Install: Yes. (Dlls installed advpack.dll, setupapi.dll, w95inf16.dll,
-      cfgmgr32.dll,shfolder.dll,w95inf32.dll)<br />
-    Run: Partial. (it has too options, some options like capture avi, or
-      capture web are not working)</td>
-        <td><span class=todo>[TODO]</span></td>
-    </tr>
 </table>
 
 <br /><br />
