@@ -91,7 +91,6 @@ if ($_REQUEST['sub'])
             echo '</table></form>',"\n";
         } else // application
         { 
-    
             //help
             echo "<div align=center><table width='90%' border=0 cellpadding=3 cellspacing=0><tr><td>\n\n";
             echo "<p>This is the full view of the application waiting to be approved. \n";
@@ -206,7 +205,7 @@ if ($_REQUEST['sub'])
             }
             
             $oApp = new Application($_REQUEST['appId']);
-            $oApp->update($_REQUEST['appName'], $_REQUEST['appDescription'], $_REQUEST['keywords'], $_REQUEST['webPage'], $_REQUEST['vendorId'], $_REQUEST['catId']);
+            $oApp->update($_REQUEST['appName'], $_REQUEST['description'], $_REQUEST['keywords'], $_REQUEST['webpage'], $_REQUEST['vendorId'], $_REQUEST['catId']);
             $oApp->unQueue();
         } else if(is_numeric($_REQUEST['versionId']) && is_numeric($_REQUEST['appId']))  // version
         {
