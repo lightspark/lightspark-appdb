@@ -81,7 +81,9 @@ direct formatting related flames to <a href="mailto:dpaun@rogers.com">Dimitrie O
     </tr>
 
     <tr class=white>
-        <td><a href="http://appdb.winehq.org/appview.php?appId=134">Acrobat Reader</a></td>
+<?
+        echo "<td><a href='".$apidb_root."appview.php?appId=134'>Acrobat Reader</a></td>";
+?>
         <td>5.0.5</td>
         <td>This is the solution to your PDF troubles.</td>
         <td>6</td>
@@ -90,7 +92,9 @@ direct formatting related flames to <a href="mailto:dpaun@rogers.com">Dimitrie O
     </tr>
 
     <tr class=white>
-        <td><a href="http://appdb.winehq.org/appview.php?appId=145">WS-FTP LE</a></td>
+<?
+        echo "<td><a href='".$apidb_root."appview.php?appId=145'>WS-FTP LE</a></td>";
+?>
         <td>5.08</td>
         <td>A great application that allows remote file edits, chmods on UNIX boxes and file moves.</td>
         <td>9</td>
@@ -99,7 +103,9 @@ direct formatting related flames to <a href="mailto:dpaun@rogers.com">Dimitrie O
     </tr>
 
     <tr class=white>
-        <td><a href="http://appdb.winehq.org/appview.php?appId=77">mIRC</a></td>
+<?
+        echo "<td><a href='".$apidb_root."appview.php?appId=77'>mIRC</a></td>";
+?>
         <td>6.03</td>
         <td>This is a popular IRC client.</td>
         <td>25</td>
@@ -108,7 +114,9 @@ direct formatting related flames to <a href="mailto:dpaun@rogers.com">Dimitrie O
     </tr>
 
     <tr class=white>
-        <td><a href="http://appdb.winehq.org/appview.php?appId=356">Putty</a></td>
+<?
+        echo "<td><a href='".$apidb_root."appview.php?appId=356'>Putty</a></td>";
+?>
         <td>0.52</td>
         <td>Simple Telnet/SSH client & console.</td>
         <td>29</td>
@@ -117,7 +125,9 @@ direct formatting related flames to <a href="mailto:dpaun@rogers.com">Dimitrie O
     </tr>
 
     <tr class=white>
-        <td><a href="http://appdb.winehq.org/appview.php?appId=1110">FTP Commander</a></td>
+<?
+        echo "<td><a href='".$apidb_root."appview.php?appId=1110'>FTP Commander</a></td>";
+?>
         <td>5.58</td>
         <td>A remote file management and command-line FTP client.</td>
         <td>83</td>
@@ -126,7 +136,9 @@ direct formatting related flames to <a href="mailto:dpaun@rogers.com">Dimitrie O
     </tr>
 
     <tr class=white>
-        <td><a href="http://appdb.winehq.org/appview.php?appId=284">Pegasus Mail</a></td>
+<?
+        echo "<td><a href='".$apidb_root."appview.php?appId=284'>Pegasus Mail</a></td>";
+?>
         <td>4.02</td>
         <td>E-mail client of choice for many beginner and advanced users.</td>
         <td>96</td>
@@ -135,7 +147,9 @@ direct formatting related flames to <a href="mailto:dpaun@rogers.com">Dimitrie O
     </tr>
 
     <tr class=white>
-        <td><a href="http://appdb.winehq.org/appview.php?appId=1756">12Ghosts Zip</a></td>
+<?
+        echo "<td><a href='".$apidb_root."appview.php?appId=1756'>12Ghosts Zip</a></td>";
+?>
         <td>XP/31</td>
         <td>This is a fast compression utility.</td>
         <td>N/A</td>
@@ -144,7 +158,9 @@ direct formatting related flames to <a href="mailto:dpaun@rogers.com">Dimitrie O
     </tr>
 
     <tr class=white>
-        <td><a href="http://appdb.winehq.org/appview.php?appId=1755">WinMerge</a></td>
+<?
+        echo "<td><a href='".$apidb_root."appview.php?appId=1755'>WinMerge</a></td>";
+?>
         <td>2.1.4</td>
         <td>A visual text file differencing and merging tool for Win32 platforms.</td>
         <td>10@SF</td>
@@ -153,7 +169,9 @@ direct formatting related flames to <a href="mailto:dpaun@rogers.com">Dimitrie O
     </tr>
 
     <tr class=white>
-        <td><a href="http://appdb.winehq.org/appview.php?appId=868">FileZilla</a></td>
+<?
+        echo "<td><a href='".$apidb_root."appview.php?appId=868'>FileZilla</a></td>";
+?>
         <td>2.2.2</td>
         <td>FileZilla is a fast FTP client for Windows with a lot of features.</td>
         <td>11@SF</td>
@@ -167,7 +185,9 @@ direct formatting related flames to <a href="mailto:dpaun@rogers.com">Dimitrie O
    to Gold status:
 <dl class=color4>
 
-<dt class=ltgrey><b><a href="http://appdb.winehq.org/appview.php?appId=2">WinZip</a></b>
+<?
+echo "<dt class=ltgrey><b><a href='".$apidb_root."appview.php?appId=2'>WinZip</a></b>";
+?>
  - The most popular compression utility for Windows just got better.</dt>
 <dd>
    <ul class=white>
@@ -179,7 +199,9 @@ direct formatting related flames to <a href="mailto:dpaun@rogers.com">Dimitrie O
   </ul>
 </dd>
 
-<dt class=ltgrey><b><a href="http://appdb.winehq.org/appview.php?appId=55">ICQ for Windows</a></b>
+<?
+echo "<dt class=ltgrey><b><a href='".$apidb_root."appview.php?appId=55'>ICQ for Windows</a></b>";
+?>
  - The new and improved ICQ is here with all the great
 features you've come to expect -- plus a whole new set!</dt>
 <dd>
@@ -194,7 +216,9 @@ features you've come to expect -- plus a whole new set!</dt>
   </ul>
 </dd>
 
-<dt class=ltgrey><b><a href="http://appdb.winehq.org/appview.php?appId=5">Winamp</a></b>
+<?
+echo "<dt class=ltgrey><b><a href='".$apidb_root."appview.php?appId=5'>Winamp</a></b>";
+?>
  - This program has so many possibilities and offers such a wide
 range of interfaces, you'll need no other player.</dt>
 <dd>
@@ -206,7 +230,9 @@ range of interfaces, you'll need no other player.</dt>
   </ul>
 </dd>
 
-<dt class=ltgrey><b><a href="http://appdb.winehq.org/appview.php?appId=391">WinRAR</a></b>
+<?
+ echo "<dt class=ltgrey><b><a href='".$apidb_root."appview.php?appId=391'>WinRAR</a></b>";
+?>
  - This is a version of the popular RAR compression format, offering
 significantly improved compression ratios.</dt>
 <dd>
@@ -221,7 +247,9 @@ significantly improved compression ratios.</dt>
   </ul>
 </dd>
 
-<dt class=ltgrey><b><a href="http://appdb.winehq.org/appview.php?appId=288">WinMX</a></b>
+<?
+    echo "<dt class=ltgrey><b><a href='".$apidb_root."appview.php?appId=288'>WinMX</a></b>";
+?>
  - Take file sharing to a new level.</dt>
 <dd>
    <ul class=white>
@@ -232,7 +260,9 @@ significantly improved compression ratios.</dt>
   </ul>
 </dd>
 
-<dt class=ltgrey><b><a href="http://appdb.winehq.org/appview.php?appId=1757">SnagIt</a></b>
+<?
+    echo "<dt class=ltgrey><b><a href='".$apidb_root."appview.php?appId=1757'>SnagIt</a></b>";
+?>
  - Use this to capture and manage images, text, and video.</dt>
 <dd>
    <ul class=white>
