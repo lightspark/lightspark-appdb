@@ -88,6 +88,7 @@ if(isset($_REQUEST['submit']))
     
     redirect(apidb_fullurl("appview.php?appId={$_REQUEST['appId']}"));
 }
+else
 // Show the form for editing the Application Family 
 {
     $family = new TableVE("edit");
