@@ -72,7 +72,7 @@ function display_catpath($catId, $appId, $versionId = '')
  */
 function display_bundle($appId)
 {
-    $result = mysql_query("SELECT appFamily.appId, appName, description FROM appBundle, appFamily ".
+    $result = query_appdb("SELECT appFamily.appId, appName, description FROM appBundle, appFamily ".
                         "WHERE bundleId = $appId AND appBundle.appId = appFamily.appId");
     if(!$result || mysql_num_rows($result) == 0)
     {
@@ -285,7 +285,7 @@ if($appId && !$versionId)
     echo "        <tr class=color1 valign=top><td align=right> <b>URL</b></td><td>".$appLinkURL."</td></tr>\n";
 
     // optional links
-    $result = mysql_query("SELECT * FROM appData WHERE appId = $appId AND type = 'url'");
+    $result = query_appdb("SELECT * FROM appData WHERE appId = $appId AND type = 'url'");
     if($result && mysql_num_rows($result) > 0)
     {
         echo "        <tr class=color1><td valign=top align=right> <b>Links</b></td><td>\n";
@@ -527,7 +527,7 @@ else if($appId && $versionId)
 
     echo html_frame_end();
 
-    $rNotes = mysql_query("SELECT * FROM appNotes WHERE appId = $appId and versionId = $versionId");
+    $rNotes = query_appdb("SELECT * FROM appNotes WHERE appId = $appId and versionId = $versionId");
     
     while( $oNote = mysql_fetch_object($rNotes) )
     {
