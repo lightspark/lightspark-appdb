@@ -69,7 +69,7 @@ if(isset($_REQUEST['submit1']))
              $WhatChanged .= "-----------------------:\n";
              $WhatChanged .= stripslashes($old_description)."\n";
              $WhatChanged .= "-----------------------:\n";
-             $WhatChanged .= " Description: Vew Value:\n";
+             $WhatChanged .= " Description: New Value:\n";
              $WhatChanged .= "-----------------------:\n";
              $WhatChanged .= stripslashes($description)."\n";
              $WhatChanged .= "-----------------------:\n";
