@@ -423,7 +423,7 @@ function getNumberOfUsers()
 /* Get the number of active users within $days of the current day */
 function getActiveUsersWithinDays($days)
 {
-    $result = mysql_query("SELECT count(*) as num_users FROM user_list WHERE stamp >= 'NOW() - $days';");
+    $result = mysql_query("SELECT count(*) as num_users FROM user_list WHERE stamp >= DATE_SUB(CURDATE(), interval $days day);");
     $row = mysql_fetch_object($result);
     return $row->num_users;
 }
