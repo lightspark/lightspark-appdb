@@ -5,12 +5,12 @@
 
 // get modules
 ini_set("memory_limit","64M");
-require(BASE."include/"."config.php");
-require(BASE."include/"."util.php");
-require(BASE."include/"."user.php");
-require(BASE."include/"."session.php");
-require(BASE."include/"."menu.php");
-require(BASE."include/"."html.php");
+require(BASE."include/config.php");
+require(BASE."include/util.php");
+require(BASE."include/user.php");
+require(BASE."include/session.php");
+require(BASE."include/menu.php");
+require(BASE."include/html.php");
 require(BASE."include/db.php");
 
 // create arrays
@@ -55,11 +55,11 @@ function apidb_header($title = 0)
          $title = " - $title";
 
     // banner ad
-    include(BASE."include/"."banner.php");
+    include(BASE."include/banner.php");
     $banner_ad = banner_display();
 
     // Display Header
-    include(BASE."include/"."header.php");
+    include(BASE."include/header.php");
 
     // Display Sidebar
     echo "<table width='100%' border=0 cellspacing=0 cellpadding=0>\n";
@@ -101,16 +101,16 @@ function apidb_sidebar()
     //TURN on GLOBAL ADMIN MENU
     if ($_SESSION['current']->hasPriv("admin"))
     {
-        include(BASE."include/"."sidebar_admin.php");
+        include(BASE."include/sidebar_admin.php");
         apidb_sidebar_add("global_admin_menu");
     }
 
     // Login Menu
-    include(BASE."include/"."sidebar_login.php");
+    include(BASE."include/sidebar_login.php");
     apidb_sidebar_add("global_sidebar_login");
 
     // Main Menu
-    include(BASE."include/"."sidebar.php");
+    include(BASE."include/sidebar.php");
     apidb_sidebar_add("global_sidebar_menu");
 
     //LOOP and display menus
