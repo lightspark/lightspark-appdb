@@ -61,7 +61,8 @@ if (isset($_REQUEST['appName']))
     
     if($vendorName) $_REQUEST['vendorId']="";
     $oApplication = new Application();
-    $oApplication->create($_REQUEST['appName'], $_REQUEST['appDescription'], $_REQUEST['keywords']." *** ".$_REQUEST['vendorName'], $_REQUEST['webpage'],$_REQUEST['vendorId'], $_REQUEST['catId']);
+// FIXME When two htmlarea will be able to live on the same page without problems under gecko, remove the <p></p> around appDescrion
+    $oApplication->create($_REQUEST['appName'], "<p>".$_REQUEST['appDescription']."</p>", $_REQUEST['keywords']." *** ".$_REQUEST['vendorName'], $_REQUEST['webpage'],$_REQUEST['vendorId'], $_REQUEST['catId']);
     $oVersion = new Version();
     $oVersion->create($_REQUEST['versionName'], $_REQUEST['versionDescription'], null, null, $oApplication->iAppId);
     redirect(apidb_fullurl("index.php"));
@@ -109,18 +110,20 @@ function initDocument() {
                   "inserthorizontalrule", "createlink", "inserttable" ]
         ];
     config.width = 700;
-    var editor = new HTMLArea("editor",config);
-    editor.config.pageStyle = "@import url(./application.css);";
-    editor.registerPlugin(DynamicCSS);
-    editor.generate();
+    config.pageStyle = "@import url(./application.css);";
+// FIXME: when both editors and stylesheets are used, sometimes one of the editor is readonly under gecko
+// var editor = new HTMLArea("editor",config);
+// editor.registerPlugin(DynamicCSS);
 <?php
 if($_REQUEST['apptype'] == 1) // we have two editors, one for application and one for version.
 {?>
     var editor2 = new HTMLArea("editor2",config);
-    editor2.config.pageStyle = "@import url(./application.css);";
     editor2.generate();
+    editor2.registerPlugin(DynamicCSS);
 <?php
 }?>
+// FIXME: when both editors and stylesheets are used, sometimes one of the editor is readonly under gecko
+// editor.generate();
 }
 
 onload = function() {
@@ -136,7 +139,7 @@ onload = function() {
      * Templates
      * FIXME: put templates in config file or somewhere else.
      */
-    $sAppDescription = "<p>Enter description here</p>";
+    //$sAppDescription = "<p>Enter description here</p>";
     $sVersionDescription = "<p>This is a template; enter version-specific description here</p>
                             <p>
                                <span class=\"title\">Wine compatibility</span><br />
