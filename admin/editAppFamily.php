@@ -117,7 +117,7 @@ if(isset($_REQUEST['submit']))
         if (!empty($_REQUEST['url_desc']) && !empty($_REQUEST['url']) )
         {
             // process added URL
-            if(debugging()) { echo "<p align=center><b>{$_REQUEST['url']}:</b> {$_REQUEST['url_desc']} </p>"; }
+            if($_SESSION['current']->showDebuggingInfos()) { echo "<p align=center><b>{$_REQUEST['url']}:</b> {$_REQUEST['url_desc']} </p>"; }
         
             $aInsert = compile_insert_string( array( 'appId' => $_REQUEST['appId'],
                                              'type' => 'url',
@@ -126,7 +126,7 @@ if(isset($_REQUEST['submit']))
             
             $sQuery = "INSERT INTO appData ({$aInsert['FIELDS']}) VALUES ({$aInsert['VALUES']})";
 	    
-            if(debugging()) { echo "<p align=center><b>query:</b> $sQuery </p>"; }
+            if($_SESSION['current']->showDebuggingInfos()) { echo "<p align=center><b>query:</b> $sQuery </p>"; }
 	    
             if (query_appdb($sQuery))
             {
@@ -141,7 +141,7 @@ if(isset($_REQUEST['submit']))
         
         for($i = 0; $i < $_REQUEST['rows']; $i++)
         {
-            if(debugging()) { echo "<p align=center><b>{$_REQUEST['adescription'][$i]}:</b> {$_REQUEST['aURL'][$i]}: {$_REQUEST['adelete'][$i]} : {$_REQUEST['aId'][$i]} : .{$_REQUEST['aOldDesc'][$i]}. : {$_REQUEST['aOldURL'][$i]}</p>"; }
+            if($_SESSION['current']->showDebuggingInfos()) { echo "<p align=center><b>{$_REQUEST['adescription'][$i]}:</b> {$_REQUEST['aURL'][$i]}: {$_REQUEST['adelete'][$i]} : {$_REQUEST['aId'][$i]} : .{$_REQUEST['aOldDesc'][$i]}. : {$_REQUEST['aOldURL'][$i]}</p>"; }
             
             if ($_REQUEST['adelete'][$i] == "on")
             {
@@ -213,7 +213,7 @@ else
     
     $ob = mysql_fetch_object($result);
     
-    if(debugging()) { echo "<p align=center><b>appName:</b> $ob->appName </p>"; }
+    if($_SESSION['current']->showDebuggingInfos()) { echo "<p align=center><b>appName:</b> $ob->appName </p>"; }
 
      apidb_header("Edit Application Family");
 
