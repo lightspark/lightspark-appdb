@@ -57,7 +57,7 @@ function show_user_fields()
 
 }
 
-if($_REQUEST)
+if($_POST)
 {   
     $user = new User();
     
