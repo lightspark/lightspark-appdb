@@ -6,13 +6,13 @@ function mail_appdb($sEmailList,$sSubject,$sMsg)
     $sHeaders .= "Reply-to: AppDB <".APPDB_OWNER_EMAIL.">\r\n";
     $sHeaders .= "X-Priority: 3\r\n";
     $sHeaders .= "X-Mailer: ".APPDB_OWNER." mailer\r\n";
-
-    $sMsg  = $sSubject."\r\n---------------------------------------------\r\n".$sMsg;
-    $sMsg .= "Best regards.\r\n";
-    $sMsg .= "The AppDB team\r\n";
-    $sMsg .= APPDB_OWNER_URL."\r\n";
-    $sMsg .= "\r\n\r\nIf you don't want to receive any other e-mail, please change your preferences:\r\n";
-    $sMsg .= APPDB_ROOT."preferences.php\r\n";
+    $sMsg  = trim(ereg_replace("\r\n","\n",$sMsg));
+    $sMsg  = $sSubject."\n-------------------------------------------------------\n".$sMsg."\n\n";
+    $sMsg .= "Best regards.\n";
+    $sMsg .= "The AppDB team\n";
+    $sMsg .= APPDB_OWNER_URL."\n";
+    $sMsg .= "\n\nIf you don't want to receive any other e-mail, please change your preferences:\n";
+    $sMsg .= APPDB_ROOT."preferences.php\n";
 
     $bResult = mail(str_replace(" ",",",$sEmailList), "[AppDB] ".$sSubject, $sMsg, $sHeaders, "-f".APPDB_OWNER_EMAIL);
     if($bResult)

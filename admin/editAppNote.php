@@ -46,7 +46,7 @@ if(isset($_REQUEST['sub']))
        
         if($sEmail)
         {
-            $sMsg .= $_SESSION['current']->realname." deleted note from ".$sFullAppName."\r\n";
+            $sMsg .= $_SESSION['current']->sRealname." deleted note from ".$sFullAppName."\r\n";
             $sMsg .= "\r\n";
             $sMsg .= "title: ".$sOldNoteTitle."\r\n";
             $sMsg .= "\r\n";
@@ -67,7 +67,7 @@ if(isset($_REQUEST['sub']))
         
         if($sEmail)
         {
-            $sMsg .= $_SESSION['current']->realname." changed note for ".$sFullAppName."\r\n";
+            $sMsg .= $_SESSION['current']->sRealname." changed note for ".$sFullAppName."\r\n";
             $sMsg .= "From --------------------------\r\n";
             $sMsg .= "title: ".$sOldNoteTitle."\r\n";
             $sMsg .= "\r\n";

@@ -5,13 +5,10 @@
 
 function forum_lookup_user($iUserId)
 {
-    $mailto = '';
     if ($iUserId > 0)
     {
-        $sQuery = "SELECT email,realname FROM user_list WHERE userId = '".$iUserId."' LIMIT 1";   
-        $hResult = query_appdb($sQuery);
-        $oUsr = mysql_fetch_object($hResult);
-        $sMailto = '<a href="mailto:' . $oUsr->email . '">' . $oUsr->realname . '</a>';
+        $oUser = new User($iUserId);
+        $sMailto = '<a href="mailto:' . $oUser->sEmail . '">' . $oUser->sRealname . '</a>';
     }
     else
     {

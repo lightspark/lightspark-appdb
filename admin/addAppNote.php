@@ -47,7 +47,7 @@ if($_REQUEST['sub'] == "Submit")
             $sFullAppName .= " Version: ".lookupVersionName($_REQUEST['appId'], $_REQUEST['versionId']);
             $sMsg  = APPDB_ROOT."appview.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']."\r\n";
             $sMsg .= "\r\n";
-            $sMsg .= $_SESSION['current']->realname." added note to ".$sFullAppName."\r\n";
+            $sMsg .= $_SESSION['current']->sRealname." added note to ".$sFullAppName."\r\n";
             $sMsg .= "\r\n";
             $sMsg .= "title: ".$_REQUEST['noteTitle']."\r\n";
             $sMsg .= "\r\n";

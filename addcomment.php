@@ -57,41 +57,28 @@ if(isset($_REQUEST['body']))
     
     if ($result)
     {
-        if (is_numeric($_REQUEST['originator']))
+        $sEmail = $oOriginator->sEmail;
+        $sFullAppName = "Comment added to ".lookupAppName($_REQUEST['appId'])." ".lookupVersionName($_REQUEST['appId'], $_REQUEST['versionId']);
+        $sMsg  = APPDB_ROOT."appview.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId'].".\n";
+        $sMsg .= "\n";
+        $sMsg .= $_SESSION['current']->sRealname." added comment to ".$sFullAppName."\n";
+        $sMsg .= "\n";
+        $sMsg .= "Subject: ".$_REQUEST['subject']."\n";
+        $sMsg .= $_REQUEST['body']."\n";
+
+        $oOriginator = new User($_REQUEST['originator']);
+        if ($oOriginator->wantsEmail())
         {
-            $oOriginator = new User($_REQUEST['originator']);
-            if ($oOriginator->getPref("send_email")=="yes")
-            {
-                $sEmail = $oOriginator->sEmail;
-                $sFullAppName = "Application: ".lookupAppName($_REQUEST['appId'])." Version: ".lookupVersionName($_REQUEST['appId'], $_REQUEST['versionId']);
-                $sMsg  = APPDB_ROOT."appview.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId'].".\n";
-                $sMsg .= "\r\n";
-                $sMsg .= $_SESSION['current']->realname." added comment to ".$sFullAppName."\r\n";
-                $sMsg .= "\r\n";
-                $sMsg .= "Subject: ".$subject."\r\n";
-                $sMsg .= "\r\n";
-                $sMsg .= $_REQUEST['body']."\r\n";
-
-                mail_appdb($sEmail, $sFullAppName ,$sMsg);
-
-                addmsg("Comment message sent to original poster", "green");                   
-            }
+            mail_appdb($sEmail, $sFullAppName ,$sMsg);
+            addmsg("Comment message sent to original poster", "green");                   
         }
+    
         $sEmail = get_notify_email_address_list($_REQUEST['appId'], $_REQUEST['versionId']);
         if($sEmail)
         {
-            $sFullAppName = "Application: ".lookupAppName($_REQUEST['appId'])." Version: ".lookupVersionName($_REQUEST['appId'], $_REQUEST['versionId']);
-            $sMsg  = APPDB_ROOT."appview.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId'].".\r\n";
-            $sMsg .= "\r\n";
-            $sMsg .= $_SESSION['current']->realname." added comment to ".$fullAppName."\r\n";
-            $sMsg .= "\r\n";
-            $sMsg .= "Subject: ".$subject."\r\n";
-            $sMsg .= "\r\n";
-            $mssMsg .= $_REQUEST['body']."\r\n";
-
             mail_appdb($sEmail, $sFullAppName ,$sMsg);
         } 
-        addmsg("New Comment Posted", "green");
+        addmsg("New comment posted.", "green");
     }
     redirect(apidb_fullurl("appview.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']));
 }
@@ -125,7 +112,7 @@ else
     
   echo '<table width="100%" border=0 cellpadding=0 cellspacing=1>',"\n";
   echo "<tr class=\"color0\"><td align=right><b>From:</b>&nbsp;</td>\n";
-  echo "	<td>&nbsp;".$_SESSION['current']->realname."</td></tr>\n";
+  echo "	<td>&nbsp;".$_SESSION['current']->sRealname."</td></tr>\n";
   echo "<tr class=\"color0\"><td align=right><b>Subject:</b>&nbsp;</td>\n";
   echo "	<td>&nbsp;<input type=\"text\" size=\"35\" name=\"subject\" value=\"".$_REQUEST['subject']."\" /> </td></tr>\n";
   echo "<tr class=\"color1\"><td colspan=2><textarea name=\"body\" cols=\"70\" rows=\"15\" wrap=\"virtual\">".$_REQUEST['body']."</textarea></td></tr>\n";

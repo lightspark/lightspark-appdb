@@ -186,7 +186,7 @@ if(isset($_REQUEST['submit']))
             $sFullAppName = "Application: ".lookupAppName($_REQUEST['appId']);
             $sMsg  = APPDB_ROOT."appview.php?appId=".$_REQUEST['appId']."\r\n";
             $sMsg .= "\r\n";
-            $sMsg .= $_SESSION['current']->realname." changed ".$sFullAppName." \r\n";
+            $sMsg .= $_SESSION['current']->sRealname." changed ".$sFullAppName." \r\n";
             $sMsg .= "\r\n";
             $sMsg .= $sWhatChanged."\r\n";
             $sMsg .= "\r\n";
