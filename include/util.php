@@ -34,11 +34,29 @@ function values($arr)
 /*
  * format date
  */
-function makedate($time)
+function print_date($sTimestamp)
 {
-    return date("F d, Y  H:i:s", $time);
+    return date("F d Y  H:i:s", $sTimestamp);
 }
 
+function mysqltimestamp_to_unixtimestamp($sTimestamp)
+{
+  $d = substr($sTimestamp,6,2); // day
+  $m = substr($sTimestamp,4,2); // month
+  $y = substr($sTimestamp,0,4); // year
+  $hours = substr($sTimestamp,8,2); // year
+  $minutes = substr($sTimestamp,10,2); // year
+  $seconds = substr($sTimestamp,12,2); // year
+  return mktime($hours,$minutes,$seconds,$m, $d, $y);
+}
+
+function mysqldatetime_to_unixtimestamp($sDatetime)
+{
+    sscanf($sDatetime, "%4s-%2s-%2s %2s:%2s:%2s",
+           &$y, &$m, &$d,
+           &$hours, &$minutes, &$seconds);
+    return mktime($hours,$minutes,$seconds,$m, $d, $y);
+}
 
 function get_remote()
 {

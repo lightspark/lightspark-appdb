@@ -61,15 +61,14 @@ if (!$_REQUEST['id'])
         while($ob = mysql_fetch_object($hResult))
         {   
             if ($c % 2 == 1) { $bgcolor = 'color0'; } else { $bgcolor = 'color1'; }
-            echo "<tr class=$bgcolor>\n";
-            echo "    <td>".date("Y-n-t h:i:sa", $ob->submitTime)." &nbsp;</td>\n";
-            if($ob->userId)
-            {
-                $oUser = new User($ob->userId);
-                echo "    <td>".$oUser->sRealname." (".$oUser->sEmail.")</td>\n";
-            }
-            else
-            echo "    <td>Anonymous</td>\n";
+            echo "<tr class=\"$bgcolor\">\n";
+            echo "<td>".print_date(mysqltimestamp_to_unixtimestamp($oApp->sSubmitTime))."</td>\n";
+            $oUser = new User($ob->submitterId);
+            echo "<td>";
+            echo $oUser->sEmail ? "<a href=\"mailto:".$oUser->sEmail."\">":"";
+            echo $oUser->sRealname;
+            echo $oUser->sEmail ? "</a>":"";
+            echo "</td>\n";
             echo "<td>".lookup_app_name($ob->appId)."</td>\n";
             echo "<td>".lookup_version_name($ob->versionId)."</td>\n";
             echo "<td>".$ob->type."</td>\n";

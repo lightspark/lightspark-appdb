@@ -249,7 +249,7 @@ if ($_REQUEST['sub'])
     $query = "SELECT queueId, appId, versionId,".
                      "userId, maintainReason,".
                      "superMaintainer,".
-                     "UNIX_TIMESTAMP(submitTime) as submitTime ".
+                     "submitTime as submitTime ".
                      "from appMaintainerQueue;";
     $result = query_appdb($query);
 
@@ -290,7 +290,7 @@ if ($_REQUEST['sub'])
             $oVersion = new Version($ob->versionId);
             if ($c % 2 == 1) { $bgcolor = 'color0'; } else { $bgcolor = 'color1'; }
             echo "<tr class=$bgcolor>\n";
-            echo "    <td>".date("Y-n-t h:i:sa", $ob->submitTime)." &nbsp;</td>\n";
+            echo "    <td>".print_date(mysqldatetime_to_unixtimestamp($ob->submitTime))." &nbsp;</td>\n";
             echo "    <td>".$oApp->sName."</td>\n";
 
             if($ob->superMaintainer)

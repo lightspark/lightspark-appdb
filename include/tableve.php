@@ -1,7 +1,4 @@
 <?php
-
-require(BASE."include/"."parsedate.php");
-
 class TableVE {
 
     var $mode;
@@ -176,15 +173,6 @@ class TableVE {
 	echo html_frame_end();
     }
 
-    function timestamp_to_unix($stamp)
-    {
-	$result = query_appdb("select unix_timestamp($stamp)");
-	if(!$result)
-	    return 0;
-	$r = mysql_fetch_row($result);
-	return $r[0];
-    }
-
     function make_option_list($varname, $cvalue, $table, $idField, $nameField, $where = "")
     {
     
@@ -261,12 +249,12 @@ class TableVE {
 		echo "<textarea cols=$len rows=10 name='$varname'>".stripslashes($value)."</textarea>\n";
 		break;
 	    case "timestamp":
-		$time = $this->timestamp_to_unix($value);
-		echo makedate($time);
+		$time = mysqltimestamp_to_unixtimestamp($value);
+		echo print_date($time);
 		break;
 	    case "datetime":
-		$time = parsedate($value);
-		echo makedate($time);
+		$time = mysqldatetime_to_unixtimestamp($value);
+		echo print_date($time);
 		break;
 	    default:
 		echo "$value &nbsp;\n";
@@ -315,12 +303,12 @@ class TableVE {
                 echo "$value &nbsp;\n";
                 break;
             case "timestamp":
-                $time = $this->timestamp_to_unix($value);
-                echo makedate($time);
+                $time = mysqltimestamp_to_unixtimestamp($value);
+                echo print_date($time);
                 break;
             case "datetime":
-                $time = parsedate($value);
-                echo makedate($time);
+                $time = mysqldatetime_to_unixtimestamp($value);
+                echo print_date($time);
                 break;
             default:
                 echo "$value &nbsp;\n";

@@ -287,8 +287,12 @@ else
             }
             if ($c % 2 == 1) { $bgcolor = 'color0'; } else { $bgcolor = 'color1'; }
             echo "<tr class=\"$bgcolor\">\n";
-            echo "    <td>".date("Y-n-t h:i:sa", $oApp->sSubmitTime)." &nbsp;</td>\n";
-            echo "    <td><a href=\"mailto:".$oSubmitter->sEmail."\">".$oSubmitter->sRealname."</a></td>\n";
+            echo "    <td>".print_date(mysqltimestamp_to_unixtimestamp($oApp->sSubmitTime))."</td>\n";
+            echo "    <td>\n";
+            echo $oSubmitter->sEmail ? "<a href=\"mailto:".$oUser->sEmail."\">":"";
+            echo $oSubmitter->sRealname;
+            echo $oSubmitter->sEmail ? "</a>":"";
+            echo "    </td>\n";
             echo "    <td>".$sVendor."</td>\n";
             echo "    <td>".$oApp->sName."</td>\n";
             echo "    <td align=\"center\">[<a href=\"adminAppQueue.php?sub=view&appId=".$oApp->iAppId."\">process</a>]</td>\n";
@@ -343,8 +347,12 @@ else
             $sVendor = $oVendor->sName;
             if ($c % 2 == 1) { $bgcolor = 'color0'; } else { $bgcolor = 'color1'; }
             echo "<tr class=\"$bgcolor\">\n";
-            echo "    <td>".date("Y-n-t h:i:sa", $oVersion->sSubmitTime)." &nbsp;</td>\n";
-            echo "    <td><a href=\"mailto:".$oSubmitter->sEmail."\">".$oSubmitter->sRealname."</a></td>\n";
+            echo "    <td>".print_date(mysqltimestamp_to_unixtimestamp($oApp->sSubmitTime))."</td>\n";
+            echo "    <td>\n";
+            echo $oSubmitter->sEmail ? "<a href=\"mailto:".$oUser->sEmail."\">":"";
+            echo $oSubmitter->sRealname;
+            echo $oSubmitter->sEmail ? "</a>":"";
+            echo "    </td>\n";
             echo "    <td>".$sVendor."</td>\n";
             echo "    <td>".$oApp->sName."</td>\n";
             echo "    <td>".$oVersion->sName."</td>\n";

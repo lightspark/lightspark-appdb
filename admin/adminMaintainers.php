@@ -68,9 +68,8 @@ if ($_REQUEST['sub'])
             $oUser = new User($ob->userId);
             if ($c % 2 == 1) { $bgcolor = 'color0'; } else { $bgcolor = 'color1'; }
             echo "<tr class=$bgcolor>\n";
-            echo "    <td>".date("Y-n-t h:i:sa", $ob->submitTime)." &nbsp;</td>\n";
+            echo "    <td>".print_date(mysqldatetime_to_unixtimestamp($ob->submitTime))." &nbsp;</td>\n";
             echo "    <td><a href=\"mailto:".$oUser->sEmail."\">".$oUser->sRealname."</a></td>\n";
-            
             if($ob->superMaintainer)
             {
                 echo "    <td><a href='".BASE."appview.php?appId=$ob->appId'>".lookup_app_name($ob->appId)."</a></td>\n";
