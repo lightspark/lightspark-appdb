@@ -19,7 +19,6 @@ function admin_menu()
     $url = BASE."admin/deleteAny.php?what=category&catId=$catId&confirmed=yes";
     $m->add("Delete this Category", "javascript:deleteURL(\"Are you sure?\", \"".$url."\")");
 
-
     $m->done();
 }
 
@@ -62,23 +61,23 @@ if($subs)
     $c = 0;
     while(list($id, list($name, $desc)) = each($subs))
     {
-	//set row color
-	$bgcolor = ($c % 2 == 0) ? "color0" : "color1"; 
+	   //set row color
+	   $bgcolor = ($c % 2 == 0) ? "color0" : "color1"; 
 	
-	//get number of apps
+	   //get number of apps
         $appcount = $cat->getAppCount($id);
 
-	//format desc
-	$desc = substr(stripslashes($desc),0,70);
+	   //format desc
+	   $desc = substr(stripslashes($desc),0,70);
 
-	//display row
-	echo "<tr class=$bgcolor>\n";
-	echo "    <td><a href='appbrowse.php?catId=$id'>".stripslashes($name)."</a></td>\n";
-	echo "    <td>$desc &nbsp;</td>\n";
-	echo "    <td>$appcount &nbsp;</td>\n";
-	echo "</tr>\n\n";
+	   //display row
+	   echo "<tr class=$bgcolor>\n";
+	   echo "    <td><a href='appbrowse.php?catId=$id'>".stripslashes($name)."</a></td>\n";
+	   echo "    <td>$desc &nbsp;</td>\n";
+	   echo "    <td>$appcount &nbsp;</td>\n";
+	   echo "</tr>\n\n";
 			    
-	$c++;
+	   $c++;
     }
     
     echo "</table>\n\n";
@@ -107,27 +106,24 @@ if($apps)
     $c = 0;
     while(list($id, list($name, $desc)) = each($apps))
     {
-	//skip if a NONAME
-	if ($ob->appName == "NONAME") { continue; }    
-    
-	//set row color
-	$bgcolor = ($c % 2 == 0) ? "color0" : "color1";
+	   //set row color
+	   $bgcolor = ($c % 2 == 0) ? "color0" : "color1";
         
         //get number of versions
-	$query = mysql_query("SELECT count(*) as versions FROM appVersion WHERE appId = $id AND versionName != 'NONAME'");
-	$ob = mysql_fetch_object($query);
-        
-	//format desc
-	$desc = substr(stripslashes($desc),0,70);
+	   $query = mysql_query("SELECT count(*) as versions FROM appVersion WHERE appId = $id AND versionName != 'NONAME'");
+	   $ob = mysql_fetch_object($query);
 	
-	//display row
-	echo "<tr class=$bgcolor>\n";
-	echo "    <td><a href='appview.php?appId=$id'>".stripslashes($name)."</a></td>\n";
-	echo "    <td>$desc &nbsp;</td>\n";
-	echo "    <td>$ob->versions &nbsp;</td>\n";
-	echo "</tr>\n\n";
+	   //format desc
+	   $desc = substr(stripslashes($desc),0,70);
+	
+	   //display row
+	   echo "<tr class=$bgcolor>\n";
+	   echo "    <td><a href='appview.php?appId=$id'>".stripslashes($name)."</a></td>\n";
+	   echo "    <td>$desc &nbsp;</td>\n";
+	   echo "    <td>$ob->versions &nbsp;</td>\n";
+	   echo "</tr>\n\n";
 			
-	$c++;
+	   $c++;
     }
     
     echo "</table>\n\n";
