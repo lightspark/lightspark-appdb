@@ -196,8 +196,8 @@ if($HTTP_POST_VARS)
     echo "</td></tr>\n";
     echo '<input type=hidden name="rows" value='.$i.'>';
 
-    echo '<tr><td class=color1>New</td><td class=color1><input size=45% name="url" type="text"></td>',"\n";
-    echo '<td class=color1><input size=45% type="text" name="url_desc"></td></tr>',"\n";
+    echo '<tr><td class=color1>New</td><td class=color1><input size=45% type="text" name="url_desc"></td>',"\n";
+    echo '<td class=color1><input size=45% name="url" type="text"></td></tr>',"\n";
      
     echo '<tr><td colspan=3 align=center class=color3><input type="submit" name=submit1 value="Update URL"></td></tr>',"\n";
          
