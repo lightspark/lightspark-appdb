@@ -63,7 +63,7 @@ function view_app_comment($ob)
     echo "</td></tr>\n";
 
     // delete message button, for admins
-    if(havepriv("admin") || $_SESSION['current']->is_maintainer($ob->appId, $ob->versionId))
+    if (loggedin() && (havepriv("admin") || $_SESSION['current']->is_maintainer($appId,$versionId) ))
     {
         echo "<tr>";
         echo "<td><form method=\"post\" name=\"message\" action=\"".BASE."deletecomment.php\"><input type=submit value='Delete' class=button>\n";
