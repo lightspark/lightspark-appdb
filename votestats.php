@@ -17,9 +17,13 @@ $categoryId = "any"; /* default to all categories */
 /* process the post variables to override the default settings */
 if($_POST)
 {
-    if(isset($_POST['topNumber'])) $topNumber = $_POST['topNumber'];
-    if(isset($_POST['categoryId'])) $categoryId = $_POST['categoryId'];
+    if(isset($_POST['topNumber'])) $topNumber = (int)mysql_real_escape_string($_POST['topNumber']);
+    if(isset($_POST['categoryId'])) $categoryId = mysql_real_escape_string($_POST['categoryId']);
 }
+
+/* Check if the value makes sense */
+if(!is_integer($topNumber) || $topNumber > 200 || $topNumber < 1)
+    $topNumber = 25;
 
 apidb_header("Vote Stats - Top $topNumber Applications");
 
