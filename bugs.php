@@ -168,14 +168,14 @@ if($appId)
 	echo "<tr class=color0 valign=top><td width='250' align=right> <b>Vendor</b></td><td width='75%'> ".
 	     "   <a href='vendorview.php?vendorId=$vendor->vendorId'> ".stripslashes($vendor->vendorName)." </a> &nbsp;\n";
         echo "<tr class=color1 valign=top><td width='250' align=right> <b>All Bugs</b></td><td width='75%'> ".
-             "   <a href='http://bugs.winehq.org/buglist.cgi?product=Wine&bug_file_loc_type=allwords&bug_file_loc=appdb ".$data->appId."'>
+             "   <a href='".BUGZILLA_ROOT."buglist.cgi?product=Wine&bug_file_loc_type=allwords&bug_file_loc=appdb ".$data->appId."'>
              Look for All bugs in bugzilla </a> &nbsp;\n";
         echo "<tr class=color0 valign=top><td width=250 align=right> <b>Open Bugs</b></td><td width='75%'> ".
-             "   <a href='http://bugs.winehq.org/buglist.cgi?product=Wine".
+             "   <a href='".BUGZILLA_ROOT."buglist.cgi?product=Wine".
              "&bug_status=UNCONFIRMED&bug_status=NEW&bug_status=ASSIGNED&bug_status=REOPENED&bug_file_loc_type=allwords&bug_file_loc=appdb ".$data->appId."'>
              Look for Open bugs in bugzilla </a> &nbsp;\n";        
         echo "<tr class=color1 valign=top><td width='250' align=right> <b>Submit a New Bug</b></td><td width='75%'> ".
-             "   <a href='http://bugs.winehq.org/enter_bug.cgi?product=wine&bug_file_loc=http://appdb.winehq.org/appview.php?appid=".$data->appId."'>
+             "   <a href='".BUGZILLA_ROOT."enter_bug.cgi?product=Wine&bug_file_loc=".APPDB_OWNER_URL."appview.php?appid=".$data->appId."'>
              Submit a new bug in bugzilla </a> &nbsp;\n";
     	echo "</td></tr>\n";
 	   
@@ -190,8 +190,8 @@ if($appId)
 	
         <p>The link between the Application Database and Bugzilla is based on the bug having the following URL
 <?      
-        echo "<a href='http://appdb.winehq.org/appview.php?appId=".$data->appId."'>
-        http://appdb.winehq.org/appview.php?appId=".$data->appId."</a> &nbsp;\n";    
+        echo "<a href='".APPDB_OWNER_URL."appview.php?appId=".$data->appId."'>
+        ".APPDB_OWNER_URL."appview.php?appId=".$data->appId."</a> &nbsp;\n";    
 ?>
         in the bug's "URL" Field. If it is not entered, this search page can not find it.
 <?       
