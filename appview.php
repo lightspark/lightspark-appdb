@@ -150,7 +150,7 @@ function display_versions($iAppId, $aVersionsIds)
             echo "    <td><a href=\"appview.php?versionId=".$iVersionId."\">".$oVersion->sName."</a></td>\n";
             echo "    <td>".trim_description($oVersion->sDescription)."</td>\n";
             echo "    <td align=center>".$oVersion->sTestedRating."</td>\n";
-            echo "    <td align=center>".$oVersion->sTestedVersion."</td>\n";
+            echo "    <td align=center>".$oVersion->sTestedRelease."</td>\n";
             echo "    <td align=center>".sizeof($oVersion->aCommentsIds)."</td>\n";
             echo "</tr>\n\n";
 
