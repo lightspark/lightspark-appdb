@@ -169,7 +169,7 @@ function cmd_send_passwd()
     }
     else
     {
-        addmsg("Sorry, that username (".$_POST['ext_username'].") does not exist.", "red");
+        addmsg("Sorry, that username (". urlencode($_POST['ext_username']) .") does not exist.", "red");
     }
     
     redirect(apidb_fullurl("account.php?cmd=login"));

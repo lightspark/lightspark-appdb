@@ -16,7 +16,7 @@ if(mysql_num_rows($result) == 0)
 {
 	// do something
 	echo html_frame_start("","98%");
-	echo "No matches found for ".$_REQUEST['q']."\n";
+	echo "No matches found for ". urlencode($_REQUEST['q']) .  "\n";
 	echo html_frame_end();
 }
 else
