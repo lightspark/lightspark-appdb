@@ -71,10 +71,8 @@ echo "<tr class=color4>\n";
 echo "    <td>Images:</td>\n";
 echo "    <td>".getNumberOfImages()."</td>\n";
 echo "</tr>\n\n";
-
+	
 echo "</table>\n\n";
 echo html_frame_end("&nbsp;");
-
-echo "</form>";
 apidb_footer();
 ?>

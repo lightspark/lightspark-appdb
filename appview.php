@@ -97,14 +97,14 @@ function show_note($sType,$oData){
     $s = html_frame_start("","98%",'',0);
 
     $s .= "<table width=\"100%\" border=\"0\" cellspacing=\"0\">\n";
-    $s .= "<tr width=\"100%\" bgcolor=\"".$color."\" align=\"center\" valign=\"top\"><td><b>".$title."</b></td></tr>\n";
+    $s .= "<tr bgcolor=\"".$color."\" align=\"center\" valign=\"top\"><td><b>".$title."</b></td></tr>\n";
     $s .= "<tr><td class=\"note\">\n";
     $s .= $oData->noteDesc;
     $s .= "</td></tr>\n";
 
     if ($_SESSION['current']->hasPriv("admin") || $_SESSION['current']->isMaintainer($_REQUEST['versionId']))
     {
-        $s .= "<tr width=\"100%\" class=\"color1\" align=\"center\" valign=\"top\"><td>";
+        $s .= "<tr class=\"color1\" align=\"center\" valign=\"top\"><td>";
         $s .= "<form method=\"post\" name=\"message\" action=\"admin/editAppNote.php?noteId={$oData->noteId}\">";
         $s .= '<input type="submit" value="Edit Note" class="button">';
         $s .= '</form></td></tr>';
@@ -438,8 +438,9 @@ else if($_REQUEST['versionId'])
         echo "<form method=\"post\" name=\"delete\" action=\"javascript:deleteURL('Are you sure?', '".$url."')\">";
         echo '<input type=submit value="Delete Version" class="button" />';
         echo '</form>';
-        echo '<form method=post name=message action=admin/addAppNote.php?versionId='.$oVersion->iVersionId.'>';
-        echo '<input type=submit value="Add Note" class=button />';
+        echo '<form method="post" name="message" action="admin/addAppNote.php">';
+        echo '<input type="hidden" name="versionId" value="'.$oVersion->iVersionId.'" />';
+        echo '<input type="submit" value="Add Note" class="button" />';
         echo '</form>';
         echo '<form method=post name=message action=admin/addAppNote.php?versionId='.$oVersion->iVersionId.'>';
         echo '<input type=hidden name="noteTitle" value="HOWTO" />';
