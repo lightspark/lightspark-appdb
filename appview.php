@@ -367,7 +367,7 @@ if($appId && !$versionId)
     if(loggedin())
     {
         /* are we already a maintainer? */
-        if($_SESSION['current']->is_super_maintainer($appId) /* yep */
+        if($_SESSION['current']->is_super_maintainer($appId)) /* yep */
         {
             echo '        <form method=post name=message action="maintainerdelete.php"><input type=submit value="Remove yourself as a super maintainer" class=button>';
         } else /* nope */
