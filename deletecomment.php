@@ -32,8 +32,6 @@ if(!havepriv("admin") &&
     exit;
 }
 
-opendb();
-
 /* retrieve the parentID of the comment we are deleting */
 /* so we can fix up the parentIds of this comments children */
 $result = query_appdb("SELECT parentId FROM appComments WHERE commentId = '".$_REQUEST['commentId']."'");

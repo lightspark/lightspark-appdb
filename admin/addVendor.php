@@ -28,7 +28,7 @@ else
     $table = "vendor";
     $query = "INSERT INTO $table VALUES(0, 'NONAME', null)";
 
-    mysql_query("DELETE FROM $table WHERE vendorName = 'NONAME'");
+    query_appdb("DELETE FROM $table WHERE vendorName = 'NONAME'");
 
     if(debugging())
 	echo "$query <br /><br />\n";

@@ -18,8 +18,6 @@ class TableVE {
 	$this->titleField = "";
 	$this->titleText = "";
 	$this->numberedTitles = 0;
-
-	opendb();
     }
 
     function test($query)

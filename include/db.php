@@ -14,21 +14,6 @@ function query_appdb($sQuery,$sComment="")
 }
 
 
-function query_userdb($sQuery)
-{
-    global $hUserLink;
-
-    if(!$hUserLink)
-    {
-        $hUserLink = mysql_pconnect(USERS_DBHOST, USERS_DBUSER, USERS_DBPASS);
-        mysql_select_db(USERS_DB);
-    }
-    $hResult = mysql_query($sQuery, $hUserLink);
-    if(!$hResult) query_error($sComment);
-    return $hResult;
-}
-
-
 function query_bugzilladb($sQuery,$sComment="")
 {
     global $hBugzillaLink;

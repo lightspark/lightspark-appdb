@@ -31,7 +31,7 @@ else
     $table = "appVersion";
     $query = "INSERT INTO $table VALUES(0, $appId, 'NONAME', null, null, null, 0.0, 0.0)";
 
-    mysql_query("DELETE FROM $table WHERE versionName = 'NONAME'");
+    query_appdb("DELETE FROM $table WHERE versionName = 'NONAME'");
 
     if(debugging())
 	echo "$query <br /><br />\n";

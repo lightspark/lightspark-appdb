@@ -210,13 +210,7 @@ function dumpmsgbuffer()
     query_appdb("DELETE FROM sessionMessages WHERE sessionId = '".session_id()."'");
 }
 
-
-/*
- * Start DB Connection
- */
-opendb();
-
-/*
+/**
  * Init Session (stores user info and cart info in session)
  */
 $session = new session("whq_appdb");

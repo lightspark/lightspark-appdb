@@ -41,8 +41,6 @@ if(!loggedin())
     exit;
 }
 
-opendb();
-
 $appId = strip_tags($_POST['appId']);
 $versionId = strip_tags($_POST['versionId']);
 $superMaintainer = strip_tags($_POST['superMaintainer']);

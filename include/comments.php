@@ -87,7 +87,7 @@ function grab_comments($appId, $versionId, $parentId = -1)
                $extra.
                "ORDER BY appComments.time ASC";
 
-    $result = mysql_query($qstring);
+    $result = query_appdb($qstring);
 
     return $result;
 }
@@ -99,7 +99,7 @@ function grab_comments($appId, $versionId, $parentId = -1)
 function count_comments($appId, $versionId)
 {
     $qstring = "SELECT count(commentId) as hits FROM appComments WHERE appId = $appId AND versionId = $versionId";   
-    $result = mysql_query($qstring);
+    $result = query_appdb($qstring);
     $ob = mysql_fetch_object($result);
     return $ob->hits;
 }
@@ -192,7 +192,7 @@ function display_comments_flat($appId, $versionId)
 function view_app_comments($appId, $versionId, $threadId = 0)
 {
     // count posts
-    $result = mysql_query("SELECT commentId FROM appComments WHERE appId = $appId AND versionId = $versionId");
+    $result = query_appdb("SELECT commentId FROM appComments WHERE appId = $appId AND versionId = $versionId");
     $messageCount = mysql_num_rows($result);
     
     //start comment format table

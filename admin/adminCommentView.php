@@ -93,14 +93,14 @@ echo "</center>";
 
 /* query for all of the commentId's, ordering by their time in reverse order */
 $offset = $currentPage * $commentsPerPage;
-$commentIds = mysql_query("SELECT commentId from appComments ORDER BY ".
+$commentIds = query_appdb("SELECT commentId from appComments ORDER BY ".
                           "appComments.time ASC LIMIT $offset, $commentsPerPage;");
 while ($ob = mysql_fetch_object($commentIds))
 {
     $qstring = "SELECT from_unixtime(unix_timestamp(time), \"%W %M %D %Y, %k:%i\") as time, ".
         "commentId, parentId, appId, versionId, userid, subject, body ".
         "FROM appComments WHERE commentId = $ob->commentId;";
-    $result = mysql_query($qstring);
+    $result = query_appdb($qstring);
 
     /* call view_app_comment to display the comment */
     $comment_ob = mysql_fetch_object($result);

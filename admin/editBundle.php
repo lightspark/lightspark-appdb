@@ -11,7 +11,7 @@ if(!havepriv("admin"))
 
 function build_app_list()
 {
-    $result = mysql_query("SELECT appId, appName FROM appFamily ORDER BY appName");
+    $result = query_appdb("SELECT appId, appName FROM appFamily ORDER BY appName");
     
     echo "<select name=appId size=5 onChange='this.form.submit()'>\n";
     while($ob = mysql_fetch_object($result))
@@ -26,7 +26,7 @@ if($cmd)
 {
     if($cmd == "delete")
 	{
-	    $result = mysql_query("DELETE FROM appBundle WHERE appId = $appId AND bundleId = $bundleId");
+	    $result = query_appdb("DELETE FROM appBundle WHERE appId = $appId AND bundleId = $bundleId");
 	    if($result)
 		addmsg("App deleted from bundle", "green");
 	    else
@@ -34,7 +34,7 @@ if($cmd)
 	}
     if($cmd == "add")
 	{
-	    $result = mysql_query("INSERT INTO appBundle VALUES ($bundleId, $appId)");
+	    $result = query_appdb("INSERT INTO appBundle VALUES ($bundleId, $appId)");
 	    if($result)
 		addmsg("App $appId added to Bundle $bundleId", "green");
 	    else
@@ -47,7 +47,7 @@ else
 {
     apidb_header("Edit Application Bundle");
 
-    $result = mysql_query("SELECT bundleId, appBundle.appId, appName FROM appBundle, appFamily ".
+    $result = query_appdb("SELECT bundleId, appBundle.appId, appName FROM appBundle, appFamily ".
 			  "WHERE bundleId = $bundleId AND appFamily.appId = appBundle.appId");
 
     if($result && mysql_num_rows($result))

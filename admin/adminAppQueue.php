@@ -27,7 +27,7 @@ if ($_REQUEST['sub'])
     {
         //get data
         $query = "SELECT * from appQueue where queueId = ".$_REQUEST['queueId'].";";
-        $result = mysql_query($query);
+        $result = query_appdb($query);
         $ob = mysql_fetch_object($result);
         mysql_free_result($result);
     }
@@ -110,7 +110,7 @@ if ($_REQUEST['sub'])
             //category
 
             $query = "select * from appCategory where catId = '$ob->queueCatId';";
-            $result = mysql_query($query);
+            $result = query_appdb($query);
             if($result)
             {
                 $ob2 = mysql_fetch_object($result);
@@ -143,7 +143,7 @@ if ($_REQUEST['sub'])
             // Use the first match if we found one and clear out the vendor field,
             // otherwise don't pick a vendor
             $query = "select * from vendor where vendorname = '$ob->queueVendor';";
-            $result = mysql_query($query);
+            $result = query_appdb($query);
             $checkvendor = 0;
             if($result)
             {
@@ -154,7 +154,7 @@ if ($_REQUEST['sub'])
             {
                 // try for a partial match
                 $query = "select * from vendor where vendorname like '%$ob->queueVendor%';";
-                $result = mysql_query($query);
+                $result = query_appdb($query);
                 if($result)
                 {
                     $ob2 = mysql_fetch_object($result);
@@ -236,7 +236,7 @@ if ($_REQUEST['sub'])
                     //get the id of the app just added    
                 $_REQUEST['appParent'] = mysql_insert_id();
                 //delete queue item
-                mysql_query("DELETE from appQueue where queueId = ".$_REQUEST['queueId'].";");
+                query_appdb("DELETE from appQueue where queueId = ".$_REQUEST['queueId'].";");
                                             
                 //set ver if not set
                 if (!$_REQUEST['queueVersion'])
@@ -294,7 +294,7 @@ if ($_REQUEST['sub'])
                     $_REQUEST['appVersion'] = mysql_insert_id();
                     $statusMessage = "<p>The application ".$_REQUEST['queueName']." was successfully added into the database</p>\n";
                     addmsg($statusMessage,"Green");
-                    mysql_query("DELETE from appQueue where queueId = ".$_REQUEST['queueId'].";");
+                    query_appdb("DELETE from appQueue where queueId = ".$_REQUEST['queueId'].";");
                     $goodtogo = 1;
                                         
                 }
@@ -360,12 +360,10 @@ if ($_REQUEST['sub'])
     {
         //delete main item
         $query = "DELETE from appQueue where queueId = ".$_REQUEST['queueId'].";";
-        $result = mysql_query($query);
+        $result = query_appdb($query, "unable to delete selected application!");
         if(!$result)
         {
-            //error
-            addmsg("Internal Error: unable to delete selected application!", "red");
-            redirect(apidb_fullurl("admin/adminAppQueue.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']));
+          redirect(apidb_fullurl("admin/adminAppQueue.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']));
         }
         else
         {   
@@ -413,7 +411,7 @@ else
                      "queueVersion, queueEmail, queueCatId,".
                      "UNIX_TIMESTAMP(submitTime) as submitTime ".
                      "from appQueue;";
-    $result = mysql_query($query);
+    $result = query_appdb($query);
 
     if(!$result || !mysql_num_rows($result))
     {
@@ -454,7 +452,7 @@ else
             if ($ob->queueCatId == -1)
             {
                 $query2 = "select * from appFamily where appId = '$ob->queueName';";
-                $result2 = mysql_query($query2);
+                $result2 = query_appdb($query2);
                 if($result2)
                 {
                     $ob2 = mysql_fetch_object($result2);

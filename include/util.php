@@ -1,27 +1,4 @@
 <?php
-
-$dbcon = null;
-$dbref = 0;
-
-function opendb()
-{
-    global $dbcon, $dbref;
-
-    $dbref++;
-
-    if($dbcon)
-	return $dbcon;
-
-    $dbcon = mysql_connect(APPS_DBHOST, APPS_DBUSER, APPS_DBPASS);
-    if(!$dbcon) 
-	{
-	    echo "An error occurred: ".mysql_error()."<p>\n";
-	    exit;
-	}
-    mysql_select_db(APPS_DB);
-    return $dbcon;
-}
-
 function build_urlarg($vars)
 {
 	$arr = array();

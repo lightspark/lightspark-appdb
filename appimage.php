@@ -36,8 +36,6 @@ if(!$versionId) {
     $versionId = 0;
 }
 
-opendb();
-
 // We have input, but wrong input
 if( ( $width AND !is_numeric($width) ) || ( $height AND !is_numeric($height) ) )
 {

@@ -17,8 +17,6 @@ if(!loggedin())
 
 function build_prefs_list()
 {
-    opendb();
-
     $result = query_appdb("SELECT * FROM prefs_list ORDER BY id");
     while($r = mysql_fetch_object($result))
         {

@@ -122,7 +122,7 @@ class User {
         $sFields = "({$aInsert['FIELDS']}, `password`, `stamp`, `created`)";
         $sValues = "({$aInsert['VALUES']}, password('".$sPassword."'), NOW(), NOW() )";
 
-        if (!query_userdb("INSERT INTO user_list $sFields VALUES $sValues"))
+        if (!query_appdb("INSERT INTO user_list $sFields VALUES $sValues"))
         {
             return mysql_error();
         }

@@ -250,7 +250,7 @@ else
     echo '<table border=0 cellpadding=6 cellspacing=0 width="100%">',"\n";
             
     $i = 0;
-    $result = mysql_query("SELECT * FROM appData WHERE appId = $ob->appId AND type = 'url' AND versionId = 0");
+    $result = query_appdb("SELECT * FROM appData WHERE appId = $ob->appId AND type = 'url' AND versionId = 0");
     if($result && mysql_num_rows($result) > 0)
     {
         echo '<tr><td class=color1><b>Delete</b></td><td class=color1>',"\n";

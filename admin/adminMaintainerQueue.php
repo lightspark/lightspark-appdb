@@ -24,7 +24,7 @@ if ($_REQUEST['sub'])
                      "userId, maintainReason, superMaintainer,".
                      "UNIX_TIMESTAMP(submitTime) as submitTime ".
                      "FROM appMaintainerQueue WHERE queueId = ".$_REQUEST['queueId'].";";
-        $result = mysql_query($query);
+        $result = query_appdb($query);
         $ob = mysql_fetch_object($result);
         mysql_free_result($result);
     }
@@ -167,10 +167,6 @@ if ($_REQUEST['sub'])
     }
     else if ($_REQUEST['add'] && $_REQUEST['queueId'])
     {
-        //add this user, app and version to the database
-        $statusMessage = "";
-        $goodtogo = 0;
-
         // insert the new entry into the maintainers list
         $query = "INSERT into appMaintainers VALUES(null,".
                     "$ob->appId,".
@@ -179,23 +175,16 @@ if ($_REQUEST['sub'])
                     "$ob->superMaintainer,".
                     "NOW());";
 
-        if (mysql_query($query))
+        if (query_appdb($query))
         {
             $statusMessage = "<p>The maintainer was successfully added into the database</p>\n";
 
             //delete the item from the queue
-            mysql_query("DELETE from appMaintainerQueue where queueId = ".$_REQUEST['queueId'].";");
-
-            $goodtogo = 1; /* set to 1 so we send the response email */
-        } else
-        {
-           //error
-           $statusMessage = "<p><b>Database Error!<br>".mysql_error()."</b></p>\n";
-        }
-
-        //Send Status Email
-        if (lookupEmail($ob->userId) && $goodtogo)
-        {
+            query_appdb("DELETE from appMaintainerQueue where queueId = ".$_REQUEST['queueId'].";");
+ 
+            //Send Status Email
+            if (lookupEmail($ob->userId))
+            {
                 $ms =  "Application Maintainer Request Report\n";
                 $ms .= "----------------------------------\n\n";
                 $ms .= "Your application to be the maintainer of ".appIdToName($ob->appId).versionIdToName($ob->versionId)." has been accepted. ";
@@ -205,10 +194,11 @@ if ($_REQUEST['sub'])
                 $ms .= "-The AppDB admins\n";
                 
                 mail(stripslashes(lookupEmail($ob->userId)),'[AppDB] Maintainer Request Report',$ms);
-        }
+            }
         
-        //done
-        addmsg("<p><b>$statusMessage</b></p>", 'green');
+            //done
+            addmsg("<p><b>$statusMessage</b></p>", 'green');
+        }
     }
     else if (($_REQUEST['reject'] || ($_REQUEST['sub'] == 'reject')) && $_REQUEST['queueId'])
     {
@@ -226,14 +216,9 @@ if ($_REQUEST['sub'])
 
        //delete main item
        $query = "DELETE from appMaintainerQueue where queueId = ".$_REQUEST['queueId'].";";
-       $result = mysql_query($query);
+       $result = query_appdb($query,"unable to delete selected maintainer application");
        echo html_frame_start("Delete maintainer application",400,"",0);
-       if(!$result)
-       {
-           //error
-           echo "<p>Internal Error: unable to delete selected maintainer application!</p>\n";
-       }
-       else
+       if($result)
        {
            //success
            echo "<p>Maintainer application was successfully deleted from the Queue.</p>\n";
@@ -258,7 +243,7 @@ if ($_REQUEST['sub'])
                      "superMaintainer,".
                      "UNIX_TIMESTAMP(submitTime) as submitTime ".
                      "from appMaintainerQueue;";
-    $result = mysql_query($query);
+    $result = query_appdb($query);
 
     if(!$result || !mysql_num_rows($result))
     {

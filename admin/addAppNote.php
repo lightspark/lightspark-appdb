@@ -35,7 +35,7 @@ if($_REQUEST['sub'] == "Submit")
                                 addslashes($_REQUEST['noteTitle'])."', '".
                                 addslashes($_REQUEST['noteDesc'])."', ".
                                 "{$_REQUEST['appId']}, {$_REQUEST['versionId']})"; 
-    if (mysql_query($query))
+    if (query_appdb($query))
     {
         // successful
         $email = getNotifyEmailAddressList($_REQUEST['appId'], $_REQUEST['versionId']);

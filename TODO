@@ -11,13 +11,6 @@ RELATED TODO: how to handle deleting accounts that have comments?  go through
 and assign them to a special account number that prints (account deleted due 
 to inactivity)
 
-# replace all mysql_query() by query_appdb() (available from include/db.php).
-When it's done we have to remove opendb() function call in incl.php and definition 
-in util.php as query_appdb already does the connection when needed.
-
-# we have to check if we really need to separate user database from appdb database
-(as seen in the config file and include/db.php)
-
 # when deleting an application we should delete linked entries (screenshots, comments, etc.)
 
 # when deleting a screenshot we should delete the image file as well

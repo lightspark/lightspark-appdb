@@ -24,7 +24,7 @@ else
     $table = "appFamily";
     $query = "INSERT INTO $table VALUES(0, 'NONAME', 0, null, null, null, $catId)";
 
-    mysql_query("DELETE FROM $table WHERE appName = 'NONAME'");
+    query_appdb("DELETE FROM $table WHERE appName = 'NONAME'");
 
     if(debugging()) { echo "<p align=center><b>query:</b> $query </p>"; }
 

@@ -22,10 +22,10 @@ if(!havepriv("admin"))
 if (!$_REQUEST['queueId'])
 {
     //get available appData
-    $str_query = "SELECT * from appDataQueue;";
-    $result = mysql_query($str_query);
+    $sQuery = "SELECT * from appDataQueue;";
+    $hResult = query_appdb($sQuery);
 
-    if(!$result || !mysql_num_rows($result))
+    if(!$hResult || !mysql_num_rows($hResult))
     {
         //no appData in queue
         echo html_frame_start("","90%");
@@ -55,7 +55,7 @@ if (!$_REQUEST['queueId'])
         echo "</tr>\n\n";
         
         $c = 1;
-        while($ob = mysql_fetch_object($result))
+        while($ob = mysql_fetch_object($hResult))
         {   
             if($_SESSION['current']->is_maintainer($ob->queueappId,
                                                    $ob->queueversionId) 
@@ -90,9 +90,9 @@ if (!$_REQUEST['queueId'])
         exit;
     }
     
-    $str_request="SELECT * FROM appDataQueue WHERE queueId='".$_REQUEST['queueId']."'";
-    $res_result=mysql_query($str_request);
-    $obj_row=mysql_fetch_object($res_result);
+    $sQuery="SELECT * FROM appDataQueue WHERE queueId='".$_REQUEST['queueId']."'";
+    $hResult=query_appdb($sQuery);
+    $obj_row=mysql_fetch_object($hResult);
     
     if(!$_REQUEST['sub']=="inside_form")
     {       
@@ -168,16 +168,16 @@ if (!$_REQUEST['queueId'])
         
         if($obj_row->type == "image")
         { 
-            $str_query = "INSERT INTO appData VALUES (null, ".$obj_row->appId.", ".$obj_row->versionId.", 'image', ".
+            $sQuery = "INSERT INTO appData VALUES (null, ".$obj_row->appId.", ".$obj_row->versionId.", 'image', ".
                      "'".addslashes($_REQUEST['description'])."', '')";
-            mysql_query($str_query);
+            query_appdb($sQuery);
             $int_id = mysql_insert_id();
  
             // we move the content in the live directory
             rename("../data/queued/screenshots/".$obj_row->queueId, "../data/screenshots/".$int_id);
 
             // we have to update the entry now that we know its name
-            $str_query = "UPDATE appData SET url = '".$int_id."' WHERE id = '".$int_id."'";
+            $sQuery = "UPDATE appData SET url = '".$int_id."' WHERE id = '".$int_id."'";
    
         }
         elseif ($obj_row->type == "url") {
@@ -187,23 +187,16 @@ if (!$_REQUEST['queueId'])
 
         if(debugging()) addmsg("<p align=center><b>query:</b> $query </p>","green");
     
-        if (mysql_query($str_query))
+        if (query_appdb($sQuery))
         {
             $statusMessage = "<p>The application data was successfully added into the database</p>\n";
 
             //delete the item from the queue
-            mysql_query("DELETE from appDataQueue where queueId = ".$obj_row->queueId.";");
-
-            $goodtogo = 1; /* set to 1 so we send the response email */
-        } else
-        {
-           //error
-           $statusMessage = "<p><b>Database Error!<br>".mysql_error()."</b></p>\n";
-        }
-
-        //Send Status Email
-        if (lookupEmail($obj_row->userId) && $goodtogo)
-        {
+            query_appdb("DELETE from appDataQueue where queueId = ".$obj_row->queueId.";");
+        
+            //Send Status Email
+            if (lookupEmail($obj_row->userId))
+            {
                 $ms =  "Application Data Request Report\n";
                 $ms .= "----------------------------------\n\n";
                 $ms .= "Your submission of an application data for ".appIdToName($obj_row->appId).versionIdToName($obj_row->versionId)." has been accepted. ";
@@ -213,11 +206,12 @@ if (!$_REQUEST['queueId'])
                 $ms .= "-The AppDB admins\n";
                 
                 mail(stripslashes(lookupEmail($obj_row->userId)),'[AppDB] Application Data Request Report',$ms);
-        }
+            }
         
-        //done
-        echo html_frame_start("Submit App Data","600");
-        echo "<p><b>$statusMessage</b></p>\n";
+            //done
+            echo html_frame_start("Submit App Data","600");
+            echo "<p><b>$statusMessage</b></p>\n";
+        }
     } elseif ($_REQUEST['reject'])
     {
        if (lookupEmail($obj_row->userId))
@@ -233,17 +227,12 @@ if (!$_REQUEST['queueId'])
        }
 
        //delete main item
-       $str_query = "DELETE from appDataQueue where queueId = ".$obj_row->queueId.";";
+       $sQuery = "DELETE from appDataQueue where queueId = ".$obj_row->queueId.";";
        unlink("../data/queued/screenshots/".$obj_row->queueId);
 
-       $result = mysql_query($str_query);
+       $hResult = query_appdb($sQuery);
        echo html_frame_start("Delete application data submission",400,"",0);
-       if(!$result)
-       {
-           //error
-           echo "<p>Internal Error: unable to delete selected maintainer application!</p>\n";
-       }
-       else
+       if($result)
        {
            //success
            echo "<p>Application data  was successfully deleted from the Queue.</p>\n";

@@ -31,15 +31,6 @@ define("APPS_DB","apidb");
 
 
 /*
- * users database info
- */
-define("USERS_DBUSER","wineowner");
-define("USERS_DBPASS","lemonade");
-define("USERS_DBHOST","localhost");
-define("USERS_DB","apidb");
-
-
-/*
  * bugzilla database info
  */
 define("BUGZILLA_DBUSER","root");

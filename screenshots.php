@@ -1,4 +1,4 @@
- <?php
+<?php
 /*******************************************************************/
 /* this script expects appId and optionally versionId as arguments */
 /* OR                                                              */
