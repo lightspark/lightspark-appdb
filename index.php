@@ -33,7 +33,7 @@ $str_benefits="
         <li>Submit new applications and versions.</li>
     </ul>
 ";
-if(!loggedin()) 
+if(!$_SESSION['current']->isLoggedIn()) 
 {
     echo "
     <p>Most of the features of the Application database require that you have a user account and

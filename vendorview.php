@@ -27,7 +27,7 @@ if(!$result || mysql_num_rows($result) != 1) {
 }
 
 //show admin sidebar if user is admin
-if(havepriv("admin")) {
+if($_SESSION['current']->hasPriv("admin")) {
     apidb_sidebar_add("admin_menu");
 }
 

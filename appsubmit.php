@@ -10,7 +10,7 @@ require(BASE."include/"."tableve.php");
 
 // Send user to the correct branch of code even if they try to bypass
 // the first page (appsubmit.php without parameters)
-if(!loggedin())
+if(!$_SESSION['current']->isLoggedIn())
 {
   unset($_REQUEST['queueName']);
   unset($_REQUEST['apptype']);
@@ -106,7 +106,7 @@ if (isset($_REQUEST['queueName']))
 else if (isset($_REQUEST['apptype']))
 {
   // set email field if logged in
-  if (loggedin())
+  if ($_SESSION['current']->isLoggedIn())
     $email = $_SESSION['current']->lookup_email($_SESSION['current']->userid);
 
   // header
@@ -213,7 +213,7 @@ else if (isset($_REQUEST['apptype']))
 ##########################
 else
 { 
-  if(!loggedin())
+  if(!$_SESSION['current']->isLoggedIn())
   {
     // you must be logged in to submit app
     apidb_header("Please login");

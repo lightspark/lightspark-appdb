@@ -47,7 +47,7 @@ function apidb_fullpath($path)
  */
 function apidb_header($title = 0)
 {
-    $realname = isset($_SESSION['current'])?$_SESSION['current']->realname:"";
+    $realname = $_SESSION['current']->sRealname;
 
     // Set Page Title
     $page_title = $title;
@@ -99,7 +99,7 @@ function apidb_sidebar()
     global $sidebar_func_list;
 
     //TURN on GLOBAL ADMIN MENU
-    if (havepriv("admin"))
+    if ($_SESSION['current']->hasPriv("admin"))
     {
         include(BASE."include/"."sidebar_admin.php");
         apidb_sidebar_add("global_admin_menu");
@@ -218,11 +218,13 @@ function dumpmsgbuffer()
 }
 
 /**
- * Init Session (stores user info and cart info in session)
+ * Init Session (stores user info in session)
  */
 $session = new session("whq_appdb");
 $session->register("current");
 
+if(!isset($_SESSION['current'])) $_SESSION['current'] = new User();
+
 // if we are debugging we need to see all errors
-if(debugging()) error_reporting(E_ALL ^ E_NOTICE);
+if($_SESSION['current']->showDebuggingInfos()) error_reporting(E_ALL ^ E_NOTICE);
 ?>

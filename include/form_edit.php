@@ -23,7 +23,7 @@
 </tr>
 <?php
 // if we manage another user we can give him administrator rights
-if($iUserId == $_REQUEST['userId'])
+if($oUser->iUserId == $_REQUEST['userId'])
 {
 ?>
 <tr>

@@ -6,7 +6,7 @@
 include("path.php");
 require(BASE."include/"."incl.php");
 require(BASE."include/"."screenshot.php");
-if(!havepriv("admin") && $_REQUEST['queued'])
+if(!$_SESSION['current']->hasPriv("admin") && $_REQUEST['queued'])
 {
     errorpage("Insufficient privileges.");
     exit;

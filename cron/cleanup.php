@@ -30,16 +30,18 @@ include(BASE."include/mail.php");
 $hSixMonth = inactiveSince(6);
 while($oRow = mysql_fetch_object($hSixMonth))
 {
-    if(isMaintainer($oRow->userid))
-        warnMaintainer(lookupEmail($oRow->userid));
+    $oUser = new User($oRow->userid);
+    if($oUser->isMaintainer())
+        warnMaintainer($oUser->sEmail);
     elseif(!hasDataAssociated($oRow->userid))
-        warnUser(lookupEmail($oRow->userid));    
+        warnUser($oUser->sEmail);    
 }
 
 $hSevenMonth = inactiveSince(7);
 while($oRow = mysql_fetch_object($hSevenMonth))
 {
-    if(isMaintainer($oRow->userid))
+    $oUser = new User($oRow->userid);
+    if($oUser->isMaintainer())
         deleteMaintainer($oRow->userid);
     elseif(!hasDataAssociated($oRow->userid))
         deleteUser($oRow->userid);    
@@ -77,20 +79,22 @@ function hasDataAssociated($iUserId)
 
 function deleteUser($iUserId)
 {
-    warnUserDeleted(lookupEmail($iUserId));
-    echo "user ".lookupEmail($iUserId)." deleted.\n";
+    $oUser = new User($iUserId);
+    warnUserDeleted($oUser->sEmail);
+    echo "user ".$oUser->sEmail." deleted.\n";
     $sQuery = "DELETE FROM user_list WHERE userid = $iUserId";
     $hResult = query_appdb($sQuery);
     $sQuery = "DELETE FROM user_prefs WHERE userid = $iUserId";
     $hResult = query_appdb($sQuery);
 }
 
-function deleteMaintainer()
+function deleteMaintainer($iUserId)
 {
+    $oUser = new User($iUserId);
     $sQuery = "DELETE FROM appMaintainers WHERE userId = $iUserId";
     $hResult = query_appdb($sQuery);
-    warnMaintainerDeleted(lookupEmail($iUserId));
-    echo "user ".lookupEmail($iUserId)." is not a maintainer anymore.\n";
+    warnMaintainerDeleted($oUser->sEmail);
+    echo "user ".$oUser->sEmail." is not a maintainer anymore.\n";
 }
 
 function warnUser($sEmail)

@@ -101,23 +101,16 @@ function cmd_do_new()
    
     $user = new User();
 
-    if($user->exists($_POST['ext_email']))
-    {
-        $_POST['ext_email'] = "";
-        retry("new", "An account with this e-mail is already in use");
-        return;
-    }
-
     $result = $user->create($_POST['ext_email'], $_POST['ext_password'], $_POST['ext_realname'], $_POST['CVSrelease'] );
 
-    if($result == null)
+    if($result == true)
     {
         $user->login($_POST['ext_email'], $_POST['ext_password']);
         addmsg("Account created! (".$_POST['ext_email'].")", "green");
         redirect(apidb_fullurl());
     }
     else
-        retry("new", "Failed to create account: $result");
+        retry("new", "Failed to create account");
 }
 
 
@@ -173,14 +166,14 @@ function cmd_do_login()
     $user = new User();
     $result = $user->login($_POST['ext_email'], $_POST['ext_password']);
 
-    if($result == null)
+    if($result == true)
     {
         $_SESSION['current'] = $user;
-        addmsg("You are successfully logged in as '$user->realname'.", "green");
+        addmsg("You are successfully logged in as '$user->sRealname'.", "green");
         redirect(apidb_fullurl("index.php"));    	    
     } else
     {
-        retry("login","Login failed ($result)");
+        retry("login","Login failed");
         $_SESSION['current'] = "";
     }
 }

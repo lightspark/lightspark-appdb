@@ -10,7 +10,7 @@ require(BASE."include/category.php");
 require(BASE."include/maintainer.php");
 require(BASE."include/mail.php");
 
-if(!havepriv("admin"))
+if(!$_SESSION['current']->hasPriv("admin"))
 {
     errorpage("Insufficient privileges.");
     exit;
@@ -27,6 +27,7 @@ if ($_REQUEST['sub'])
                      "FROM appMaintainerQueue WHERE queueId = ".$_REQUEST['queueId'].";";
         $result = query_appdb($query);
         $ob = mysql_fetch_object($result);
+        $oUser = new User($ob->userId);
         mysql_free_result($result);
     }
     else
@@ -66,13 +67,14 @@ if ($_REQUEST['sub'])
             $foundMaintainers = true;
             while(list($index, list($userIdValue)) = each($other_users))
             {
+                $oUser = new User($userIdValue);
                 if($firstDisplay)
                 {
-                    echo "<td>".lookupRealname($userIdValue)."</td></tr>\n";
+                    echo "<td>".$oUser->sRealname."</td></tr>\n";
                     $firstDisplay = false;
                 } else
                 {
-                    echo "<tr><td class=color0></td><td>".lookupRealname($userIdValue)."</td></tr>\n";
+                    echo "<tr><td class=\"color0\"></td><td>".$oUser->sRealname."</td></tr>\n";
                 }
             }
         }
@@ -83,13 +85,14 @@ if ($_REQUEST['sub'])
             $foundMaintainers = true;
             while(list($index, list($userIdValue)) = each($other_users))
             {
+                $oUser = new User($userIdValue);
                 if($firstDisplay)
                 {
-                    echo "<td>".lookupRealname($userIdValue)."*</td></tr>\n";
+                    echo "<td>".$oUser->sRealname."*</td></tr>\n";
                     $firstDisplay = false;
                 } else
                 {
-                    echo "<tr><td class=color0></td><td>".lookupRealname($userIdValue)."*</td></tr>\n";
+                    echo "<tr><td class=\"color0\"></td><td>".$oUser->sRealname."*</td></tr>\n";
                 }
             }
         }
@@ -100,7 +103,7 @@ if ($_REQUEST['sub'])
         }
 
         // Show which other apps the user maintains
-        echo '<tr valign=top><td class=color0><b>This user also maintains these apps:</b></td>',"\n";
+        echo '<tr valign="top"><td class="color0"><b>This user also maintains these apps:</b></td>',"\n";
 
         $firstDisplay = true;
         $other_apps = getAppsFromUserId($ob->userId);
@@ -144,9 +147,6 @@ if ($_REQUEST['sub'])
         echo '<tr valign=top><td class=color0><b>Email reply</b></td>',"\n";
         echo "<td><textarea name='replyText' rows=10 cols=35>Enter a personalized reason for acceptance or rejection of the users maintainer request here</textarea></td></tr>\n";
 
-        //echo '<tr valign=top><td bgcolor=class=color0><b>Email</b></td>,"\n";
-        //echo '<td><input type=text name="queueEmail" value="'.$ob->queueEmail.'" size=20></td></tr>',"\n";
-
         /* Add button */
         echo '<tr valign=top><td class=color3 align=center colspan=2>' ,"\n";
         echo '<input type=submit name=add value=" Add maintainer to this application " class=button /> </td></tr>',"\n";
@@ -184,7 +184,7 @@ if ($_REQUEST['sub'])
             query_appdb("DELETE from appMaintainerQueue where queueId = ".$_REQUEST['queueId'].";");
  
             //Send Status Email
-            $sEmail = lookupEmail($ob->userId);
+            $sEmail = $oUser->sEmail;
             if ($sEmail)
             {
                 $sSubject =  "Application Maintainer Request Report";
@@ -201,7 +201,7 @@ if ($_REQUEST['sub'])
     }
     else if (($_REQUEST['reject'] || ($_REQUEST['sub'] == 'reject')) && $_REQUEST['queueId'])
     {
-       $sEmail = lookupEmail($ob->userId);
+       $sEmail = $oUser->sEmail;
        if ($sEmail)
        {
            $sSubject =  "Application Maintainer Request Report";
@@ -278,11 +278,12 @@ if ($_REQUEST['sub'])
         $c = 1;
         while($ob = mysql_fetch_object($result))
         {
+            $oUser = new User($ob->userId);
             if ($c % 2 == 1) { $bgcolor = 'color0'; } else { $bgcolor = 'color1'; }
             echo "<tr class=$bgcolor>\n";
             echo "    <td>".date("Y-n-t h:i:sa", $ob->submitTime)." &nbsp;</td>\n";
             echo "    <td><a href='adminMaintainerQueue.php?sub=view&queueId=$ob->queueId'>$ob->queueId</a></td>\n";
-            echo "    <td>".lookupRealname($ob->userId)."</td>\n";
+            echo "    <td>".$oUser->sRealName."</td>\n";
             echo "    <td>".appIdToName($ob->appId)."</td>\n";
 
             if($ob->superMaintainer)
@@ -291,11 +292,11 @@ if ($_REQUEST['sub'])
                 echo "<td>Yes</td>\n";
             } else
             {
-                echo "<td>".versionIdToName($ob->versionId)." &nbsp;</td>\n";
+  	              echo "<td>".versionIdToName($ob->versionId)." &nbsp;</td>\n";
                 echo "<td>No</td>\n";
             }
 
-            echo "    <td>".lookupEmail($ob->userId)." &nbsp;</td>\n";
+            echo "    <td>".$oUser->sEmail." &nbsp;</td>\n";
             echo "    <td>[<a href='adminMaintainerQueue.php?sub=reject&queueId=$ob->queueId'>reject</a>]</td>\n";
             echo "</tr>\n\n";
             $c++;
@@ -308,7 +309,4 @@ if ($_REQUEST['sub'])
     }
         
 }
-
-
-
 ?>

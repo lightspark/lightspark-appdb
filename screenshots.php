@@ -20,15 +20,15 @@ if($_REQUEST['cmd'])
     //process screenshot upload
     if($_REQUEST['cmd'] == "screenshot_upload")
     {   
-        if(havepriv("admin") || 
-            (loggedin() && $_SESSION['current']->is_maintainer($_REQUEST['appId'], 
+        if($_SESSION['current']->hasPriv("admin") || 
+            ($_SESSION['current']->isLoggedIn() && $_SESSION['current']->isMaintainer($_REQUEST['appId'], 
                                                 $_REQUEST['versionId'])))
         {    
-            $oScreenshot = new Screenshot(null,false,$_SESSION['current']->userid,$_REQUEST['appId'],$_REQUEST['versionId'],$_REQUEST['screenshot_desc'],$_FILES['imagefile']);
+            $oScreenshot = new Screenshot(null,false,$_SESSION['current']->iUserId,$_REQUEST['appId'],$_REQUEST['versionId'],$_REQUEST['screenshot_desc'],$_FILES['imagefile']);
             if($oScreenshot)
             {
                 //success
-                $sEmail = getNotifyEmailAddressList($_REQUEST['appId'], $_REQUEST['versionId']);
+                $sEmail = get_notify_email_address_list($_REQUEST['appId'], $_REQUEST['versionId']);
                 if($sEmail)
                 {
                     $sFullAppName = "Application: ".lookupAppName($_REQUEST['appId'])." Version: ".lookupVersionName($_REQUEST['appId'], $_REQUEST['versionId']);
@@ -47,7 +47,7 @@ if($_REQUEST['cmd'])
             if($oScreenshot)
             {
                 //success
-                $sEmail = getNotifyEmailAddressList($_REQUEST['appId'], $_REQUEST['versionId']);
+                $sEmail = get_notify_email_address_list($_REQUEST['appId'], $_REQUEST['versionId']);
                 if($sEmail)
                 {
                     $sFullAppName = "Application: ".lookupAppName($_REQUEST['appId'])." Version: ".lookupVersionName($_REQUEST['appId'], $_REQUEST['versionId']);
@@ -64,14 +64,14 @@ if($_REQUEST['cmd'])
         $oScreenshot->free();
     } elseif($_REQUEST['cmd'] == "delete" && is_numeric($_REQUEST['imageId']))
     {
-        if(havepriv("admin") ||
-              $_SESSION['current']->is_maintainer($_REQUEST['appId'], 
+        if($_SESSION['current']->hasPriv("admin") ||
+              $_SESSION['current']->isMaintainer($_REQUEST['appId'], 
                                                   $_REQUEST['versionId']))
         {     
             $oScreenshot = new Screenshot($_REQUEST['imageId']);         
             if($oScreenshot && $oScreenshot->delete())
             {
-                $sEmail = getNotifyEmailAddressList($_REQUEST['appId'], $_REQUEST['versionId']);
+                $sEmail = get_notify_email_address_list($_REQUEST['appId'], $_REQUEST['versionId']);
                 if($sEmail)
                 {
                     $sFullAppName = "Application: ".lookupAppName($_REQUEST['appId'])." Version: ".lookupVersionName($_REQUEST['appId'], $_REQUEST['versionId']);
@@ -130,7 +130,7 @@ if($result && mysql_num_rows($result))
 
         // set image link based on user pref
         $img = '<a href="javascript:openWin(\'appimage.php?id='.$ob->id.'\',\''.$randName.'\','.$oScreenshot->oScreenshotImage->width.','.($oScreenshot->oScreenshotImage->height+4).');">'.$imgSRC.'</a>';
-        if (loggedin())
+        if ($_SESSION['current']->isLoggedIn())
         {
             if ($_SESSION['current']->getpref("window:screenshot") == "no")
             {
@@ -144,8 +144,8 @@ if($result && mysql_num_rows($result))
         echo "<div align=center>". substr(stripslashes($ob->description),0,20). "\n";
         
         //show admin delete link
-        if(loggedin() && (havepriv("admin") || 
-               $_SESSION['current']->is_maintainer($_REQUEST['appId'],
+        if($_SESSION['current']->isLoggedIn() && ($_SESSION['current']->hasPriv("admin") || 
+               $_SESSION['current']->isMaintainer($_REQUEST['appId'],
                                                    $_REQUEST['versionId'])))
         {
             echo "<br />[<a href='screenshots.php?cmd=delete&imageId=$ob->id&appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']."'>Delete Image</a>]";

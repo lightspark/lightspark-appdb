@@ -11,7 +11,7 @@ require(BASE."include/"."screenshot.php");
 apidb_header("Screenshots");
 
 // deny access if not admin
-if(!havepriv("admin"))
+if(!$_SESSION['current']->hasPriv("admin"))
 {
     errorpage("Insufficient privileges.");
     exit;

@@ -4,7 +4,7 @@ include("path.php");
 include(BASE."include/"."incl.php");
 include(BASE."include/"."tableve.php");
 
-if(!havepriv("admin"))
+if(!$_SESSION['current']->hasPriv("admin"))
 {
     errorpage();
     exit;

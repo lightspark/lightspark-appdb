@@ -9,34 +9,35 @@
 include("path.php");
 include(BASE."include/"."incl.php");
 
-if(!loggedin())
+if(!$_SESSION['current']->isLoggedIn())
 {
     errorpage("You must be logged in to edit preferences");
     exit;
 }
 
 // we come from the administration to edit an user
-if(havepriv("admin") && 
+if($_SESSION['current']->hasPriv("admin") && 
    is_numeric($_REQUEST['userId']) &&
    is_numeric($_REQUEST['iLimit']) &&
    in_array($_REQUEST['sOrderBy'],array("email","realname","created"))
 ) 
 {
-    $iUserId = $_REQUEST['userId'];
+    $oUser = new User($_REQUEST['userId']);
 } else
 {
-    $iUserId = $_SESSION['current']->userid;
+    $oUser = &$_SESSION['current'];
 }
 
 
 function build_prefs_list()
 {
+    global $oUser;
     $result = query_appdb("SELECT * FROM prefs_list ORDER BY id");
     while($result && $r = mysql_fetch_object($result))
         {
             //skip admin options
             //TODO: add a field to prefs_list to flag the user level for the pref
-            if(!havepriv("admin"))
+            if(!$_SESSION['current']->hasPriv("admin"))
                 {
                     if($r->name == "query:mode")
                         continue;
@@ -53,28 +54,24 @@ function build_prefs_list()
                 }
                 
             $input = html_select("pref_$r->name", explode('|', $r->value_list), 
-                                 $_SESSION['current']->getpref($r->name, $r->def_value));
+                                 $oUser->getpref($r->name, $r->def_value));
             echo html_tr(array("&nbsp; $r->description", $input));
         }
 }
 
 function show_user_fields()
 {
-    global $iUserId;
-    $user = new User();
+    global $oUser;
 
-    $ext_realname = $user->lookup_realname($iUserId);
-    $ext_email = $user->lookup_email($iUserId);
-    $CVSrelease = $user->lookup_CVSrelease($iUserId);
-    // if we are managing anothe user
-    if($iUserId == $_REQUEST['userId'])
-    {
-        if(isAdministrator($iUserId))
-            $ext_hasadmin = 'checked="true"';
-        else
-            $ext_hasadmin = "";
-    }
-    include(BASE."include/"."form_edit.php");
+    $ext_realname = $oUser->sRealname;
+    $ext_email = $oUser->sEmail;
+    $CVSrelease = $oUser->sWineRelease;
+    if($oUser->hasPriv("admin"))
+        $ext_hasadmin = 'checked="true"';
+    else
+        $ext_hasadmin = "";
+    
+    include(BASE."include/form_edit.php");
 
     echo "<tr><td>&nbsp; Wine version </td><td>";
     make_bugzilla_version_list("CVSrelease", $CVSrelease);
@@ -83,13 +80,11 @@ function show_user_fields()
 
 if($_POST)
 {   
-    $user = new User();
-    
     while(list($key, $value) = each($_REQUEST))
         {
             if(!ereg("^pref_(.+)$", $key, $arr))
                 continue;
-            $_SESSION['current']->setpref($arr[1], $value);
+            $oUser->setPref($arr[1], $value);
         }
     
     if ($_REQUEST['ext_password'] == $_REQUEST['ext_password2'])
@@ -100,18 +95,17 @@ if($_POST)
     {
         addmsg("The Passwords you entered did not match.", "red");
     }
-    if ($user->update($iUserId, $str_passwd, $_REQUEST['ext_realname'], $_REQUEST['ext_email'], $_REQUEST['CVSrelease']))
+    if ($oUser->update($_REQUEST['ext_email'], $str_passwd, $_REQUEST['ext_realname'], $_REQUEST['CVSrelease']))
     {
         addmsg("Preferences Updated", "green");
         // we were managing an user, let's go back to the admin after updating tha admin status
-        if($iUserId == $_REQUEST['userId'] && havepriv("admin"))
+        if($oUser->iUserId == $_REQUEST['userId'] && $_SESSION['current']->hasPriv("admin"))
         {
-            $user->userid = $iUserId;
             if($_POST['ext_hasadmin']=="on") 
-                $user->addpriv("admin");
+                $oUser->addPriv("admin");
             else 
-                $user->delpriv("admin");
-            redirect(BASE."admin/adminUsers.php?userId=".$iUserId."&sSearch=".$_REQUEST['sSearch']."&iLimit=".$_REQUEST['iLimit']."&sOrderBy=".$_REQUEST['sOrderBy']."&sSubmit=true");
+                $oUser->delPriv("admin");
+            redirect(BASE."admin/adminUsers.php?userId=".$oUser->iUserId."&sSearch=".$_REQUEST['sSearch']."&iLimit=".$_REQUEST['iLimit']."&sOrderBy=".$_REQUEST['sOrderBy']."&sSubmit=true");
         }
     }
     else
@@ -125,7 +119,7 @@ apidb_header("User Preferences");
 echo "<form method=\"post\" action=\"preferences.php\">\n";
 
 // if we manage another user we give the parameters to go back to the admin
-if($iUserId == $_REQUEST['userId'])
+if($oUser->iUserId == $_REQUEST['userId'])
 {
     echo "<input type=\"hidden\" name=\"iLimit\" value=\"".$_REQUEST['iLimit']."\">\n";
     echo "<input type=\"hidden\" name=\"sOrderBy\" value=\"".$_REQUEST['sOrderBy']."\">\n";
@@ -133,19 +127,18 @@ if($iUserId == $_REQUEST['userId'])
     echo "<input type=\"hidden\" name=\"userId\" value=\"".$_REQUEST['userId']."\">\n";
 }
 
-echo html_frame_start("Preferences for ".lookupRealName($iUserId), "80%");
+echo html_frame_start("Preferences for ".$oUser->sRealname, "80%");
 echo html_table_begin("width='100%' border=0 align=left cellspacing=0 class='box-body'");
 
 show_user_fields();
 
 // if we don't manage another user
-if($iUserId != $_REQUEST['userId']) build_prefs_list();
+if($oUser->iUserId != $_REQUEST['userId']) build_prefs_list();
 
 echo html_table_end();
 echo html_frame_end();
 echo "<br /> <div align=center> <input type=\"submit\" value=\"Update\" /> </div> <br />\n";
 echo "</form>\n";
-
 
 apidb_footer();
 ?>

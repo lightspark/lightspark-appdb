@@ -11,7 +11,7 @@ function global_sidebar_login() {
   
     $g = new htmlmenu("User Menu");
     
-    if(loggedin())
+    if($_SESSION['current']->isLoggedIn())
     {
 
         $g->add("Logout", BASE."account.php?cmd=logout");

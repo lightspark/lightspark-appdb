@@ -11,7 +11,7 @@ include(BASE."include/incl.php");
 include(BASE."include/category.php");
 include(BASE."include/application.php");
 
-if(!havepriv("admin"))
+if(!$_SESSION['current']->hasPriv("admin"))
 {
     errorpage();
     exit;

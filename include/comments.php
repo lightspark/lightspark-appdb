@@ -55,7 +55,7 @@ function view_app_comment($ob)
     echo "</td></tr>\n";
 
     // delete message button, for admins
-    if (loggedin() && (havepriv("admin") || $_SESSION['current']->is_maintainer($ob->appId,$ob->versionId) ))
+    if ($_SESSION['current']->isLoggedIn() && ($_SESSION['current']->hasPriv("admin") || $_SESSION['current']->isMaintainer($ob->appId,$ob->versionId) ))
     {
         echo "<tr>";
         echo "<td><form method=\"post\" name=\"message\" action=\"".BASE."deletecomment.php\"><input type=submit value='Delete' class=button>\n";
@@ -202,7 +202,7 @@ function view_app_comments($appId, $versionId, $threadId = 0)
     echo '<tr><td bgcolor=#C0C0C0 align=center><table border=0 cellpadding=0 cellspacing=0><tr bgcolor=#C0C0C0>',"\n";
     
     // message display mode changer
-    if (loggedin())
+    if ($_SESSION['current']->isLoggedIn())
     {
     // FIXME we need to change this so not logged in users can change current view as well
         if (isset($_REQUEST['cmode']))
@@ -241,7 +241,7 @@ function view_app_comments($appId, $versionId, $threadId = 0)
     echo '<table width="100%" border=0 cellpadding=2 cellspacing=1"><tr><td>',"\n";
     
     //hide or display depending on pref
-    if (loggedin())
+    if ($_SESSION['current']->isLoggedIn())
         $mode = $_SESSION['current']->getpref("comments:mode");
     else
         $mode = "flat";

@@ -9,7 +9,7 @@
 include("path.php");
 require(BASE."include/incl.php");
 
-if(!havepriv("admin"))
+if(!$_SESSION['current']->hasPriv("admin"))
 {
     errorpage("Insufficient privileges.");
     exit;

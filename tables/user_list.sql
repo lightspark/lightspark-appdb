@@ -9,8 +9,6 @@ create table user_list (
 	realname	text not null,
 	email		text not null,
         created         datetime not null,
-        status          int(4),
-	perm		int(4),
         CVSrelease      text,
         unique key(userid),
 	unique(email)

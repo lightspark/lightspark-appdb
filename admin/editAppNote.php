@@ -20,7 +20,7 @@ $hResult = query_appdb($sQuery);
 $ob = mysql_fetch_object($hResult);
 
 /* Check for privs */
-if(!loggedin() || (!havepriv("admin") && !$_SESSION['current']->is_maintainer($ob->appId,$ob->versionId)) )
+if(!$_SESSION['current']->isLoggedIn() || (!$_SESSION['current']->hasPriv("admin") && !$_SESSION['current']->isMaintainer($ob->appId,$ob->versionId)) )
 {
     errorpage("Insufficient Privileges!");
     exit;
@@ -37,7 +37,7 @@ if(isset($_REQUEST['sub']))
     $sMsg = APPDB_ROOT."appview.php?appId={$ob->appId}&versionId={$ob->versionId}\r\n";
     $sMsg .= "\r\n";
             
-    $sEmail = getNotifyEmailAddressList($ob->appId, $ob->versionId);
+    $sEmail = get_notify_email_address_list($ob->appId, $ob->versionId);
     
     if ($_REQUEST['sub'] == 'Delete')
     {

@@ -10,7 +10,7 @@ require(BASE."include/application.php");
 require(BASE."include/mail.php");
 
 //deny access if not logged in
-if(!havepriv("admin"))
+if(!$_SESSION['current']->hasPriv("admin"))
 {
     errorpage("Insufficient privileges.");
     exit;
@@ -318,7 +318,7 @@ if ($_REQUEST['sub'])
         }
         if ($goodtogo)
         {
-            $sEmail = getNotifyEmailAddressList($_REQUEST['appParent'], $_REQUEST['appVersion']);
+            $sEmail = get_notify_email_address_list($_REQUEST['appParent'], $_REQUEST['appVersion']);
             if($sEmail)
             {
                 $sFullAppName = "Application: ".lookupAppName($_REQUEST['appParent']).

@@ -11,7 +11,7 @@ require(BASE."include/"."incl.php");
 require(BASE."include/"."tableve.php");
 require(BASE."include/"."category.php");
 
-if(!loggedin())
+if(!$_SESSION['current']->isLoggedIn())
 {
     errorpage("You need to be logged in to apply to be a maintainer.");
     exit;

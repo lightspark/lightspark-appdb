@@ -35,7 +35,7 @@ function checkAppMaintainerInput( $fields )
 }
 
 
-if(!loggedin())
+if(!$_SESSION['current']->isLoggedIn())
 {
     errorpage("You need to be logged in to apply to be a maintainer.");
     exit;
@@ -46,14 +46,14 @@ $versionId = strip_tags($_POST['versionId']);
 $superMaintainer = strip_tags($_POST['superMaintainer']);
 
 /* if the user is already a maintainer don't add them again */
-if($_SESSION['current']->is_maintainer($appId, $versionId))
+if($_SESSION['current']->isMaintainer($appId, $versionId))
 {
     echo "You are already a maintainer of this app!";
     exit;
 }
 
 /* if this user is a super maintainer they maintain all of the versionIds of this appId */
-if($_SESSION['current']->is_super_maintainer($appId))
+if($_SESSION['current']->isSuperMaintainer($appId))
 {
     echo "You are already a supermaintainer of the whole application family!";
     exit;

@@ -17,7 +17,7 @@ $_REQUEST['versionId'] = strip_tags($_REQUEST['versionId']);
 $_REQUEST['commentId'] = strip_tags($_REQUEST['commentId']);
 $_REQUEST['commentId'] = mysql_escape_string($_REQUEST['commentId']);
 
-if(!loggedin())
+if(!$_SESSION['current']->isLoggedIn())
 {
     errorpage("You need to be logged in to delete a comment.");
     exit;
@@ -25,8 +25,8 @@ if(!loggedin())
 
 /* if we aren't an admin or the maintainer of this app we shouldn't be */
 /* allowed to delete any comments */
-if(!havepriv("admin") && 
-        !$_SESSION['current']->is_maintainer($_REQUEST['appId'], 
+if(!$_SESSION['current']->hasPriv("admin") && 
+        !$_SESSION['current']->isMaintainer($_REQUEST['appId'], 
                                              $_REQUEST['versionId']))
 {
     errorpage('You don\'t have admin privileges');
@@ -96,9 +96,10 @@ if($_SESSION['current']->getpref("confirm_comment_deletion") != "no" &&
             exit;
         } else 
         {
-            $sEmail = getNotifyEmailAddressList($_REQUEST['appId'], $_REQUEST['versionId']);
-            $notify_user_email=lookupEmail($ob->userId);
-            $notify_user_realname=lookupRealname($ob->userId);
+            $sEmail = get_notify_email_address_list($_REQUEST['appId'], $_REQUEST['versionId']);
+            $oUser = new User($ob->userId);
+            $notify_user_email=$oUser->sEmail;
+            $notify_user_realname=$oUser->sRealname;
             $sEmail .= $notify_user_email;
             if($sEmail)
             {

@@ -3,7 +3,7 @@
 include("path.php");
 include(BASE."include/"."incl.php");
 
-if(!havepriv("admin"))
+if(!$_SESSION['current']->hasPriv("admin"))
 {
     errorpage();
     exit;

@@ -10,7 +10,7 @@ include("path.php");
 require(BASE."include/incl.php");
 
 // deny access if not logged in
-if(!havepriv("admin"))
+if(!$_SESSION['current']->hasPriv("admin"))
 {
     errorpage("Insufficient privileges.");
     exit;
@@ -68,10 +68,11 @@ if ($_REQUEST['sub'])
         $c = 1;
         while($ob = mysql_fetch_object($hResult))
         {
+            $oUser = new User($ob->userId);
             if ($c % 2 == 1) { $bgcolor = 'color0'; } else { $bgcolor = 'color1'; }
             echo "<tr class=$bgcolor>\n";
             echo "    <td>".date("Y-n-t h:i:sa", $ob->submitTime)." &nbsp;</td>\n";
-            echo "    <td>".lookupRealname($ob->userId)."</td>\n";
+            echo "    <td>".$oUser->sRealname."</td>\n";
             
             if($ob->superMaintainer)
             {
@@ -84,8 +85,7 @@ if ($_REQUEST['sub'])
                 echo "    <td><a href='".BASE."appview.php?appId=$ob->appId&versionId=$ob->versionId'>".versionIdToName($ob->versionId)."</a>&nbsp;</td>\n";
                 echo "    <td>No</td>\n";
             }
-
-            echo "    <td>".lookupEmail($ob->userId)." &nbsp;</td>\n";
+            echo "    <td>".$oUser->sEmail." &nbsp;</td>\n";
             echo "    <td>[<a href='adminMaintainers.php?sub=delete&maintainerId=$ob->maintainerId'>delete</a>]</td>\n";
             echo "</tr>\n\n";
             $c++;

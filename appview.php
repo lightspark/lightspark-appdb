@@ -107,7 +107,7 @@ function show_note($sType,$oData){
     $s .= add_br(stripslashes($oData->noteDesc));
     $s .= "</td></tr>\n";
 
-    if (loggedin() && (havepriv("admin") || $_SESSION['current']->is_maintainer($_REQUEST['appId'], $_REQUEST['versionId'])))
+    if ($_SESSION['current']->isLoggedIn() && ($_SESSION['current']->hasPriv("admin") || $_SESSION['current']->isMaintainer($_REQUEST['appId'], $_REQUEST['versionId'])))
     {
         $s .= "<tr width='100%' class=color1 align=center valign=top><td>";
         $s .= "<form method=post name=message action='admin/editAppNote.php?noteId={$oData->noteId}'>";
@@ -203,7 +203,7 @@ if($appId && !$versionId)
     }
 
     // show Vote Menu
-    if(loggedin())
+    if($_SESSION['current']->isLoggedIn())
         apidb_sidebar_add("vote_menu");
 
     // header
@@ -268,8 +268,9 @@ if($appId && !$versionId)
     {
         while(list($index, list($userIdValue)) = each($other_maintainers))
         {
+            $oUser = new User($userIdValue);
             echo "        <tr><td align=left>\n";
-            echo "        <li>".lookupRealname($userIdValue)."</td></tr>\n";
+            echo "        <li>".$oUser->sRealname."</td></tr>\n";
         }
     } else
     {
@@ -278,10 +279,10 @@ if($appId && !$versionId)
 
     // Display the app maintainer button
     echo "        <tr><td><center>\n";
-    if(loggedin())
+    if($_SESSION['current']->isLoggedIn())
     {
         /* are we already a maintainer? */
-        if($_SESSION['current']->is_super_maintainer($appId)) /* yep */
+        if($_SESSION['current']->isSuperMaintainer($appId)) /* yep */
         {
             echo '        <form method=post name=message action="maintainerdelete.php"><input type=submit value="Remove yourself as a super maintainer" class=button>';
         } else /* nope */
@@ -294,14 +295,14 @@ if($appId && !$versionId)
         echo "        <input type=hidden name='superMaintainer' value=1>"; /* set superMaintainer to 1 because we are at the appFamily level */
         echo "        </form>";
 
-        if($_SESSION['current']->is_super_maintainer($appId) || havepriv("admin"))
+        if($_SESSION['current']->isSuperMaintainer($appId) || $_SESSION['current']->hasPriv("admin"))
         {
             echo '        <form method="post" name="edit" action="admin/editAppFamily.php"><input type="hidden" name="appId" value="'.$appId.'"><input type="submit" value="Edit App" class="button"></form>';
             echo '<form method="post" name="message" action="appsubmit.php?appId='.$_REQUEST['appId'].'&apptype=2">';
             echo '<input type=submit value="Add Version" class="button">';
             echo '</form>';
         }
-        if(havepriv("admin"))
+        if($_SESSION['current']->hasPriv("admin"))
         {
             $url = BASE."admin/deleteAny.php?what=appFamily&appId=".$_REQUEST['appId']."&confirmed=yes";
             echo "        <form method=\"post\" name=\"edit\" action=\"javascript:deleteURL(\"Are you sure?\", \"".$url."\")\"><input type=\"submit\" value=\"Delete App\" class=\"button\"></form>";
@@ -396,7 +397,7 @@ else if($appId && $versionId)
         while(list($index, list($userIdValue)) = each($other_maintainers))
         {
             echo "<tr class=color0><td align=left colspan=2>";
-            echo "<li>".lookupRealname($userIdValue)."</td></tr>\n";
+            echo "<li>".$oUser->sRealname."</td></tr>\n";
         }
     } else
     {
@@ -407,18 +408,18 @@ else if($appId && $versionId)
 
     // display the app maintainer button
     echo "<tr><td colspan = 2><center>";
-    if(loggedin())
+    if($_SESSION['current']->isLoggedIn())
     {
         /* is this user a maintainer of this version by virtue of being a super maintainer */
         /* of this app family? */
-        if($_SESSION['current']->is_super_maintainer($appId))
+        if($_SESSION['current']->isSuperMaintainer($appId))
         {
             echo '<form method=post name=message action="maintainerdelete.php"><input type=submit value="Remove yourself as a supermaintainer" class=button>';
             echo "<input type=hidden name='superMaintainer' value=1>";
         } else
         {
             /* are we already a maintainer? */
-            if($_SESSION['current']->is_maintainer($appId, $versionId)) /* yep */
+            if($_SESSION['current']->isMaintainer($appId, $versionId)) /* yep */
             {
                 echo '<form method=post name=message action="maintainerdelete.php"><input type=submit value="Remove yourself as a maintainer" class=button>';
                 echo "<input type=hidden name='superMaintainer' value=0>";
@@ -440,7 +441,7 @@ else if($appId && $versionId)
     
     echo "</center></td></tr>";
 
-    if (loggedin() && (havepriv("admin") || $_SESSION['current']->is_maintainer($appId, $versionId)))
+    if ($_SESSION['current']->isLoggedIn() && ($_SESSION['current']->hasPriv("admin") || $_SESSION['current']->isMaintainer($appId, $versionId)))
     {
         echo "<tr><td colspan = 2><center>";
         echo '<form method=post name=message action=admin/editAppVersion.php?appId='.$appId.'&versionId='.$versionId.'>';

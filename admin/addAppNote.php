@@ -9,7 +9,7 @@ require(BASE."include/application.php");
 require(BASE."include/mail.php");
 
 //check for admin privs
-if(!loggedin() || (!havepriv("admin") && !$_SESSION['current']->is_maintainer($_REQUEST['appId'],$_REQUEST['versionId'])) )
+if(!$_SESSION['current']->isLoggedIn() || (!$_SESSION['current']->hasPriv("admin") && !$_SESSION['current']->isMaintainer($_REQUEST['appId'],$_REQUEST['versionId'])) )
 {
     errorpage("Insufficient Privileges!");
     exit;
@@ -40,7 +40,7 @@ if($_REQUEST['sub'] == "Submit")
     if (query_appdb("INSERT INTO `appNotes` ({$aInsert['FIELDS']}) VALUES ({$aInsert['VALUES']})"))
     {
         // successful
-        $sEmail = getNotifyEmailAddressList($_REQUEST['appId'], $_REQUEST['versionId']);
+        $sEmail = get_notify_email_address_list($_REQUEST['appId'], $_REQUEST['versionId']);
         if($sEmail)
         {
             $sFullAppName  = "Application: ".lookupAppName($_REQUEST['appId']);

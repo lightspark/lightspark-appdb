@@ -16,7 +16,7 @@ if(!is_numeric($_REQUEST['appId']))
     exit;
 }
 
-if(!(havepriv("admin") || $_SESSION['current']->is_super_maintainer($_REQUEST['appId'])))
+if(!($_SESSION['current']->hasPriv("admin") || $_SESSION['current']->isSuperMaintainer($_REQUEST['appId'])))
 {
     errorpage("Insufficient Privileges!");
     exit;
@@ -180,7 +180,7 @@ if(isset($_REQUEST['submit']))
     }
     if ($bAppChanged)
     {
-        $sEmail = getNotifyEmailAddressList($_REQUEST['appId']);
+        $sEmail = get_notify_email_address_list($_REQUEST['appId']);
         if($sEmail)
         {
             $sFullAppName = "Application: ".lookupAppName($_REQUEST['appId']);

@@ -8,7 +8,7 @@ include(BASE."include/"."incl.php");
 
 apidb_header("Admin Users Management");
 
-if(!havepriv("admin"))
+if(!$_SESSION['current']->hasPriv("admin"))
 {
     errorpage("Insufficient privileges.");
     exit;
@@ -17,10 +17,11 @@ if(!havepriv("admin"))
 // we want to delete a user
 if($_REQUEST['action'] == "delete" && is_numeric($_REQUEST['userId']))
 {
-    $sEmail = lookupEmail($_REQUEST['userId']);
+    $oUser = new User($_REQUEST['userId']);
+    $sEmail = $oUser->sEmail;
     if($sEmail)
     {
-        $_SESSION['current']->remove($sEmail);
+        $oUser->delete();
     }
 }
 
@@ -85,15 +86,16 @@ if($_REQUEST['sSubmit'])
         $i=0;
         while($hResult && $oRow = mysql_fetch_object($hResult))
         {
-            $sAreYouSure = "Are you sure that you want to delete user ".addslashes($oRow->realname)." ?";
+            $oUser = new User($oRow->userid);
+            $sAreYouSure = "Are you sure that you want to delete user ".addslashes($oUser->sRealname)." ?";
             echo "<tr class=\"color".(($i++)%2)."\">\n";
-            echo "    <td>".$oRow->realname."</td>\n";
-            echo "    <td>".$oRow->email."</td>\n";
-            echo "    <td>".$oRow->created."</td>\n";
-            echo "    <td>".$oRow->stamp."</td>\n";
+            echo "    <td>".$oUser->sRealname."</td>\n";
+            echo "    <td>".$oUser->sEmail."</td>\n";
+            echo "    <td>".$oUser->sDateCreated."</td>\n";
+            echo "    <td>".$oUser->sStamp."</td>\n";
             echo "    <td>";
-            if(isAdministrator($oRow->userid)) echo "A";
-            if(isMaintainer($oRow->userid)) echo "M";
+            if($oUser->hasPriv("admin")) echo "A";
+            if($oUser->isMaintainer()) echo "M";
             echo "    </td>\n";
             echo "    <td>[<a onclick=\"if(!confirm('".$sAreYouSure."'))return false;\" \"href=\"".$_SERVER['PHP_SELF']."?action=delete&userId=".$oRow->userid."&sSearch=".$sSearch."&iLimit=".$_REQUEST['iLimit']."&sOrderBy=".$_REQUEST['sOrderBy']."&sSubmit=true\">delete</a>]&nbsp;[<a href=\"../preferences.php?userId=".$oRow->userid."&sSearch=".$sSearch."&iLimit=".$_REQUEST['iLimit']."&sOrderBy=".$_REQUEST['sOrderBy']."\">edit</a>]</td>\n";
             echo "</tr>\n\n";

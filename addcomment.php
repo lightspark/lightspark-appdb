@@ -12,7 +12,7 @@ require(BASE."include/application.php");
 require(BASE."include/mail.php");
 
 // you must be logged in to submit comments
-if(!loggedin())
+if(!$_SESSION['current']->isLoggedIn())
 {
   apidb_header("Please login");
   echo "To submit a comment for an application you must be logged in. Please <a href=\"account.php?cmd=login\">login now</a> or create a <a href=\"account.php?cmd=new\">new account</a>.","\n";
@@ -59,13 +59,14 @@ if(isset($_REQUEST['body']))
     {
         if (is_numeric($_REQUEST['originator']))
         {
-            if (UserWantsEmail($_REQUEST['originator']))
+            $oOriginator = new User($_REQUEST['originator']);
+            if ($oOriginator->getPref("send_email"))
             {
-                $sEmail = lookupEmail($_REQUEST['originator']);
+                $sEmail = $oOriginator->sEmail;
                 $sFullAppName = "Application: ".lookupAppName($_REQUEST['appId'])." Version: ".lookupVersionName($_REQUEST['appId'], $_REQUEST['versionId']);
                 $sMsg  = APPDB_ROOT."appview.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId'].".\n";
                 $sMsg .= "\r\n";
-                $sMsg .= ($_SESSION['current']->realname ? $_SESSION['current']->realname : "Anonymous")." added comment to ".$sFullAppName."\r\n";
+                $sMsg .= $_SESSION['current']->realname." added comment to ".$sFullAppName."\r\n";
                 $sMsg .= "\r\n";
                 $sMsg .= "Subject: ".$subject."\r\n";
                 $sMsg .= "\r\n";
@@ -76,7 +77,7 @@ if(isset($_REQUEST['body']))
                 addmsg("Comment message sent to original poster", "green");                   
             }
         }
-        $sEmail = getNotifyEmailAddressList($_REQUEST['appId'], $_REQUEST['versionId']);
+        $sEmail = get_notify_email_address_list($_REQUEST['appId'], $_REQUEST['versionId']);
         if($sEmail)
         {
             $sFullAppName = "Application: ".lookupAppName($_REQUEST['appId'])." Version: ".lookupVersionName($_REQUEST['appId'], $_REQUEST['versionId']);

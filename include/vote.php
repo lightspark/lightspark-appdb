@@ -12,8 +12,8 @@ function vote_count($appId, $userId = null)
 
     if(!$userId)
     {
-        if(loggedin())
-            $userId = $_SESSION['current']->userid;
+        if($_SESSION['current']->isLoggedIn())
+            $userId = $_SESSION['current']->iUserId;
         else
             return 0;
 }
@@ -29,8 +29,8 @@ function vote_count_user_total($userId = null)
 {
     if(!$userId)
     {
-        if(loggedin())
-            $userId = $_SESSION['current']->userid;
+        if($_SESSION['current']->isLoggedIn())
+            $userId = $_SESSION['current']->iUserId;
         else
             return 0;
     }
@@ -56,8 +56,8 @@ function vote_add($appId, $slot, $userId = null)
 {
     if(!$userId)
         {
-            if(loggedin())
-                $userId = $_SESSION['current']->userid;
+        if($_SESSION['current']->isLoggedIn())
+            $userId = $_SESSION['current']->iUserId;
             else
                 return;
         }
@@ -78,8 +78,8 @@ function vote_remove($slot, $userId = null)
     
     if(!$userId)
         {
-            if(loggedin())
-                $userId = $_SESSION['current']->userid;
+            if($_SESSION['current']->isLoggedIn())
+                $userId = $_SESSION['current']->iUserId;
             else
                 return;
         }
@@ -91,8 +91,8 @@ function vote_get_user_votes($userId = null)
 {
     if(!$userId)
     {
-        if(loggedin())
-            $userId = $_SESSION['current']->userid;
+        if($_SESSION['current']->isLoggedIn())
+            $userId = $_SESSION['current']->iUserId;
         if(!$userId)
             return array();
     }
@@ -150,10 +150,9 @@ function dump($arr)
 
 function vote_update($vars)
 {
-    //FIXME this doesn't work since msgs only work when logged in
-    if(!loggedin())
+    if(!$_SESSION['current']->isLoggedIn())
     {
-        addmsg("You must be logged in to vote", "red");
+        errorpage("You must be logged in to vote");
         return;
     }
 

@@ -13,7 +13,7 @@ require(BASE."include/mail.php");
 apidb_header("Admin Application Data Queue");
 
 // deny access if not admin
-if(!havepriv("admin"))
+if(!$_SESSION['current']->hasPriv("admin"))
 {
     errorpage("Insufficient privileges.");
     exit;
@@ -59,16 +59,19 @@ if (!$_REQUEST['queueId'])
         $c = 1;
         while($ob = mysql_fetch_object($hResult))
         {   
-            if($_SESSION['current']->is_maintainer($ob->queueappId,
+            if($_SESSION['current']->isMaintainer($ob->queueappId,
                                                    $ob->queueversionId) 
-                    || havepriv("admin"))
+                    || $_SESSION['current']->hasPriv("admin"))
              {
                 if ($c % 2 == 1) { $bgcolor = 'color0'; } else { $bgcolor = 'color1'; }
                 echo "<tr class=$bgcolor>\n";
                 echo "    <td>".date("Y-n-t h:i:sa", $ob->submitTime)." &nbsp;</td>\n";
                 echo "    <td><a href='adminAppDataQueue.php?queueId=$ob->queueId'>".$ob->queueId."</a></td>\n";
                 if($ob->userId)
-                    echo "    <td>".lookupRealname($ob->userId)." (".lookupEmail($ob->userId).")</td>\n";
+                {
+                    $oUser = new User($ob->userId);
+                    echo "    <td>".$oUser->sRealname." (".$oUser->sEmail.")</td>\n";
+                }
                 else
                     echo "    <td>Anonymous</td>\n";
                 echo "<td>".appIdToName($ob->appId)."</td>\n";
@@ -84,8 +87,8 @@ if (!$_REQUEST['queueId'])
         
 } else // shows a particular appdata
 {
-    if(!(havepriv("admin") ||
-             $_SESSION['current']->is_maintainer($obj_row->queueAppId,
+    if(!($_SESSION['current']->hasPriv("admin") ||
+             $_SESSION['current']->isMaintainer($obj_row->queueAppId,
                                                  $obj_row->queueVersionId)))
     {
         errorpage("You don't have sufficient privileges to use this page.");
@@ -133,7 +136,7 @@ if (!$_REQUEST['queueId'])
            $randName = generate_passwd(5);
            // set image link based on user pref
            $img = '<a href="javascript:openWin(\'../appimage.php?queued=true&id='.$obj_row->queueId.'\',\''.$randName.'\','.$oScreenshot->oScreenshotImage->width.','.($oScreenshot->oScreenshotImage->height+4).');">'.$imgSRC.'</a>';
-           if (loggedin())
+           if ($_SESSION['current']->isLoggedIn())
            {
                if ($_SESSION['current']->getpref("window:screenshot") == "no")
                { 
@@ -200,14 +203,15 @@ if (!$_REQUEST['queueId'])
             query_appdb("DELETE from appDataQueue where queueId = ".$obj_row->queueId.";");
         
             //Send Status Email
-            if (lookupEmail($obj_row->userId))
+            $oUser = new User($obj_row->userId);
+            if ($oUser->sEmail)
             {
                 $sSubject =  "Application Data Request Report";
                 $sMsg  = "Your submission of an application data for ".appIdToName($obj_row->appId).versionIdToName($obj_row->versionId)." has been accepted. ";
                 $sMsg .= $_REQUEST['replyText'];
                 $sMsg .= "We appreciate your help in making the Application Database better for all users.\r\n";
                 
-                mail_appdb(lookupEmail($obj_row->userId), $sSubject ,$sMsg);
+                mail_appdb($oUser->sEmail, $sSubject ,$sMsg);
             }
         
             //done
@@ -216,13 +220,14 @@ if (!$_REQUEST['queueId'])
         }
     } elseif ($_REQUEST['reject'])
     {
-       if (lookupEmail($obj_row->userId))
+       $oUser = new User($obj_row->userId);
+       if ($oUser->sEmail)
        {
            $sSubject =  "Application Data Request Report";
            $sMsg  = "Your submission of an application data for ".appIdToName($obj_row->appId).versionIdToName($obj_row->versionId)." was rejected. ";
            $sMsg .= $_REQUEST['replyText'];
              
-           mail_appdb(lookupEmail($obj_row->userId), $sSubject ,$sMsg); 
+           mail_appdb($oUser->sEmail, $sSubject ,$sMsg); 
        }
 
        //delete main item

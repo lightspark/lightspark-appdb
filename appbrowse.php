@@ -37,7 +37,7 @@ $catFullPath = make_cat_path($cat->getCategoryPath());
 $subs = $cat->getCategoryList();
 
 //display admin box
-if(havepriv("admin") && $catId != 0)
+if($_SESSION['current']->hasPriv("admin") && $catId != 0)
     apidb_sidebar_add("admin_menu");
 
 //output header
