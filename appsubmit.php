@@ -115,13 +115,15 @@ function initDocument() {
 // var editor = new HTMLArea("editor",config);
 // editor.registerPlugin(DynamicCSS);
 <?php
-if($_REQUEST['apptype'] == 1) // we have two editors, one for application and one for version.
-{?>
+// if($_REQUEST['apptype'] == 1) // we have two editors, one for application and one for version.
+//{
+?>
     var editor2 = new HTMLArea("editor2",config);
     editor2.generate();
     editor2.registerPlugin(DynamicCSS);
 <?php
-}?>
+//}
+?>
 // FIXME: when both editors and stylesheets are used, sometimes one of the editor is readonly under gecko
 // editor.generate();
 }
@@ -182,7 +184,7 @@ onload = function() {
         echo html_frame_start("New Application Form",400,"",0);
         echo "<table width='100%' border=0 cellpadding=2 cellspacing=0>\n";
         echo '<tr valign=top><td class="color0"><b>Application name</b></td>',"\n";
-        echo '<td><input type=text name="appName" value="" size="20"></td></tr>',"\n";
+        echo '<td><input type="text" name="appName" value="" size="20"></td></tr>',"\n";
         echo '<tr valign=top><td class="color0"><b>Version name</b></td>',"\n";
         echo '<td><input type=text name="versionName" value="" size="20"></td></tr>',"\n";
 
@@ -237,10 +239,10 @@ onload = function() {
         echo '</td></tr>',"\n";
 
         echo '<tr valign=top><td class="color0"><b>Version name</b></td>',"\n";
-        echo '<td><input type=text name="versionName" size="20"></td></tr>',"\n";
+        echo '<td><input type="text" name="versionName" size="20"></td></tr>',"\n";
     
         echo '<tr valign=top><td class=color0><b>Version description</b></td>',"\n";
-        echo '<td><p style="width:700px"><textarea cols="80" rows="20" id="editor" name="versionDescription">'.$sVersionDescription.'</textarea></p></td></tr>',"\n";
+        echo '<td><p style="width:700px"><textarea cols="80" rows="20" id="editor2" name="versionDescription">'.$sVersionDescription.'</textarea></p></td></tr>',"\n";
 
         echo '<tr valign=top><td class="color3" align="center" colspan="2">',"\n";
         echo '<input type=submit value="Submit New Version" class="button"> </td></tr>',"\n";	  
