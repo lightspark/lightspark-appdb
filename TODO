@@ -1,0 +1,9 @@
+WineHQ Application Database
+ TODO List
+
++ appdb engine
+  - clean up the php backend
+
++ app queue
+  - add a form, so the admin can enter a custom response to the submitter
+
