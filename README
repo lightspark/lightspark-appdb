@@ -32,6 +32,12 @@ To install locally for testing/hacking:
   'magic_quotes_gpc = Off' (you would end up with \ everywhere)
   'session.bug_compat_42' = On' (Problem with auto-globals and session variables)
 
+# An AppDB admin user has been automatically created while running 
+  the create_tables script
+  username: admin
+  password: testing
+  You should change the password as soon as possible!
+
 #------------------------------------------------------------------------#
 You can create ether set up a real bugzilla database or a fake one 
 
