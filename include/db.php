@@ -20,7 +20,7 @@ function query_bugzilladb($sQuery,$sComment="")
 
     if(!$hBugzillaLink)
     {
-        $hBugzillaLink = mysql_pconnect(BUGZILLA_DBHOST, BUGZILLA_DBUSER, BUGZILLA_DBPASS);
+        $hBugzillaLink = mysql_connect(BUGZILLA_DBHOST, BUGZILLA_DBUSER, BUGZILLA_DBPASS);
         mysql_select_db(BUGZILLA_DB);
     }
     $hResult = mysql_query($sQuery, $hBugzillaLink);
