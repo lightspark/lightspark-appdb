@@ -103,7 +103,7 @@ wine-users mailing list or the wine newsgroup, for more information visit
     <th>Application</th><th>Version</th><th>Description</th><th>Screenshot</th>
     </tr>
 <?php
-$sQuery = "SELECT appVotes.appId AS appId, COUNT(appVotes.appId) AS c, appVersion.versionId AS versionId FROM appVotes, appVersion WHERE appVotes.appId = appVersion.appId AND appVersion.maintainer_rating = 'Gold' GROUP BY appVotes.appId ORDER BY c LIMIT 10";
+$sQuery = "SELECT appVotes.appId AS appId, COUNT(appVotes.appId) AS c, appVersion.versionId AS versionId FROM appVotes, appVersion WHERE appVotes.appId = appVersion.appId AND appVersion.maintainer_rating = 'Gold' GROUP BY appVotes.appId ORDER BY c DESC, versionId DESC LIMIT 10";
 $hResult = query_appdb($sQuery);
 while($oRow = mysql_fetch_object($hResult))
 {
@@ -129,7 +129,7 @@ while($oRow = mysql_fetch_object($hResult))
       <th>Application</th><th>Version</th><th>Description</th><th>Screenshot</th>
     </tr>
 <?php
-$sQuery = "SELECT appVotes.appId AS appId, COUNT(appVotes.appId) AS c, appVersion.versionId AS versionId FROM appVotes, appVersion WHERE appVotes.appId = appVersion.appId AND appVersion.maintainer_rating = 'Silver' GROUP BY appVotes.appId ORDER BY c LIMIT 10";
+$sQuery = "SELECT appVotes.appId AS appId, COUNT(appVotes.appId) AS c, appVersion.versionId AS versionId FROM appVotes, appVersion WHERE appVotes.appId = appVersion.appId AND appVersion.maintainer_rating = 'Silver' GROUP BY appVotes.appId ORDER BY c DESC, versionId DESC LIMIT 10";
 $hResult = query_appdb($sQuery);
 while($oRow = mysql_fetch_object($hResult))
 {
