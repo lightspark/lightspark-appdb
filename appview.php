@@ -220,6 +220,18 @@ if($_REQUEST['appId'])
     // main URL
     echo "        <tr class=\"color1\"><td><b>URL</b></td><td>".$appLinkURL."</td></tr>\n";
 
+    // optional links
+    $result = query_appdb("SELECT * FROM appData WHERE appId = ".$_REQUEST['appId']." AND versionID = 0 AND type = 'url'");
+    if($result && mysql_num_rows($result) > 0)
+    {
+        echo "        <tr class=\"color1\"><td> <b>Links</b></td><td>\n";
+        while($ob = mysql_fetch_object($result))
+        {
+            echo "        <a href='$ob->url'>".substr(stripslashes($ob->description),0,30)."</a> <br />\n";
+        }
+            echo "        </td></tr>\n";
+        }
+  
     // image
     $img = get_screenshot_img($oApp->iAppId);
     echo "<tr><td align=center colspan=2>$img</td></tr>\n";

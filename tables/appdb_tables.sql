@@ -154,6 +154,7 @@ create table appComments (
  */
 create table appData (
 	id		int not null auto_increment,
+	appId		int not null,
 	versionId	int default 0,
 	type		enum('image', 'url', 'bug'),
 	description	text,
