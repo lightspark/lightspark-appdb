@@ -346,59 +346,68 @@ if($appId && !$versionId)
 }
 else if($appId && $versionId)
 {
-	$app = new Application($appId);
-	$data = $app->data;
-    
-	if(!$data) {
-		// Oops! application not found or other error. do something
-		errorpage('Internal Database Access Error');
-		exit;
-	}
+    $app = new Application($appId);
+    $data = $app->data;
+    if(!$data ) 
+    {
+        // Oops! application not found or other error. do something
+        errorpage('Internal Database Access Error. No App found.');
+	exit;
+    }
 
-	// rating menu
-	if(loggedin()) {
-	    apidb_sidebar_add("rating_menu");
-	}
+    $ver = $app->getAppVersion($versionId);
+    if(!$ver) 
+    {
+        // Oops! Version not found or other error. do something
+        errorpage('Internal Database Access Error. No Version Found.');
+	exit;
+    }
 
-	// admin menu
-    if(loggedin() && (havepriv("admin") || $current->ownsApp($appId))) {
-            apidb_sidebar_add("admin_menu");
-	}
+    // rating menu
+    if(loggedin()) 
+    {
+        apidb_sidebar_add("rating_menu");
+    }
+
+    // admin menu
+    if(loggedin() && havepriv("admin")) 
+    {
+        apidb_sidebar_add("admin_menu");
+    }
+
+    // header
+     apidb_header("Viewing App Version - ".$data->appName);
+
+    //cat
+    display_catpath($app->data->catId);
 	
-	// header
-	$ver = $app->getAppVersion($versionId);
-	apidb_header("Viewing App Version - ".$data->appName);
-
-	//cat
-        display_catpath($app->data->catId);
-	
-	//set URL
-	$appLinkURL = ($data->webPage) ? "<a href='$data->webPage'>".substr(stripslashes($data->webPage),0,30)."</a>": "&nbsp;";
+    //set URL
+    $appLinkURL = ($ver->webPage) ? "<a href='$ver->webPage'>".substr(stripslashes($ver->webPage),0,30)."</a>": "&nbsp;";
 
     //start version display
-	echo html_frame_start("","98%","",0);
+    echo html_frame_start("","98%","",0);
 	
-	echo '<tr><td class=color4 valign=top>',"\n";
-	echo '<table width="250" border=0 cellpadding=3 cellspacing=1">',"\n";
-	echo "<tr class=color0 valign=top><td width=100> <b>Name</b></td><td width='100%'>".stripslashes($data->appName)."</td>\n";
-	echo "<tr class=color1 valign=top><td width=100> <b>Ver Id</b></td><td width='100%'> $ver->versionId</td>\n";
-	echo "<tr class=color0 valign=top><td> <b>Version</b></td><td>".stripslashes($ver->versionName)."</td></tr>\n";
-	echo "<tr class=color1 valign=top><td> <b>URL</b></td><td>".stripslashes($appLinkURL)."</td></tr>\n";
+    echo '<tr><td class=color4 valign=top>',"\n";
+    echo '<table width="250" border=0 cellpadding=3 cellspacing=1">',"\n";
+    echo "<tr class=color0 valign=top><td width=100> <b>Name</b></td><td width='100%'>".stripslashes($data->appName)."</td>\n";
+    echo "<tr class=color1 valign=top><td width=100> <b>Ver Id</b></td><td width='100%'> $ver->versionId</td>\n";
+    echo "<tr class=color0 valign=top><td> <b>Version</b></td><td>".stripslashes($ver->versionName)."</td></tr>\n";
+    echo "<tr class=color1 valign=top><td> <b>URL</b></td><td>".stripslashes($appLinkURL)."</td></tr>\n";
 
-	//Rating Area
-	$r_win = rating_stars_for_version($versionId, "windows");
-	$r_fake = rating_stars_for_version($versionId, "fake");
+    //Rating Area
+    $r_win = rating_stars_for_version($versionId, "windows");
+    $r_fake = rating_stars_for_version($versionId, "fake");
 
     echo "<tr class=color0 valign=top><td> <b>Rating</b></td><td> $r_win \n";
-	echo "<br> $r_fake </td></tr>\n";
+    echo "<br> $r_fake </td></tr>\n";
 
-	//notes
-	display_notes($appId, $versionId);
+    //notes
+    display_notes($appId, $versionId);
 
-	//Image
+    //Image
     $img = get_screenshot_img($appId, $versionId);
 
-	echo "<tr><td align=center colspan=2>$img</td></tr>\n";
+    echo "<tr><td align=center colspan=2>$img</td></tr>\n";
 
     // Display all maintainers of this application
     echo "<tr class=color0><td align=left colspan=2><b>Maintainers of this application:</b>\n";
@@ -438,27 +447,35 @@ else if($appId && $versionId)
     {
         echo '<input type=submit value="Log in to become an app maintainer" class=button>';
     }
+    
     echo "</center></td></tr>";
-	echo "</table><td class=color2 valign=top width='100%'>\n";
+    if (loggedin() && (havepriv("admin") || isMaintainer($appId, $versionId)))
+    {
+        echo "<tr><td colspan = 2><center>";
+        echo "<a href=admin/editAppVersion.php?appId=".$appId."&versionId=".$versionId.">Edit version</a>";
+        echo "</center></td></tr>";
+    }
+    echo "</table><td class=color2 valign=top width='100%'>\n";
 
 
-	//Desc Image
-	echo "<table width='100%' border=0><tr><td width='100%' valign=top> <b>Description</b><br>\n";
-	echo add_br(stripslashes($ver->description));
-	echo "</td></tr>";
+    //Desc Image
+    echo "<table width='100%' border=0><tr><td width='100%' valign=top> <b>Description</b><br>\n";
+    echo add_br(stripslashes($ver->description));
+    echo "</td></tr>";
 
     /* close the table */
     echo "</table>\n";
 		
-	echo html_frame_end();
+    echo html_frame_end();
 
-	//TODO: code to view/add user experience records
-	if(!$versionId) {
-	    $versionId = 0;
-	}
+    //TODO: code to view/add user experience record
+//    if(!$versionId) 
+//    {
+//        $versionId = 0;
+//    }
 
-	// Comments Section
-	view_app_comments($appId, $versionId);
+    // Comments Section
+    view_app_comments($appId, $versionId);
 	
 }
 else
