@@ -66,6 +66,14 @@ class User {
         return lookupEmail($userid);
     }
 
+    function lookup_CVSrelease($userId)
+    {
+        $result = mysql_query("SELECT CVSrelease FROM user_list WHERE userId = '$userId'");
+        if(!$result || mysql_num_rows($result) != 1)
+            return null;
+        $ob = mysql_fetch_object($result);
+        return $ob->CVSrelease;
+    }
 
     /**
      * restore a user from the database

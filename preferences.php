@@ -54,6 +54,7 @@ function show_user_fields()
         $ext_username = $_SESSION['current']->username;
         $ext_realname = $user->lookup_realname($_SESSION['current']->userid);
         $ext_email = $user->lookup_email($_SESSION['current']->userid);
+        $CVSrelease = $user->lookup_CVSrelease($_SESSION['current']->userid);
         
         include(BASE."include/"."form_edit.php");
 
