@@ -14,7 +14,7 @@ function mail_appdb($sEmailList,$sSubject,$sMsg)
     $sMsg .= "\r\n\r\nIf you don't want to receive any other e-mail, please change your preferences:\r\n";
     $sMsg .= APPDB_ROOT."preferences.php\r\n";
 
-    $bResult = mail($sEmail, "[AppDB] ".$sSubject, $sMsg, $sHeaders, "-f".APPDB_OWNER_EMAIL);
+    $bResult = mail($sEmailList, "[AppDB] ".$sSubject, $sMsg, $sHeaders, "-f".APPDB_OWNER_EMAIL);
     if($bResult)
         addmsg("Message sent to: ".$sEmailList, "green");
     else 
