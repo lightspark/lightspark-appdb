@@ -6,7 +6,7 @@
 /*******************************************************************/
 
 /*
- * application evironment
+ * application environment
  */ 
 include("path.php");
 require(BASE."include/"."incl.php");
