@@ -171,4 +171,13 @@ function get_xml_tag ($file, $mode = null)
     }
 }
 
+/* get the number of applications in the appQueue table */
+function getQueuedAppCount()
+{
+    $qstring = "SELECT count(*) as queued_apps FROM appQueue";
+    $result = mysql_query($qstring);
+    $ob = mysql_fetch_object($result);
+    return $ob->queued_apps;
+}
+
 ?>

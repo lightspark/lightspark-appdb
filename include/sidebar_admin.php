@@ -17,7 +17,7 @@ function global_admin_menu() {
     
     $g->addmisc("&nbsp;");
     $g->add("List Users", $apidb_root."admin/");
-    $g->add("View App Queue", $apidb_root."admin/adminAppQueue.php");
+    $g->add("View App Queue (".getQueuedAppCount().")", $apidb_root."admin/adminAppQueue.php");
 
     $g->done();
 
