@@ -9,20 +9,20 @@ require(BASE."include/"."application.php");
 
 
 //check for admin privs
-if(!loggedin() || (!havepriv("admin") && !isMaintainer($appId, $versionId)) )
+if(!loggedin() || (!havepriv("admin") && !isMaintainer($_REQUEST['appId'], $_REQUEST['versionId'])) )
 {
     errorpage("Insufficient Privileges!");
     exit;
 }
 
-if($HTTP_POST_VARS)
+if(isset($_REQUEST['submit1']))
 {
-    if($submit1 == "Update Database")
+    if($_REQUEST['submit1'] == "Update Database")
 
     {
         $statusMessage = '';
         // Get the old values from the database 
-        $query = "SELECT * FROM appVersion WHERE appId = $appId and versionId = $versionId";
+        $query = "SELECT * FROM appVersion WHERE appId = ".$_REQUEST['appId']." and versionId = ".$_REQUEST['versionId'];
         $result = mysql_query($query);
         $ob = mysql_fetch_object($result);
         $old_versionName = $ob->versionName;
@@ -30,9 +30,9 @@ if($HTTP_POST_VARS)
         $old_description = $ob->description;
         $old_webPage     = $ob->webPage;
 
-        $versionName   = addslashes($versionName);
-        $description   = addslashes($description);
-        $webPage       = addslashes($webPage);
+        $versionName   = addslashes($_REQUEST['versionName']);
+        $description   = addslashes($_REQUEST['description']);
+        $webPage       = addslashes($_REQUEST['webPage']);
         $VersionChanged = false;
         if ($old_versionName <> $versionName)
         {
@@ -40,7 +40,7 @@ if($HTTP_POST_VARS)
             $WhatChanged .= "              New Value: ".stripslashes($versionName)."\n";
             $VersionChanged = true;
         } 
-        if ($old_keywords <> $keywords)
+        if ($old_keywords <> $_REQUEST['keywords'])
         {
              $WhatChanged .= "   Key Words: Old Value: ".stripslashes($old_keywords)."\n";
              $WhatChanged .= "              New Value: ".stripslashes($keywords)."\n";
@@ -68,18 +68,18 @@ if($HTTP_POST_VARS)
         if ($VersionChanged)
         {
             $query = "UPDATE appVersion SET versionName = '".$versionName."', ".
-                "keywords = '".$keywords."', ".
+                "keywords = '".$_REQUEST['keywords']."', ".
                 "description = '".$description."', ".
                 "webPage = '".$webPage."'".
-                " WHERE appId = $appId and versionId = $versionId";
+                " WHERE appId = ".$_REQUEST['appId']." and versionId = ".$_REQUEST['versionId'];
             if (mysql_query($query))
             {  
-	        //success
-                $email = getNotifyEmailAddressList($appId, $versionId);
+          //success
+                $email = getNotifyEmailAddressList($_REQUEST['appId'], $_REQUEST['versionId']);
                 if($email)
                 {
-                    $fullAppName = "Application: ".lookupAppName($appId)." Version: ".lookupVersionName($appId, $versionId);
-                    $ms .= APPDB_ROOT."appview.php?appId=$appId&versionId=$versionId"."\n";
+                    $fullAppName = "Application: ".lookupAppName($_REQUEST['appId'])." Version: ".lookupVersionName($_REQUEST['appId'], $_REQUEST['versionId']);
+                    $ms .= APPDB_ROOT."appview.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']."\n";
                     $ms .= "\n";
                     $ms .= ($_SESSION['current']->username ? $_SESSION['current']->username : "Anonymous")." changed ".$fullAppName."\n";
                     $ms .= "\n";
@@ -96,28 +96,28 @@ if($HTTP_POST_VARS)
                 addmsg("mesage sent to: ".$email, green);
 
                 addmsg("The Version was successfully updated in the database", "green");
-                redirect(apidb_fullurl("appview.php?appId=$appId&versionId=$versionId"));
-	    }
-	    else
-	    {
-	       //error
-               $statusMessage = "<p><b>Database Error!<br>".mysql_error()."</b></p>\n";
+                redirect(apidb_fullurl("appview.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']));
+      }
+      else
+      {
+         //error
+               $statusMessage = "<p><b>Database Error!<br />".mysql_error()."</b></p>\n";
                addmsg($statusMessage, "red");
-               redirect(apidb_fullurl("admin/editAppVersion.php?appId=$appId&versionId=$versionId"));
-	    }
-	    
+               redirect(apidb_fullurl("admin/editAppVersion.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']));
+      }
+      
         } else
         {
             addmsg("Nothing changed", "red");
-            redirect(apidb_fullurl("admin/editAppVersion.php?appId=$appId&versionId=$versionId"));
+            redirect(apidb_fullurl("admin/editAppVersion.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']));
         }
     }
-    exit;   	
+    exit;     
 } else
 {
     $query = "SELECT versionName,  keywords, ".
         "description, webPage from appVersion WHERE ".
-        "appId = '$appId' and versionId = '$versionId'";
+        "appId = '".$_REQUEST['appId']."' and versionId = '".$_REQUEST['versionId']."'";
     if(debugging()) { echo "<p align=center><b>query:</b> $query </p>"; }
 
     $result = mysql_query($query);
@@ -126,20 +126,20 @@ if($HTTP_POST_VARS)
     apidb_header("Edit Application Version");
 
     echo "<form method=post action='editAppVersion.php'>\n";
-    echo html_frame_start("Data for Application ID: $appId Version ID: $versionId", "90%","",0);
+    echo html_frame_start("Data for Application ID: ".$_REQUEST['appId']." Version ID: ".$_REQUEST['versionId'], "90%","",0);
     echo html_table_begin("width='100%' border=0 align=left cellpadding=6 cellspacing=0 class='box-body'");
 
-    echo '<input type=hidden name="appId" value='.$appId.'>';
-    echo '<input type=hidden name="appId" value='.$appId.'>';
-    echo '<input type=hidden name="versionId" value='.$versionId.'>';
-    echo '<tr><td class=color1>Name</td><td class=color0>'.lookupAppName($appId).'</td></tr>',"\n";
-    echo '<tr><td class=color4>Version</td><td class=color0><input size=80% type="text" name="versionName" type="text" value="'.$versionName.'"></td></tr>',"\n";
-    echo '<tr><td class=color1>Keywords</td><td class=color0><input size=80% type="text" name="keywords" value="'.$keywords.'"></td></tr>',"\n";
+    echo '<input type=hidden name="appId" value='.$_REQUEST['appId'].' />';
+    echo '<input type=hidden name="appId" value='.$_REQUEST['appId'].' />';
+    echo '<input type=hidden name="versionId" value='.$_REQUEST['versionId'].' />';
+    echo '<tr><td class=color1>Name</td><td class=color0>'.lookupAppName($_REQUEST['appId']).'</td></tr>',"\n";
+    echo '<tr><td class=color4>Version</td><td class=color0><input size=80% type="text" name="versionName" type="text" value="'.$versionName.'" /></td></tr>',"\n";
+    echo '<tr><td class=color1>Keywords</td><td class=color0><input size=80% type="text" name="keywords" value="'.$keywords.'" /></td></tr>',"\n";
     echo '<tr><td class=color4>Description</td><td class=color0>', "\n";
     echo '<textarea cols=$80 rows=$30 name="description">'.stripslashes($description).'</textarea></td></tr>',"\n";
-    echo '<tr><td class=color1>Web Page</td><td class=color0><input size=80% type="text" name="webPage" value="'.$webPage.'"></td></tr>',"\n";
+    echo '<tr><td class=color1>Web Page</td><td class=color0><input size=80% type="text" name="webPage" value="'.$webPage.'" /></td></tr>',"\n";
 
-    echo '<tr><td colspan=2 align=center class=color3><input type="submit" name=submit1 value="Update Database"></td></tr>',"\n";
+    echo '<tr><td colspan=2 align=center class=color3><input type="submit" name=submit1 value="Update Database" /></td></tr>',"\n";
 
     echo html_table_end();
     echo html_frame_end();

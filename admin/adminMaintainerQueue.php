@@ -23,15 +23,15 @@ if(!loggedin())
 apidb_header("Admin Maintainer Queue");
 echo '<form name="qform" action="adminMaintainerQueue.php" method="post" enctype="multipart/form-data">',"\n";
 
-if ($sub)
+if ($_REQUEST['sub'])
 {
-    if ($queueId)
+    if ($_REQUEST['queueId'])
     {
         //get data
         $query = "SELECT queueId, appId, versionId,".
                      "userId, maintainReason, superMaintainer,".
                      "UNIX_TIMESTAMP(submitTime) as submitTime ".
-                     "FROM appMaintainerQueue WHERE queueId = $queueId;";
+                     "FROM appMaintainerQueue WHERE queueId = ".$_REQUEST['queueId'].";";
         $result = mysql_query($query);
         $ob = mysql_fetch_object($result);
         mysql_free_result($result);
@@ -45,7 +45,7 @@ if ($sub)
     }
 
     //process according to which request was submitted and optionally the sub flag
-    if (!$_REQUEST['add'] && !$_REQUEST['reject'] && $queueId)
+    if (!$_REQUEST['add'] && !$_REQUEST['reject'] && $_REQUEST['queueId'])
     {
         $x = new TableVE("view");
 
@@ -155,20 +155,20 @@ if ($sub)
 
         /* Add button */
         echo '<tr valign=top><td class=color3 align=center colspan=2>' ,"\n";
-        echo '<input type=submit name=add value=" Add maintainer to this application " class=button> </td></tr>',"\n";
+        echo '<input type=submit name=add value=" Add maintainer to this application " class=button /> </td></tr>',"\n";
 
         /* Reject button */
         echo '<tr valign=top><td class=color3 align=center colspan=2>' ,"\n";
-        echo '<input type=submit name=reject value=" Reject this request " class=button></td></tr>',"\n";
+        echo '<input type=submit name=reject value=" Reject this request " class=button /></td></tr>',"\n";
 
         echo '</table>',"\n";
-        echo '<input type=hidden name="sub" value="inside_form">',"\n"; 
-        echo '<input type=hidden name="queueId" value="'.$queueId.'">',"\n";  
+        echo '<input type=hidden name="sub" value="inside_form" />',"\n"; 
+        echo '<input type=hidden name="queueId" value="'.$_REQUEST['queueId'].'" />',"\n";  
 
         echo html_frame_end("&nbsp;");
         echo html_back_link(1,'adminMaintainerQueue.php');
     }
-    else if ($_REQUEST['add'] && $queueId)
+    else if ($_REQUEST['add'] && $_REQUEST['queueId'])
     {
         //add this user, app and version to the database
         $statusMessage = "";
@@ -187,7 +187,7 @@ if ($sub)
             $statusMessage = "<p>The application was successfully added into the database</p>\n";
 
             //delete the item from the queue
-            mysql_query("DELETE from appMaintainerQueue where queueId = $queueId;");
+            mysql_query("DELETE from appMaintainerQueue where queueId = ".$_REQUEST['queueId'].";");
 
             $goodtogo = 1; /* set to 1 so we send the response email */
         } else
@@ -215,7 +215,7 @@ if ($sub)
         echo html_frame_end("&nbsp;");
         echo html_back_link(1,'adminMaintainerQueue.php'); 
     }
-    else if (($_REQUEST['reject'] || ($sub == 'reject')) && $queueId)
+    else if (($_REQUEST['reject'] || ($_REQUEST['sub'] == 'reject')) && $_REQUEST['queueId'])
     {
        if (lookupEmail($ob->userId))
        {
@@ -230,7 +230,7 @@ if ($sub)
        }
 
        //delete main item
-       $query = "DELETE from appMaintainerQueue where queueId = $queueId;";
+       $query = "DELETE from appMaintainerQueue where queueId = ".$_REQUEST['queueId'].";";
        $result = mysql_query($query);
        echo html_frame_start("Delete maintainer application",400,"",0);
        if(!$result)
