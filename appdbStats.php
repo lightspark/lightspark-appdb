@@ -42,6 +42,18 @@ echo "    <td>Images:</td>\n";
 echo "    <td>".getNumberOfImages()."</td>\n";
 echo "</tr>\n\n";
 
+/* Display the active users in the last 30 days */
+echo "<tr class=color4>\n";
+echo "    <td>Users active within the last 30 days:</td>\n";
+echo "    <td>".getActiveUsersWithinDays(30)."</td>\n";
+echo "</tr>\n\n";
+
+/* Display the active users in the last 60 days */
+echo "<tr class=color4>\n";
+echo "    <td>Users active within the last 60 days:</td>\n";
+echo "    <td>".getActiveUsersWithinDays(60)."</td>\n";
+echo "</tr>\n\n";
+
 /* Display the active users in the last 90 days */
 echo "<tr class=color4>\n";
 echo "    <td>Users active within the last 90 days:</td>\n";
