@@ -16,9 +16,18 @@ running on Wine.<p>
 
 <p><b>Q: What is Wine?</b></p>
 <blockquote>
-<p><b>A:</b> Wine is an execution layer that allows Windows programs to be run
-on Linux Systems. More information can be found at the
-<a href="http://www.winehq.com/fom-meta/cache/3.html">Wine FAQ</a>.<p>
+<p><b>A:</b>Think of Wine as a Windows compatibility layer. Wine does not require
+Microsoft Windows, as it is a completely alternative implementation
+consisting of 100% Microsoft-free code, but it can optionally use
+native system DLLs if they are available. Wine provides both a development
+toolkit (Winelib) for porting Windows sources to Unix and a program loader,
+allowing many unmodified Windows binaries to run on x86-based Unixes, including
+<a href="http://www.linux.org/">Linux</a>,
+<a href="http://www.freebsd.org/">FreeBSD</a>, and
+<a href="http://wwws.sun.com/software/solaris/">Solaris</a>.</p>
+
+<p>More information can be found at the
+<a href="http://www.winehq.org/site/docs/wine-faq/index">Wine FAQ</a>.<p>
 </blockquote>
 
 <p><b>Q: What is the benefit Application Database?</b></p>
