@@ -194,24 +194,14 @@ class User {
     /**
      * Check if this user is a maintainer of a given appId/versionId.
      */
-    function isMaintainer($iAppId=null, $iVersionId=null)
+    function isMaintainer($iVersionId=null)
     {
         if(!$this->isLoggedIn()) return false;
 
-        /* if this user is a super maintainer of this appid then they */
-        /* are a maintainer of all of the versionId's of it as well */
-        if($this->isSuperMaintainer($iAppId))
+        if($iVersionId)
         {
-            return true;
-        }
-        
-        if($iAppId && $iVersionId)
-        {
-            $sQuery = "SELECT * FROM appMaintainers WHERE userid = '".$this->iUserId."' AND appId = '".$iAppId."' AND versionId = '$iVersionId'";
-        } elseif($iAppId) // isMaintainer ? and we only provided appId => isSupermaintainer.
-        {
-            return $this->isSuperMaintainer($iAppId);
-        } else
+            $sQuery = "SELECT * FROM appMaintainers WHERE userid = '".$this->iUserId."' AND versionId = '$iVersionId'";
+        } else // are we maintaining any version ?
         {
             $sQuery = "SELECT * FROM appMaintainers WHERE userid = '".$this->iUserId."'";
         }

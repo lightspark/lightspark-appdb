@@ -19,7 +19,7 @@ function global_sidebar_login() {
         
         /* if this user maintains any applications list them */
         /* in their sidebar */
-        $apps_user_maintains = getAppsFromUserId($_SESSION['current']->iUserid);
+        $apps_user_maintains = getAppsFromUserId($_SESSION['current']->iUserId);
         if($apps_user_maintains)
         {
             $g->addmisc("");
@@ -41,5 +41,4 @@ function global_sidebar_login() {
     $g->done();   
 
 }
-
 ?>
