@@ -125,20 +125,21 @@ class Version {
     /**
      * Update version.
      * FIXME: Informs interested people about the modification.
+     * FIXME: Use compile_update_string instead of addslashes.
      * Returns true on success and false on failure.
      */
     function update($sName=null, $sDescription=null, $sTestedRelease=null, $sTestedRating=null, $iAppId=null)
     {
         if ($sName)
         {
-            if (!query_appdb("UPDATE appVersion SET versionName = '".$sName."' WHERE versionId = ".$this->iVersionId))
+            if (!query_appdb("UPDATE appVersion SET versionName = '".addslashes($sName)."' WHERE versionId = ".$this->iVersionId))
                 return false;
             $this->sName = $sName;
         }     
 
         if ($sDescription)
         {
-            if (!query_appdb("UPDATE appVersion SET description = '".$sDescription."' WHERE versionId = ".$this->iVersionId))
+            if (!query_appdb("UPDATE appVersion SET description = '".addslashes($sDescription)."' WHERE versionId = ".$this->iVersionId))
                 return false;
             $this->sDescription = $sDescription;
         }

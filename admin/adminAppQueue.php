@@ -86,9 +86,9 @@ if ($_REQUEST['sub'])
 
             echo '<tr valign=top><td class=color3 align=center colspan=2>' ,"\n";
             echo '<input type="hidden" name="versionId" value="'.$oVersion->iVersionId.'" />';
-            echo '<input type="submit" value=" Submit App Into Database " class=button>&nbsp',"\n";
-            echo '<input name="sub" type=submit value="Delete" class=button> </td></tr>',"\n";
-            echo '</table>',"\n";
+            echo '<input type="submit" value=" Submit Version Into Database " class="button">&nbsp',"\n";
+            echo '<input name="sub" type=submit value="Delete" class="button"></td></tr>',"\n";
+            echo '</table></form>',"\n";
         } else // application
         { 
     
@@ -188,7 +188,7 @@ if ($_REQUEST['sub'])
             echo '<input type="hidden" name="appId" value="'.$oApp->iAppId.'" />';
             echo '<input type=submit value=" Submit App Into Database " class=button>&nbsp',"\n";
             echo '<input name="sub" type="submit" value="Delete" class="button" /></td></tr>',"\n";
-            echo '</table>',"\n";
+            echo '</table></form>',"\n";
         }
 
         echo html_frame_end("&nbsp;");
@@ -196,7 +196,7 @@ if ($_REQUEST['sub'])
     }
     else if ($_REQUEST['sub'] == 'add')
     {
-        if (is_numeric($_REQUEST['appId'])) // application
+        if (is_numeric($_REQUEST['appId']) && !is_numeric($_REQUEST['versionId'])) // application
         {
             // add new vendor
             if($sVendor)
@@ -208,10 +208,10 @@ if ($_REQUEST['sub'])
             $oApp = new Application($_REQUEST['appId']);
             $oApp->update($_REQUEST['appName'], $_REQUEST['appDescription'], $_REQUEST['keywords'], $_REQUEST['webPage'], $_REQUEST['vendorId'], $_REQUEST['catId']);
             $oApp->unQueue();
-        } else if(is_numeric($_REQUEST['versionId']))  // version
+        } else if(is_numeric($_REQUEST['versionId']) && is_numeric($_REQUEST['appId']))  // version
         {
             $oVersion = new Version($_REQUEST['versionId']);
-            $oVersion->update($_REQUEST['versionName'], $_REQUEST['versionDescription']);
+            $oVersion->update($_REQUEST['versionName'], $_REQUEST['versionDescription'],null,null,$_REQUEST['appId']);
             $oVersion->unQueue();
         }
         
