@@ -1,0 +1,105 @@
+<!--TITLE: Maintainers Guidelines -->
+
+<h3>Maintainers Guidelines</h3>
+
+<p>
+Getting a (super) maintainer gives you certain rights on the Application Database. However as you may know, with great power, comes great responsibility...
+</p>
+
+<p>An application maintainer is someone who runs the application regularly and who is willing to be active in reporting regressions with newer versions of Wine and to help other users run this application under Wine.</p>
+
+You are expected to:
+<ul>
+<li>Keep the application comments clean, all stale data should be removed</li>
+<li>Be an active user of that application and version</li>
+<li>Keep up-to-date with all Wine releases, if there are regressions they should be reported to <a href="mailto:wine-devel@winehq.org">wine-devel@winehq.org</a> and <a href="http://bugs.winehq.org">Bugzilla</a></li>
+</ul>
+
+You will:
+<ul>
+<li>Receive an email anytime a comment is posted or deleted for the application or the application information is modified</li>
+<li>Be able to modify all aspects of your application(s) and version(s), including description, screenshots, how-to's, notes, comments, etc.</li>
+</ul>
+
+<br />
+
+<h4>Application overview page guidlines</h4>
+<p><i>N.B. Only super maintainers can change the general description of an application.</i><br />
+You can edit an application overview page by clicking on the "Edit Application" button in an application overview page. You'll be then presented with a form whose fields are explained thereafter.
+<ul>
+<li>
+Application name should be checked against official application name and should not contain the vendor's name.
+</li>
+<li>
+Application vendor should be set correctly. If the vendor is missing, please contact <a href="mailto:appdb@winehq.org">appdb@winehq.org</a>.
+</li>
+<li>
+Keywords are used by the search engine, you don't need to repeat the application's name but you are encouraged to provide some keywords in this field.
+</li>
+<li>
+Description should describe the application in a general manner (what it does). Wine and version specific considerations goes in version-specific pages (described below). If you want to add more than a short sentence, please add a cariage return after the first sentence as it will be used when showing application summary in the search engine, top-25 page and so on. <br />You are encouraged to make use of the template provided for application description; you can copy/paste this template from the "<a href="../appsubmit.php?apptype=1">Submit application page</a>".
+</li>
+<li>
+Webpage should contain the home page for this application. Please remember that an URL starts with http://.
+</li>
+</ul>
+</p>
+
+<h4>Version page guidlines</h4>
+<p>
+You can edit a version page by clicking on the "Edit Version" button in any version page for which you are a (super) maintainer. You'll be then presented with a form whose fields are explained thereafter.
+<ul>
+<li>
+Version name should be checked against official version name. However if you feel that two minor revision of an application will share the same problems or success, you are encouraged to use wildcards in the version number to don't fill the database with hundreds of versions. For example if you know that Adobe Acrobat 6.0, 6.01 and 6.1 are about the same application, just choose 6.x as a version name. You can however use the full version name in an history table in the description field (see below).
+</li>
+<li>
+Description should describe the application version and not be a repetition of the application description. Please use a short sentence as the first line of your description to describe what this version is and then add a cariage return after this first sentence as it will be used when showing version summary in the application page for example. <br />You are encouraged to make use of the template provided for version description; you can copy/paste this template from the "<a href="../appsubmit.php?apptype=2">Submit version page</a>".<br />
+As you'll see in this template usefull informations to place in this field are the specification of what works and what doesn't in wine and you can also add what is called an history table to keep track of improvemetns and regression. Using the html editor described later in this document and the provided template it is easy to produce such a table which will contains columns like version number, wine version, installs, runs, rating. You can then use the styles drop down list of the editor to set the color of the row according to the rating (gold, silver, bronze or garbage). You can see an example <a href="../appview.php?versionId=2602">here</a>.
+</li>
+<li>
+Rating let's you rate how this version ran with the latest Wine version you tested it with. For rating definitions, please see this <a href="index.php?topic=maintainer_ratings">page</a>.
+</li>
+<li>
+Release is the latest release of Wine you tested this version with.
+</li>
+</ul>
+
+<h4>Additional URLs guidlines</h4>
+<p>
+In both application and version editing page you can add additional URLs. These URLs can for example help the user find native alternatives for this application (in application overview page) or find specific dll (in version page).
+</p>
+
+<h4>Screenshots guidlines</h4>
+<p>
+As a maintainer you are encouraged to provide screenshots for the versions you tested under Wine. To ass a screenshot, simply click on the screenshot thumbnail you'll find in the version page you want to provide a screenshot for.
+</p>
+
+<h4>Notes guidlines</h4>
+<p>
+In the version page you can add, edit and delete notes for the versions you maintain. Just click on "Add note" button.
+</p>
+
+
+<h4>How-to guidlines</h4>
+<p>
+How-to's are just a special kind of notes. You can provide step-by-step explanations on how to install or run a specific version of the current application here. Please try to keep How-to's up to date (for example some steps might not be needed anymore using a more recent version of Wine).
+</p>
+
+<h4>Warnings guidlines</h4>
+<p>
+Warnings are just a special kind of note. Warnings appear in red and should catch the attention of the reader. If you are warning users agains potential data corruption for example, please keep the warning up-to-date if it is not true anymore using a recent Wine version (in this case you might choose to keep the warning and tell users that since Wine X.Y, this has been fixed).
+</p>
+
+<h4>Comments guidlines</h4>
+<p>
+As a maintainer you are entitled to delete comments. Use this feature wisely and always explain why you deleted a comment. If a comment is useless or is not true anymore, you can safely delete it. Whenever you can, extract how-to's, other people's tests (for you test history table for example) from the comments and put it in your version's page and how-to notes.
+</p>
+
+
+<h4>Using the HTML editor</h4>
+<p>
+Here you'll find informations and hints about the HTML editor used when editing informations in the Application Database.<br />
+At this time detailed informations are not available. Please check back later.
+</p>
+<br />
+<p>If you have additionnal questions, please do not hesitate to contact us on <a href="mailto:appdb@winehq.org">appdb@winehq.org</a>.</p>

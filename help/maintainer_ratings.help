@@ -1,6 +1,6 @@
-<!--TITLE: Maintainers Ratings Help -->
+<!--TITLE: Maintainers Ratings Definitions -->
 
-<h3>Maintainers Ratings System Help</h3>
+<h3>Maintainers Ratings Definitions</h3>
 
 <p>
 The Application Database features a Maintainers rating system that allows you to see
@@ -20,7 +20,7 @@ An application can be rated as Gold if it installs and runs "out of the box".
 
 <p>
 If an application needs DLL overrides (native DLL's from a Windows installation) to install and
-run but runs flawlessly otherwise, then it can be rated as silver. There should be an accompanying "HowTo" 
+run but runs flawlessly otherwise, then it can be rated as silver. There should be an accompanying "How-To" 
 written to allow users to get this application to run.
 </p>
 
@@ -39,6 +39,3 @@ There should be at least one bug report in bugzilla if an app gets this rating.
 </p>
 
 </ul>
-
-
-<p>&nbsp;</p>
