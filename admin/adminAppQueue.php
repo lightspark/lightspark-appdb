@@ -1,7 +1,8 @@
-<?
-
-/* code to View and approve new Apps */
-
+<?php
+/**
+ * code to View and approve new Apps 
+ */
+ 
 include("path.php");
 require(BASE."include/"."incl.php");
 require(BASE."include/"."tableve.php");
@@ -342,7 +343,7 @@ if ($_REQUEST['sub'])
 
         }
         //done
-        addmsg("<a href=".apidb_fullurl("appview.php")."?appId=".$_REQUEST['appParent']."&versionId=".$_REQUEST['appVersion'].">Veiw App</a>", "green");
+        addmsg("<a href=".apidb_fullurl("appview.php")."?appId=".$_REQUEST['appParent']."&versionId=".$_REQUEST['appVersion'].">View App</a>", "green");
         redirect(apidb_fullurl("admin/adminAppQueue.php"));
         exit;
     }
