@@ -187,17 +187,17 @@ else if (isset($_REQUEST['apptype']))
     // app parent
     $x = new TableVE("view");
     echo '<tr valign=top><td class=color0><b>App Parent</b></td><td>',"\n";
-    $x->make_option_list("queueName",stripslashes($appId),"appFamily","appId","appName");
+    $x->make_option_list("queueName",$_REQUEST['appId'],"appFamily","appId","appName");
     echo '</td></tr>',"\n";
 
     echo '<tr valign=top><td class=color0><b>App Version</b></td>',"\n";
-    echo '<td><input type=text name="queueVersion" size=20 value="'.$queueVersion.'"></td></tr>',"\n";
+    echo '<td><input type=text name="queueVersion" size=20></td></tr>',"\n";
 
     echo '<tr valign=top><td class=color0><b>App URL</b></td>',"\n";
-    echo '<td><input type=text name="queueURL" size=20 value="'.$queueURL.'"></td></tr>',"\n";
+    echo '<td><input type=text name="queueURL" size=20></td></tr>',"\n";
 
     echo '<tr valign=top><td class=color0><b>App Desc</b></td>',"\n";
-    echo '<td><textarea name="queueDesc" rows=10 cols=35 value="'.$queueDesc.'"></textarea></td></tr>',"\n";
+    echo '<td><textarea name="queueDesc" rows=10 cols=35></textarea></td></tr>',"\n";
 
     echo '<tr valign=top><td class=color0><b>Email</b></td>',"\n";
     echo '<td><input type=text name="queueEmail" value="'.$email.'" size=20></td></tr>',"\n";
