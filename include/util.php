@@ -189,4 +189,36 @@ function getQueuedMaintainerCount()
     return $ob->queued_maintainers;
 }
 
+/* Get the number of users in the database */
+function getNumberOfComments()
+{
+    $result = mysql_query("SELECT count(*) as num_comments FROM appComments;");
+    $row = mysql_fetch_object($result);
+    return $row->num_comments;
+}
+
+/* Get the number of versions in the database */
+function getNumberOfVersions()
+{
+    $result = mysql_query("SELECT count(versionId) as num_versions FROM appVersion WHERE versionName != 'NONAME';");
+    $row = mysql_fetch_object($result);
+    return $row->num_versions;
+}
+
+/* Get the number of app familes in the database */
+function getNumberOfAppFamilies()
+{
+    $result = mysql_query("SELECT count(*) as num_appfamilies FROM appFamily;");
+    $row = mysql_fetch_object($result);
+    return $row->num_appfamilies;
+}
+
+/* Get the number of images in the database */
+function getNumberOfImages()
+{
+    $result = mysql_query("SELECT count(*) as num_images FROM appData WHERE type='image';");
+    $row = mysql_fetch_object($result);
+    return $row->num_images;
+}
+
 ?>

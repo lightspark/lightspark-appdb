@@ -412,4 +412,20 @@ function getNotifyEmailAddressList($appId, $versionId)
     return $retval;
 }
 
+/* Get the number of users in the database */
+function getNumberOfUsers()
+{
+    $result = mysql_query("SELECT count(*) as num_users FROM user_list;");
+    $row = mysql_fetch_object($result);
+    return $row->num_users;
+}
+
+/* Get the number of active users within $days of the current day */
+function getActiveUsersWithinDays($days)
+{
+    $result = mysql_query("SELECT count(*) as num_users FROM user_list WHERE stamp >= 'NOW() - $days';");
+    $row = mysql_fetch_object($result);
+    return $row->num_users;
+}
+
 ?>

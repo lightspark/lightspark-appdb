@@ -20,6 +20,7 @@ function global_sidebar_menu() {
     $g->add("Submit App", $apidb_root."appsubmit.php");
     $g->add("Documentation", $apidb_root."help/");
     $g->add("Help & Support", $apidb_root."support.php");
+    $g->add("Appdb Stats", $apidb_root."appdbStats.php");
     $g->done();    
 
     $g = new htmlmenu("Search");

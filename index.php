@@ -42,11 +42,7 @@ apidb_header("Wine Application Database");
 	</p>
 <?
 
-    $countQuery = "SELECT count(versionId) as hits FROM appVersion WHERE versionName != 'NONAME'";
-    $result = mysql_query($countQuery);
-    $ob = mysql_fetch_object($result);
-    
-    $numApps = $ob->hits;
+    $numApps = getNumberOfVersions();
 
     $voteQuery = "SELECT appVotes.appId, appName, count(userId) as count ".
         "FROM appVotes, appFamily ".
