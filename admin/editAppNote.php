@@ -18,7 +18,7 @@ if(!is_numeric($_REQUEST['noteId']))
 $oNote = new Note($_REQUEST['noteId']);
 
 /* Check for privs */
-if(!$_SESSION['current']->isLoggedIn() || (!$_SESSION['current']->hasPriv("admin") && !$_SESSION['current']->isMaintainer($oNote->iAppId,$oNote->iVersionId)) )
+if(!$_SESSION['current']->isLoggedIn() || (!$_SESSION['current']->hasPriv("admin") && !$_SESSION['current']->isMaintainer($oNote->iVersionId) && !isSuperMaintainer($oNote->iAppId)) )
 {
     errorpage("Insufficient Privileges!");
     exit;
