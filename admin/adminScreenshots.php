@@ -29,6 +29,7 @@ if($_REQUEST['regenerate'])
         $screenshot = new Screenshot($oRow->id);
         $screenshot->generate();
         $screenshot->free();
+        set_time_limit(60);
     }
 }
 
