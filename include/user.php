@@ -245,15 +245,9 @@ class User {
     function is_super_maintainer($appId)
     {
         if(!loggedin() || !$this->userid)
-{
-	echo "not logged in or not this userid";
             return false;
-}else {
-	echo "running the query";
-}
 
         $query = "SELECT * FROM appMaintainers WHERE userid = '$this->userid' AND appId = '$appId' AND superMaintainer = '1'";
-	echo "$query";
         $result = mysql_query($query, $this->link);
         if(!$result)
             return 0;
