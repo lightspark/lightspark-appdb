@@ -89,27 +89,27 @@ if(isset($_REQUEST['submit1']))
                 $sEmail = get_notify_email_address_list($_REQUEST['appId'], $_REQUEST['versionId']);
                 if($sEmail)
                 {
-                    $sFullAppName = "Application: ".lookupAppName($_REQUEST['appId'])." Version: ".lookupVersionName($_REQUEST['appId'], $_REQUEST['versionId']);
-                    $sMsg .= APPDB_ROOT."appview.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']."\r\n";
-                    $sMsg .= "\r\n";
-                    $sMsg .= $_SESSION['current']->realname." changed ".$sFullAppName."\n";
-                    $sMsg .= "\r\n";
-                    $sMsg .= $WhatChanged."\r\n";
-                    $sMsg .= "\r\n";
+                    $sSubject = lookupAppName($_REQUEST['appId'])." ".lookupVersionName($_REQUEST['versionId'])." has been modified by".$_SESSION['current']->sRealname;
+                    $sMsg .= APPDB_ROOT."appview.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']."\n";
+                    $sMsg .= "\n";
+                    $sMsg .= "The following changes have been made:";
+                    $sMsg .= "\n";
+                    $sMsg .= $WhatChanged."\n";
+                    $sMsg .= "\n";
 
-                    mail_appdb($sEmail, $sFullAppName ,$sMsg);
+                    mail_appdb($sEmail, $sSubject ,$sMsg);
                 }
-                addmsg("The Version was successfully updated in the database", "green");
-                redirect(apidb_fullurl("appview.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']));
+                addmsg("The version was successfully updated in the database", "green");
+                redirect(apidb_fullurl("appview.php?versionId=".$_REQUEST['versionId']));
             } else
             {
                 //error
-                redirect(apidb_fullurl("admin/editAppVersion.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']));
+                redirect(apidb_fullurl("admin/editAppVersion.php?versionId=".$_REQUEST['versionId']));
             }          
         } else
         {
             addmsg("Nothing changed", "red");
-            redirect(apidb_fullurl("admin/editAppVersion.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']));
+            redirect(apidb_fullurl("admin/editAppVersion.php?versionId=".$_REQUEST['versionId']));
         }
     }
     else if($_REQUEST['submit1'] == "Update URL")
@@ -187,24 +187,28 @@ if(isset($_REQUEST['submit1']))
         $sEmail = get_notify_email_address_list($_REQUEST['appId']);
         if($sEmail)
         {
-            $sFullAppName = "Application: ".lookupAppName($_REQUEST['appId']);
-            $sMsg  = APPDB_ROOT."appview.php?appId=".$_REQUEST['appId']."\r\n";
-            $sMsg .= "\r\n";
-            $sMsg .= $_SESSION['current']->realname." changed ".$sFullAppName." \r\n";
-            $sMsg .= "\r\n";
-            $sMsg .= $sWhatChanged."\r\n";
-            $sMsg .= "\r\n";
+            $sSubject = "Links for ".lookupAppName($_REQUEST['appId'])." ".lookupAppName($_REQUEST['versionId'])." have been updated by ".$_SESSION['current']->sRealname;
+            $sMsg  = APPDB_ROOT."appview.php?appId=".$_REQUEST['appId']."\n";
+            $sMsg .= "\n";
+            $sMsg .= "The following changes have been made:";
+            $sMsg .= "\n";
+            $sMsg .= $sWhatChanged."\n";
+            $sMsg .= "\n";
 
-            mail_appdb($sEmail, $sFullAppName ,$sMsg);
+            mail_appdb($sEmail, $sSubject ,$sMsg);
         }
     }
     exit;     
 } else
 {
+?>
+<link rel="stylesheet" href="./application.css" type="text/css">
+<!-- load HTMLArea -->
+<script type="text/javascript" src="../htmlarea/htmlarea_loader.js"></script>
+<?php
     $sQuery = "SELECT *
                FROM appVersion
-               WHERE appId = '".$_REQUEST['appId']."'
-               AND versionId = '".$_REQUEST['versionId']."'";
+               WHERE versionId = '".$_REQUEST['versionId']."'";
     $hResult = query_appdb($sQuery);
     $oRow = mysql_fetch_object($hResult);
 
@@ -218,7 +222,34 @@ if(isset($_REQUEST['submit1']))
     echo '<tr><td class=color1>Name</td><td class=color0>'.lookupAppName($_REQUEST['appId']).'</td></tr>',"\n";
     echo '<tr><td class=color4>Version</td><td class=color0><input size=80% type="text" name="versionName" type="text" value="'.$oRow->versionName.'" /></td></tr>',"\n";
     echo '<tr><td class="color4">Version specific description</td><td class="color0">', "\n";
-    echo '<textarea cols="80" rows="30" name="description">'.$oRow->description.'</textarea></td></tr>',"\n";
+    if(trim(strip_tags($oRow->description))=="")
+    {
+        $oRow->description  = "<p>This is a template; enter version-specific description here</p>";
+        $oRow->description .= "<p>
+                               <span class=\"title\">Wine compatibility</span><br />
+                               <span class=\"subtitle\">What works:</span><br />
+                               - settings<br />
+                               - help<br />
+                               <br /><span class=\"subtitle\">What doesn't work:</span><br />
+                               - erasing<br />
+                               <br /><span class=\"subtitle\">What was not tested:</span><br />
+                               - burning<br />
+                               </p>";
+        $oRow->description .= "<p><span class=\"title\">Tested versions</span><br /><table width=\"90%\" border=\"1\">
+                            <thead><tr>
+                            <td>App. version</td><td>Wine version</td><td>Installs?</td><td>Runs?</td><td>Rating</td>
+                            </tr></thead>
+                            <tbody><tr>
+                            <td class=\"gold\">3.23</td><td class=\"gold\">20050111</td><td class=\"gold\">yes</td><td class=\"gold\">yes</td><td class=\"gold\">Gold</td>
+                            </tr><tr>
+                            <td class=\"silver\">3.23</td><td class=\"silver\">20041201</td><td class=\"silver\">yes</td><td class=\"silver\">yes</td><td class=\"silver\">Silver</td>
+                            </tr><tr>
+                            <td class=\"bronze\">3.21</td><td class=\"bronze\">20040615</td><td class=\"bronze\">yes</td><td class=\"bronze\">yes</td><td class=\"bronze\">Bronze</td>
+                            </tr></tbody></table></p><p> <br /> </p>";
+    }
+    echo '<p style="width:700px">', "\n";
+    echo '<textarea cols="80" rows="30" id="editor" name="description">'.$oRow->description.'</textarea></td></tr>',"\n";
+    echo '</p>';
     echo '<tr><td class="color4">Rating</td><td class="color0">',"\n";
     make_maintainer_rating_list("maintainer_rating", $oRow->maintainer_rating);
     echo '</td></tr>',"\n";
@@ -226,7 +257,7 @@ if(isset($_REQUEST['submit1']))
     make_bugzilla_version_list("maintainer_release", $oRow->maintainer_release);
     echo '</td></tr>',"\n";
 
-    echo '<tr><td colspan=2 align=center class=color3><input type="submit" name=submit1 value="Update Database" /></td></tr>',"\n";
+    echo '<tr><td colspan=2 align=center class=color3><input type="submit" name="submit1" value="Update Database" /></td></tr>',"\n";
 
     echo html_table_end();
     echo html_frame_end();
@@ -240,7 +271,7 @@ if(isset($_REQUEST['submit1']))
     echo '<table border=0 cellpadding=6 cellspacing=0 width="100%">',"\n";
             
     $i = 0;
-    $result = query_appdb("SELECT * FROM appData WHERE appId = ".$_REQUEST['appId']."  AND versionId = ".$_REQUEST['versionId']." AND type = 'url'");
+    $result = query_appdb("SELECT * FROM appData WHERE versionId = ".$_REQUEST['versionId']." AND type = 'url'");
     if($result && mysql_num_rows($result) > 0)
     {
         echo '<tr><td class=color1><b>Delete</b></td><td class=color1>',"\n";
@@ -268,7 +299,6 @@ if(isset($_REQUEST['submit1']))
     }
     echo "</td></tr>\n";
     echo "<input type=hidden name='rows' value='$i'>";
-
     echo '<tr><td class=color1>New</td><td class=color1><input size="45" type="text" name="url_desc"></td>',"\n";
     echo '<td class=color1><input size=45% name="url" type="text"></td></tr>',"\n";
      
@@ -277,7 +307,7 @@ if(isset($_REQUEST['submit1']))
     echo '</table>',"\n";
     echo html_frame_end();
     echo "</form>";
-    echo html_back_link(1,BASE."appview.php?appId=$ob->appId&versionId=$ob->versionId");
+    echo html_back_link(1,BASE."appview.php?versionId=".$_REQUEST['versionId']);
     apidb_footer();
 }
 ?>

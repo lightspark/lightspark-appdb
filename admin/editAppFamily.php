@@ -99,13 +99,30 @@ if(isset($_REQUEST['submit']))
                                                     'vendorId' => $_REQUEST['vendorId'],
                                                     'keywords' => $_REQUEST['keywords'],
                                                     'catId' =>  $_REQUEST['catId'] ));
-                                               
+            
+            // success                                               
             if (query_appdb("UPDATE `appFamily` SET $sUpdate WHERE `appId` = {$_REQUEST['appId']}"))
+            {  
+                $sEmail = get_notify_email_address_list($_REQUEST['appId']);
+                if($sEmail)
+                {
+                    $sSubject = lookupAppName($_REQUEST['appId'])." has been modified by ".$_SESSION['current']->sRealname;
+                    $sMsg .= APPDB_ROOT."appview.php?appId=".$_REQUEST['appId']."\n";
+                    $sMsg .= "\n";
+                    $sMsg .= "The following changes have been made:";
+                    $sMsg .= "\n";
+                    $sMsg .= $sWhatChanged."\n";
+                    $sMsg .= "\n";
+
+                    mail_appdb($sEmail, $sSubject ,$sMsg);
+                }
+                addmsg("The application was successfully updated in the database", "green");
+                redirect(apidb_fullurl("appview.php?appId=".$_REQUEST['appId']));
+            } else
             {
-
-                addmsg("Database Updated", "green");
-
-            }
+                //error
+                redirect(apidb_fullurl("admin/editAppVersion.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']));
+            }   
         }
     }
     else if($_REQUEST['submit'] == "Update URL")
@@ -177,30 +194,33 @@ if(isset($_REQUEST['submit']))
                 }
             }
         }
-    }
-    if ($bAppChanged)
-    {
-        $sEmail = get_notify_email_address_list($_REQUEST['appId']);
-        if($sEmail)
+        if ($bAppChanged) 
         {
-            $sFullAppName = "Application: ".lookupAppName($_REQUEST['appId']);
-            $sMsg  = APPDB_ROOT."appview.php?appId=".$_REQUEST['appId']."\r\n";
-            $sMsg .= "\r\n";
-            $sMsg .= $_SESSION['current']->sRealname." changed ".$sFullAppName." \r\n";
-            $sMsg .= "\r\n";
-            $sMsg .= $sWhatChanged."\r\n";
-            $sMsg .= "\r\n";
-
-            mail_appdb($sEmail, $sFullAppName ,$sMsg);
+            $sEmail = get_notify_email_address_list($_REQUEST['appId']);
+            if($sEmail)
+            {
+                $sFullAppName = "Links for ".lookupAppName($_REQUEST['appId'])." have been updated";
+                $sMsg  = APPDB_ROOT."appview.php?appId=".$_REQUEST['appId']."\r\n";
+                $sMsg .= "\n";
+                $sMsg .= $_SESSION['current']->sRealname." updated links for ".$sFullAppName." \r\n";
+                $sMsg .= "\n";
+                $sMsg .= $sWhatChanged."\n";
+                mail_appdb($sEmail, $sFullAppName ,$sMsg);
+            }
         }
-    }
 
-    redirect(apidb_fullurl("appview.php?appId={$_REQUEST['appId']}"));
-    exit;
+        redirect(apidb_fullurl("appview.php?appId={$_REQUEST['appId']}"));
+        exit;
+    }
 }
 else
 // Show the form for editing the Application Family 
 {
+?>
+<link rel="stylesheet" href="./application.css" type="text/css">
+<!-- load HTMLArea -->
+<script type="text/javascript" src="../htmlarea/htmlarea_loader.js"></script>
+<?php
     $family = new TableVE("edit");
 
     $result = query_appdb("SELECT * from appFamily WHERE appId = '{$_REQUEST['appId']}'");
@@ -217,23 +237,25 @@ else
 
      apidb_header("Edit Application Family");
 
-    echo "<form method=post action='editAppFamily.php'>\n";
+    echo "<form method=\"post\" action=\"editAppFamily.php\">\n";
     echo html_frame_start("Data for Application ID $ob->appId", "90%","",0);
     echo html_table_begin("width='100%' border=0 align=left cellpadding=6 cellspacing=0 class='box-body'");
 
-    echo '<input type=hidden name="appId" value='.$ob->appId.'>';
+    echo '<input type="hidden" name="appId" value="'.$ob->appId.'">';
     echo '<tr><td class=color1>Name</td><td class=color0><input size=80% type="text" name="appName" type="text" value="'.$ob->appName.'"></td></tr>',"\n";
     echo '<tr><td class=color4>Vendor</td><td class=color0>';
     $family->make_option_list("vendorId", $ob->vendorId, "vendor", "vendorId", "vendorName");
     echo '</td></tr>',"\n";
     echo '<tr><td class=color1>Keywords</td><td class=color0><input size=80% type="text" name="keywords" value="'.$ob->keywords.'"></td></tr>',"\n";
-    echo '<tr><td class=color4>Description</td><td class=color0>', "\n";
-    echo '<textarea cols=50 rows=10 name="description">'.stripslashes($ob->description).'</textarea></td></tr>',"\n";
+    echo '<tr><td class="color4">Description</td><td class="color0">', "\n";
+    if(trim(strip_tags($ob->description))=="") $ob->description="<p>Enter description here</p>";
+    echo '<p style="width:700px">', "\n";
+    echo '<textarea rows="20" cols="80" id="editor" name="description">'.$ob->description.'</textarea></td></tr>',"\n";
+    echo '</p>';
     echo '<tr><td class=color1>Web Page</td><td class=color0><input size=80% type="text" name="webPage" value="'.$ob->webPage.'"></td></tr>',"\n";
     echo '<tr><td class=color4>Category</td><td class=color0>';
     $family->make_option_list("catId", $ob->catId, "appCategory", "catId", "catName");
     echo '</td></tr>',"\n";
-
     echo '<tr><td colspan=2 align=center class=color3><input type="submit" name=submit value="Update Database"></td></tr>',"\n";
 
     echo html_table_end();
@@ -289,5 +311,4 @@ else
 }
 
 apidb_footer();
-
 ?>

@@ -52,13 +52,10 @@ else
 		$query = query_appdb("SELECT count(*) as versions FROM appVersion WHERE appId = $ob->appId AND versionName != 'NONAME'");
 	        $y = mysql_fetch_object($query);
 		
-		//format desc
-		$desc = substr(stripslashes($ob->description),0,75);
-
 		//display row
 		echo "<tr class=$bgcolor>\n";
 		echo "    <td>".html_ahref($ob->appName,"appview.php?appId=$ob->appId")."</td>\n";
-		echo "    <td>$desc &nbsp;</td>\n";
+		echo "    <td>".trim_description($ob->description)."</td>\n";
 		echo "    <td>$y->versions &nbsp;</td>\n";
 		echo "</tr>\n\n";
 		
@@ -66,7 +63,7 @@ else
 	}
 
     echo "<tr><td colspan=3 class=color4><font color=white>$c match(es) found</font></td></tr>\n";
-	echo "</table>\n\n";
+    echo "</table>\n\n";
 }
 
 apidb_footer();
