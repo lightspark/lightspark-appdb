@@ -23,18 +23,15 @@ class Vendor {
             /*
              * We fetch the data related to this vendor.
              */
-            if(!$this->vendorId)
+            $sQuery = "SELECT *
+                       FROM vendor
+                       WHERE vendorId = ".$iVendorId;
+            if($hResult = query_appdb($sQuery))
             {
-                $sQuery = "SELECT *
-                           FROM vendor
-                           WHERE vendorId = ".$iVendorId;
-                if($hResult = query_appdb($sQuery))
-                {
-                    $oRow = mysql_fetch_object($hResult);
-                    $this->iVendorId = $iVendorId;
-                    $this->sName = $oRow->vendorName;
-                    $this->sWebpage = $oRow->vendorURL;
-                }
+                $oRow = mysql_fetch_object($hResult);
+                $this->iVendorId = $iVendorId;
+                $this->sName = $oRow->vendorName;
+                $this->sWebpage = $oRow->vendorURL;
             }
 
             /*
@@ -103,7 +100,6 @@ class Vendor {
 
     /**    
      * Deletes the vendor from the database. 
-     * FIXME: What should happen if sizeof($aApplicationsIds)>0 ?
      */
     function delete($bSilent=false)
     {
