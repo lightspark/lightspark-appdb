@@ -280,7 +280,7 @@ class Screenshot {
 function get_screenshot_img($iAppId = null, $iVersionId = null) 
 {
     // we want a random screenshots for this app
-    if($iAppId)
+    if($iAppId && !$iVersionId)
     {
        $hResult = query_appdb("SELECT appData.*, RAND() AS rand 
                                FROM appData, appVersion 
@@ -322,7 +322,7 @@ function get_screenshots($iAppId = null, $iVersionId = null, $bQueued = "false")
     /*
      * We want all screenshots for this app.
      */
-    if($iAppId)
+    if($iAppId && !$iVersionId)
     {
         $sQuery = "SELECT appData.*, appVersion.appId as appId
                    FROM appData, appVersion
