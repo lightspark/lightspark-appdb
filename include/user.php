@@ -165,17 +165,13 @@ class User {
      * remove the current, or specified user from the database
      * returns 0 on success and an error msg on failure
      */
-    function remove($sEmail = 0)
+    function remove($sEmail = "")
     {
-        if($sEmail == 0)
+        if(!$sEmail)
             $sEmail = $this->email;
-
-        $result = query_appdb("DELETE FROM user_list WHERE email = '$sEmail'");
-
+        $result = query_appdb("DELETE FROM user_list WHERE email = '".$sEmail."'");
         if(!$result)
             return "A database error occured";
-        if(mysql_affected_rows($result) == 0)
-            return "No such user.";
         return 0;
     }
 

@@ -15,6 +15,20 @@ if(!loggedin())
     exit;
 }
 
+// we come from the administration to edit an user
+if(havepriv("admin") && 
+   is_numeric($_REQUEST['userId']) &&
+   is_numeric($_REQUEST['iLimit']) &&
+   in_array($_REQUEST['sOrderBy'],array("email","realname","created"))
+) 
+{
+    $iUserId = $_REQUEST['userId'];
+} else
+{
+    $iUserId = $_SESSION['current']->userid;
+}
+
+
 function build_prefs_list()
 {
     $result = query_appdb("SELECT * FROM prefs_list ORDER BY id");
@@ -46,19 +60,18 @@ function build_prefs_list()
 
 function show_user_fields()
 {
-        
-        $user = new User();
-        
-        $ext_realname = $user->lookup_realname($_SESSION['current']->userid);
-        $ext_email = $user->lookup_email($_SESSION['current']->userid);
-        $CVSrelease = $user->lookup_CVSrelease($_SESSION['current']->userid);
-        
-        include(BASE."include/"."form_edit.php");
+    global $iUserId;
+    $user = new User();
 
-        echo "<tr><td>&nbsp; Wine version </td><td>";
-        make_bugzilla_version_list("CVSrelease", $CVSrelease);
-        echo "</td></tr>";
+    $ext_realname = $user->lookup_realname($iUserId);
+    $ext_email = $user->lookup_email($iUserId);
+    $CVSrelease = $user->lookup_CVSrelease($iUserId);
+      
+    include(BASE."include/"."form_edit.php");
 
+    echo "<tr><td>&nbsp; Wine version </td><td>";
+    make_bugzilla_version_list("CVSrelease", $CVSrelease);
+    echo "</td></tr>";
 }
 
 if($_POST)
@@ -80,10 +93,15 @@ if($_POST)
     {
         addmsg("The Passwords you entered did not match.", "red");
     }
-    
-    if ($user->update($_SESSION['current']->userid, $str_passwd, $_REQUEST['ext_realname'], $_REQUEST['ext_email'], $_REQUEST['CVSrelease']))
+    if ($user->update($iUserId, $str_passwd, $_REQUEST['ext_realname'], $_REQUEST['ext_email'], $_REQUEST['CVSrelease']))
     {
         addmsg("Preferences Updated", "green");
+
+        // we were managing an user, let's go back to the admin.
+        if($iUserId == $_REQUEST['userId'])
+        {
+            redirect(BASE."admin/adminUsersEdit.php?userId=".$iUserId."&sSearch=".$_REQUEST['sSearch']."&iLimit=".$_REQUEST['iLimit']."&sOrderBy=".$_REQUEST['sOrderBy']."&sSubmit=true");
+        }
     }
     else
     {
@@ -93,16 +111,28 @@ if($_POST)
 
 apidb_header("User Preferences");
 
-echo "<form method=post action='preferences.php'>\n";
-echo html_frame_start("Preferences for ".$_SESSION['current']->realname, "80%");
+echo "<form method=\"post\" action=\"preferences.php\">\n";
+
+// if we manage another user we give the parameters to go back to the admin
+if($iUserId == $_REQUEST['userId'])
+{
+    echo "<input type=\"hidden\" name=\"iLimit\" value=\"".$_REQUEST['iLimit']."\">\n";
+    echo "<input type=\"hidden\" name=\"sOrderBy\" value=\"".$_REQUEST['sOrderBy']."\">\n";
+    echo "<input type=\"hidden\" name=\"sSearch\" value=\"".addslashes($_REQUEST['sSearch'])."\">\n";
+    echo "<input type=\"hidden\" name=\"userId\" value=\"".$_REQUEST['userId']."\">\n";
+}
+
+echo html_frame_start("Preferences for ".lookupRealName($iUserId), "80%");
 echo html_table_begin("width='100%' border=0 align=left cellspacing=0 class='box-body'");
 
 show_user_fields();
-build_prefs_list();
+
+// if we don't manage another user
+if($iUserId != $_REQUEST['userId']) build_prefs_list();
 
 echo html_table_end();
 echo html_frame_end();
-echo "<br /> <div align=center> <input type=submit value='Update'> </div> <br />\n";
+echo "<br /> <div align=center> <input type=\"submit\" value=\"Update\" /> </div> <br />\n";
 echo "</form>\n";
 
 

@@ -12,7 +12,6 @@ function global_admin_menu() {
     $g->add("Add Vendor", BASE."admin/addVendor.php");
     
     $g->addmisc("&nbsp;");
-    $g->add("List Users", BASE."admin/");
     $g->add("View App Queue (".getQueuedAppCount().")", BASE."admin/adminAppQueue.php");
     $g->add("View App Data Queue (".getQueuedAppDataCount().")", BASE."admin/adminAppDataQueue.php");
     $g->add("View Maintainer Queue (".getQueuedMaintainerCount().")", BASE."admin/adminMaintainerQueue.php");
@@ -20,7 +19,8 @@ function global_admin_menu() {
     $g->add("View Vendors (".getVendorCount().")", BASE."admin/adminVendors.php");
 
     $g->addmisc("&nbsp;");
-    $g->add("Comment manager", BASE."admin/adminCommentView.php");
+    $g->add("Users Management", BASE."admin/adminUsers.php");
+    $g->add("Comments Management", BASE."admin/adminCommentView.php");
     $g->done();
 
 }
