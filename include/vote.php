@@ -111,36 +111,22 @@ function vote_get_user_votes($userId = null)
 
 function vote_menu()
 {
-    global $appId;
-
     $m = new htmlmenu("Votes","updatevote.php");
     
     $votes = vote_get_user_votes();
 
-    if($votes[1])
+    for($i = 1;$i <= MAX_VOTES; $i++)
     {
-        $str = "<a href='appview.php?appId=".$votes[1]->appId."'> App #".$votes[1]->appId."</a>";
-        $m->add("<input type=radio name=slot value='1' selected> ".$str);
+        if(isset($votes[$i]))
+        {
+            $appName = lookupAppName($votes[$i]->appId);
+            $str = "<a href='appview.php?appId=".$votes[$i]->appId."'> $appName</a>";
+            $m->add("<input type=radio name=slot value='$i'> ".$str);
+        }
+        else
+            $m->add("<input type=radio name=slot value='$i'> No App Selected");
     }
-    else
-        $m->add("<input type=radio name=slot value='1' selected> No App Selected");
     
-    if($votes[2])
-    {
-        $str = "<a href='appview.php?appId=".$votes[2]->appId."'> App #".$votes[2]->appId."</a>";
-        $m->add("<input type=radio name=slot value='2'> ".$str);
-    }
-    else
-        $m->add("<input type=radio name=slot value='2'> No App Selected");
-
-    if($votes[3])
-    {
-            $str = "<a href='appview.php?appId=".$votes[3]->appId."'> App #".$votes[3]->appId."</a>";
-	    $m->add("<input type=radio name=slot value='3'> ".$str);
-    }
-    else
-        $m->add("<input type=radio name=slot value='3'> No App Selected");
-
     $m->addmisc("&nbsp;");
 
     $m->add("<input type=submit name=clear value=' Clear Vote   ' class=votebutton>");
