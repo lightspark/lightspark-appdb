@@ -81,7 +81,7 @@ if ($_REQUEST['sub'])
             echo '<td><p style="width:700px"><textarea  cols="80" rows="20" id="editor" name="versionDescription">'.$oVersion->sDescription.'</textarea></p></td></tr>',"\n";
         
             echo '<tr valign=top><td class="color0"><b>email Text</b></td>',"\n";
-            echo '<td><textarea name="emailtext" rows="10" cols="35"></textarea></td></tr>',"\n";
+            echo '<td><textarea name="replyText" rows="10" cols="35"></textarea></td></tr>',"\n";
         
 
             echo '<tr valign=top><td class=color3 align=center colspan=2>' ,"\n";
@@ -181,7 +181,7 @@ if ($_REQUEST['sub'])
             echo '<td><p style="width:700px"><textarea  cols="80" rows="20" id="editor" name="description">'.$oApp->sDescription.'</textarea></p></td></tr>',"\n";
         
             echo '<tr valign=top><td class="color0"><b>email Text</b></td>',"\n";
-            echo '<td><textarea name="emailtext" rows=10 cols=35></textarea></td></tr>',"\n";
+            echo '<td><textarea name="replyText" rows=10 cols=35></textarea></td></tr>',"\n";
 
             echo '<tr valign=top><td class=color3 align=center colspan=2>' ,"\n";
             echo '<input type="hidden" name="appId" value="'.$oApp->iAppId.'" />';
@@ -218,7 +218,7 @@ if ($_REQUEST['sub'])
     }
     else if ($_REQUEST['sub'] == 'Delete')
     {
-        if (is_numeric($_REQUEST['appId'])) // application
+        if (is_numeric($_REQUEST['appId']) && !is_numeric($_REQUEST['versionId'])) // application
         {
             $oApp = new Application($_REQUEST['appId']);
             $oApp->delete();

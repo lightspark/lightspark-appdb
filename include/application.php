@@ -239,7 +239,7 @@ class Application {
             }
         }
         if(!$bSilent)
-            $this->mailSupermaintainers(true);
+            $this->mailSupermaintainers("delete");
     }
 
 
@@ -256,6 +256,7 @@ class Application {
                                                'keywords'=> str_replace(" *** ","",$this->sKeywords) ));
         if(query_appdb("UPDATE appFamily SET ".$sUpdate." WHERE appId = ".$this->iAppId))
         {
+            $this->bQueued = false;
             // we send an e-mail to intersted people
             $this->mailSubmitter();
             $this->mailSupermaintainers();

@@ -242,7 +242,8 @@ class Version {
             }
         }
         if(!$bSilent)
-            $this->mailMaintainers(true);
+            $this->mailMaintainers("delete");
+            $this->mailSubmitter(true);
     }
 
 
@@ -258,6 +259,7 @@ class Version {
         $sUpdate = compile_update_string(array('queued'    => "false"));
         if(query_appdb("UPDATE appVersion SET ".$sUpdate." WHERE versionId = ".$this->iVersionId))
         {
+            $this->bQueued = false;
             // we send an e-mail to intersted people
             $this->mailSubmitter();
             $this->mailMaintainers();
