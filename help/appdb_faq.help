@@ -30,7 +30,7 @@ allowing many unmodified Windows binaries to run on x86-based Unixes, including
 <a href="http://www.winehq.org/site/docs/wine-faq/index">Wine FAQ</a>.<p>
 </blockquote>
 
-<p><b>Q: What is the benefit Application Database?</b></p>
+<p><b>Q: What is the benefits of this Application Database?</b></p>
 <blockquote>
 <p><b>A:</b> The Application database will give the Wine developers a
 resource for compatibility information. This will allow them to focus their

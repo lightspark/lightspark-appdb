@@ -52,12 +52,10 @@ and you may also want to read the
 <li> You can ask for help on the <a href="http://www.winehq.org/mailman/listinfo/wine-users">wine-users</a>
 mailing list. </li>
 
-<li>WineHQ has a newsgroup hosted by Usenet. You can read and post using a
+<li>WineHQ has a newsgroup hosted by <a href="news:comp.emulators.ms-windows.wine">Usenet</a>. You can read and post using a
 newsgroup reader such as <a href="http://www.mozilla.org/">Mozilla</a>
-or <a href="http://pan.rebelbase.com/">Pan</a>.</li><p>
-
-<li><a href="news:comp.emulators.ms-windows.wine">comp.emulators.ms-windows.wine</a> or via the web at
-<a href="http://groups.google.com/groups?group=comp.emulators.ms-windows.wine">Google</a></li>
+or <a href="http://pan.rebelbase.com/">Pan</a>. or via the web at 
+<a href="http://groups.google.com/groups?group=comp.emulators.ms-windows.wine">Google</a>.</li>
 
 <li><a href="http://www.freenode.net">Freenode.net</a> hosts a chat room for
 Wine. You can access the chat room using an IRC program such as
