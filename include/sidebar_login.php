@@ -30,7 +30,7 @@ function global_sidebar_login() {
             $g->addmisc("You maintain:\n");
             while(list($index, list($appId, $versionId)) = each($apps_user_maintains))
             {
-                $g->addmisc("<a href='".$apidb_root."appview.php?appId=$appId&versionId=$versionId'>".appIdToName($appId).versionIdToName($versionId)."</a>", "center");
+                $g->addmisc("<a href='".$apidb_root."appview.php?appId=$appId&versionId=$versionId'>".appIdToName($appId)." ".versionIdToName($versionId)."</a>", "center");
             }
         }
     }
