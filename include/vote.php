@@ -146,7 +146,7 @@ function vote_menu()
     $m->add("<input type=submit name=clear value=' Clear Vote   ' class=votebutton>");
     $m->add("<input type=submit name=vote value='Vote for App' class=votebutton>");
     
-    $m->addmisc("<input type=hidden name=appId value=$appId>");
+    $m->addmisc("<input type=hidden name=appId value={$_REQUEST['appId']}>");
     
     $m->add("View Results", BASE."votestats.php");
     $m->add("Voting Help", BASE."help/?topic=voting");
@@ -175,7 +175,13 @@ function vote_update($vars)
 
     dump($vars);
     echo "<br>\n";
-
+    
+    if( !is_numeric($vars['appId']) OR !is_numeric($vars['slot']))
+    {
+        addmsg("No application or vote slot selected", "red");
+        return;
+    }
+    
     if($vars["vote"])
 	{
 	    addmsg("Registered vote for App #".$vars["appId"], "green");
@@ -185,7 +191,7 @@ function vote_update($vars)
     if($vars["clear"])
 	{
 	    addmsg("Removed vote for App #".$vars["appId"], "green");
-            vote_remove($vars["appId"], $vars["slot"]);
+        vote_remove($vars["appId"], $vars["slot"]);
 	}
 }
 
