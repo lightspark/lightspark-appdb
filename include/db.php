@@ -13,6 +13,21 @@ function query_appdb($sQuery,$sComment="")
     return $hResult;
 }
 
+function query_userdb($sQuery,$sComment="")
+{
+    global $huserdbLink;
+
+    if(!$huserdbLink)
+    {
+        $huserdbLink = mysql_connect(USERS_DBHOST, USERS_DBUSER, USERS_DBPASS);
+        mysql_select_db(USERS_DB);
+    }
+    $hResult = mysql_query($sQuery, $huserdbLink);
+    if(!$hResult) query_error($sQuery, $sComment);
+    return $hResult;
+}
+
+
 
 function query_bugzilladb($sQuery,$sComment="")
 {
