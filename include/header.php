@@ -31,9 +31,6 @@
         <td width="100%" align="center" valign="middle">
             <?php echo $banner_ad; ?>
 	    </td>
-        <td>
-          <img src="<?php echo $apidb_root; ?>images/blank.gif" width=10 height=1 alt="">
-        </td>
 	  </tr>
 	 </table>
     </td>

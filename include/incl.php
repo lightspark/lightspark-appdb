@@ -77,7 +77,7 @@ function apidb_header($title = 0)
     echo "</td>\n";
     echo "<td width='100%'>\n";
 
-    echo html_frame_start($page_title, '98%');
+    echo html_frame_start($page_title, '100%');
 
     // Display Status Messages
     dumpmsgbuffer();
