@@ -46,21 +46,16 @@ if(isset($_REQUEST['body']))
     // get current userid
     $userId = $_SESSION['current']->userid;
 
-    $result = mysql_query("INSERT INTO appComments VALUES (NOW(), null, '".$_REQUEST['thread']."','".
+    $result = query_appdb("INSERT INTO appComments VALUES (NOW(), null, '".$_REQUEST['thread']."','".
 			   $_REQUEST['appId']."', '".$_REQUEST['versionId']."', $userId, '$hostname', '$subject', ".
 			   "'$body1', 0)");
-		
-    if (!$result)
+    if ($result)
     {
-        errorpage('Internal Database Access Error',mysql_error());
-        exit;
-    } else
-    {
-        if (isset($originator))
+        if (isset($_REQUEST['originator']))
         {
-            if (UserWantsEmail($originator))
+            if (UserWantsEmail($_REQUEST['originator']))
             {
-                $email = lookupEmail($originator);
+                $email = lookupEmail($_REQUEST['originator']);
                 $fullAppName = "Application: ".lookupAppName($_REQUEST['appId'])." Version: ".lookupVersionName($_REQUEST['appId'], $_REQUEST['versionId']);
                 $ms .= APPDB_ROOT."appview.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId'].".\n";
                 $ms .= "\n";
@@ -101,8 +96,8 @@ if(isset($_REQUEST['body']))
         addmsg("mesage sent to: ".$email, "green");
 
         addmsg("New Comment Posted", "green");
-        redirect(apidb_fullurl("appview.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']));
     }
+    redirect(apidb_fullurl("appview.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']));
 }
 
 ################################
@@ -116,7 +111,7 @@ else if(loggedin())
 
   if($_REQUEST['thread'])
   {
-    $result = mysql_query("SELECT * FROM appComments WHERE commentId = ".$_REQUEST['thread']);
+    $result = query_appdb("SELECT * FROM appComments WHERE commentId = ".$_REQUEST['thread']);
     $ob = mysql_fetch_object($result);
     if($ob)
     {
