@@ -70,3 +70,28 @@ if(!isset($appId))
  1) it is off by default in php 4.1+
  2) it is more secure
  3) it makes it easier to understand where your vars are comming from (forms, session, etc.)
+
+- variables naming
+variables that don't come from outside your script (i.e. that arent fetched from superglobals) should be named this way 
+(a.k.a hungariant notation):
+prefix + var_name
+
+Where prefix is one of:
+Scalar types:
+i for integers
+f for floats
+s for strings
+b for booleans
+Compound types:
+a for arrays
+o for objects
+Special type:
+h for handles
+
+the rest of the variable's name is using camel style
+examples:
+$aUsers
+$iTopicId
+$hRecordSet 
+$sQuery
+$hResult
