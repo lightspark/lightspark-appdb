@@ -20,6 +20,7 @@ class Screenshot {
     var $iVersionId;
     var $iAppId;
     var $sDirectory;
+    var $sUrl;
 
     /**    
      * constructor, fetches the description and creates the Image objects and files if needed.
@@ -54,6 +55,7 @@ class Screenshot {
                 $this->sSubmitTime = $oRow->submitTime;
                 $this->iAppId = $oRow->appId;
                 $this->iVersionId = $oRow->versionId;
+                $this->sUrl = $oRow->url;
            }
         } else // we are working on a non-existing screenshot
         {
@@ -76,6 +78,7 @@ class Screenshot {
                 return false;
             } else // we managed to copy the file, now we have to process the image
             {   
+                $this->sUrl = $this->iScreenshotId;
                 $this->generate();
                 // we have to update the entry now that we know its name
                 $sQuery = "UPDATE ".$this->sTable." SET url = '".$this->iScreenshotId."' WHERE ".$this->sTableId." = '".$this->iScreenshotId."'";
@@ -127,20 +130,20 @@ class Screenshot {
     {
         // first we will create the thumbnail
         // load the screenshot
-        $this->oThumbnailImage  = new Image("/data/".$this->sDirectory."/originals/".$this->iScreenshotId);
+        $this->oThumbnailImage  = new Image("/data/".$this->sDirectory."/originals/".$this->sUrl);
         $this->oThumbnailImage->make_thumb(0,0,1,'#000000');
         // store the image
-        $this->oThumbnailImage->output_to_file($_SERVER['DOCUMENT_ROOT']."/data/".$this->sDirectory."/thumbnails/".$this->iScreenshotId);
+        $this->oThumbnailImage->output_to_file($_SERVER['DOCUMENT_ROOT']."/data/".$this->sDirectory."/thumbnails/".$this->sUrl);
             
         // now we'll process the screenshot image for watermarking
         // load the screenshot
-        $this->oScreenshotImage  = new Image("/data/".$this->sDirectory."/originals/".$this->iScreenshotId);
+        $this->oScreenshotImage  = new Image("/data/".$this->sDirectory."/originals/".$this->sUrl);
         // resize the image
         $this->oScreenshotImage->make_full();
         // store the resized image
-        $this->oScreenshotImage->output_to_file($_SERVER['DOCUMENT_ROOT']."/data/".$this->sDirectory."/".$this->iScreenshotId);
+        $this->oScreenshotImage->output_to_file($_SERVER['DOCUMENT_ROOT']."/data/".$this->sDirectory."/".$this->sUrl);
         // reload the resized screenshot
-        $this->oScreenshotImage  = new Image("/data/".$this->sDirectory."/".$this->iScreenshotId);
+        $this->oScreenshotImage  = new Image("/data/".$this->sDirectory."/".$this->sUrl);
         // load the watermark
         $watermark = new image("/images/watermark.png");
         // add the watermark to the screenshot
@@ -148,7 +151,7 @@ class Screenshot {
         // clean up the memory
         $watermark->destroy();
         // store the watermarked image
-        $this->oScreenshotImage->output_to_file($_SERVER['DOCUMENT_ROOT']."/data/".$this->sDirectory."/".$this->iScreenshotId);
+        $this->oScreenshotImage->output_to_file($_SERVER['DOCUMENT_ROOT']."/data/".$this->sDirectory."/".$this->sUrl);
     }
 
 }
