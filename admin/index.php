@@ -13,35 +13,6 @@ if(!havepriv("admin"))
     exit;
 }
 
-// desc
-function get_tables()
-{
-    $result = mysql_query("SHOW TABLES");
-    $arr = array();
-    $arr[] = "ALL";
-    while($r = mysql_fetch_array($result))
-        {
-            $arr[] = $r[0];
-        }
-    return $arr;
-}
-
-// desc
-function input_form()
-{
-    echo "<form method=get action=".apidb_url("admin").">\n";
-    echo "</form>\n";
-}
-
-//desc
-function make_options($name, $options, $label = "Submit")
-{
-    echo "<select name='$name'>\n";
-    while(list($idx, $val) = each($options))
-	echo "<option>$val</option>\n";
-    echo "</select>\n";
-}
-
 //desc
 if($table_cmd)
 {
