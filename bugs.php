@@ -11,35 +11,9 @@ require(BASE."include/"."incl.php");
 require(BASE."include/"."application.php");
 require(BASE."include/"."comments.php");
 require(BASE."include/"."appdb.php");
-
+require(BASE."include/"."screenshot.php");
 require(BASE."include/"."rating.php");
 require(BASE."include/"."category.php");
-
-
-function get_screenshot_img($appId, $versionId)
-{
-    if(!$versionId)
-	$versionId = 0;
-
-    $result = mysql_query("SELECT * FROM appData WHERE appId = $appId AND versionId = $versionId AND type = 'image'");
-    
-    if(!$result || !mysql_num_rows($result))
-    {
-	$imgFile = "<img src='".BASE."images/no_screenshot.gif' alt='No Screenshot'>";
-    }
-    else
-    {
-        $ob = mysql_fetch_object($result);
-	$imgFile = "<img src='appimage.php?appId=$appId&versionId=$versionId&width=128&height=128' ".
-	           "alt='$ob->description'>";
-    }
-    
-    $img = html_frame_start("",'128','',2);
-    $img .= "<a href='screenshots.php?appId=$appId&versionId=$versionId'>$imgFile</a>";
-    $img .= html_frame_end()."<br>";
-    
-    return $img;
-}
 
 
 function display_catpath($catId, $appId, $versionId = '')
