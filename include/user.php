@@ -244,11 +244,16 @@ class User {
      */
     function is_super_maintainer($appId)
     {
-        global $current;
         if(!loggedin() || !$this->userid)
+{
+	echo "not logged in or not this userid";
             return false;
+}else {
+	echo "running the query";
+}
 
-        $query = "SELECT * FROM appMaintainers WHERE userid = '$this->userid' AND appId = '$appId' AND superMaintainer = 1";
+        $query = "SELECT * FROM appMaintainers WHERE userid = '$this->userid' AND appId = '$appId' AND superMaintainer = '1'";
+	echo "$query";
         $result = mysql_query($query, $this->link);
         if(!$result)
             return 0;
@@ -304,53 +309,43 @@ function loggedin()
 
 function havepriv($priv)
 {
-    global $current;
-
     if(!loggedin())
         return false;
 
-    return $current->checkpriv($priv);
+    return $_SESSION['current']->checkpriv($priv);
 }
 
 function isMaintainer($appId, $versionId)
 {
-    global $current;
-
     if(!loggedin())
         return false;
 
-    return $current->is_maintainer($appId, $versionId);
+    return $_SESSION['current']->is_maintainer($appId, $versionId);
 }
 
 function isSuperMaintainer($appId)
 {
-    global $current;
-
     if(!loggedin())
         return false;
 
-    return $current->is_super_maintainer($appId);
+    return $_SESSION['current']->is_super_maintainer($appId);
 }
 
 function debugging()
 {
-    global $current;
-
     if(!loggedin())
 	return false;
-    return $current->getpref("debug") == "yes";
+    return $_SESSION['current']->getpref("debug") == "yes";
 }
 
 
 function makeurl($text, $url, $pref = null)
 {
-    global $current;
-
     if(loggedin())
-	{
-	    if($current->getpref($pref) == "yes")
-		$extra = "window='new'";
-	}
+    {
+        if($_SESSION['current']->getpref($pref) == "yes")
+            $extra = "window='new'";
+    }
     return "<a href='$url' $extra> $text </a>\n";
 }
 
