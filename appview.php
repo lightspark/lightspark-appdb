@@ -192,7 +192,7 @@ if($_REQUEST['appId'])
     $oVendor = new Vendor($oApp->iVendorId);
 
     // set URL
-    $appLinkURL = ($oApp->sWebpage) ? "<a href=\"$data->webPage\">".substr(stripslashes($oApp->sWebpage),0,30)."</a>": "&nbsp;";
+    $appLinkURL = ($oApp->sWebpage) ? "<a href=\"".$oApp->sWebpage."\">".substr(stripslashes($oApp->sWebpage),0,30)."</a>": "&nbsp;";
   
     // start display application
     echo html_frame_start("","98%","",0);
@@ -341,7 +341,7 @@ else if($_REQUEST['versionId'])
     display_catpath($oApp->iCatId, $oApp->iAppId, $oVersion->iVersionId);
   
     // set URL
-    $appLinkURL = ($oApp->sWebpage) ? "<a href='$oApp->sWebpage'>".substr(stripslashes($oApp->sWebpage),0,30)."</a>": "&nbsp;";
+    $appLinkURL = ($oApp->sWebpage) ? "<a href=\"".$oApp->sWebpage."\">".substr(stripslashes($oApp->sWebpage),0,30)."</a>": "&nbsp;";
 
     // start version display
     echo html_frame_start("","98%","",0);
@@ -349,6 +349,9 @@ else if($_REQUEST['versionId'])
     echo '<table width="250" border="0" cellpadding="3" cellspacing="1">',"\n";
     echo "<tr class=\"color0\" valign=\"top\"><td width=\"100\"> <b>Name</b></td><td width=\"100%\">".$oApp->sName."</td>\n";
     echo "<tr class=\"color1\" valign=\"top\"><td><b>Version</b></td><td>".$oVersion->sName."</td></tr>\n";
+
+    // main URL
+    echo "        <tr class=\"color1\"><td><b>URL</b></td><td>".$appLinkURL."</td></tr>\n";
 
     // links
     $result = query_appdb("SELECT * FROM appData WHERE versionID = ".$oVersion->iVersionId." AND type = 'url'");
