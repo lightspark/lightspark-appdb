@@ -20,9 +20,6 @@ if(!loggedin())
     exit;
 }
 
-apidb_header("Admin Maintainer Queue");
-echo '<form name="qform" action="adminMaintainerQueue.php" method="post" enctype="multipart/form-data">',"\n";
-
 if ($_REQUEST['sub'])
 {
     if ($_REQUEST['queueId'])
@@ -39,14 +36,15 @@ if ($_REQUEST['sub'])
     else
     {
         //error no Id!
-        echo html_frame_start("Error","300");
-        echo '<p><b>QueueId Not Found!</b></p>',"\n";
-        echo html_frame_end("&nbsp;"); 
+        errorpage("<p><b>QueueId Not Found!</b></p>");
     }
 
     //process according to which request was submitted and optionally the sub flag
     if (!$_REQUEST['add'] && !$_REQUEST['reject'] && $_REQUEST['queueId'])
     {
+        apidb_header("Admin Maintainer Queue");
+        echo '<form name="qform" action="adminMaintainerQueue.php" method="post" enctype="multipart/form-data">',"\n";
+
         $x = new TableVE("view");
 
         //help
@@ -167,6 +165,10 @@ if ($_REQUEST['sub'])
 
         echo html_frame_end("&nbsp;");
         echo html_back_link(1,'adminMaintainerQueue.php');
+        echo "</form>";
+        apidb_footer();
+        exit;
+
     }
     else if ($_REQUEST['add'] && $_REQUEST['queueId'])
     {
@@ -184,7 +186,7 @@ if ($_REQUEST['sub'])
 
         if (mysql_query($query))
         {
-            $statusMessage = "<p>The application was successfully added into the database</p>\n";
+            $statusMessage = "<p>The maintainer was successfully added into the database</p>\n";
 
             //delete the item from the queue
             mysql_query("DELETE from appMaintainerQueue where queueId = ".$_REQUEST['queueId'].";");
@@ -202,6 +204,7 @@ if ($_REQUEST['sub'])
                 $ms =  "Application Maintainer Request Report\n";
                 $ms .= "----------------------------------\n\n";
                 $ms .= "Your application to be the maintainer of ".appIdToName($ob->appId).versionIdToName($ob->versionId)." has been accepted. ";
+                $ms .= $_REQUEST['replyText'];
                 $ms .= "We appreciate your help in making the Application Database better for all users.\n\n";
                 $ms .= "Thanks!\n";
                 $ms .= "-The AppDB admins\n";
@@ -210,10 +213,7 @@ if ($_REQUEST['sub'])
         }
         
         //done
-        echo html_frame_start("Submit Maintainer","600");
-        echo "<p><b>$statusMessage</b></p>\n";
-        echo html_frame_end("&nbsp;");
-        echo html_back_link(1,'adminMaintainerQueue.php'); 
+        addmsg("<p><b>$statusMessage</b></p>", 'green');
     }
     else if (($_REQUEST['reject'] || ($_REQUEST['sub'] == 'reject')) && $_REQUEST['queueId'])
     {
@@ -249,14 +249,14 @@ if ($_REQUEST['sub'])
     else
     {
         //error no sub!
-        echo html_frame_start("Error","300");
-        echo '<p><b>Internal Routine Not Found!</b></p>',"\n";        
-        echo html_frame_end("&nbsp;");
-        echo html_back_link(1,'adminMaintainerQueue.php'); 
+        addmsg('<p><b>Internal Routine Not Found!</b></p>', 'red');        
     }
 }
-else /* display the list of all outstanding maintainer requests */
+/* display the list of all outstanding maintainer requests */
 {
+    apidb_header("Admin Maintainer Queue");
+    echo '<form name="qform" action="adminMaintainerQueue.php" method="post" enctype="multipart/form-data">',"\n";
+
     //get available maintainers
     $query = "SELECT queueId, appId, versionId,".
                      "userId, maintainReason,".
@@ -323,12 +323,13 @@ else /* display the list of all outstanding maintainer requests */
         }
         echo "</table>\n\n";
         echo html_frame_end("&nbsp;");
+        echo "</form>";
+        apidb_footer();
+
     }
         
 }
 
-echo "</form>";
-apidb_footer();
 
 
 ?>
