@@ -31,11 +31,12 @@ if(!is_numeric($_REQUEST['appId']))
 if($_REQUEST['sub'] == "Submit")
 {
 
-    $query = "INSERT into appNotes VALUES (null, '".
-                                addslashes($_REQUEST['noteTitle'])."', '".
-                                addslashes($_REQUEST['noteDesc'])."', ".
-                                "{$_REQUEST['appId']}, {$_REQUEST['versionId']})"; 
-    if (query_appdb($query))
+    $aInsert = compile_insert_string(array( 'noteTitle' =>$_REQUEST['noteTitle'],
+                                            'NoteDesc' => $_REQUEST['noteDesc'],
+                                            'appId' => $_REQUEST['appId'],
+                                            'versionId' => $_REQUEST['versionId'] ));
+
+    if (query_appdb("INSERT INTO `appNotes` ({$aInsert['FIELDS']}) VALUES ({$aInsert['VALUES']})"))
     {
         // successful
         $email = getNotifyEmailAddressList($_REQUEST['appId'], $_REQUEST['versionId']);
@@ -53,7 +54,7 @@ if($_REQUEST['sub'] == "Submit")
             $ms .= "\n";
             $ms .= STANDARD_NOTIFY_FOOTER;
 
-            mail(stripslashes($email), "[AppDB] ".$fullAppName ,$ms);
+            mail( "", "[AppDB] ".$fullAppName ,$ms, "Bcc: ".stripslashes( $email));
 
         } else
         {
