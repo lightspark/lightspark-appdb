@@ -220,13 +220,31 @@ function make_bugzilla_version_list($varname, $cvalue)
     echo "<option value=0>Choose ...</option>\n";
     while(list($value) = mysql_fetch_row($result))
     {
-        if($id == $cvalue)
+        if($value == $cvalue)
             echo "<option value=$value selected>$value\n";
         else
             echo "<option value=$value>$value\n";
     }
     echo "</select>\n";
     closebugzilladb();
+}
+
+function make_maintainer_rating_list($varname, $cvalue)
+{
+    
+    echo "<select name='$varname'>\n";
+    echo "<option value=0>Choose ...</option>\n";
+    $aRating = array("Gold", "Silver", "Bronze", "Garbage");
+    $iMax = count($aRating);
+
+    for($i=0; $i < $iMax; $i++)
+    {
+        if($aRating[$i] == $cvalue)
+            echo "<option value=$aRating[$i] selected>$aRating[$i]\n";
+        else
+            echo "<option value=$aRating[$i]>$aRating[$i]\n";
+    }
+    echo "</select>\n";
 }
 
 /* get the number of applications in the appQueue table */

@@ -52,14 +52,16 @@ create table appFamily (
  * a version of an application
  */
 create table appVersion (
-       versionId	int not null auto_increment,
-       appId		int not null,
-       versionName	varchar(100) not null,
-       keywords		text,
-       description	text,
-       webPage		varchar(100),
-       rating_windows   float default 0.0,
-       rating_fake      float default 0.0,
+       versionId          int not null auto_increment,
+       appId              int not null,
+       versionName        varchar(100) not null,
+       keywords           text,
+       description        text,
+       webPage            varchar(100),
+       rating_windows     float default 0.0,
+       rating_fake        float default 0.0,
+       maintainer_rating  text,
+       maintainer_release text,
        key(versionId)
 );
 
@@ -181,7 +183,7 @@ create table appData (
 	id		int not null auto_increment,
 	appId		int not null,
 	versionId	int default 0,
-	type		enum('image', 'url'),
+	type		enum('image', 'url', 'bug'),
 	description	text,
 	url		varchar(255),
 	key(id),

@@ -29,10 +29,17 @@ if(isset($_REQUEST['submit1']))
         $old_keywords    = $ob->keywords;
         $old_description = $ob->description;
         $old_webPage     = $ob->webPage;
+        $old_rating      = $ob->maintainer_rating;
+        $old_release     = $ob->maintainer_release;
 
-        $versionName   = addslashes($_REQUEST['versionName']);
-        $description   = addslashes($_REQUEST['description']);
-        $webPage       = addslashes($_REQUEST['webPage']);
+        $versionName        = addslashes($_REQUEST['versionName']);
+        $keywords           = $_REQUEST['keywords'];
+        $description        = addslashes($_REQUEST['description']);
+        $webPage            = addslashes($_REQUEST['webPage']);
+        $maintainer_rating  = $_REQUEST['maintainer_rating'];
+        $maintainer_release = $_REQUEST['maintainer_release'];
+
+        
         $VersionChanged = false;
         if ($old_versionName <> $versionName)
         {
@@ -40,7 +47,7 @@ if(isset($_REQUEST['submit1']))
             $WhatChanged .= "              New Value: ".stripslashes($versionName)."\n";
             $VersionChanged = true;
         } 
-        if ($old_keywords <> $_REQUEST['keywords'])
+        if ($old_keywords <> $keywords)
         {
              $WhatChanged .= "   Key Words: Old Value: ".stripslashes($old_keywords)."\n";
              $WhatChanged .= "              New Value: ".stripslashes($keywords)."\n";
@@ -64,13 +71,29 @@ if(isset($_REQUEST['submit1']))
              $WhatChanged .= "-----------------------:\n";
              $VersionChanged = true;
         } 
+        if ($old_rating <> $maintainer_rating)
+        {
+            $WhatChanged .= "     Release: Old Value: ".stripslashes($old_rating)."\n";
+            $WhatChanged .= "              New Value: ".stripslashes($maintainer_rating)."\n";
+            $VersionChanged = true;
+        } 
+
+        if ($old_release <> $maintainer_release)
+        {
+            $WhatChanged .= "     Release: Old Value: ".stripslashes($old_release)."\n";
+            $WhatChanged .= "              New Value: ".stripslashes($maintainer_release)."\n";
+            $VersionChanged = true;
+        } 
+
         //did anything change?
         if ($VersionChanged)
         {
             $query = "UPDATE appVersion SET versionName = '".$versionName."', ".
                 "keywords = '".$_REQUEST['keywords']."', ".
                 "description = '".$description."', ".
-                "webPage = '".$webPage."'".
+                "webPage = '".$webPage."',".
+                "maintainer_rating = '".$maintainer_rating."',".
+                "maintainer_release = '".$maintainer_release."'".
                 " WHERE appId = ".$_REQUEST['appId']." and versionId = ".$_REQUEST['versionId'];
             if (mysql_query($query))
             {  
@@ -116,12 +139,12 @@ if(isset($_REQUEST['submit1']))
 } else
 {
     $query = "SELECT versionName,  keywords, ".
-        "description, webPage from appVersion WHERE ".
+        "description, webPage, maintainer_rating, maintainer_release from appVersion WHERE ".
         "appId = '".$_REQUEST['appId']."' and versionId = '".$_REQUEST['versionId']."'";
     if(debugging()) { echo "<p align=center><b>query:</b> $query </p>"; }
 
     $result = mysql_query($query);
-    list($versionName, $keywords, $description, $webPage) = mysql_fetch_row($result);
+    list($versionName, $keywords, $description, $webPage, $maintainer_rating, $maintainer_release) = mysql_fetch_row($result);
 
     apidb_header("Edit Application Version");
 
@@ -138,6 +161,12 @@ if(isset($_REQUEST['submit1']))
     echo '<tr><td class=color4>Description</td><td class=color0>', "\n";
     echo '<textarea cols=$80 rows=$30 name="description">'.stripslashes($description).'</textarea></td></tr>',"\n";
     echo '<tr><td class=color1>Web Page</td><td class=color0><input size=80% type="text" name="webPage" value="'.$webPage.'" /></td></tr>',"\n";
+    echo '<tr><td class=color4>Rating</td><td class=color0>',"\n";
+    make_maintainer_rating_list("maintainer_rating", $maintainer_rating);
+    echo '</td></tr>',"\n";
+    echo '<tr><td class=color1>Release</td><td class=color0>',"\n";
+    make_bugzilla_version_list("maintainer_release", $maintainer_release);
+    echo '</td></tr>',"\n";
 
     echo '<tr><td colspan=2 align=center class=color3><input type="submit" name=submit1 value="Update Database" /></td></tr>',"\n";
 
