@@ -192,9 +192,8 @@ function getNumberOfVersions()
 /* Get the number of maintainers in the database */
 function getNumberOfMaintainers()
 {
-    $result = query_appdb("SELECT count(maintainerId ) as num_maintainers FROM appMaintainers;");
-    $row = mysql_fetch_object($result);
-    return $row->num_maintainers;
+    $result = query_appdb("SELECT DISTINCT userId FROM appMaintainers;");
+    return mysql_num_rows($result);
 }
 
 /* Get the number of app familes in the database */
