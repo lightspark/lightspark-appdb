@@ -135,21 +135,33 @@ echo '<br />';
 if(strcasecmp($categoryId, "any") == 0)
 {
     /* leave out the appFamily.catId = '$categoryId' */
-    $voteQuery = "SELECT appVotes.appId, appName, count(userId) as count ".
+    $sVoteQuery = "SELECT appVotes.appId, appName, count(userId) as count ".
         "FROM appVotes, appFamily ".
         "WHERE appVotes.appId = appFamily.appId ".
         "GROUP BY appId ORDER BY count DESC LIMIT $topNumber";
 } else
 {
-    $voteQuery = "SELECT appVotes.appId, appName, count(userId) as count ".
-        "FROM appVotes, appFamily, appCategory ".
-        "WHERE appVotes.appId = appFamily.appId AND ".
-        "(appFamily.catId = '$categoryId' OR ".
-        "(appFamily.catId = appCategory.catId AND appCategory.catParent = '$categoryId')) ".
-        "GROUP BY appId ORDER BY count DESC LIMIT $topNumber";
+    /* Display all application for a given category (including sub categories)
+    SELECT f.appId, f.appName
+    FROM appFamily AS f, appCategory AS c
+    WHERE f.catId = c.catId
+    AND (
+    c.catId =29
+    OR c.catParent =29)*/
+    
+    $sVoteQuery = "SELECT v.appId, f.appName, count( v.userid ) AS count
+                  FROM appFamily AS f, appCategory AS c, appVotes AS v
+                  WHERE v.appId = f.appId
+                  AND f.catId = c.catId
+                  AND (
+                        c.catId = '$categoryId'
+                        OR c.catParent = '$categoryId'
+                      )
+                  GROUP BY v.userId
+                  ORDER BY count DESC LIMIT $topNumber";
 }
 
-$result = mysql_query($voteQuery);
+$result = query_appdb($sVoteQuery);
 
 if($result)
 {
