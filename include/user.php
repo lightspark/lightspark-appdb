@@ -12,6 +12,7 @@ class User {
     var $created;
     var $status;
     var $perm;
+    var $CVSrelease;
 
     /**
      * constructor
@@ -123,7 +124,7 @@ class User {
     /**
      * Update User Account;
      */
-    function update($userid = 0, $password = null, $realname = null, $email = null)
+    function update($userid = 0, $password = null, $realname = null, $email = null, $CVSrelease = null)
     {
         if (!$userid)
             return 0;
@@ -144,6 +145,13 @@ class User {
             if (!mysql_query("UPDATE user_list SET email = '".addslashes($email)."' WHERE userid = $userid"))
                 return 0;
         }
+
+        if ($CVSrelease)
+        {
+            if (!mysql_query("UPDATE user_list SET CVSrelease = '".addslashes($CVSrelease)."' WHERE userid = $userid"))
+                return 0;
+        }
+
         return 1;
     }
 

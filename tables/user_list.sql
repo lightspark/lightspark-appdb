@@ -12,6 +12,7 @@ create table user_list (
         created         datetime not null,
         status          int(4),
 	perm		int(4),
+        CVSrelease      text,
         unique key(userid),
 	unique(username(12))
 );

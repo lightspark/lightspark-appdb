@@ -56,9 +56,9 @@ function show_user_fields()
         $ext_email = $user->lookup_email($_SESSION['current']->userid);
         
         include(BASE."include/"."form_edit.php");
-        $version = "unspecified";
-        echo "<tr><td>&nbsp; wine version </td><td>";
-        make_bugzilla_version_list("version", $version);
+
+        echo "<tr><td>&nbsp; Wine version </td><td>";
+        make_bugzilla_version_list("CVSrelease", $CVSrelease);
         echo "</td></tr>";
 
 }
@@ -83,7 +83,7 @@ if($_POST)
         addmsg("The Passwords you entered did not match.", "red");
     }
     
-    if ($user->update($_SESSION['current']->userid, $str_passwd, $_REQUEST['ext_realname'], $_REQUEST['ext_email']))
+    if ($user->update($_SESSION['current']->userid, $str_passwd, $_REQUEST['ext_realname'], $_REQUEST['ext_email'], $_REQUEST['CVSrelease']))
     {
         addmsg("Preferences Updated", "green");
     }
