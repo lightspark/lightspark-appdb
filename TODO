@@ -9,13 +9,6 @@ borrow from lostwages(winehq.org/cvsweb/lostwages) for this
 
 # check for existing email when user is creating a new account
 
-# setup a cron job in a new /bin directory, put a deny all .htaccess 
-file in there and purge all inactive accounts after 6 months of inactivity
-
-# RELATED TODO: how to handle deleting accounts that have comments ?  go through 
-and assign them to a special account number that prints (account deleted due 
-to inactivity)
-
 # when deleting an application or version we should delete linked entries (screenshots, comments, etc.)
 
 # when deleting a screenshot we should delete the image file as well

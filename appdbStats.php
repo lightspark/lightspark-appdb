@@ -19,6 +19,30 @@ echo "    <td>Users:</td>\n";
 echo "    <td>".getNumberOfUsers()."</td>\n";
 echo "</tr>\n\n";
 
+/* Display the active users in the last 30 days */
+echo "<tr class=color4>\n";
+echo "    <td>Users active within the last 30 days:</td>\n";
+echo "    <td>".getActiveUsersWithinDays(30)."</td>\n";
+echo "</tr>\n\n";
+
+/* Display the active users in the last 60 days */
+echo "<tr class=color4>\n";
+echo "    <td>Users active within the last 60 days:</td>\n";
+echo "    <td>".getActiveUsersWithinDays(60)."</td>\n";
+echo "</tr>\n\n";
+
+/* Display the active users in the last 90 days */
+echo "<tr class=color4>\n";
+echo "    <td>Users active within the last 90 days:</td>\n";
+echo "    <td>".getActiveUsersWithinDays(90)."</td>\n";
+echo "</tr>\n\n";
+
+/* Display the inactive users */
+echo "<tr class=color4>\n";
+echo "    <td>Inactive users (not logged in since six months):</td>\n";
+echo "    <td>".(getNumberOfUsers()-getActiveUsersWithinDays(183))."</td>\n";
+echo "</tr>\n\n";
+
 /* Display the number of comments */
 echo "<tr class=color4>\n";
 echo "    <td>Comments:</td>\n";
@@ -47,24 +71,6 @@ echo "</tr>\n\n";
 echo "<tr class=color4>\n";
 echo "    <td>Images:</td>\n";
 echo "    <td>".getNumberOfImages()."</td>\n";
-echo "</tr>\n\n";
-
-/* Display the active users in the last 30 days */
-echo "<tr class=color4>\n";
-echo "    <td>Users active within the last 30 days:</td>\n";
-echo "    <td>".getActiveUsersWithinDays(30)."</td>\n";
-echo "</tr>\n\n";
-
-/* Display the active users in the last 60 days */
-echo "<tr class=color4>\n";
-echo "    <td>Users active within the last 60 days:</td>\n";
-echo "    <td>".getActiveUsersWithinDays(60)."</td>\n";
-echo "</tr>\n\n";
-
-/* Display the active users in the last 90 days */
-echo "<tr class=color4>\n";
-echo "    <td>Users active within the last 90 days:</td>\n";
-echo "    <td>".getActiveUsersWithinDays(90)."</td>\n";
 echo "</tr>\n\n";
 
 echo "</table>\n\n";
