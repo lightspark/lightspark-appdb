@@ -36,6 +36,12 @@ echo "    <td>Versions:</td>\n";
 echo "    <td>".getNumberOfVersions()."</td>\n";
 echo "</tr>\n\n";
 
+/* Display the number of application maintainers */
+echo "<tr class=color4>\n";
+echo "    <td>Application maintainers:</td>\n";
+echo "    <td>".getNumberOfMaintainers()."</td>\n";
+echo "</tr>\n\n";
+
 /* Display the number of images */
 echo "<tr class=color4>\n";
 echo "    <td>Images:</td>\n";
