@@ -189,6 +189,15 @@ function getQueuedMaintainerCount()
     return $ob->queued_maintainers;
 }
 
+/* get the total number of maintainers and applications in the appMaintainers table */
+function getMaintainerCount()
+{
+    $qstring = "SELECT count(*) as maintainers FROM appMaintainers";
+    $result = mysql_query($qstring);
+    $ob = mysql_fetch_object($result);
+    return $ob->maintainers;
+}
+
 /* Get the number of users in the database */
 function getNumberOfComments()
 {
