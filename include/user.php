@@ -325,6 +325,7 @@ function isSuperMaintainer($appId)
 
 function debugging()
 {
+return true;
     if(!loggedin())
         return false;
     return $_SESSION['current']->getpref("debug") == "yes";
