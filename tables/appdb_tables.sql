@@ -20,6 +20,7 @@ drop table if exists appVotes;
 drop table if exists appRating;
 drop table if exists appNotes;
 drop table if exists appMaintainers;
+drop table if exists appMaintainerQueue;
 drop table if exists sessionMessages;
 
 
