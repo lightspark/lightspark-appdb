@@ -184,7 +184,7 @@ function cmd_do_login()
     if($result == null)
 	{
 	    $current = $user;
-	    addmsg("You are successfully logged in.", "green");
+	    addmsg("You are successfully logged in as '$user->username'.", "green");
 	    redirect(apidb_fullurl("index.php"));    	    
 	}
     else

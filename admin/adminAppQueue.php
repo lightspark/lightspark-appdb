@@ -84,13 +84,41 @@ if ($sub)
 	//version
 	echo '<tr valign=top><td class=color0><b>App Version</b></td><td><input type=text name="queueVersion" value="'.stripslashes($ob->queueVersion).'" size=20></td></tr>',"\n";
  	
-	//vendor
- 	echo '<tr valign=top><td class=color0><b>App Vendor</b></td><td><input type=text name="queueVendor" value="'.stripslashes($ob->queueVendor).'" size=20></td></tr>',"\n";
+	//vendor/alt vendor fields
+    // try for an exact match
+    $query = "select * from vendor where vendorname = '$ob->queueVendor';";
+    $result = mysql_query($query);
+    if(!$result)
+    {
+        // try for a partial match
+        $query = "select * from vendor where vendorname like '%$ob->queueVendor%';";
+        $result = mysql_query($query);
+    }
+
+    // Use the first match if we found one and clear out the vendor field,
+    // otherwise don't pick a vendor
+    if($result)
+    {
+        $ob->queueVendor = '';
+
+        //vendor field
+        echo '<tr valign=top><td class=color0><b>App Vendor</b></td><td><input type=text name="queueVendor" value="'.stripslashes($ob->queueVendor).'" size=20></td></tr>',"\n";
 	
-	//alt vendor
-	echo '<tr valign=top><td class=color0>&nbsp;</td><td>',"\n";
-	$x->make_option_list("altvendor","","vendor","vendorId","vendorName");
-	echo '</td></tr>',"\n";
+        $ob2 = mysql_fetch_object($result);
+
+        echo '<tr valign=top><td class=color0>&nbsp;</td><td>',"\n";
+        $x->make_option_list("altvendor","$ob2->vendorId","vendor","vendorId","vendorName");
+        echo '</td></tr>',"\n";
+    } else
+    {
+        //vendor field
+        echo '<tr valign=top><td class=color0><b>App Vendor</b></td><td><input type=text name="queueVendor" value="'.stripslashes($ob->queueVendor).'" size=20></td></tr>',"\n";
+	
+        echo '<tr valign=top><td class=color0>&nbsp;</td><td>',"\n";
+        $x->make_option_list("altvendor","","vendor","vendorId","vendorName");
+        echo '</td></tr>',"\n";
+    }
+    
 		
 	//url
 	echo '<tr valign=top><td class=color0><b>App URL</b></td><td><input type=text name="queueURL" value="'.stripslashes($ob->queueURL).'" size=20></td></tr>',"\n";

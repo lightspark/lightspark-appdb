@@ -23,7 +23,8 @@ function checkInput( $fields )
         $errors .= "<li>Please enter an application version.</li>\n";
     }
 
-    if ( empty( $fields['queueVendor']) )
+    // No vendor entered, and nothing in the list is selected
+    if ( empty( $fields['queueVendor']) and $fields['altvendor'] == '0' )
     {
         $errors .= "<li>Please enter a vendor.</li>\n";
     }
@@ -51,12 +52,11 @@ function checkInput( $fields )
 
 include("path.php");
 require(BASE."include/"."incl.php");
+require(BASE."include/"."tableve.php");
 global $current;
 
 if ($_REQUEST['queueName'])
 {
-	// add to queue
-    
     // Check input and exit if we found errors
     $errors = checkInput($_REQUEST);
     if( !empty($errors) )
@@ -64,10 +64,25 @@ if ($_REQUEST['queueName'])
         errorpage("We found the following errors:","<ul>$errors</ul><br>Please go back and correct them.");
         exit;
     }
+
+    /* if the user picked the vendor we need to retrieve the vendor name */
+    /* and store it into the $queueVendor */
+    if($_REQUEST['altvendor'])
+    {
+        /* retrieve the actual name here */
+        $query = "select * from vendor where vendorId = '$altvendor';";
+        $result = mysql_query($query);
+        if($result)
+        {
+            $ob = mysql_fetch_object($result);
+            $_REQUEST['queueVendor'] = $ob->vendorName;
+        }
+    }
     
     // header
     apidb_header("Submit Application");    
-    
+
+    // add to queue
     $query = "INSERT INTO appQueue VALUES (null, '".
             addslashes($_REQUEST['queueName'])."', '".
             addslashes($_REQUEST['queueVersion'])."', '".
@@ -88,7 +103,6 @@ if ($_REQUEST['queueName'])
         echo "<p>Your application has been submitted for Review. You should hear back\n";
         echo "soon about the status of your submission</p>\n";
     }
-    
 }
 else
 {
@@ -122,6 +136,13 @@ else
 	    echo '<tr valign=top><td class=color0><b>App Name</b></td><td><input type=text name="queueName" value="" size=20></td></tr>',"\n";
 	    echo '<tr valign=top><td class=color0><b>App Version</b></td><td><input type=text name="queueVersion" value="" size=20></td></tr>',"\n";
 	    echo '<tr valign=top><td class=color0><b>App Vendor</b></td><td><input type=text name="queueVendor" value="" size=20></td></tr>',"\n";
+
+        //alt vendor
+        $x = new TableVE("view");
+        echo '<tr valign=top><td class=color0>&nbsp;</td><td>',"\n";
+        $x->make_option_list("altvendor","","vendor","vendorId","vendorName");
+        echo '</td></tr>',"\n";
+
 	    echo '<tr valign=top><td class=color0><b>App URL</b></td><td><input type=text name="queueURL" value="" size=20></td></tr>',"\n";
 	    echo '<tr valign=top><td class=color0><b>App Desc</b></td><td><textarea name="queueDesc" rows=10 cols=35></textarea></td></tr>',"\n";
 	    echo '<tr valign=top><td class=color0><b>Email</b></td><td><input type=text name="queueEmail" value="'.$email.'" size=20></td></tr>',"\n";
