@@ -79,8 +79,8 @@ function get_screenshot_img($appId, $versionId)
     else
     {
         $ob = mysql_fetch_object($result);
-	$imgFile = "<img src='appimage.php?appId=$appId&versionId=$versionId&width=128&height=128' ".
-	           "border=0 alt='$ob->description'>";
+        $imgFile = "<img src='appimage.php?imageId=$ob->id&width=128&height=128' ".
+                   "border=0 alt='$ob->description'>";
     }
     
     $img = html_frame_start("",'128','',2);
