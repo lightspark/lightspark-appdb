@@ -208,7 +208,6 @@ create table appNotes (
 	noteId          int not null auto_increment,
 	noteTitle       varchar(255),
 	noteDesc        text,
-	appId           int not null,
 	versionId       int not null,
 	key(noteId)
 );
