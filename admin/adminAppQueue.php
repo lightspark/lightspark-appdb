@@ -266,9 +266,10 @@ else
         echo "<table width=\"100%\" border=\"0\" cellpadding=\"3\" cellspacing=\"0\">
                <tr class=color4>
                   <td>Submission Date</td>
-                  <td>Vendor</td>
-                  <td>Application Name</td>
                   <td>Submitter</td>
+                  <td>Vendor</td>
+                  <td>Application</td>
+                  <td align=\"center\">Action</td>
                </tr>";
         
         $c = 1;
@@ -287,9 +288,10 @@ else
             if ($c % 2 == 1) { $bgcolor = 'color0'; } else { $bgcolor = 'color1'; }
             echo "<tr class=\"$bgcolor\">\n";
             echo "    <td>".date("Y-n-t h:i:sa", $oApp->sSubmitTime)." &nbsp;</td>\n";
-            echo "    <td>".$sVendor." &nbsp;</td>\n";
-            echo "    <td><a href=\"adminAppQueue.php?sub=view&appId=".$oApp->iAppId."\">".$oApp->sName."</a></td>\n";
             echo "    <td><a href=\"mailto:".$oSubmitter->sEmail."\">".$oSubmitter->sRealname."</a></td>\n";
+            echo "    <td>".$sVendor."</td>\n";
+            echo "    <td>".$oApp->sName."</td>\n";
+            echo "    <td align=\"center\">[<a href=\"adminAppQueue.php?sub=view&appId=".$oApp->iAppId."\">process</a>]</td>\n";
             echo "</tr>\n\n";
             $c++;
         }
@@ -324,10 +326,11 @@ else
         echo "<table width=\"100%\" border=\"0\" cellpadding=\"3\" cellspacing=\"0\">
                <tr class=color4>
                   <td>Submission Date</td>
-                  <td>Vendor</td>
-                  <td>Application Name</td>
-                  <td>Version Name</td>
                   <td>Submitter</td>
+                  <td>Vendor</td>
+                  <td>Application</td>
+                  <td>Version</td>
+                  <td align=\"center\">Action</td>
                </tr>";
         
         $c = 1;
@@ -341,10 +344,11 @@ else
             if ($c % 2 == 1) { $bgcolor = 'color0'; } else { $bgcolor = 'color1'; }
             echo "<tr class=\"$bgcolor\">\n";
             echo "    <td>".date("Y-n-t h:i:sa", $oVersion->sSubmitTime)." &nbsp;</td>\n";
-            echo "    <td>".$sVendor." &nbsp;</td>\n";
-            echo "    <td>".$oApp->sName." &nbsp;</td>\n";
-            echo "    <td><a href=\"adminAppQueue.php?sub=view&versionId=".$oVersion->iVersionId."\">".$oVersion->sName."</a></td>\n";
             echo "    <td><a href=\"mailto:".$oSubmitter->sEmail."\">".$oSubmitter->sRealname."</a></td>\n";
+            echo "    <td>".$sVendor."</td>\n";
+            echo "    <td>".$oApp->sName."</td>\n";
+            echo "    <td>".$oVersion->sName."</td>\n";
+            echo "    <td align=\"center\">[<a href=\"adminAppQueue.php?sub=view&versionId=".$oVersion->iVersionId."\">process</a>]</td>\n";
             echo "</tr>\n\n";
             $c++;
         }

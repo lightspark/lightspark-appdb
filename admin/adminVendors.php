@@ -38,7 +38,8 @@ if ($_REQUEST['sub'])
     echo "<tr class=color4>\n";
     echo "    <td>Vendor name</td>\n";
     echo "    <td>Vendor url</td>\n";
-    echo "    <td>Action</td>\n";
+    echo "    <td>Linked apps</td>\n";
+    echo "    <td align=\"center\">Action</td>\n";
     echo "</tr>\n\n";
         
     $c = 1;
@@ -49,8 +50,9 @@ if ($_REQUEST['sub'])
         echo "<tr class=\"$bgcolor\">\n";
         echo "    <td><a href=\"".BASE."vendorview.php?vendorId=".$oVendor->iVendorId."\">".$oVendor->sName."</a></td>\n";
         echo "    <td><a href=\"".$oVendor->sWebpage."\">".$oVendor->sWebpage."</a></td>\n";
-        echo "    <td>[<a href='adminVendors.php?sub=delete&vendorId=".$oVendor->iVendorId."'>delete</a>] &nbsp; ";
-        echo "        [<a href='addVendor.php?vendorId=".$oVendor->iVendorId."'>edit</a>]</td>\n";
+        echo "    <td>".sizeof($oVendor->aApplicationsIds)."</td>\n";
+        echo "    <td align=\"center\">[<a href='addVendor.php?vendorId=".$oVendor->iVendorId."'>edit</a>] &nbsp; [<a href='adminVendors.php?sub=delete&vendorId=".$oVendor->iVendorId."'>delete</a>]";
+        echo "        </td>\n";
         echo "</tr>\n\n";
         $c++;
     }

@@ -73,7 +73,7 @@ if($_REQUEST['sSubmit'])
     echo "    <td>Creation date</td>\n";
     echo "    <td>Last connected</td>\n";
     echo "    <td>Roles</td>\n";
-    echo "    <td>&nbsp;</td>\n";
+    echo "    <td align=\"center\">Action</td>\n";
     echo "</tr>\n\n";
     if(is_numeric($_REQUEST['iLimit']) && in_array($_REQUEST['sOrderBy'],array("email","realname","created")))
     {
@@ -97,7 +97,7 @@ if($_REQUEST['sSubmit'])
             if($oUser->hasPriv("admin")) echo "A";
             if($oUser->isMaintainer()) echo "M";
             echo "    </td>\n";
-            echo "    <td>[<a onclick=\"if(!confirm('".$sAreYouSure."'))return false;\" \"href=\"".$_SERVER['PHP_SELF']."?action=delete&userId=".$oRow->userid."&sSearch=".$sSearch."&iLimit=".$_REQUEST['iLimit']."&sOrderBy=".$_REQUEST['sOrderBy']."&sSubmit=true\">delete</a>]&nbsp;[<a href=\"../preferences.php?userId=".$oRow->userid."&sSearch=".$sSearch."&iLimit=".$_REQUEST['iLimit']."&sOrderBy=".$_REQUEST['sOrderBy']."\">edit</a>]</td>\n";
+            echo "    <td align=\"center\">[<a href=\"../preferences.php?userId=".$oRow->userid."&sSearch=".$sSearch."&iLimit=".$_REQUEST['iLimit']."&sOrderBy=".$_REQUEST['sOrderBy']."\">edit</a>]&nbsp;[<a onclick=\"if(!confirm('".$sAreYouSure."'))return false;\" \"href=\"".$_SERVER['PHP_SELF']."?action=delete&userId=".$oRow->userid."&sSearch=".$sSearch."&iLimit=".$_REQUEST['iLimit']."&sOrderBy=".$_REQUEST['sOrderBy']."&sSubmit=true\">delete</a>]</td>\n";
             echo "</tr>\n\n";
         }
     }

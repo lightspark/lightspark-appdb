@@ -50,12 +50,12 @@ if (!$_REQUEST['id'])
         echo "<table width='100%' border=0 cellpadding=3 cellspacing=0>\n\n";
         
         echo "<tr class=color4>\n";
-        echo "    <td><font color=white>Submission Date</font></td>\n";
-        echo "    <td><font color=white>Id</font></td>\n";
-        echo "    <td><font color=white>Name (e-mail)</font></td>\n";
-        echo "    <td><font color=white>Application Name</font></td>\n";
-        echo "    <td><font color=white>Version</font></td>\n";
-        echo "    <td><font color=white>Type</font></td>\n";
+        echo "    <td>Submission Date</td>\n";
+        echo "    <td>Submitter</td>\n";
+        echo "    <td>Application</td>\n";
+        echo "    <td>Version</td>\n";
+        echo "    <td>Type</td>\n";
+        echo "    <td align=\"center\">Action</td>\n";
         echo "</tr>\n\n";
         
         $c = 1;
@@ -64,7 +64,6 @@ if (!$_REQUEST['id'])
             if ($c % 2 == 1) { $bgcolor = 'color0'; } else { $bgcolor = 'color1'; }
             echo "<tr class=$bgcolor>\n";
             echo "    <td>".date("Y-n-t h:i:sa", $ob->submitTime)." &nbsp;</td>\n";
-            echo "    <td><a href='adminAppDataQueue.php?id=$ob->id'>".$ob->id."</a></td>\n";
             if($ob->userId)
             {
                 $oUser = new User($ob->userId);
@@ -75,6 +74,7 @@ if (!$_REQUEST['id'])
             echo "<td>".lookup_app_name($ob->appId)."</td>\n";
             echo "<td>".lookup_version_name($ob->versionId)."</td>\n";
             echo "<td>".$ob->type."</td>\n";
+            echo "<td align=\"center\">[<a href='adminAppDataQueue.php?id=$ob->id'>process</a>]</td>\n";
             echo "</tr>\n\n";
             $c++;
         }

@@ -56,13 +56,10 @@ if ($_REQUEST['sub'])
 
         echo "<tr class=color4>\n";
         echo "    <td><font color=white>Submission Date</font></td>\n";
-        echo "    <td><font color=white>Name</font></td>\n";
-        echo "    <td><font color=white>Application Name</font></td>\n";
+        echo "    <td><font color=white>Maintainer</font></td>\n";
+        echo "    <td><font color=white>Application</font></td>\n";
         echo "    <td><font color=white>Version</font></td>\n";
-        echo "    <td><font color=white>Super maintainer?</font></td>\n";
-        echo "    <td><font color=white>Email address</font></td>\n";
-        echo "    <td></td>\n";
-        echo "    <td>&nbsp;</td>\n";
+        echo "    <td align=\"center\">Action</td>\n";
         echo "</tr>\n\n";
         
         $c = 1;
@@ -72,21 +69,18 @@ if ($_REQUEST['sub'])
             if ($c % 2 == 1) { $bgcolor = 'color0'; } else { $bgcolor = 'color1'; }
             echo "<tr class=$bgcolor>\n";
             echo "    <td>".date("Y-n-t h:i:sa", $ob->submitTime)." &nbsp;</td>\n";
-            echo "    <td>".$oUser->sRealname."</td>\n";
+            echo "    <td><a href=\"mailto:".$oUser->sEmail."\">".$oUser->sRealname."</a></td>\n";
             
             if($ob->superMaintainer)
             {
                 echo "    <td><a href='".BASE."appview.php?appId=$ob->appId'>".lookup_app_name($ob->appId)."</a></td>\n";
-                echo "    <td>".lookup_version_name($ob->versionId)."&nbsp;</td>\n";
-                echo "    <td>Yes</td>\n";
+                echo "    <td>*</td>\n";
             } else
             {
-                echo "    <td>".lookup_app_name($ob->appId)."</td>\n";
-                echo "    <td><a href='".BASE."appview.php?appId=$ob->appId&versionId=$ob->versionId'>".lookup_version_name($ob->versionId)."</a>&nbsp;</td>\n";
-                echo "    <td>No</td>\n";
+                echo "    <td><a href='".BASE."appview.php?appId=$ob->appId'>".lookup_app_name($ob->appId)."</a></td>\n";
+                echo "    <td><a href='".BASE."appview.php?versionId=$ob->versionId'>".lookup_version_name($ob->versionId)."</a>&nbsp;</td>\n";
             }
-            echo "    <td>".$oUser->sEmail." &nbsp;</td>\n";
-            echo "    <td>[<a href='adminMaintainers.php?sub=delete&maintainerId=$ob->maintainerId'>delete</a>]</td>\n";
+            echo "    <td align=\"center\">[<a href='adminMaintainers.php?sub=delete&maintainerId=$ob->maintainerId'>delete</a>]</td>\n";
             echo "</tr>\n\n";
             $c++;
         }
