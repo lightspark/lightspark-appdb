@@ -57,30 +57,27 @@ function show_user_fields()
 
 }
 
-if($HTTP_POST_VARS)
-{
-    global $ext_username, $ext_password1, $ext_password2, $ext_realname, $ext_email;
-    
-    
+if($_REQUEST)
+{   
     $user = new User();
     
-    while(list($key, $value) = each($HTTP_POST_VARS))
+    while(list($key, $value) = each($_REQUEST))
         {
             if(!ereg("^pref_(.+)$", $key, $arr))
                 continue;
             $_SESSION['current']->setpref($arr[1], $value);
         }
     
-    if ($ext_password == $ext_password2)
+    if ($_REQUEST['ext_password'] == $_REQUEST['ext_password2'])
     {
-        $passwd = $ext_password;
+        $str_passwd = $_REQUEST['ext_password'];
     }
-    else if ($ext_password)
+    else if ($_REQUEST['ext_password'])
     {
         addmsg("The Passwords you entered did not match.", "red");
     }
     
-    if ($user->update($_SESSION['current']->userid, $passwd, $ext_realname, $ext_email))
+    if ($user->update($_SESSION['current']->userid, $str_passwd, $_REQUEST['ext_realname'], $_REQUEST['ext_email']))
     {
         addmsg("Preferences Updated", "green");
     }
