@@ -18,10 +18,6 @@ require(BASE."include/"."html.php");
 $sidebar_func_list = array();
 $help_list = array();
 
-// start session ...
-apidb_session_start();
-
-
 function apidb_help_add($desc, $id)
 {
     global $help_list;
@@ -238,5 +234,16 @@ define("APPDB_ROOT", "http://appdb.winehq.org/");
 define("STANDARD_NOTIFY_FOOTER","------- You are receiving this mail because: -------\n".
 "You are an maintainer of this app or an appdb administrator\n".
 "to change your preferences go to: ".APPDB_ROOT."preferences.php\n");
+
+/*
+ * Start DB Connection
+ */
+opendb();
+
+/*
+ * Init Session (stores user info and cart info in session)
+ */
+$session = new session("whq_appdb");
+$session->register("current");
 
 ?>

@@ -50,7 +50,7 @@ function do_account($cmd = null)
             exit;
 
         case "logout":
-            apidb_session_destroy();
+            $GLOBALS['session']->destroy();
             addmsg("You are successfully logged out.", "green");
             redirect(apidb_fullurl("index.php"));
             exit;

@@ -5,7 +5,6 @@
 
 class User {
 
-    var $link; // database connection
     var $stamp;
     var $userid;
     var $username;
@@ -20,15 +19,8 @@ class User {
      */
     function User()
     {
-        $this->connect();
+
     }
-
-
-    function connect()
-    {
-        $this->link = opendb();
-    }
-
 
     /**
      * check if a user exists
@@ -36,7 +28,7 @@ class User {
      */
     function exists($username)
     {
-        $result = mysql_query("SELECT * FROM user_list WHERE username = '$username'", $this->link);
+        $result = mysql_query("SELECT * FROM user_list WHERE username = '$username'");
         if(!$result || mysql_num_rows($result) != 1)
             return 0;
          return 1;
@@ -83,9 +75,9 @@ class User {
         $result = mysql_query("SELECT stamp, userid, username, realname, ".
                               "created, status, perm FROM user_list WHERE ".
                               "username = '$username' AND ".
-                              "password = password('$password')", $this->link);
+                              "password = password('$password')");
         if(!$result)
-            return "Error: ".mysql_error($this->link);
+            return "Error: ".mysql_error();
 
         if(mysql_num_rows($result) == 0)
             return "Invalid username or password";
@@ -121,9 +113,9 @@ class User {
     {
         $result = mysql_query("INSERT INTO user_list VALUES ( NOW(), 0, ".
                               "'$username', password('$password'), ".
-                              "'$realname', '$email', NOW(), 0, 0)", $this->link);
+                              "'$realname', '$email', NOW(), 0, 0)");
         if(!$result)
-            return mysql_error($this->link);
+            return mysql_error();
         return $this->restore($username, $password);
     }
 
@@ -164,10 +156,10 @@ class User {
         if($username == 0)
             $username = $this->username;
 
-        $result = mysql_query("DELETE FROM user_list WHERE username = '$username'", $this->link);
+        $result = mysql_query("DELETE FROM user_list WHERE username = '$username'");
 
         if(!$result)
-            return mysql_error($this->link);
+            return mysql_error();
         if(mysql_affected_rows($result) == 0)
             return "No such user.";
         return 0;
@@ -176,7 +168,7 @@ class User {
 
     function done()
     {
-        mysql_close($this->link);
+    
     }
 
 
@@ -185,7 +177,7 @@ class User {
         if(!$this->userid || !$key)
             return $def;
 
-        $result = mysql_query("SELECT * FROM user_prefs WHERE userid = $this->userid AND name = '$key'", $this->link);
+        $result = mysql_query("SELECT * FROM user_prefs WHERE userid = $this->userid AND name = '$key'");
         if(!$result || mysql_num_rows($result) == 0)
             return $def;
         $ob = mysql_fetch_object($result);
@@ -213,7 +205,7 @@ class User {
         if(!$this->userid || !$priv)
             return 0;
 
-        $result = mysql_query("SELECT * FROM user_privs WHERE userid = $this->userid AND priv  = '$priv'", $this->link);
+        $result = mysql_query("SELECT * FROM user_privs WHERE userid = $this->userid AND priv  = '$priv'");
         if(!$result)
             return 0;
         return mysql_num_rows($result);
@@ -236,7 +228,7 @@ class User {
         }
 
         $query = "SELECT * FROM appMaintainers WHERE userid = '$this->userid' AND appId = '$appId' AND versionId = '$versionId'";
-        $result = mysql_query($query, $this->link);
+        $result = mysql_query($query);
         if(!$result)
             return 0;
         return mysql_num_rows($result);
@@ -252,7 +244,7 @@ class User {
             return false;
 
         $query = "SELECT * FROM appMaintainers WHERE userid = '$this->userid' AND appId = '$appId' AND superMaintainer = '1'";
-        $result = mysql_query($query, $this->link);
+        $result = mysql_query($query);
         if(!$result)
             return 0;
         return mysql_num_rows($result);
@@ -267,7 +259,7 @@ class User {
         if($this->checkpriv($priv))
             return 1;
 
-        $result = mysql_query("INSERT INTO user_privs VALUES ($this->userid, '$priv')", $this->link);
+        $result = mysql_query("INSERT INTO user_privs VALUES ($this->userid, '$priv')");
         return $result;
     }
 
@@ -277,7 +269,7 @@ class User {
         if(!$this->userid || !$priv)
             return 0;
 
-        $result = mysql_query("DELETE FROM user_privs WHERE userid = $this->userid AND priv = '$priv'", $this->link);
+        $result = mysql_query("DELETE FROM user_privs WHERE userid = $this->userid AND priv = '$priv'");
         return $result;
     }
 
