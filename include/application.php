@@ -40,6 +40,7 @@ class Application {
                        AND appFamily.appId = ".$iAppId;
             if($hResult = query_appdb($sQuery))
             {
+                $this->aVersionsIds = array();
                 while($oRow = mysql_fetch_object($hResult))
                 {
                     if(!$this->iAppId)
@@ -205,7 +206,7 @@ class Application {
                    LIMIT 1";
         if($hResult = query_appdb($sQuery))
         {
-            foreach($aVersionsIds as $iVersionId)
+            foreach($this->aVersionsIds as $iVersionId)
             {
                 $oVersion = new Version($iVersionId);
                 $oVersion->delete($bSilent);

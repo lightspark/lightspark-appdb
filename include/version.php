@@ -60,6 +60,7 @@ class Version {
             /*
              * We fetch notesIds. 
              */
+            $this->aNotesIds = array();
             $sQuery = "SELECT noteId
                        FROM appNotes
                        WHERE versionId = ".$iVersionId;
@@ -89,6 +90,8 @@ class Version {
             /*
              * We fetch screenshotsIds and urlsIds. 
              */
+            $this->aScreenshotsIds = array();
+            $this->aUrlsIds = array();
             $sQuery = "SELECT id, type
                        FROM appData
                        WHERE versionId = ".$iVersionId;
@@ -100,7 +103,7 @@ class Version {
                     if($oRow->type="image")
                         $this->aScreenshotsIds[] = $oRow->id;
                     else
-                        $this->aNotesIds[] = $oRow->id;
+                        $this->aUrlsIds[] = $oRow->id;
                 }
             }
         }
