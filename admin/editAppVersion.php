@@ -7,9 +7,14 @@ include(BASE."include/"."tableve.php");
 include(BASE."include/"."qclass.php");
 require(BASE."include/"."application.php");
 
+if(!is_numeric($_REQUEST['appId']) OR !is_numeric($_REQUEST['versionId']))
+{
+    errorpage("Wrong ID");
+    exit;
+}
 
 //check for admin privs
-if(!loggedin() || (!havepriv("admin") && !$_SESSION['current']->is_maintainer($_REQUEST['appId'], $_REQUEST['versionId'])) )
+if(!(havepriv("admin") || $_SESSION['current']->is_maintainer($_REQUEST['appId'],$_REQUEST['versionId'])))
 {
     errorpage("Insufficient Privileges!");
     exit;
@@ -23,7 +28,7 @@ if(isset($_REQUEST['submit1']))
         $statusMessage = '';
         // Get the old values from the database 
         $query = "SELECT * FROM appVersion WHERE appId = ".$_REQUEST['appId']." and versionId = ".$_REQUEST['versionId'];
-        $result = mysql_query($query);
+        $result = query_appdb($query);
         $ob = mysql_fetch_object($result);
         $old_versionName = $ob->versionName;
         $old_keywords    = $ob->keywords;
@@ -32,10 +37,10 @@ if(isset($_REQUEST['submit1']))
         $old_rating      = $ob->maintainer_rating;
         $old_release     = $ob->maintainer_release;
 
-        $versionName        = addslashes($_REQUEST['versionName']);
+        $versionName        = $_REQUEST['versionName'];
         $keywords           = $_REQUEST['keywords'];
-        $description        = addslashes($_REQUEST['description']);
-        $webPage            = addslashes($_REQUEST['webPage']);
+        $description        = $_REQUEST['description'];
+        $webPage            = $_REQUEST['webPage'];
         $maintainer_rating  = $_REQUEST['maintainer_rating'];
         $maintainer_release = $_REQUEST['maintainer_release'];
 
@@ -44,19 +49,19 @@ if(isset($_REQUEST['submit1']))
         if ($old_versionName <> $versionName)
         {
             $WhatChanged .= "Version name: Old Value: ".stripslashes($old_versionName)."\n";
-            $WhatChanged .= "              New Value: ".stripslashes($versionName)."\n";
+            $WhatChanged .= "              New Value: ".$versionName."\n";
             $VersionChanged = true;
         } 
         if ($old_keywords <> $keywords)
         {
              $WhatChanged .= "   Key Words: Old Value: ".stripslashes($old_keywords)."\n";
-             $WhatChanged .= "              New Value: ".stripslashes($keywords)."\n";
+             $WhatChanged .= "              New Value: ".$keywords."\n";
              $VersionChanged = true;
         }
         if ($old_webPage <> $webPage)
         {
              $WhatChanged .= "    Web Page: Old Value: ".stripslashes($old_webPage)."\n";
-             $WhatChanged .= "              New Value: ".stripslashes($webPage)."\n";
+             $WhatChanged .= "              New Value: ".$webPage."\n";
              $VersionChanged = true;
         } 
         if ($old_description <> $description)
@@ -74,28 +79,30 @@ if(isset($_REQUEST['submit1']))
         if ($old_rating <> $maintainer_rating)
         {
             $WhatChanged .= "     Release: Old Value: ".stripslashes($old_rating)."\n";
-            $WhatChanged .= "              New Value: ".stripslashes($maintainer_rating)."\n";
+            $WhatChanged .= "              New Value: ".$maintainer_rating."\n";
             $VersionChanged = true;
         } 
 
         if ($old_release <> $maintainer_release)
         {
             $WhatChanged .= "     Release: Old Value: ".stripslashes($old_release)."\n";
-            $WhatChanged .= "              New Value: ".stripslashes($maintainer_release)."\n";
+            $WhatChanged .= "              New Value: ".$maintainer_release."\n";
             $VersionChanged = true;
         } 
 
         //did anything change?
         if ($VersionChanged)
         {
-            $query = "UPDATE appVersion SET versionName = '".$versionName."', ".
-                "keywords = '".$_REQUEST['keywords']."', ".
-                "description = '".$description."', ".
-                "webPage = '".$webPage."',".
-                "maintainer_rating = '".$maintainer_rating."',".
-                "maintainer_release = '".$maintainer_release."'".
-                " WHERE appId = ".$_REQUEST['appId']." and versionId = ".$_REQUEST['versionId'];
-            if (mysql_query($query))
+            $sUpdate = compile_update_string( array('versionName' => $versionName,
+                                              'description' => $description,
+                                              'webPage' => $webPage,
+                                              'keywords' => $keywords,
+                                              'maintainer_rating' => $maintainer_rating,
+                                              'maintainer_release' =>  $maintainer_release));
+                                              
+            $query = "UPDATE appVersion SET $sUpdate WHERE appId = ".$_REQUEST['appId']." and versionId = ".$_REQUEST['versionId'];
+            
+            if (query_appdb($query))
             {  
           //success
                 $email = getNotifyEmailAddressList($_REQUEST['appId'], $_REQUEST['versionId']);
@@ -143,7 +150,7 @@ if(isset($_REQUEST['submit1']))
         "appId = '".$_REQUEST['appId']."' and versionId = '".$_REQUEST['versionId']."'";
     if(debugging()) { echo "<p align=center><b>query:</b> $query </p>"; }
 
-    $result = mysql_query($query);
+    $result = query_appdb($query);
     list($versionName, $keywords, $description, $webPage, $maintainer_rating, $maintainer_release) = mysql_fetch_row($result);
 
     apidb_header("Edit Application Version");
