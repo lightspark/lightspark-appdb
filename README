@@ -27,11 +27,14 @@ To install locally for testing/hacking:
   Edit your /etc/apache/httpd.conf "DirectoryIndex" to include index.php 
   so apache will open index.php after not finding index.html/index.htm etc
 
-# Check your /etc/php/php.ini to ensure that
-  'register_globals = On' (variables won't get passed)
-  'magic_quotes_gpc = Off' (you would end up with \ everywhere)
-  'session.bug_compat_42' = On' (Problem with auto-globals and session variables)
-
+# Also ensure these options in /etc/apache/php.ini:
+   register_globals 0
+   short_open_tag 0
+   register_long_arrays 0
+   magic_quotes_gpc 0
+ Or ensure your appdb directory has AllowOveride' set to 'All' inside 
+ httpd.conf to let .htaccess set these settings.
+ 
 # An AppDB admin user has been automatically created while running 
   the create_tables script
   username: admin
