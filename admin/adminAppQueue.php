@@ -69,7 +69,7 @@ if ($_REQUEST['sub'])
 
             //app parent
             echo '<tr valign=top><td class=color0><b>Application</b></td><td>',"\n";
-            $x->make_option_list("appId",$oVersion->sName,"appFamily","appId","appName");
+            $x->make_option_list("appId",$oVersion->iAppId,"appFamily","appId","appName");
             echo '</td></tr>',"\n";
 
             //version
