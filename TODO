@@ -15,10 +15,20 @@ would go into the db like every other image.
 
 # Super Maintainers should be able to edit the main app and send a notify message like the versions have.
 
-# Add Maintainer rating system to the app verision (tony's working on it).
+# Add Maintainer rating system to the app version (Tony's working on it).
 
-# revamp the star rating system
+# revamp the star rating system (Chris)
 
 # once maintainer rating system is in place revamp the front page to use a dynamic list of maintainer rated apps.
 
 # add a system that well allow users to monitor an app without becoming a maintainer.
+
+# add distro table and administration screens for it. (Chris)
+
+# We need an administration screen for vendors.
+
+# add wineversion, distro, source/package fields to the user_list table.
+
+# add wineversion, distro, source/package fields to the appComments table.
+
+# add new table for maintainer ratings. fields: userid, appId versionId ,rating, wineversion, distro, source/package
