@@ -120,7 +120,7 @@ else
     
     apidb_header("Query Results");
     
-    include(BASE."include/"."query_inc.php");
+    include(BASE."include/"."query.php");
 
     twinedb_query($query, $vars);
 
