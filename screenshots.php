@@ -128,7 +128,7 @@ if((!$result || !mysql_num_rows($result)) && (!havepriv("admin") && !isMaintaine
                     echo html_frame_end();
                 }
                 $currentVersionId=$ob->versionId;
-                echo html_frame_start("Version ".$app->getAppVersion($ob->versionId)->versionName);
+                echo html_frame_start("Version ".lookupVersionName($_REQUEST['appId'], $currentVersionId));
                 echo "<div align=center><table><tr>\n";
             }
             // set img tag
