@@ -25,10 +25,10 @@ function admin_menu()
 {
     $m = new htmlmenu("Admin");
     if(isset($_REQUEST['versionId'])) {
-        $m->add("Add Note", BASE."admin/addAppNote.php?appId=$appId&versionId=".$_REQUEST['versionId']);
+        $m->add("Add Note", BASE."admin/addAppNote.php?appId={$_REQUEST['appId']}&versionId=".$_REQUEST['versionId']);
         $m->addmisc("&nbsp;");
 
-        $m->add("Edit Version", BASE."admin/editAppVersion.php?appId=$appId&versionId=".$_REQUEST['versionId']);
+        $m->add("Edit Version", BASE."admin/editAppVersion.php?appId={$_REQUEST['appId']}&versionId=".$_REQUEST['versionId']);
 
         $url = BASE."admin/deleteAny.php?what=appVersion&versionId=".$_REQUEST['versionId']."&confirmed=yes";
         $m->add("Delete Version", "javascript:deleteURL(\"Are you sure?\", \"".$url."\")");
