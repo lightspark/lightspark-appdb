@@ -306,7 +306,7 @@ if ($_REQUEST['sub'])
         //Send Status Email
         if ($ob->queueEmail && $goodtogo)
         {
-            $sFullAppName = lookupAppName($_REQUEST['appParent'])." Version: ".lookupVersionName($_REQUEST['appParent'], $_REQUEST['appVersion']);
+            $sFullAppName = lookupAppName($_REQUEST['appParent'])." Version: ".lookupVersionName($_REQUEST['appVersion']);
              
             $sSubject =  "Application Database Status Report";
             $sMsg  = "Your application: ".$sFullAppName." has been entered ";
@@ -322,7 +322,7 @@ if ($_REQUEST['sub'])
             if($sEmail)
             {
                 $sFullAppName = "Application: ".lookupAppName($_REQUEST['appParent']).
-                    " Version: ".lookupVersionName($_REQUEST['appParent'], $_REQUEST['appVersion']);
+                    " Version: ".lookupVersionName($_REQUEST['appVersion']);
                 $sSubject = "New ".$sFullAppName;
                 $sMsg  = APPDB_ROOT."appview.php?appId=".$_REQUEST['appParent']."&versionId=".$_REQUEST['appVersion']."\r\n";
                 $sMsg .= "New Application added to database:\r\n";

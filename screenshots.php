@@ -31,11 +31,10 @@ if($_REQUEST['cmd'])
                 $sEmail = get_notify_email_address_list($_REQUEST['appId'], $_REQUEST['versionId']);
                 if($sEmail)
                 {
-                    $sFullAppName = "Screenshot added to ".lookupAppName($_REQUEST['appId'])." ".lookupVersionName($_REQUEST['appId'], $_REQUEST['versionId']);
+                    $sFullAppName = "Screenshot added to ".lookupAppName($_REQUEST['appId'])." ".lookupVersionName($_REQUEST['versionId']);
                     $sMsg  = APPDB_ROOT."screenshots.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']."\n";
                     $sMsg .= "\n";
-                    $sMsg .= $_SESSION['current']->sRealname." added screenshot ".$_REQUEST['screenshot_desc']." to ".$sFullAppName."\n";
-          
+                    $sMsg .= $_SESSION['current']->sRealname." added screenshot ".$_REQUEST['screenshot_desc']." to ".$sFullAppName."\n";          
                     mail_appdb($sEmail, $sFullAppName ,$sMsg);
                 }
                 addmsg("The image was successfully added into the database", "green");
@@ -50,7 +49,7 @@ if($_REQUEST['cmd'])
                 $sEmail = get_notify_email_address_list($_REQUEST['appId'], $_REQUEST['versionId']);
                 if($sEmail)
                 {
-                    $sFullAppName = "Screenshot queued for ".lookupAppName($_REQUEST['appId'])." ".lookupVersionName($_REQUEST['appId'], $_REQUEST['versionId']);
+                    $sFullAppName = "Screenshot queued for ".lookupAppName($_REQUEST['appId'])." ".lookupVersionName($_REQUEST['versionId']);
                     $sMsg  = APPDB_ROOT."admin/adminAppDataQueue.php?queueId=".mysql_insert_id()."\n";
                     $sMsg .= "\n";
                     $sMsg .= ($_SESSION['current']->sRealname ? $_SESSION['current']->sRealname : "an anonymous user")." submitted a screenshot ".$_REQUEST['screenshot_desc']." for ".$sFullAppName."\n";
@@ -74,7 +73,7 @@ if($_REQUEST['cmd'])
                 $sEmail = get_notify_email_address_list($_REQUEST['appId'], $_REQUEST['versionId']);
                 if($sEmail)
                 {
-                    $sFullAppName = "Screenshot deleted from ".lookupAppName($_REQUEST['appId'])." ".lookupVersionName($_REQUEST['appId'], $_REQUEST['versionId']);
+                    $sFullAppName = "Screenshot deleted from ".lookupAppName($_REQUEST['appId'])." ".lookupVersionName($_REQUEST['versionId']);
                     $sMsg  = APPDB_ROOT."screenshots.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']."\n";
                     $sMsg .= "\n";
                     $sMsg .= ($_SESSION['current']->sRealname ? $_SESSION['current']->sRealname : "Anonymous")." deleted screenshot from ".$sFullAppName."\r\n";
@@ -119,7 +118,7 @@ if($result && mysql_num_rows($result))
                 $c=1;
             }
             $currentVersionId=$ob->versionId;
-            echo html_frame_start("Version ".lookupVersionName($_REQUEST['appId'], $currentVersionId));
+            echo html_frame_start("Version ".lookupVersionName($currentVersionId));
             echo "<div align=center><table><tr>\n";
         }
         $oScreenshot = new Screenshot($ob->id);
