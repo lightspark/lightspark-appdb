@@ -77,7 +77,7 @@ class Comment {
             if($sEmail)
             {
                 $sSubject = "Comment for ".lookup_app_name($this->iAppId)." ".lookup_version_name($this->iVersionId)." added by ".$_SESSION['current']->sRealname;
-                $sMsg  = APPDB_ROOT."appview.php?appId=".$this->iAppId."&amp;versionId=".$this->iVersionId."\n";
+                $sMsg  = APPDB_ROOT."appview.php?versionId=".$this->iVersionId."\n";
                 $sMsg .= "\n";
                 $sMsg .= "Subject: ".$this->sSubject."\r\n";
                 $sMsg .= "\n";
@@ -148,7 +148,7 @@ class Comment {
             if($sEmail)
             {
                 $sSubject = "Comment for ".lookup_app_name($this->iAppId)." ".lookup_version_name($this->iVersionId)." deleted by ".$_SESSION['current']->sRealname;
-                $sMsg  = APPDB_ROOT."appview.php?appId=".$this->iAppId."&amp;versionId=".$this->iVersionId."\n";
+                $sMsg  = APPDB_ROOT."appview.php?versionId=".$this->iVersionId."\n";
                 $sMsg .= "\n";
                 $sMsg .= "This comment was made on ".substr($this->sDateCreated,0,10)." by ".$this->oOwner->sRealname."\n";
                 $sMsg .= "\n";
