@@ -74,7 +74,7 @@ class Screenshot {
             if(!rename($hFile['tmp_name'], "data/".$this->sDirectory."/originals/".$this->iScreenshotId))
             {
                 // whoops, moving failed, do something
-                addmsg("Unable to move screenshot", "red");
+                addmsg("Unable to move screenshot from ".$hFile['tmp_name']." to data/".$this->sDirectory."/originals/".$this->iScreenshotId, "red");
                 $sQuery = "DELETE FROM ".$this->sTable." WHERE ".$this->sTableId." = '".$this->iScreenshotId."'";
                 query_appdb($sQuery);
                 return false;
