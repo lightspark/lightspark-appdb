@@ -5,7 +5,7 @@ function query_appdb($sQuery,$sComment="")
 
     if(!$hAppdbLink)
     {
-        $hAppdbLink = mysql_pconnect(APPS_DBHOST, APPS_DBUSER, APPS_DBPASS);
+        $hAppdbLink = mysql_connect(APPS_DBHOST, APPS_DBUSER, APPS_DBPASS);
         mysql_select_db(APPS_DB);
     }
     $hResult = mysql_query($sQuery, $hAppdbLink);
