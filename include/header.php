@@ -24,7 +24,7 @@
     <td>
       <table width="100%" cellpadding=0 cellspacing=0>
       <tr>
-	    <td width="100%"><a href="<?php echo BASE; ?>"><img src="<?php echo BASE; ?>images/winehq_top_logo.gif" width=300 height=99 alt="Wine HQ"></a></td>
+	    <td width="100%"><a href="<?php echo BASE; ?>"><img src="<?php echo BASE; ?>images/winehq_top_logo.png" width=300 height=99 alt="Wine HQ"></a></td>
         <td>
           <img src="<?php echo BASE; ?>images/blank.gif" width=10 height=1 alt="">
         </td>

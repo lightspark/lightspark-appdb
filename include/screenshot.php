@@ -19,7 +19,7 @@ function get_screenshot_img($appId, $versionId="")
     
     if(!$result || !mysql_num_rows($result))
     {
-        $imgFile = "<img src='".BASE."images/no_screenshot.gif' alt='No Screenshot' />";
+        $imgFile = "<img src='".BASE."images/no_screenshot.png' alt='No Screenshot' />";
     }
     else
     {
