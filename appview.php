@@ -285,7 +285,7 @@ if($_REQUEST['appId'])
         }
     } else
     {
-        echo '        <input type=submit value="Log in to become a super maintainer" class=button>';
+        echo '<form method="post" action="account.php?cmd=login"><input type="submit" value="Log in to become a super maintainer" class="button"></form>';
     }
     echo "        </center></td></tr>\n";
     echo "      </table>\n"; /* close of super maintainers table */
