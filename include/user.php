@@ -351,5 +351,61 @@ function lookupEmail($userid)
     return $ob->email;
 }
 
+function UserWantsEmail($userid)
+{
+    $result = mysql_query("SELECT * FROM user_prefs WHERE userid = $userid AND name = 'send_email'");
+    if(!$result || mysql_num_rows($result) == 0)
+    {
+        return true;
+    }
+    $ob = mysql_fetch_object($result);
+    return ($ob->value == 'no' ? false : true); 
+}
+
+/*
+ * get the email address of people to notify for this appId and versionId
+ */
+function getNotifyEmailAddressList($appId, $versionId)
+{
+    $aUserId = array();
+    $c = 0;
+    $retval = "";
+
+    $query = "SELECT userId FROM ".
+                          "appMaintainers WHERE appId = '$appId' " .
+                          "AND versionId = '$versionId';";
+    $result = mysql_query($query);
+    if(mysql_num_rows($result) > 0)
+    {
+        while($row = mysql_fetch_object($result))
+        {
+            $aUserId[$c] = array($row->userId);
+            $c++;
+        }
+    }
+    $result = mysql_query("SELECT * FROM user_privs WHERE priv  = 'admin'");
+    if(mysql_num_rows($result) > 0)
+    {
+        while($row = mysql_fetch_object($result))
+        {
+            $i = array_search($row->userid, $aUserId);
+            if ($aUserId[$i] != array($row->userid))
+            {
+                $aUserId[$c] = array($row->userid);
+                $c++;
+            }
+        }
+
+    }
+    if ($c > 0)
+    {
+        while(list($index, list($userIdValue)) = each($aUserId))
+        {
+            if (UserWantsEmail($userIdValue))
+                $retval .= lookupEmail($userIdValue)." ";
+        }
+    }
+    return $retval;
+}
 
 ?>

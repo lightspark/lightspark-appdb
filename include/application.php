@@ -76,3 +76,24 @@ class Application {
         return $list;
     }
 }
+
+function lookupVersionName($appId, $versionId)
+{
+    $result = mysql_query("SELECT versionName FROM appVersion WHERE versionId = $versionId and appId = $appId");
+    if(!$result || mysql_num_rows($result) != 1)
+        return null;
+    $ob = mysql_fetch_object($result);
+    return $ob->versionName;
+}
+
+
+function lookupAppName($appId)
+{
+    $result = mysql_query("SELECT appName FROM appFamily WHERE appId = $appId");
+    if(!$result || mysql_num_rows($result) != 1)
+        return null;
+    $ob = mysql_fetch_object($result);
+    return $ob->appName;
+}
+
+?>

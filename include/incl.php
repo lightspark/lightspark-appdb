@@ -238,4 +238,9 @@ function dumpmsgbuffer()
     mysql_query("DELETE FROM sessionMessages WHERE sessionId = '$PHPSESSID'");
 }
 
+define("STANDARD_NOTIFY_FOOTER","------- You are receiving this mail because: -------\n".
+				"You are an maintainer of this app or an appdb administrator\n".
+                                "to change your preverences go to: http://appdb.winehq.org/preferences.php\n");
+
+
 ?>

@@ -2,6 +2,7 @@
     
 include("path.php");
 require(BASE."include/"."incl.php");
+require(BASE."include/"."application.php");
 
 global $current;
 
@@ -29,24 +30,46 @@ if($body)
     
     $subject = strip_tags($subject);
     $subject = mysql_escape_string($subject);
-    $body = mysql_escape_string($body);
+    $body1 = mysql_escape_string($body);
 
     // get current userid
     $userId = (loggedin()) ? $current->userid : 0;
 
     $result = mysql_query("INSERT INTO appComments VALUES (null, null, $thread, ".
 			   "$appId, $versionId, $userId, '$hostname', '$subject', ".
-			   "'$body', 0)");
+			   "'$body1', 0)");
 		
     if (!$result)
     {
         errorpage('Internal Database Access Error',mysql_error());
         exit;
-    }
-		
-    addmsg("New Comment Posted", "green");
-    redirect(apidb_fullurl("appview.php?appId=$appId&versionId=$versionId"));
+    } else
+    {
+        $email = getNotifyEmailAddressList($appId, $versionId);
+        if($email)
+        {
+            $fullAppName = "Application: ".lookupAppName($appId)." Version: ".lookupVersionName($appId, $versionId);
+            $ms .= apidb_fullurl("appview.php?appId=$appId&versionId=$versionId")."\n";
+            $ms .= "\n";
+            $ms .= ($current->username ? $current->username : "Anonymous")." added comment to ".$fullAppName."\n";
+            $ms .= "\n";
+            $ms .= "Subject: ".$subject."\n";
+            $ms .= "\n";
+            $ms .= $body."\n";
+            $ms .= "\n";
+            $ms .= STANDARD_NOTIFY_FOOTER;
 
+            mail(stripslashes($email), "[AppDB] ".$fullAppName ,$ms);
+
+        } else
+        {
+            $email = "no one";
+        }
+        addmsg("mesage sent to: ".$email, green);
+
+        addmsg("New Comment Posted", "green");
+        redirect(apidb_fullurl("appview.php?appId=$appId&versionId=$versionId"));
+    }
 }
 else
 {
