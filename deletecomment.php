@@ -3,20 +3,21 @@
 include("path.php");
 require(BASE."include/"."incl.php");
 
-//FIXME: should check to see if the user is an application maintainer when we have application maintainers
-if(!havepriv("admin"))
+$appId = strip_tags($_POST['appId']);
+$versionId = strip_tags($_POST['versionId']);
+
+$commentId = strip_tags($_POST['commentId']);
+$commentId = mysql_escape_string($commentId);
+
+/* if we aren't an admin or the maintainer of this app we shouldn't be */
+/* allowed to delete any comments */
+if(!havepriv("admin") && !isMaintainer($appId, $versionId))
 {
     errorpage('You don\'t have admin privilages');
     exit;
 }
 
 opendb();
-
-$commentId = strip_tags($_POST['commentId']);
-$commentId = mysql_escape_string($commentId);
-
-$appId = strip_tags($_POST['appId']);
-$versionId = strip_tags($_POST['versionId']);
 
 /* retrieve the parentID of the comment we are deleting */
 /* so we can fix up the parentIds of this comments children */

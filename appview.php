@@ -16,6 +16,8 @@ require(BASE."include/"."vote.php");
 require(BASE."include/"."rating.php");
 require(BASE."include/"."category.php");
 
+require(BASE."include/"."maintainer.php");
+
 global $apidb_root;
 
 
@@ -194,7 +196,7 @@ function display_versions($appId, $versions)
 		 echo "    <td width=40><font color=white class=small>Comments</font></td>\n";
 		 echo "</tr>\n\n";
     	
-	        $c = 0;
+         $c = 0;
 		while(list($idx, $ver) = each($versions))
 		{
 	             //set row color
@@ -373,10 +375,7 @@ else if($appId && $versionId)
 	//set URL
 	$appLinkURL = ($data->webPage) ? "<a href='$data->webPage'>".substr(stripslashes($data->webPage),0,30)."</a>": "&nbsp;";
 
-    //set image
-    $img = get_screenshot_img($appId, $versionId);
-
-        //start version display
+    //start version display
 	echo html_frame_start("","98%","",0);
 	
 	echo '<tr><td class=color4 valign=top>',"\n";
@@ -397,14 +396,59 @@ else if($appId && $versionId)
 	display_notes($appId, $versionId);
 
 	//Image
+    $img = get_screenshot_img($appId, $versionId);
+
 	echo "<tr><td align=center colspan=2>$img</td></tr>\n";
-	
-	echo "</table></td><td class=color2 valign=top width='100%'>\n";
+
+    // Display all maintainers of this application
+    echo "<tr class=color0><td align=left colspan=2><b>Maintainers of this application:</b>\n";
+    echo "<table width=250 border=0>";
+    $other_maintainers = getMaintainersUserIdsFromAppIdVersionId($appId, $versionId);
+    if($other_maintainers)
+    {
+        while(list($index, list($userIdValue)) = each($other_maintainers))
+        {
+            echo "<tr class=color0><td align=left colspan=2>";
+            echo "<li>".lookupUsername($userIdValue)."</td></tr>\n";
+        }
+    } else
+    {
+        echo "<tr class=color0><td align=right colspan=2>";
+        echo "No maintainers. Volunteer today!</td></tr>\n";
+    }
+    echo "</table></td></tr>";
+
+    // Display the app maintainer button
+    echo "<tr><td colspan = 2><center>";
+    if(loggedin())
+    {
+        /* are we already a maintainer? */
+        if(isMaintainer($appId, $versionId)) /* yep */
+        {
+            echo '<form method=post name=message action="maintainerdelete.php"><input type=submit value="Remove yourself as a maintainer" class=button>';
+        } else /* nope */
+        {
+            echo '<form method=post name=message action="maintainersubmit.php"><input type=submit value="Be a maintainer for this app" class=button>';
+        }
+
+        echo "<input type=hidden name='appId' value=$appId>";
+        echo "<input type=hidden name='versionId' value=$versionId>";
+        echo "</form>";
+    } else
+    {
+        echo '<input type=submit value="Log in to become an app maintainer" class=button>';
+    }
+    echo "</center></td></tr>";
+	echo "</table><td class=color2 valign=top width='100%'>\n";
+
 
 	//Desc Image
 	echo "<table width='100%' border=0><tr><td width='100%' valign=top> <b>Description</b><br>\n";
 	echo add_br(stripslashes($ver->description));
-	echo "</td></tr></table>\n";
+	echo "</td></tr>";
+
+    /* close the table */
+    echo "</table>\n";
 		
 	echo html_frame_end();
 

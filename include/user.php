@@ -46,11 +46,7 @@ class User {
 
     function lookup_username($userid)
     {
-	$result = mysql_query("SELECT username FROM user_list WHERE userid = $userid");
-	if(!$result || mysql_num_rows($result) != 1)
-	    return null;
-	$ob = mysql_fetch_object($result);
-	return $ob->username;
+        return lookupUsername($userId);
     }
 
     function lookup_userid($username)
@@ -73,11 +69,7 @@ class User {
 
     function lookup_email($userid)
     {
-	$result = mysql_query("SELECT email FROM user_list WHERE userid = $userid");
-	if(!$result || mysql_num_rows($result) != 1)
-	    return null;
-	$ob = mysql_fetch_object($result);
-	return $ob->email;
+        return lookupEmail($userid);
     }
 
     /*
@@ -183,14 +175,14 @@ class User {
 
     function getpref($key, $def = null)
     {
-	if(!$this->userid || !$key)
+        if(!$this->userid || !$key)
             return $def;
 
-	$result = mysql_query("SELECT * FROM user_prefs WHERE userid = $this->userid AND name = '$key'", $this->link);
-	if(!$result || mysql_num_rows($result) == 0)
-	    return $def;
-	$ob = mysql_fetch_object($result);
-	return $ob->value; 
+        $result = mysql_query("SELECT * FROM user_prefs WHERE userid = $this->userid AND name = '$key'", $this->link);
+        if(!$result || mysql_num_rows($result) == 0)
+            return $def;
+        $ob = mysql_fetch_object($result);
+        return $ob->value; 
     }
 
     function setpref($key, $value)
@@ -218,6 +210,22 @@ class User {
 	if(!$result)
 	    return 0;
 	return mysql_num_rows($result);
+    }
+
+    /*
+     * check if this user is an maintainer of a given appId/versionId
+     */
+    function is_maintainer($appId, $versionId)
+    {
+        global $current;
+        if(!loggedin() || !$this->userid)
+            return false;
+
+        $query = "SELECT * FROM appMaintainers WHERE userid = '$this->userid' AND appId = '$appId' AND versionId = '$versionId'";
+        $result = mysql_query($query, $this->link);
+        if(!$result)
+            return 0;
+        return mysql_num_rows($result);
     }
 
     function addpriv($priv)
@@ -275,9 +283,19 @@ function havepriv($priv)
     global $current;
 
     if(!loggedin())
-	return false;
+        return false;
 
     return $current->checkpriv($priv);
+}
+
+function isMaintainer($appId, $versionId)
+{
+    global $current;
+
+    if(!loggedin())
+        return false;
+
+    return $current->is_maintainer($appId, $versionId);
 }
 
 function debugging()
@@ -314,5 +332,24 @@ function generate_passwd($pass_len = 10)
     }
     return ($nps);
 }
+
+function lookupUsername($userid)
+{
+    $result = mysql_query("SELECT username FROM user_list WHERE userid = $userid");
+    if(!$result || mysql_num_rows($result) != 1)
+        return null;
+    $ob = mysql_fetch_object($result);
+    return $ob->username;
+}
+
+function lookupEmail($userid)
+{
+    $result = mysql_query("SELECT email FROM user_list WHERE userid = $userid");
+    if(!$result || mysql_num_rows($result) != 1)
+        return null;
+    $ob = mysql_fetch_object($result);
+    return $ob->email;
+}
+
 
 ?>

@@ -10,7 +10,7 @@ class htmlmenu {
 
 echo '
 <div align=left>
-<table width="150" border="0" cellspacing="0" cellpadding="0">
+<table width="160" border="0" cellspacing="0" cellpadding="0">
 <tr>
 <td colspan=2>
     <table width="100%" border="0" cellpadding="0" cellspacing="0" class="topMenu">
@@ -30,7 +30,7 @@ echo '
 </tr>
 <tr>
 <td>
-    <table width="145" border="0" cellspacing="0" cellpadding="1">
+    <table width="155" border="0" cellspacing="0" cellpadding="1">
     <tr class="topMenu"><td>
       <table width="100%" border="0" cellspacing="0" cellpadding="5">
 ';

@@ -1,4 +1,4 @@
-<?
+.<?
 
 /*
  * sidebar_admin
@@ -18,6 +18,7 @@ function global_admin_menu() {
     $g->addmisc("&nbsp;");
     $g->add("List Users", $apidb_root."admin/");
     $g->add("View App Queue (".getQueuedAppCount().")", $apidb_root."admin/adminAppQueue.php");
+    $g->add("View Maintainer Queue (".getQueuedMaintainerCount().")", $apidb_root."admin/adminMaintainerQueue.php");
 
     $g->done();
 

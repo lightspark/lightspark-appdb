@@ -66,8 +66,7 @@ function view_app_comment($ob)
     echo "</td></tr>\n";
 
     // delete message button, for admins
-    //TODO: application managers should also see this button
-    if(havepriv("admin"))
+    if(havepriv("admin") || isMaintainer($ob->appId, $ob->versionId))
     {
         echo "<tr>";
         echo '<td><form method=post name=message action="deletecomment.php"><input type=submit value="Delete" class=button> ',"\n";
