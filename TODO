@@ -9,21 +9,13 @@ sat for too long it would be rejected and an email would be send to the
 submitter saying it timed out.  If the admin/maintainer clicked on accept it 
 would go into the db like every other image.
 
-# appdb engine - clean up the php backend (???)
-
-# app queue - add a form, so the admin can enter a custom response to the submitter (done)
-
-# main App should have a random screenshot from it's versions. (patch sent to wine-patches)
+# appdb engine - clean up the php backend (see CODING_STANDARD for code style guidelines). In particular globally registered vars should be replaced by superglobals and <? ?> should be replaced by <?php ?>.
 
 # when we delete a comment there should be a box to explain why you are deleting this comment and an email should be sent to the submitter 
 
 # Super Maintainers should be able to edit the main app and send a notify message like the versions have.
 
 # Add Maintainer rating system to the app verision (tony's working on it).
-
-# stop annoymous comments (patch sent to wine-patches) 
-
-# stop annoymous applications submitions (patch sent to wine-patches)
 
 # revamp the star rating system
 

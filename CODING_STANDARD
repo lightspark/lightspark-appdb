@@ -62,4 +62,11 @@ if(!isset($appId))
     }
 }
 
+- use long php tags (<?php ?>) instead of short ones (<? ?>) as :
+ 1) it could be removed from future versions of php
+ 2) if conflicts with tags like <?xml version=1.0 ?> that are used in xhtml
 
+- do not use vars that require register_globals to be on as:
+ 1) it is off by default in php 4.1+
+ 2) it is more secure
+ 3) it makes it easier to understand where your vars are comming from (forms, session, etc.)
