@@ -36,7 +36,7 @@ function display_bundle($appId)
 {
     $oApp = new Application($appId);
     $result = query_appdb("SELECT appFamily.appId, appName, description FROM appBundle, appFamily ".
-                        "WHERE bundleId = $appId AND appBundle.appId = appFamily.appId");
+                        "WHERE appFamily.queued='false' AND bundleId = $appId AND appBundle.appId = appFamily.appId");
     if(!$result || mysql_num_rows($result) == 0)
     {
          return; // do nothing

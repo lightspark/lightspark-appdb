@@ -13,6 +13,7 @@ require(BASE."include/application.php");
 $sQuery = "SELECT *
            FROM appFamily
            WHERE appName != 'NONAME'
+           AND queued = 'false'
            AND appName LIKE '%".addslashes($_REQUEST['q'])."%'
            OR keywords LIKE '%".addslashes($_REQUEST['q'])."%'
            ORDER BY appName";

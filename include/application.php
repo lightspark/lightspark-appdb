@@ -39,6 +39,7 @@ class Application {
             $sQuery = "SELECT appFamily.*, appVersion.versionId AS versionId
                        FROM appFamily, appVersion 
                        WHERE appFamily.appId = appVersion.appId 
+                       AND appVersion.queued='false'
                        AND appFamily.appId = ".$iAppId." ORDER BY versionName";
             if($hResult = query_appdb($sQuery))
             {

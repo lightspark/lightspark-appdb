@@ -44,7 +44,8 @@ class Category {
              */
             $sQuery = "SELECT appId
                        FROM appFamily
-                       WHERE catId = ".$iCatId;
+                       WHERE catId = ".$iCatId."
+                       AND queued = 'false'";
             if($hResult = query_appdb($sQuery))
             {
                 while($oRow = mysql_fetch_object($hResult))
