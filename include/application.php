@@ -126,7 +126,7 @@ class Application {
                                                 'webPage'    => $sWebpage,
                                                 'vendorId'   => $iVendorId,
                                                 'catId'      => $iCatId,
-                                                'submitterId'=> $_REQUEST['current']->iUserId,
+                                                'submitterId'=> $_SESSION['current']->iUserId,
                                                 'queued'     => $this->bQueued ));
         $sFields = "({$aInsert['FIELDS']})";
         $sValues = "({$aInsert['VALUES']})";
