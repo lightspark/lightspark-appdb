@@ -67,10 +67,10 @@ function view_app_comment($ob)
     if(havepriv("admin") || isMaintainer($ob->appId, $ob->versionId))
     {
         echo "<tr>";
-        echo "<td><form method=post name=message action=$apidb_root/deletecomment.php><input type=submit value='Delete' class=button>\n";
-        echo "<input type=hidden name='commentId' value=$ob->commentId>";
-        echo "<input type=hidden name='appId' value=$ob->appId>";
-        echo "<input type=hidden name='versionId' value=$ob->versionId></form></td>","\n";
+        echo "<td><form method=\"post\" name=\"message\" action=\"".$apidb_root."deletecomment.php\"><input type=submit value='Delete' class=button>\n";
+        echo "<input type=\"hidden\" name=\"commentId\" value=\"$ob->commentId\" />";
+        echo "<input type=\"hidden\" name=\"appId\" value=\"$ob->appId\" />";
+        echo "<input type=\"hidden\" name=\"versionId\" value=\"$ob->versionId\" /></form></td>","\n";
         echo "</td></tr>";
     }
 
@@ -200,8 +200,6 @@ function display_comments_flat($appId, $versionId)
 
 function view_app_comments($appId, $versionId, $threadId = 0)
 {
-    global $cmode;
-
     // count posts
     $result = mysql_query("SELECT commentId FROM appComments WHERE appId = $appId AND versionId = $versionId");
     $messageCount = mysql_num_rows($result);
@@ -216,8 +214,8 @@ function view_app_comments($appId, $versionId, $threadId = 0)
     if (loggedin())
     {
     // FIXME we need to change this so not logged in users can change current view as well
-        if ($cmode)
-            $_SESSION['current']->setpref("comments:mode", $cmode);
+        if (isset($_REQUEST['cmode']))
+            $_SESSION['current']->setpref("comments:mode", $_REQUEST['cmode']);
 
             $sel[$_SESSION['current']->getpref("comments:mode")] = 'selected';
             echo '<td><form method=get name=smode action="appview.php">',"\n";

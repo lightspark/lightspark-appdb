@@ -635,6 +635,6 @@ else if($appId && $versionId)
 
 <p>&nbsp;</p>
 
-<?
+<?php
 apidb_footer();
 ?>
