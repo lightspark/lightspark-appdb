@@ -283,6 +283,7 @@ function get_screenshot_img($iAppId = null, $iVersionId = null)
                                WHERE appData.versionId = appVersion.versionId
                                AND appVersion.appId = $iAppId 
                                AND type = 'image' 
+                               AND appData.queued = 'false' 
                                ORDER BY rand");
     } else if ($iVersionId) // we want a random screenshot for this version
     {
@@ -290,6 +291,7 @@ function get_screenshot_img($iAppId = null, $iVersionId = null)
                                 FROM appData 
                                 WHERE versionId = $iVersionId 
                                 AND type = 'image' 
+                                AND queued = 'false' 
                                 ORDER BY rand");
     }
     if(!$hResult || !mysql_num_rows($hResult))
