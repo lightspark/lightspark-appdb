@@ -1,5 +1,18 @@
 WineHQ Application Database TODO List
 
+# incorporate templates into appdb to simplify code, Jeremy says we can 
+borrow from lostwages(winehq.org/cvsweb/lostwages) for this
+
+# make email address the users username
+
+# check for existing email when user is creating a new account
+
+# setup a cron job in a new /bin directory, put a deny all .htaccess 
+file in there and purge all inactive accounts after 6 months of inactivity
+RELATED TODO: how to handle deleting accounts that have comments?  go through 
+and assign them to a special account number that prints (account deleted due 
+to inactivity)
+
 # screenshot submission isn't very friendly.  it would be really cool if 
 people could submit screenshots via a web interface.  We would store the 
 image and related information in the database and send email to the database 
