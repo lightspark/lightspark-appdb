@@ -51,11 +51,11 @@ class User {
 
     function lookup_userid($username)
     {
-	$result = mysql_query("SELECT userid FROM user_list WHERE username = '$username'");
-	if(!$result || mysql_num_rows($result) != 1)
-	    return null;
-	$ob = mysql_fetch_object($result);
-	return $ob->userid;
+        $result = mysql_query("SELECT userid FROM user_list WHERE username = '$username'");
+        if(!$result || mysql_num_rows($result) != 1)
+            return null;
+        $ob = mysql_fetch_object($result);
+        return $ob->userid;
     }
 
     function lookup_realname($userid)
@@ -79,33 +79,39 @@ class User {
     function restore($username, $password)
     {
         $result = mysql_query("SELECT stamp, userid, username, realname, ".
-			      "created, status, perm FROM user_list WHERE ".
-			      "username = '$username' AND ".
-			      "password = password('$password')", $this->link);
-	//echo "RESTORE($username, $password)  result=$result  rows=".mysql_num_rows($result)."<br>\n";
-	if(!$result)
-	    return "Error: ".mysql_error($this->link);
+                              "created, status, perm FROM user_list WHERE ".
+                              "username = '$username' AND ".
+                              "password = password('$password')", $this->link);
+        //echo "RESTORE($username, $password)  result=$result  rows=".mysql_num_rows($result)."<br>\n";
+        if(!$result)
+            return "Error: ".mysql_error($this->link);
 
-	if(mysql_num_rows($result) == 0)
-	    return "Invalid username or password";
+        if(mysql_num_rows($result) == 0)
+            return "Invalid username or password";
 
-	list($this->stamp, $this->userid, $this->username, $this->realname, 
-	     $this->created, $status, $perm) = mysql_fetch_row($result);
+        list($this->stamp, $this->userid, $this->username, $this->realname, 
+             $this->created, $status, $perm) = mysql_fetch_row($result);
 
-	//echo "<br> User: $this->userid ($this->username, $this->realname) <br>\n";
-	return 0;
+        //echo "<br> User: $this->userid ($this->username, $this->realname) <br>\n";
+        return 0;
     }
 
 
     function login($username, $password)
     {
-	$result = $this->restore($username, $password);
-	
-	if($result != null)
-	    return $result;
-	//echo "<br>LOGIN($this->username)<br>\n";
-	//FIXME: update last_login here
-	return 0;
+        $result = $this->restore($username, $password);
+
+        /* if our result is non-null then we must have had an error */
+        if($result != null)
+            return $result;
+
+        //echo "<br>LOGIN($this->username)<br>\n";
+
+        /* update the 'stamp' field in the users account to reflect the last time */
+        /* they logged in */
+        $myUserId = $this->lookup_userid($username);
+        $result = mysql_query("UPDATE user_list SET stamp=null WHERE userid=$myUserId;");
+        return 0;
     }
 
     /*
@@ -114,38 +120,38 @@ class User {
      */
     function create($username, $password, $realname, $email)
     {
-	$result = mysql_query("INSERT INTO user_list VALUES ( NOW(), 0, ".
-			      "'$username', password('$password'), ".
-			      "'$realname', '$email', NOW(), 0, 0)", $this->link);
-	//echo "error: ".mysql_error();
-	if(!$result)
-	    return mysql_error($this->link);
-	return $this->restore($username, $password);
+        $result = mysql_query("INSERT INTO user_list VALUES ( NOW(), 0, ".
+                              "'$username', password('$password'), ".
+                              "'$realname', '$email', NOW(), 0, 0)", $this->link);
+        //echo "error: ".mysql_error();
+        if(!$result)
+            return mysql_error($this->link);
+        return $this->restore($username, $password);
     }
 
     // Update User Account;
     function update($userid = 0, $password = null, $realname = null, $email = null)
     {
-    	if (!$userid)
-	    return 0;
+        if (!$userid)
+            return 0;
         if ($password)
-	{
-		if (!mysql_query("UPDATE user_list SET password = password('$password') WHERE userid = $userid"))
-		    return 0;
-	}
+        {
+            if (!mysql_query("UPDATE user_list SET password = password('$password') WHERE userid = $userid"))
+                return 0;
+        }
 	
-	if ($realname)
-	{
-		if (!mysql_query("UPDATE user_list SET realname = '".addslashes($realname)."' WHERE userid = $userid"))
-		    return 0;
-	}
+        if ($realname)
+        {
+            if (!mysql_query("UPDATE user_list SET realname = '".addslashes($realname)."' WHERE userid = $userid"))
+                return 0;
+        }
 	
-	if ($email)
-	{
-		if (!mysql_query("UPDATE user_list SET email = '".addslashes($email)."' WHERE userid = $userid"))
-		    return 0;
-	}
-	return 1;
+        if ($email)
+        {
+            if (!mysql_query("UPDATE user_list SET email = '".addslashes($email)."' WHERE userid = $userid"))
+                return 0;
+        }
+        return 1;
     }
 
     /* 
@@ -154,22 +160,22 @@ class User {
      */
     function remove($username = 0)
     {
-	if($username == 0)
-	    $username = $this->username;
+        if($username == 0)
+            $username = $this->username;
 
-	$result = mysql_query("DELETE FROM user_list WHERE username = '$username'", $this->link);
+        $result = mysql_query("DELETE FROM user_list WHERE username = '$username'", $this->link);
 
-	if(!$result)
-	    return mysql_error($this->link);
-	if(mysql_affected_rows($result) == 0)
-	    return "No such user.";
-	return 0;
+        if(!$result)
+            return mysql_error($this->link);
+        if(mysql_affected_rows($result) == 0)
+            return "No such user.";
+        return 0;
     }
 
 
     function done()
     {
-	mysql_close($this->link);
+        mysql_close($this->link);
     }
 
 
@@ -190,11 +196,10 @@ class User {
         if(!$this->userid || !$key || !$value)
             return null;
 
-	$result = mysql_query("DELETE FROM user_prefs WHERE userid = $this->userid AND name = '$key'");
-	$result = mysql_query("INSERT INTO user_prefs VALUES($this->userid, '$key', '$value')");
-	echo mysql_error();
-
-	return $result ? true : false;
+        $result = mysql_query("DELETE FROM user_prefs WHERE userid = $this->userid AND name = '$key'");
+        $result = mysql_query("INSERT INTO user_prefs VALUES($this->userid, '$key', '$value')");
+        echo mysql_error();
+        return $result ? true : false;
     }
     
 
@@ -203,13 +208,13 @@ class User {
      */
     function checkpriv($priv)
     {
-	if(!$this->userid || !$priv)
+        if(!$this->userid || !$priv)
             return 0;
 
-	$result = mysql_query("SELECT * FROM user_privs WHERE userid = $this->userid AND priv  = '$priv'", $this->link);
-	if(!$result)
-	    return 0;
-	return mysql_num_rows($result);
+        $result = mysql_query("SELECT * FROM user_privs WHERE userid = $this->userid AND priv  = '$priv'", $this->link);
+        if(!$result)
+            return 0;
+        return mysql_num_rows($result);
     }
 
     /*
@@ -230,13 +235,13 @@ class User {
 
     function addpriv($priv)
     {
-	if(!$this->userid || !$priv)
-	    return 0;
+        if(!$this->userid || !$priv)
+            return 0;
 
-	if($this->checkpriv($priv))
-	    return 1;
+        if($this->checkpriv($priv))
+            return 1;
 
-	$result = mysql_query("INSERT INTO user_privs VALUES ($this->userid, '$priv')", $this->link);
+        $result = mysql_query("INSERT INTO user_privs VALUES ($this->userid, '$priv')", $this->link);
         return $result;
     }
 
@@ -246,7 +251,7 @@ class User {
             return 0;
 
         $result = mysql_query("DELETE FROM user_privs WHERE userid = $this->userid AND priv = '$priv'", $this->link);
-	return $result;
+        return $result;
     }
 
     
@@ -257,12 +262,11 @@ class User {
      */
     function ownsApp($appId)
     {
-	$result = mysql_query("SELECT * FROM appOwners WHERE ownerId = $this->userid AND appId = $appId");
-	if($result && mysql_num_rows($result))
-	      return 1; // OK
-	return 0; // NOPE!
+        $result = mysql_query("SELECT * FROM appOwners WHERE ownerId = $this->userid AND appId = $appId");
+        if($result && mysql_num_rows($result))
+            return 1; // OK
+        return 0; // NOPE!
     }
-
 }
 
 
