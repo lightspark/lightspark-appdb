@@ -243,6 +243,15 @@ function getQueuedAppCount()
 }
 
 /* get the number of applications in the appQueue table */
+function getQueuedAppDataCount()
+{
+    $qstring = "SELECT count(*) as queued_appdata FROM appDataQueue";
+    $result = mysql_query($qstring);
+    $ob = mysql_fetch_object($result);
+    return $ob->queued_appdata;
+}
+
+/* get the number of applications in the appQueue table */
 function getQueuedMaintainerCount()
 {
     $qstring = "SELECT count(*) as queued_maintainers FROM appMaintainerQueue";

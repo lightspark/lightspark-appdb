@@ -13,6 +13,7 @@ drop table if exists catHitStats;
 drop table if exists appOwners;
 drop table if exists appComments;
 drop table if exists appData;
+drop table if exists appDataQueue;
 drop table if exists appQueue;
 drop table if exists appCrosslink;
 drop table if exists appBundle;
@@ -199,6 +200,26 @@ create table appData (
 	index(appId),
 	index(versionId)
 );
+
+
+/*
+ * links to screenshots and other stuff waiting to be accepted
+ */
+create table appDataQueue (
+ queueid   int not null auto_increment,
+ queueappId    int not null,
+ queueversionId  int default 0,
+ queuetype   enum('image', 'url'),
+ queuedescription  text,
+ queueurl    varchar(255),
+ queuecontent  longblob,
+ queueuserId int not null,
+ submitTime  timestamp,
+ key(queueid),
+ index(queueappId),
+ index(queueversionId)
+);
+ 
 
 
 /*

@@ -33,7 +33,10 @@ are logged in. Some of the benefits of membership are:<p>
 stomping out Wine issues will be greatly appreciated.</p>
 
 <p>
-If you have anything to contribute (screenshots, howtos), contact us at:
+If you have screenshots or links to contribute, please browse the database and use the AppDB interface to send us your contributions.
+</p>
+<p>
+If you have anything else to contribute (howtos, etc.), contact us at:
 <a href="mailto:appdb@winehq.org">appdb@winehq.org</a><br />
 Note that this address is not for end-user support, for end user support please contact the
 wine-users mailing list or the wine newsgroup, for more information visit
