@@ -13,7 +13,7 @@ function global_sidebar_menu() {
     $g->add("AppDB Home", BASE);
     $g->add("Browse Apps", BASE."appbrowse.php");
     $g->add("Top 25", BASE."votestats.php");
-    $g->add("Submit App", BASE."appsubmit.php");
+    $g->add("Submit App", BASE."appsubmit.php?apptype=1");
     $g->add("Documentation", BASE."help/");
     $g->add("Help & Support", BASE."support.php");
     $g->add("Appdb Stats", BASE."appdbStats.php");

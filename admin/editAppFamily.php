@@ -24,110 +24,14 @@ if(!($_SESSION['current']->hasPriv("admin") || $_SESSION['current']->isSuperMain
 
 if(isset($_REQUEST['submit']))
 {
-    $statusMessage = '';
-    
     // commit changes of form to database
     if($_REQUEST['submit'] == "Update Database")
     {
-        // Get the old values from the database 
-        $sQuery = "SELECT * FROM appFamily WHERE appId = ".$_REQUEST['appId'];
-        $hResult = query_appdb($sQuery);
-        $ob = mysql_fetch_object($hResult);
-        $sOld_appName     = $ob->appName;
-        $sOld_description = $ob->description;
-        $iOld_vendorId    = $ob->vendorId;
-        $iOld_catId       = $ob->catId;
-        $sOld_keywords    = $ob->keywords;
-        $sOld_webPage     = $ob->webPage;
-
-        $sWhatChanged = "";
-        $bAppChanged = false;
-        if ($sOld_appName <> $_REQUEST['appName'])
-        {
-            $sWhatChanged .= "    App name: Old Value: ".stripslashes($sOld_appName)."\n";
-            $sWhatChanged .= "              New Value: ".stripslashes($_REQUEST['appName'])."\n";
-            $bAppChanged = true;
-        }
-
-        if ($iOld_vendorId <> $_REQUEST['vendorId'])
-        {
-            $sWhatChanged .= "      Vendor: Old Value: ".lookupVendorName($iOld_vendorId)."\n";
-            $sWhatChanged .= "              New Value: ".lookupVendorName($_REQUEST['vendorId'])."\n";
-            $bAppChanged = true;
-        }
-
-        if ($old_description <> $_REQUEST['description'])
-        {
-            $sWhatChanged .= " Description: Old Value:\n";
-            $sWhatChanged .= "-----------------------:\n";
-            $sWhatChanged .= stripslashes($sOld_description)."\n";
-            $sWhatChanged .= "-----------------------:\n";
-            $sWhatChanged .= " Description: New Value:\n";
-            $sWhatChanged .= "-----------------------:\n";
-            $sWhatChanged .= stripslashes($_REQUEST['description'])."\n";
-            $sWhatChanged .= "-----------------------:\n";
-            $bAppChanged = true;
-        }
-
-        if ($iOld_catId <> $_REQUEST['catId'])
-        {
-            $sWhatChanged .= "    Category: Old Value: ".lookupCategoryName($iOld_catId)."\n";
-            $sWhatChanged .= "              New Value: ".lookupCategoryName($_REQUEST['catId'])."\n";
-            $bAppChanged = true;
-        }
-
-        if ($sOld_keywords <> $_REQUEST['keywords'])
-        {
-            $sWhatChanged .= "    keywords: Old Value: ".stripslashes($sOld_keywords)."\n";
-            $sWhatChanged .= "              New Value: ".stripslashes($_REQUEST['keywords'])."\n";
-            $bAppChanged = true;
-        }
-
-        if ($sOld_webPage <> $_REQUEST['webPage'])
-        {
-            $sWhatChanged .= "    Web Page: Old Value: ".stripslashes($sOld_webPage)."\n";
-            $sWhatChanged .= "              New Value: ".stripslashes($_REQUEST['webPage'])."\n";
-            $bAppChanged = true;
-        }
-
-        //did anything change?
-        if ($bAppChanged)
-        {
-            $sUpdate = compile_update_string(array( 'appName' => $_REQUEST['appName'],
-                                                    'description' => $_REQUEST['description'],
-                                                    'webPage' => $_REQUEST['webPage'],
-                                                    'vendorId' => $_REQUEST['vendorId'],
-                                                    'keywords' => $_REQUEST['keywords'],
-                                                    'catId' =>  $_REQUEST['catId'] ));
-            
-            // success                                               
-            if (query_appdb("UPDATE `appFamily` SET $sUpdate WHERE `appId` = {$_REQUEST['appId']}"))
-            {  
-                $sEmail = get_notify_email_address_list($_REQUEST['appId']);
-                if($sEmail)
-                {
-                    $sSubject = lookup_app_name($_REQUEST['appId'])." has been modified by ".$_SESSION['current']->sRealname;
-                    $sMsg .= APPDB_ROOT."appview.php?appId=".$_REQUEST['appId']."\n";
-                    $sMsg .= "\n";
-                    $sMsg .= "The following changes have been made:";
-                    $sMsg .= "\n";
-                    $sMsg .= $sWhatChanged."\n";
-                    $sMsg .= "\n";
-
-                    mail_appdb($sEmail, $sSubject ,$sMsg);
-                }
-                addmsg("The application was successfully updated in the database", "green");
-                redirect(apidb_fullurl("appview.php?appId=".$_REQUEST['appId']));
-            } else
-            {
-                //error
-                redirect(apidb_fullurl("admin/editAppVersion.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']));
-            }   
-        }
+        $oApp = new Application($_REQUEST['appId']);
+        $oApp->update($_REQUEST['appName'], $_REQUEST['description'], $_REQUEST['keywords'], $_REQUEST['webPage'], $_REQUEST['vendorId'], $_REQUEST['catId']);
     }
     else if($_REQUEST['submit'] == "Update URL")
     {
-
         $sWhatChanged = "";
         $bAppChanged = false;
 
@@ -208,10 +112,8 @@ if(isset($_REQUEST['submit']))
                 mail_appdb($sEmail, $sFullAppName ,$sMsg);
             }
         }
-
-        redirect(apidb_fullurl("appview.php?appId={$_REQUEST['appId']}"));
-        exit;
     }
+    redirect(apidb_fullurl("appview.php?appId={$_REQUEST['appId']}"));
 }
 else
 // Show the form for editing the Application Family 
@@ -228,7 +130,6 @@ else
     if(!mysql_num_rows($result))
     {
         errorpage('Application does not exist');
-        exit;
     }
     
     $ob = mysql_fetch_object($result);

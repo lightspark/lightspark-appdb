@@ -61,10 +61,6 @@ function hasDataAssociated($iUserId)
     $hResult = query_appdb($sQuery);
     if(mysql_num_rows($hResult)) return true;
 
-    $sQuery = "SELECT * FROM appDataQueue WHERE userId = $iUserId";
-    $hResult = query_appdb($sQuery);
-    if(mysql_num_rows($hResult)) return true;
-
     $sQuery = "SELECT * FROM appMaintainerQueue WHERE userId = $iUserId";
     $hResult = query_appdb($sQuery);
     if(mysql_num_rows($hResult)) return true;

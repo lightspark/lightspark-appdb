@@ -203,14 +203,16 @@ function make_cat_path($path, $appId = '', $versionId = '')
 
     if(!empty($appId))
     {
+        $oApp = new Application($appId);
         if(!empty($versionId))
         {
-            $str .= " &gt; ".html_ahref(lookup_app_name($appId),"appview.php?appId=$appId");
-            $str .= " &gt; ".lookup_version_name($versionId);
+            $oVersion = new Version($versionId);
+            $str .= " &gt; ".html_ahref($oApp->sName,"appview.php?appId=$appId");
+            $str .= " &gt; ".$oVersion->sName;
         }
         else
         {
-            $str .= " &gt; ".lookup_app_name($appId);
+            $str .= " &gt; ".$oApp->sName;
         }
     }
 

@@ -13,7 +13,9 @@ class Version {
     var $sDescription;
     var $sTestedRelease;
     var $sTestedRating;
+    var $sSubmitTime;
     var $iSubmitterId;
+    var $sDate;
     var $aNotesIds;           // an array that contains the noteId of every note linked to this version
     var $aScreenshotsIds;     // an array that contains the screenshotId of every screenshot linked to this version
     var $aUrlsIds;            // an array that contains the screenshotId of every url linked to this version
@@ -42,6 +44,7 @@ class Version {
                     $this->iVendorId = $oRow->vendorId;
                     $this->iCatId = $oRow->catId;
                     $this->iSubmitterId = $oRow->submitterId;
+                    $this->sSubmitTime = $oRow->submitTime;
                     $this->sDate = $oRow->submitTime;
                     $this->sName = $oRow->versionName;
                     $this->sKeywords = $oRow->keywords;
@@ -206,8 +209,8 @@ class Version {
         if(!$this->bQueued)
             return false;
 
-        $sUpdate = compile_insert_string(array('queued'    => "false"));
-        if(query_appdb("UPDATE appVersion ".$sUpdate))
+        $sUpdate = compile_update_string(array('queued'    => "false"));
+        if(query_appdb("UPDATE appVersion SET ".$sUpdate." WHERE versionId = ".$this->iVersionId))
         {
             // we send an e-mail to intersted people
             $this->mailSubmitter();

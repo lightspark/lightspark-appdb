@@ -9,6 +9,14 @@ require(BASE."include/tableve.php");
 require(BASE."include/application.php");
 require(BASE."include/mail.php");
 
+
+function get_vendor_from_keywords($sKeywords)
+{
+    $aKeywords = explode(" *** ",$keywords);
+    $iLastElt = (sizeOf($aKeywords)-1);
+    return($aKeywords[$iLastElt]);
+}
+
 //deny access if not logged in
 if(!$_SESSION['current']->hasPriv("admin"))
 {
@@ -18,67 +26,70 @@ if(!$_SESSION['current']->hasPriv("admin"))
 
 if ($_REQUEST['sub'])
 {
-    if(!is_numeric($_REQUEST['queueId']))
+    if(is_numeric($_REQUEST['appId']))
     {
-        errorpage("Wrong ID");
-        exit;
-    }
-
-    if ($_REQUEST['queueId'])
+        $oApp = new Application($_REQUEST['appId']);
+    } elseif(is_numeric($_REQUEST['versionId']))
     {
-        //get data
-        $query = "SELECT * from appQueue where queueId = ".$_REQUEST['queueId'].";";
-        $result = query_appdb($query);
-        $ob = mysql_fetch_object($result);
-        mysql_free_result($result);
-    }
-    else
+        $oVersion = new Version($_REQUEST['versionId']);
+    } else
     {
         //error no Id!
         addmsg("Application Not Found!", "red");
         redirect(apidb_fullurl("admin/adminAppQueue.php"));
-        exit;
     }
 
     //process according to sub flag
-    if ($_REQUEST['sub'] == 'view' && $_REQUEST['queueId'])
+    if ($_REQUEST['sub'] == 'view')
     {
         $x = new TableVE("view");
         apidb_header("Admin App Queue");
+?>
+<link rel="stylesheet" href="./application.css" type="text/css">
+<!-- load HTMLArea -->
+<script type="text/javascript" src="../htmlarea/htmlarea_loader.js"></script>
+<?php
         echo '<form name="qform" action="adminAppQueue.php" method="post" enctype="multipart/form-data">',"\n";
+        echo '<input type="hidden" name="sub" value="add">',"\n"; 
 
-        echo '<input type=hidden name="sub" value="add">',"\n"; 
-        echo '<input type=hidden name="queueId" value="'.$_REQUEST['queueId'].'">',"\n";  
-
-        If ($ob->queueCatId == -1) //app version
+        if ($oVersion) //app version
         { 
             //help
             echo "<div align=center><table width='90%' border=0 cellpadding=3 cellspacing=0><tr><td>\n\n";
-            echo "<p>This is the full view of the application waiting to be approved. \n";
-            echo "If you approve this application,\n";
-            echo "an email will be sent to the author of the submission.<p>\n";
+            echo "<p>This is the full view of the application version waiting to be approved. \n";
+            echo "If you approve this application version an email will be sent to the author of the submission.<p>\n";
 
-            echo "      <b>App Version</b> This type of application will be nested under the selected application parent.\n";
+            echo "<b>App Version</b> This type of application will be nested under the selected application parent.\n";
             echo "<p>Click delete to remove the selected item from the queue an email will automatically be sent to the\n";
             echo "submitter to let him know the item was deleted.</p>\n\n";        
             echo "</td></tr></table></div>\n\n";    
 
-            echo '<input type=hidden name=type value="ver">',"\n"; 
-
-            echo html_frame_start("New Application Form",400,"",0);
+            echo html_frame_start("New Version Form",400,"",0);
             echo "<table width='100%' border=0 cellpadding=2 cellspacing=0>\n";
 
             //app parent
-            echo '<tr valign=top><td class=color0><b>App Parent</b></td><td>',"\n";
-            $x->make_option_list("appParent",stripslashes($ob->queueName),"appFamily","appId","appName");
+            echo '<tr valign=top><td class=color0><b>Application</b></td><td>',"\n";
+            $x->make_option_list("appId",$oVersion->sName,"appFamily","appId","appName");
             echo '</td></tr>',"\n";
 
             //version
-            echo '<tr valign=top><td class=color0><b>App Version</b></td>',"\n";
-            echo '<td><input type=text name="queueVersion" value="'.stripslashes($ob->queueVersion).'" size=20></td></tr>',"\n";
+            echo '<tr valign=top><td class="color0"><b>Version name</b></td>',"\n";
+            echo '<td><input type=text name="versionName" value="'.$oVersion->sName.'" size="20"></td></tr>',"\n";
 
-        }
-        else
+
+            echo '<tr valign=top><td class=color0><b>Description</b></td>',"\n";
+            echo '<td><p style="width:700px"><textarea  cols="80" rows="20" id="editor" name="versionDescription">'.$oVersion->sDescription.'</textarea></p></td></tr>',"\n";
+        
+            echo '<tr valign=top><td class="color0"><b>email Text</b></td>',"\n";
+            echo '<td><textarea name="emailtext" rows="10" cols="35"></textarea></td></tr>',"\n";
+        
+
+            echo '<tr valign=top><td class=color3 align=center colspan=2>' ,"\n";
+            echo '<input type="hidden" name="versionId" value="'.$oVersion->iVersionId.'" />';
+            echo '<input type="submit" value=" Submit App Into Database " class=button>&nbsp',"\n";
+            echo '<input name="sub" type=submit value="Delete" class=button> </td></tr>',"\n";
+            echo '</table>',"\n";
+        } else // application
         { 
     
             //help
@@ -103,345 +114,237 @@ if ($_REQUEST['sub'])
             echo html_frame_start("New Application Form",400,"",0);
             echo "<table width='100%' border=0 cellpadding=2 cellspacing=0>\n";
 
-            //type        
-            echo '<tr valign=top><td class=color0><b>Type</b></td><td>',"\n";
-            echo '<select name=type><option value=app>Application</option><option value=ver>Version</option></select>',"\n";
-            echo '</td></tr>',"\n";        
-
             //category
-
-            $query = "select * from appCategory where catId = '$ob->queueCatId';";
-            $result = query_appdb($query);
-            if($result)
-            {
-                $ob2 = mysql_fetch_object($result);
-                        
-                echo '<tr valign=top><td class=color0><b>Category</b></td><td>',"\n";
-                $x->make_option_list("cat",stripslashes($ob2->catId),"appCategory","catId","catName");
-                echo '</td></tr>',"\n";
-            } else
-            {
-                echo '<tr valign=top><td class=color0><b>Category</b></td><td>',"\n";
-                $x->make_option_list("cat","","appCategory","catId","catName");
-                echo '</td></tr>',"\n";
-            }
-            //app parent
-            echo '<tr valign=top><td class=color0><b>App Parent</b></td><td>',"\n";
-            $x->make_option_list("appParent","","appFamily","appId","appName");
+            echo '<tr valign=top><td class="color0>"<b>Category</b></td><td>',"\n";
+            $x->make_option_list("catId",$oApp->iCatId,"appCategory","catId","catName");
             echo '</td></tr>',"\n";
                 
             //name
-            echo '<tr valign=top><td class=color0><b>App Name</b></td>',"\n";
-            echo '<td><input type=text name="queueName" value="'.stripslashes($ob->queueName).'" size=20></td></tr>',"\n";
-
-            //version
-            echo '<tr valign=top><td class=color0><b>App Version</b></td>',"\n";
-            echo '<td><input type=text name="queueVersion" value="'.stripslashes($ob->queueVersion).'" size=20></td>',"\n";
-            echo '</tr>',"\n";
+            echo '<tr valign=top><td class="color0"><b>App Name</b></td>',"\n";
+            echo '<td><input type="text" name="appName" value="'.$oApp->sName.'" size=20></td></tr>',"\n";
          
-            //vendor/alt vendor fields
-            // try for an exact match
-            // Use the first match if we found one and clear out the vendor field,
-            // otherwise don't pick a vendor
-            $query = "select * from vendor where vendorname = '$ob->queueVendor';";
-            $result = query_appdb($query);
-            $checkvendor = 0;
-            if($result)
+            /*
+             * vendor/alt vendor fields
+             * if user selected a predefined vendorId:
+             */
+            $iVendorId = $oApp->iVendorId;
+
+            /*
+             * If not, try for an exact match
+             * Use the first match if we found one and clear out the vendor field,
+             * otherwise don't pick a vendor
+             * N.B. The vendor string is the last word of the keywords field !
+             */
+            if(!$iVendorId)
             {
-                $ob2 = mysql_fetch_object($result);
-                $checkvendor = $ob2->vendorId;
-            }
-            if(!$checkvendor)
-            {
-                // try for a partial match
-                $query = "select * from vendor where vendorname like '%$ob->queueVendor%';";
-                $result = query_appdb($query);
-                if($result)
+                $sVendor = get_vendor_from_keywords($oApp->sKeywords);
+                $sQuery = "SELECT vendorId FROM vendor WHERE vendorname = '".$sVendor."';";
+                $hResult = query_appdb($sQuery);
+                if($hResult)
                 {
-                    $ob2 = mysql_fetch_object($result);
-                    $checkvendor = $ob2->vendorId;
+                    $oRow = mysql_fetch_object($hResult);
+                    $iVendorId = $oRow->vendorId;
                 }
             }
-            if($checkvendor)
-            {
-                $ob->queueVendor = '';
-    
-                //vendor field
-                echo '<tr valign=top><td class=color0><b>App Vendor</b></td>',"\n";
-                echo '<td><input type=text name="queueVendor" value="'.stripslashes($ob->queueVendor).'" size=20></td>',"\n";
-                echo '</tr>',"\n";
             
-                echo '<tr valign=top><td class=color0>&nbsp;</td><td>',"\n";
-                $x->make_option_list("altvendor", $checkvendor ,"vendor","vendorId","vendorName");
-                echo '</td></tr>',"\n";
-            } else
+            /*
+             * try for a partial match
+             */
+            if(!$iVendorId)
             {
-                //vendor field
-                echo '<tr valign=top><td class=color0><b>App Vendor</b></td>',"\n";
-                echo '<td><input type=text name="queueVendor" value="'.stripslashes($ob->queueVendor).'" size=20></td>',"\n";
-                echo '</tr>',"\n";
-        
-                echo '<tr valign=top><td class=color0>&nbsp;</td><td>',"\n";
-                $x->make_option_list("altvendor","","vendor","vendorId","vendorName");
-                echo '</td></tr>',"\n";
+                $sQuery = "select * from vendor where vendorname like '%$ob->queueVendor%';";
+                $hResult = query_appdb($sQuery);
+                if($hResult)
+                {
+                    $oRow = mysql_fetch_object($hResult);
+                    $iVendorId = $oRow->vendorId;
+                }
             }
-        }
 
-        //url
-        // FIXME: don't display this field for appversion
-        echo '<tr valign=top><td class=color0><b>App URL</b></td>',"\n";
-        echo '<td><input type=text name="queueURL" value="'.stripslashes($ob->queueURL).'" size=20></td></tr>',"\n";
+            //vendor field
+            if($iVendorId)
+                $sVendor = "";
+            echo '<tr valign=top><td class="color0"><b>App Vendor</b></td>',"\n";
+            echo '<td><input type=text name="sVendor" value="'.$sVendor.'" size="20"></td>',"\n";
+            echo '</tr>',"\n";
+            
+            echo '<tr valign=top><td class="color0">&nbsp;</td><td>',"\n";
+            $x->make_option_list("vendorId", $iVendorId ,"vendor","vendorId","vendorName");
+            echo '</td></tr>',"\n";
+
+            //url
+            echo '<tr valign=top><td class="color0"><b>App URL</b></td>',"\n";
+            echo '<td><input type=text name="webpage" value="'.$oApp->sWebpage.'" size="20"></td></tr>',"\n";
+      
+            //desc
+  
+            echo '<tr valign=top><td class=color0><b>Description</b></td>',"\n";
+            echo '<td><p style="width:700px"><textarea  cols="80" rows="20" id="editor" name="description">'.$oApp->sDescription.'</textarea></p></td></tr>',"\n";
         
-        //desc
-?>
-<link rel="stylesheet" href="./application.css" type="text/css">
-<!-- load HTMLArea -->
-<script type="text/javascript" src="../htmlarea/htmlarea_loader.js"></script>
-<?php
-        echo '<tr valign=top><td class=color0><b>App Desc</b></td>',"\n";
-        echo '<td><p style="width:700px"><textarea  cols="80" rows="20" id="editor" name="queueDesc">'.stripslashes($ob->queueDesc).'</textarea></p></td></tr>',"\n";
-        
-        //email message text
-        if ($ob->queueEmail)
-        {
-            echo '<tr valign=top><td class=color0><b>email Text</b></td>',"\n";
+            echo '<tr valign=top><td class="color0"><b>email Text</b></td>',"\n";
             echo '<td><textarea name="emailtext" rows=10 cols=35></textarea></td></tr>',"\n";
+
+            echo '<tr valign=top><td class=color3 align=center colspan=2>' ,"\n";
+            echo '<input type="hidden" name="appId" value="'.$oApp->iAppId.'" />';
+            echo '<input type=submit value=" Submit App Into Database " class=button>&nbsp',"\n";
+            echo '<input name="sub" type="submit" value="Delete" class="button" /></td></tr>',"\n";
+            echo '</table>',"\n";
         }
-        echo '<tr valign=top><td class=color3 align=center colspan=2>' ,"\n";
-        echo '<input type=submit value=" Submit App Into Database " class=button>&nbsp',"\n";
-        echo '<input name="sub" type=submit value="Delete" class=button> </td></tr>',"\n";
-        echo '</table>',"\n";
 
         echo html_frame_end("&nbsp;");
         echo html_back_link(1,'adminAppQueue.php');
     }
-    else if ($_REQUEST['sub'] == 'add' && $_REQUEST['queueId'])
+    else if ($_REQUEST['sub'] == 'add')
     {
-        //add item to main db
-        $statusMessage = "";
-        $goodtogo = 0;
-        if ($_REQUEST['type'] == 'app')
+        if (is_numeric($_REQUEST['appId'])) // application
         {
-            //process as application family
-            if ($_REQUEST['altvendor'] == 0 && $_REQUEST['queueVendor'])
+            // add new vendor
+            if($sVendor)
             {
-                //add new vendor
-                $aInsert = compile_insert_string( array('vendorName' => $_REQUEST['queueVendor'],
-                                                        'vendorURL' => $_REQUEST['queueURL']));
-
-                query_appdb("INSERT INTO `vendor` ({$aInsert['FIELDS']}) VALUES ({$aInsert['VALUES']})");
-                $_REQUEST['altvendor'] = mysql_insert_id();
-            }
-            $aInsert = compile_insert_string( array('AppName' => $_REQUEST['queueName'],
-                                                    'vendorId' => $_REQUEST['altvendor'],
-                                                    'description' => $_REQUEST['queueDesc'],
-                                                    'webPage' => $_REQUEST['queueURL'],
-                                                    'keywords' => "",
-                                                    'catId' =>  $_REQUEST['cat']));
-
-            if (query_appdb("INSERT INTO `appFamily` ({$aInsert['FIELDS']}) VALUES ({$aInsert['VALUES']})"))
-            {
-                    //get the id of the app just added    
-                $_REQUEST['appParent'] = mysql_insert_id();
-                //delete queue item
-                query_appdb("DELETE from appQueue where queueId = ".$_REQUEST['queueId'].";");
-                                            
-                //set ver if not set
-                if (!$_REQUEST['queueVersion'])
-                    $_REQUEST['queueVersion'] = '1.0';
-                if (!$_REQUEST['queueDesc'])
-                    $_REQUEST['queueDesc'] = 'released version';
-
-                //Now add a version
-                $aInsert = compile_insert_string( array('appId' => $_REQUEST['appParent'],
-                                                        'versionName' => $_REQUEST['queueVersion'],
-                                                        'description' => $_REQUEST['queueDesc'],
-                                                        'maintainer_rating' => "",
-                                                        'maintainer_release' =>  ""));
-                if (query_appdb("INSERT INTO `appVersion` ({$aInsert['FIELDS']}) VALUES ({$aInsert['VALUES']})"))
-                {
-                    //successful
-                    $_REQUEST['appVersion'] = mysql_insert_id();
-                    addmsg("The application ".$_REQUEST['queueName']." was successfully added into the database", "green");
-                    $goodtogo = 1;
-                }
-                else
-                {
-                    //error
-                    $statusMessage = "<p><b>Note:</b> The application family was successfully added.</p>\n";
-                    addmsg($statusMessage, "red");
-                }
-                
-            }
-        }
-        else if ($_REQUEST['type'] == 'ver')
-        {
-            //process as application version
-            if ($_REQUEST['appParent'])
-            {
-                $aInsert = compile_insert_string( array('appId' => $_REQUEST['appParent'],
-                                                        'versionName' => $_REQUEST['queueVersion'],
-                                                        'description' => $_REQUEST['queueDesc'],
-                                                        'maintainer_rating' => "",
-                                                        'maintainer_release' =>  ""));
-
-                if (query_appdb("INSERT INTO `appVersion` ({$aInsert['FIELDS']}) VALUES ({$aInsert['VALUES']})"))
-                {
-                    //successful
-                    $_REQUEST['appVersion'] = mysql_insert_id();
-                    $statusMessage = "<p>The application ".$_REQUEST['queueName']." was successfully added into the database</p>\n";
-                    addmsg($statusMessage,"Green");
-                    query_appdb("DELETE from appQueue where queueId = ".$_REQUEST['queueId'].";");
-                    $goodtogo = 1;
-                                        
-                }
-            }
-            else
-            {
-                addmsg("You did not pick an application Parent!",red);
-                redirect(apidb_fullurl("admin/adminAppQueue.php?cat=view&queueId=".$_REQUEST['queueId']));
-                exit;
-
+                $oVendor = new Vendor();
+                $oVendor->create($sVendor);
             }
             
+            $oApp = new Application($_REQUEST['appId']);
+            $oApp->update($_REQUEST['appName'], $_REQUEST['appDescription'], $_REQUEST['keywords'], $_REQUEST['webPage'], $_REQUEST['vendorId'], $_REQUEST['catId']);
+            $oApp->unQueue();
+        } else if(is_numeric($_REQUEST['versionId']))  // version
+        {
+            $oVersion = new Version($_REQUEST['versionId']);
+            $oVersion->update($_REQUEST['versionName'], $_REQUEST['versionDescription']);
+            $oVersion->unQueue();
         }
         
-        //Send Status Email
-        if($_REQUEST['type'] == 'ver')
-        {
-            $sFullAppName = lookup_app_name($_REQUEST['appParent'])." ".lookup_version_name($_REQUEST['appVersion']);
-            $sUrl = APPDB_ROOT."appview.php?versionId=".$_REQUEST['appVersion'];
-        } else 
-        {
-            $sFullAppName = lookup_app_name($_REQUEST['appParent']);
-            $sUrl = APPDB_ROOT."appview.php?appId=".$_REQUEST['appParent'];
-        }
-        $sSubject =  $sFullAppName." has been added into the AppDB";
-        $sMsg  = $sUrl."\n";
-        if ($ob->queueEmail && $goodtogo)
-        {   
-            $sMsg .= $emailtext;
-            mail_appdb($ob->queueEmail, $sSubject ,$sMsg);
-        }
-        if ($goodtogo)
-        {
-            $sEmail = get_notify_email_address_list($_REQUEST['appParent'], $_REQUEST['appVersion']);
-            if($sEmail)
-            {
-                mail_appdb($sEmail, $sSubject ,$sMsg);
-            }
-        }
-        //done
-        addmsg("<a href=".apidb_fullurl("appview.php")."?appId=".$_REQUEST['appParent'].">View App</a>", "green");
         redirect(apidb_fullurl("admin/adminAppQueue.php"));
-        exit;
     }
-    else if ($_REQUEST['sub'] == 'Delete' && $_REQUEST['queueId'])
+    else if ($_REQUEST['sub'] == 'Delete')
     {
-        //delete main item
-        $query = "DELETE from appQueue where queueId = ".$_REQUEST['queueId'].";";
-        $result = query_appdb($query, "unable to delete selected application!");
-        if(!$result)
+        if (is_numeric($_REQUEST['appId'])) // application
         {
-          redirect(apidb_fullurl("admin/adminAppQueue.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']));
+            $oApp = new Application($_REQUEST['appId']);
+            $oApp->delete();
+        } else if(is_numeric($_REQUEST['versionId']))  // version
+        {
+            $oVersion = new Version($_REQUEST['versionId']);
+            $oVersion->delete();
         }
-        else
-        {   
-            //Send Status Email
-            if($_REQUEST['type'] == 'ver')
-            {
-                $sFullAppName = lookup_app_name($_REQUEST['appParent'])." ".lookup_version_name($_REQUEST['appVersion']);
-            } else 
-            {
-                $sFullAppName = lookup_app_name($_REQUEST['appParent']);
-            }
-            $sSubject =  $sFullAppName." has not been added into the AppDB";
-            if ($ob->queueEmail)
-            {
-                $sMsg = $emailtext;
-                mail_appdb($ob->queueEmail, $sSubject ,$sMsg);
-            }
-            //success
-            addmsg("Application was successfully deleted from the Queue.", "green");
-            redirect(apidb_fullurl("admin/adminAppQueue.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']));
-        }
+        
+        redirect(apidb_fullurl("admin/adminAppQueue.php"));
     }
     else
     {
         //error no sub!
         addmsg("Internal Routine Not Found!!", "red");
         redirect(apidb_fullurl("admin/adminAppQueue.php"));
-
     }
-    exit;
 }
 else
 {
     apidb_header("Admin App Queue");
-    echo '<form name="qform" action="admin/adminAppQueue.php" method="post" enctype="multipart/form-data">',"\n";
+    // get queued apps
+    $sQuery = "SELECT appId FROM appFamily WHERE queued = 'true'";
+    $hResult = query_appdb($sQuery);
 
-    //get available apps
-    $query = "SELECT queueId, queueName, queueVendor,".
-                     "queueVersion, queueEmail, queueCatId,".
-                     "UNIX_TIMESTAMP(submitTime) as submitTime ".
-                     "from appQueue;";
-    $result = query_appdb($query);
-
-    if(!$result || !mysql_num_rows($result))
+    if(!$hResult || !mysql_num_rows($hResult))
     {
          //no apps in queue
-        echo html_frame_start("","90%");
+        echo html_frame_start("Application Queue","90%");
         echo '<p><b>The Application Queue is empty.</b></p>',"\n";
-        echo '<p>There is nothing for you to do. Check back later.</p>',"\n";        
         echo html_frame_end("&nbsp;");         
     }
     else
     {
         //help
         echo "<div align=center><table width='90%' border=0 cellpadding=3 cellspacing=0><tr><td>\n\n";
-        echo "<p>This is the list of applications waiting for your approval, or to be annihilated from existence.</p>\n";
+        echo "<p>This is the list of applications waiting for your approval, or to be rejected.</p>\n";
         echo "<p>To view a submission, click on its name. From that page you can edit, delete or approve it into \n";
         echo "the AppDB .<br>\n";
         echo "</td></tr></table></div>\n\n";
     
         //show applist
         echo html_frame_start("","90%","",0);
-        echo "<table width='100%' border=0 cellpadding=3 cellspacing=0>\n\n";
-        
-        echo "<tr class=color4>\n";
-        echo "    <td><font color=white>Submission Date</font></td>\n";
-        echo "    <td><font color=white>Application Name</font></td>\n";
-        echo "    <td><font color=white>Version</font></td>\n";
-        echo "    <td><font color=white>Vendor</font></td>\n";
-        echo "    <td><font color=white>Submitter Email</font></td>\n";
-        echo "    <td>&nbsp;</td>\n";
-        echo "</tr>\n\n";
+        echo "<table width=\"100%\" border=\"0\" cellpadding=\"3\" cellspacing=\"0\">
+               <tr class=color4>
+                  <td>Submission Date</td>
+                  <td>Vendor</td>
+                  <td>Application Name</td>
+                  <td>Submitter</td>
+               </tr>";
         
         $c = 1;
-        while($ob = mysql_fetch_object($result))
+        while($oRow = mysql_fetch_object($hResult))
         {
-            if ($c % 2 == 1) { $bgcolor = 'color0'; } else { $bgcolor = 'color1'; }
-            echo "<tr class=$bgcolor>\n";
-            echo "    <td>".date("Y-n-t h:i:sa", $ob->submitTime)." &nbsp;</td>\n";
-            if ($ob->queueCatId == -1)
+            $oApp = new Application($oRow->appId);
+            $oSubmitter = new User($oApp->iSubmitterId);
+            if($oApp->iVendorId)
             {
-                $query2 = "select * from appFamily where appId = '$ob->queueName';";
-                $result2 = query_appdb($query2);
-                if($result2)
-                {
-                    $ob2 = mysql_fetch_object($result2);
-                    echo "    <td><a href='adminAppQueue.php?sub=view&queueId=$ob->queueId'>$ob2->appName</a></td>\n";
-                } else
-                {
-                    echo "    <td><a href='adminAppQueue.php?sub=view&queueId=$ob->queueId'>App not found</a></td>\n";
-                }
+                $oVendor = new Vendor($oApp->iVendorId);
+                $sVendor = $oVendor->sName;
             } else
             {
-                echo "    <td><a href='adminAppQueue.php?sub=view&queueId=$ob->queueId'>$ob->queueName</a></td>\n";
+                $sVendor = get_vendor_from_keywords($oApp->sKeywords);
             }
-            echo "    <td>".stripslashes($ob->queueVersion)." &nbsp;</td>\n";
-            echo "    <td>".stripslashes($ob->queueVendor)." &nbsp;</td>\n";
-            echo "    <td>".stripslashes($ob->queueEmail)." &nbsp;</td>\n";
+            if ($c % 2 == 1) { $bgcolor = 'color0'; } else { $bgcolor = 'color1'; }
+            echo "<tr class=\"$bgcolor\">\n";
+            echo "    <td>".date("Y-n-t h:i:sa", $oApp->sSubmitTime)." &nbsp;</td>\n";
+            echo "    <td>".$sVendor." &nbsp;</td>\n";
+            echo "    <td><a href=\"adminAppQueue.php?sub=view&appId=".$oApp->iAppId."\">".$oApp->sName."</a></td>\n";
+            echo "    <td><a href=\"mailto:".$oSubmitter->sEmail."\">".$oSubmitter->sRealname."</a></td>\n";
+            echo "</tr>\n\n";
+            $c++;
+        }
+        echo "</table>\n\n";
+        echo html_frame_end("&nbsp;");
+    }
+
+     // get queued versions (only versions where application are not queued already)
+     $sQuery = "SELECT versionId FROM appVersion, appFamily WHERE appFamily.appId = appVersion.appId and appFamily.queued = 'false' AND appVersion.queued = 'true'";
+     $hResult = query_appdb($sQuery);
+
+     if(!$hResult || !mysql_num_rows($hResult))
+     {
+         //no apps in queue
+         echo html_frame_start("Version Queue","90%");
+         echo '<p><b>The Version Queue is empty.</b></p>',"\n";
+         echo html_frame_end("&nbsp;");         
+     }
+     else
+     {
+        //help
+        echo "<div align=center><table width='90%' border=0 cellpadding=3 cellspacing=0><tr><td>\n\n";
+        echo "<p>This is the list of versions waiting for your approval, or to be rejected.</p>\n";
+        echo "<p>To view a submission, click on its name. From that page you can edit, delete or approve it into \n";
+        echo "the AppDB .<br>\n";
+        echo "<p>Note that versions linked to application that have not been yet approved are not displayed in this list.</p>\n";
+        echo "the AppDB.<br>\n";
+        echo "</td></tr></table></div>\n\n";
+    
+        //show applist
+        echo html_frame_start("","90%","",0);
+        echo "<table width=\"100%\" border=\"0\" cellpadding=\"3\" cellspacing=\"0\">
+               <tr class=color4>
+                  <td>Submission Date</td>
+                  <td>Vendor</td>
+                  <td>Application Name</td>
+                  <td>Version Name</td>
+                  <td>Submitter</td>
+               </tr>";
+        
+        $c = 1;
+        while($oRow = mysql_fetch_object($hResult))
+        {
+            $oVersion = new Version($oRow->versionId);
+            $oApp = new Application($oVersion->iAppId);
+            $oSubmitter = new User($oVersion->iSubmitterId);
+            $oVendor = new Vendor($oApp->iVendorId);
+            $sVendor = $oVendor->sName;
+            if ($c % 2 == 1) { $bgcolor = 'color0'; } else { $bgcolor = 'color1'; }
+            echo "<tr class=\"$bgcolor\">\n";
+            echo "    <td>".date("Y-n-t h:i:sa", $oVersion->sSubmitTime)." &nbsp;</td>\n";
+            echo "    <td>".$sVendor." &nbsp;</td>\n";
+            echo "    <td>".$oApp->sName." &nbsp;</td>\n";
+            echo "    <td><a href=\"adminAppQueue.php?sub=view&versionId=".$oVersion->iVersionId."\">".$oVersion->sName."</a></td>\n";
+            echo "    <td><a href=\"mailto:".$oSubmitter->sEmail."\">".$oSubmitter->sRealname."</a></td>\n";
             echo "</tr>\n\n";
             $c++;
         }
@@ -449,9 +352,6 @@ else
         echo html_frame_end("&nbsp;");
 
     }
-    echo "</form>";
-    apidb_footer();
-       
 }
-
+apidb_footer();       
 ?>

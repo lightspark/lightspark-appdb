@@ -128,25 +128,25 @@ function make_maintainer_rating_list($varname, $cvalue)
     echo "</select>\n";
 }
 
-/* get the number of applications in the appQueue table */
+/* get the number of queued applications */
 function getQueuedAppCount()
 {
-    $qstring = "SELECT count(*) as queued_apps FROM appQueue";
+    $qstring = "SELECT count(*) as queued_apps FROM appFamily WHERE queued='true'";
     $result = query_appdb($qstring);
     $ob = mysql_fetch_object($result);
     return $ob->queued_apps;
 }
 
-/* get the number of applications in the appQueue table */
+/* get the number of queued appdata */
 function getQueuedAppDataCount()
 {
-    $qstring = "SELECT count(*) as queued_appdata FROM appDataQueue";
+    $qstring = "SELECT count(*) as queued_appdata FROM appData WHERE queued='true'";
     $result = query_appdb($qstring);
     $ob = mysql_fetch_object($result);
     return $ob->queued_appdata;
 }
 
-/* get the number of applications in the appQueue table */
+/* get the number of queued maintainers */
 function getQueuedMaintainerCount()
 {
     $qstring = "SELECT count(*) as queued_maintainers FROM appMaintainerQueue";

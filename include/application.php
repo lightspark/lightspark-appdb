@@ -3,8 +3,8 @@
 /* this class represents an application incl. all versions */
 /***********************************************************/
 
-require(BASE."include/version.php");
-require(BASE."include/vendor.php");
+require_once(BASE."include/version.php");
+require_once(BASE."include/vendor.php");
 
 /**
  * Application class for handling applications.
@@ -19,6 +19,7 @@ class Application {
     var $sDescription;
     var $sWebpage;
     var $bQueued;
+    var $sSubmitTime;
     var $iSubmitterId;
     var $aVersionsIds;  // an array that contains the versionId of every version linked to this app.
 
@@ -47,6 +48,7 @@ class Application {
                         $this->iVendorId = $oRow->vendorId;
                         $this->iCatId = $oRow->catId;
                         $this->iSubmitterId = $oRow->submitterId;
+                        $this->sSubmitTime = $oRow->submitTime;
                         $this->sDate = $oRow->submitTime;
                         $this->sName = $oRow->appName;
                         $this->sKeywords = $oRow->keywords;
@@ -104,6 +106,7 @@ class Application {
                                                 'webPage'    => $sWebpage,
                                                 'vendorId'   => $iVendorId,
                                                 'catId'      => $iCatId,
+                                                'submitterId'=> $_REQUEST['current']->iUserId,
                                                 'queued'     => $this->bQueued ));
         $sFields = "({$aInsert['FIELDS']})";
         $sValues = "({$aInsert['VALUES']})";
@@ -123,34 +126,36 @@ class Application {
     /**
      * Update application.
      * FIXME: Informs interested people about the modification.
+     * FIXME: tell what changed in the email.
+     * FIXME: get rid of addslashes and use compile_update_string
      * Returns true on success and false on failure.
      */
     function update($sName=null, $sDescription=null, $sKeywords=null, $sWebpage=null, $iVendorId=null, $iCatId=null)
     {
         if ($sName)
         {
-            if (!query_appdb("UPDATE appFamily SET appName = '".$sName."' WHERE appId = ".$this->iAppId))
+            if (!query_appdb("UPDATE appFamily SET appName = '".addslashes($sName)."' WHERE appId = ".$this->iAppId))
                 return false;
             $this->sName = $sName;
         }     
 
         if ($sDescription)
         {
-            if (!query_appdb("UPDATE appFamily SET description = '".$sDescription."' WHERE appId = ".$this->iAppId))
+            if (!query_appdb("UPDATE appFamily SET description = '".addslashes($sDescription)."' WHERE appId = ".$this->iAppId))
                 return false;
             $this->sDescription = $sDescription;
         }
 
         if ($sKeywords)
         {
-            if (!query_appdb("UPDATE appFamily SET keywords = '".$sKeywords."' WHERE appId = ".$this->iAppId))
+            if (!query_appdb("UPDATE appFamily SET keywords = '".addslashes($sKeywords)."' WHERE appId = ".$this->iAppId))
                 return false;
             $this->sKeywords = $sKeywords;
         }
 
         if ($sWebpage)
         {
-            if (!query_appdb("UPDATE appFamily SET webPage = '".$sWebpage."' WHERE appId = ".$this->iAppId))
+            if (!query_appdb("UPDATE appFamily SET webPage = '".addslashes($sWebpage)."' WHERE appId = ".$this->iAppId))
                 return false;
             $this->sWebpage = $sWebpage;
         }
@@ -160,6 +165,13 @@ class Application {
             if (!query_appdb("UPDATE appFamily SET vendorId = '".$iVendorId."' WHERE appId = ".$this->iAppId))
                 return false;
             $this->iVendorId = $iVendorId;
+        }
+
+        if ($iCatId)
+        {
+            if (!query_appdb("UPDATE appFamily SET catId = '".$iCatId."' WHERE appId = ".$this->iAppId))
+                return false;
+            $this->iCatId = $iCatId;
         }
         return true;
     }
@@ -196,8 +208,9 @@ class Application {
         if(!$this->bQueued)
             return false;
 
-        $sUpdate = compile_insert_string(array('queued'    => "false"));
-        if(query_appdb("UPDATE appFamily ".$sUpdate))
+        $sUpdate = compile_update_string(array('queued'  => "false",
+                                               'keywords'=> str_replace(" *** ","",$this->sKeywords) ));
+        if(query_appdb("UPDATE appFamily SET ".$sUpdate." WHERE appId = ".$this->iAppId))
         {
             // we send an e-mail to intersted people
             $this->mailSubmitter();
@@ -258,8 +271,7 @@ class Application {
             $sSubject = "Application ".$this->sName." deleted by ".$_SESSION['current']->sRealname;
             addmsg("Application deleted.", "green");
         }
-
-        $sEmail = get_notify_email_address_list(null, $this->iVersionId);
+        $sEmail = get_notify_email_address_list($this->iAppId);
         if($sEmail)
             mail_appdb($sEmail, $sSubject ,$sMsg);
     } 

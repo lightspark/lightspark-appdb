@@ -33,9 +33,11 @@ function display_catpath($catId, $appId, $versionId = '')
 
 /**
  * display the SUB apps that belong to this app 
+ * FIXME:
  */
 function display_bundle($appId)
 {
+    $oApp = new Application($appId);
     $result = query_appdb("SELECT appFamily.appId, appName, description FROM appBundle, appFamily ".
                         "WHERE bundleId = $appId AND appBundle.appId = appFamily.appId");
     if(!$result || mysql_num_rows($result) == 0)
@@ -56,12 +58,10 @@ function display_bundle($appId)
         //set row color
         $bgcolor = ($c % 2 == 0) ? "color0" : "color1";
 
-        //format desc
-        $aDesc = explode("\n",$oApp->data->description,2);
         //display row
         echo "<tr class=$bgcolor>\n";
         echo "    <td><a href='appview.php?appId=$ob->appId'>".stripslashes($ob->appName)."</a></td>\n";
-        echo "    <td>".$aDesc[0]."</td>\n";
+        echo "    <td>".trim_description($oApp->sDescription)."</td>\n";
         echo "</tr>\n\n";
 
         $c++;
@@ -194,7 +194,7 @@ if($_REQUEST['appId'])
     display_catpath($oApp->iCatId, $oApp->iAppId);
 
     // set Vendor
-    $vendor = $oApp->iVendorId;
+    $oVendor = new Vendor($oApp->iVendorId);
 
     // set URL
     $appLinkURL = ($oApp->sWebpage) ? "<a href=\"$data->webPage\">".substr(stripslashes($oApp->sWebpage),0,30)."</a>": "&nbsp;";
@@ -209,7 +209,7 @@ if($_REQUEST['appId'])
     echo '      <table width="250" border=0 cellpadding=3 cellspacing=1">',"\n";
     echo "        <tr class=color0 valign=top><td width=\"100\"><b>Name</b></td><td width='100%'> ".$oApp->sName." </td>\n";
     echo "        <tr class=\"color1\"><td><b>Vendor</b></td><td> ".
-         "        <a href='vendorview.php?vendorId=$vendor->vendorId'> ".stripslashes($vendor->vendorName)." </a> &nbsp;\n";
+         "        <a href='vendorview.php?vendorId=$oVendor->iVendorId'> ".$oVendor->sName." </a> &nbsp;\n";
     echo "        <tr class=\"color0\"><td><b>BUGS</b></td><td> ".
          "        <a href=\"bugs.php?appId=".$oApp->iAppId."\">Check for bugs in bugzilla </a> &nbsp;\n";
     echo "        </td></tr>\n";

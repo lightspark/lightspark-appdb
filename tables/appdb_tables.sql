@@ -11,8 +11,6 @@ drop table if exists appHitStats;
 drop table if exists catHitStats;
 drop table if exists appComments;
 drop table if exists appData;
-drop table if exists appDataQueue;
-drop table if exists appQueue;
 drop table if exists appBundle;
 drop table if exists appVotes;
 drop table if exists appNotes;
@@ -34,14 +32,17 @@ create table vendor (
  * application
  */
 create table appFamily (
-       appId		int not null auto_increment,
-       appName		varchar(100) not null,
-       vendorId		int not null,
-       keywords		text,
-       description	text,
-       webPage		varchar(100),
-       catId		int,
-       key(appId)
+	appId		int not null auto_increment,
+	appName		varchar(100) not null,
+	vendorId	int not null,
+	keywords	text,
+	description	text,
+	webPage		varchar(100),
+	catId		int,
+	submitTime	timestamp(14) NOT NULL,
+	submitterId	int(11) NOT NULL default '0',
+	queued		enum('true','false') NOT NULL default 'false',
+	key(appId)
 );
 
 
@@ -49,28 +50,18 @@ create table appFamily (
  * a version of an application
  */
 create table appVersion (
-       versionId          int not null auto_increment,
-       appId              int not null,
-       versionName        varchar(100) not null,
-       description        text,
-       maintainer_rating  text,
-       maintainer_release text,
-       key(versionId)
+	versionId          int not null auto_increment,
+	appId              int not null,
+	versionName        varchar(100) not null,
+	description        text,
+	maintainer_rating  text,
+	maintainer_release text,
+	submitTime	timestamp(14) NOT NULL,
+	submitterId	int(11) NOT NULL default '0',
+	queued		enum('true','false') NOT NULL default 'false',
+	key(versionId)
 );
 
-create table appQueue (
-       queueId		int not null auto_increment,
-       queueName	varchar(100) not null,
-       queueVersion	varchar(100) not null,
-       queueVendor	varchar(100) not null,
-       queueDesc	text,
-       queueEmail	varchar(100),
-       queueURL		varchar(100),
-       queueImage	varchar(100) not null,
-       submitTime	timestamp,
-       queueCatId	int,
-       key(queueId)
-);
 
 create table userExperience (
        uExpId		int not null auto_increment,
@@ -158,27 +149,12 @@ create table appData (
 	versionId	int default 0,
 	type		enum('image', 'url', 'bug'),
 	description	text,
-	url		varchar(255),
-	key(id),
-	index(appId),
-	index(versionId)
-);
-
-
-/*
- * links to screenshots and other stuff waiting to be accepted
- */
-create table appDataQueue (
- queueId   int not null auto_increment,
- versionId  int default 0,
- type   enum('image', 'url'),
- description  text,
- url    varchar(255),
- userId int not null,
- submitTime  timestamp,
- key(queueid),
- index(appId),
- index(versionId)
+	url		varchar(255) default NULL,
+	submitTime	timestamp(14) NOT NULL,
+	submitterId	int(11) NOT NULL default '0',
+	queued		enum('true','false') NOT NULL default 'false',
+	KEY id (id),
+	KEY versionId (versionId)
 );
  
 

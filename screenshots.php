@@ -41,9 +41,12 @@ if($_REQUEST['cmd'])
  */ 
 $hResult = get_screenshots($_REQUEST['appId'], $_REQUEST['versionId']);   
 apidb_header("Screenshots");
+$oApp = new Application($_REQUEST['appId']);
+$oVersion = new Version($_REQUEST['versionId']);
+
 if($hResult && mysql_num_rows($hResult))
 {
-    echo html_frame_start("Screenshot Gallery for ".lookup_app_name($_REQUEST['appId'])." ".lookup_version_name($_REQUEST['versionId']),500);
+    echo html_frame_start("Screenshot Gallery for ".$oApp->sName." ".$oVersion->sName,500);
 
     // display thumbnails
     $c = 1;
