@@ -63,7 +63,22 @@ function view_app_comment($ob)
     echo "	[<a href='addcomment.php?appId=$ob->appId&versionId=$ob->versionId&subject=".
 	        urlencode("$subject")."&thread=$ob->commentId'><small>reply to this</small></a>] \n";
 
-    echo "</td></tr></table>\n";
+    echo "</td></tr>\n";
+
+    // delete message button, for admins
+    //TODO: application managers should also see this button
+    if(havepriv("admin"))
+    {
+        echo "<tr>";
+        echo '<td><form method=post name=message action="deletecomment.php"><input type=submit value="Delete" class=button> ',"\n";
+        echo "<input type=hidden name='commentId' value=$ob->commentId>";
+        echo "<input type=hidden name='appId' value=$ob->appId>";
+        echo "<input type=hidden name='versionId' value=$ob->versionId></form></td>","\n";
+        echo "</td></tr>";
+    }
+
+    echo "</table>\n";
+
     echo html_frame_end();
         
 }
