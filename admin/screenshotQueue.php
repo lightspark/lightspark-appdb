@@ -4,6 +4,7 @@
 /************************************************/
 
 include("path.php");
+require(BASE."include/"."incl.php");
 if(!havepriv("admin"))
 {
     errorpage("Insufficient privileges.");
