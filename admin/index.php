@@ -37,10 +37,7 @@ if($table_cmd)
 // output of admin page begins here
 apidb_header("Admin");
 
-// Draw User List
-include(BASE."include/"."query_users.php");
-
+echo 'TODO: User managment';
 
 apidb_footer();
-
 ?>

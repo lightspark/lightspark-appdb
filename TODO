@@ -44,3 +44,5 @@ In particular globally registered vars should be replaced by superglobals (nearl
 # add wineversion, distro, source/package fields to the appComments table.
 
 # add new table for maintainer ratings. fields: userid, appId versionId ,rating, wineversion, distro, source/package
+
+# add user management
