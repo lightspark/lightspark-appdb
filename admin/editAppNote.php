@@ -7,152 +7,130 @@ include("path.php");
 include(BASE."include/"."incl.php");
 require(BASE."include/"."application.php");
 
-//check for admin privs
-if(!loggedin() || (!havepriv("admin") && !$_SESSION['current']->is_maintainer($appId,$versionId)) )
+if(!is_numeric($_REQUEST['noteId']))
+{
+    errorpage('Wrong note ID');
+    exit;
+}  
+
+/* Get note data */
+$sQuery = "SELECT * from appNotes where noteId = {$_REQUEST['noteId']}";
+$hResult = query_appdb($sQuery);
+$ob = mysql_fetch_object($hResult);
+
+/* Check for privs */
+if(!loggedin() || (!havepriv("admin") && !$_SESSION['current']->is_maintainer($ob->appId,$ob->versionId)) )
 {
     errorpage("Insufficient Privileges!");
     exit;
 }
 
-//set link for version
-if ($versionId != 0)
+if(isset($_REQUEST['sub']))
 {
-    $versionLink = "&versionId=$versionId";
-}
-
-if($sub)
-{
-    $query = "SELECT * from appNotes where noteId = $noteId;";
-    $result = mysql_query($query);
-    if(!$result)
-    {
-        $ob = mysql_fetch_object($result);
-
-        $oldNoteTitle = $ob->noteTitle;
-        $oldNoteDesc  = $ob->noteDesc;
-    }
-    if ($sub == 'Delete')
-    {
-        //delete Note
-        $query = "DELETE from appNotes where noteId = $noteId;";
-        $result = mysql_query($query);
-        if(!$result)
-        {
-            //error
-            addmsg("Internal Error: unable to delete selected note!", "red");
-        }
-        else
-        {   
-            $email = getNotifyEmailAddressList($appId, $versionId);
-            if($email)
-            {
-                $fullAppName = "Application: ".lookupAppName($appId)." Version: ".lookupVersionName($appId, $versionId);
-                $ms = APPDB_ROOT."appview.php?appId=$appId&versionId=$versionId"."\n";
-                $ms .= "\n";
-                $ms .= ($_SESSION['current']->username ? $_SESSION['current']->username : "Anonymous")." deleted note from ".$fullAppName."\n";
-                $ms .= "\n";
-                $ms .= "title: ".$oldNoteTitle."\n";
-                $ms .= "\n";
-                $ms .= $oldNoteDesc."\n";
-                $ms .= "\n";
-                $ms .= STANDARD_NOTIFY_FOOTER;
-
-                mail(stripslashes($email), "[AppDB] ".$fullAppName ,$ms);
+    $sOldNoteTitle = $ob->noteTitle;
+    $sOldNoteDesc  = $ob->noteDesc;
     
-            } else
-            {
-                $email = "no one";
-            }
-            addmsg("mesage sent to: ".$email, green);
-            //success
-            addmsg("Note Deleted.", "green");
+    $sFullAppName = "Application: ".lookupAppName($ob->appId)." Version: ".lookupVersionName($ob->appId, $ob->versionId);
+    
+    /* Start of e-mail */
+    $ms = APPDB_ROOT."appview.php?appId={$ob->appId}&versionId={$ob->versionId}"."\n";
+    $ms .= "\n";
+            
+    $sEmail = getNotifyEmailAddressList($ob->appId, $ob->versionId);
+    
+    if ($_REQUEST['sub'] == 'Delete')
+    {
+        // delete Note
+        query_appdb("DELETE from `appNotes` where noteId = {$_REQUEST['noteId']}");
+       
+        if($sEmail)
+        {
+            $ms .= ($_SESSION['current']->username ? $_SESSION['current']->username : "Anonymous")." deleted note from ".$sFullAppName."\n";
+            $ms .= "\n";
+            $ms .= "title: ".$sOldNoteTitle."\n";
+            $ms .= "\n";
+            $ms .= $sOldNoteDesc."\n";
+            $ms .= "\n";
+            $ms .= STANDARD_NOTIFY_FOOTER;
+
+            mail(stripslashes($sEmail), "[AppDB] ".$sFullAppName ,$ms);
+        } else
+        {
+            $sEmail = "no one";
         }
+        
+        addmsg("mesage sent to: ".$sEmail, 'green');
+        // success
+        addmsg("Note Deleted.", "green");
     } 
-    if ($sub == 'Update')
+    else if ($_REQUEST['sub'] == 'Update')
     {
-        //Update Note
-        $NewNoteTitle = addslashes($noteTitle);
-        $NewNoteDesc  = addslashes($noteDesc);
-        if (!mysql_query("UPDATE appNotes SET noteTitle = '".$NewNoteTitle."', ".
-            "noteDesc = '".$NewNoteDesc."'".
-            " WHERE noteId = $noteId"))
+        $sUpdate = compile_update_string(array( 'noteTitle' => $_REQUEST['noteTitle'],
+                                               'noteDesc'  => $_REQUEST['noteDesc']));
+        
+        query_appdb("UPDATE appNotes SET $sUpdate WHERE noteId = {$_REQUEST['noteId']}");
+        
+        if($sEmail)
         {
-            $statusMessage = "<p><b>Database Error!<br>".mysql_error()."</b></p>\n";
-            addmsg($statusMessage, "red");
-	}
-        else
+            $ms .= ($_SESSION['current']->username ? $_SESSION['current']->username : "Anonymous")." changed note for ".$sFullAppName."\n";
+            $ms .= "From --------------------------\n";
+            $ms .= "title: ".$sOldNoteTitle."\n";
+            $ms .= "\n";
+            $ms .= $sOldNoteDesc."\n";
+            $ms .= "To --------------------------\n";
+            $ms .= "title: ".$_REQUEST['noteTitle']."\n";
+            $ms .= "\n";
+            $ms .= $_REQUEST['noteDesc']."\n";
+            $ms .= "\n";
+            $ms .= STANDARD_NOTIFY_FOOTER;
+
+            mail(stripslashes($sEmail), "[AppDB] ".$sFullAppName ,$ms);
+
+        } else
         {
-            $email = getNotifyEmailAddressList($appId, $versionId);
-            if($email)
-            {
-                $fullAppName = "Application: ".lookupAppName($appId)." Version: ".lookupVersionName($appId, $versionId);
-                $ms = APPDB_ROOT."appview.php?appId=$appId&versionId=$versionId"."\n";
-                $ms .= "\n";
-                $ms .= ($_SESSION['current']->username ? $_SESSION['current']->username : "Anonymous")." changed note for ".$fullAppName."\n";
-                $ms .= "\n";
-                $ms .= "From --------------------------\n";
-                $ms .= "title: ".$oldNoteTitle."\n";
-                $ms .= "\n";
-                $ms .= $oldNoteDesc."\n";
-                $ms .= "To --------------------------\n";
-                $ms .= "title: ".$noteTitle."\n";
-                $ms .= "\n";
-                $ms .= $noteDesc."\n";
-                $ms .= "\n";
-                $ms .= STANDARD_NOTIFY_FOOTER;
-
-                mail(stripslashes($email), "[AppDB] ".$fullAppName ,$ms);
-    
-            } else
-            {
-                $email = "no one";
-            }
-            addmsg("mesage sent to: ".$email, green);
-
-            addmsg("Note Updated", "green");
+            $sEmail = "no one";
         }
-    }
-    redirect(apidb_fullurl("appview.php?appId=".$appId.$versionLink));
+        addmsg("mesage sent to: ".$sEmail, green);
 
+        addmsg("Note Updated", "green");
+    }
+    
+    redirect(apidb_fullurl("appview.php?appId={$ob->appId}&versionId={$ob->versionId}"));
 }
 else
 {
-    if (!$preview)
+    if (!isset($_REQUEST['preview']))
     {
-        $table = "appNotes";
-        $query = "SELECT * FROM $table WHERE noteId = $noteId";
-        $result = mysql_query($query);
-        $ob = mysql_fetch_object($result);
-        $noteTitle = $ob->noteTitle;
-        $noteDesc  = $ob->noteDesc;
-        $appId     = $ob->appId;
-        $versionId = $ob->versionId;
+        $_REQUEST['noteTitle'] = $ob->noteTitle;
+        $_REQUEST['noteDesc']  = $ob->noteDesc;
+        $_REQUEST['appId'] = $ob->appId;
+        $_REQUEST['versionId'] = $ob->versionId;
     }
     // show form
     apidb_header("Edit Application Note");
 
     echo "<form method=post action='editAppNote.php'>\n";
-    echo html_frame_start("Edit Application Note $ob->noteId", "90%","",0);
+    echo html_frame_start("Edit Application Note {$_REQUEST['noteId']}", "90%","",0);
     echo html_table_begin("width='100%' border=0 align=left cellpadding=6 cellspacing=0 class='box-body'");
     echo '<tr><td colspan=2 class=color4>';
     echo '<center><b>You can use html to make your Warning, Howto or Note look better.</b></center>';
     echo '</td></tr>',"\n";
 
-    echo add_br($noteDesc);
-    echo '<input type=hidden name="noteId" value='.$noteId.'>';
-    echo '<input type=hidden name="appId" value='.$appId.'>';
-    echo '<input type=hidden name="versionId" value='.$versionId.'>';
-    if ($noteTitle == "HOWTO" || $noteTitle == "WARNING")
+    echo add_br($_REQUEST['noteDesc']);
+    
+    echo '<input type=hidden name="noteId" value='.$_REQUEST['noteId'].'>';
+    
+    if ($_REQUEST['noteTitle'] == "HOWTO" || $_REQUEST['noteTitle'] == "WARNING")
     {
         echo '<tr><td class=color1>Title (Do not change)</td>';
-        echo '<td class=color0><input size=80% type="text" name="noteTitle" type="text" value="'.$noteTitle.'"></td></tr>',"\n";
+        echo '<td class=color0><input size=80% type="text" name="noteTitle" type="text" value="'.$_REQUEST['noteTitle'].'"></td></tr>',"\n";
     }
     else
     {
-        echo '<tr><td class=color1>Title</td><td class=color0><input size=80% type="text" name="noteTitle" type="text" value="'.$noteTitle.'"></td></tr>',"\n";
+        echo '<tr><td class=color1>Title</td><td class=color0><input size=80% type="text" name="noteTitle" type="text" value="'.$_REQUEST['noteTitle'].'"></td></tr>',"\n";
     }
     echo '<tr><td class=color4>Description</td><td class=color0>', "\n";
-    echo '<textarea cols=$50 rows=10 name="noteDesc">'.stripslashes($noteDesc).'</textarea></td></tr>',"\n";
+    echo '<textarea cols=$50 rows=10 name="noteDesc">'.stripslashes($_REQUEST['noteDesc']).'</textarea></td></tr>',"\n";
     echo '<tr><td colspan=2 align=center class=color3>',"\n";
     echo '<input type="submit" name=preview value="Preview">&nbsp',"\n";
     echo '<input type="submit" name=sub value="Update">&nbsp',"\n";
@@ -161,7 +139,7 @@ else
     echo html_table_end();
     echo html_frame_end();
     
-    echo html_back_link(1,BASE."appview.php?appId=$appId".$versionLink);
+    echo html_back_link();
 
 }
 
