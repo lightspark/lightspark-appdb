@@ -51,7 +51,7 @@ function display_index ()
 
     echo "</ul><hr noshade>\n";
 
-    echo "<p>Need more help? Contact us at <a href='mailto:appdb@winehq.org'>appdb@winehq.org</a><p>\n";
+    echo "<p>Need more help? Contact us at <a href='mailto:".APPDB_OWNER_EMAIL."'>".APPDB_OWNER_EMAIL."</a><p>\n";
         
     apidb_footer();
 }

@@ -15,8 +15,8 @@ apidb_header("Help and Support");
 <p><big><b>Who Can Help Me Out?</b></big></p>
 
 <p>
-If you have questions, comments on the Wine Application Database, you can contact
-us at <a href="mailto:appdb@winehq.org">appdb@winehq.org</a>.
+If you have questions, comments on the Application Database, you can contact
+us at <a href="mailto:<?php echo APPDB_OWNER_EMAIL;?>"><?php echo APPDB_OWNER_EMAIL;?></a>.
 </p>
 
 <p>
@@ -29,11 +29,11 @@ to the App DB Bug Database by following this
 </p>
 
 <p>
-If you need more information on the Wine Project itself, there are plenty of resources.
+If you need more information on this project, there are plenty of resources.
 </p>
 
 <ul>
-   <li><a href="http://www.winehq.org">Wine Development HQ</a></li>
+   <li><a href="<?php echo APPDB_OWNER_URL;?>"><?php echo APPDB_OWNER;?></a></li>
    <li><a href="http://www.codeweavers.com">CodeWeavers Home Page</a></li>
 </ul>	
 <?php

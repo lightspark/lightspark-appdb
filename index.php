@@ -65,10 +65,8 @@ If you have screenshots or links to contribute, please browse the database and u
 ?>
 <p>
 If you have anything else to contribute (howtos, etc.), enroll to be an application maintainer or contact us at:
-<a href="mailto:appdb@winehq.org">appdb@winehq.org</a><br />
-Note that this address is not for end-user support, for end user support please contact the
-wine-users mailing list or the wine newsgroup, for more information visit
-<a href="http://www.winehq.com/site/forums">this page</a>
+<a href="mailto:<?php echo APPDB_OWNER_EMAIL;?>"><?php echo APPDB_OWNER_EMAIL;?></a><br />
+Note that this address is not for end-user support, for end user support please use the mailing lists or newsgroups that you'll find on the <a href="<?php echo APPDB_OWNER_URL;?>">main website</a>.
 </p>
 <?php
 

@@ -122,8 +122,7 @@ else if (isset($_REQUEST['apptype']))
   echo "and if any workaround were needed. Having app descriptions just sponsoring the app\n";
   echo "(Yes, some vendor want to use the appdb for this) or saying \"I haven't tried this app with Wine\" ";
   echo "won't help Wine development or Wine users.</p>\n";
-  echo "<p>To submit screenshots, please email them to ";
-  echo "<a href='mailto:appdb@winehq.org'>appdb@winehq.org</a></p>\n";
+  echo "<p>After your application has been added you'll be able to submit screenshots for it.</p>";
 
   # NEW APPLICATION
   if ($_REQUEST['apptype'] == 1)
