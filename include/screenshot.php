@@ -26,7 +26,7 @@ class Screenshot {
     var $iSubmitterId;
 
     /**    
-     * constructor, fetches the description and creates the Image objects and files if needed.
+     * Constructor, fetches the data and image objects if $iScreenshotId is given.
      */
     function Screenshot($iScreenshotId = null,$bQueued = false)
     {
@@ -47,7 +47,6 @@ class Screenshot {
         // we are working on an existing screenshot
         if($iScreenshotId)
         {
-            $this->iScreenshotId = $iScreenshotId;
             $sQuery = "SELECT ".$this->sTable.".*, appVersion.appId AS appId
                        FROM ".$this->sTable.", appVersion 
                        WHERE ".$this->sTable.".versionId = appVersion.versionId 
@@ -56,6 +55,7 @@ class Screenshot {
             if($hResult = query_appdb($sQuery))
             {
                 $oRow = mysql_fetch_object($hResult);
+                $this->iScreenshotId = $iScreenshotId;
                 $this->sDescription = $oRow->description;
                 $this->oScreenshotImage = new Image("/data/".$this->sDirectory."/".$oRow->url);
                 $this->oThumbnailImage = new Image("/data/".$this->sDirectory."/thumbnails/".$oRow->url);
@@ -70,6 +70,9 @@ class Screenshot {
     }
  
 
+    /**
+     * Creates a new screenshot.
+     */
     function create($iVersionId = null, $sDescription = null, $hFile = null)
     {
 
@@ -189,6 +192,9 @@ class Screenshot {
             // we send an e-mail to intersted people
             $this->mailSubmitter();
             $this->mailMaintainers();
+
+            // the screenshot has been unqueued
+            addmsg("The screenshot has been unqueued.", "green");
         }
     }
 
@@ -266,9 +272,6 @@ class Screenshot {
                 
             mail_appdb($oSubmitter->sEmail, $sSubject ,$sMsg);
         }
-        
-        // the screenshot has been unqueued
-        addmsg("The screenshot has been unqueued.", "green");
     }
 
  
