@@ -6,6 +6,7 @@
 require_once(BASE."include/note.php");
 require_once(BASE."include/comment.php");
 require_once(BASE."include/url.php");
+require_once(BASE."include/screenshot.php");
 
 /**
  * Version class for handling versions.

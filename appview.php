@@ -12,7 +12,6 @@ require(BASE."include/application.php");
 require(BASE."include/appdb.php");
 require(BASE."include/vote.php");
 require(BASE."include/category.php");
-require(BASE."include/screenshot.php");
 require(BASE."include/maintainer.php");
 
 

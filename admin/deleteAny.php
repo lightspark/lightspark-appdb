@@ -51,7 +51,7 @@ if($_REQUEST['what'])
 	    break;
 	case "appVersion":
 	    // delete a version
-            $oVersion = new Application($_REQUEST['versionId']);
+            $oVersion = new Version($_REQUEST['versionId']);
             $oVersion->delete();
             redirect(BASE."appview.php?appId=".$_REQUEST['appId']);
 	    break;
