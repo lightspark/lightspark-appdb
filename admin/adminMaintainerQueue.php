@@ -274,14 +274,12 @@ if ($_REQUEST['sub'])
         echo "<table width='100%' border=0 cellpadding=3 cellspacing=0>\n\n";
         
         echo "<tr class=color4>\n";
-        echo "    <td><font color=white>Submission Date</font></td>\n";
-        echo "    <td><font color=white>Queue Id</font></td>\n";
-        echo "    <td><font color=white>Name</font></td>\n";
-        echo "    <td><font color=white>Application Name</font></td>\n";
-        echo "    <td><font color=white>Version</font></td>\n";
-        echo "    <td><font color=white>Super maintainer?</font></td>\n";
-        echo "    <td><font color=white>Submitter Email</font></td>\n";
-        echo "    <td>&nbsp;</td>\n";
+        echo "    <td>Submission Date</td>\n";
+        echo "    <td>Application Name</td>\n";
+        echo "    <td>Version</td>\n";
+        echo "    <td>Super maintainer?</td>\n";
+        echo "    <td>Submitter</td>\n";
+        echo "    <td>Action</td>\n";
         echo "</tr>\n\n";
         
         $c = 1;
@@ -293,8 +291,6 @@ if ($_REQUEST['sub'])
             if ($c % 2 == 1) { $bgcolor = 'color0'; } else { $bgcolor = 'color1'; }
             echo "<tr class=$bgcolor>\n";
             echo "    <td>".date("Y-n-t h:i:sa", $ob->submitTime)." &nbsp;</td>\n";
-            echo "    <td><a href='adminMaintainerQueue.php?sub=view&queueId=$ob->queueId'>$ob->queueId</a></td>\n";
-            echo "    <td>".$oUser->sRealName."</td>\n";
             echo "    <td>".$oApp->sName."</td>\n";
 
             if($ob->superMaintainer)
@@ -303,12 +299,12 @@ if ($_REQUEST['sub'])
                 echo "<td>Yes</td>\n";
             } else
             {
-  	              echo "<td>".$oVersion->sName." &nbsp;</td>\n";
+  	        echo "<td>".$oVersion->sName." &nbsp;</td>\n";
                 echo "<td>No</td>\n";
             }
 
-            echo "    <td>".$oUser->sEmail." &nbsp;</td>\n";
-            echo "    <td>[<a href='adminMaintainerQueue.php?sub=reject&queueId=$ob->queueId'>reject</a>]</td>\n";
+            echo "    <td><a href=\"mailto:".$oUser->sEmail."\">".$oUser->sRealname."</a></td>\n";
+            echo "    <td>[<a href=\"adminMaintainerQueue.php?sub=view&queueId=$ob->queueId\">answer</a>]</td>\n";
             echo "</tr>\n\n";
             $c++;
         }
