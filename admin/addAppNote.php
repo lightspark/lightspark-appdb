@@ -15,7 +15,7 @@ $oRow = mysql_fetch_object($hResult);
 $appId = $oRow->appId; 
 
 //check for admin privs
-if(!$_SESSION['current']->isLoggedIn() || (!$_SESSION['current']->hasPriv("admin") && !$_SESSION['current']->isMaintainer($appId,$_REQUEST['versionId'])) )
+if(!$_SESSION['current']->hasPriv("admin") && !$_SESSION['current']->isMaintainer($_REQUEST['versionId']) && !$_SESSION['current']->isSuperMaintainer($_REQUEST['appId']))
 {
     errorpage("Insufficient Privileges!");
     exit;
