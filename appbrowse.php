@@ -22,8 +22,16 @@ function admin_menu()
     $m->done();
 }
 
+$catId = $_REQUEST['catId'];
+
 if(!$catId)
     $catId = 0; // ROOT
+
+if( !is_numeric($catId) )
+{
+	errorpage("Something went wrong with the category ID");
+	exit;
+}
 
 // list sub categories
 $cat = new Category($catId);

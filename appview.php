@@ -231,6 +231,15 @@ function display_versions($appId, $versions)
 
 /* code to VIEW an application & versions */
 
+$appId = $_REQUEST['appId'];
+$versionId = $_REQUEST['versionId'];
+
+if(!is_numeric($appId))
+{
+	errorpage("Something went wrong with the IDs");
+	exit;
+}
+
 if($appId && !$versionId)
 {
 	$app = new Application($appId);
