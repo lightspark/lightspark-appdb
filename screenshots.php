@@ -11,98 +11,119 @@
 include("path.php");
 require(BASE."include/"."incl.php");
 require(BASE."include/"."application.php");
-
 if($_REQUEST['cmd'])
 {
     //process screenshot upload
     if($_REQUEST['cmd'] == "screenshot_upload")
     {   
         if(havepriv("admin") || 
-            $_SESSION['current']->is_maintainer($_REQUEST['appId'], 
-                                                $_REQUEST['versionId']))
-        {     
-            if(!copy($_FILES['imagefile']['tmp_name'], "data/screenshots/".$_REQUEST['appId']."-".$_REQUEST['versionId']."-".basename($_FILES['imagefile']['name'])))
-            {
-                // whoops, copy failed. do something
-                errorpage("debug: copy failed; (".$_FILES['imagefile']['tmp_name'].";".$_FILES['imagefile']['name']);
-                exit;
-            }
-
-            $query = "INSERT INTO appData VALUES (null, ".$_REQUEST['appId'].", ".$_REQUEST['versionId'].", 'image', ".
-                     "'".addslashes($_REQUEST['screenshot_desc'])."', '".$_REQUEST['appId']."-".$_REQUEST['versionId']."-".basename($_FILES['imagefile']['name'])."')";
-
-            if(debugging()) addmsg("<p align=center><b>query:</b> $query </p>","green");
-    
-            if (mysql_query($query))
-            {
-                //success
-                $email = getNotifyEmailAddressList($_REQUEST['appId'], $_REQUEST['versionId']);
-                if($email)
-                {
-                    $fullAppName = "Application: ".lookupAppName($_REQUEST['appId'])." Version: ".lookupVersionName($_REQUEST['appId'], $_REQUEST['versionId']);
-                    $ms .= APPDB_ROOT."screenshots.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']."\n";
-                    $ms .= "\n";
-                    $ms .= $_SESSION['current']->username." added screenshot ".$_REQUEST['screenshot_desc']." to ".$fullAppName."\n";
-                    $ms .= "\n";
-                    $ms .= STANDARD_NOTIFY_FOOTER;
- 
-                    mail(stripslashes($email), "[AppDB] ".$fullAppName ,$ms);
-                } else
-                {
-                    $email = "no one";
-                }
-                addmsg("mesage sent to: ".$email, "green");
-
-                addmsg("The image was successfully added into the database", "green");
-                redirect(apidb_fullurl("screenshots.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']));
-            }
-            else
-            {
-                //error
-                $statusMessage = "<p><b>Database Error!<br>".mysql_error()."</b></p>\n";
-                addmsg($statusMessage, "red");
-            }
-        } else // we are a normal user or an anonymous and submitted a screenshot
-        {   
-            if(!$str_data = addslashes(fread(fopen($_FILES['imagefile']['tmp_name'], "rb"), filesize($_FILES['imagefile']['tmp_name']))))
-            {
-                // whoops, copy failed. do something
-                errorpage("debug: reading of file failed; (".$_FILES['imagefile']['tmp_name'].";".$_FILES['imagefile']['name']);
-                exit;
-            }
-            $str_query = "INSERT INTO appDataQueue VALUES (null, ".$_REQUEST['appId'].", ".$_REQUEST['versionId'].", 'image', ".
-                     "'".addslashes($_REQUEST['screenshot_desc'])."', '".$_REQUEST['appId']."-".$_REQUEST['versionId']."-".basename($_FILES['imagefile']['name'])."', '$str_data', '".$_SESSION['current']->userid."', NOW())";
+            (loggedin() && $_SESSION['current']->is_maintainer($_REQUEST['appId'], 
+                                                $_REQUEST['versionId'])))
+        {    
+            $str_query = "INSERT INTO appData VALUES (null, ".$_REQUEST['appId'].", ".$_REQUEST['versionId'].
+                         ", 'image', '".addslashes($_REQUEST['screenshot_desc'])."', '')";
 
             if(debugging()) addmsg("<p align=center><b>query:</b> $str_query </p>","green");
     
             if (mysql_query($str_query))
             {
-                //success
-                $email = getNotifyEmailAddressList($_REQUEST['appId'], $_REQUEST['versionId']);
-                if($email)
+                $int_id = mysql_insert_id();
+    
+                if(!copy($_FILES['imagefile']['tmp_name'], "data/screenshots/".$int_id))
                 {
-                    $fullAppName = "Application: ".lookupAppName($_REQUEST['appId'])." Version: ".lookupVersionName($_REQUEST['appId'], $_REQUEST['versionId']);
-                    $ms .= APPDB_ROOT."admin/adminAppDataQueue.php?queueId=".mysql_insert_id()."\n";
-                    $ms .= "\n";
-                    $ms .= ($_SESSION['current']->username ? $_SESSION['current']->username : "an anonymous user")." submitted a screenshot ".$_REQUEST['screenshot_desc']." for ".$fullAppName."\n";
-                    $ms .= "\n";
-                    $ms .= STANDARD_NOTIFY_FOOTER;
+                    // whoops, copy failed. do something
+                    errorpage("debug: copy failed; (".$_FILES['imagefile']['tmp_name'].";".$_FILES['imagefile']['name']);
+                    $str_query = "DELETE FROM appData WHERE id = '".$int_id."'";
+                    mysql_query($str_query);
+                    exit;
+                } else 
+                {   
+                    // we have to update the entry now that we know it's name
+                    $str_query = "UPDATE appData SET url = '".$int_id."' WHERE id = '".$int_id."'";
+                    if (mysql_query($str_query))
+                    {
+                        //success
+                        $email = getNotifyEmailAddressList($_REQUEST['appId'], $_REQUEST['versionId']);
+                        if($email)
+                        {
+                            $fullAppName = "Application: ".lookupAppName($_REQUEST['appId'])." Version: ".lookupVersionName($_REQUEST['appId'], $_REQUEST['versionId']);
+                            $ms .= APPDB_ROOT."screenshots.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']."\n";
+                            $ms .= "\n";
+                            $ms .= $_SESSION['current']->username." added screenshot ".$_REQUEST['screenshot_desc']." to ".$fullAppName."\n";
+                            $ms .= "\n";
+                            $ms .= STANDARD_NOTIFY_FOOTER;
  
-                    mail(stripslashes($email), "[AppDB] ".$fullAppName ,$ms);
-                } else
-                {
-                    $email = "no one";
-                }
-                addmsg("mesage sent to: ".$email, "green");
+                            mail(stripslashes($email), "[AppDB] ".$fullAppName ,$ms);
+                        } else
+                        {
+                            $email = "no one";
+                        }
+                        addmsg("mesage sent to: ".$email, "green");
 
-                addmsg("The image you submitted will be added to the database database after being reviewed", "green");
-                redirect(apidb_fullurl("screenshots.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']));
+                        addmsg("The image was successfully added into the database", "green");
+                        redirect(apidb_fullurl("screenshots.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']));
+                    }
+                    else
+                    {
+                        //error
+                        $statusMessage = "<p><b>Database Error!<br>".mysql_error()."</b></p>\n";
+                        addmsg($statusMessage, "red");
+                    }
+                }
             }
-            else
+        } else // we are a normal user or an anonymous and submitted a screenshot
+        {   
+            $str_query = "INSERT INTO appDataQueue VALUES (null, ".$_REQUEST['appId'].", ".$_REQUEST['versionId'].
+                         ", 'image', '".addslashes($_REQUEST['screenshot_desc'])."', '','".$_SESSION['current']->userid.
+                         "', NOW())";
+
+            if(debugging()) addmsg("<p align=center><b>query:</b> $str_query </p>","green");
+    
+            if (mysql_query($str_query))
             {
-                //error
-                $statusMessage = "<p><b>Database Error!<br>".mysql_error()."</b></p>\n";
-                addmsg($statusMessage, "red");
+                $int_queueId = mysql_insert_id();
+    
+                if(!copy($_FILES['imagefile']['tmp_name'], "data/queued/screenshots/".$int_queueId))
+                {
+                    // whoops, copy failed. do something
+                    errorpage("debug: copy failed; (".$_FILES['imagefile']['tmp_name'].";".$_FILES['imagefile']['name']);
+                    $str_query = "DELETE FROM appDataQueue WHERE queueId = '".$int_queueId."'";
+                    mysql_query($str_query);
+                    exit;
+                } else 
+                {   
+                    // we have to update the queued entry now that we know it's name
+                    $str_query = "UPDATE appDataQueue SET url = '".$int_queueId."' WHERE queueId = '".$int_queueId."'";
+                    if (mysql_query($str_query))
+                    {
+                        //success
+                        $email = getNotifyEmailAddressList($_REQUEST['appId'], $_REQUEST['versionId']);
+                        if($email)
+                        {
+                            $fullAppName = "Application: ".lookupAppName($_REQUEST['appId'])." Version: ".lookupVersionName($_REQUEST['appId'], $_REQUEST['versionId']);
+                            $ms .= APPDB_ROOT."admin/adminAppDataQueue.php?queueId=".mysql_insert_id()."\n";
+                            $ms .= "\n";
+                            $ms .= ($_SESSION['current']->username ? $_SESSION['current']->username : "an anonymous user")." submitted a screenshot ".$_REQUEST['screenshot_desc']." for ".$fullAppName."\n";
+                            $ms .= "\n";
+                            $ms .= STANDARD_NOTIFY_FOOTER;
+ 
+                            mail(stripslashes($email), "[AppDB] ".$fullAppName ,$ms);
+                        } else
+                        {
+                            $email = "no one";
+                        }
+                        addmsg("mesage sent to: ".$email, "green");
+
+                        addmsg("The image you submitted will be added to the database database after being reviewed", "green");
+                        redirect(apidb_fullurl("screenshots.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']));
+                    }
+                    else
+                    {
+                        //error
+                        $statusMessage = "<p><b>Database Error!<br>".mysql_error()."</b></p>\n";
+                        addmsg($statusMessage, "red");
+                    }
+                }
             }
         }
     } elseif($_REQUEST['cmd'] == "delete")
@@ -131,7 +152,6 @@ if($_REQUEST['cmd'])
                     $email = "no one";
                 }
                 addmsg("mesage sent to: ".$email, "green");
-
                 addmsg("Image deleted", "green");
                 redirect(apidb_fullurl("screenshots.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']));
             } else

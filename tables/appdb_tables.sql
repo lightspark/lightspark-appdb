@@ -206,18 +206,17 @@ create table appData (
  * links to screenshots and other stuff waiting to be accepted
  */
 create table appDataQueue (
- queueid   int not null auto_increment,
- queueappId    int not null,
- queueversionId  int default 0,
- queuetype   enum('image', 'url'),
- queuedescription  text,
- queueurl    varchar(255),
- queuecontent  longblob,
- queueuserId int not null,
+ queueId   int not null auto_increment,
+ appId    int not null,
+ versionId  int default 0,
+ type   enum('image', 'url'),
+ description  text,
+ url    varchar(255),
+ userId int not null,
  submitTime  timestamp,
  key(queueid),
- index(queueappId),
- index(queueversionId)
+ index(appId),
+ index(versionId)
 );
  
 

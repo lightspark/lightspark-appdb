@@ -1,16 +1,14 @@
 <?php
 /************************************************/
-/* code to show an image stored in mysql        */
+/* code to show a queued image                  */
 /************************************************/
 
 include("path.php");
-require(BASE."include/"."incl.php");
-if($info=getimagesize("../data/screenshots/".$_REQUEST['file']))
+if($info=getimagesize("../data/queued/screenshots/".$_REQUEST['queueId']))
 {
        header('Content-type: '.$info['mime']);
-       $handle = fopen("../data/screenshots/".$_REQUEST['file'], "rb");
-       echo fread($handle, filesize("../data/screenshots/".$_REQUEST['file']));
+       $handle = fopen("../data/queued/screenshots/".$_REQUEST['queueId'], "rb");
+       echo fread($handle, filesize("../data/queued/screenshots/".$_REQUEST['queueId']));
        fclose($handle);
 }
-unlink("../data/screenshots/".$_REQUEST['file']);
 ?>
