@@ -8,13 +8,12 @@
  */ 
 include("path.php");
 require(BASE."include/incl.php");
-require(BASE."include/tableve.php");
 require(BASE."include/category.php");
 require(BASE."include/application.php");
 
 if(!$_SESSION['current']->isLoggedIn())
 {
-    errorpage("You need to be logged in to apply to be a maintainer.");
+    errorpage("You need to be logged in to resign from being a maintainer.");
     exit;
 }
 

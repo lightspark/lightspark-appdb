@@ -8,7 +8,6 @@
  */ 
 include("path.php");
 require(BASE."include/incl.php");
-require(BASE."include/tableve.php");
 require(BASE."include/category.php");
 require(BASE."include/application.php");
 
