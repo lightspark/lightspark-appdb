@@ -10,8 +10,19 @@ Application Database.</p>
 <p><b>Q: What is the Application Database?</b></p>
 <blockquote>
 <p><b>A:</b> The Application Database is a repository for
-compatibility information of applications for Microsoft Windows
-running on Wine.<p>
+Windows application compatibility information with Wine.
+In particular it provides the following information:<br>
+(see the <a href="/appview.php?appId=296">Visual FoxPro</a> entry for an
+example)<p>
+<ul>
+  <li>Whether a given application works at all with Wine.</li>
+  <li>If it is partially working, then which areas of the application
+      have problems.</li>
+  <li>How to install and get that application working best.</li>
+</ul>
+<p>And if the Windows application you want most to use with Wine does not
+work, it lets you vote for it to bring it to the attention of Wine
+developers.</p>
 </blockquote>
 
 <p><b>Q: What is Wine?</b></p>
@@ -30,13 +41,12 @@ allowing many unmodified Windows binaries to run on x86-based Unixes, including
 <a href="http://www.winehq.org/site/docs/wine-faq/index">Wine FAQ</a>.<p>
 </blockquote>
 
-<p><b>Q: What is the benefits of this Application Database?</b></p>
+<p><b>Q: What are the benefits of this Application Database?</b></p>
 <blockquote>
-<p><b>A:</b> The Application database will give the Wine developers a
-resource for compatibility information. This will allow them to focus their
-efforts on those applications the community most wants to see working. It also
-provides end-user support. Users can find out before they even install Wine if
-their application is supported.<p>
+<p><b>A:</b> The Application database benefits both Wine developers and users.
+It lets Wine developers know which applications the community most wants to
+see working. And it lets Wine user know beforehand if their application will
+work in Wine, and also what are the tricks to get it working best.<p>
 </blockquote>
 
 <p><b>Q: How does a new application get added to the database?</b></p>
