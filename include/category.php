@@ -227,4 +227,16 @@ function deleteCategory($catId)
         addmsg("Failed to delete category $catId: ".mysql_error(), "red");
     }
 }
+
+Function lookupCategoryName($catId)
+{
+    $sResult = query_appdb("SELECT * FROM appCategory ".
+               "WHERE catId = ".$catId);
+    if(!$sResult || mysql_num_rows($sResult) != 1)
+        return "Unknown category";
+
+    $ob = mysql_fetch_object($sResult);
+    return $ob->catName;
+}
+
 ?>

@@ -7,6 +7,8 @@ include("path.php");
 include(BASE."include/"."incl.php");
 include(BASE."include/"."tableve.php");
 include(BASE."include/"."qclass.php");
+require(BASE."include/"."application.php");
+require(BASE."include/"."category.php");
 
 if(!is_numeric($_REQUEST['appId']))
 {
@@ -27,18 +29,91 @@ if(isset($_REQUEST['submit']))
     // commit changes of form to database
     if($_REQUEST['submit'] == "Update Database")
     {
-        $sUpdate = compile_update_string(array( 'appName' => $_REQUEST['appName'],
-                                               'description' => $_REQUEST['description'],
-                                               'webPage' => $_REQUEST['webPage'],
-                                               'vendorId' => $_REQUEST['vendorId'],
-                                               'keywords' => $_REQUEST['keywords'],
-                                               'catId' =>  $_REQUEST['catId'] ));
+        // Get the old values from the database 
+        $sQuery = "SELECT * FROM appFamily WHERE appId = ".$_REQUEST['appId'];
+        $hResult = query_appdb($sQuery);
+        $ob = mysql_fetch_object($hResult);
+        $sOld_appName     = $ob->AppName;
+        $sOld_description = $ob->description;
+        $iOld_vendorId    = $ob->vendorId;
+        $iOld_catId       = $ob->catId;
+        $sOld_keywords    = $ob->keywords;
+        $sOld_webPage     = $ob->webPage;
+
+        $sWhatChanged = "";
+        $bAppChanged = false;
+        if ($sOld_appName <> $_REQUEST['appName'])
+        {
+            $sWhatChanged .= "    App name: Old Value: ".stripslashes($sOld_appName)."\n";
+            $sWhatChanged .= "              New Value: ".stripslashes($_REQUEST['appName'])."\n";
+            $bAppChanged = true;
+        }
+
+        if ($iOld_vendorId <> $_REQUEST['vendorId'])
+        {
+            $sWhatChanged .= "      Vendor: Old Value: ".lookupVendorName($iOld_vendorId)."\n";
+            $sWhatChanged .= "              New Value: ".lookupVendorName($_REQUEST['vendorId'])."\n";
+            $bAppChanged = true;
+        }
+
+        if ($old_description <> $description)
+        {
+            $sWhatChanged .= " Description: Old Value:\n";
+            $sWhatChanged .= "-----------------------:\n";
+            $sWhatChanged .= stripslashes($sOld_description)."\n";
+            $sWhatChanged .= "-----------------------:\n";
+            $sWhatChanged .= " Description: New Value:\n";
+            $sWhatChanged .= "-----------------------:\n";
+            $sWhatChanged .= stripslashes($_REQUEST['description'])."\n";
+            $sWhatChanged .= "-----------------------:\n";
+            $bAppChanged = true;
+        }
+
+        if ($iOld_catId <> $_REQUEST['catId'])
+        {
+            $sWhatChanged .= "    Category: Old Value: ".lookupCategoryName($iOld_catId)."\n";
+            $sWhatChanged .= "              New Value: ".lookupCategoryName($_REQUEST['catId'])."\n";
+            $bAppChanged = true;
+        }
+
+        if ($sOld_keywords <> $_REQUEST['keywords'])
+        {
+            $sWhatChanged .= "    keywords: Old Value: ".stripslashes($sOld_keywords)."\n";
+            $sWhatChanged .= "              New Value: ".stripslashes($_REQUEST['keywords'])."\n";
+            $bAppChanged = true;
+        }
+
+        if ($sOld_webPage <> $_REQUEST['webPage'])
+        {
+            $sWhatChanged .= "    Web Page: Old Value: ".stripslashes($sOld_webPage)."\n";
+            $sWhatChanged .= "              New Value: ".stripslashes($_REQUEST['webPage'])."\n";
+            $bAppChanged = true;
+        }
+
+        //did anything change?
+        if ($bAppChanged)
+        {
+            $sUpdate = compile_update_string(array( 'appName' => $_REQUEST['appName'],
+                                                    'description' => $_REQUEST['description'],
+                                                    'webPage' => $_REQUEST['webPage'],
+                                                    'vendorId' => $_REQUEST['vendorId'],
+                                                    'keywords' => $_REQUEST['keywords'],
+                                                    'catId' =>  $_REQUEST['catId'] ));
                                                
-        if (query_appdb("UPDATE `appFamily` SET $sUpdate WHERE `appId` = {$_REQUEST['appId']}"))
-            addmsg("Database Updated", "green");
+            if (query_appdb("UPDATE `appFamily` SET $sUpdate WHERE `appId` = {$_REQUEST['appId']}"))
+            {
+
+                addmsg("Database Updated", "green");
+
+            }
+        }
     }
     else if($_REQUEST['submit'] == "Update URL")
     {
+
+        $sWhatChanged = "";
+        $bAppChanged = false;
+
         if (!empty($_REQUEST['url_desc']) && !empty($_REQUEST['url']) )
         {
             // process added URL
@@ -54,7 +129,12 @@ if(isset($_REQUEST['submit']))
             if(debugging()) { echo "<p align=center><b>query:</b> $sQuery </p>"; }
 	    
             if (query_appdb($sQuery))
+            {
                 addmsg("The URL was successfully added into the database", "green");
+                $sWhatChanged .= "  Added Url:     Description: ".stripslashes($_REQUEST['url_desc'])."\n";
+                $sWhatChanged .= "                         Url: ".stripslashes($_REQUEST['url'])."\n";
+                $bAppChanged = true;
+            }
         }
         
         // Process changed URL's
@@ -68,7 +148,13 @@ if(isset($_REQUEST['submit']))
 	            $hResult = query_appdb("DELETE FROM appData WHERE id = '{$_REQUEST['aId'][$i]}'");
 
                 if($hResult)
+                {
                     addmsg("<p><b>Successfully deleted URL ".$_REQUEST['aOldDesc'][$i]." (".$_REQUEST['aOldURL'][$i].")</b></p>\n",'green');
+                    $sWhatChanged .= "Deleted Url:     Description: ".stripslashes($_REQUEST['aOldDesc'][$i])."\n";
+                    $sWhatChanged .= "                         url: ".stripslashes($_REQUEST['aOldURL'][$i])."\n";
+                    $bAppChanged = true;
+                }
+
 
             }
             else if( $_REQUEST['aURL'][$i] != $_REQUEST['aOldURL'][$i] || $_REQUEST['adescription'][$i] != $_REQUEST['aOldDesc'][$i])
@@ -80,13 +166,42 @@ if(isset($_REQUEST['submit']))
                     $sUpdate = compile_update_string( array( 'description' => $_REQUEST['adescription'][$i],
                                                      'url' => $_REQUEST['aURL'][$i]));
                     if (query_appdb("UPDATE appData SET $sUpdate WHERE id = '{$_REQUEST['aId'][$i]}'"))
+                    {
                          addmsg("<p><b>Successfully updated ".$_REQUEST['aOldDesc'][$i]." (".$_REQUEST['aOldURL'][$i].")</b></p>\n",'green');
+                         $sWhatChanged .= "Changed Url: Old Description: ".stripslashes($_REQUEST['aOldDesc'][$i])."\n";
+                         $sWhatChanged .= "                     Old Url: ".stripslashes($_REQUEST['aOldURL'][$i])."\n";
+                         $sWhatChanged .= "             New Description: ".stripslashes($_REQUEST['adescription'][$i])."\n";
+                         $sWhatChanged .= "                     New url: ".stripslashes($_REQUEST['aURL'][$i])."\n";
+                         $bAppChanged = true;
+                    }
                 }
-            }            
+            }
         }
     }
-    
+    if ($bAppChanged)
+    {
+        $email = getNotifyEmailAddressList($_REQUEST['appId']);
+        if($email)
+        {
+            $fullAppName = "Application: ".lookupAppName($_REQUEST['appId']);
+            $ms .= APPDB_ROOT."appview.php?appId=".$_REQUEST['appId']."\n";
+            $ms .= "\n";
+            $ms .= ($_SESSION['current']->username ? $_SESSION['current']->username : "Anonymous")." changed ".$fullAppName."\n";
+            $ms .= "\n";
+            $ms .= $sWhatChanged."\n";
+            $ms .= "\n";
+            $ms .= STANDARD_NOTIFY_FOOTER;
+
+            mail( "", "[AppDB] ".$fullAppName ,$ms, "Bcc: ".stripslashes( $email));
+        } else
+        {
+            $email = "no one";
+        }
+        addmsg("mesage sent to: ".$email, green);
+    }
+
     redirect(apidb_fullurl("appview.php?appId={$_REQUEST['appId']}"));
+    exit;
 }
 else
 // Show the form for editing the Application Family 

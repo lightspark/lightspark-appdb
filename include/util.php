@@ -283,4 +283,15 @@ function getNumberOfImages()
     return $row->num_images;
 }
 
+function lookupVendorName($vendorId)
+{
+    $sResult = query_appdb("SELECT * FROM vendor ".
+               "WHERE vendorId = ".$vendorId);
+    if(!$sResult || mysql_num_rows($sResult) != 1)
+        return "Unknown vendor";
+
+    $vendor = mysql_fetch_object($sResult);
+    return $vendor->vendorName;
+}
+
 ?>

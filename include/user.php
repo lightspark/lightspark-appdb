@@ -374,15 +374,17 @@ function UserWantsEmail($userid)
 /**
  * get the email address of people to notify for this appId and versionId
  */
-function getNotifyEmailAddressList($appId, $versionId)
+function getNotifyEmailAddressList($appId, $versionId = 0)
 {
     $aUserId = array();
     $c = 0;
     $retval = "";
+    if ($versionId == 0)
+        $sWhere = "appId = ".$appId;
+    else
+        $sWhere = "appId = ".$appId." AND versionId = ".$versionId;
 
-    $query = "SELECT userId FROM ".
-                          "appMaintainers WHERE appId = '$appId' " .
-                          "AND versionId = '$versionId';";
+    $query = "SELECT userId FROM appMaintainers WHERE ".$sWhere.";";
     $result = mysql_query($query);
     if(mysql_num_rows($result) > 0)
     {
