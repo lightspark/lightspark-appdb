@@ -27,20 +27,16 @@ function getAppsFromUserId($userId)
 /*
  * get the userIds of maintainers for this appId and versionId
  */
-function getMaintainersUserIdsFromAppIdVersionId($appId, $versionId)
+function getMaintainersUserIdsFromAppIdVersionId($versionId)
 {
     $query = "SELECT userId FROM ".
-                          "appMaintainers WHERE appId = '$appId' " .
-                          "AND versionId = '$versionId';";
+                          "appMaintainers WHERE versionId = '$versionId';";
     $result = query_appdb($query);
-    if(mysql_num_rows($result) == 0)
-        return; // no sub categories
-
     $retval = array();
     $c = 0;
     while($row = mysql_fetch_object($result))
     {
-        $retval[$c] = array($row->userId);
+        $retval[$c] = $row->userId;
         $c++;
     }
 
@@ -56,14 +52,11 @@ function getSuperMaintainersUserIdsFromAppId($appId)
                           "appMaintainers WHERE appId = '$appId' " .
                           "AND superMaintainer = '1';";
     $result = query_appdb($query);
-    if(!$result || mysql_num_rows($result) == 0)
-        return; // no sub categories
-
     $retval = array();
     $c = 0;
     while($row = mysql_fetch_object($result))
     {
-        $retval[$c] = array($row->userId);
+        $retval[$c] = $row->userId;
         $c++;
     }
 

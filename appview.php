@@ -239,7 +239,7 @@ if($_REQUEST['appId'])
     if($other_maintainers)
     {
         echo "        <tr><td align=\"left\"><ul>\n";
-        while(list($index, list($userIdValue)) = each($other_maintainers))
+        while(list($index, $userIdValue) = each($other_maintainers))
         {
             $oUser = new User($userIdValue);
             echo "        <li>".$oUser->sRealname."</li>\n";
@@ -368,13 +368,16 @@ else if($_REQUEST['versionId'])
     echo "<tr><td align=\"center\" colspan=\"2\">$img</td></tr>\n";
 
     // display all maintainers of this application
-    echo "<tr class=\"color0\"><td align=\"left\" colspan=\"2\"><b>Maintainers of this application:</b>\n";
+    echo "<tr class=\"color0\"><td align=\"left\" colspan=\"2\"><b>Maintainers of this version:</b>\n";
     echo "<table width=\"250\" border=\"0\">";
-    $other_maintainers = getMaintainersUserIdsFromAppIdVersionId($oApp->iAppId, $oVersion->iVersionId);
-    if($other_maintainers)
+    $aMaintainers = getMaintainersUserIdsFromAppIdVersionId($oVersion->iVersionId);
+    $aSupermaintainers = getSuperMaintainersUserIdsFromAppId($oVersion->iAppId);
+    $aAllMaintainers = array_merge($aMaintainers,$aSupermaintainers);
+    $aAllMaintainers = array_unique($aAllMaintainers);
+    if(sizeof($aAllMaintainers)>0)
     {
         echo "<tr class=\"color0\"><td align=\"left\" colspan=\"2\"><ul>";
-        while(list($index, list($userIdValue)) = each($other_maintainers))
+        while(list($index, $userIdValue) = each($aAllMaintainers))
         {
             $oUser = new User($userIdValue);
             echo "<li>".$oUser->sRealname."</li>";
