@@ -1,8 +1,8 @@
 <?php
 
 
-include(BASE."include/"."appversion_inc.php");
-include(BASE."include/"."appbyvendor_inc.php");
+include(BASE."include/"."appversion.php");
+include(BASE."include/"."appbyvendor.php");
 
 function initFields()
 {

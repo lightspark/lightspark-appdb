@@ -1,9 +1,9 @@
 <?php
-/*************************************************************/
-/* query class                                               */
-/* (de)compose/exec queries                                  */
-/* this should have query_inc.php's query preprocessing etc. */
-/*************************************************************/
+/*********************************************************/
+/* query class                                           */
+/* (de)compose/exec queries                              */
+/* this should have query.php's query preprocessing etc. */
+/*********************************************************/
 
 class qclass {
 
