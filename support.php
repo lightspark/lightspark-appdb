@@ -25,7 +25,7 @@ help us out.<br />
 We also have a <a href="http://bugs.winehq.org/">Bug Tracking Database</a>
 where you can register bugs. This is the best way to get problems fixed. You can go directly
 to the App DB Bug Database by following this
-<a href="http://bugs.winehq.org/buglist.cgi?product=Wine+Apps+Database">link</a>.
+<a href="http://bugs.winehq.org/buglist.cgi?product=WineHQ+Apps+Database">link</a>.
 </p>
 
 <p>
