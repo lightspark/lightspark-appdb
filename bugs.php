@@ -42,11 +42,11 @@ function get_screenshot_img($appId, $versionId)
 }
 
 
-function display_catpath($catId)
+function display_catpath($catId, $appId, $versionId = '')
 {
     $cat = new Category($catId);
 
-    $catFullPath = make_cat_path($cat->getCategoryPath());
+    $catFullPath = make_cat_path($cat->getCategoryPath(),$appId, $versionId);
     echo html_frame_start("",'98%','',2);
     echo "<p><b>Category: ". $catFullPath ."</b><br>\n";
     echo html_frame_end();
@@ -173,7 +173,7 @@ if($appId)
 	apidb_header("Search for bugs in Bugzila for - ".$data->appName);
 
 	//cat display
-	display_catpath($app->data->catId);
+	display_catpath($app->data->catId, $appId);
 
 	//set Vendor
 	$vendor = $app->getVendor();

@@ -105,7 +105,6 @@ foreach ($cat_array_reversed as $i => $value)
 /******************************************************************/
 /* add to the list all of the sub sections of the current section */
 $cat = new Category($catId);
-$catFullPath = make_cat_path($cat->getCategoryPath());
 $subs = $cat->getCategoryList();
 
 if($subs)

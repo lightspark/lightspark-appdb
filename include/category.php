@@ -182,7 +182,7 @@ function versionIdToName($versionId)
 /**
  * create the Category: line at the top of appdb pages$
  */
-function make_cat_path($path)
+function make_cat_path($path, $appId = '', $versionId = '')
 {
     $str = "";
     $catCount = 0;
@@ -198,11 +198,13 @@ function make_cat_path($path)
         $catCount++;
     }
 
-    if($_REQUEST['appId'])
-        $str .= " &gt; ".html_ahref(appIdToName($_REQUEST['appId']),"appview.php?appId=".$_REQUEST['appId']);
+    if(!empty($appId))
+    {
+        $str .= " &gt; ".html_ahref(appIdToName($appId),"appview.php?appId=$appId");
 
-    if($_REQUEST['versionId'])
-        $str .= " &gt; ".html_ahref(versionIdToName($_REQUEST['versionId']),"appview.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']);
+        if(!empty($versionId))
+            $str .= " &gt; ".html_ahref(versionIdToName($versionId),"appview.php?appId=".$appId."&versionId=".$versionId);
+    }
 
     return $str;
 }
