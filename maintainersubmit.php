@@ -93,9 +93,9 @@ if($_REQUEST['maintainReason'])
 {
     // header
     if($versionId)
-        apidb_header("Request to become an application maintainer of ".appIdToName($appId)." ".versionIdToName($versionId));
+        apidb_header("Request to become an application maintainer of ".lookup_app_name($appId)." ".lookup_version_name($versionId));
     else
-        apidb_header("Request to become an application super maintainer of ".appIdToName($appId));
+        apidb_header("Request to become an application super maintainer of ".lookup_app_name($appId));
 
     // show add to queue form
 	
@@ -138,12 +138,12 @@ if($_REQUEST['maintainReason'])
 
     echo "<table width='100%' border=0 cellpadding=2 cellspacing=0>\n";
     echo "<tr valign=top><td class=color0>";
-    echo '<b>Application</b></td><td>'.appIdToName($appId);
+    echo '<b>Application</b></td><td>'.lookup_app_name($appId);
     echo '</td></tr>',"\n";
     if($versionId)
     {
         echo "<tr valign=top><td class=color0>";
-        echo '<b>Version</b></td><td>'.versionIdToName($versionId);
+        echo '<b>Version</b></td><td>'.lookup_version_name($versionId);
         echo '</td></tr>',"\n";
     }
     echo "<input type=hidden name='appId' value=$appId>";

@@ -57,7 +57,7 @@ class Note {
             $sEmail = get_notify_email_address_list($this->iAppId, $this->iVersionId);
             if($sEmail)
             {
-                $sSubject = "Note for ".lookupAppName($this->iAppId)." ".lookupVersionName($this->iVersionId)." added by ".$_SESSION['current']->sRealname;
+                $sSubject = "Note for ".lookup_app_name($this->iAppId)." ".lookup_version_name($this->iVersionId)." added by ".$_SESSION['current']->sRealname;
                 $sMsg  = APPDB_ROOT."appview.php?appId=".$this->iAppId."&versionId=".$this->iVersionId."\n";
                 $sMsg .= "\n";
                 $sMsg .= "Title: ".$this->sTitle."\r\n";
@@ -119,7 +119,7 @@ class Note {
             $sEmail = get_notify_email_address_list($this->iAppId, $this->iVersionId);
             if($sEmail)
             {
-                $sSubject = "Note for ".lookupAppName($this->iAppId)." ".lookupVersionName($this->iVersionId)." deleted by ".$_SESSION['current']->sRealname;
+                $sSubject = "Note for ".lookup_app_name($this->iAppId)." ".lookup_version_name($this->iVersionId)." deleted by ".$_SESSION['current']->sRealname;
                 $sMsg  = APPDB_ROOT."appview.php?appId=".$this->iAppId."&versionId=".$this->iVersionId."\n";
                 $sMsg .= "\n";
                 $sMsg .= "This note was made on ".substr($this->sDateCreated,0,10)." by ".$this->oOwner->sRealname."\n";

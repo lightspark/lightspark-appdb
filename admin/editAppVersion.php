@@ -89,7 +89,7 @@ if(isset($_REQUEST['submit1']))
                 $sEmail = get_notify_email_address_list($_REQUEST['appId'], $_REQUEST['versionId']);
                 if($sEmail)
                 {
-                    $sSubject = lookupAppName($_REQUEST['appId'])." ".lookupVersionName($_REQUEST['versionId'])." has been modified by".$_SESSION['current']->sRealname;
+                    $sSubject = lookup_app_name($_REQUEST['appId'])." ".lookup_version_name($_REQUEST['versionId'])." has been modified by".$_SESSION['current']->sRealname;
                     $sMsg .= APPDB_ROOT."appview.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']."\n";
                     $sMsg .= "\n";
                     $sMsg .= "The following changes have been made:";
@@ -180,7 +180,7 @@ if(isset($_REQUEST['submit1']))
         $sEmail = get_notify_email_address_list($_REQUEST['appId']);
         if($sEmail)
         {
-            $sSubject = "Links for ".lookupAppName($_REQUEST['appId'])." ".lookupAppName($_REQUEST['versionId'])." have been updated by ".$_SESSION['current']->sRealname;
+            $sSubject = "Links for ".lookup_app_name($_REQUEST['appId'])." ".lookup_app_name($_REQUEST['versionId'])." have been updated by ".$_SESSION['current']->sRealname;
             $sMsg  = APPDB_ROOT."appview.php?appId=".$_REQUEST['appId']."\n";
             $sMsg .= "\n";
             $sMsg .= "The following changes have been made:";
@@ -212,7 +212,7 @@ if(isset($_REQUEST['submit1']))
     echo html_table_begin("width='100%' border=0 align=left cellpadding=6 cellspacing=0 class='box-body'");
     echo '<input type="hidden" name="appId" value='.$_REQUEST['appId'].' />';
     echo '<input type="hidden" name="versionId" value='.$_REQUEST['versionId'].' />';
-    echo '<tr><td class=color1>Name</td><td class=color0>'.lookupAppName($_REQUEST['appId']).'</td></tr>',"\n";
+    echo '<tr><td class=color1>Name</td><td class=color0>'.lookup_app_name($_REQUEST['appId']).'</td></tr>',"\n";
     echo '<tr><td class=color4>Version</td><td class=color0><input size=80% type="text" name="versionName" type="text" value="'.$oRow->versionName.'" /></td></tr>',"\n";
     echo '<tr><td class="color4">Version specific description</td><td class="color0">', "\n";
     if(trim(strip_tags($oRow->description))=="")

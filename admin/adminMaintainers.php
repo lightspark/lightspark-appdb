@@ -76,13 +76,13 @@ if ($_REQUEST['sub'])
             
             if($ob->superMaintainer)
             {
-                echo "    <td><a href='".BASE."appview.php?appId=$ob->appId'>".appIdToName($ob->appId)."</a></td>\n";
-                echo "    <td>".versionIdToName($ob->versionId)."&nbsp;</td>\n";
+                echo "    <td><a href='".BASE."appview.php?appId=$ob->appId'>".lookup_app_name($ob->appId)."</a></td>\n";
+                echo "    <td>".lookup_version_name($ob->versionId)."&nbsp;</td>\n";
                 echo "    <td>Yes</td>\n";
             } else
             {
-                echo "    <td>".appIdToName($ob->appId)."</td>\n";
-                echo "    <td><a href='".BASE."appview.php?appId=$ob->appId&versionId=$ob->versionId'>".versionIdToName($ob->versionId)."</a>&nbsp;</td>\n";
+                echo "    <td>".lookup_app_name($ob->appId)."</td>\n";
+                echo "    <td><a href='".BASE."appview.php?appId=$ob->appId&versionId=$ob->versionId'>".lookup_version_name($ob->versionId)."</a>&nbsp;</td>\n";
                 echo "    <td>No</td>\n";
             }
             echo "    <td>".$oUser->sEmail." &nbsp;</td>\n";

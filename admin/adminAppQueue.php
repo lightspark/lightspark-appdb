@@ -309,11 +309,11 @@ if ($_REQUEST['sub'])
         //Send Status Email
         if($_REQUEST['type'] == 'ver')
         {
-            $sFullAppName = lookupAppName($_REQUEST['appParent'])." ".lookupVersionName($_REQUEST['appVersion']);
+            $sFullAppName = lookup_app_name($_REQUEST['appParent'])." ".lookup_version_name($_REQUEST['appVersion']);
             $sUrl = APPDB_ROOT."appview.php?versionId=".$_REQUEST['appVersion'];
         } else 
         {
-            $sFullAppName = lookupAppName($_REQUEST['appParent']);
+            $sFullAppName = lookup_app_name($_REQUEST['appParent']);
             $sUrl = APPDB_ROOT."appview.php?appId=".$_REQUEST['appParent'];
         }
         $sSubject =  $sFullAppName." has been added into the AppDB";
@@ -350,10 +350,10 @@ if ($_REQUEST['sub'])
             //Send Status Email
             if($_REQUEST['type'] == 'ver')
             {
-                $sFullAppName = lookupAppName($_REQUEST['appParent'])." ".lookupVersionName($_REQUEST['appVersion']);
+                $sFullAppName = lookup_app_name($_REQUEST['appParent'])." ".lookup_version_name($_REQUEST['appVersion']);
             } else 
             {
-                $sFullAppName = lookupAppName($_REQUEST['appParent']);
+                $sFullAppName = lookup_app_name($_REQUEST['appParent']);
             }
             $sSubject =  $sFullAppName." has not been added into the AppDB";
             if ($ob->queueEmail)

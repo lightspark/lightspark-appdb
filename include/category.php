@@ -161,24 +161,6 @@ class Category {
 };
 
 
-function appIdToName($appId)
-{
-    $result = query_appdb("SELECT appName FROM appFamily WHERE appId = $appId");
-    if(!$result || !mysql_num_rows($result))
-        return "<unknown>";  // shouldn't normally happen
-    $ob = mysql_fetch_object($result);
-    return $ob->appName;
-}
-
-function versionIdToName($versionId)
-{
-    $result = query_appdb("SELECT versionName FROM appVersion WHERE versionId = $versionId");
-    if(!$result || !mysql_num_rows($result))
-        return "<unknown>";  // shouldn't normally happen
-    $ob = mysql_fetch_object($result);
-    return $ob->versionName;
-}
-
 /**
  * create the Category: line at the top of appdb pages$
  */
@@ -202,12 +184,12 @@ function make_cat_path($path, $appId = '', $versionId = '')
     {
         if(!empty($versionId))
         {
-            $str .= " &gt; ".html_ahref(appIdToName($appId),"appview.php?appId=$appId");
-            $str .= " &gt; ".versionIdToName($versionId);
+            $str .= " &gt; ".html_ahref(lookup_app_name($appId),"appview.php?appId=$appId");
+            $str .= " &gt; ".lookup_version_name($versionId);
         }
         else
         {
-            $str .= " &gt; ".appIdToName($appId);
+            $str .= " &gt; ".lookup_app_name($appId);
         }
     }
 

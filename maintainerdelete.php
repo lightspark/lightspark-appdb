@@ -27,12 +27,12 @@ if($confirmed)
 
     if($superMaintainer)
     {
-        apidb_header("You have resigned as supermaintainer of ".appIdToName($appId));
+        apidb_header("You have resigned as supermaintainer of ".lookup_app_name($appId));
         $query = "DELETE FROM appMaintainers WHERE userId = ".$_SESSION['current']->userid.
                  " AND appId = ".$appId." AND superMaintainer = ".$superMaintainer.";";
     } else
     {
-        apidb_header("You have resigned as maintainer of ".appIdToName($appId));
+        apidb_header("You have resigned as maintainer of ".lookup_app_name($appId));
         $query = "DELETE FROM appMaintainers WHERE userId = ".$_SESSION['current']->userid.
                  " AND appId = ".$appId." AND versionId = ".$versionId." AND superMaintainer = ".$superMaintainer.";";
     }
@@ -41,16 +41,16 @@ if($confirmed)
     if($result = query_appdb($query))
     {
         if($superMaintainer)
-            echo "You were removed as a supermaintainer of ".appIdToName($appId);
+            echo "You were removed as a supermaintainer of ".lookup_app_name($appId);
         else
-            echo "You were removed as a maintainer of ".appIdToName($appId).versionIdToName($versionId);
+            echo "You were removed as a maintainer of ".lookup_app_name($appId).lookup_version_name($versionId);
     }
 } else
 {
     if($superMaintainer)
-        apidb_header("Confirm supermaintainer resignation of ".appIdToName($appId));
+        apidb_header("Confirm supermaintainer resignation of ".lookup_app_name($appId));
     else
-        apidb_header("Confirm maintainer resignation of ".appIdToName($appId).versionIdToName($versionId));
+        apidb_header("Confirm maintainer resignation of ".lookup_app_name($appId).lookup_version_name ($versionId));
 
 
     echo '<form name="deleteMaintainer" action="maintainerdelete.php" method="post" enctype="multipart/form-data">',"\n";

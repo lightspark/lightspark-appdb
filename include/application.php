@@ -97,8 +97,9 @@ function deleteAppVersion($versionId)
         addmsg("Application Version $versionId deleted", "green");
 }
 
-function lookupVersionName($versionId)
+function lookup_version_name($versionId)
 {
+    if(!$versionId) return null;
     $result = query_appdb("SELECT versionName FROM appVersion WHERE versionId = $versionId");
     if(!$result || mysql_num_rows($result) != 1)
         return null;
@@ -107,8 +108,9 @@ function lookupVersionName($versionId)
 }
 
 
-function lookupAppName($appId)
+function lookup_app_name($appId)
 {
+    if(!$appId) return null;
     $result = query_appdb("SELECT appName FROM appFamily WHERE appId = $appId");
     if(!$result || mysql_num_rows($result) != 1)
         return null;
