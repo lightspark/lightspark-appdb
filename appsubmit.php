@@ -68,11 +68,11 @@ if (isset($_REQUEST['queueName']))
 
     /* if the user picked the vendor we need to retrieve the vendor name */
     /* and store it into the $queueVendor */
-    if($_REQUEST['altvendor'])
+    if(isset($_REQUEST['altvendor']))
     {
         /* retrieve the actual name here */
-        $query = "select * from vendor where vendorId = '$altvendor';";
-        $result = mysql_query($query);
+        $sQuery = "select * from vendor where vendorId = '$altvendor';";
+        $result = query_appdb($sQuery);
         if($result)
         {
             $ob = mysql_fetch_object($result);
@@ -80,31 +80,24 @@ if (isset($_REQUEST['queueName']))
         }
     }
     
-    // header
-    apidb_header("Submit Application");    
+    $aFields = compile_insert_string(
+                    array( 'queueName' => $_REQUEST['queueName'],
+                    'queueVersion' => $_REQUEST['queueVersion'],
+                    'queueVendor' => $_REQUEST['queueVendor'],
+                    'queueDesc' => $_REQUEST['queueDesc'],
+                    'queueEmail' => $_REQUEST['queueEmail'],
+                    'queueURL' => $_REQUEST['queueURL'],
+                    'queueCatId' => $_REQUEST['queueCatId']));
 
-    // add to queue
-    $query = "INSERT INTO appQueue VALUES (null, '".
-            addslashes($_REQUEST['queueName'])."', '".
-            addslashes($_REQUEST['queueVersion'])."', '".
-            addslashes($_REQUEST['queueVendor'])."', '".
-            addslashes($_REQUEST['queueDesc'])."', '".
-            addslashes($_REQUEST['queueEmail'])."', '".
-            addslashes($_REQUEST['queueURL'])."', '".
-            addslashes($_REQUEST['queueImage'])."',".
-            "NOW()".",".
-            addslashes($_REQUEST['queueCatId']).");";
-
-    mysql_query($query);
-
-    if ($error = mysql_error())
+    $sQuery = "INSERT INTO appQueue ({$aFields['FIELDS']},`submitTime`) VALUES ({$aFields['VALUES']}, NOW())";
+    
+    if(query_appdb($sQuery))
     {
-        echo "<p><font color=red><b>Error:</b></font></p>\n";
-        echo "<p>$error</p>\n";
-    } else {
-        echo "<p>Your application has been submitted for Review. You should hear back\n";
-        echo "soon about the status of your submission</p>\n";
+        addmsg("Your application has been submitted for review. You should hear back soon".
+               " about the status of your submission.",'green');
     }
+    
+    redirect(apidb_fullurl("index.php"));
 }
 
 #######################################
