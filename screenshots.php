@@ -15,101 +15,42 @@ require(BASE."include/application.php");
 require(BASE."include/mail.php");
 
 
+/*
+ * We issued a command.
+ */ 
 if($_REQUEST['cmd'])
 {
-    //process screenshot upload
+    // process screenshot upload
     if($_REQUEST['cmd'] == "screenshot_upload")
     {   
-        if($_SESSION['current']->hasPriv("admin") || 
-            ($_SESSION['current']->isLoggedIn() && $_SESSION['current']->isMaintainer($_REQUEST['appId'], 
-                                                $_REQUEST['versionId'])))
-        {    
-            $oScreenshot = new Screenshot(null,false,$_SESSION['current']->iUserId,$_REQUEST['appId'],$_REQUEST['versionId'],$_REQUEST['screenshot_desc'],$_FILES['imagefile']);
-            if($oScreenshot)
-            {
-                //success
-                $sEmail = get_notify_email_address_list($_REQUEST['appId'], $_REQUEST['versionId']);
-                if($sEmail)
-                {
-                    $sFullAppName = "Screenshot added to ".lookupAppName($_REQUEST['appId'])." ".lookupVersionName($_REQUEST['versionId']);
-                    $sMsg  = APPDB_ROOT."screenshots.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']."\n";
-                    $sMsg .= "\n";
-                    $sMsg .= $_SESSION['current']->sRealname." added screenshot ".$_REQUEST['screenshot_desc']." to ".$sFullAppName."\n";          
-                    mail_appdb($sEmail, $sFullAppName ,$sMsg);
-                }
-                addmsg("The image was successfully added into the database", "green");
-                redirect(apidb_fullurl("screenshots.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']));
-            }
-        } else // we are a normal user or an anonymous and submitted a screenshot
-        {   
-            $oScreenshot = new Screenshot(null,true,$_SESSION['current']->userid,$_REQUEST['appId'],$_REQUEST['versionId'],$_REQUEST['screenshot_desc'],$_FILES['imagefile']);
-            if($oScreenshot)
-            {
-                //success
-                $sEmail = get_notify_email_address_list($_REQUEST['appId'], $_REQUEST['versionId']);
-                if($sEmail)
-                {
-                    $sFullAppName = "Screenshot queued for ".lookupAppName($_REQUEST['appId'])." ".lookupVersionName($_REQUEST['versionId']);
-                    $sMsg  = APPDB_ROOT."admin/adminAppDataQueue.php?queueId=".mysql_insert_id()."\n";
-                    $sMsg .= "\n";
-                    $sMsg .= ($_SESSION['current']->sRealname ? $_SESSION['current']->sRealname : "an anonymous user")." submitted a screenshot ".$_REQUEST['screenshot_desc']." for ".$sFullAppName."\n";
-
-                    mail_appdb($sEmail, $sFullAppName ,$sMsg);
-                } 
-                addmsg("The image you submitted will be added to the database database after being reviewed", "green");
-                redirect(apidb_fullurl("screenshots.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']));
-            }
-        }
+        $oScreenshot = new Screenshot();
+        $oScreenshot->create($_REQUEST['versionId'], $_REQUEST['screenshot_desc'], $_FILES['imagefile']);
         $oScreenshot->free();
-    } elseif($_REQUEST['cmd'] == "delete" && is_numeric($_REQUEST['imageId']))
+    } elseif($_REQUEST['cmd'] == "delete" && is_numeric($_REQUEST['imageId'])) // process screenshot deletion
     {
-        if($_SESSION['current']->hasPriv("admin") ||
-              $_SESSION['current']->isMaintainer($_REQUEST['appId'], 
-                                                  $_REQUEST['versionId']))
-        {     
-            $oScreenshot = new Screenshot($_REQUEST['imageId']);         
-            if($oScreenshot && $oScreenshot->delete())
-            {
-                $sEmail = get_notify_email_address_list($_REQUEST['appId'], $_REQUEST['versionId']);
-                if($sEmail)
-                {
-                    $sFullAppName = "Screenshot deleted from ".lookupAppName($_REQUEST['appId'])." ".lookupVersionName($_REQUEST['versionId']);
-                    $sMsg  = APPDB_ROOT."screenshots.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']."\n";
-                    $sMsg .= "\n";
-                    $sMsg .= ($_SESSION['current']->sRealname ? $_SESSION['current']->sRealname : "Anonymous")." deleted screenshot from ".$sFullAppName."\r\n";
-   
-                    mail_appdb($sEmail, $sFullAppName ,$sMsg);
-                }
-                addmsg("Image deleted", "green");
-                redirect(apidb_fullurl("screenshots.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']));
-            } else
-            {
-                redirect(apidb_fullurl("screenshots.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']));
-            }
-        }
+        $oScreenshot = new Screenshot($_REQUEST['imageId']);
+        $oScreenshot->delete();
+        $oScreenshot->free();
     } 
-    $oScreenshot->free();
-    exit;
+    redirect(apidb_fullurl("screenshots.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']));
 }
 
-// we didn't issue any command
-if($_REQUEST['versionId'])
-    $result = query_appdb("SELECT * FROM appData WHERE type = 'image' AND appId = ".$_REQUEST['appId']." AND versionId = ".$_REQUEST['versionId']);
-else
-    $result = query_appdb("SELECT * FROM appData WHERE type = 'image' AND appId = ".$_REQUEST['appId']." ORDER BY versionId");
-     
-$app=new Application($_REQUEST['appId']);
+
+/*
+ * We didn't issued any command.
+ */ 
+$hResult = get_screenshots($_REQUEST['appId'], $_REQUEST['versionId']);   
 apidb_header("Screenshots");
-if($result && mysql_num_rows($result))
+if($hResult && mysql_num_rows($hResult))
 {
-    echo html_frame_start("Screenshot Gallery for ".$app->data->appName,500);
+    echo html_frame_start("Screenshot Gallery for ".lookup_app_name($_REQUEST['appId'])." ".lookup_version_name($_REQUEST['versionId']),500);
 
     // display thumbnails
     $c = 1;
     echo "<div align=center><table><tr>\n";
-    while($ob = mysql_fetch_object($result))
+    while($oRow = mysql_fetch_object($hResult))
     {
-        if(!$_REQUEST['versionId'] && $ob->versionId!=$currentVersionId)
+        if(!$_REQUEST['versionId'] && $oRow->versionId != $currentVersionId)
         {
             if($currentVersionId)
             {
@@ -117,37 +58,36 @@ if($result && mysql_num_rows($result))
                 echo html_frame_end();
                 $c=1;
             }
-            $currentVersionId=$ob->versionId;
-            echo html_frame_start("Version ".lookupVersionName($currentVersionId));
+            $currentVersionId=$oRow->versionId;
+            echo html_frame_start("Version ".lookup_version_name($currentVersionId));
             echo "<div align=center><table><tr>\n";
         }
-        $oScreenshot = new Screenshot($ob->id);
+        $oScreenshot = new Screenshot($oRow->id);
         // generate random tag for popup window
         $randName = generate_passwd(5);
         // set img tag        
-        $imgSRC = '<img src="appimage.php?thumbnail=true&id='.$ob->id.'" alt="'.$oScreenshot->description.'" width="'.$oScreenshot->oThumnailImage->width.'" height="'.$oScreenshot->oThumnailImage->height.'">';
+        $imgSRC = '<img src="appimage.php?thumbnail=true&id='.$oRow->id.'" alt="'.$oScreenshot->description.'" width="'.$oScreenshot->oThumnailImage->width.'" height="'.$oScreenshot->oThumnailImage->height.'">';
 
         // set image link based on user pref
-        $img = '<a href="javascript:openWin(\'appimage.php?id='.$ob->id.'\',\''.$randName.'\','.$oScreenshot->oScreenshotImage->width.','.($oScreenshot->oScreenshotImage->height+4).');">'.$imgSRC.'</a>';
+        $img = '<a href="javascript:openWin(\'appimage.php?id='.$oRow->id.'\',\''.$randName.'\','.$oScreenshot->oScreenshotImage->width.','.($oScreenshot->oScreenshotImage->height+4).');">'.$imgSRC.'</a>';
         if ($_SESSION['current']->isLoggedIn())
         {
             if ($_SESSION['current']->getpref("window:screenshot") == "no")
             {
-                $img = '<a href="appimage.php?imageId='.$ob->id.'">'.$imgSRC.'</a>';
+                $img = '<a href="appimage.php?imageId='.$oRow->id.'">'.$imgSRC.'</a>';
             }
         }
 
         // display image
         echo "<td>\n";
         echo $img;
-        echo "<div align=center>". substr(stripslashes($ob->description),0,20). "\n";
+        echo "<div align=center>". substr($oRow->description,0,20). "\n";
         
         //show admin delete link
         if($_SESSION['current']->isLoggedIn() && ($_SESSION['current']->hasPriv("admin") || 
-               $_SESSION['current']->isMaintainer($_REQUEST['appId'],
-                                                   $_REQUEST['versionId'])))
+               $_SESSION['current']->isMaintainer($_REQUEST['versionId'])))
         {
-            echo "<br />[<a href='screenshots.php?cmd=delete&imageId=$ob->id&appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']."'>Delete Image</a>]";
+            echo "<br />[<a href='screenshots.php?cmd=delete&imageId=$oRow->id&appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']."'>Delete Image</a>]";
         }
 
         echo "</div></td>\n";
@@ -168,7 +108,7 @@ if($result && mysql_num_rows($result))
 if($_REQUEST['versionId'])
 {
     //image upload box
-    echo '<form enctype="multipart/form-data" action="screenshots.php" name=imageForm method="post">',"\n";
+    echo '<form enctype="multipart/form-data" action="screenshots.php" name="imageForm" method="post">',"\n";
     echo html_frame_start("Upload Screenshot","400","",0);
     echo '<table border=0 cellpadding=6 cellspacing=0 width="100%">',"\n";
       
@@ -181,7 +121,6 @@ if($_REQUEST['versionId'])
     echo html_frame_end();
     echo '<input type="hidden" name="MAX_FILE_SIZE" value="10000000" />',"\n";
     echo '<input type="hidden" name="cmd" value="screenshot_upload" />',"\n";
-    echo '<input type="hidden" name="appId" value="'.$_REQUEST['appId'].'" />',"\n";
     echo '<input type="hidden" name="versionId" value="'.$_REQUEST['versionId'].'"></form />',"\n";
 }
 echo html_back_link(1);

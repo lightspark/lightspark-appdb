@@ -170,7 +170,7 @@ function display_versions($appId, $versions)
 
 
 /**
- * We want to see an application family (=no version) 
+ * We want to see an application family (=no version).
  */
 if(!is_numeric($_REQUEST['appId']) && !is_numeric($_REQUEST['versionId']))
 {
@@ -227,18 +227,6 @@ if($_REQUEST['appId'])
     // main URL
     echo "        <tr class=\"color1\"><td><b>URL</b></td><td>".$appLinkURL."</td></tr>\n";
 
-    // optional links
-    $result = query_appdb("SELECT * FROM appData WHERE appId = ".$_REQUEST['appId']." AND versionID = 0 AND type = 'url'");
-    if($result && mysql_num_rows($result) > 0)
-    {
-        echo "        <tr class=\"color1\"><td> <b>Links</b></td><td>\n";
-        while($ob = mysql_fetch_object($result))
-        {
-            echo "        <a href='$ob->url'>".substr(stripslashes($ob->description),0,30)."</a> <br />\n";
-        }
-            echo "        </td></tr>\n";
-        }
-  
     // image
     $img = get_screenshot_img($_REQUEST['appId']);
     echo "<tr><td align=center colspan=2>$img</td></tr>\n";
@@ -325,9 +313,10 @@ if($_REQUEST['appId'])
     //log_application_visit($_REQUEST['appId']);
 }
 
-#######################################
-# We want to see a particular version #
-#######################################
+
+/*
+ * We want to see a particular version.
+ */
 else if($_REQUEST['versionId'])
 {
     //FIXME: get rid of appId references everywhere, as version is enough.
@@ -371,7 +360,7 @@ else if($_REQUEST['versionId'])
     echo "<tr class=color1 valign=top><td> <b>Version</b></td><td>".stripslashes($ver->versionName)."</td></tr>\n";
 
     // links
-    $result = query_appdb("SELECT * FROM appData WHERE appId = $appId AND versionID = ".$_REQUEST['versionId']." AND type = 'url'");
+    $result = query_appdb("SELECT * FROM appData WHERE versionID = ".$_REQUEST['versionId']." AND type = 'url'");
     if($result && mysql_num_rows($result) > 0)
     {
         echo "        <tr class=\"color1\"><td><b>Links</b></td><td>\n";
@@ -422,7 +411,7 @@ else if($_REQUEST['versionId'])
         } else
         {
             /* are we already a maintainer? */
-            if($_SESSION['current']->isMaintainer($appId, $_REQUEST['versionId'])) /* yep */
+            if($_SESSION['current']->isMaintainer($_REQUEST['versionId'])) /* yep */
             {
                 echo '<form method=post name=message action="maintainerdelete.php"><input type=submit value="Remove yourself as a maintainer" class=button>';
                 echo "<input type=hidden name='superMaintainer' value=0>";

@@ -5,12 +5,10 @@
 
 include("path.php");
 require(BASE."include/incl.php");
+require(BASE."include/mail.php");
 require(BASE."include/screenshot.php");
 require(BASE."include/tableve.php");
-require(BASE."include/category.php");
-require(BASE."include/mail.php");
-
-apidb_header("Admin Application Data Queue");
+require(BASE."include/application.php");
 
 // deny access if not admin
 if(!$_SESSION['current']->hasPriv("admin"))
@@ -23,19 +21,23 @@ if(!$_SESSION['current']->hasPriv("admin"))
 // shows the list of appdata in queue
 if (!$_REQUEST['queueId'])
 {
-    //get available appData
-    $sQuery = "SELECT * from appDataQueue;";
+
+    apidb_header("Admin Application Data Queue");
+
+    // get available appData
+    $sQuery = "SELECT appDataQueue.*, appVersion.appId AS appId 
+               FROM appDataQueue, appVersion 
+               WHERE appVersion.versionId = appDataQueue.versionID;";
     $hResult = query_appdb($sQuery);
 
     if(!$hResult || !mysql_num_rows($hResult))
     {
-        //no appData in queue
+        // no appData in queue
         echo html_frame_start("","90%");
         echo '<p><b>The App Data Queue is empty.</b></p>',"\n";
         echo '<p>There is nothing for you to do. Check back later.</p>',"\n";        
         echo html_frame_end("&nbsp;");         
-    }
-    else
+    } else
     {
         //help
         echo "<div align=center><table width='90%' border=0 cellpadding=3 cellspacing=0><tr><td>\n\n";
@@ -59,49 +61,36 @@ if (!$_REQUEST['queueId'])
         $c = 1;
         while($ob = mysql_fetch_object($hResult))
         {   
-            if($_SESSION['current']->isMaintainer($ob->queueappId,
-                                                   $ob->queueversionId) 
-                    || $_SESSION['current']->hasPriv("admin"))
-             {
-                if ($c % 2 == 1) { $bgcolor = 'color0'; } else { $bgcolor = 'color1'; }
-                echo "<tr class=$bgcolor>\n";
-                echo "    <td>".date("Y-n-t h:i:sa", $ob->submitTime)." &nbsp;</td>\n";
-                echo "    <td><a href='adminAppDataQueue.php?queueId=$ob->queueId'>".$ob->queueId."</a></td>\n";
-                if($ob->userId)
-                {
-                    $oUser = new User($ob->userId);
-                    echo "    <td>".$oUser->sRealname." (".$oUser->sEmail.")</td>\n";
-                }
-                else
-                    echo "    <td>Anonymous</td>\n";
-                echo "<td>".appIdToName($ob->appId)."</td>\n";
-                echo "<td>".versionIdToName($ob->versionId)."</td>\n";
-                echo "<td>".$ob->type."</td>\n";
-                echo "</tr>\n\n";
-                $c++;
+            if ($c % 2 == 1) { $bgcolor = 'color0'; } else { $bgcolor = 'color1'; }
+            echo "<tr class=$bgcolor>\n";
+            echo "    <td>".date("Y-n-t h:i:sa", $ob->submitTime)." &nbsp;</td>\n";
+            echo "    <td><a href='adminAppDataQueue.php?queueId=$ob->queueId'>".$ob->queueId."</a></td>\n";
+            if($ob->userId)
+            {
+                $oUser = new User($ob->userId);
+                echo "    <td>".$oUser->sRealname." (".$oUser->sEmail.")</td>\n";
             }
+            else
+            echo "    <td>Anonymous</td>\n";
+            echo "<td>".lookup_app_name($ob->appId)."</td>\n";
+            echo "<td>".lookup_version_name($ob->versionId)."</td>\n";
+            echo "<td>".$ob->type."</td>\n";
+            echo "</tr>\n\n";
+            $c++;
         }
         echo "</table>\n\n";
         echo html_frame_end("&nbsp;");
-    }
-        
+    }      
 } else // shows a particular appdata
 {
-    if(!($_SESSION['current']->hasPriv("admin") ||
-             $_SESSION['current']->isMaintainer($obj_row->queueAppId,
-                                                 $obj_row->queueVersionId)))
-    {
-        errorpage("You don't have sufficient privileges to use this page.");
-        exit;
-    }
-    
-    $sQuery="SELECT * FROM appDataQueue WHERE queueId='".$_REQUEST['queueId']."'";
-    $hResult=query_appdb($sQuery);
-    $obj_row=mysql_fetch_object($hResult);
+    $sQuery = "SELECT * FROM appDataQueue WHERE queueId='".$_REQUEST['queueId']."'";
+    $hResult = query_appdb($sQuery);
+    $obj_row = mysql_fetch_object($hResult);
     
     if(!$_REQUEST['sub']=="inside_form")
     {       
-         
+        apidb_header("Admin Application Data Queue");
+
         echo '<form name="qform" action="adminAppDataQueue.php" method="post">',"\n";
         // help
         echo "<div align=center><table width='90%' border=0 cellpadding=3 cellspacing=0><tr><td>\n\n";
@@ -115,11 +104,11 @@ if (!$_REQUEST['queueId'])
   
         // app name
         echo '<tr valign=top><td class=color0><b>App Name</b></td>',"\n";
-        echo "<td>".appIdToName($obj_row->appId)."</td></tr>\n";
+        echo "<td>".lookup_app_name($obj_row->appId)."</td></tr>\n";
 
         // version
         echo '<tr valign=top><td class=color0><b>App Version</b></td>',"\n";
-        echo "<td>".versionIdToName($obj_row->versionId)."</td></tr>\n";
+        echo "<td>".lookup_version_name($obj_row->versionId)."</td></tr>\n";
          
         //dataDescription
         echo '<tr valign=top><td class=color0><b>Description</b></td>',"\n";
@@ -170,85 +159,69 @@ if (!$_REQUEST['queueId'])
     } elseif ($_REQUEST['add']) // we accepted the request
     { 
         $statusMessage = "";
-        $goodtogo = 0;
+         $goodtogo = 0;
         
         if($obj_row->type == "image")
         { 
-            $sQuery = "INSERT INTO appData VALUES (null, ".$obj_row->appId.", ".$obj_row->versionId.", 'image', ".
-                     "'".addslashes($_REQUEST['description'])."', '')";
-            query_appdb($sQuery);
-            $iId = mysql_insert_id();
- 
-            // we move the content in the live directory
-            rename("../data/queued/screenshots/".$obj_row->queueId, "../data/screenshots/".$iId);
-            rename("../data/queued/screenshots/originals/".$obj_row->queueId, "../data/screenshots/originals/".$iId);
-            rename("../data/queued/screenshots/thumbnails/".$obj_row->queueId, "../data/screenshots/thumbnails/".$iId);
-
-            // we have to update the entry now that we know its name
-            $sQuery = "UPDATE appData SET url = '".$iId."' WHERE id = '".$iId."'";
-   
+            $oScreenshot = new Screenshot($obj_row->queueId,true);
+            $oScreenshot->unQueue();
         }
-        elseif ($obj_row->type == "url") {
-             $query = "INSERT INTO appData VALUES (null, ".$obj_row->appId.", ".$obj_row->versionId.", 'url', ".
+        elseif ($obj_row->type == "url")
+        { // FIXME: use Link class
+            $query = "INSERT INTO appData VALUES (null, ".$obj_row->versionId.", 'url', ".
                      "'".addslashes($_REQUEST['description'])."', '".$obj_row->url."')";
-        }
+            if (query_appdb($sQuery))
+            {
+                $statusMessage = "<p>The application data was successfully added into the database</p>\n";
 
-        if(debugging()) addmsg("<p align=center><b>query:</b> $query </p>","green");
-    
-        if (query_appdb($sQuery))
-        {
-            $statusMessage = "<p>The application data was successfully added into the database</p>\n";
-
-            //delete the item from the queue
-            query_appdb("DELETE from appDataQueue where queueId = ".$obj_row->queueId.";");
+                //delete the item from the queue
+                query_appdb("DELETE from appDataQueue where queueId = ".$obj_row->queueId.";");
         
-            //Send Status Email
+                //Send Status Email
+                $oUser = new User($obj_row->userId);
+                if ($oUser->sEmail)
+                {
+                    $sSubject =  "Application Data Request Report";
+                    $sMsg  = "Your submission of an application data for ".lookup_app_name($obj_row->appId).lookup_version_name($obj_row->versionId)." has been accepted. ";
+                    $sMsg .= $_REQUEST['replyText'];
+                    $sMsg .= "We appreciate your help in making the Application Database better for all users.\r\n";
+                
+                    mail_appdb($oUser->sEmail, $sSubject ,$sMsg);
+                }
+            }
+        }
+        redirect(apidb_fullurl("admin/adminAppDataQueue.php"));
+    } elseif ($_REQUEST['reject'])
+    {
+        if($obj_row->type == "image")
+        { 
+            $oScreenshot = new Screenshot($obj_row->queueId,true);
+            $oScreenshot->delete();
+        }
+        elseif ($obj_row->type == "url")
+        { // FIXME: use Link class
             $oUser = new User($obj_row->userId);
             if ($oUser->sEmail)
             {
                 $sSubject =  "Application Data Request Report";
-                $sMsg  = "Your submission of an application data for ".appIdToName($obj_row->appId).versionIdToName($obj_row->versionId)." has been accepted. ";
+                $sMsg  = "Your submission of an application data for ".lookup_app_name($obj_row->appId).lookup_version_name($obj_row->versionId)." was rejected. ";
                 $sMsg .= $_REQUEST['replyText'];
-                $sMsg .= "We appreciate your help in making the Application Database better for all users.\r\n";
-                
-                mail_appdb($oUser->sEmail, $sSubject ,$sMsg);
+                mail_appdb($oUser->sEmail, $sSubject ,$sMsg); 
             }
-        
-            //done
-            echo html_frame_start("Submit App Data","600");
-            echo "<p><b>$statusMessage</b></p>\n";
+
+            //delete main item
+            $sQuery = "DELETE from appDataQueue where queueId = ".$obj_row->queueId.";";
+            $hResult = query_appdb($sQuery);
+            if($hResult)
+            {
+               //success
+               echo "<p>Application data  was successfully deleted from the Queue.</p>\n";
+            }
         }
-    } elseif ($_REQUEST['reject'])
-    {
-       $oUser = new User($obj_row->userId);
-       if ($oUser->sEmail)
-       {
-           $sSubject =  "Application Data Request Report";
-           $sMsg  = "Your submission of an application data for ".appIdToName($obj_row->appId).versionIdToName($obj_row->versionId)." was rejected. ";
-           $sMsg .= $_REQUEST['replyText'];
-             
-           mail_appdb($oUser->sEmail, $sSubject ,$sMsg); 
-       }
-
-       //delete main item
-       $sQuery = "DELETE from appDataQueue where queueId = ".$obj_row->queueId.";";
-       unlink("../data/queued/screenshots/".$obj_row->queueId);
-       unlink("../data/queued/screenshots/originals/".$obj_row->queueId);
-       unlink("../data/queued/screenshots/thumbnails/".$obj_row->queueId);
-
-       $hResult = query_appdb($sQuery);
-       echo html_frame_start("Delete application data submission",400,"",0);
-       if($result)
-       {
-           //success
-           echo "<p>Application data  was successfully deleted from the Queue.</p>\n";
-       }
+        redirect(apidb_fullurl("admin/adminAppDataQueue.php"));
     }
-    
 }
 echo html_frame_end("&nbsp;");        
 echo html_back_link(1,'adminAppDataQueue.php');
 apidb_footer();
 ?>
-
- 

@@ -317,39 +317,60 @@ function generate_passwd($pass_len = 10)
 /**
  * Get the email address of people to notify for this appId and versionId.
  */
-function get_notify_email_address_list($appId, $versionId = 0)
+function get_notify_email_address_list($iAppId = null, $iVersionId = null)
 {
     $aUserId = array();
     $c = 0;
     $retval = "";
-    if ($versionId == 0)
-        $sWhere = "appId = ".$appId;
-    else
-        $sWhere = "appId = ".$appId." AND versionId = ".$versionId;
 
-    $query = "SELECT userId FROM appMaintainers WHERE ".$sWhere.";";
-    $result = query_appdb($query);
-    if(mysql_num_rows($result) > 0)
+    /*
+     * Retrieve version maintainers.
+     */
+    /*
+     * If versionId was supplied we fetch supermaintainers of application and maintainer of version.
+     */
+    if($iVersionId)
     {
-        while($row = mysql_fetch_object($result))
+        $sQuery = "SELECT appMaintainers.userId 
+                   FROM appMaintainers, appVersion
+                   WHERE appVersion.appId = appMaintainers.appId 
+                   AND appVersion.versionId = '".$iVersionId."'";
+    } 
+    /*
+     * If versionId was not supplied we fetch supermaintainers of application and maintainer of all versions.
+     */
+    elseif($iAppId)
+    {
+        $sQuery = "SELECT userId 
+                   FROM appMaintainers
+                   WHERE appId = '".$iAppId."'";
+    }
+    $hResult = query_appdb($sQuery);
+    if(mysql_num_rows($hResult) > 0)
+    {
+        while($oRow = mysql_fetch_object($hResult))
         {
-            $aUserId[$c] = array($row->userId);
+            $aUserId[$c] = array($oRow->userId);
             $c++;
         }
     }
-    $result = query_appdb("SELECT * FROM user_privs WHERE priv  = 'admin'");
-    if(mysql_num_rows($result) > 0)
+
+
+    /*
+     * Retrieve administrators.
+     */
+    $hResult = query_appdb("SELECT * FROM user_privs WHERE priv  = 'admin'");
+    if(mysql_num_rows($hResult) > 0)
     {
-        while($row = mysql_fetch_object($result))
+        while($oRow = mysql_fetch_object($hResult))
         {
-            $i = array_search($row->userid, $aUserId);
-            if ($aUserId[$i] != array($row->userid))
+            $i = array_search($oRow->userid, $aUserId);
+            if ($aUserId[$i] != array($oRow->userid))
             {
-                $aUserId[$c] = array($row->userid);
+                $aUserId[$c] = array($oRow->userid);
                 $c++;
             }
         }
-
     }
     if ($c > 0)
     {

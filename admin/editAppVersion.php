@@ -121,17 +121,12 @@ if(isset($_REQUEST['submit1']))
         if (!empty($_REQUEST['url_desc']) && !empty($_REQUEST['url']) )
         {
             // process added URL
-            if($_SESSION['current']->showDebuggingInfos()) { echo "<p align=center><b>{$_REQUEST['url']}:</b> {$_REQUEST['url_desc']} </p>"; }
-        
-            $aInsert = compile_insert_string( array( 'appId' => $_REQUEST['appId'],
-                                             'versionId' => $_REQUEST['versionId'],
+            $aInsert = compile_insert_string( array('versionId' => $_REQUEST['versionId'],
                                              'type' => 'url',
                                              'description' => $_REQUEST['url_desc'],
                                              'url' => $_REQUEST['url']));
             
             $sQuery = "INSERT INTO appData ({$aInsert['FIELDS']}) VALUES ({$aInsert['VALUES']})";
-	    
-            if($_SESSION['current']->showDebuggingInfos()) { echo "<p align=center><b>query:</b> $sQuery </p>"; }
 	    
             if (query_appdb($sQuery))
             {
@@ -145,15 +140,13 @@ if(isset($_REQUEST['submit1']))
         // Process changed URLs  
         for($i = 0; $i < $_REQUEST['rows']; $i++)
         {
-            if($_SESSION['current']->showDebuggingInfos()) { echo "<p align=center><b>{$_REQUEST['adescription'][$i]}:</b> {$_REQUEST['aURL'][$i]}: {$_REQUEST['adelete'][$i]} : {$_REQUEST['aId'][$i]} : .{$_REQUEST['aOldDesc'][$i]}. : {$_REQUEST['aOldURL'][$i]}</p>"; }
-            
             if ($_REQUEST['adelete'][$i] == "on")
             {
 	            $hResult = query_appdb("DELETE FROM appData WHERE id = '{$_REQUEST['aId'][$i]}'");
 
                 if($hResult)
                 {
-                    addmsg("<p><b>Successfully deleted URL ".$_REQUEST['aOldDesc'][$i]." (".$_REQUEST['aOldURL'][$i].")</b></p>\n",'green');
+                    addmsg("Successfully deleted URL ".$_REQUEST['aOldDesc'][$i]." (".$_REQUEST['aOldURL'][$i].").","green");
                     $sWhatChanged .= "Deleted Url:     Description: ".stripslashes($_REQUEST['aOldDesc'][$i])."\n";
                     $sWhatChanged .= "                         url: ".stripslashes($_REQUEST['aOldURL'][$i])."\n";
                     $bAppChanged = true;
@@ -198,7 +191,7 @@ if(isset($_REQUEST['submit1']))
             mail_appdb($sEmail, $sSubject ,$sMsg);
         }
     }
-    exit;     
+    redirect(apidb_fullurl("appview.php?versionId=".$_REQUEST['versionId']));
 } else
 {
 ?>
