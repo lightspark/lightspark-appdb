@@ -3,6 +3,9 @@
 /* this class represents an version */
 /************************************/
 
+require_once(BASE."include/note.php");
+require_once(BASE."include/comment.php");
+
 /**
  * Version class for handling versions.
  */
@@ -17,6 +20,7 @@ class Version {
     var $iSubmitterId;
     var $sDate;
     var $aNotesIds;           // an array that contains the noteId of every note linked to this version
+    var $aCommentsIds;        // an array that contains the commentId of every comment linked to this version
     var $aScreenshotsIds;     // an array that contains the screenshotId of every screenshot linked to this version
     var $aUrlsIds;            // an array that contains the screenshotId of every url linked to this version
 
@@ -41,7 +45,6 @@ class Version {
                     $oRow = mysql_fetch_object($hResult);
                     $this->iVersionId = $iVersionId;
                     $this->iAppId = $oRow->appId;
-                    $this->iVendorId = $oRow->vendorId;
                     $this->iCatId = $oRow->catId;
                     $this->iSubmitterId = $oRow->submitterId;
                     $this->sSubmitTime = $oRow->submitTime;
@@ -64,7 +67,21 @@ class Version {
             {
                 while($oRow = mysql_fetch_object($hResult))
                 {
-                    $this->aNotesIds[] = $oRow->versionId;
+                    $this->aNotesIds[] = $oRow->noteId;
+                }
+            }
+
+            /*
+             * We fetch commentsIds. 
+             */
+            $sQuery = "SELECT commentId
+                       FROM appComments
+                       WHERE versionId = ".$iVersionId;
+            if($hResult = query_appdb($sQuery))
+            {
+                while($oRow = mysql_fetch_object($hResult))
+                {
+                    $this->aCommentsIds[] = $oRow->commentId;
                 }
             }
 
@@ -106,7 +123,8 @@ class Version {
                                                 'maintainer_release'=> $sTestedRelease,
                                                 'maintainer_rating' => $sTestedRating,
                                                 'appId'             => $iAppId,
-                                                'queued'     => $this->bQueued ));
+                                                'submitterId'       => $_REQUEST['current']->iUserId,
+                                                'queued'            => $this->bQueued ));
         $sFields = "({$aInsert['FIELDS']})";
         $sValues = "({$aInsert['VALUES']})";
 
@@ -124,46 +142,61 @@ class Version {
 
     /**
      * Update version.
-     * FIXME: Informs interested people about the modification.
      * FIXME: Use compile_update_string instead of addslashes.
      * Returns true on success and false on failure.
      */
     function update($sName=null, $sDescription=null, $sTestedRelease=null, $sTestedRating=null, $iAppId=null)
     {
-        if ($sName)
+        $sWhatChanged = "";
+
+        if ($sName && $sName!=$this->sName)
         {
-            if (!query_appdb("UPDATE appVersion SET versionName = '".addslashes($sName)."' WHERE versionId = ".$this->iVersionId))
+            $sUpdate = compile_update_string(array('versionName'    => $sName));
+            if (!query_appdb("UPDATE appVersion SET ".$sUpdate." WHERE versionId = ".$this->iVersionId))
                 return false;
+            $sWhatChanged .= "Name was changed from ".$this->sName." to ".$sName.".\n\n";
             $this->sName = $sName;
         }     
 
-        if ($sDescription)
+        if ($sDescription && $sDescription!=$this->sDescription)
         {
-            if (!query_appdb("UPDATE appVersion SET description = '".addslashes($sDescription)."' WHERE versionId = ".$this->iVersionId))
+            $sUpdate = compile_update_string(array('description'    => $sDescription));
+            if (!query_appdb("UPDATE appVersion SET ".$sUpdate." WHERE versionId = ".$this->iVersionId))
                 return false;
+            $sWhatChanged .= "Description was changed from\n ".$this->sDescription."\n to \n".$sDescription.".\n\n";
             $this->sDescription = $sDescription;
         }
 
-        if ($sTestedRelease)
+        if ($sTestedRelease && $sTestedRelease!=$this->sTestedRelease)
         {
-            if (!query_appdb("UPDATE appVersion SET maintainer_release = '".$sTestedRelease."' WHERE versionId = ".$this->iVersionId))
+            $sUpdate = compile_update_string(array('maintainer_release'    => $sTestedRelease));
+            if (!query_appdb("UPDATE appVersion SET ".$sUpdate." WHERE versionId = ".$this->iVersionId))
                 return false;
-            $this->sKeywords = $sTestedRelease;
+            $sWhatChanged .= "Last tested release was changed from ".$this->sTestedRelease." to ".$sTestedRelease.".\n\n";
+            $this->sTestedRelease = $sTestedRelease;
         }
 
-        if ($sTestedRating)
+        if ($sTestedRating && $sTestedRating!=$this->sTestedRating)
         {
+            $sUpdate = compile_update_string(array('maintainer_rating'    => $sTestedRating));
             if (!query_appdb("UPDATE appVersion SET maintainer_rating = '".$sTestedRating."' WHERE versionId = ".$this->iVersionId))
                 return false;
-            $this->sWebpage = $sTestedRating;
+            $sWhatChanged .= "Rating was changed from ".$this->sTestedRating." to ".$sTestedRating.".\n\n";
+            $this->sTestedRating = $sTestedRating;
         }
      
-        if ($iAppId)
+        if ($iAppId && $iAppId!=$this->iAppId)
         {
-            if (!query_appdb("UPDATE appVersion SET vendorId = '".$iAppId."' WHERE appId = ".$this->iAppId))
+            $sUpdate = compile_update_string(array('appId'    => $iAppId));
+            if (!query_appdb("UPDATE appVersion SET ".$sUpdate." WHERE appId = ".$this->iAppId))
                 return false;
-            $this->iVendorId = $iAppId;
+            $oAppBefore = new Application($this->iAppId);
+            $oAppAfter = new Application($iAppId);
+            $sWhatChanged .= "Application was changed from ".$oAppBefore->sName." to ".$oAppAfter->sName.".\n\n";
+            $this->iAppId = $iAppId;
         }
+        if($sWhatChanged)
+            $this->mailMaintainers("edit",$sWhatChanged);
         return true;
     }
 
@@ -171,7 +204,6 @@ class Version {
     /**    
      * Deletes the version from the database. 
      * and request the deletion of linked elements.
-     * FIXME: DELETE COMMENTS AS WELL !
      */
     function delete($bSilent=false)
     {
@@ -182,8 +214,13 @@ class Version {
         {
             foreach($aNotesIds as $iNoteId)
             {
-                #FIXME: NOT IMPLEMENTED $oNote = new Note($iNoteId);
-                #FIXME: NOT IMPLEMENTED $oNote->delete($bSilent);
+                $oNote = new Note($iNoteId);
+                $oNote->delete($bSilent);
+            }
+            foreach($aCommentsIds as $iCommentId)
+            {
+                $oComment = new Note($iCommentId);
+                $oComment->delete($bSilent);
             }
             foreach($aScreenshotsIds as $iScreenshotId)
             {
@@ -246,38 +283,42 @@ class Version {
     }
 
  
-    function mailMaintainers($bDeleted=false)
+    function mailMaintainers($sAction="add",$sMsg=null)
     {
-        if(!$bDeleted)
+        switch($sAction)
         {
-            if(!$this->bQueued)
-            {
-                $sSubject = "Version ".$this->sName." added by ".$_SESSION['current']->sRealname;
-                $sMsg  = APPDB_ROOT."appview.php?versionId=".$this->iVersionId."\n";
-                if($this->iSubmitterId)
+            case "add":
+                if(!$this->bQueued)
                 {
-                    $oSubmitter = new User($this->iSubmitterId);
-                    $sMsg .= "This version has been submitted by ".$oSubmitter->sRealname.".";
+                    $sSubject = "Version ".$this->sName." added by ".$_SESSION['current']->sRealname;
+                    $sMsg  = APPDB_ROOT."appview.php?versionId=".$this->iVersionId."\n";
+                    if($this->iSubmitterId)
+                    {
+                        $oSubmitter = new User($this->iSubmitterId);
+                        $sMsg .= "This version has been submitted by ".$oSubmitter->sRealname.".";
+                        $sMsg .= "\n";
+                    }
+                    addmsg("The version was successfully added into the database.", "green");
+                } else // Version queued.
+                {
+                    $sSubject = "Version ".$this->sName." submitted by ".$_SESSION['current']->sRealname;
+                    $sMsg .= "This version has been queued.";
                     $sMsg .= "\n";
+                    addmsg("The version you submitted will be added to the database database after being reviewed.", "green");
                 }
-                addmsg("The version was successfully added into the database.", "green");
-            } else // Version queued.
-            {
-                $sSubject = "Version ".$this->sName." submitted by ".$_SESSION['current']->sRealname;
-                $sMsg .= "This version has been queued.";
-                $sMsg .= "\n";
-                addmsg("The version you submitted will be added to the database database after being reviewed.", "green");
-            }
-        } else // Version deleted.
-        {
-            $sSubject = "Version ".$this->sName." deleted by ".$_SESSION['current']->sRealname;
-            addmsg("Version deleted.", "green");
+            break;
+            case "edit":
+                $sSubject =  $this->sName." has been modified by ".$_SESSION['current']->sRealname;
+                addmsg("Version modified.", "green");
+            break;
+            case "delete":
+                $sSubject = "Version ".$this->sName." has been deleted by ".$_SESSION['current']->sRealname;
+                addmsg("Version deleted.", "green");
+            break;
         }
-
         $sEmail = get_notify_email_address_list(null, $this->iVersionId);
         if($sEmail)
             mail_appdb($sEmail, $sSubject ,$sMsg);
     } 
-
 }
 ?>
