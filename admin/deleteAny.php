@@ -32,22 +32,26 @@ if($_REQUEST['what'])
     switch($_REQUEST['what'])
 	{
 	case "comment":
-	    // TODO: delete a comment
+            $oComment = new Comment($_REQUEST['commentId']);
+            $oComment->delete();
             redirect(BASE."appview.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']);
 	    break;
 	case "category":
 	    // delete category and the apps in it
-	    deleteCategory($_REQUEST['catId']);
+            $oCategory = new Category($_REQUEST['catId']);
+            $oCategory->delete();
             redirect(BASE."appbrowse.php");
 	    break;
 	case "appFamily":
 	    // delete app family & all its versions
-	    deleteAppFamily($_REQUEST['appId']);
+            $oApp = new Application($_REQUEST['appId']);
+            $oApp->delete();
             redirect(BASE."appbrowse.php");
 	    break;
 	case "appVersion":
 	    // delete a version
-	    deleteAppVersion($_REQUEST['versionId']);
+            $oVersion = new Application($_REQUEST['versionId']);
+            $oVersion->delete();
             redirect(BASE."appview.php?appId=".$_REQUEST['appId']);
 	    break;
 	}

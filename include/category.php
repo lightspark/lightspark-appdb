@@ -15,10 +15,31 @@ class Category {
      */
     function Category($id = 0)
     {
+        $this->id = $id;
         $this->load($id);
     }
 
     
+    /**    
+     * Deletes the category from the database. 
+     * and request the deletion of linked elements.
+     */
+    function delete()
+    {
+        $r = query_appdb("SELECT appId FROM appFamily WHERE catId = ".$this->id,"Failed to delete category ".$this->id);
+        if($r)
+        {
+            while($ob = mysql_fetch_object($r))
+            {
+                $oApp = new Application($ob->appId);
+                $oApp->delete();
+            }
+            $r = query_appdb("DELETE FROM appCategory WHERE catId = $catId","Failed to delete category $catId");
+            if($r)
+                addmsg("Category $catId deleted.", "green");
+        }
+    }
+
     /**
      * load the category data into this class 
      */
@@ -196,21 +217,7 @@ function make_cat_path($path, $appId = '', $versionId = '')
     return $str;
 }
 
-function deleteCategory($catId)
-{
-    $r = query_appdb("SELECT appId FROM appFamily WHERE catId = $catId","Failed to delete category $catId");
-    if($r)
-    {
-        while($ob = mysql_fetch_object($r))
-            deleteAppFamily($ob->appId);
-        $r = query_appdb("DELETE FROM appCategory WHERE catId = $catId","Failed to delete category $catId");
-       
-        if($r)
-            addmsg("Category $catId deleted", "green");
-    }
-}
-
-Function lookupCategoryName($catId)
+function lookupCategoryName($catId)
 {
     $sResult = query_appdb("SELECT * FROM appCategory ".
                "WHERE catId = ".$catId);
