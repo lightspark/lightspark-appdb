@@ -94,14 +94,10 @@ function display_versions($appId, $versions)
 	            $bgcolor = (($c % 2) ? "color0" : "color1");
 
 	            //format desc
-	            $desc = substr(stripslashes($ver->description),0,75);
+	            $desc = trim_description($ver->description);
 	            if(strlen($desc) == 75)
 		    $desc .= " ...";		
 		
-		   //get ratings
-	           $r_win = rating_stars_for_version($ver->versionId, "windows");
-	           $r_fake = rating_stars_for_version($ver->versionId, "fake");
-		   
 		   //count comments
 		   $r_count = count_comments($appId,$ver->versionId);
 		
@@ -133,70 +129,69 @@ if(!is_numeric($appId))
 
 if($appId)
 {
-	$app = new Application($appId);
-	$data = $app->data;
-	if(!$data) {
+	$oApp = new Application($appId);
+	if(!$oApp->iAppId) {
 		// Oops! application not found or other error. do something
 		errorpage('Internal Database Access Error');
 		exit;
 	}
 
 	// header
-	apidb_header("Search for bugs in Bugzila for - ".$data->appName);
+	apidb_header("Search for bugs in Bugzila for - ".$oApp->sName);
 
 	//cat display
-	display_catpath($app->data->catId, $appId);
+	display_catpath($oApp->iCatId, $oApp->iAppId);
 
 	//set Vendor
-	$vendor = $app->getVendor();
+	$oVendor = new Vendor($oApp->iVendorId);
 
 	//set URL
-	$appLinkURL = ($data->webPage) ? "<a href='$data->webPage'>".substr(stripslashes($data->webPage),0,30)."</a>": "&nbsp;";
+	$appLinkURL = ($oApp->sWebPage) ? "<a href='$oApp->sWebPage'>".substr(stripslashes($oApp->sWebPage),0,30)."</a>": "&nbsp;";
 	
 	//set Image
-	$img = get_screenshot_img($appId, $versionId);
+	$img = get_screenshot_img($oApp->iAppId, $versionId);
 	
 	//start display application
 	echo html_frame_start("","98%","",0);
 	
 	echo '<tr><td class=color4 valign=top>',"\n";	
 	echo '<table width="300" border=0 cellpadding=3 cellspacing=1">',"\n";
-	echo "<tr class=color0 valign=top><td width='250' align=right> <b>Name</b></td><td width='75%'> ".stripslashes($data->appName)." </td>\n";
-	echo "<tr class=color1 valign=top><td width='250' align=right> <b>App Id</b></td><td width='75%'> ".$data->appId." </td>\n";
+	echo "<tr class=color0 valign=top><td width='250' align=right> <b>Name</b></td><td width='75%'> ".$oApp->sName." </td>\n";
+	echo "<tr class=color1 valign=top><td width='250' align=right> <b>App Id</b></td><td width='75%'> ".$oApp->iAppId." </td>\n";
 	echo "<tr class=color0 valign=top><td width='250' align=right> <b>Vendor</b></td><td width='75%'> ".
-	     "   <a href='vendorview.php?vendorId=$vendor->vendorId'> ".stripslashes($vendor->vendorName)." </a> &nbsp;\n";
+	     "   <a href='vendorview.php?vendorId=".$oVendor->iVendorId."'> ".$oVendor->sName." </a> &nbsp;\n";
         echo "<tr class=color1 valign=top><td width='250' align=right> <b>All Bugs</b></td><td width='75%'> ".
-             "   <a href='".BUGZILLA_ROOT."buglist.cgi?product=Wine&bug_file_loc_type=allwords&bug_file_loc=appdb ".$data->appId."'>
+             "   <a href='".BUGZILLA_ROOT."buglist.cgi?product=Wine&bug_file_loc_type=allwords&bug_file_loc=appdb ".$oApp->iAppId."'>
              Look for All bugs in bugzilla </a> &nbsp;\n";
         echo "<tr class=color0 valign=top><td width=250 align=right> <b>Open Bugs</b></td><td width='75%'> ".
              "   <a href='".BUGZILLA_ROOT."buglist.cgi?product=Wine".
-             "&bug_status=UNCONFIRMED&bug_status=NEW&bug_status=ASSIGNED&bug_status=REOPENED&bug_file_loc_type=allwords&bug_file_loc=appdb ".$data->appId."'>
+             "&bug_status=UNCONFIRMED&bug_status=NEW&bug_status=ASSIGNED&bug_status=REOPENED&bug_file_loc_type=allwords&bug_file_loc=appdb ".$oApp->iAppId."'>
              Look for Open bugs in bugzilla </a> &nbsp;\n";        
         echo "<tr class=color1 valign=top><td width='250' align=right> <b>Submit a New Bug</b></td><td width='75%'> ".
-             "   <a href='".BUGZILLA_ROOT."enter_bug.cgi?product=Wine&bug_file_loc=".APPDB_OWNER_URL."appview.php?appid=".$data->appId."'>
+             "   <a href='".BUGZILLA_ROOT."enter_bug.cgi?product=Wine&bug_file_loc=".APPDB_OWNER_URL."appview.php?appid=".$oApp->iAppId."'>
              Submit a new bug in bugzilla </a> &nbsp;\n";
     	echo "</td></tr>\n";
 	   
 	echo "</table></td><td class=color2 valign=top width='100%'>\n";
 
 	//Notes
-	echo "<table width='100%' border=0><tr><td width='100%' valign=top><big><b>Welcome</b></big><br />;
+	echo "<table width='100%' border=0><tr><td width='100%' valign=top><big><b>Welcome</b></big><br />
         <p>This is the link between the Wine Application Database and Wine's Buzilla. From here you 
         get search for bugs entered against this application. You can also enter new bugs if you log
         into Wine's Bugzilla.</p>
         <p>The link between the Application Database and Bugzilla is based on the bug having the following URL
-        <a href='".APPDB_OWNER_URL."appview.php?appId=".$data->appId."'>
-        ".APPDB_OWNER_URL."appview.php?appId=".$data->appId."</a> &nbsp;    
+        <a href='".APPDB_OWNER_URL."appview.php?appId=".$oApp->iAppId."'>
+        ".APPDB_OWNER_URL."appview.php?appId=".$oApp->iAppId."</a> &nbsp;    
         in the bug's <i>URL</i> Field. If it is not entered, this search page can not find it.
 	</td></tr></table>";
 		
 	echo html_frame_end("For more details and user comments, view the versions of this application.");
 
         //display versions
-	display_versions($appId,$app->getAppVersionList());
+	display_versions($oApp->iAppId,$oApp->aVersionsIds);
 
 	//display bundle
-	display_bundle($appId);
+	display_bundle($oApp->iAppId);
 
 }
 else
