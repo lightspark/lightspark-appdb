@@ -15,16 +15,16 @@ apidb_header("Help and Support");
 	
 	<p>
 	If you have questions, comments on the Wine Application Database, you can contact
-	us at <a href="mailto:appdb@winehq.com">appdb@winehq.com</a>.
+	us at <a href="mailto:appdb@winehq.org">appdb@winehq.org</a>.
 	</p>
 	
 	<p>
 	If you notice something that seems to be wrong, or busticated, there is a way you can 
 	help us out.<br>
-	We also have a <a href="http://bugs.winehq.com/">Bug Tracking Database</a>
+	We also have a <a href="http://bugs.winehq.org/">Bug Tracking Database</a>
 	where you can register bugs. This is the best way to get problems fixed. You can go directly
 	to the App DB Bug Database by following this
-	<a href="http://bugs.winehq.com/buglist.cgi?product=Wine+Apps+Database">link</a>.
+	<a href="http://bugs.winehq.org/buglist.cgi?product=Wine+Apps+Database">link</a>.
 	</p>
 	
 	<p>
@@ -32,7 +32,7 @@ apidb_header("Help and Support");
 	</p>
 	
 	<ul>
-	   <li><a href="http://www.winehq.com">Wine Development HQ</a></li>
+	   <li><a href="http://www.winehq.org">Wine Development HQ</a></li>
 	   <li><a href="http://www.codeweavers.com">CodeWeavers Home Page</a></li>
 	</ul>	
 <?
