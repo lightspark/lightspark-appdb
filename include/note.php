@@ -54,18 +54,7 @@ class Note {
         if(query_appdb("INSERT INTO appNotes $sFields VALUES $sValues", "Error while creating a new note."))
         {
             $this->note(mysql_insert_id());
-            $sEmail = get_notify_email_address_list($this->iAppId, $this->iVersionId);
-            if($sEmail)
-            {
-                $sSubject = "Note for ".lookup_app_name($this->iAppId)." ".lookup_version_name($this->iVersionId)." added by ".$_SESSION['current']->sRealname;
-                $sMsg  = APPDB_ROOT."appview.php?appId=".$this->iAppId."&versionId=".$this->iVersionId."\n";
-                $sMsg .= "\n";
-                $sMsg .= "Title: ".$this->sTitle."\r\n";
-                $sMsg .= "\n";
-                $sMsg .= $this->sDescription."\r\n";
-                mail_appdb($sEmail, $sSubject ,$sMsg);
-            } 
-            addmsg("Note created.", "green");
+            $this->mailMaintainers("add");
             return true;
         }
         else
@@ -124,7 +113,7 @@ class Note {
     {
         $hResult = query_appdb("DELETE FROM appNotes WHERE noteId = '".$this->iNoteId."'");
         if(!$bSilent)
-            $this->mailMaintainers(true);
+            $this->mailMaintainers("delete");
     }
 
 
@@ -133,16 +122,16 @@ class Note {
         switch($sAction)
         {
             case "add":
-                $sSubject = "Note ".$this->sName." added by ".$_SESSION['current']->sRealname;
+                $sSubject = "Note ".$this->sTitle." for ".lookup_app_name($this->iAppId)." ".lookup_version_name($this->iVersionId)." added by ".$_SESSION['current']->sRealname;
                 $sMsg  = APPDB_ROOT."appview.php?versionId=".$this->iVersionId."\n";
                 addmsg("The note was successfully added into the database.", "green");
             break;
             case "edit":
-                $sSubject =  "Note for ".lookup_app_name($this->iAppId)." ".lookup_version_name($this->iVersionId)." has been modified by ".$_SESSION['current']->sRealname;
+                $sSubject =  "Note ".$this->sTitle." for ".lookup_app_name($this->iAppId)." ".lookup_version_name($this->iVersionId)." has been modified by ".$_SESSION['current']->sRealname;
                 addmsg("Note modified.", "green");
             break;
             case "delete":
-                $sSubject = "Note for  ".lookup_app_name($this->iAppId)." ".lookup_version_name($this->iVersionId)." has been deleted by ".$_SESSION['current']->sRealname;
+                $sSubject = "Note ".$this->sTitle." for ".lookup_app_name($this->iAppId)." ".lookup_version_name($this->iVersionId)." has been deleted by ".$_SESSION['current']->sRealname;
                 $sMsg .= "This note was made on ".substr($this->sDateCreated,0,10)." by ".$this->oOwner->sRealname."\n";
                 $sMsg .= "\n";
                 $sMsg .= "Subject: ".$this->sTitle."\n";
@@ -163,10 +152,4 @@ class Note {
             mail_appdb($sEmail, $sSubject ,$sMsg);
     } 
 }
-
-
-
-/*
- * Note functions that are not part of the class
- */
 ?>
