@@ -8,7 +8,7 @@ include(BASE."include/"."qclass.php");
 
 global $apidb_root;
 
-if(!loggedin() || (!havepriv("admin") && !$current->ownsApp($appId)) )
+if(!loggedin() || (!havepriv("admin") && !$_SESSION['current']->ownsApp($appId)) )
 {
     errorpage("Insufficient Privileges!");
     exit;

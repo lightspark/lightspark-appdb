@@ -53,7 +53,7 @@ if($sub)
                 $fullAppName = "Application: ".lookupAppName($appId)." Version: ".lookupVersionName($appId, $versionId);
                 $ms = APPDB_ROOT."appview.php?appId=$appId&versionId=$versionId"."\n";
                 $ms .= "\n";
-                $ms .= ($current->username ? $current->username : "Anonymous")." deleted note from ".$fullAppName."\n";
+                $ms .= ($_SESSION['current']->username ? $_SESSION['current']->username : "Anonymous")." deleted note from ".$fullAppName."\n";
                 $ms .= "\n";
                 $ms .= "title: ".$oldNoteTitle."\n";
                 $ms .= "\n";
@@ -92,7 +92,7 @@ if($sub)
                 $fullAppName = "Application: ".lookupAppName($appId)." Version: ".lookupVersionName($appId, $versionId);
                 $ms = APPDB_ROOT."appview.php?appId=$appId&versionId=$versionId"."\n";
                 $ms .= "\n";
-                $ms .= ($current->username ? $current->username : "Anonymous")." changed note for ".$fullAppName."\n";
+                $ms .= ($_SESSION['current']->username ? $_SESSION['current']->username : "Anonymous")." changed note for ".$fullAppName."\n";
                 $ms .= "\n";
                 $ms .= "From --------------------------\n";
                 $ms .= "title: ".$oldNoteTitle."\n";

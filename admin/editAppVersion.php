@@ -81,7 +81,7 @@ if($HTTP_POST_VARS)
                     $fullAppName = "Application: ".lookupAppName($appId)." Version: ".lookupVersionName($appId, $versionId);
                     $ms .= APPDB_ROOT."appview.php?appId=$appId&versionId=$versionId"."\n";
                     $ms .= "\n";
-                    $ms .= ($current->username ? $current->username : "Anonymous")." changed ".$fullAppName."\n";
+                    $ms .= ($_SESSION['current']->username ? $_SESSION['current']->username : "Anonymous")." changed ".$fullAppName."\n";
                     $ms .= "\n";
                     $ms .= $WhatChanged."\n";
                     $ms .= "\n";
