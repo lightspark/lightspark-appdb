@@ -6,7 +6,6 @@ drop table if exists vendor;
 drop table if exists appFamily;
 drop table if exists appVersion;
 drop table if exists userExperience;
-drop table if exists apiUsage;
 drop table if exists appCategory;
 drop table if exists appHitStats;
 drop table if exists catHitStats;
@@ -14,10 +13,8 @@ drop table if exists appComments;
 drop table if exists appData;
 drop table if exists appDataQueue;
 drop table if exists appQueue;
-drop table if exists appCrosslink;
 drop table if exists appBundle;
 drop table if exists appVotes;
-drop table if exists appRating;
 drop table if exists appNotes;
 drop table if exists sessionMessages;
 
@@ -90,13 +87,6 @@ create table userExperience (
        wineCfgFile	text,
        key(uExpId)
 );
-
-create table apiUsage (
-       apiUsageId     int not null auto_increment,
-       versionId      int not null,
-       apiid	      int(11) not null,
-       key(apiUsageId)
-);
        
 
 /*
@@ -108,17 +98,6 @@ create table appCategory (
 	catDescription	text,
 	catParent	int default 0,
 	key(catId)
-);
-
-
-/*
- * not used yet
- */
-create table appCrosslink (
-	appId		int not null,
-	catId		int not null,
-	key(appId),
-	index(catId)
 );
 
 
@@ -222,22 +201,6 @@ create table appVotes (
 	slot		int not null,
 	key(id),
 	index(appId),
-	index(userId)
-);
-
-
-/*
- * app ratings
- */
-create table appRating (
-	id		int not null auto_increment,
-	time		timestamp,  /* we might wanna expire old ratings */
-	versionId	int not null,
-	userId		int not null,
-	system          enum('windows', 'fake'),
-	score		int not null,
-	key(id),
-	index(versionId),
 	index(userId)
 );
 
