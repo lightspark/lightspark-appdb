@@ -29,6 +29,14 @@ echo html_frame_start("Create New Application DB Account","400","",0)
         <td class=color1> Email Address </td>
         <td class=color0> <input type="text" name="ext_email" value='<?php if(isset($_POST['ext_email'])) echo $_POST['ext_email']?>'> </td>
     </tr>
+
+<?php
+
+        echo "<tr><td class=color1>&nbsp; Wine version </td><td class=color0>";
+        make_bugzilla_version_list("CVSrelease", $CVSrelease);
+        echo "</td></tr>";
+
+?>
       
     <tr>
         <td colspan=2 align=center class=color3>

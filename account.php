@@ -119,7 +119,7 @@ function cmd_do_new()
         return;
     }
 
-    $result = $user->create($_POST['ext_username'], $_POST['ext_password'], $_POST['ext_realname'], $_POST['ext_email']);
+    $result = $user->create($_POST['ext_username'], $_POST['ext_password'], $_POST['ext_realname'], $_POST['ext_email'], $_POST['CVSrelease'] );
 
     if($result == null)
     {

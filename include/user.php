@@ -118,11 +118,11 @@ class User {
      * create a new user
      * returns 0 on success and an error msg on failure
      */
-    function create($username, $password, $realname, $email)
+    function create($username, $password, $realname, $email, $CVSrelease)
     {
         $result = mysql_query("INSERT INTO user_list VALUES ( NOW(), 0, ".
                               "'$username', password('$password'), ".
-                              "'$realname', '$email', NOW(), 0, 0)");
+                              "'$realname', '$email', NOW(), 0, 0, '$CVSrelease')");
         if(!$result)
             return mysql_error();
         return $this->restore($username, $password);
