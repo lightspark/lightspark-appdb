@@ -57,17 +57,20 @@ function inactiveSince($iMonths)
 
 function hasDataAssociated($iUserId)
 {
-    $sQuery = "SELECT * FROM appComments WHERE userId = $iUserId";
+    $sQuery = "SELECT count(userId) as c FROM appComments WHERE userId = $iUserId";
     $hResult = query_appdb($sQuery);
-    if(mysql_num_rows($hResult)) return true;
+    $ob = mysql_fetch_object($hResult);
+    if($ob->c != 0) return true;
 
-    $sQuery = "SELECT * FROM appMaintainerQueue WHERE userId = $iUserId";
+    $sQuery = "SELECT count(userId) as c FROM appMaintainerQueue WHERE userId = $iUserId";
     $hResult = query_appdb($sQuery);
-    if(mysql_num_rows($hResult)) return true;
+    $ob = mysql_fetch_object($hResult);
+    if($ob->c != 0) return true;
 
-    $sQuery = "SELECT * FROM appVotes WHERE userId = $iUserId";
+    $sQuery = "SELECT count(userId) as c FROM appVotes WHERE userId = $iUserId";
     $hResult = query_appdb($sQuery);
-    if(mysql_num_rows($hResult)) return true;
+    $ob = mysql_fetch_object($hResult);
+    if($ob->c != 0) return true;
 
     return false;
 }
