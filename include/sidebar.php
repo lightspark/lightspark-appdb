@@ -20,7 +20,7 @@ function global_sidebar_menu() {
     $g->done();    
 
     $g = new htmlmenu("Search");
-    $g->addmisc(app_search_box($_REQUEST['q']));
+    $g->addmisc(app_search_box(isset($_REQUEST['q']) ? $_REQUEST['q'] : ''));
     $g->done();
 
 }
