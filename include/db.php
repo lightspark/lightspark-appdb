@@ -8,9 +8,11 @@ function query_appdb($sQuery,$sComment="")
 
     if(!is_resource($hAppdbLink))
     {
-        $hAppdbLink = mysql_connect(APPS_DBHOST, APPS_DBUSER, APPS_DBPASS);
+        // The last argument makes sure we are really opening a new connection
+        $hAppdbLink = mysql_connect(APPS_DBHOST, APPS_DBUSER, APPS_DBPASS,true);
+        mysql_select_db(APPS_DB, $hAppdbLink);
     }
-    mysql_select_db(APPS_DB, $hAppdbLink);
+    
     $hResult = mysql_query($sQuery, $hAppdbLink);
     if(!$hResult) query_error($sQuery, $sComment);
     return $hResult;
@@ -23,9 +25,11 @@ function query_bugzilladb($sQuery,$sComment="")
 
     if(!is_resource($hBugzillaLink))
     {
-        $hBugzillaLink = mysql_connect(BUGZILLA_DBHOST, BUGZILLA_DBUSER, BUGZILLA_DBPASS);
+        // The last argument makes sure we are really opening a new connection
+        $hBugzillaLink = mysql_connect(BUGZILLA_DBHOST, BUGZILLA_DBUSER, BUGZILLA_DBPASS,true);
+        mysql_select_db(BUGZILLA_DB, $hBugzillaLink);
     }
-    mysql_select_db(BUGZILLA_DB, $hBugzillaLink);
+    
     $hResult = mysql_query($sQuery, $hBugzillaLink);
     if(!$hResult) query_error($sQuery, $sComment);
     return $hResult;
