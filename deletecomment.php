@@ -7,8 +7,9 @@
  * application environment
  */
 include("path.php");
-require(BASE."include/"."incl.php");
-require(BASE."include/"."application.php");
+require(BASE."include/incl.php");
+require(BASE."include/application.php");
+require(BASE."include/mail.php");
 
 
 $_REQUEST['appId'] = strip_tags($_REQUEST['appId']);
@@ -95,34 +96,30 @@ if($_SESSION['current']->getpref("confirm_comment_deletion") != "no" &&
             exit;
         } else 
         {
-            $email = getNotifyEmailAddressList($_REQUEST['appId'], $_REQUEST['versionId']);
+            $sEmail = getNotifyEmailAddressList($_REQUEST['appId'], $_REQUEST['versionId']);
             $notify_user_email=lookupEmail($ob->userId);
             $notify_user_realname=lookupRealname($ob->userId);
-            $email .= $notify_user_email;
-            if($email)
+            $sEmail .= $notify_user_email;
+            if($sEmail)
             {
-                $fullAppName = "Application: ".lookupAppName($_REQUEST['appId'])." Version: ".lookupVersionName($_REQUEST['appId'], $_REQUEST['versionId']);
-                $ms = APPDB_ROOT."appview.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']."\n";
-                $ms .= "\n";
-                $ms .= $_SESSION['current']->realname." deleted comment from ".$fullAppName."\n";
-                $ms .= "\n";
-                $ms .= "This comment was made on ".substr($ob->time,0,10)." by $notify_user_realname \n";
-                $ms .= "\n";
-                $ms .= "Subject: ".$subject."\n";
-                $ms .= "\n";
-                $ms .= $body."\n";
-                $ms .= "\n";
-                $ms .= "Because:\n";
+                $sFullAppName = "Application: ".lookupAppName($_REQUEST['appId'])." Version: ".lookupVersionName($_REQUEST['appId'], $_REQUEST['versionId']);
+                $sMsg  = APPDB_ROOT."appview.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']."\r\n";
+                $sMsg .= "\r\n";
+                $sMsg .= $_SESSION['current']->realname." deleted comment from ".$sFullAppName."\r\n";
+                $sMsg .= "\n";
+                $sMsg .= "This comment was made on ".substr($ob->time,0,10)." by $notify_user_realname \r\n";
+                $sMsg .= "\r\n";
+                $sMsg .= "Subject: ".$subject."\r\n";
+                $sMsg .= "\r\n";
+                $sMsg .= $body."\r\n";
+                $sMsg .= "\r\n";
+                $sMsg .= "Because:\r\n";
                 if($_REQUEST['str_why'])
-                    $ms .= stripslashes($_REQUEST['str_why'])."\n";
+                    $sMsg .= stripslashes($_REQUEST['str_why'])."\r\n";
                 else
-                    $ms .= "No reason given.\n";
-                $ms .= "\n";
-                $ms .= STANDARD_NOTIFY_FOOTER;
-                mail(stripslashes($email), "[AppDB] ".$fullAppName ,$ms);
-            } else
-                $email = "no one";
-            addmsg("message sent to: ".$email, "green");
+                    $sMsg .= "No reason given.\r\n";
+                mail_appdb($sEmail, $sFullAppName ,$sMsg);
+            } 
             addmsg("Comment deleted", "green");
             redirect(apidb_fullurl("appview.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']));
         }

@@ -6,7 +6,8 @@
 ##################################################
 
 include("path.php");
-include(BASE."include/"."incl.php");
+include(BASE."include/incl.php");
+include(BASE."include/mail.php");
 
 /*
  * Let:
@@ -94,76 +95,40 @@ function deleteMaintainer()
 
 function warnUser($sEmail)
 {
-    $sHeaders  = "MIME-Version: 1.0\r\n";
-    $sHeaders .= "From: AppDB <appdb@winehq.org>\r\n";
-    $sHeaders .= "Reply-to: AppDB <appdb@winehq.orgl>\r\n";
-    $sHeaders .= "X-Priority: 3\r\n";
-    $sHeaders .= "X-Mailer: ".APPDB_OWNER." mailer\r\n";
+    $sSubject  = "Warning: inactivity detected";
+    $sMsg  = "You didn't log in in the past six month to the AppDB.\r\n";
+    $sMsg .= "Please log in or your account will automatically be deleted in one month.\r\n";
 
-    $sMsg  = "AppDB Warning: inactivity detected\r\n";
-    $sMsg .= "-----------------------------------\r\n";
-    $sMsg .= "You didn't log in in the past six month to the AppDB (".APPDB_OWNER_URL.")\r\n";
-    $sMsg .= "Please log in or your account will automatically be deleted in one month.\r\n\r\n";
-    $sMsg .= "Best regards.\r\n";
-    $sMsg .= "The AppDB team.\r\n";
-
-    mail($sEmail, "[AppDB] Warning: inactivity detected", $sMsg, $sHeaders, "-fappdb@winehq.org");
+    mail_appdb($sEmail, $sSubject, $sMsg);
 }
 
 function warnMaintainer($sEmail)
 {
-    $sHeaders  = "MIME-Version: 1.0\r\n";
-    $sHeaders .= "From: AppDB <appdb@winehq.org>\r\n";
-    $sHeaders .= "Reply-to: AppDB <appdb@winehq.orgl>\r\n";
-    $sHeaders .= "X-Priority: 3\r\n";
-    $sHeaders .= "X-Mailer: ".APPDB_OWNER." mailer\r\n";
+    $sSubject  = "Warning: inactivity detected";
+    $sMsg  = "You didn't log in in the past six month to the AppDB.\r\n";
+    $sMsg .= "As a maintainer we would be pleased to see you once in a while.\r\n";
+    $sMsg .= "Please log in or you will lose your maintainer's abilities in one month.\r\n";
 
-    $sMsg  = "AppDB Warning: inactivity detected\r\n";
-    $sMsg .= "-----------------------------------\r\n";
-    $sMsg .= "You didn't log in in the past six month to the AppDB (".APPDB_OWNER_URL.")\r\n";
-    $sMsg .= "As a maintainer we would be pleased to see you once in a while\r\n";
-    $sMsg .= "Please log in or you will lose your maintainer's abilities in one month.\r\n\r\n";
-    $sMsg .= "Best regards.\r\n";
-    $sMsg .= "The AppDB team.\r\n";
-
-    mail($sEmail, "[AppDB] Warning: inactivity detected", $sMsg, $sHeaders, "-fappdb@winehq.org");
+    mail_appdb($sEmail, $sSubject, $sMsg);
 }
 
 function warnUserDeleted($sEmail)
 {
-    $sHeaders  = "MIME-Version: 1.0\r\n";
-    $sHeaders .= "From: AppDB <appdb@winehq.org>\r\n";
-    $sHeaders .= "Reply-to: AppDB <appdb@winehq.orgl>\r\n";
-    $sHeaders .= "X-Priority: 3\r\n";
-    $sHeaders .= "X-Mailer: ".APPDB_OWNER." mailer\r\n";
+    $sSubject  = "Warning: account removed";
+    $sMsg  = "You didn't log in in the past seven month to the AppDB.\r\n";
+    $sMsg .= "As you don't have any data associated to your account we have removed it.\r\n";
+    $sMsg .= "Please feel free to recreate an account anytime.\r\n";
 
-    $sMsg  = "AppDB Warning: account removed\r\n";
-    $sMsg .= "-----------------------------------\r\n";
-    $sMsg .= "You didn't log in in the past seven month to the AppDB (".APPDB_OWNER_URL.")\r\n";
-    $sMsg .= "As you don't have any data associated to your account we have removed it.\r\n\r\n";
-    $sMsg .= "Please feel free to recreate an account anytime.\r\n\r\n";
-    $sMsg .= "Best regards.\r\n";
-    $sMsg .= "The AppDB team.\r\n";
-
-    mail($sEmail, "[AppDB] Warning: account removed", $sMsg, $sHeaders, "-fappdb@winehq.org");
+    mail_appdb($sEmail, $sSubject, $sMsg);
 }
 
 function warnMaintainerDeleted($sEmail)
 {
-    $sHeaders  = "MIME-Version: 1.0\r\n";
-    $sHeaders .= "From: AppDB <appdb@winehq.org>\r\n";
-    $sHeaders .= "Reply-to: AppDB <appdb@winehq.orgl>\r\n";
-    $sHeaders .= "X-Priority: 3\r\n";
-    $sHeaders .= "X-Mailer: ".APPDB_OWNER." mailer\r\n";
+    $sSubject  = "Warning: maintainer rights revoked\r\n";
+    $sMsg  = "You didn't log in in the past seven month to the AppDB.\r\n";
+    $sMsg .= "As a result, you are not a maintainer anymore.\r\n";
+    $sMsg .= "Please feel free to enroll again as a maintainer anytime.\r\n";
 
-    $sMsg  = "AppDB Warning: maintainer rights revoked\r\n";
-    $sMsg .= "----------------------------------------\r\n";
-    $sMsg .= "You didn't log in in the past seven month to the AppDB (".APPDB_OWNER_URL.")\r\n";
-    $sMsg .= "As a result, you are not a maintainer anymore.\r\n\r\n";
-    $sMsg .= "Please feel free to enroll again as a maintainer anytime.\r\n\r\n";
-    $sMsg .= "Best regards.\r\n";
-    $sMsg .= "The AppDB team.\r\n";
-
-    mail($sEmail, "[AppDB] Warning: maintainer rights revoked", $sMsg, $sHeaders, "-fappdb@winehq.org");
+    mail_appdb($sEmail, $sSubject, $sMsg);
 }
 ?>

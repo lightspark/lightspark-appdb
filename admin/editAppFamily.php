@@ -4,10 +4,11 @@
 /**********************************/
 
 include("path.php");
-include(BASE."include/"."incl.php");
-include(BASE."include/"."tableve.php");
-require(BASE."include/"."application.php");
-require(BASE."include/"."category.php");
+require(BASE."include/incl.php");
+require(BASE."include/tableve.php");
+require(BASE."include/application.php");
+require(BASE."include/category.php");
+require(BASE."include/mail.php");
 
 if(!is_numeric($_REQUEST['appId']))
 {
@@ -179,24 +180,19 @@ if(isset($_REQUEST['submit']))
     }
     if ($bAppChanged)
     {
-        $email = getNotifyEmailAddressList($_REQUEST['appId']);
-        if($email)
+        $sEmail = getNotifyEmailAddressList($_REQUEST['appId']);
+        if($sEmail)
         {
-            $fullAppName = "Application: ".lookupAppName($_REQUEST['appId']);
-            $ms .= APPDB_ROOT."appview.php?appId=".$_REQUEST['appId']."\n";
-            $ms .= "\n";
-            $ms .= ($_SESSION['current']->realname ? $_SESSION['current']->realname : "Anonymous")." changed ".$fullAppName."\n";
-            $ms .= "\n";
-            $ms .= $sWhatChanged."\n";
-            $ms .= "\n";
-            $ms .= STANDARD_NOTIFY_FOOTER;
+            $sFullAppName = "Application: ".lookupAppName($_REQUEST['appId']);
+            $sMsg  = APPDB_ROOT."appview.php?appId=".$_REQUEST['appId']."\r\n";
+            $sMsg .= "\r\n";
+            $sMsg .= $_SESSION['current']->realname." changed ".$sFullAppName." \r\n";
+            $sMsg .= "\r\n";
+            $sMsg .= $sWhatChanged."\r\n";
+            $sMsg .= "\r\n";
 
-            mail( "", "[AppDB] ".$fullAppName ,$ms, "Bcc: ".stripslashes( $email));
-        } else
-        {
-            $email = "no one";
+            mail_appdb($sEmail, $sFullAppName ,$sMsg);
         }
-        addmsg("message sent to: ".$email, green);
     }
 
     redirect(apidb_fullurl("appview.php?appId={$_REQUEST['appId']}"));

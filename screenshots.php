@@ -9,9 +9,11 @@
  * application environment
  */ 
 include("path.php");
-require(BASE."include/"."incl.php");
-require(BASE."include/"."screenshot.php");
-require(BASE."include/"."application.php");
+require(BASE."include/incl.php");
+require(BASE."include/screenshot.php");
+require(BASE."include/application.php");
+require(BASE."include/mail.php");
+
 
 if($_REQUEST['cmd'])
 {
@@ -26,23 +28,16 @@ if($_REQUEST['cmd'])
             if($oScreenshot)
             {
                 //success
-                $email = getNotifyEmailAddressList($_REQUEST['appId'], $_REQUEST['versionId']);
-                if($email)
+                $sEmail = getNotifyEmailAddressList($_REQUEST['appId'], $_REQUEST['versionId']);
+                if($sEmail)
                 {
-                    $fullAppName = "Application: ".lookupAppName($_REQUEST['appId'])." Version: ".lookupVersionName($_REQUEST['appId'], $_REQUEST['versionId']);
-                    $ms .= APPDB_ROOT."screenshots.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']."\n";
-                    $ms .= "\n";
-                    $ms .= $_SESSION['current']->realname." added screenshot ".$_REQUEST['screenshot_desc']." to ".$fullAppName."\n";
-                    $ms .= "\n";
-                    $ms .= STANDARD_NOTIFY_FOOTER;
- 
-                    mail(stripslashes($email), "[AppDB] ".$fullAppName ,$ms);
-                } else
-                {
-                    $email = "no one";
+                    $sFullAppName = "Application: ".lookupAppName($_REQUEST['appId'])." Version: ".lookupVersionName($_REQUEST['appId'], $_REQUEST['versionId']);
+                    $ms  = APPDB_ROOT."screenshots.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']."\r\n";
+                    $ms .= "\r\n";
+                    $ms .= $_SESSION['current']->realname." added screenshot ".$_REQUEST['screenshot_desc']." to ".$sFullAppName."\r\n";
+          
+                    mail_appdb($sEmail, $sFullAppName ,$sMsg);
                 }
-                addmsg("message sent to: ".$email, "green");
-
                 addmsg("The image was successfully added into the database", "green");
                 redirect(apidb_fullurl("screenshots.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']));
             }
@@ -52,23 +47,16 @@ if($_REQUEST['cmd'])
             if($oScreenshot)
             {
                 //success
-                $email = getNotifyEmailAddressList($_REQUEST['appId'], $_REQUEST['versionId']);
-                if($email)
+                $sEmail = getNotifyEmailAddressList($_REQUEST['appId'], $_REQUEST['versionId']);
+                if($sEmail)
                 {
-                    $fullAppName = "Application: ".lookupAppName($_REQUEST['appId'])." Version: ".lookupVersionName($_REQUEST['appId'], $_REQUEST['versionId']);
-                    $ms .= APPDB_ROOT."admin/adminAppDataQueue.php?queueId=".mysql_insert_id()."\n";
-                    $ms .= "\n";
-                    $ms .= ($_SESSION['current']->realname ? $_SESSION['current']->realname : "an anonymous user")." submitted a screenshot ".$_REQUEST['screenshot_desc']." for ".$fullAppName."\n";
-                    $ms .= "\n";
-                    $ms .= STANDARD_NOTIFY_FOOTER;
+                    $sFullAppName = "Application: ".lookupAppName($_REQUEST['appId'])." Version: ".lookupVersionName($_REQUEST['appId'], $_REQUEST['versionId']);
+                    $sMsg  = APPDB_ROOT."admin/adminAppDataQueue.php?queueId=".mysql_insert_id()."\n";
+                    $sMsg .= "\r\n";
+                    $sMsg .= ($_SESSION['current']->realname ? $_SESSION['current']->realname : "an anonymous user")." submitted a screenshot ".$_REQUEST['screenshot_desc']." for ".$sFullAppName."\n";
 
-                    mail(stripslashes($email), "[AppDB] ".$fullAppName ,$ms);
-                } else
-                {
-                    $email = "no one";
-                }
-                addmsg("message sent to: ".$email, "green");
-
+                    mail_appdb($sEmail, $sFullAppName ,$sMsg);
+                } 
                 addmsg("The image you submitted will be added to the database database after being reviewed", "green");
                 redirect(apidb_fullurl("screenshots.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']));
             }
@@ -83,23 +71,16 @@ if($_REQUEST['cmd'])
             $oScreenshot = new Screenshot($_REQUEST['imageId']);         
             if($oScreenshot && $oScreenshot->delete())
             {
-                $email = getNotifyEmailAddressList($_REQUEST['appId'], $_REQUEST['versionId']);
-                if($email)
+                $sEmail = getNotifyEmailAddressList($_REQUEST['appId'], $_REQUEST['versionId']);
+                if($sEmail)
                 {
-                    $fullAppName = "Application: ".lookupAppName($_REQUEST['appId'])." Version: ".lookupVersionName($_REQUEST['appId'], $_REQUEST['versionId']);
-                    $ms .= APPDB_ROOT."screenshots.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']."\n";
-                    $ms .= "\n";
-                    $ms .= ($_SESSION['current']->realname ? $_SESSION['current']->realname : "Anonymous")." deleted screenshot from ".$fullAppName."\n";
-                    $ms .= "\n";
-                    $ms .= STANDARD_NOTIFY_FOOTER;
+                    $sFullAppName = "Application: ".lookupAppName($_REQUEST['appId'])." Version: ".lookupVersionName($_REQUEST['appId'], $_REQUEST['versionId']);
+                    $sMsg  = APPDB_ROOT."screenshots.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']."\n";
+                    $sMsg .= "\n";
+                    $sMsg .= ($_SESSION['current']->realname ? $_SESSION['current']->realname : "Anonymous")." deleted screenshot from ".$sFullAppName."\r\n";
    
-                    mail(stripslashes($email), "[AppDB] ".$fullAppName ,$ms);
- 
-                } else
-                {
-                    $email = "no one";
+                    mail_appdb($sEmail, $sFullAppName ,$sMsg);
                 }
-                addmsg("message sent to: ".$email, "green");
                 addmsg("Image deleted", "green");
                 redirect(apidb_fullurl("screenshots.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']));
             } else

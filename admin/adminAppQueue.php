@@ -4,9 +4,10 @@
 /*************************************/
  
 include("path.php");
-require(BASE."include/"."incl.php");
-require(BASE."include/"."tableve.php");
-require(BASE."include/"."application.php");
+require(BASE."include/incl.php");
+require(BASE."include/tableve.php");
+require(BASE."include/application.php");
+require(BASE."include/mail.php");
 
 //deny access if not logged in
 if(!havepriv("admin"))
@@ -305,38 +306,30 @@ if ($_REQUEST['sub'])
         //Send Status Email
         if ($ob->queueEmail && $goodtogo)
         {
-            $fullAppName = lookupAppName($_REQUEST['appParent'])." Version: ".lookupVersionName($_REQUEST['appParent'], $_REQUEST['appVersion']);
+            $sFullAppName = lookupAppName($_REQUEST['appParent'])." Version: ".lookupVersionName($_REQUEST['appParent'], $_REQUEST['appVersion']);
              
-            $ms =  "Application Database Status Report\n";
-            $ms .= "----------------------------------\n\n";
-            $ms .= "Your application: ".$fullAppName." has been entered ";
-            $ms .= "into the application database.\n\n";
-            $ms .= APPDB_ROOT."appview.php?appId=".$_REQUEST['appParent']."&versionId=".$_REQUEST['appVersion']."\n\n";
-            $ms .= "Thanks!\n\n";
-            $ms .= $emailtext;
+            $sSubject =  "Application Database Status Report";
+            $sMsg  = "Your application: ".$sFullAppName." has been entered ";
+            $sMsg .= "into the application database.\r\n";
+            $sMsg .= APPDB_ROOT."appview.php?appId=".$_REQUEST['appParent']."&versionId=".$_REQUEST['appVersion']."\r\n";
+            $sMsg .= $emailtext;
 
-            mail(stripslashes($ob->queueEmail),'[AppDB] Status Report',$ms);
+            mail_appdb($ob->queueEmail, $sSubject ,$sMsg);
         }
         if ($goodtogo)
         {
-            $email = getNotifyEmailAddressList($_REQUEST['appParent'], $_REQUEST['appVersion']);
-            if($email)
+            $sEmail = getNotifyEmailAddressList($_REQUEST['appParent'], $_REQUEST['appVersion']);
+            if($sEmail)
             {
-                $fullAppName = "Application: ".lookupAppName($_REQUEST['appParent']).
+                $sFullAppName = "Application: ".lookupAppName($_REQUEST['appParent']).
                     " Version: ".lookupVersionName($_REQUEST['appParent'], $_REQUEST['appVersion']);
-                $ms = APPDB_ROOT."appview.php?appId=".$_REQUEST['appParent']."&versionId=".$_REQUEST['appVersion']."\n\n";
-                $ms .= "New Application added to database:\n\n";
-                $ms .= $fullAppName."\n\n";
-                $ms .= STANDARD_NOTIFY_FOOTER;
+                $sSubject = "New ".$sFullAppName;
+                $sMsg  = APPDB_ROOT."appview.php?appId=".$_REQUEST['appParent']."&versionId=".$_REQUEST['appVersion']."\r\n";
+                $sMsg .= "New Application added to database:\r\n";
+                $sMsg .= $sFullAppName."\r\n";
     
-                mail(stripslashes($email), "[AppDB] NEW ".$fullAppName ,$ms);
-    
-            } else
-            {
-                $email = "no one";
+                mail_appdb($sEmail, $sSubject ,$sMsg);
             }
-            addmsg("message sent to: ".$email, "green");
-
         }
         //done
         addmsg("<a href=".apidb_fullurl("appview.php")."?appId=".$_REQUEST['appParent']."&versionId=".$_REQUEST['appVersion'].">View App</a>", "green");
@@ -359,20 +352,19 @@ if ($_REQUEST['sub'])
             {
                 if($ob->queueCatId == -1) //app version
                 {
-                    $fullAppName = lookupAppName($_REQUEST['appParent'])." Version: ".$ob->queueVersion;
+                    $sFullAppName = lookupAppName($_REQUEST['appParent'])." Version: ".$ob->queueVersion;
                 } else
                 {
-                    $fullAppName = $ob->queueName." Version: ".$ob->queueVersion;
+                    $sFullAppName = $ob->queueName." Version: ".$ob->queueVersion;
                 }
             
-                $ms =  "Application Database Status Report\n";
-                $ms .= "----------------------------------\n\n";
-                $ms .= "Your application: ".$fullAppName." has not been entered ";
-                $ms .= "into the application database.\n\n";
-                $ms .= "Sorry!\n\n";
-                $ms .= $emailtext;
+                $sSubject =  "Application Database Status Report";
+                $sMsg .= "Your application: ".$sFullAppName." has not been entered ";
+                $sMsg .= "into the application database.\r\n";
+                $sMsg .= "Sorry!\r\n";
+                $sMsg .= $emailtext;
 
-                mail(stripslashes($ob->queueEmail),'[AppDB] Status Report',$ms);
+                mail_appdb($ob->queueEmail, $sSubject ,$sMsg);
             }
             //success
             addmsg("Application was successfully deleted from the Queue.", "green");

@@ -4,10 +4,11 @@
 /********************************************************/
 
 include("path.php");
-require(BASE."include/"."incl.php");
-require(BASE."include/"."tableve.php");
-require(BASE."include/"."category.php");
-require_once(BASE."include/"."maintainer.php");
+require(BASE."include/incl.php");
+require(BASE."include/tableve.php");
+require(BASE."include/category.php");
+require(BASE."include/maintainer.php");
+require(BASE."include/mail.php");
 
 if(!havepriv("admin"))
 {
@@ -183,17 +184,15 @@ if ($_REQUEST['sub'])
             query_appdb("DELETE from appMaintainerQueue where queueId = ".$_REQUEST['queueId'].";");
  
             //Send Status Email
-            if (lookupEmail($ob->userId))
+            $sEmail = lookupEmail($ob->userId);
+            if ($sEmail)
             {
-                $ms =  "Application Maintainer Request Report\n";
-                $ms .= "----------------------------------\n\n";
-                $ms .= "Your application to be the maintainer of ".appIdToName($ob->appId).versionIdToName($ob->versionId)." has been accepted. ";
-                $ms .= $_REQUEST['replyText'];
-                $ms .= "We appreciate your help in making the Application Database better for all users.\n\n";
-                $ms .= "Thanks!\n";
-                $ms .= "-The AppDB admins\n";
+                $sSubject =  "Application Maintainer Request Report";
+                $sMsg  = "Your application to be the maintainer of ".appIdToName($ob->appId).versionIdToName($ob->versionId)." has been accepted. ";
+                $sMsg .= $_REQUEST['replyText'];
+                $sMsg .= "We appreciate your help in making the Application Database better for all users.\n\n";
                 
-                mail(stripslashes(lookupEmail($ob->userId)),'[AppDB] Maintainer Request Report',$ms);
+                mail_appdb($sEmail, $sSubject ,$sMsg);
             }
         
             //done
@@ -202,16 +201,16 @@ if ($_REQUEST['sub'])
     }
     else if (($_REQUEST['reject'] || ($_REQUEST['sub'] == 'reject')) && $_REQUEST['queueId'])
     {
-       if (lookupEmail($ob->userId))
+       $sEmail = lookupEmail($ob->userId);
+       if ($sEmail)
        {
-           $ms =  "Application Maintainer Request Report\n";
-           $ms .= "----------------------------------\n\n";
-           $ms .= "Your application to be the maintainer of ".appIdToName($ob->appId).versionIdToName($ob->versionId)." was rejected. ";
-           $ms .= $_REQUEST['replyText'];
-           $ms .= "";
-           $ms .= "-The AppDB admins\n";
+           $sSubject =  "Application Maintainer Request Report";
+           $sMsg  = "Your application to be the maintainer of ".appIdToName($ob->appId).versionIdToName($ob->versionId)." was rejected. ";
+           $sMsg .= $_REQUEST['replyText'];
+           $sMsg .= "";
+           $sMsg .= "-The AppDB admins\n";
                 
-           mail(stripslashes(lookupEmail($ob->userId)),'[AppDB] Maintainer Request Report',$ms);
+           mail_appdb($sEmail, $sSubject ,$sMsg);
        }
 
        //delete main item

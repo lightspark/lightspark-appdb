@@ -4,8 +4,9 @@
 /****************/
 
 include("path.php");
-include(BASE."include/"."incl.php");
-require(BASE."include/"."application.php");
+require(BASE."include/incl.php");
+require(BASE."include/application.php");
+require(BASE."include/mail.php");
 
 if(!is_numeric($_REQUEST['noteId']))
 {
@@ -33,8 +34,8 @@ if(isset($_REQUEST['sub']))
     $sFullAppName = "Application: ".lookupAppName($ob->appId)." Version: ".lookupVersionName($ob->appId, $ob->versionId);
     
     /* Start of e-mail */
-    $ms = APPDB_ROOT."appview.php?appId={$ob->appId}&versionId={$ob->versionId}"."\n";
-    $ms .= "\n";
+    $sMsg = APPDB_ROOT."appview.php?appId={$ob->appId}&versionId={$ob->versionId}\r\n";
+    $sMsg .= "\r\n";
             
     $sEmail = getNotifyEmailAddressList($ob->appId, $ob->versionId);
     
@@ -45,22 +46,15 @@ if(isset($_REQUEST['sub']))
        
         if($sEmail)
         {
-            $ms .= ($_SESSION['current']->realname ? $_SESSION['current']->realname : "Anonymous")." deleted note from ".$sFullAppName."\n";
-            $ms .= "\n";
-            $ms .= "title: ".$sOldNoteTitle."\n";
-            $ms .= "\n";
-            $ms .= $sOldNoteDesc."\n";
-            $ms .= "\n";
-            $ms .= STANDARD_NOTIFY_FOOTER;
+            $sMsg .= $_SESSION['current']->realname." deleted note from ".$sFullAppName."\r\n";
+            $sMsg .= "\r\n";
+            $sMsg .= "title: ".$sOldNoteTitle."\r\n";
+            $sMsg .= "\r\n";
+            $sMsg .= $sOldNoteDesc."\r\n";
+            $sMsg .= "\r\n";
 
-            mail( "", "[AppDB] ".$sFullAppName ,$ms, "Bcc: ".stripslashes( $sEmail));
-
-        } else
-        {
-            $sEmail = "no one";
-        }
-        
-        addmsg("message sent to: ".$sEmail, 'green');
+            mail_appdb($sEmail, $sFullAppName ,$sMsg);
+        } 
         // success
         addmsg("Note Deleted.", "green");
     } 
@@ -73,26 +67,20 @@ if(isset($_REQUEST['sub']))
         
         if($sEmail)
         {
-            $ms .= ($_SESSION['current']->realname ? $_SESSION['current']->realname : "Anonymous")." changed note for ".$sFullAppName."\n";
-            $ms .= "From --------------------------\n";
-            $ms .= "title: ".$sOldNoteTitle."\n";
-            $ms .= "\n";
-            $ms .= $sOldNoteDesc."\n";
-            $ms .= "To --------------------------\n";
-            $ms .= "title: ".$_REQUEST['noteTitle']."\n";
-            $ms .= "\n";
-            $ms .= $_REQUEST['noteDesc']."\n";
-            $ms .= "\n";
-            $ms .= STANDARD_NOTIFY_FOOTER;
+            $sMsg .= $_SESSION['current']->realname." changed note for ".$sFullAppName."\r\n";
+            $sMsg .= "From --------------------------\r\n";
+            $sMsg .= "title: ".$sOldNoteTitle."\r\n";
+            $sMsg .= "\r\n";
+            $sMsg .= $sOldNoteDesc."\r\n";
+            $sMsg .= "To --------------------------\r\n";
+            $sMsg .= "title: ".$_REQUEST['noteTitle']."\r\n";
+            $sMsg .= "\r\n";
+            $sMsg .= $_REQUEST['noteDesc']."\r\n";
+            $sMsg .= "\r\n";
 
-            mail( "", "[AppDB] ".$sFullAppName ,$ms, "Bcc: ".stripslashes( $sEmail));
+            mail_appdb($sEmail, $sFullAppName ,$sMsg);
 
-        } else
-        {
-            $sEmail = "no one";
-        }
-        addmsg("message sent to: ".$sEmail, green);
-
+        } 
         addmsg("Note Updated", "green");
     }
     

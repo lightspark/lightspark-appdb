@@ -1,10 +1,9 @@
 <?php
-
-
 include("path.php");
-include(BASE."include/"."incl.php");
-include(BASE."include/"."tableve.php");
-require(BASE."include/"."application.php");
+require(BASE."include/incl.php");
+require(BASE."include/ableve.php");
+require(BASE."include/application.php");
+require(BASE."include/mail.php");
 
 if(!is_numeric($_REQUEST['appId']) OR !is_numeric($_REQUEST['versionId']))
 {
@@ -100,30 +99,22 @@ if(isset($_REQUEST['submit1']))
                                               'maintainer_release' =>  $maintainer_release));
                                               
             $query = "UPDATE appVersion SET $sUpdate WHERE appId = ".$_REQUEST['appId']." and versionId = ".$_REQUEST['versionId'];
-            
+            // success            
             if (query_appdb($query))
             {  
-          //success
-                $email = getNotifyEmailAddressList($_REQUEST['appId'], $_REQUEST['versionId']);
-                if($email)
+                $sEmail = getNotifyEmailAddressList($_REQUEST['appId'], $_REQUEST['versionId']);
+                if($sEmail)
                 {
-                    $fullAppName = "Application: ".lookupAppName($_REQUEST['appId'])." Version: ".lookupVersionName($_REQUEST['appId'], $_REQUEST['versionId']);
-                    $ms .= APPDB_ROOT."appview.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']."\n";
-                    $ms .= "\n";
-                    $ms .= ($_SESSION['current']->realname ? $_SESSION['current']->realname : "Anonymous")." changed ".$fullAppName."\n";
-                    $ms .= "\n";
-                    $ms .= $WhatChanged."\n";
-                    $ms .= "\n";
-                    $ms .= STANDARD_NOTIFY_FOOTER;
+                    $sFullAppName = "Application: ".lookupAppName($_REQUEST['appId'])." Version: ".lookupVersionName($_REQUEST['appId'], $_REQUEST['versionId']);
+                    $sMsg .= APPDB_ROOT."appview.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']."\r\n";
+                    $sMsg .= "\r\n";
+                    $sMsg .= $_SESSION['current']->realname." changed ".$sFullAppName."\n";
+                    $sMsg .= "\r\n";
+                    $sMsg .= $WhatChanged."\r\n";
+                    $sMsg .= "\r\n";
 
-                    mail(stripslashes($email), "[AppDB] ".$fullAppName ,$ms);
-
-                } else
-                {
-                $email = "no one";
+                    mail_appdb($sEmail, $sFullAppName ,$sMsg);
                 }
-                addmsg("message sent to: ".$email, green);
-
                 addmsg("The Version was successfully updated in the database", "green");
                 redirect(apidb_fullurl("appview.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']));
       }

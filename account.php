@@ -4,7 +4,8 @@
 /********************************************/
 
 include("path.php");
-include(BASE."include/"."incl.php");
+require(BASE."include/incl.php");
+require(BASE."include/mail.php");
 
 // set http header to not cache
 header("Pragma: no-cache");
@@ -134,20 +135,20 @@ function cmd_send_passwd()
     {
         if ($user->update($userid, $passwd))
         {
-            $msg =  "Application DB Lost Password\n";
-            $msg .= "----------------------------\n";
-            $msg .= "We have received a request that you lost your password.\n";
-            $msg .= "We will create a new password for you. You can then change\n";
-            $msg .= "your password at the Preferences screen.\n\n";
-            $msg .= "Your new password is: ".$passwd."\n\n";
+            $sSubject =  "Application DB Lost Password";
+            $sMsg  = "We have received a request that you lost your password.\r\n";
+            $sMsg .= "We will create a new password for you. You can then change\r\n";
+            $sMsg .= "your password at the Preferences screen.\r\n";
+            $sMsg .= "Your new password is: ".$passwd."\r\n";
             
-            if (mail($user->lookup_email($userid), '[AppDB] Lost Password', $msg))
+
+            if (mail_appdb($user->lookup_email($userid), $sSubject ,$sMsg))
             {
                 addmsg("Your new password has been emailed to you.", "green");
             }
             else
             {
-                addmsg("Your password has changed, but we could not email it to you. Contact Support!", "red");
+                addmsg("Your password has changed, but we could not email it to you. Contact Support (".APPDB_OWNER_EMAIL.") !", "red");
             }
         }
         else

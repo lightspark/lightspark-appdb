@@ -4,10 +4,11 @@
 /********************************************************/
 
 include("path.php");
-require(BASE."include/"."incl.php");
-require(BASE."include/"."screenshot.php");
-require(BASE."include/"."tableve.php");
-require(BASE."include/"."category.php");
+require(BASE."include/incl.php");
+require(BASE."include/screenshot.php");
+require(BASE."include/tableve.php");
+require(BASE."include/category.php");
+require(BASE."include/mail.php");
 
 apidb_header("Admin Application Data Queue");
 
@@ -201,15 +202,12 @@ if (!$_REQUEST['queueId'])
             //Send Status Email
             if (lookupEmail($obj_row->userId))
             {
-                $ms =  "Application Data Request Report\n";
-                $ms .= "----------------------------------\n\n";
-                $ms .= "Your submission of an application data for ".appIdToName($obj_row->appId).versionIdToName($obj_row->versionId)." has been accepted. ";
-                $ms .= $_REQUEST['replyText'];
-                $ms .= "We appreciate your help in making the Application Database better for all users.\n\n";
-                $ms .= "Thanks!\n";
-                $ms .= "-The AppDB admins\n";
+                $sSubject =  "Application Data Request Report";
+                $sMsg  = "Your submission of an application data for ".appIdToName($obj_row->appId).versionIdToName($obj_row->versionId)." has been accepted. ";
+                $sMsg .= $_REQUEST['replyText'];
+                $sMsg .= "We appreciate your help in making the Application Database better for all users.\r\n";
                 
-                mail(stripslashes(lookupEmail($obj_row->userId)),'[AppDB] Application Data Request Report',$ms);
+                mail_appdb(lookupEmail($obj_row->userId), $sSubject ,$sMsg);
             }
         
             //done
@@ -220,14 +218,11 @@ if (!$_REQUEST['queueId'])
     {
        if (lookupEmail($obj_row->userId))
        {
-           $ms =  "Application Data Request Report\n";
-           $ms .= "----------------------------------\n\n";
-           $ms .= "Your submission of an application data for ".appIdToName($obj_row->appId).versionIdToName($obj_row->versionId)." was rejected. ";
-           $ms .= $_REQUEST['replyText'];
-           $ms .= "";
-           $ms .= "-The AppDB admins\n";
-                
-           mail(stripslashes(lookupEmail($obj_row->userId)),'[AppDB] Application Data Request Report',$ms);
+           $sSubject =  "Application Data Request Report";
+           $sMsg  = "Your submission of an application data for ".appIdToName($obj_row->appId).versionIdToName($obj_row->versionId)." was rejected. ";
+           $sMsg .= $_REQUEST['replyText'];
+             
+           mail_appdb(lookupEmail($obj_row->userId), $sSubject ,$sMsg); 
        }
 
        //delete main item

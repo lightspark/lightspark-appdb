@@ -4,8 +4,9 @@
 /************************/
 
 include("path.php");
-include(BASE."include/"."incl.php");
-require(BASE."include/"."application.php");
+require(BASE."include/incl.php");
+require(BASE."include/application.php");
+require(BASE."include/mail.php");
 
 //check for admin privs
 if(!loggedin() || (!havepriv("admin") && !$_SESSION['current']->is_maintainer($_REQUEST['appId'],$_REQUEST['versionId'])) )
@@ -39,29 +40,21 @@ if($_REQUEST['sub'] == "Submit")
     if (query_appdb("INSERT INTO `appNotes` ({$aInsert['FIELDS']}) VALUES ({$aInsert['VALUES']})"))
     {
         // successful
-        $email = getNotifyEmailAddressList($_REQUEST['appId'], $_REQUEST['versionId']);
-        if($email)
+        $sEmail = getNotifyEmailAddressList($_REQUEST['appId'], $_REQUEST['versionId']);
+        if($sEmail)
         {
-            $fullAppName  = "Application: ".lookupAppName($_REQUEST['appId']);
-            $fullAppName .= " Version: ".lookupVersionName($_REQUEST['appId'], $_REQUEST['versionId']);
-            $ms = APPDB_ROOT."appview.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']."\n";
-            $ms .= "\n";
-            $ms .= ($_SESSION['current']->realname ? $_SESSION['current']->realname : "Anonymous")." added note to ".$fullAppName."\n";
-            $ms .= "\n";
-            $ms .= "title: ".$_REQUEST['noteTitle']."\n";
-            $ms .= "\n";
-            $ms .= $_REQUEST['noteDesc']."\n";
-            $ms .= "\n";
-            $ms .= STANDARD_NOTIFY_FOOTER;
+            $sFullAppName  = "Application: ".lookupAppName($_REQUEST['appId']);
+            $sFullAppName .= " Version: ".lookupVersionName($_REQUEST['appId'], $_REQUEST['versionId']);
+            $sMsg  = APPDB_ROOT."appview.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']."\r\n";
+            $sMsg .= "\r\n";
+            $sMsg .= $_SESSION['current']->realname." added note to ".$sFullAppName."\r\n";
+            $sMsg .= "\r\n";
+            $sMsg .= "title: ".$_REQUEST['noteTitle']."\r\n";
+            $sMsg .= "\r\n";
+            $sMsg .= $_REQUEST['noteDesc']."\r\n";
 
-            mail( "", "[AppDB] ".$fullAppName ,$ms, "Bcc: ".stripslashes( $email));
-
-        } else
-        {
-            $email = "no one";
+            mail_appdb($sEmail, $sFullAppName ,$sMsg);
         }
-        addmsg("message sent to: ".$email, green);
-
         $statusMessage = "<p>Note added into the database</p>\n";
         addmsg($statusMessage,Green);
     }

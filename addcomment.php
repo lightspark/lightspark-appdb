@@ -3,10 +3,13 @@
 /* code to submit a new comment */
 /********************************/
     
-# APPLICATION ENVIRONMENT
+/*
+ * application environment
+ */
 include("path.php");
-require(BASE."include/"."incl.php");
-require(BASE."include/"."application.php");
+require(BASE."include/incl.php");
+require(BASE."include/application.php");
+require(BASE."include/mail.php");
 
 // you must be logged in to submit comments
 if(!loggedin())
@@ -58,46 +61,35 @@ if(isset($_REQUEST['body']))
         {
             if (UserWantsEmail($_REQUEST['originator']))
             {
-                $email = lookupEmail($_REQUEST['originator']);
-                $fullAppName = "Application: ".lookupAppName($_REQUEST['appId'])." Version: ".lookupVersionName($_REQUEST['appId'], $_REQUEST['versionId']);
-                $ms .= APPDB_ROOT."appview.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId'].".\n";
-                $ms .= "\n";
-                $ms .= ($_SESSION['current']->realname ? $_SESSION['current']->realname : "Anonymous")." added comment to ".$fullAppName."\n";
-                $ms .= "\n";
-                $ms .= "Subject: ".$subject."\n";
-                $ms .= "\n";
-                $ms .= $_REQUEST['body']."\n";
-                $ms .= "\n";
-                $ms .= "------- You are receiving this mail because: -------\n";
-                $ms .= "Someone posted a comment in response to your comment\n";
-                $ms .= "to change your preferences go to: http://appdb.winehq.org/preferences.php\n";
+                $sEmail = lookupEmail($_REQUEST['originator']);
+                $sFullAppName = "Application: ".lookupAppName($_REQUEST['appId'])." Version: ".lookupVersionName($_REQUEST['appId'], $_REQUEST['versionId']);
+                $sMsg  = APPDB_ROOT."appview.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId'].".\n";
+                $sMsg .= "\r\n";
+                $sMsg .= ($_SESSION['current']->realname ? $_SESSION['current']->realname : "Anonymous")." added comment to ".$sFullAppName."\r\n";
+                $sMsg .= "\r\n";
+                $sMsg .= "Subject: ".$subject."\r\n";
+                $sMsg .= "\r\n";
+                $sMsg .= $_REQUEST['body']."\r\n";
 
-                mail(stripslashes($email), "[AppDB] (Comment Reply): ".$fullAppName ,$ms);
-                
+                mail_appdb($sEmail, $sFullAppName ,$sMsg);
+
                 addmsg("Comment message sent to original poster", "green");                   
             }
         }
-        $email = getNotifyEmailAddressList($_REQUEST['appId'], $_REQUEST['versionId']);
-        if($email)
+        $sEmail = getNotifyEmailAddressList($_REQUEST['appId'], $_REQUEST['versionId']);
+        if($sEmail)
         {
-            $fullAppName = "Application: ".lookupAppName($_REQUEST['appId'])." Version: ".lookupVersionName($_REQUEST['appId'], $_REQUEST['versionId']);
-            $ms = APPDB_ROOT."appview.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId'].".\n";
-            $ms .= "\n";
-            $ms .= $_SESSION['current']->realname." added comment to ".$fullAppName."\n";
-            $ms .= "\n";
-            $ms .= "Subject: ".$subject."\n";
-            $ms .= "\n";
-            $ms .= $_REQUEST['body']."\n";
-            $ms .= "\n";
-            $ms .= STANDARD_NOTIFY_FOOTER;
+            $sFullAppName = "Application: ".lookupAppName($_REQUEST['appId'])." Version: ".lookupVersionName($_REQUEST['appId'], $_REQUEST['versionId']);
+            $sMsg  = APPDB_ROOT."appview.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId'].".\r\n";
+            $sMsg .= "\r\n";
+            $sMsg .= $_SESSION['current']->realname." added comment to ".$fullAppName."\r\n";
+            $sMsg .= "\r\n";
+            $sMsg .= "Subject: ".$subject."\r\n";
+            $sMsg .= "\r\n";
+            $mssMsg .= $_REQUEST['body']."\r\n";
 
-            mail(stripslashes($email), "[AppDB] ".$fullAppName ,$ms);
-        } else
-        {
-            $email = "no one";
-        }
-        addmsg("message sent to: ".$email, "green");
-
+            mail_appdb($sEmail, $sFullAppName ,$sMsg);
+        } 
         addmsg("New Comment Posted", "green");
     }
     redirect(apidb_fullurl("appview.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']));
