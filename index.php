@@ -19,18 +19,18 @@ apidb_header("Wine Application Database");
     
 <h1>Welcome</h1>
 
-<p>This is the Wine Application Database. From here you get info on application
+<p>This is the Wine Application Database (AppDB). From here you get info on application
 compatibility with Wine. For developers, you can get information on the APIs used in an
 application.</p>
 <?php
 $str_benefits="
     <ul>
-        <li>Ability to Vote on Favorite Applications</li>
-        <li>Access to the Application Rating System. Rate the apps that \"Don't Suck\"</li>
-        <li>Ability to customize the View of the Apps DB and Comment System</li>
+        <li>Ability to <a href=\"".BASE."help/?topic=voting\" title=\"help on voting\">Vote</a> on Favorite Applications</li>
+        <li>Ability to customize the layout and behaviour of the AppDB and comments system</li>
         <li>Take Credit for your witty posts</li>
-        <li>Ability to sign up to be an application maintainer.</li>
+        <li>Ability to sign up to be an <a href=\"".BASE."help/?topic=maintainer_guidelines\" title=\"informations about application maintainers\">application maintainer</a>.</li>
         <li>Submit new applications and versions.</li>
+        <li>Submit new screenshots.</li>
     </ul>
 ";
 if(!$_SESSION['current']->isLoggedIn()) 
@@ -56,17 +56,7 @@ if(!$_SESSION['current']->isLoggedIn())
 }
 ?>
 <p>
-If you have screenshots or links to contribute, please browse the database and use the AppDB interface to send us your contributions.
-</p>
-<?php
-# FIXME: This is too "wine-specific" and must be replaced.
-# (for example user could submit how-to's, etc using a form and an admin or app maintainer 
-# could accept or reject the how-to in the same way we are now handling screenshots.)
-?>
-<p>
-If you have anything else to contribute (howtos, etc.), enroll to be an application maintainer or contact us at:
-<a href="mailto:<?php echo APPDB_OWNER_EMAIL;?>"><?php echo APPDB_OWNER_EMAIL;?></a><br />
-Note that this address is not for end-user support, for end user support please use the mailing lists or newsgroups that you'll find on the <a href="<?php echo APPDB_OWNER_URL;?>">main website</a>.
+If you have screenshots or links to contribute, please browse the database and use the AppDB interface to send us your contributions (any member can send screenshots, if you want to send how-to's or other informations you can either enroll to be a maintainer or post this information as a comment for the application of interest).
 </p>
 <?php
 

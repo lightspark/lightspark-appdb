@@ -111,30 +111,22 @@ if($_REQUEST['maintainReason'])
     echo "<p>This page is for submitting a request to become an application maintainer.\n";
     echo "An application maintainer is someone who runs the application \n";
     echo "regularly and who is willing to be active in reporting regressions with newer \n";
-    echo "versions of Wine and to help other users run this application under Wine.";
-    echo "<p>Being an application maintainer comes with responsibilities. ";
-    echo "<br /><br /><b>You are expected to:</b>";
-    echo "<li>Keep the application comments clean, all stale data should be removed</li>";
-    echo "<li>Be an active user of that application and version</li>";
-    echo "<li>Keep up-to-date with all Wine releases, if there are regressions they should be reported to wine-devel</li>";
-
-    echo "<p><b>You will:</b>";
-    echo "<li>Receive an email anytime a comment is posted or deleted for the application or the application information is modified</li>";
+    echo "versions of Wine and to help other users run this application under Wine.</p>";
+    echo "<p>Being an application maintainer comes with new rights and new responsibilities; please be sure to read the <a href=\"".BASE."/help/?topic=maintainer_guidelines\">maintainer's guidelines</a> before to proceed.</p> ";
     echo "<p>We ask that all maintainers explain why they want to be an application maintainer,\n";
     echo "why they think they will do a good job and a little about their experience\n";
     echo "with Wine.  This is both to give you time to\n";
     echo "think about whether you really want to be an application maintainer and also for the\n";
     echo "appdb admins to identify people that are best suited for the job.  Your request\n";
     echo "may be denied if there are already a handful of maintainers for this application or if you\n";
-    echo "don't have the experience with Wine that is necessary to help other users out.\n";
-    echo "<br />";
+    echo "don't have the experience with Wine that is necessary to help other users out.</p>\n";
 
     /* Special message for super maintainer applications */
     if($superMaintainer)
     {
-        echo "<p>As a super maintainer you are expected to do all of this but for EVERY version of\n";
-        echo "this application.  We don't expect you to run every version but at least to help keep\n";
-        echo "the forums clean of stale and out-of-date information\n";
+        echo "<p>Super maintainers are just like normal maintainers but they can modify EVERY version of\n";
+        echo "this application (and the application itself).  We don't expect you to run every version but at least to help keep\n";
+        echo "the forums clean of stale and out-of-date information.</p>\n";
     }
     echo "<br /><br />";
 

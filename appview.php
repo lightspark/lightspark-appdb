@@ -261,7 +261,7 @@ if($_REQUEST['appId'])
             echo '        <form method="post" name="message" action="maintainerdelete.php"><input type=submit value="Remove yourself as a super maintainer" class="button">';
         } else /* nope */
         {
-            echo '        <form method=post name=message action="maintainersubmit.php"><input type=submit value="Be a super maintainer of this app" class="button">';
+            echo '        <form method="post" name="message" action="maintainersubmit.php"><input type="submit" value="Be a super maintainer of this app" class="button" title="Click here to know more about super maintainers.">';
         }
 
         echo "        <input type=\"hidden\" name=\"appId\" value=\"".$oApp->iAppId."\">";
@@ -270,7 +270,7 @@ if($_REQUEST['appId'])
 
         if($_SESSION['current']->isSuperMaintainer($oApp->iAppId) || $_SESSION['current']->hasPriv("admin"))
         {
-            echo '        <form method="post" name="edit" action="admin/editAppFamily.php"><input type="hidden" name="appId" value="'.$_REQUEST['appId'].'"><input type="submit" value="Edit App" class="button"></form>';
+            echo '        <form method="post" name="edit" action="admin/editAppFamily.php"><input type="hidden" name="appId" value="'.$_REQUEST['appId'].'"><input type="submit" value="Edit Application" class="button"></form>';
         }
         if($_SESSION['current']->isLoggedIn())
         {
@@ -411,7 +411,7 @@ else if($_REQUEST['versionId'])
                 echo "<input type=hidden name='superMaintainer' value=0>";
             } else /* nope */
             {
-                echo '<form method=post name=message action="maintainersubmit.php"><input type=submit value="Be a maintainer for this app" class=button>';
+                echo '<form method="post" name="message" action="maintainersubmit.php"><input type="submit" value="Be a maintainer for this app" class="button"  title="Click here to know more about maintainers.">';
             }
         }
 
@@ -430,8 +430,8 @@ else if($_REQUEST['versionId'])
     if ($_SESSION['current']->hasPriv("admin") || $_SESSION['current']->isMaintainer($oVersion->iVersionId))
     {
         echo "<tr><td colspan = 2><center>";
-        echo '<form method=post name=message action=admin/editAppVersion.php?appId='.$oApp->iAppId.'&versionId='.$oVersion->iVersionId.'>';
-        echo '<input type=submit value="Edit Version Info" class=button>';
+        echo '<form method="post" name="message" action="admin/editAppVersion.php?appId='.$oApp->iAppId.'&versionId='.$oVersion->iVersionId.'">';
+        echo '<input type=submit value="Edit Version" class=button>';
         echo '</form>';
         $url = BASE."admin/deleteAny.php?what=appVersion&appId=".$oApp->iAppId."&versionId=".$oVersion->iVersionId."&confirmed=yes";
         echo "<form method=\"post\" name=\"delete\" action=\"javascript:deleteURL('Are you sure?', '".$url."')\">";
