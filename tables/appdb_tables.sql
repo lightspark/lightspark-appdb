@@ -72,6 +72,7 @@ create table appQueue (
        queueEmail	varchar(100),
        queueURL		varchar(100),
        queueImage	varchar(100) not null,
+       submitTime	timestamp,
        key(queueId)
 );
 

@@ -277,7 +277,10 @@ if ($sub)
 else
 {
     //get available apps
-    $query = "SELECT * from appQueue;";
+    $query = "SELECT queueId, queueName, queueVendor,".
+                     "queueEmail,".
+                     "UNIX_TIMESTAMP(submitTime) as submitTime ".
+                     "from appQueue;";
     $result = mysql_query($query);
 
     if(!$result || !mysql_num_rows($result))
@@ -303,6 +306,7 @@ else
 	echo "<table width='100%' border=0 cellpadding=3 cellspacing=0>\n\n";
 	
 	echo "<tr class=color4>\n";
+	echo "    <td><font color=white>Submission Date</font></td>\n";
 	echo "    <td><font color=white>Application Name</font></td>\n";
 	echo "    <td><font color=white>Version</font></td>\n";
 	echo "    <td><font color=white>Vendor</font></td>\n";
@@ -315,6 +319,7 @@ else
         {
 	    if ($c % 2 == 1) { $bgcolor = 'color0'; } else { $bgcolor = 'color1'; }
 	    echo "<tr class=$bgcolor>\n";
+	    echo "    <td>".date("Y-n-t h:i:sa", $ob->submitTime)." &nbsp;</td>\n";
 	    echo "    <td><a href='adminAppQueue.php?sub=view&queueId=$ob->queueId'>$ob->queueName</a></td>\n";
 	    echo "    <td>".stripslashes($ob->queueVersion)." &nbsp;</td>\n";
 	    echo "    <td>".stripslashes($ob->queueVendor)." &nbsp;</td>\n";

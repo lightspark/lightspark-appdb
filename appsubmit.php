@@ -90,7 +90,8 @@ if ($_REQUEST['queueName'])
             addslashes($_REQUEST['queueDesc'])."', '".
             addslashes($_REQUEST['queueEmail'])."', '".
             addslashes($_REQUEST['queueURL'])."', '".
-            addslashes($_REQUEST['queueImage'])."');";
+            addslashes($_REQUEST['queueImage'])."',".
+            "NOW());";
     mysql_query($query);
 
     if ($error = mysql_error())
