@@ -89,7 +89,7 @@ if(isset($_REQUEST['submit1']))
                 $sEmail = get_notify_email_address_list($_REQUEST['appId'], $_REQUEST['versionId']);
                 if($sEmail)
                 {
-                    $sSubject = lookup_app_name($_REQUEST['appId'])." ".lookup_version_name($_REQUEST['versionId'])." has been modified by".$_SESSION['current']->sRealname;
+                    $sSubject = lookup_app_name($_REQUEST['appId'])." ".lookup_version_name($_REQUEST['versionId'])." has been modified by ".$_SESSION['current']->sRealname;
                     $sMsg .= APPDB_ROOT."appview.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']."\n";
                     $sMsg .= "\n";
                     $sMsg .= "The following changes have been made:";
