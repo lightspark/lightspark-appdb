@@ -75,7 +75,6 @@ function view_app_comment($ob)
         echo "<input type=hidden name='commentId' value=$ob->commentId>";
         echo "<input type=hidden name='appId' value=$ob->appId>";
         echo "<input type=hidden name='versionId' value=$ob->versionId></form></td>","\n";
-	echo "blahblahblah $apidb_root";
         echo "</td></tr>";
     }
 
