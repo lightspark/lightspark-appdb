@@ -30,12 +30,12 @@ to inactivity)
 
 # add new table for maintainer ratings. fields: userid, appId versionId ,rating, wineversion, distro, source/package
 
+# when a user responds to a comment a reply is only sent to the person who wrote the comment being responded to but 
+an email should be sent to everyone in that thread.
 
 ##################        
 # Assigned TODOs #
 ##################
-
-# add Maintainer rating system to the app version (Tony).
 
 # revamp the star rating system (Chris)
 
