@@ -136,7 +136,7 @@ if(isset($_REQUEST['submit']))
             }
         }
         
-        // Process changed URL's
+        // Process changed URLs
         
         for($i = 0; $i < $_REQUEST['rows']; $i++)
         {

@@ -58,8 +58,8 @@ if ($_REQUEST['sub'])
             echo "an email will be sent to the author of the submission.<p>\n";
 
             echo "      <b>App Version</b> This type of application will be nested under the selected application parent.\n";
-            echo "<p>Click delete to remove the selected item from the queue. An email will automatically be sent to the\n";
-            echo "submitter to let them know the item was deleted.</p>\n\n";        
+            echo "<p>Click delete to remove the selected item from the queue an email will automatically be sent to the\n";
+            echo "submitter to let him know the item was deleted.</p>\n\n";        
             echo "</td></tr></table></div>\n\n";    
 
             echo '<input type=hidden name=type value="ver">',"\n"; 

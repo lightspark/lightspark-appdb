@@ -28,7 +28,7 @@ pessimistic.
         <li> <b>0</b> -- Unrated.
         <li> <b>1</b> -- Totally nonfunctional. Crashes on load.
         <li> <b>2</b> -- Partial functionality. Good enough for a carefully scripted demo.
-        <li> <b>3</b> -- Sufficient functionality for noncritical work. Occasional crashes okay,
+        <li> <b>3</b> -- Sufficient functionality for non critical work. Occasional crashes okay,
                          as are weird setup problems, required patches, or missing major functionality.
 			 Alpha quality.
         <li> <b>4</b> -- Substantially correct. Good enough for general use, with possible 

@@ -70,7 +70,7 @@ display_range($currentPage, $pageRange, $totalPages, $commentsPerPage);
 echo "<br />";
 echo "<br />";
 
-/* display the option to choose how many comments per-page to disable */
+/* display the option to choose how many comments per-page to display */
 echo "<form method=\"get\" name=\"message\" action=\"".$_SERVER['PHP_SELF']."\">";
 echo "<b>Number of comments per page:</b>";
 echo "<select name='commentsPerPage'>";

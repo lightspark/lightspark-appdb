@@ -164,7 +164,7 @@ function redirect($url)
 }
 
 /**
- * redirect back to referer, or else to the main page
+ * redirect back to referrer, or else to the main page
  */
 function redirectref($url = null)
 {
@@ -190,7 +190,7 @@ function addmsg($text, $color = "black")
     $sQuery = "INSERT INTO sessionMessages VALUES (null, null, '".session_id()."', '$text')";
     if (!mysql_query($sQuery,$hAppdbLink))
     {
-        echo "An error has occured in addmsg(): ".mysql_error($hAppdbLink);
+        echo "An error has occurred in addmsg(): ".mysql_error($hAppdbLink);
         echo $text;
     }
 }

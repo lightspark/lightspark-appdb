@@ -79,7 +79,7 @@ class User {
                               "email = '$sEmail' AND ".
                               "password = password('$sPassword')");
         if(!$result)
-            return "A database error occured";
+            return "A database error occurred";
 
         if(mysql_num_rows($result) == 0)
             return "Invalid e-mail or password";
@@ -171,7 +171,7 @@ class User {
             $sEmail = $this->email;
         $result = query_appdb("DELETE FROM user_list WHERE email = '".$sEmail."'");
         if(!$result)
-            return "A database error occured";
+            return "A database error occurred";
         return 0;
     }
 
@@ -222,7 +222,7 @@ class User {
 
 
     /**
-     * check if this user is an maintainer of a given appId/versionId
+     * check if this user is a maintainer of a given appId/versionId
      */
     function is_maintainer($appId, $versionId)
     {
@@ -245,7 +245,7 @@ class User {
 
 
     /*
-     * check if this user is an maintainer of a given appId/versionId
+     * check if this user is a maintainer of a given appId/versionId
      */
     function is_super_maintainer($appId)
     {

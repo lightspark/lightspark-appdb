@@ -72,8 +72,8 @@ if(!isset($appId))
  3) it makes it easier to understand where your vars are comming from (forms, session, etc.)
 
 - variables naming
-variables that don't come from outside your script (i.e. that arent fetched from superglobals) should be named this way 
-(a.k.a hungariant notation):
+variables that don't come from outside your script (i.e. that aren't fetched from superglobals) should be named this way 
+(a.k.a hungarian notation):
 prefix + var_name
 
 Where prefix is one of:
