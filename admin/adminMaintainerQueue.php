@@ -28,7 +28,7 @@ if ($sub)
     {
         //get data
         $query = "SELECT queueId, appId, versionId,".
-                     "userId, maintainReason,".
+                     "userId, maintainReason, superMaintainer,".
                      "UNIX_TIMESTAMP(submitTime) as submitTime ".
                      "FROM appMaintainerQueue WHERE queueId = $queueId;";
         $result = mysql_query($query);
@@ -61,14 +61,45 @@ if ($sub)
         // Show the other maintainers of this application, if there are any
         echo '<tr valign=top><td class=color0><b>Other maintainers of this app:</b></td>',"\n";
 
+        $foundMaintainers = false;
+
+        $firstDisplay = true; /* if false we need to fix up table rows appropriately */
+
         $other_users = getMaintainersUserIdsFromAppIdVersionId($ob->appId, $ob->versionId);
         if($other_users)
         {
+            $foundMaintainers = true;
             while(list($index, list($userIdValue)) = each($other_users))
             {
-                echo "<td>".lookupUsername($userIdValue)."</td></tr>\n";
+                if($firstDisplay)
+                {
+                    echo "<td>".lookupUsername($userIdValue)."</td></tr>\n";
+                    $firstDisplay = false;
+                } else
+                {
+                    echo "<tr><td class=color0></td><td>".lookupUsername($userIdValue)."</td></tr>\n";
+                }
             }
-        } else
+        }
+
+        $other_users = getSuperMaintainersUserIdsFromAppId($ob->appId);
+        if($other_users)
+        {
+            $foundMaintainers = true;
+            while(list($index, list($userIdValue)) = each($other_users))
+            {
+                if($firstDisplay)
+                {
+                    echo "<td>".lookupUsername($userIdValue)."*</td></tr>\n";
+                    $firstDisplay = false;
+                } else
+                {
+                    echo "<tr><td class=color0></td><td>".lookupUsername($userIdValue)."*</td></tr>\n";
+                }
+            }
+        }
+
+        if(!$foundMaintainers)
         {
             echo "<td>No other maintainers</td></tr>\n";
         }
@@ -76,12 +107,26 @@ if ($sub)
         // Show which other apps the user maintains
         echo '<tr valign=top><td class=color0><b>This user also maintains these apps:</b></td>',"\n";
 
+        $firstDisplay = true;
         $other_apps = getAppsFromUserId($ob->userId);
         if($other_apps)
         {
-            while(list($index, list($appId, $versionId)) = each($other_apps))
+            while(list($index, list($appIdOther, $versionIdOther, $superMaintainerOther)) = each($other_apps))
             {
-                echo "<td>".appIdToName($appIdOther).versionIdToName($versionIdOther)."</td></tr>\n";
+                if($firstDisplay)
+                {
+                    $firstDisplay = false;
+                    if($superMaintainerOther)
+                        echo "<td>".appIdToName($appIdOther)."*</td></tr>\n";
+                    else
+                        echo "<td>".appIdToName($appIdOther).versionIdToName($versionIdOther)."</td></tr>\n";
+                } else
+                {
+                    if($superMaintainerOther)
+                        echo "<td class=color0></td><td>".appIdToName($appIdOther)."*</td></tr>\n";
+                    else
+                        echo "<td class=color0></td><td>".appIdToName($appIdOther).versionIdToName($versionIdOther)."</td></tr>\n";
+                }
             }
         } else
         {
@@ -133,6 +178,7 @@ if ($sub)
                     "$ob->appId,".
                     "$ob->versionId,".
                     "$ob->userId,".
+                    "$ob->superMaintainer,".
                     "NOW());";
 
         if (mysql_query($query))
@@ -213,6 +259,7 @@ else /* display the list of all outstanding maintainer requests */
     //get available maintainers
     $query = "SELECT queueId, appId, versionId,".
                      "userId, maintainReason,".
+                     "superMaintainer,".
                      "UNIX_TIMESTAMP(submitTime) as submitTime ".
                      "from appMaintainerQueue;";
     $result = mysql_query($query);
@@ -243,6 +290,7 @@ else /* display the list of all outstanding maintainer requests */
         echo "    <td><font color=white>Username</font></td>\n";
         echo "    <td><font color=white>Application Name</font></td>\n";
         echo "    <td><font color=white>Version</font></td>\n";
+        echo "    <td><font color=white>Super maintainer?</font></td>\n";
         echo "    <td><font color=white>Submitter Email</font></td>\n";
         echo "    <td>&nbsp;</td>\n";
         echo "</tr>\n\n";
@@ -256,7 +304,17 @@ else /* display the list of all outstanding maintainer requests */
             echo "    <td><a href='adminMaintainerQueue.php?sub=view&queueId=$ob->queueId'>$ob->queueId</a></td>\n";
             echo "    <td>".lookupUsername($ob->userId)."</td>\n";
             echo "    <td>".appIdToName($ob->appId)."</td>\n";
-            echo "    <td>".versionIdToName($ob->versionId)." &nbsp;</td>\n";
+
+            if($ob->superMaintainer)
+            {
+                echo "<td>N/A</td>\n";
+                echo "<td>Yes</td>\n";
+            } else
+            {
+                echo "<td>".versionIdToName($ob->versionId)." &nbsp;</td>\n";
+                echo "<td>No</td>\n";
+            }
+
             echo "    <td>".lookupEmail($ob->userId)." &nbsp;</td>\n";
             echo "    <td>[<a href='adminMaintainerQueue.php?sub=reject&queueId=$ob->queueId'>reject</a>]</td>\n";
             echo "</tr>\n\n";

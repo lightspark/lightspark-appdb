@@ -252,11 +252,12 @@ create table appNotes (
  * care for an application.
  */
 create table appMaintainers (
-    maintainerId int not null auto_increment,
-    appId        int,
-    versionId    int,
-    userId       int,
-    submitTime   datetime,
+    maintainerId    int not null auto_increment,
+    appId           int,
+    versionId       int,
+    userId          int,
+    superMaintainer bool,
+    submitTime      datetime,
     key(maintainerId)
 );
 
@@ -270,6 +271,7 @@ create table appMaintainerQueue (
     versionId       int,
     userId          int,
     maintainReason  text,
+    superMaintainer bool,
     submitTime	    datetime,
     key(queueId)
 );

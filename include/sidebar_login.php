@@ -28,9 +28,12 @@ function global_sidebar_login() {
         {
             $g->addmisc("");
             $g->addmisc("You maintain:\n");
-            while(list($index, list($appId, $versionId)) = each($apps_user_maintains))
+            while(list($index, list($appId, $versionId, $superMaintainer)) = each($apps_user_maintains))
             {
-                $g->addmisc("<a href='".$apidb_root."appview.php?appId=$appId&versionId=$versionId'>".appIdToName($appId)." ".versionIdToName($versionId)."</a>", "center");
+                if($superMaintainer)
+                    $g->addmisc("<a href='".$apidb_root."appview.php?appId=$appId'>".appIdToName($appId)."*</a>", "center");
+                else
+                    $g->addmisc("<a href='".$apidb_root."appview.php?appId=$appId&versionId=$versionId'>".appIdToName($appId)." ".versionIdToName($versionId)."</a>", "center");
             }
         }
     }

@@ -31,32 +31,29 @@ function admin_menu()
     $m = new htmlmenu("Admin");
     if($versionId)
     {
-	$m->add("Add Note", $apidb_root."admin/addAppNote.php?appId=$appId&versionId=$versionId");
-	$m->addmisc("&nbsp;");
+        $m->add("Add Note", $apidb_root."admin/addAppNote.php?appId=$appId&versionId=$versionId");
+        $m->addmisc("&nbsp;");
 
-	$m->add("Edit Version", $apidb_root."admin/editAppVersion.php?appId=$appId&versionId=$versionId");
+        $m->add("Edit Version", $apidb_root."admin/editAppVersion.php?appId=$appId&versionId=$versionId");
 
-	$url = $apidb_root."admin/deleteAny.php?what=appVersion&versionId=$versionId&confirmed=yes";
-	$m->add("Delete Version", "javascript:deleteURL(\"Are you sure?\", \"".$url."\")");
-	
-    }
-    else
+        $url = $apidb_root."admin/deleteAny.php?what=appVersion&versionId=$versionId&confirmed=yes";
+        $m->add("Delete Version", "javascript:deleteURL(\"Are you sure?\", \"".$url."\")");
+    } else
     {
-	$m->add("Add Version", $apidb_root."admin/addAppVersion.php?appId=$appId");
-	$m->addmisc("&nbsp;");
+        $m->add("Add Version", $apidb_root."admin/addAppVersion.php?appId=$appId");
+        $m->addmisc("&nbsp;");
 	
-	$m->add("Edit App", $apidb_root."admin/editAppFamily.php?appId=$appId");
+        $m->add("Edit App", $apidb_root."admin/editAppFamily.php?appId=$appId");
 	
-	// global admin options
-	if(havepriv("admin"))
-	{
-       	    $url = $apidb_root."admin/deleteAny.php?what=appFamily&appId=$appId&confirmed=yes";
-	    $m->add("Delete App", "javascript:deleteURL(\"Are you sure?\", \"".$url."\")");
-	    $m->addmisc("&nbsp;");
-	    $m->add("Edit Owners", $apidb_root."admin/editAppOwners.php?appId=$appId");
-       	    $m->add("Edit Bundle", $apidb_root."admin/editBundle.php?bundleId=$appId");
+        // global admin options
+        if(havepriv("admin"))
+        {
+            $url = $apidb_root."admin/deleteAny.php?what=appFamily&appId=$appId&confirmed=yes";
+            $m->add("Delete App", "javascript:deleteURL(\"Are you sure?\", \"".$url."\")");
+            $m->addmisc("&nbsp;");
+            $m->add("Edit Owners", $apidb_root."admin/editAppOwners.php?appId=$appId");
+            $m->add("Edit Bundle", $apidb_root."admin/editBundle.php?bundleId=$appId");
         }
-	
     }
     
     $m->done();
@@ -74,7 +71,7 @@ function get_screenshot_img($appId, $versionId)
     
     if(!$result || !mysql_num_rows($result))
     {
-	$imgFile = "<img src='".$apidb_root."images/no_screenshot.gif' border=0 alt='No Screenshot'>";
+        $imgFile = "<img src='".$apidb_root."images/no_screenshot.gif' border=0 alt='No Screenshot'>";
     }
     else
     {
@@ -154,7 +151,7 @@ function display_notes($appId, $versionId = 0)
     if(!$result || mysql_num_rows($result) == 0)
     {
         // do nothing
-	return;
+        return;
     }
     
     echo "<tr class=color1><td valign=top align=right> <b>Notes</b></td><td>\n";
@@ -172,10 +169,10 @@ function display_notes($appId, $versionId = 0)
 	    }
 	    
 	    //display row
-            if (havepriv("admin") || isMaintainer($appId,$versionId) )
-                 echo "    <a href='admin/editAppNote.php?noteId=".$ob->noteId."&appId=$appId".$versionLink."'> $c. ".substr(stripslashes($ob->noteTitle),0,30)."</a><br>\n";
-            else
-                 echo "    <a href='noteview.php?noteId=".$ob->noteId."&appId=$appId".$versionLink."'> $c. ".substr(stripslashes($ob->noteTitle),0,30)."</a><br>\n";
+        if (havepriv("admin") || isMaintainer($appId,$versionId) )
+            echo "    <a href='admin/editAppNote.php?noteId=".$ob->noteId."&appId=$appId".$versionLink."'> $c. ".substr(stripslashes($ob->noteTitle),0,30)."</a><br>\n";
+        else
+            echo "    <a href='noteview.php?noteId=".$ob->noteId."&appId=$appId".$versionLink."'> $c. ".substr(stripslashes($ob->noteTitle),0,30)."</a><br>\n";
 	    $c++;
 	}
 
@@ -187,7 +184,6 @@ function display_versions($appId, $versions)
 {
 	if ($versions)
 	{
-	
 		 echo html_frame_start("","98%","",0);
 		 echo "<table width='100%' border=0 cellpadding=3 cellspacing=1>\n\n";
 
@@ -200,33 +196,33 @@ function display_versions($appId, $versions)
 		 echo "</tr>\n\n";
     	
          $c = 0;
-		while(list($idx, $ver) = each($versions))
-		{
-	             //set row color
-	            $bgcolor = ($c % 2 == 0) ? "color0" : "color1";
+         while(list($idx, $ver) = each($versions))
+         {
+            //set row color
+            $bgcolor = ($c % 2 == 0) ? "color0" : "color1";
 
-	            //format desc
-	            $desc = substr(stripslashes($ver->description),0,75);
-	            if(strlen($desc) == 75)
-		    $desc .= " ...";		
+            //format desc
+            $desc = substr(stripslashes($ver->description),0,75);
+            if(strlen($desc) == 75)
+                $desc .= " ...";		
 		
-		   //get ratings
-	           $r_win = rating_stars_for_version($ver->versionId, "windows");
-	           $r_fake = rating_stars_for_version($ver->versionId, "fake");
+            //get ratings
+            $r_win = rating_stars_for_version($ver->versionId, "windows");
+            $r_fake = rating_stars_for_version($ver->versionId, "fake");
 		   
-		   //count comments
-		   $r_count = count_comments($appId,$ver->versionId);
+            //count comments
+            $r_count = count_comments($appId,$ver->versionId);
 		
-	           //display row
-	           echo "<tr class=$bgcolor>\n";
-	           echo "    <td><a href='appview.php?appId=$appId&versionId=$ver->versionId'>".$ver->versionName."</a></td>\n";
-	           echo "    <td>$desc &nbsp;</td>\n";
-		   echo "    <td align=center>$r_win</td>\n";
-		   echo "    <td align=center>$r_fake</td>\n";
-		   echo "    <td align=center>$r_count</td>\n";
-	           echo "</tr>\n\n";
+            //display row
+            echo "<tr class=$bgcolor>\n";
+            echo "    <td><a href='appview.php?appId=$appId&versionId=$ver->versionId'>".$ver->versionName."</a></td>\n";
+            echo "    <td>$desc &nbsp;</td>\n";
+            echo "    <td align=center>$r_win</td>\n";
+            echo "    <td align=center>$r_fake</td>\n";
+            echo "    <td align=center>$r_count</td>\n";
+            echo "</tr>\n\n";
 
-	           $c++;		
+            $c++;		
 		}
 		
 		echo "</table>\n";
@@ -247,108 +243,160 @@ if(!is_numeric($appId))
 
 if($appId && !$versionId)
 {
-	$app = new Application($appId);
-	$data = $app->data;
-	if(!$data) {
-		// Oops! application not found or other error. do something
-		errorpage('Internal Database Access Error');
-		exit;
-	}
+    $app = new Application($appId);
+    $data = $app->data;
+    if(!$data)
+    {
+        // Oops! application not found or other error. do something
+        errorpage('Internal Database Access Error');
+        exit;
+    }
 
-	// Show Vote Menu
-	if(loggedin())
-	    apidb_sidebar_add("vote_menu");
+    // Show Vote Menu
+    if(loggedin())
+        apidb_sidebar_add("vote_menu");
 
-	// Show Admin Menu
-	if(loggedin() && (havepriv("admin") || $current->ownsApp($appId))) {
-	    apidb_sidebar_add("admin_menu");
-	}
+    // Show Admin Menu
+    if(loggedin() && (havepriv("admin") || $current->ownsApp($appId)))
+        apidb_sidebar_add("admin_menu");
 
-	// header
-	apidb_header("Viewing App - ".$data->appName);
+    // header
+    apidb_header("Viewing App - ".$data->appName);
 
-	//cat display
-	display_catpath($app->data->catId);
+    //cat display
+    display_catpath($app->data->catId);
 
-	//set Vendor
-	$vendor = $app->getVendor();
+    //set Vendor
+    $vendor = $app->getVendor();
 
-	//set URL
-	$appLinkURL = ($data->webPage) ? "<a href='$data->webPage'>".substr(stripslashes($data->webPage),0,30)."</a>": "&nbsp;";
+    //set URL
+    $appLinkURL = ($data->webPage) ? "<a href='$data->webPage'>".substr(stripslashes($data->webPage),0,30)."</a>": "&nbsp;";
 	
-	//set Image
-	$img = get_screenshot_img($appId, $versionId);
+    //set Image
+    $img = get_screenshot_img($appId, $versionId);
 	
-	//start display application
-	echo html_frame_start("","98%","",0);
+    //start display application
+    echo html_frame_start("","98%","",0);
 	
-	echo '<tr><td class=color4 valign=top>',"\n";	
-	echo '<table width="250" border=0 cellpadding=3 cellspacing=1">',"\n";
-	echo "<tr class=color0 valign=top><td width='100' align=right> <b>Name</b></td><td width='100%'> ".stripslashes($data->appName)." </td>\n";
-	echo "<tr class=color1 valign=top><td align=right> <b>Vendor</b></td><td> ".
-	     "   <a href='vendorview.php?vendorId=$vendor->vendorId'> ".stripslashes($vendor->vendorName)." </a> &nbsp;\n";
-        echo "<tr class=color0 valign=top><td align=right> <b>BUGS</b></td><td> ".
-	     "   <a href='bugs.php?appId=$data->appId.'> Check for bugs in bugzilla </a> &nbsp;\n";        
-	echo "</td></tr>\n";
+    echo "<tr><td class=color4 valign=top>\n";
+    echo "  <table>\n";
+    echo "    <tr><td>\n";
+
+    echo '      <table width="250" border=0 cellpadding=3 cellspacing=1">',"\n";
+    echo "        <tr class=color0 valign=top><td width='100' align=right> <b>Name</b></td><td width='100%'> ".stripslashes($data->appName)." </td>\n";
+    echo "        <tr class=color1 valign=top><td align=right> <b>Vendor</b></td><td> ".
+         "        <a href='vendorview.php?vendorId=$vendor->vendorId'> ".stripslashes($vendor->vendorName)." </a> &nbsp;\n";
+    echo "        <tr class=color0 valign=top><td align=right> <b>BUGS</b></td><td> ".
+         "        <a href='bugs.php?appId=$data->appId.'> Check for bugs in bugzilla </a> &nbsp;\n";        
+    echo "        </td></tr>\n";
 	
 	//display notes
 	display_notes($appId);
 	
 	//main URL
-	echo "<tr class=color1 valign=top><td align=right> <b>URL</b></td><td>".$appLinkURL."</td></tr>\n";
+	echo "        <tr class=color1 valign=top><td align=right> <b>URL</b></td><td>".$appLinkURL."</td></tr>\n";
 
 	//optional links
 	$result = mysql_query("SELECT * FROM appData WHERE appId = $appId AND type = 'url'");
 	if($result && mysql_num_rows($result) > 0)
-	    {
-		echo "<tr class=color1><td valign=top align=right> <b>Links</b></td><td>\n";
+    {
+		echo "        <tr class=color1><td valign=top align=right> <b>Links</b></td><td>\n";
 		while($ob = mysql_fetch_object($result))
-		    {
-			echo " <a href='$ob->url'>".substr(stripslashes($ob->description),0,30)."</a> <br>\n";
-		    }
-		echo "</td></tr>\n";
-	    }
+        {
+			echo "        <a href='$ob->url'>".substr(stripslashes($ob->description),0,30)."</a> <br>\n";
+        }
+		echo "        </td></tr>\n";
+    }
 
 	// display app owner
 	$result = mysql_query("SELECT * FROM appOwners WHERE appId = $appId");
 	if($result && mysql_num_rows($result) > 0)
-	    {
-		echo "<tr class=color0><td valign=top align=right> <b>Owner</b></td><td>\n";
+    {
+		echo "        <tr class=color0><td valign=top align=right> <b>Owner</b></td>\n";
+        echo "        <td>\n";
 		while($ob = mysql_fetch_object($result))
-		    {
-		    	$inResult = mysql_query("SELECT username,email FROM user_list WHERE userid = $ob->ownerId");
+        {
+            $inResult = mysql_query("SELECT username,email FROM user_list WHERE userid = $ob->ownerId");
 			if ($inResult && mysql_num_rows($inResult) > 0)
 			{
 				$foo = mysql_fetch_object($inResult);
-				echo " <a href='mailto:$foo->email'>".substr(stripslashes($foo->username),0,30)."</a> <br>\n";
-		    	}
-		    }
-		echo "</td></tr>\n";
-	    }
+				echo "        <a href='mailto:$foo->email'>".substr(stripslashes($foo->username),0,30)."</a> <br>\n";
+            }
+        }
+		echo "        </td></tr>\n";
+    }
+    echo "      </table>\n"; /* close of name/vendor/bugs/url table */
 
-        echo "<tr><td colspan = 2><center>";
-        echo "<a href='appsubmit.php?appId=$data->appId&apptype=2'> Submit New Version </a> &nbsp;\n";
-        echo "</center></td></tr>";
+    echo "    </td></tr>\n";
+    echo "    <tr><td>\n";
 
-	echo "</table></td><td class=color2 valign=top width='100%'>\n";
+    // Display all supermaintainers maintainers of this application
+    echo "      <table class=color4 width=250 border=1>\n";
+    echo "        <tr><td align=left><b>Super maintainers:</b></td></tr>\n";
+    $other_maintainers = getSuperMaintainersUserIdsFromAppId($appId);
+    if($other_maintainers)
+    {
+        while(list($index, list($userIdValue)) = each($other_maintainers))
+        {
+            echo "        <tr><td align=left>\n";
+            echo "        <li>".lookupUsername($userIdValue)."</td></tr>\n";
+        }
+    } else
+    {
+        echo "        <tr><td align=right>No maintainers.Volunteer today!</td></tr>\n";
+    }
 
-	//Desc
-	echo "<table width='100%' border=0><tr><td width='100%' valign=top><b>Description</b><br>\n";
-	echo add_br(stripslashes($data->description));
+    // Display the app maintainer button
+    echo "        <tr><td><center>\n";
+    if(loggedin())
+    {
+        /* are we already a maintainer? */
+        if(isSuperMaintainer($appId, $versionId)) /* yep */
+        {
+            echo '        <form method=post name=message action="maintainerdelete.php"><input type=submit value="Remove yourself as a super maintainer" class=button>';
+        } else /* nope */
+        {
+            echo '        <form method=post name=message action="maintainersubmit.php"><input type=submit value="Be a super maintainer of this app" class=button>';
+        }
 
-	echo "</td></tr></table>\n";
-		
-	echo html_frame_end("For more details and user comments, view the versions of this application.");
+        echo "        <input type=hidden name='appId' value=$appId>";
+        echo "        <input type=hidden name='versionId' value=$versionId>";
+        echo "        <input type=hidden name='superMaintainer' value=1>"; /* set superMaintainer to 1 because we are at the appFamily level */
+        echo "        </form>";
+    } else
+    {
+        echo '        <input type=submit value="Log in to become a super maintainer" class=button>';
+    }
+    echo "        </center></td></tr>\n";
+    echo "      </table>\n"; /* close of super maintainers table */
 
-        //display versions
-	display_versions($appId,$app->getAppVersionList());
+    echo "    </td></tr>\n";
 
-	//display bundle
-	display_bundle($appId);
+    echo "    <tr><td>\n";
+    echo "      <center><a href='appsubmit.php?appId=$data->appId&apptype=2'> Submit New Version </a> &nbsp;<center>\n";
+    echo "    </td></tr>\n";
 
-	// disabled for now
-	//log_application_visit($appId);
+    echo "    </td></tr>\n";
 
+    echo "  </table>\n"; /* close the table that contains the whole left hand side of the upper table */
+
+    //Desc
+    echo "  <td class=color2 valign=top width='100%'>\n";
+    echo "    <table width='100%' border=0><tr><td width='100%' valign=top><b>Description</b><br>\n";
+    echo add_br(stripslashes($data->description));
+
+    echo "    </td></tr></table>\n";
+
+    echo html_frame_end("For more details and user comments, view the versions of this application.");
+
+    //display versions
+    display_versions($appId,$app->getAppVersionList());
+
+    //display bundle
+    display_bundle($appId);
+
+    // disabled for now
+    //log_application_visit($appId);
 }
 else if($appId && $versionId)
 {
@@ -436,13 +484,23 @@ else if($appId && $versionId)
     echo "<tr><td colspan = 2><center>";
     if(loggedin())
     {
-        /* are we already a maintainer? */
-        if(isMaintainer($appId, $versionId)) /* yep */
+        /* is this user a maintainer of this version by virtue of being a super maintainer */
+        /* of this app family? */
+        if(isSuperMaintainer($appId) && !isMaintainer($appId, $versionId))
         {
-            echo '<form method=post name=message action="maintainerdelete.php"><input type=submit value="Remove yourself as a maintainer" class=button>';
-        } else /* nope */
+            echo '<form method=post name=message action="maintainerdelete.php"><input type=submit value="Remove yourself as a supermaintainer" class=button>';
+            echo "<input type=hidden name='superMaintainer' value=1>";
+        } else
         {
-            echo '<form method=post name=message action="maintainersubmit.php"><input type=submit value="Be a maintainer for this app" class=button>';
+            /* are we already a maintainer? */
+            if(isMaintainer($appId, $versionId)) /* yep */
+            {
+                echo '<form method=post name=message action="maintainerdelete.php"><input type=submit value="Remove yourself as a maintainer" class=button>';
+                echo "<input type=hidden name='superMaintainer' value=0>";
+            } else /* nope */
+            {
+                echo '<form method=post name=message action="maintainersubmit.php"><input type=submit value="Be a maintainer for this app" class=button>';
+            }
         }
 
         echo "<input type=hidden name='appId' value=$appId>";

@@ -16,9 +16,14 @@ opendb();
 $appId = strip_tags($_POST['appId']);
 $versionId = strip_tags($_POST['versionId']);
 $confirmed = strip_tags($_POST['confirmed']);
+$superMaintainer = strip_tags($_POST['superMaintainer']);
 
 // header
-apidb_header("Confirm maintainer resignation of ".appIdToName($appId).versionIdToName($versionId));
+
+if($superMaintainer)
+    apidb_header("Confirm supermaintainer resignation of ".appIdToName($appId));
+else
+    apidb_header("Confirm maintainer resignation of ".appIdToName($appId).versionIdToName($versionId));
 
 if($confirmed)
 {
@@ -26,11 +31,20 @@ if($confirmed)
 
     echo html_frame_start("Removing",400,"",0);
 
-    $query = "DELETE FROM appMaintainers WHERE appId = '$appId' AND versionId = '$versionId' AND userId = '$current->userid';";
+    if($superMaintainer)
+        $query = "DELETE FROM appMaintainers WHERE userId = '$current->userid' AND appId = '$appId' AND superMaintainer = '$superMaintainer';";
+    else
+        $query = "DELETE FROM appMaintainers WHERE userId = '$current->userid' AND appId = '$appId' AND versionId = '$versionId' AND superMaintainer = '$superMaintainer';";
+
+    echo "$query";
+
     $result = mysql_query($query);
     if($result)
     {
-        echo "You were removed as a maintainer of ".appIdToName($appId).versionIdToName($versionId);
+        if($superMaintainer)
+            echo "You were removed as a supermaintainer of ".appIdToName($appId);
+        else
+            echo "You were removed as a maintainer of ".appIdToName($appId).versionIdToName($versionId);
     } else
     {
         //error
@@ -44,9 +58,19 @@ if($confirmed)
     echo "<table width='100%' border=0 cellpadding=2 cellspacing=0>\n";
     echo "<input type=hidden name='appId' value=$appId>";
     echo "<input type=hidden name='versionId' value=$versionId>";
+    echo "<input type=hidden name='superMaintainer' value=$superMaintainer>";
     echo "<input type=hidden name='confirmed' value=1>";
-    echo "<tr><td>Are you sure that you want to be removed as a maintainer of this application?</tr></td>\n";
-    echo '<tr><td align=center><input type=submit value=" Confirm resignation as maintainer " class=button>', "\n";
+
+    if($superMaintainer)
+    {
+        echo "<tr><td>Are you sure that you want to be removed as a super maintainer of this application?</tr></td>\n";
+        echo '<tr><td align=center><input type=submit value=" Confirm resignation as supermaintainer " class=button>', "\n";
+    } else
+    {
+        echo "<tr><td>Are you sure that you want to be removed as a maintainer of this application?</tr></td>\n";
+        echo '<tr><td align=center><input type=submit value=" Confirm resignation as maintainer " class=button>', "\n";
+    }
+
     echo "</td></tr></table>";
 }
 

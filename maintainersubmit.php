@@ -36,11 +36,19 @@ opendb();
 
 $appId = strip_tags($_POST['appId']);
 $versionId = strip_tags($_POST['versionId']);
+$superMaintainer = strip_tags($_POST['superMaintainer']);
 
 /* if the user is already a maintainer don't add them again */
 if(isMaintainer($appId, $versionId))
 {
     echo "You are already a maintainer of this app!";
+    exit;
+}
+
+/* if this user is a super maintainer they maintain all of the versionIds of this appId */
+if(isSuperMaintainer($appId))
+{
+    echo "You are already a supermaintainer of the whole application family!";
     exit;
 }
 
@@ -55,14 +63,18 @@ if($_REQUEST['maintainReason'])
     }
 
     // header
-    apidb_header("Submit Maintainer Request");    
+    if($superMaintainer)
+        apidb_header("Submit SuperMaintainer Request");    
+    else
+        apidb_header("Submit Maintainer Request");    
 
     // add to queue
     $query = "INSERT INTO appMaintainerQueue VALUES (null, '".
             addslashes($_REQUEST['appId'])."', '".
             addslashes($_REQUEST['versionId'])."', '".
             addslashes($current->userid)."', '".
-            addslashes($_REQUEST['maintainReason'])."',".
+            addslashes($_REQUEST['maintainReason'])."', '".
+            addslashes($_REQUEST['superMaintainer'])."',".
             "NOW()".");";
 
     mysql_query($query);
@@ -105,9 +117,21 @@ if($_REQUEST['maintainReason'])
     echo "appdb admins to identify people that are best suited for the job.  Your request\n";
     echo "may be denied if there are already a handful of maintainers for this app or if you\n";
     echo "don't have the experience with wine that is necessary to help other users out.\n";
+    echo "<br>";
+
+    /* Special message for super maintainer applications */
+    if($superMaintainer)
+    {
+        echo "<p>As a super maintainer you are expected to do all of this but for EVERY version of\n";
+        echo "this application.  We don't expect you to run every version but at least to help keep\n";
+        echo "the forums clean of stale or out-of-date information\n";
+    }
     echo "<br><br>";
 
-    echo html_frame_start("New Maintainer Form",400,"",0);
+    if($superMaintainer)
+        echo html_frame_start("New Super Maintainer Form",400,"",0);
+    else
+        echo html_frame_start("New Maintainer Form",400,"",0);
 
     echo "<table width='100%' border=0 cellpadding=2 cellspacing=0>\n";
     echo "<tr valign=top><td class=color0>";
@@ -115,7 +139,13 @@ if($_REQUEST['maintainReason'])
     echo '</td></tr>',"\n";
     echo "<input type=hidden name='appId' value=$appId>";
     echo "<input type=hidden name='versionId' value=$versionId>";
-    echo '<tr valign=top><td class=color0><b>Why you want to and should be an app maintainer</b></td><td><textarea name="maintainReason" rows=15 cols=70></textarea></td></tr>',"\n";
+    echo "<input type=hidden name='superMaintainer' value=$superMaintainer>";
+
+    if($superMaintainer)
+        echo '<tr valign=top><td class=color0><b>Why you want to and should be an app supermaintainer</b></td><td><textarea name="maintainReason" rows=15 cols=70></textarea></td></tr>',"\n";
+    else
+        echo '<tr valign=top><td class=color0><b>Why you want to and should be an app maintainer</b></td><td><textarea name="maintainReason" rows=15 cols=70></textarea></td></tr>',"\n";
+
     echo '<tr valign=top><td class=color3 align=center colspan=2> <input type=submit value=" Submit Maintainer Request " class=button> </td></tr>',"\n";
     echo '</table>',"\n";
 

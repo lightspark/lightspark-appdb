@@ -69,6 +69,7 @@ if ($sub)
         echo "    <td><font color=white>Username</font></td>\n";
         echo "    <td><font color=white>Application Name</font></td>\n";
         echo "    <td><font color=white>Version</font></td>\n";
+        echo "    <td><font color=white>Super maintainer?</font></td>\n";
         echo "    <td></td>\n";
         echo "    <td>&nbsp;</td>\n";
         echo "</tr>\n\n";
@@ -80,10 +81,20 @@ if ($sub)
             echo "<tr class=$bgcolor>\n";
             echo "    <td>".date("Y-n-t h:i:sa", $ob->submitTime)." &nbsp;</td>\n";
             echo "    <td>".lookupUsername($ob->userId)."</td>\n";
-            echo "    <td>".appIdToName($ob->appId)."</td>\n";
-            echo "    <td><a href='".$apidb_root."appview.php?appId=$ob->appId&versionId=$ob->versionId'>".versionIdToName($ob->versionId)."</a>&nbsp;</td>\n";
+            
+            if(isSuperMaintainer($ob->appId))
+            {
+                echo "    <td><a href='".$apidb_root."appview.php?appId=$ob->appId'>".appIdToName($ob->appId)."</a></td>\n";
+                echo "    <td>".versionIdToName($ob->versionId)."&nbsp;</td>\n";
+            } else
+            {
+                echo "    <td>".appIdToName($ob->appId)."</td>\n";
+                echo "    <td><a href='".$apidb_root."appview.php?appId=$ob->appId&versionId=$ob->versionId'>".versionIdToName($ob->versionId)."</a>&nbsp;</td>\n";
+            }
+
             echo "    <td>".lookupEmail($ob->userId)." &nbsp;</td>\n";
             echo "    <td>[<a href='adminMaintainers.php?sub=delete&maintainerId=$ob->maintainerId'>delete</a>]</td>\n";
+            echo "    <td>
             echo "</tr>\n\n";
             $c++;
         }

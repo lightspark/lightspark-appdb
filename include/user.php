@@ -226,7 +226,30 @@ class User {
         if(!loggedin() || !$this->userid)
             return false;
 
+        /* if this user is a super maintainer of this appid then they */
+        /* are a maintainer of all of the versionId's of it as well */
+        if($this->is_super_maintainer($appId))
+        {
+            return true;
+        }
+
         $query = "SELECT * FROM appMaintainers WHERE userid = '$this->userid' AND appId = '$appId' AND versionId = '$versionId'";
+        $result = mysql_query($query, $this->link);
+        if(!$result)
+            return 0;
+        return mysql_num_rows($result);
+    }
+
+    /*
+     * check if this user is an maintainer of a given appId/versionId
+     */
+    function is_super_maintainer($appId)
+    {
+        global $current;
+        if(!loggedin() || !$this->userid)
+            return false;
+
+        $query = "SELECT * FROM appMaintainers WHERE userid = '$this->userid' AND appId = '$appId' AND superMaintainer = 1";
         $result = mysql_query($query, $this->link);
         if(!$result)
             return 0;
@@ -300,6 +323,16 @@ function isMaintainer($appId, $versionId)
         return false;
 
     return $current->is_maintainer($appId, $versionId);
+}
+
+function isSuperMaintainer($appId)
+{
+    global $current;
+
+    if(!loggedin())
+        return false;
+
+    return $current->is_super_maintainer($appId);
 }
 
 function debugging()
