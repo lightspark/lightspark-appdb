@@ -186,7 +186,7 @@ function html_imagebutton($text, $url, $extra = "")
     $java  = "onMouseDown = 'document.img$i.src = \"$img2\"; return true;' ";
     $java .= "onMouseUp = 'document.img$i.src = \"$img1\"; return true;' ";
 
-    return "\n<a href='$url' $extra $java>\n <img src='$img1' name='img$i' alt='$text' border=0> </a>\n";
+    return "\n<a href='$url' $extra $java>\n <img src='$img1' name='img$i' alt='$text'> </a>\n";
 }
 
 
@@ -206,19 +206,19 @@ $str .= '
 <tr><td>
     <table width="100%" border="0" cellpadding="0" cellspacing="0" class="topMenu">
       <tr>
-        <td valign="top" align="left"><img src="'.$apidb_root.'images/winehq_border_top_left.gif" border="0" alt=""></td>
-        <td rowspan="3" valign="middle" align="left"><img src="'.$apidb_root.'images/winehq_border_dot_left.gif" border="0" alt=""></td>
+        <td valign="top" align="left"><img src="'.$apidb_root.'images/winehq_border_top_left.gif" alt=""></td>
+        <td rowspan="3" valign="middle" align="left"><img src="'.$apidb_root.'images/winehq_border_dot_left.gif" alt=""></td>
         <td width="100%" rowspan="3" align="center"><span class="menuTitle">'.$title.'</span></td>
-        <td rowspan="3" valign="middle" align="right"><img src="'.$apidb_root.'images/winehq_border_dot_right.gif" border="0" alt=""></td>
-        <td valign="top" align="left"><img src="'.$apidb_root.'images/winehq_border_top_right.gif" border="0" alt=""></td>
+        <td rowspan="3" valign="middle" align="right"><img src="'.$apidb_root.'images/winehq_border_dot_right.gif" alt=""></td>
+        <td valign="top" align="left"><img src="'.$apidb_root.'images/winehq_border_top_right.gif" alt=""></td>
       </tr>
       <tr>
-        <td><img src="'.$apidb_root.'images/blank.gif" width="1" height="1" border="0" alt=""></td>
-        <td><img src="'.$apidb_root.'images/blank.gif" width="1" height="1" border="0" alt=""></td>
+        <td><img src="'.$apidb_root.'images/blank.gif" width="1" height="1" alt=""></td>
+        <td><img src="'.$apidb_root.'images/blank.gif" width="1" height="1" alt=""></td>
       </tr>
       <tr>
-        <td valign="bottom" align="right"><img src="'.$apidb_root.'images/winehq_border_bottom_left.gif" border="0" alt=""></td>
-        <td valign="bottom" align="right"><img src="'.$apidb_root.'images/winehq_border_bottom_right.gif" border="0" alt=""></td>
+        <td valign="bottom" align="right"><img src="'.$apidb_root.'images/winehq_border_bottom_left.gif" alt=""></td>
+        <td valign="bottom" align="right"><img src="'.$apidb_root.'images/winehq_border_bottom_right.gif" alt=""></td>
       </tr>
     </table>
 </td></tr>
@@ -228,7 +228,7 @@ $str .= '
 
 $str .= '
 <tr>
-<td><img src="'.$apidb_root.'images/blank.gif" border=0 width=5 height=1 alt="-"></td>
+<td><img src="'.$apidb_root.'images/blank.gif" width=5 height=1 alt="-"></td>
 <td width="100%"><table width="100%" border=0 cellpadding=0 cellspacing=0>
     <tr><td class=topMenu>
         <table width="100%" border=0 cellpadding="'.$innerPad.'" cellspacing="1" '.$extra.'><tr><td class=white>
@@ -245,7 +245,7 @@ $str = '
         </td></tr></table></td></tr>
     </table>
 </td>
-<td><img src="'.$apidb_root.'images/blank.gif" border=0 width=5 height=1 alt="-"></td>
+<td><img src="'.$apidb_root.'images/blank.gif" width=5 height=1 alt="-"></td>
 </tr>
 </table>
 <br>

@@ -29,13 +29,13 @@ function get_screenshot_img($appId, $versionId)
     
     if(!$result || !mysql_num_rows($result))
     {
-	$imgFile = "<img src='".$apidb_root."images/no_screenshot.gif' border=0 alt='No Screenshot'>";
+	$imgFile = "<img src='".$apidb_root."images/no_screenshot.gif' alt='No Screenshot'>";
     }
     else
     {
         $ob = mysql_fetch_object($result);
 	$imgFile = "<img src='appimage.php?appId=$appId&versionId=$versionId&width=128&height=128' ".
-	           "border=0 alt='$ob->description'>";
+	           "alt='$ob->description'>";
     }
     
     $img = html_frame_start("",'128','',2);

@@ -132,7 +132,7 @@ if((!$result || !mysql_num_rows($result)) && (!havepriv("admin") && !isMaintaine
                 echo "<div align=center><table><tr>\n";
             }
             // set img tag
-            $imgSRC = '<img src="appimage.php?imageId='.$ob->id.'&width=128&height=128" border=0 alt="'.$ob->description.'">';
+            $imgSRC = '<img src="appimage.php?imageId='.$ob->id.'&width=128&height=128" alt="'.$ob->description.'">';
 
             // get image size
             $size = getimagesize("data/screenshots/".$ob->url);

@@ -10,7 +10,7 @@ apidb_header("Wine Application Database");
 
 ?>
 
-    <img src="images/appdb_montage.jpg" width=391 height=266 border=0 align=right alt="Wine AppDB">
+    <img src="images/appdb_montage.jpg" width=391 height=266 align=right alt="Wine AppDB">
     
 <h1>Welcome</h1>
 
