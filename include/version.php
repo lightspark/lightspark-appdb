@@ -138,8 +138,8 @@ class Version {
         if(query_appdb("INSERT INTO appVersion $sFields VALUES $sValues", "Error while creating a new version."))
         {
             $this->iVersionId = mysql_insert_id();
-            $this->mailMaintainers();
             $this->version($this->iVersionId);
+            $this->mailMaintainers();
             return true;
         }
         else

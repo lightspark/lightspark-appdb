@@ -134,8 +134,8 @@ class Application {
         if(query_appdb("INSERT INTO appFamily $sFields VALUES $sValues", "Error while creating a new application."))
         {
             $this->iAppId = mysql_insert_id();
-            $this->mailSupermaintainers();  // Only administrators will be mailed as no supermaintainers exist for this app.
             $this->application($this->iAppId);
+            $this->mailSupermaintainers();  // Only administrators will be mailed as no supermaintainers exist for this app.
             return true;
         }
         else
