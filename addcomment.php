@@ -11,23 +11,23 @@ require(BASE."include/"."application.php");
 // you must be logged in to submit comments
 if(!loggedin())
 {
-  unset($_REQUEST['body']);
   apidb_header("Please login");
   echo "To submit a comment for an application you must be logged in. Please <a href=\"account.php?cmd=login\">login now</a> or create a <a href=\"account.php?cmd=new\">new account</a>.","\n";
+  exit;
 }
 
-if(!isset($_REQUEST['appId']))
+if(!is_numeric($_REQUEST['appId']))
 {
   errorpage('Internal Database Access Error');
   exit;
 }
 
-if(!isset($_REQUEST['versionId']))
+if(!is_numeric($_REQUEST['versionId']))
 {
   $_REQUEST['versionId'] = 0;
 }
 
-if(!isset($_REQUEST['thread']))
+if(!is_numeric($_REQUEST['thread']))
 {
   $_REQUEST['thread'] = 0;
 }
@@ -39,19 +39,22 @@ if(isset($_REQUEST['body']))
 {
     $hostname = get_remote();
     
-    $subject = strip_tags($_REQUEST['subject']);
-    $subject = mysql_escape_string($subject);
-    $body1 = mysql_escape_string($_REQUEST['body']);
-
     // get current userid
     $userId = $_SESSION['current']->userid;
 
-    $result = query_appdb("INSERT INTO appComments VALUES (NOW(), null, '".$_REQUEST['thread']."','".
-			   $_REQUEST['appId']."', '".$_REQUEST['versionId']."', $userId, '$hostname', '$subject', ".
-			   "'$body1', 0)");
+    $aInsert = compile_insert_string(array( 'parentId' => $_REQUEST['thread'],
+                                            'appId' => $_REQUEST['appId'],
+                                            'versionId' => $_REQUEST['versionId'],
+                                            'userId' => $userId,
+                                            'hostname' => $hostname,
+                                            'subject' => $_REQUEST['subject'],
+                                            'body' => $_REQUEST['body']));
+                                            
+    $result = query_appdb("INSERT INTO appComments (`time`, {$aInsert['FIELDS']}) VALUES (NOW(), {$aInsert['VALUES']})");
+    
     if ($result)
     {
-        if (isset($_REQUEST['originator']))
+        if (is_numeric($_REQUEST['originator']))
         {
             if (UserWantsEmail($_REQUEST['originator']))
             {
@@ -103,13 +106,13 @@ if(isset($_REQUEST['body']))
 ################################
 # USER WANTS TO SUBMIT COMMENT #
 ################################
-else if(loggedin())
+else
 {
   apidb_header("Add Comment");
 
   $mesTitle = "<b>Post New Comment</b>";
 
-  if($_REQUEST['thread'])
+  if($_REQUEST['thread'] > 0)
   {
     $result = query_appdb("SELECT * FROM appComments WHERE commentId = ".$_REQUEST['thread']);
     $ob = mysql_fetch_object($result);
