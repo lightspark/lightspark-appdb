@@ -41,8 +41,9 @@ if($_REQUEST['sub'] == "Submit")
         $email = getNotifyEmailAddressList($_REQUEST['appId'], $_REQUEST['versionId']);
         if($email)
         {
-            $fullAppName = "Application: ".lookupAppName($appId)." Version: ".lookupVersionName($appId, $versionId);
-            $ms = APPDB_ROOT."appview.php?appId=$appId&versionId=$versionId"."\n";
+            $fullAppName  = "Application: ".lookupAppName($_REQUEST['appId']);
+            $fullAppName .= " Version: ".lookupVersionName($_REQUEST['appId'], $_REQUEST['versionId']);
+            $ms = APPDB_ROOT."appview.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']."\n";
             $ms .= "\n";
             $ms .= ($_SESSION['current']->username ? $_SESSION['current']->username : "Anonymous")." added note to ".$fullAppName."\n";
             $ms .= "\n";
