@@ -114,7 +114,7 @@ else if (isset($_REQUEST['apptype']))
 {
   // set email field if logged in
   if (loggedin())
-    $email = $_SESSION[current]->lookup_email($_SESSION[current]->userid);
+    $email = $_SESSION['current']->lookup_email($_SESSION['current']->userid);
 
   // header
   apidb_header("Submit Application");
@@ -133,7 +133,7 @@ else if (isset($_REQUEST['apptype']))
   echo "<a href='mailto:appdb@winehq.org'>appdb@winehq.org</a></p>\n";
 
   # NEW APPLICATION
-  if ($_REQUEST[apptype] == 1)
+  if ($_REQUEST['apptype'] == 1)
   {
     echo html_frame_start("New Application Form",400,"",0);
     echo "<table width='100%' border=0 cellpadding=2 cellspacing=0>\n";

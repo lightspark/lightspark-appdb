@@ -156,7 +156,7 @@ function rating_update($vars)
 	    return;
 	}
 
-    $userId = $_SESSION[current]->userid;
+    $userId = $_SESSION['current']->userid;
     $versionId = $vars["versionId"];
     $score_w = $vars["score_w"];
     $score_f = $vars["score_f"];

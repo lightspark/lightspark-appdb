@@ -26,7 +26,7 @@ function admin_menu()
     global $apidb_root;
 
     $m = new htmlmenu("Admin");
-    if($_REQUEST[versionId]) {
+    if($_REQUEST['versionId']) {
         $m->add("Add Note", $apidb_root."admin/addAppNote.php?appId=$appId&versionId=".$_REQUEST['versionId']);
         $m->addmisc("&nbsp;");
 
