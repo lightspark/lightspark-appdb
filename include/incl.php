@@ -184,7 +184,7 @@ function addmsg($text, $color = "black")
         $text = "<font color='$color'> $text </font>\n";
 
     $text = str_replace("'", "\\'", $text);
-    mysql_query("INSERT INTO sessionMessages VALUES (null, null, '".session_id()."', '$text')");
+    query_appdb("INSERT INTO sessionMessages VALUES (null, null, '".session_id()."', '$text')");
     echo mysql_error();
 }
 
@@ -195,7 +195,7 @@ function addmsg($text, $color = "black")
  */
 function dumpmsgbuffer()
 {
-    $result = mysql_query("SELECT * FROM sessionMessages WHERE sessionId = '".session_id()."'");
+    $result = query_appdb("SELECT * FROM sessionMessages WHERE sessionId = '".session_id()."'");
     if(!$result)
         return;
 
@@ -207,7 +207,7 @@ function dumpmsgbuffer()
         echo "<br>\n";
     }
 
-    mysql_query("DELETE FROM sessionMessages WHERE sessionId = '".session_id()."'");
+    query_appdb("DELETE FROM sessionMessages WHERE sessionId = '".session_id()."'");
 }
 
 

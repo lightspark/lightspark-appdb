@@ -31,7 +31,7 @@ class Category {
             $this->name = "ROOT";
         } else
         {
-            $result = mysql_query("SELECT * FROM appCategory WHERE catId = $id");
+            $result = query_appdb("SELECT * FROM appCategory WHERE catId = $id");
             if(!$result)
             {
                 // category not found! 
@@ -43,7 +43,7 @@ class Category {
             $this->name = $ob->catName;
         }
 
-        $result = mysql_query("SELECT catId, catName, catDescription FROM ".
+        $result = query_appdb("SELECT catId, catName, catDescription FROM ".
                               "appCategory WHERE catParent = $this->id " .
                               "ORDER BY catName");
         if(mysql_num_rows($result) == 0)
@@ -68,7 +68,7 @@ class Category {
         if($name == "ROOT")
             return 0;
 
-        $result = mysql_query("SELECT catId FROM appCategory WHERE ".
+        $result = query_appdb("SELECT catId FROM appCategory WHERE ".
                               "catName = '$name'");
         if(!$result)
             return -1;
@@ -102,7 +102,7 @@ class Category {
         $id   = $this->id;
         while(1)
         {
-            $result = mysql_query("SELECT catName, catId, catParent FROM appCategory WHERE catId = $id");
+            $result = query_appdb("SELECT catName, catId, catParent FROM appCategory WHERE catId = $id");
             if(!$result || mysql_num_rows($result) != 1)
                 break;
             $cat = mysql_fetch_object($result);
@@ -119,7 +119,7 @@ class Category {
      */
     function getAppList($id)
     {
-        $result = mysql_query("SELECT appId, appName, description FROM ".
+        $result = query_appdb("SELECT appId, appName, description FROM ".
                               "appFamily WHERE catId = $id ".
                               "ORDER BY appName");
         if(!$result || mysql_num_rows($result) == 0)
@@ -143,13 +143,13 @@ class Category {
     {
         $total = 0;
 
-        $result = mysql_query("SELECT appId FROM appFamily WHERE catId = $id");
+        $result = query_appdb("SELECT appId FROM appFamily WHERE catId = $id");
         if($result)
             $total += mysql_num_rows($result);
 
         if($recurse)
         {
-            $result = mysql_query("SELECT catId FROM appCategory WHERE catParent = $id");
+            $result = query_appdb("SELECT catId FROM appCategory WHERE catParent = $id");
             if($result)
             {
                  while($ob = mysql_fetch_object($result))
@@ -163,7 +163,7 @@ class Category {
 
 function appIdToName($appId)
 {
-    $result = mysql_query("SELECT appName FROM appFamily WHERE appId = $appId");
+    $result = query_appdb("SELECT appName FROM appFamily WHERE appId = $appId");
     if(!$result || !mysql_num_rows($result))
         return "<unknown>";  // shouldn't normally happen
     $ob = mysql_fetch_object($result);
@@ -172,7 +172,7 @@ function appIdToName($appId)
 
 function versionIdToName($versionId)
 {
-    $result = mysql_query("SELECT versionName FROM appVersion WHERE versionId = $versionId");
+    $result = query_appdb("SELECT versionName FROM appVersion WHERE versionId = $versionId");
     if(!$result || !mysql_num_rows($result))
         return "<unknown>";  // shouldn't normally happen
     $ob = mysql_fetch_object($result);
@@ -211,12 +211,12 @@ function make_cat_path($path, $appId = '', $versionId = '')
 
 function deleteCategory($catId)
 {
-    $r = mysql_query("SELECT appId FROM appFamily WHERE catId = $catId");
+    $r = query_appdb("SELECT appId FROM appFamily WHERE catId = $catId");
     if($r)
     {
         while($ob = mysql_fetch_object($r))
             deleteAppFamily($ob->appId);
-        $r = mysql_query("DELETE FROM appCategory WHERE catId = $catId");
+        $r = query_appdb("DELETE FROM appCategory WHERE catId = $catId");
        
         if($r)
             addmsg("Category $catId deleted", "green");

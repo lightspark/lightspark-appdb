@@ -202,7 +202,7 @@ function make_maintainer_rating_list($varname, $cvalue)
 function getQueuedAppCount()
 {
     $qstring = "SELECT count(*) as queued_apps FROM appQueue";
-    $result = mysql_query($qstring);
+    $result = query_appdb($qstring);
     $ob = mysql_fetch_object($result);
     return $ob->queued_apps;
 }
@@ -211,7 +211,7 @@ function getQueuedAppCount()
 function getQueuedAppDataCount()
 {
     $qstring = "SELECT count(*) as queued_appdata FROM appDataQueue";
-    $result = mysql_query($qstring);
+    $result = query_appdb($qstring);
     $ob = mysql_fetch_object($result);
     return $ob->queued_appdata;
 }
@@ -220,7 +220,7 @@ function getQueuedAppDataCount()
 function getQueuedMaintainerCount()
 {
     $qstring = "SELECT count(*) as queued_maintainers FROM appMaintainerQueue";
-    $result = mysql_query($qstring);
+    $result = query_appdb($qstring);
     $ob = mysql_fetch_object($result);
     return $ob->queued_maintainers;
 }
@@ -229,7 +229,7 @@ function getQueuedMaintainerCount()
 function getMaintainerCount()
 {
     $qstring = "SELECT count(*) as maintainers FROM appMaintainers";
-    $result = mysql_query($qstring);
+    $result = query_appdb($qstring);
     $ob = mysql_fetch_object($result);
     return $ob->maintainers;
 }
@@ -238,7 +238,7 @@ function getMaintainerCount()
 function getVendorCount()
 {
     $qstring = "SELECT count(*) as vendors FROM vendor";
-    $result = mysql_query($qstring);
+    $result = query_appdb($qstring);
     $ob = mysql_fetch_object($result);
     return $ob->vendors;
 }
@@ -246,7 +246,7 @@ function getVendorCount()
 /* Get the number of users in the database */
 function getNumberOfComments()
 {
-    $result = mysql_query("SELECT count(*) as num_comments FROM appComments;");
+    $result = query_appdb("SELECT count(*) as num_comments FROM appComments;");
     $row = mysql_fetch_object($result);
     return $row->num_comments;
 }
@@ -254,7 +254,7 @@ function getNumberOfComments()
 /* Get the number of versions in the database */
 function getNumberOfVersions()
 {
-    $result = mysql_query("SELECT count(versionId) as num_versions FROM appVersion WHERE versionName != 'NONAME';");
+    $result = query_appdb("SELECT count(versionId) as num_versions FROM appVersion WHERE versionName != 'NONAME';");
     $row = mysql_fetch_object($result);
     return $row->num_versions;
 }
@@ -262,7 +262,7 @@ function getNumberOfVersions()
 /* Get the number of maintainers in the database */
 function getNumberOfMaintainers()
 {
-    $result = mysql_query("SELECT count(maintainerId ) as num_maintainers FROM appMaintainers;");
+    $result = query_appdb("SELECT count(maintainerId ) as num_maintainers FROM appMaintainers;");
     $row = mysql_fetch_object($result);
     return $row->num_maintainers;
 }
@@ -270,7 +270,7 @@ function getNumberOfMaintainers()
 /* Get the number of app familes in the database */
 function getNumberOfAppFamilies()
 {
-    $result = mysql_query("SELECT count(*) as num_appfamilies FROM appFamily;");
+    $result = query_appdb("SELECT count(*) as num_appfamilies FROM appFamily;");
     $row = mysql_fetch_object($result);
     return $row->num_appfamilies;
 }
@@ -278,7 +278,7 @@ function getNumberOfAppFamilies()
 /* Get the number of images in the database */
 function getNumberOfImages()
 {
-    $result = mysql_query("SELECT count(*) as num_images FROM appData WHERE type='image';");
+    $result = query_appdb("SELECT count(*) as num_images FROM appData WHERE type='image';");
     $row = mysql_fetch_object($result);
     return $row->num_images;
 }

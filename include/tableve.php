@@ -24,7 +24,7 @@ class TableVE {
 
     function test($query)
     {
-	$result  = mysql_query($query);
+	$result  = query_appdb($query);
 	$nfields = mysql_num_fields($result);
 	$nrows   = mysql_num_rows($result);
 	$table   = mysql_field_table($result, 0);
@@ -51,7 +51,7 @@ class TableVE {
      */
     function create($query, $table, $idcolumn)
     {
-	$result = mysql_query($query);
+	$result = query_appdb($query);
 	$id     = mysql_insert_id();
 	
 	$new_query = "SELECT * FROM $table WHERE $idcolumn = $id";
@@ -65,7 +65,7 @@ class TableVE {
 
 	$nrows = 0;
 
-	$result  = mysql_query($query);
+	$result  = query_appdb($query);
         $nrows   = mysql_num_rows($result);
 
         if(debugging())
@@ -127,7 +127,7 @@ class TableVE {
 
     function edit($query)
     {
-        $result  = mysql_query($query);
+        $result  = query_appdb($query);
 	if(!$result)
 	    echo "Oops: ".mysql_error()."<br>$query<br>\n";
         $nrows   = mysql_num_rows($result);
@@ -182,7 +182,7 @@ class TableVE {
 
     function timestamp_to_unix($stamp)
     {
-	$result = mysql_query("select unix_timestamp($stamp)");
+	$result = query_appdb("select unix_timestamp($stamp)");
 	if(!$result)
 	    return 0;
 	$r = mysql_fetch_row($result);
@@ -192,7 +192,7 @@ class TableVE {
     function make_option_list($varname, $cvalue, $table, $idField, $nameField, $where = "")
     {
     
-	$result = mysql_query("SELECT $idField, $nameField FROM $table $where ORDER BY $nameField");
+	$result = query_appdb("SELECT $idField, $nameField FROM $table $where ORDER BY $nameField");
 	if(!$result)
 	    return; // Oops
 
@@ -459,7 +459,7 @@ class TableVE {
 			
 			$update .= " WHERE ".$this->get_id($table)." = $value";
 						
-			if(!mysql_query($update))
+			if(!query_appdb($update))
 			{
 			    $thisError = "<p><font color=black><b>Query:</b>: $update</font></p>\n";
 			    $thisError .= "<p><font color=red>".mysql_error()."</font></p>";
@@ -473,7 +473,7 @@ class TableVE {
 			if(ereg("^impl_.+$", $table))
 			    {
 				$value = $fieldnames["apiid"][$i];
-				mysql_query("UPDATE $table SET lastmodby = ".$_SESSION['current']->userid." WHERE apiid = $value");
+				query_appdb("UPDATE $table SET lastmodby = ".$_SESSION['current']->userid." WHERE apiid = $value");
 			    }
 		    }
 	    }

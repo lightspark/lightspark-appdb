@@ -28,7 +28,7 @@ class User {
      */
     function exists($sEmail)
     {
-        $result = mysql_query("SELECT * FROM user_list WHERE email = '$sEmail'");
+        $result = query_appdb("SELECT * FROM user_list WHERE email = '$sEmail'");
         if(!$result || mysql_num_rows($result) != 1)
             return 0;
          return 1;
@@ -36,7 +36,7 @@ class User {
 
     function lookup_userid($sEmail)
     {
-        $result = mysql_query("SELECT userid FROM user_list WHERE email = '$sEmail'");
+        $result = query_appdb("SELECT userid FROM user_list WHERE email = '$sEmail'");
         if(!$result || mysql_num_rows($result) != 1)
             return null;
         $ob = mysql_fetch_object($result);
@@ -46,7 +46,7 @@ class User {
 
     function lookup_realname($userid)
     {
-        $result = mysql_query("SELECT realname FROM user_list WHERE userid = $userid");
+        $result = query_appdb("SELECT realname FROM user_list WHERE userid = $userid");
         if(!$result || mysql_num_rows($result) != 1)
             return null;
         $ob = mysql_fetch_object($result);
@@ -61,7 +61,7 @@ class User {
 
     function lookup_CVSrelease($userId)
     {
-        $result = mysql_query("SELECT CVSrelease FROM user_list WHERE userId = '$userId'");
+        $result = query_appdb("SELECT CVSrelease FROM user_list WHERE userId = '$userId'");
         if(!$result || mysql_num_rows($result) != 1)
             return null;
         $ob = mysql_fetch_object($result);
@@ -74,7 +74,7 @@ class User {
      */
     function restore($sEmail, $sPassword)
     {
-        $result = mysql_query("SELECT stamp, userid, realname, ".
+        $result = query_appdb("SELECT stamp, userid, realname, ".
                               "created, status, perm FROM user_list WHERE ".
                               "email = '$sEmail' AND ".
                               "password = password('$sPassword')");
@@ -102,7 +102,7 @@ class User {
         /* update the 'stamp' field in the users account to reflect the last time */
         /* they logged in */
         $myUserId = $this->lookup_userid($sEmail);
-        $result = mysql_query("UPDATE user_list SET stamp=null WHERE userid=$myUserId;");
+        $result = query_appdb("UPDATE user_list SET stamp=null WHERE userid=$myUserId;");
         return 0;
     }
 
@@ -140,25 +140,25 @@ class User {
             return 0;
         if ($password)
         {
-            if (!mysql_query("UPDATE user_list SET password = password('$password') WHERE userid = $userid"))
+            if (!query_appdb("UPDATE user_list SET password = password('$password') WHERE userid = $userid"))
                 return 0;
         }
 
         if ($realname)
         {
-            if (!mysql_query("UPDATE user_list SET realname = '".addslashes($realname)."' WHERE userid = $userid"))
+            if (!query_appdb("UPDATE user_list SET realname = '".addslashes($realname)."' WHERE userid = $userid"))
                 return 0;
         }
 
         if ($email)
         {
-            if (!mysql_query("UPDATE user_list SET email = '".addslashes($email)."' WHERE userid = $userid"))
+            if (!query_appdb("UPDATE user_list SET email = '".addslashes($email)."' WHERE userid = $userid"))
                 return 0;
         }
 
         if ($CVSrelease)
         {
-            if (!mysql_query("UPDATE user_list SET CVSrelease = '".addslashes($CVSrelease)."' WHERE userid = $userid"))
+            if (!query_appdb("UPDATE user_list SET CVSrelease = '".addslashes($CVSrelease)."' WHERE userid = $userid"))
                 return 0;
         }
 
@@ -174,7 +174,7 @@ class User {
         if($sEmail == 0)
             $sEmail = $this->email;
 
-        $result = mysql_query("DELETE FROM user_list WHERE email = '$sEmail'");
+        $result = query_appdb("DELETE FROM user_list WHERE email = '$sEmail'");
 
         if(!$result)
             return mysql_error();
@@ -195,7 +195,7 @@ class User {
         if(!$this->userid || !$key)
             return $def;
 
-        $result = mysql_query("SELECT * FROM user_prefs WHERE userid = $this->userid AND name = '$key'");
+        $result = query_appdb("SELECT * FROM user_prefs WHERE userid = $this->userid AND name = '$key'");
         if(!$result || mysql_num_rows($result) == 0)
             return $def;
         $ob = mysql_fetch_object($result);
@@ -208,9 +208,8 @@ class User {
         if(!$this->userid || !$key || !$value)
             return null;
 
-        $result = mysql_query("DELETE FROM user_prefs WHERE userid = $this->userid AND name = '$key'");
-        $result = mysql_query("INSERT INTO user_prefs VALUES($this->userid, '$key', '$value')");
-        echo mysql_error();
+        $result = query_appdb("DELETE FROM user_prefs WHERE userid = $this->userid AND name = '$key'");
+        $result = query_appdb("INSERT INTO user_prefs VALUES($this->userid, '$key', '$value')");
         return $result ? true : false;
     }
 
@@ -223,7 +222,7 @@ class User {
         if(!$this->userid || !$priv)
             return 0;
 
-        $result = mysql_query("SELECT * FROM user_privs WHERE userid = $this->userid AND priv  = '$priv'");
+        $result = query_appdb("SELECT * FROM user_privs WHERE userid = $this->userid AND priv  = '$priv'");
         if(!$result)
             return 0;
         return mysql_num_rows($result);
@@ -246,7 +245,7 @@ class User {
         }
 
         $query = "SELECT * FROM appMaintainers WHERE userid = '$this->userid' AND appId = '$appId' AND versionId = '$versionId'";
-        $result = mysql_query($query);
+        $result = query_appdb($query);
         if(!$result)
             return 0;
         return mysql_num_rows($result);
@@ -262,7 +261,7 @@ class User {
             return false;
 
         $query = "SELECT * FROM appMaintainers WHERE userid = '$this->userid' AND appId = '$appId' AND superMaintainer = '1'";
-        $result = mysql_query($query);
+        $result = query_appdb($query);
         if(!$result)
             return 0;
         return mysql_num_rows($result);
@@ -277,7 +276,7 @@ class User {
         if($this->checkpriv($priv))
             return 1;
 
-        $result = mysql_query("INSERT INTO user_privs VALUES ($this->userid, '$priv')");
+        $result = query_appdb("INSERT INTO user_privs VALUES ($this->userid, '$priv')");
         return $result;
     }
 
@@ -287,7 +286,7 @@ class User {
         if(!$this->userid || !$priv)
             return 0;
 
-        $result = mysql_query("DELETE FROM user_privs WHERE userid = $this->userid AND priv = '$priv'");
+        $result = query_appdb("DELETE FROM user_privs WHERE userid = $this->userid AND priv = '$priv'");
         return $result;
     }
 }
@@ -343,7 +342,7 @@ function generate_passwd($pass_len = 10)
 
 function lookupEmail($userid)
 {
-    $result = mysql_query("SELECT email FROM user_list WHERE userid = $userid");
+    $result = query_appdb("SELECT email FROM user_list WHERE userid = $userid");
     if(!$result || mysql_num_rows($result) != 1)
         return null;
     $ob = mysql_fetch_object($result);
@@ -352,7 +351,7 @@ function lookupEmail($userid)
 
 function lookupRealname($userid)
 {
-    $result = mysql_query("SELECT realname FROM user_list WHERE userid = $userid");
+    $result = query_appdb("SELECT realname FROM user_list WHERE userid = $userid");
     if(!$result || mysql_num_rows($result) != 1)
         return null;
     $ob = mysql_fetch_object($result);
@@ -361,7 +360,7 @@ function lookupRealname($userid)
 
 function UserWantsEmail($userid)
 {
-    $result = mysql_query("SELECT * FROM user_prefs WHERE userid = $userid AND name = 'send_email'");
+    $result = query_appdb("SELECT * FROM user_prefs WHERE userid = $userid AND name = 'send_email'");
     if(!$result || mysql_num_rows($result) == 0)
     {
         return true;
@@ -385,7 +384,7 @@ function getNotifyEmailAddressList($appId, $versionId = 0)
         $sWhere = "appId = ".$appId." AND versionId = ".$versionId;
 
     $query = "SELECT userId FROM appMaintainers WHERE ".$sWhere.";";
-    $result = mysql_query($query);
+    $result = query_appdb($query);
     if(mysql_num_rows($result) > 0)
     {
         while($row = mysql_fetch_object($result))
@@ -394,7 +393,7 @@ function getNotifyEmailAddressList($appId, $versionId = 0)
             $c++;
         }
     }
-    $result = mysql_query("SELECT * FROM user_privs WHERE priv  = 'admin'");
+    $result = query_appdb("SELECT * FROM user_privs WHERE priv  = 'admin'");
     if(mysql_num_rows($result) > 0)
     {
         while($row = mysql_fetch_object($result))
@@ -425,7 +424,7 @@ function getNotifyEmailAddressList($appId, $versionId = 0)
  */
 function getNumberOfUsers()
 {
-    $result = mysql_query("SELECT count(*) as num_users FROM user_list;");
+    $result = query_appdb("SELECT count(*) as num_users FROM user_list;");
     $row = mysql_fetch_object($result);
     return $row->num_users;
 }
@@ -436,7 +435,7 @@ function getNumberOfUsers()
  */
 function getActiveUsersWithinDays($days)
 {
-    $result = mysql_query("SELECT count(*) as num_users FROM user_list WHERE stamp >= DATE_SUB(CURDATE(), interval $days day);");
+    $result = query_appdb("SELECT count(*) as num_users FROM user_list WHERE stamp >= DATE_SUB(CURDATE(), interval $days day);");
     $row = mysql_fetch_object($result);
     return $row->num_users;
 }

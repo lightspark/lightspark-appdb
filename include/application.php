@@ -9,7 +9,7 @@ class Application {
 
     function Application($id)
     {
-	$result = mysql_query("SELECT * FROM appFamily WHERE appId = $id");
+	$result = query_appdb("SELECT * FROM appFamily WHERE appId = $id");
 	if(!$result)
 	    return; // Oops
 	if(mysql_num_rows($result) != 1)
@@ -23,7 +23,7 @@ class Application {
     {
 	$list = array();
 
-	$result = mysql_query("SELECT * FROM appVersion ".
+	$result = query_appdb("SELECT * FROM appVersion ".
 			      "WHERE appId = ". $this->data->appId . " " .
 			      "ORDER BY versionName");
 	if(!$result)
@@ -41,7 +41,7 @@ class Application {
 
     function getAppVersion($versionId)
     {
-	$result = mysql_query("SELECT * FROM appVersion ".
+	$result = query_appdb("SELECT * FROM appVersion ".
                               "WHERE appId = ". $this->data->appId ." AND ".
 			      "versionId = $versionId");
         if(!$result || mysql_num_rows($result) != 1)
@@ -52,7 +52,7 @@ class Application {
 
     function getVendor()
     {
-	$result = mysql_query("SELECT * FROM vendor ".
+	$result = query_appdb("SELECT * FROM vendor ".
 			      "WHERE vendorId = ". $this->data->vendorId);
 	if(!$result || mysql_num_rows($result) != 1)
 	    return array("vendorName" => "Unknown");
@@ -65,7 +65,7 @@ class Application {
     {
 	$list = array();
 
-        $result = mysql_query("SELECT * FROM appComments ".
+        $result = query_appdb("SELECT * FROM appComments ".
                               "WHERE appId = ". $this->data->appId . " AND " .
 			      "versionId = $versionId " .
                               "ORDER BY time");
@@ -81,10 +81,10 @@ class Application {
 
 function deleteAppFamily($appId)
 {
-    $r = mysql_query("DELETE FROM appFamily WHERE appId = $appId");
+    $r = query_appdb("DELETE FROM appFamily WHERE appId = $appId");
     if($r)
     {
-        $r = mysql_query("DELETE FROM appVersion WHERE appId = $appId");
+        $r = query_appdb("DELETE FROM appVersion WHERE appId = $appId");
         if($r)
             addmsg("Application and versions deleted", "green");
         else
@@ -97,7 +97,7 @@ function deleteAppFamily($appId)
 
 function deleteAppVersion($versionId)
 {
-    $r = mysql_query("DELETE FROM appVersion WHERE versionId = $versionId");
+    $r = query_appdb("DELETE FROM appVersion WHERE versionId = $versionId");
     if($r)
         addmsg("Application Version $versionId deleted", "green");
     else
@@ -106,7 +106,7 @@ function deleteAppVersion($versionId)
 
 function lookupVersionName($appId, $versionId)
 {
-    $result = mysql_query("SELECT versionName FROM appVersion WHERE versionId = $versionId and appId = $appId");
+    $result = query_appdb("SELECT versionName FROM appVersion WHERE versionId = $versionId and appId = $appId");
     if(!$result || mysql_num_rows($result) != 1)
         return null;
     $ob = mysql_fetch_object($result);
@@ -116,7 +116,7 @@ function lookupVersionName($appId, $versionId)
 
 function lookupAppName($appId)
 {
-    $result = mysql_query("SELECT appName FROM appFamily WHERE appId = $appId");
+    $result = query_appdb("SELECT appName FROM appFamily WHERE appId = $appId");
     if(!$result || mysql_num_rows($result) != 1)
         return null;
     $ob = mysql_fetch_object($result);
