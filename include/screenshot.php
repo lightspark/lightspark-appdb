@@ -71,7 +71,7 @@ class Screenshot {
                 $this->iScreenshotId = mysql_insert_id();
             }
             else return false;
-            if(!rename($hFile['tmp_name'], "data/".$this->sDirectory."/originals/".$this->iScreenshotId))
+            if(!move_uploaded_file($hFile['tmp_name'], "data/".$this->sDirectory."/originals/".$this->iScreenshotId))
             {
                 // whoops, moving failed, do something
                 addmsg("Unable to move screenshot from ".$hFile['tmp_name']." to data/".$this->sDirectory."/originals/".$this->iScreenshotId, "red");
