@@ -28,7 +28,7 @@ class Screenshot {
     function Screenshot($iScreenshotId = null)
     {
         // we are working on an existing screenshot
-        if($iScreenshotId)
+        if(is_numeric($iScreenshotId))
         {
             $sQuery = "SELECT appData.*, appVersion.appId AS appId
                        FROM appData, appVersion 

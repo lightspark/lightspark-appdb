@@ -32,7 +32,7 @@ class Version {
     function Version($iVersionId = null)
     {
         // we are working on an existing version
-        if($iVersionId)
+        if(is_numeric($iVersionId))
         {
             /*
              * We fetch the data related to this version.

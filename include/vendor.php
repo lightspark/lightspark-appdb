@@ -18,7 +18,7 @@ class Vendor {
     function Vendor($iVendorId = null)
     {
         // we are working on an existing vendor
-        if($iVendorId)
+        if(is_numeric($iVendorId))
         {
             /*
              * We fetch the data related to this vendor.

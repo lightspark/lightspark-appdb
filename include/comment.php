@@ -25,7 +25,7 @@ class Comment {
      */
     function Comment($iCommentId="")
     {
-        if($iCommentId)
+        if(is_numeric($iCommentId))
         {
 
             $sQuery = "SELECT appComments.*, appVersion.appId AS appId

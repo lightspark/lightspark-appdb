@@ -31,7 +31,7 @@ class Application {
     function Application($iAppId = null)
     {
         // we are working on an existing application
-        if($iAppId)
+        if(is_numeric($iAppId))
         {
             /*
              * We fetch application data and versionsIds. 

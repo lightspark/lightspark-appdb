@@ -22,7 +22,7 @@ class User {
     function User($iUserId="")
     {
         $this->sRealname = "an anonymous user";
-        if($iUserId)
+        if(is_numeric($iUserId))
         {
             $sQuery = "SELECT *
                        FROM user_list
@@ -47,8 +47,8 @@ class User {
     {
         $sQuery = "SELECT *
                    FROM user_list
-                   WHERE email = '".$sEmail."'
-                   AND password = password('".$sPassword."')";
+                   WHERE email = '".addslashes($sEmail)."'
+                   AND password = password('".addslashes($sPassword)."')";
         $hResult = query_appdb($sQuery);
         $oRow = mysql_fetch_object($hResult);
         $this->iUserId = $oRow->userid;
