@@ -3,7 +3,6 @@
 include("path.php");
 include(BASE."include/"."incl.php");
 include(BASE."include/"."tableve.php");
-include(BASE."include/"."qclass.php");
 
 //check for admin privs
 if(!havepriv("admin"))

@@ -4,7 +4,6 @@
 include("path.php");
 include(BASE."include/"."incl.php");
 include(BASE."include/"."tableve.php");
-include(BASE."include/"."qclass.php");
 require(BASE."include/"."application.php");
 
 if(!is_numeric($_REQUEST['appId']) OR !is_numeric($_REQUEST['versionId']))
