@@ -11,10 +11,10 @@ function get_screenshot_img($appId, $versionId="")
 {
     if($versionId) 
     {
-        $result = mysql_query("SELECT *, RAND() AS rand FROM appData WHERE appId = $appId AND versionId = $versionId AND type = 'image' ORDER BY rand");
+        $result = query_appdb("SELECT *, RAND() AS rand FROM appData WHERE appId = $appId AND versionId = $versionId AND type = 'image' ORDER BY rand");
     }
     else {
-       $result = mysql_query("SELECT *, RAND() AS rand FROM appData WHERE appId = $appId AND type = 'image' ORDER BY rand");
+       $result = query_appdb("SELECT *, RAND() AS rand FROM appData WHERE appId = $appId AND type = 'image' ORDER BY rand");
     }
     
     if(!$result || !mysql_num_rows($result))

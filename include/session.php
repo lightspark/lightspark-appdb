@@ -66,7 +66,7 @@ class session
     // read session
     function _read ($key)
     {
-        $result = mysql_query("SELECT data FROM session_list WHERE session_id = '".$key."'");
+        $result = query_appdb("SELECT data FROM session_list WHERE session_id = '".$key."'");
         if (!$result) { return null; }
         $r = mysql_fetch_object($result);
         return $r->data; 
@@ -79,21 +79,21 @@ class session
         if(isset($GLOBALS['msg_buffer']))
             $messages = implode("|", $GLOBALS['msg_buffer']);
 
-        mysql_query("REPLACE session_list VALUES ('$key',  ".$_SESSION['current']->userid.", '".get_remote()."', '".addslashes($value)."', '$messages', NOW())");
+        query_appdb("REPLACE session_list VALUES ('$key',  '".$_SESSION['current']->userid."', '".get_remote()."', '".addslashes($value)."', '$messages', NOW())");
         return true;
     }
     
     // delete current session
     function _destroy ($key)
     {
-        mysql_query("DELETE FROM session_list WHERE session_id = '$key'");
+        query_appdb("DELETE FROM session_list WHERE session_id = '$key'");
         return true;
     }
     
     // clear old sessions (moved into a separate cron process)
     function _gc ($maxlifetime)
     {
-        mysql_query("DELETE FROM session_list WHERE to_days(now()) - to_days(stamp) >= 7");
+        query_appdb("DELETE FROM session_list WHERE to_days(now()) - to_days(stamp) >= 7");
         return true;
     }
 

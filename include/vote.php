@@ -17,7 +17,7 @@ function vote_count($appId, $userId = null)
         else
             return 0;
 }
-    $result = mysql_query("SELECT * FROM appVotes WHERE appId = $appId AND userId = $userId");
+    $result = query_appdb("SELECT * FROM appVotes WHERE appId = $appId AND userId = $userId");
     return mysql_num_rows($result);
 }
 
@@ -34,7 +34,7 @@ function vote_count_user_total($userId = null)
         else
             return 0;
     }
-    $result = mysql_query("SELECT * FROM appVotes WHERE userId = $userId");
+    $result = query_appdb("SELECT * FROM appVotes WHERE userId = $userId");
     return mysql_num_rows($result);
 }
 
@@ -44,7 +44,7 @@ function vote_count_user_total($userId = null)
  */
 function vote_count_app_total($appId)
 {
-    $result = mysql_query("SELECT * FROM appVotes WHERE appId = $appId");
+    $result = query_appdb("SELECT * FROM appVotes WHERE appId = $appId");
     return mysql_num_rows($result);
 }
 
@@ -66,7 +66,7 @@ function vote_add($appId, $slot, $userId = null)
         return;
     
     vote_remove($slot, $userId);
-    mysql_query("INSERT INTO appVotes VALUES (null, null, $appId, $userId, $slot)");
+    query_appdb("INSERT INTO appVotes VALUES (null, null, $appId, $userId, $slot)");
 }
 
 
@@ -83,7 +83,7 @@ function vote_remove($slot, $userId = null)
             else
                 return;
         }
-    mysql_query("DELETE FROM appVotes WHERE userId = $userId AND slot = $slot");
+    query_appdb("DELETE FROM appVotes WHERE userId = $userId AND slot = $slot");
 }
 
 
@@ -96,7 +96,7 @@ function vote_get_user_votes($userId = null)
         if(!$userId)
             return array();
     }
-    $result = mysql_query("SELECT * FROM appVotes WHERE userId = $userId");
+    $result = query_appdb("SELECT * FROM appVotes WHERE userId = $userId");
     if(!$result)
         return array();
 

@@ -8,7 +8,7 @@
  */
 function getAppsFromUserId($userId)
 {
-    $result = mysql_query("SELECT appId, versionId, superMaintainer FROM ".
+    $result = query_appdb("SELECT appId, versionId, superMaintainer FROM ".
                           "appMaintainers WHERE userId = '$userId'");
     if(!$result || mysql_num_rows($result) == 0)
         return;
@@ -32,7 +32,7 @@ function getMaintainersUserIdsFromAppIdVersionId($appId, $versionId)
     $query = "SELECT userId FROM ".
                           "appMaintainers WHERE appId = '$appId' " .
                           "AND versionId = '$versionId';";
-    $result = mysql_query($query);
+    $result = query_appdb($query);
     if(mysql_num_rows($result) == 0)
         return; // no sub categories
 
@@ -55,7 +55,7 @@ function getSuperMaintainersUserIdsFromAppId($appId)
     $query = "SELECT userId FROM ".
                           "appMaintainers WHERE appId = '$appId' " .
                           "AND superMaintainer = '1';";
-    $result = mysql_query($query);
+    $result = query_appdb($query);
     if(!$result || mysql_num_rows($result) == 0)
         return; // no sub categories
 
