@@ -32,32 +32,6 @@ function closedb()
     mysql_close($dbcon);
 }
 
-function querydb($query)
-{
-	$result = mysql_query($query);
-	if(!$result)
-	{
-		echo "<br><font color=green> $query </font> <br><br>\n";
-		echo "<font color=red>A QUERY error occurred:</font> ".
-			"<font color=blue>".mysql_error()."</font><p>\n";
-	}
-	return $result;
-}
-
-function mysql_field_is_null($result, $row, $field)
-{
-	if(mysql_result($result, $row, $field) == null)
-		return 1;
-	return 0;
-}
-
-
-function read_string($filename)
-{
-    return join("", file($filename));
-}
-
-
 function build_urlarg($vars)
 {
 	$arr = array();
@@ -77,29 +51,6 @@ function build_urlarg($vars)
 	return implode("&", $arr);
 }
 
-
-function add_option_menu($options, $label, $id)
-{
-	echo "<form action='project.php' method='get'>\n";
-	echo "<select name='prj_id'>\n";
-	while(list($idx, $val) = each($options))
-		     echo "<option>$val</option>\n";
-	echo "</select>\n";
-	echo "<input type='submit' value='$label'>\n";
-	echo "</form> <br>\n";
-}
-
-
-/*
- * return all keys of a mapping as an array
- */
-function keys($arr)
-{
-    $res = array();
-    while(list($k, $v) = each($arr))
-        $res[] = $k;
-    return $res;
-}
 
 /*
  * return all values of a mapping as an array
