@@ -169,8 +169,8 @@ function html_p()
 function html_line($thickness = 1, $colspan = 1, $color = "#000000")
 {
     return do_indent("<tr><td bgcolor=\"$color\" colspan=$colspan> ".
-		     "<img src=\"/images/blank.gif\" height=$thickness ".
-		     "vspace=0> </td></tr>");
+		     "<img src=\"/images/blank.gif\" height=\"$thickness\" ".
+		     "vspace=\"0\"> </td></tr>");
 }
 
 
@@ -186,7 +186,7 @@ function html_imagebutton($text, $url, $extra = "")
     $java  = "onMouseDown = 'document.img$i.src = \"$img2\"; return true;' ";
     $java .= "onMouseUp = 'document.img$i.src = \"$img1\"; return true;' ";
 
-    return "\n<a href='$url' $extra $java>\n <img src='$img1' name='img$i' alt='$text'> </a>\n";
+    return "\n<a href=\"$url\" $extra $java>\n <img src=\"$img1\" name=\"img$i\" alt=\"$text\"> </a>\n";
 }
 
 
@@ -204,19 +204,19 @@ $str .= '
 <tr><td>
     <table width="100%" border="0" cellpadding="0" cellspacing="0" class="topMenu">
       <tr>
-        <td valign="top" align="left"><img src="'.BASE.'images/winehq_border_top_left.gif" alt=""></td>
-        <td rowspan="3" valign="middle" align="left"><img src="'.BASE.'images/winehq_border_dot_left.gif" alt=""></td>
+        <td valign="top" align="left"><img src="'.BASE.'images/winehq_border_top_left.gif" width="6" height="9" alt=""></td>
+        <td rowspan="3" valign="middle" align="left"><img src="'.BASE.'images/winehq_border_dot_left.gif" width="12" height="3" alt=""></td>
         <td width="100%" rowspan="3" align="center"><span class="menuTitle">'.$title.'</span></td>
-        <td rowspan="3" valign="middle" align="right"><img src="'.BASE.'images/winehq_border_dot_right.gif" alt=""></td>
-        <td valign="top" align="left"><img src="'.BASE.'images/winehq_border_top_right.gif" alt=""></td>
+        <td rowspan="3" valign="middle" align="right"><img src="'.BASE.'images/winehq_border_dot_right.gif" width="12" height="3" alt=""></td>
+        <td valign="top" align="left"><img src="'.BASE.'images/winehq_border_top_right.gif" width="6" height="9" alt=""></td>
       </tr>
       <tr>
         <td><img src="'.BASE.'images/blank.gif" width="1" height="1" alt=""></td>
         <td><img src="'.BASE.'images/blank.gif" width="1" height="1" alt=""></td>
       </tr>
       <tr>
-        <td valign="bottom" align="right"><img src="'.BASE.'images/winehq_border_bottom_left.gif" alt=""></td>
-        <td valign="bottom" align="right"><img src="'.BASE.'images/winehq_border_bottom_right.gif" alt=""></td>
+        <td valign="bottom" align="right"><img src="'.BASE.'images/winehq_border_bottom_left.gif" width="6" height="9" alt=""></td>
+        <td valign="bottom" align="right"><img src="'.BASE.'images/winehq_border_bottom_right.gif" width="6" height="9" alt=""></td>
       </tr>
     </table>
 </td></tr>
@@ -226,7 +226,7 @@ $str .= '
 
 $str .= '
 <tr>
-<td><img src="'.BASE.'images/blank.gif" width=5 height=1 alt="-"></td>
+<td><img src="'.BASE.'images/blank.gif" width="5" height="1" alt=""></td>
 <td width="100%"><table width="100%" border=0 cellpadding=0 cellspacing=0>
     <tr><td class=topMenu>
         <table width="100%" border=0 cellpadding="'.$innerPad.'" cellspacing="1" '.$extra.'><tr><td class=white>
@@ -242,7 +242,7 @@ $str = '
         </td></tr></table></td></tr>
     </table>
 </td>
-<td><img src="'.BASE.'images/blank.gif" width=5 height=1 alt="-"></td>
+<td><img src="'.BASE.'images/blank.gif" width="5" height="1" alt=""></td>
 </tr>
 </table>
 <br>
