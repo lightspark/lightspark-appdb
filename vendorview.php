@@ -10,6 +10,8 @@ require(BASE."include/"."comments.php");
 
 global $apidb_root;
 
+$vendorId = $_REQUEST['vendorId'];
+
 //exit with error if no vendor
 if(!$vendorId) {
     errorpage("No vendor ID specified!");
