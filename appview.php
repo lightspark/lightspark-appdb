@@ -101,7 +101,7 @@ function show_note($sType,$oData){
     $s .= "<table width='100%' border=0 cellspacing=0>\n";
     $s .= "<tr width='100%' bgcolor='$color' align=center valign=top><td><b>$title</b></td></tr>\n";
     $s .= "<tr><td class='note'>\n";
-    $s .= add_br(stripslashes($oData->noteDesc));
+    $s .= $oData->noteDesc;
     $s .= "</td></tr>\n";
 
     if ($_SESSION['current']->hasPriv("admin") || $_SESSION['current']->isMaintainer($_REQUEST['versionId']))
