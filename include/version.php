@@ -292,12 +292,13 @@ class Version {
  
     function mailMaintainers($sAction="add",$sMsg=null)
     {
+        $oApp = new Application($this->iAppId);
         switch($sAction)
         {
             case "add":
                 if(!$this->bQueued)
                 {
-                    $sSubject = "Version ".$this->sName." added by ".$_SESSION['current']->sRealname;
+                    $sSubject = "Version ".$this->sName." of ".$oApp->sName." added by ".$_SESSION['current']->sRealname;
                     $sMsg  = APPDB_ROOT."appview.php?versionId=".$this->iVersionId."\n";
                     if($this->iSubmitterId)
                     {
@@ -308,18 +309,18 @@ class Version {
                     addmsg("The version was successfully added into the database.", "green");
                 } else // Version queued.
                 {
-                    $sSubject = "Version ".$this->sName." submitted by ".$_SESSION['current']->sRealname;
+                    $sSubject = "Version ".$this->sName." of ".$oApp->sName." submitted by ".$_SESSION['current']->sRealname;
                     $sMsg .= "This version has been queued.";
                     $sMsg .= "\n";
                     addmsg("The version you submitted will be added to the database database after being reviewed.", "green");
                 }
             break;
             case "edit":
-                $sSubject =  $this->sName." has been modified by ".$_SESSION['current']->sRealname;
+                $sSubject =  $oApp->sName." ".$this->sName." has been modified by ".$_SESSION['current']->sRealname;
                 addmsg("Version modified.", "green");
             break;
             case "delete":
-                $sSubject = "Version ".$this->sName." has been deleted by ".$_SESSION['current']->sRealname;
+                $sSubject = "Version ".$this->sName." of ".$oApp->sName." has been deleted by ".$_SESSION['current']->sRealname;
                 addmsg("Version deleted.", "green");
             break;
         }
