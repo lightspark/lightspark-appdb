@@ -2,22 +2,41 @@
 
 /*=========================================================================
  *
+ * get user info for posts
+ *
+ */
+function forum_lookup_user ($userid)
+{
+    $mailto = '';
+    if ($userid > 0)
+    {
+        $qstring = "SELECT email,username FROM user_list WHERE userid = '".$userid."' LIMIT 1";   
+        $result = mysql_query($qstring);
+        $usr = mysql_fetch_object($result);
+        if ($usr->email)
+        {
+            $mailto = '<a href="mailto:' . $usr->email . '">' . $usr->username . '</a>';
+        }
+        else
+        {
+            $mailto = $usr->username;
+        }
+        unset($qstring, $result, $usr);
+    }
+    else
+    {
+        $mailto = '<font color="#999999">Anonymous</font>';
+    }
+    return $mailto;
+}
+
+/*=========================================================================
+ *
  * display a single comment (in $ob)
  *
  */
 function view_app_comment($ob)
-{    
-    $user = new User();
-    
-    if ($ob->email)
-    {
-    	$mailto = '<a href="mailto:' . $ob->email . '">' . $ob->username . '</a>';
-    }
-    else
-    {
-       $mailto = $ob->username;
-    }
-
+{
     echo html_frame_start('','98%');
     echo '<table width="100%" border=0 cellpadding=2 cellspacing=1">',"\n";
 
@@ -26,8 +45,8 @@ function view_app_comment($ob)
 
     // message header
     echo "<tr bgcolor=#E0E0E0><td>\n";
-    echo " <b>$ob->subject</b><br>\n";
-    echo " by  $mailto on $ob->time<br>\n";
+    echo " <b>".$ob->subject."</b><br>\n";
+    echo " by  ".forum_lookup_user($ob->userid)." on ".$ob->time."<br>\n";
     echo "</td></tr><tr><td>\n";
     
     // body
@@ -37,7 +56,7 @@ function view_app_comment($ob)
     if(eregi("RE:", $ob->subject))
 	$subject = $ob->subject;
     else
-	$subject = "RE: $ob->subject";
+	$subject = "RE: ".$ob->subject;
 
     // reply post buttons
     echo "	[<a href='addcomment.php?appId=$ob->appId&versionId=$ob->versionId'><small>post new</small></a>] \n";
@@ -62,11 +81,10 @@ function grab_comments($appId, $versionId, $parentId = -1)
 	$extra = "AND parentId = $parentId ";
 
     $qstring = "SELECT from_unixtime(unix_timestamp(time), \"%W %M %D %Y, %k:%i\") as time, ".
-        "commentId, parentId, appId, versionId, username, email, subject, body ".
-        "FROM appComments, user_list WHERE appComments.userId = user_list.userid ".
-        $extra .
-	"AND appId = $appId AND versionId = $versionId ".
-        "ORDER BY appComments.time ASC";
+               "commentId, parentId, appId, versionId, userid, subject, body ".
+               "FROM appComments WHERE appId = '$appId' AND versionId = '$versionId' ".
+               $extra.
+               "ORDER BY appComments.time ASC";
 
     $result = mysql_query($qstring);
 
@@ -126,26 +144,32 @@ function display_comments_nested($appId, $versionId, $threadId)
  */
 function do_display_comments_threaded($handle, $is_main)
 {
-    if(!$is_main)
-	echo "<ul>\n";
+    if (!$is_main)
+	    echo "<ul>\n";
 
-    while($ob = mysql_fetch_object($handle))
+    while ($ob = mysql_fetch_object($handle))
+    {
+        if ($is_main)
         {
-	    if($is_main)
-		view_app_comment($ob);
+            view_app_comment($ob);
+        }
 	    else
-		echo "<li> <a href='commentview.php?appId=$ob->appId&versionId=$ob->versionId&threadId=$ob->commentId'> ".
-		    " $ob->subject </a> by $ob->username on $ob->time </li>\n";
-            $result = grab_comments($ob->appId, $ob->versionId, $ob->commentId);
-            if($result && mysql_num_rows($result))
-                {
-                    echo "<blockquote>\n";
-                    do_display_comments_threaded($result, 0);
-                    echo "</blockquote>\n";
-                }
-	}
-    if(!$is_main)
-	echo "</ul>\n";
+        {
+		    echo '<li><a href="commentview.php?appId='.$ob->appId.'&versionId='.$ob->versionId.'&threadId='.$ob->commentId.'"> '.
+		         $ob->subject.' </a> by '.forum_lookup_user($ob->userid).' on '.$ob->time.' </li>'."\n";
+        }
+        
+        $result = grab_comments($ob->appId, $ob->versionId, $ob->commentId);
+        if ($result && mysql_num_rows($result))
+        {
+            echo "<blockquote>\n";
+            do_display_comments_threaded($result, 0);
+            echo "</blockquote>\n";
+        }
+    }
+    
+    if (!$is_main)
+        echo "</ul>\n";
 }
 
 function display_comments_threaded($appId, $versionId, $threadId = 0)
@@ -164,26 +188,25 @@ function display_comments_threaded($appId, $versionId, $threadId = 0)
 function display_comments_flat($appId, $versionId)
 {
     $result = grab_comments($appId, $versionId);
-
-    while($ob = mysql_fetch_object($result))
-	{
-	    view_app_comment($ob);
-	}
+    if ($result)
+    {
+        while($ob = mysql_fetch_object($result))
+        {
+            view_app_comment($ob);
+        }
+    }
 }
     
 
 function view_app_comments($appId, $versionId, $threadId = 0)
 {
-    opendb();
-
     global $current;
     global $cmode;
 
-
+    // count posts
     $result = mysql_query("SELECT commentId FROM appComments WHERE appId = $appId AND versionId = $versionId");
     $messageCount = mysql_num_rows($result);
     
-
     //start comment format table
     echo html_frame_start("","98%",'',0);
     echo '<table width="100%" border=0 cellpadding=1 cellspacing=0">',"\n";
@@ -215,11 +238,13 @@ function view_app_comments($appId, $versionId, $threadId = 0)
     // post new message button
     echo '<td><form method=get name=message action="addcomment.php"><input type=submit value=" post new comment " class=button> ',"\n";
     echo '<input type=hidden name="appId" value="'.$appId.'"><input type=hidden name="versionId" value="'.$versionId.'"></form></td>',"\n";
-    
+        
     //end comment format table
     echo '</tr></table></td></tr>',"\n";  
     echo '</table>',"\n";
-    echo html_frame_end("The following comments are owned by whoever posted them. CodeWeavers is not responsible for what they say.");
+    echo html_frame_end();
+
+    echo '<p align="center">The following comments are owned by whoever posted them. WineHQ is not responsible for what they say.</p>'."\n";
 
     //start comments
     echo '<table width="100%" border=0 cellpadding=2 cellspacing=1"><tr><td>',"\n";
