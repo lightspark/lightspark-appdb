@@ -32,7 +32,6 @@ function display_catpath($catId, $appId, $versionId = '')
 
 /**
  * display the SUB apps that belong to this app 
- * FIXME:
  */
 function display_bundle($appId)
 {
@@ -45,9 +44,9 @@ function display_bundle($appId)
     }
 
     echo html_frame_start("","98%","",0);
-    echo "<table width='100%' border=0 cellpadding=3 cellspacing=1>\n\n";
+    echo "<table width=\"100%\" border=\"0\" cellpadding=\"3\" cellspacing=\"1\">\n\n";
 
-    echo "<tr class=color4>\n";
+    echo "<tr class=\"color4\">\n";
     echo "    <td>Application Name</td>\n";
     echo "    <td>Description</td>\n";
     echo "</tr>\n\n";
@@ -58,8 +57,8 @@ function display_bundle($appId)
         $bgcolor = ($c % 2 == 0) ? "color0" : "color1";
 
         //display row
-        echo "<tr class=$bgcolor>\n";
-        echo "    <td><a href='appview.php?appId=$ob->appId'>".stripslashes($ob->appName)."</a></td>\n";
+        echo "<tr class=\"$bgcolor\">\n";
+        echo "    <td><a href=\"appview.php?appId=$ob->appId\">".stripslashes($ob->appName)."</a></td>\n";
         echo "    <td>".trim_description($oApp->sDescription)."</td>\n";
         echo "</tr>\n\n";
 
@@ -97,17 +96,17 @@ function show_note($sType,$oData){
     
     $s = html_frame_start("","98%",'',0);
 
-    $s .= "<table width='100%' border=0 cellspacing=0>\n";
-    $s .= "<tr width='100%' bgcolor='$color' align=center valign=top><td><b>$title</b></td></tr>\n";
-    $s .= "<tr><td class='note'>\n";
+    $s .= "<table width=\"100%\" border=\"0\" cellspacing=\"0\">\n";
+    $s .= "<tr width=\"100%\" bgcolor=\"".$color."\" align=\"center\" valign=\"top\"><td><b>".$title."</b></td></tr>\n";
+    $s .= "<tr><td class=\"note\">\n";
     $s .= $oData->noteDesc;
     $s .= "</td></tr>\n";
 
     if ($_SESSION['current']->hasPriv("admin") || $_SESSION['current']->isMaintainer($_REQUEST['versionId']))
     {
-        $s .= "<tr width='100%' class=color1 align=center valign=top><td>";
-        $s .= "<form method=post name=message action='admin/editAppNote.php?noteId={$oData->noteId}'>";
-        $s .= '<input type=submit value="Edit Note" class=button>';
+        $s .= "<tr width=\"100%\" class=\"color1\" align=\"center\" valign=\"top\"><td>";
+        $s .= "<form method=\"post\" name=\"message\" action=\"admin/editAppNote.php?noteId={$oData->noteId}\">";
+        $s .= '<input type="submit" value="Edit Note" class="button">';
         $s .= '</form></td></tr>';
     }
 
@@ -125,7 +124,7 @@ function display_versions($iAppId, $aVersionsIds)
     if ($aVersionsIds)
     {
         echo html_frame_start("","98%","",0);
-        echo "<table width='100%' border=0 cellpadding=3 cellspacing=1>\n\n";
+        echo "<table width=\"100%\" border=\"0\" cellpadding=\"3\" cellspacing=\"1\">\n\n";
 
         echo "<tr class=color4>\n";
         echo "    <td width=\"80\">Version</td>\n";
@@ -194,12 +193,11 @@ if($_REQUEST['appId'])
   
     // start display application
     echo html_frame_start("","98%","",0);
-    echo "<link rel=\"stylesheet\" href=\"./application.css\" type=\"text/css\">";
     echo "<tr><td class=color4 valign=top>\n";
     echo "  <table>\n";
     echo "    <tr><td>\n";
 
-    echo '      <table width="250" border=0 cellpadding=3 cellspacing=1">',"\n";
+    echo '      <table width="250" border="0" cellpadding="3" cellspacing="1">',"\n";
     echo "        <tr class=color0 valign=top><td width=\"100\"><b>Name</b></td><td width='100%'> ".$oApp->sName." </td>\n";
     echo "        <tr class=\"color1\"><td><b>Vendor</b></td><td> ".
          "        <a href='vendorview.php?vendorId=$oVendor->iVendorId'> ".$oVendor->sName." </a> &nbsp;\n";
@@ -227,7 +225,7 @@ if($_REQUEST['appId'])
   
     // image
     $img = get_screenshot_img($oApp->iAppId);
-    echo "<tr><td align=center colspan=2>$img</td></tr>\n";
+    echo "<tr><td align=\"center\" colspan=\"2\">$img</td></tr>\n";
     
     echo "      </table>\n"; /* close of name/vendor/bugs/url table */
 
@@ -235,24 +233,25 @@ if($_REQUEST['appId'])
     echo "    <tr><td>\n";
 
     // Display all supermaintainers maintainers of this application
-    echo "      <table class=color4 width=250 border=1>\n";
-    echo "        <tr><td align=left><b>Super maintainers:</b></td></tr>\n";
+    echo "      <table class=\"color4\" width=\"250\" border=\"1\">\n";
+    echo "        <tr><td align=\"left\"><b>Super maintainers:</b></td></tr>\n";
     $other_maintainers = getSuperMaintainersUserIdsFromAppId($oApp->iAppId);
     if($other_maintainers)
     {
+        echo "        <tr><td align=\"left\"><ul>\n";
         while(list($index, list($userIdValue)) = each($other_maintainers))
         {
             $oUser = new User($userIdValue);
-            echo "        <tr><td align=left>\n";
-            echo "        <li>".$oUser->sRealname."</td></tr>\n";
+            echo "        <li>".$oUser->sRealname."</li>\n";
         }
+        echo "</ul></td></tr>\n";
     } else
     {
         echo "        <tr><td align=right>No maintainers.Volunteer today!</td></tr>\n";
     }
 
     // Display the app maintainer button
-    echo "        <tr><td><center>\n";
+    echo '        <tr><td align="center">';
     if($_SESSION['current']->isLoggedIn())
     {
         /* are we already a maintainer? */
@@ -274,13 +273,13 @@ if($_REQUEST['appId'])
         }
         if($_SESSION['current']->isLoggedIn())
         {
-            echo '<form method="post" name="message" action="appsubmit.php?appId='.$oApp->iAppId.'&apptype=2">';
+            echo '<form method="post" name="message" action="appsubmit.php?appId='.$oApp->iAppId.'&amp;apptype=2">';
             echo '<input type=submit value="Add Version" class="button">';
             echo '</form>';
         }
         if($_SESSION['current']->hasPriv("admin"))
         {
-            $url = BASE."admin/deleteAny.php?what=appFamily&appId=".$oApp->iAppId."&confirmed=yes";
+            $url = BASE."admin/deleteAny.php?what=appFamily&amp;appId=".$oApp->iAppId."&amp;confirmed=yes";
             echo "        <form method=\"post\" name=\"edit\" action=\"javascript:deleteURL('Are you sure?', '".$url."')\"><input type=\"submit\" value=\"Delete App\" class=\"button\"></form>";
             echo '        <form method="post" name="edit" action="admin/editBundle.php"><input type="hidden" name="bundleId" value="'.$oApp->iAppId.'"><input type="submit" value="Edit Bundle" class="button"></form>';
         }
@@ -288,13 +287,9 @@ if($_REQUEST['appId'])
     {
         echo '<form method="post" action="account.php?cmd=login"><input type="submit" value="Log in to become a super maintainer" class="button"></form>';
     }
-    echo "        </center></td></tr>\n";
+    echo "        </td></tr>\n";
     echo "      </table>\n"; /* close of super maintainers table */
-
     echo "    </td></tr>\n";
-
-   echo "    </td></tr>\n";
-
     echo "  </table>\n"; /* close the table that contains the whole left hand side of the upper table */
 
     // description
@@ -347,11 +342,10 @@ else if($_REQUEST['versionId'])
 
     // start version display
     echo html_frame_start("","98%","",0);
-    echo "<link rel=\"stylesheet\" href=\"./application.css\" type=\"text/css\">";  
-    echo '<tr><td class=color4 valign=top>',"\n";
-    echo '<table width="250" border=0 cellpadding=3 cellspacing=1">',"\n";
-    echo "<tr class=color0 valign=top><td width=100> <b>Name</b></td><td width='100%'>".$oApp->sName."</td>\n";
-    echo "<tr class=color1 valign=top><td> <b>Version</b></td><td>".$oVersion->sName."</td></tr>\n";
+    echo '<tr><td class="color4" valign="top">',"\n";
+    echo '<table width="250" border="0" cellpadding="3" cellspacing="1">',"\n";
+    echo "<tr class=\"color0\" valign=\"top\"><td width=\"100\"> <b>Name</b></td><td width=\"100%\">".$oApp->sName."</td>\n";
+    echo "<tr class=\"color1\" valign=\"top\"><td><b>Version</b></td><td>".$oVersion->sName."</td></tr>\n";
 
     // links
     $result = query_appdb("SELECT * FROM appData WHERE versionID = ".$oVersion->iVersionId." AND type = 'url'");
@@ -360,31 +354,32 @@ else if($_REQUEST['versionId'])
         echo "        <tr class=\"color1\"><td><b>Links</b></td><td>\n";
         while($ob = mysql_fetch_object($result))
         {
-            echo "        <a href='$ob->url'>".substr(stripslashes($ob->description),0,30)."</a> <br />\n";
+            echo "        <a href=\"$ob->url\">".substr(stripslashes($ob->description),0,30)."</a> <br />\n";
         }
             echo "        </td></tr>\n";
     }    
 
     // rating Area
-    echo "<tr class=\"color1\" valign=\"top\"><td> <b>Maintainer Rating</b></td><td>".$oVersion->sTestedRating."</td></tr>\n";
-    echo "<tr class=\"color0\" valign=\"top\"><td> <b>Maintainers Version</b></td><td>".$oVersion->sTestedRelease."</td></tr>\n";
+    echo "<tr class=\"color1\" valign=\"top\"><td><b>Maintainer Rating</b></td><td>".$oVersion->sTestedRating."</td></tr>\n";
+    echo "<tr class=\"color0\" valign=\"top\"><td><b>Maintainers Version</b></td><td>".$oVersion->sTestedRelease."</td></tr>\n";
 
     // image
     $img = get_screenshot_img($oApp->iAppId, $oVersion->iVersionId);
-    echo "<tr><td align=center colspan=2>$img</td></tr>\n";
+    echo "<tr><td align=\"center\" colspan=\"2\">$img</td></tr>\n";
 
     // display all maintainers of this application
-    echo "<tr class=color0><td align=left colspan=2><b>Maintainers of this application:</b>\n";
-    echo "<table width=250 border=0>";
+    echo "<tr class=\"color0\"><td align=\"left\" colspan=\"2\"><b>Maintainers of this application:</b>\n";
+    echo "<table width=\"250\" border=\"0\">";
     $other_maintainers = getMaintainersUserIdsFromAppIdVersionId($oApp->iAppId, $oVersion->iVersionId);
     if($other_maintainers)
     {
+        echo "<tr class=\"color0\"><td align=\"left\" colspan=\"2\"><ul>";
         while(list($index, list($userIdValue)) = each($other_maintainers))
         {
             $oUser = new User($userIdValue);
-            echo "<tr class=color0><td align=left colspan=2>";
-            echo "<li>".$oUser->sRealname."</td></tr>\n";
+            echo "<li>".$oUser->sRealname."</li>";
         }
+        echo "</ul></td></tr>\n";
     } else
     {
         echo "<tr class=color0><td align=right colspan=2>";
@@ -393,25 +388,28 @@ else if($_REQUEST['versionId'])
     echo "</table></td></tr>";
 
     // display the app maintainer button
-    echo "<tr><td colspan = 2><center>";
+    echo '<tr><td colspan="2" align="center">';
     if($_SESSION['current']->isLoggedIn())
     {
         /* is this user a maintainer of this version by virtue of being a super maintainer */
         /* of this app family? */
         if($_SESSION['current']->isSuperMaintainer($oApp->iAppId))
         {
-            echo '<form method=post name=message action="maintainerdelete.php"><input type=submit value="Remove yourself as a supermaintainer" class=button>';
-            echo "<input type=hidden name='superMaintainer' value=1>";
+            echo '<form method="post" name="message" action="maintainerdelete.php">';
+            echo '<input type="submit" value="Remove yourself as a supermaintainer" class="button">';
+            echo '<input type="hidden" name="superMaintainer" value="1">';
         } else
         {
             /* are we already a maintainer? */
             if($_SESSION['current']->isMaintainer($oVersion->iVersionId)) /* yep */
             {
-                echo '<form method=post name=message action="maintainerdelete.php"><input type=submit value="Remove yourself as a maintainer" class=button>';
-                echo "<input type=hidden name='superMaintainer' value=0>";
+                echo '<form method="post" name="message" action="maintainerdelete.php">';
+                echo '<input type="submit" value="Remove yourself as a maintainer" class=button>';
+                echo '<input type="hidden" name="superMaintainer" value="0">';
             } else /* nope */
             {
-                echo '<form method="post" name="message" action="maintainersubmit.php"><input type="submit" value="Be a maintainer for this app" class="button"  title="Click here to know more about maintainers.">';
+                echo '<form method="post" name="message" action="maintainersubmit.php">';
+                echo '<input type="submit" value="Be a maintainer for this app" class="button" title="Click here to know more about maintainers.">';
             }
         }
 
@@ -420,37 +418,38 @@ else if($_REQUEST['versionId'])
         echo "</form>";
     } else
     {
-        echo '<form method=post name=message action="account.php?cmd=login">';
-        echo '<input type=submit value="Log in to become an app maintainer" class=button>';
+        echo '<form method="post" name="message" action="account.php">';
+        echo '<input type="hidden" name="cmd" value="login">';
+        echo '<input type=submit value="Log in to become an app maintainer" class="button">';
         echo '</form>';
     }
     
-    echo "</center></td></tr>";
+    echo "</td></tr>";
 
     if ($_SESSION['current']->hasPriv("admin") || $_SESSION['current']->isMaintainer($oVersion->iVersionId))
     {
-        echo "<tr><td colspan = 2><center>";
-        echo '<form method="post" name="message" action="admin/editAppVersion.php?appId='.$oApp->iAppId.'&versionId='.$oVersion->iVersionId.'">';
-        echo '<input type=submit value="Edit Version" class=button>';
+        echo '<tr><td colspan="2" align="center">';
+        echo '<form method="post" name="message" action="admin/editAppVersion.php">';
+        echo '<input type="hidden" name="appId" value="'.$oApp->iAppId.'" />';
+        echo '<input type="hidden" name="versionId" value="'.$oVersion->iVersionId.'" />';
+        echo '<input type=submit value="Edit Version" class="button" />';
         echo '</form>';
-        $url = BASE."admin/deleteAny.php?what=appVersion&appId=".$oApp->iAppId."&versionId=".$oVersion->iVersionId."&confirmed=yes";
+        $url = BASE."admin/deleteAny.php?what=appVersion&amp;appId=".$oApp->iAppId."&amp;versionId=".$oVersion->iVersionId."&amp;confirmed=yes";
         echo "<form method=\"post\" name=\"delete\" action=\"javascript:deleteURL('Are you sure?', '".$url."')\">";
-        echo '<input type=submit value="Delete Version" class="button">';
+        echo '<input type=submit value="Delete Version" class="button" />';
         echo '</form>';
         echo '<form method=post name=message action=admin/addAppNote.php?versionId='.$oVersion->iVersionId.'>';
-        echo '<input type=submit value="Add Note" class=button>';
-        echo '</form>';
-        echo '</form>';
-        echo '<form method=post name=message action=admin/addAppNote.php?versionId='.$oVersion->iVersionId.'>';
-        echo '<input type=hidden name="noteTitle" value="HOWTO">';
-        echo '<input type=submit value="Add How To" class=button>';
-        echo '</form>';
+        echo '<input type=submit value="Add Note" class=button />';
         echo '</form>';
         echo '<form method=post name=message action=admin/addAppNote.php?versionId='.$oVersion->iVersionId.'>';
-        echo '<input type=hidden name="noteTitle" value="WARNING">';
-        echo '<input type=submit value="Add Warning" class=button>';
+        echo '<input type=hidden name="noteTitle" value="HOWTO" />';
+        echo '<input type=submit value="Add How To" class="button" />';
         echo '</form>';
-        echo "</center></td></tr>";
+        echo '<form method=post name=message action=admin/addAppNote.php?versionId='.$oVersion->iVersionId.'>';
+        echo '<input type=hidden name="noteTitle" value="WARNING" />';
+        echo '<input type=submit value="Add Warning" class="button" />';
+        echo '</form>';
+        echo "</td></tr>";
     }
 
     echo "</table><td class=color2 valign=top width='100%'>\n";

@@ -12,7 +12,6 @@ require(BASE."include/application.php");
 require(BASE."include/screenshot.php");
 
 apidb_header("Wine Application Database");
-
 ?>
 
     <img src="images/appdb_montage.jpg" width=391 height=266 align=right alt="Wine AppDB">
@@ -25,10 +24,10 @@ application.</p>
 <?php
 $str_benefits="
     <ul>
-        <li>Ability to <a href=\"".BASE."help/?topic=voting\" title=\"help on voting\">Vote</a> on Favorite Applications</li>
+        <li>Ability to <a href=\"".BASE."help/?topic=voting\" title=\"help on voting\" style=\"cursor: help\">vote</a> on Favorite Applications</li>
         <li>Ability to customize the layout and behaviour of the AppDB and comments system</li>
-        <li>Take Credit for your witty posts</li>
-        <li>Ability to sign up to be an <a href=\"".BASE."help/?topic=maintainer_guidelines\" title=\"informations about application maintainers\">application maintainer</a>.</li>
+        <li>Take credit for your witty posts</li>
+        <li>Ability to sign up to be an <a href=\"".BASE."help/?topic=maintainer_guidelines\" title=\"informations about application maintainers\"  style=\"cursor: help\">application maintainer</a>.</li>
         <li>Submit new applications and versions.</li>
         <li>Submit new screenshots.</li>
     </ul>
@@ -154,10 +153,9 @@ application site. The site contains tips and howtos on getting listed apps to ru
 <p>
 <a href="http://sidenet.ddo.jp/winetips/config.html"><b>Sidenet Wine configuration utility</b></a>:  Installs Internet Explorer 6 and Windows Media Player 7 automatically (works also with MSN Messenger and RealPlayer).
 </p>
+<p>
 <a href="http://www.von-thadden.de/Joachim/WineTools/"><b>WineTools</b></a>: WineTools is an menu driven installer for installing Windows programs under Wine (DCOM98, IE6, Windows Core Fonts, Windows System Software, Office & Office Viewer, Adobe Photoshop 7, Illustrator 9, Acrobat Reader 5.1, ...).
 </p>
-<p>&nbsp;</p>
-
 <?php
 apidb_footer();
 ?>

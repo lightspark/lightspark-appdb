@@ -297,12 +297,12 @@ function get_screenshot_img($iAppId = null, $iVersionId = null)
     } else
     {
         $oRow = mysql_fetch_object($hResult);
-        $sImgFile = '<img src="appimage.php?thumbnail=true&id='.$oRow->id.'" alt="'.$oRow->description.'" />';
+        $sImgFile = '<img src="appimage.php?thumbnail=true&amp;id='.$oRow->id.'" alt="'.$oRow->description.'" />';
     }
     
     $sImg = html_frame_start("",'128','',2);
     if($iVersionId || mysql_num_rows($hResult))
-        $sImg .= "<a href='screenshots.php?appId=$iAppId&versionId=$iVersionId'>$sImgFile</a>";
+        $sImg .= "<a href='screenshots.php?appId=$iAppId&amp;versionId=$iVersionId'>$sImgFile</a>";
     else // no link for adding app screenshot as screenshots are linked to versions
         $sImg .= $sImgFile; 
     $sImg .= html_frame_end()."<br />";

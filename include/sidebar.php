@@ -14,7 +14,7 @@ function global_sidebar_menu() {
     $g->add("Browse Apps", BASE."appbrowse.php");
     $g->add("Top 25", BASE."votestats.php");
     $g->add("Submit Application", BASE."appsubmit.php?apptype=1");
-    $g->add("Help & Documentation", BASE."help/");
+    $g->add("Help &amp; Documentation", BASE."help/");
     $g->add("AppDB Stats", BASE."appdbStats.php");
     $g->done();    
 

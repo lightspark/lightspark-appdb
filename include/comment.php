@@ -77,7 +77,7 @@ class Comment {
             if($sEmail)
             {
                 $sSubject = "Comment for ".lookup_app_name($this->iAppId)." ".lookup_version_name($this->iVersionId)." added by ".$_SESSION['current']->sRealname;
-                $sMsg  = APPDB_ROOT."appview.php?appId=".$this->iAppId."&versionId=".$this->iVersionId."\n";
+                $sMsg  = APPDB_ROOT."appview.php?appId=".$this->iAppId."&amp;versionId=".$this->iVersionId."\n";
                 $sMsg .= "\n";
                 $sMsg .= "Subject: ".$this->sSubject."\r\n";
                 $sMsg .= "\n";
@@ -148,7 +148,7 @@ class Comment {
             if($sEmail)
             {
                 $sSubject = "Comment for ".lookup_app_name($this->iAppId)." ".lookup_version_name($this->iVersionId)." deleted by ".$_SESSION['current']->sRealname;
-                $sMsg  = APPDB_ROOT."appview.php?appId=".$this->iAppId."&versionId=".$this->iVersionId."\n";
+                $sMsg  = APPDB_ROOT."appview.php?appId=".$this->iAppId."&amp;versionId=".$this->iVersionId."\n";
                 $sMsg .= "\n";
                 $sMsg .= "This comment was made on ".substr($this->sDateCreated,0,10)." by ".$this->oOwner->sRealname."\n";
                 $sMsg .= "\n";
@@ -185,7 +185,7 @@ function forum_lookup_user($iUserId)
     }
     if (!$iUserId || !$oUser->isLoggedIn())
     {
-        $sMailto = '<font color="#999999">Anonymous</font>';
+        $sMailto = 'Anonymous';
     }
     return $sMailto;
 }
@@ -197,19 +197,19 @@ function view_app_comment($ob)
 {
 
     echo html_frame_start('','98%');
-    echo '<table width="100%" border=0 cellpadding=2 cellspacing=1">',"\n";
+    echo '<table width="100%" border="0" cellpadding="2" cellspacing="1">',"\n";
 
     $ob->subject = stripslashes($ob->subject);
     $ob->body = stripslashes($ob->body);
 
     // message header
-    echo "<tr bgcolor=#E0E0E0><td>\n";
-    echo " <b>".$ob->subject."</b><br>\n";
-    echo " by  ".forum_lookup_user($ob->userId)." on ".$ob->time."<br>\n";
+    echo "<tr bgcolor=\"#E0E0E0\"><td>\n";
+    echo " <b>".$ob->subject."</b><br />\n";
+    echo " by  ".forum_lookup_user($ob->userId)." on ".$ob->time."<br />\n";
     echo "</td></tr><tr><td>\n";
     
     // body
-    echo htmlify_urls($ob->body), "<br><br>\n";
+    echo htmlify_urls($ob->body), "<br /><br />\n";
     
     // only add RE: once
     if(eregi("RE:", $ob->subject))
@@ -218,9 +218,9 @@ function view_app_comment($ob)
 	$subject = "RE: ".$ob->subject;
 
     // reply post buttons
-    echo "	[<a href='addcomment.php?appId=$ob->appId&versionId=$ob->versionId'><small>post new</small></a>] \n";
-    echo "	[<a href='addcomment.php?appId=$ob->appId&versionId=$ob->versionId&subject=".
-	        urlencode("$subject")."&thread=$ob->commentId'><small>reply to this</small></a>] \n";
+    echo "	[<a href=\"addcomment.php?appId=$ob->appId&amp;versionId=$ob->versionId\"><small>post new</small></a>] \n";
+    echo "	[<a href=\"addcomment.php?appId=$ob->appId&amp;versionId=$ob->versionId&amp;subject=".
+	        urlencode("$subject")."&amp;thread=$ob->commentId\"><small>reply to this</small></a>] \n";
 
     echo "</td></tr>\n";
 
@@ -228,10 +228,10 @@ function view_app_comment($ob)
     if ($_SESSION['current']->isLoggedIn() && ($_SESSION['current']->hasPriv("admin") || $_SESSION['current']->isMaintainer($ob->appId,$ob->versionId) ))
     {
         echo "<tr>";
-        echo "<td><form method=\"post\" name=\"message\" action=\"".BASE."deletecomment.php\"><input type=submit value='Delete' class=button>\n";
+        echo "<td><form method=\"post\" name=\"message\" action=\"".BASE."deletecomment.php\"><input type=\"submit\" value=\"Delete\" class=\"button\">\n";
         echo "<input type=\"hidden\" name=\"commentId\" value=\"$ob->commentId\" />";
         echo "<input type=\"hidden\" name=\"appId\" value=\"$ob->appId\" />";
-        echo "<input type=\"hidden\" name=\"versionId\" value=\"$ob->versionId\" /></form></td>","\n";
+        echo "<input type=\"hidden\" name=\"versionId\" value=\"$ob->versionId\" /></form>","\n";
         echo "</td></tr>";
     }
 
@@ -307,7 +307,7 @@ function do_display_comments_threaded($handle, $is_main)
             view_app_comment($ob);
         } else
         {
-            echo '<li><a href="commentview.php?appId='.$ob->appId.'&versionId='.$ob->versionId.'&threadId='.$ob->parentId.'"> '.
+            echo '<li><a href="commentview.php?appId='.$ob->appId.'&amp;versionId='.$ob->versionId.'&threadId='.$ob->parentId.'"> '.
             $ob->subject.' </a> by '.forum_lookup_user($ob->userId).' on '.$ob->time.' </li>'."\n";
         }
         
@@ -357,9 +357,9 @@ function view_app_comments($versionId, $threadId = 0)
     
     //start comment format table
     echo html_frame_start("","98%",'',0);
-    echo '<table width="100%" border=0 cellpadding=1 cellspacing=0">',"\n";
+    echo '<table width="100%" border="0" cellpadding="1" cellspacing="0">',"\n";
     
-    echo '<tr><td bgcolor=#C0C0C0 align=center><table border=0 cellpadding=0 cellspacing=0><tr bgcolor=#C0C0C0>',"\n";
+    echo '<tr><td bgcolor="#C0C0C0" align="center"><table border="0" cellpadding="0" cellspacing="0"><tr bgcolor="#C0C0C0">',"\n";
     
     // message display mode changer
     if ($_SESSION['current']->isLoggedIn())
@@ -369,7 +369,7 @@ function view_app_comments($versionId, $threadId = 0)
             $_SESSION['current']->setpref("comments:mode", $_REQUEST['cmode']);
 
             $sel[$_SESSION['current']->getpref("comments:mode")] = 'selected';
-            echo '<td><form method=get name=smode action="appview.php">',"\n";
+            echo '<td><form method="post" name="smode" action="appview.php">',"\n";
             echo "<b>Application Comments</b> $messageCount total comments ";
             echo '<b>Mode</b> <select name="cmode" onchange="document.smode.submit();">',"\n";
             echo '   <option value="flat" '.$sel['flat'].'>Flat</option>',"\n";
@@ -377,15 +377,15 @@ function view_app_comments($versionId, $threadId = 0)
             echo '   <option value="nested" '.$sel['nested'].'>Nested</option>',"\n";
             echo '   <option value="off" '.$sel['off'].'>No Comments</option>',"\n";
             echo '</select>',"\n";
-            echo '<input type=hidden name="versionId" value="'.$versionId.'"></form></td>',"\n";
+            echo '<input type="hidden" name="versionId" value="'.$versionId.'"></form></td>',"\n";
     }
     
     // blank space
     echo '<td> &nbsp; </td>',"\n";
     
     // post new message button
-    echo '<td><form method="get" name=message action="addcomment.php"><input type=submit value=" post new comment " class=button> ',"\n";
-    echo '<input type=hidden name="versionId" value="'.$versionId.'"></form></td>',"\n";
+    echo '<td><form method="post" name="message" action="addcomment.php"><input type="submit" value="post new comment" class="button"> ',"\n";
+    echo '<input type="hidden" name="versionId" value="'.$versionId.'"></form></td>',"\n";
         
     //end comment format table
     echo '</tr></table></td></tr>',"\n";  
@@ -398,7 +398,7 @@ function view_app_comments($versionId, $threadId = 0)
     }
 
     //start comments
-    echo '<table width="100%" border=0 cellpadding=2 cellspacing=1"><tr><td>',"\n";
+    echo '<table width="100%" border="0" cellpadding="2" cellspacing="1"><tr><td>',"\n";
     
     //hide or display depending on pref
     if ($_SESSION['current']->isLoggedIn())

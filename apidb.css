@@ -220,7 +220,7 @@ TD.stub { color: #0000B1; font-style: italic; text-align: center }
 /*******************************************************************/
 
 /* Main table */
-#mainTable { padding-left: 7px; }
+.mainTable { padding-left: 7px; }
 
 /* Banner div */
 #banner { border: 1px solid black; }

@@ -195,7 +195,7 @@ function html_frame_start($title = "", $width = "", $extra = "", $innerPad = 5)
 
     if ($width) { $width = 'width="'.$width.'"'; }
 
-$str = '<table '.$width.' border=0 id="mainTable" cellpadding=0 cellspacing=0 align=center>'."\n";
+$str = '<table '.$width.' border="0" class="mainTable" cellpadding="0" cellspacing="0" align="center">'."\n";
 
 if ($title)
 {
