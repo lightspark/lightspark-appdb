@@ -38,6 +38,13 @@ if(!$versionId) {
 
 opendb();
 
+// We have input, but wrong input
+if( ( $width AND !is_numeric($width) ) || ( $height AND !is_numeric($height) ) )
+{
+	$width = 100;
+	$height = 75;
+}
+
 if($imageId AND is_numeric($imageId) )
     $result = mysql_query("SELECT * FROM appData WHERE id = $imageId");
 
@@ -82,6 +89,11 @@ if($width && $height)
     // do scaling
     $sim = ImageCreate($width, $height);
     ImageCopyResized($sim, $im, 0, 0, 0, 0, $width, $height, ImageSX($im), ImageSY($im));
+}
+else
+{
+	// display full image
+	$sim = $im;
 }
 
 // output the image
