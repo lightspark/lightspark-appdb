@@ -7,6 +7,9 @@ DirectoryIndex index.php
 # 404 not found document
 ErrorDocument 404 http://www.winehq.org/site/404
 
-# Tell PHP how we want to handle global vars
+# Modify the PHP configuration (global vars, etc.)
 php_value register_globals 0
+php_value short_open_tag 0
+php_value session.bug_compat_42 0
+php_value register_long_arrays 0
 
