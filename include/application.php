@@ -129,7 +129,7 @@ class Application {
                                                 'vendorId'   => $iVendorId,
                                                 'catId'      => $iCatId,
                                                 'submitterId'=> $_SESSION['current']->iUserId,
-                                                'queued'     => $this->bQueued ));
+                                                'queued'     => $this->bQueued?"true":"false" ));
         $sFields = "({$aInsert['FIELDS']})";
         $sValues = "({$aInsert['VALUES']})";
 

@@ -71,7 +71,7 @@ class Screenshot {
         $aInsert = compile_insert_string(array( 'versionId'    => $iVersionId,
                                                 'type'         => "image",
                                                 'description'  => $sDescription,
-                                                'queued'       => $this->bQueued,
+                                                'queued'       => $this->bQueued?"true":"false",
                                                 'submitterId'  => $_SESSION['current']->iUserId ));
         $sFields = "({$aInsert['FIELDS']})";
         $sValues = "({$aInsert['VALUES']})";

@@ -132,7 +132,7 @@ class Version {
                                                 'maintainer_rating' => $sTestedRating,
                                                 'appId'             => $iAppId,
                                                 'submitterId'       => $_SESSION['current']->iUserId,
-                                                'queued'            => $this->bQueued ));
+                                                'queued'            => $this->bQueued?"true":"false" ));
         $sFields = "({$aInsert['FIELDS']})";
         $sValues = "({$aInsert['VALUES']})";
 
