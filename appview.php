@@ -18,40 +18,6 @@ require(BASE."include/"."screenshot.php");
 require(BASE."include/"."maintainer.php");
 
 
-
-// NOTE: app Owners will see this menu too, make sure we don't show admin-only options
-function admin_menu()
-{
-    $m = new htmlmenu("Admin");
-    if(isset($_REQUEST['versionId'])) {
-        $m->add("Add Note", BASE."admin/addAppNote.php?appId={$_REQUEST['appId']}&versionId=".$_REQUEST['versionId']);
-        $m->addmisc("&nbsp;");
-
-        $m->add("Edit Version", BASE."admin/editAppVersion.php?appId={$_REQUEST['appId']}&versionId=".$_REQUEST['versionId']);
-
-        $url = BASE."admin/deleteAny.php?what=appVersion&versionId=".$_REQUEST['versionId']."&confirmed=yes";
-        $m->add("Delete Version", "javascript:deleteURL(\"Are you sure?\", \"".$url."\")");
-    } else
-    {
-        $m->add("Add Version", BASE."admin/addAppVersion.php?appId=".$_REQUEST['appId']);
-        $m->addmisc("&nbsp;");
-  
-        $m->add("Edit App", BASE."admin/editAppFamily.php?appId=".$_REQUEST['appId']);
-  
-        // global admin options
-        if(havepriv("admin"))
-        {
-            $url = BASE."admin/deleteAny.php?what=appFamily&appId=".$_REQUEST['appId']."&confirmed=yes";
-            $m->add("Delete App", "javascript:deleteURL(\"Are you sure?\", \"".$url."\")");
-            $m->addmisc("&nbsp;");
-            $m->add("Edit Bundle", BASE."admin/editBundle.php?bundleId=".$_REQUEST['appId']);
-        }
-    }
-    
-    $m->done();
-}
-
-
 /**
  * display the full path of the Category we are looking at
  */
@@ -240,10 +206,6 @@ if($appId && !$versionId)
     if(loggedin())
         apidb_sidebar_add("vote_menu");
 
-    // show Admin Menu
-    if(loggedin() && ((havepriv("admin") || $_SESSION['current']->is_super_maintainer($appId))))
-        apidb_sidebar_add("admin_menu");
-
     // header
     apidb_header("Viewing App - ".$data->appName);
 
@@ -331,6 +293,20 @@ if($appId && !$versionId)
         echo "        <input type=hidden name='versionId' value=$versionId>";
         echo "        <input type=hidden name='superMaintainer' value=1>"; /* set superMaintainer to 1 because we are at the appFamily level */
         echo "        </form>";
+
+        if($_SESSION['current']->is_super_maintainer($appId) || havepriv("admin"))
+        {
+            echo '        <form method="post" name="edit" action="admin/editAppFamily.php"><input type="hidden" name="appId" value="'.$appId.'"><input type="submit" value="Edit App" class="button"></form>';
+            echo '<form method="post" name="message" action="admin/addAppVersion.php?appId='.$_REQUEST['appId'].'">';
+            echo '<input type=submit value="Add Version" class="button">';
+            echo '</form>';
+        }
+        if(havepriv("admin"))
+        {
+            $url = BASE."admin/deleteAny.php?what=appFamily&appId=".$_REQUEST['appId']."&confirmed=yes";
+            echo "        <form method=\"post\" name=\"edit\" action=\"javascript:deleteURL(\"Are you sure?\", \"".$url."\")\"><input type=\"submit\" value=\"Delete App\" class=\"button\"></form>";
+            echo '        <form method="post" name="edit" action="admin/editBundle.php"><input type="hidden" name="bundleId" value="'.$appId.'"><input type="submit" value="Edit Bundle" class="button"></form>';
+        }
     } else
     {
         echo '        <input type=submit value="Log in to become a super maintainer" class=button>';
@@ -387,12 +363,6 @@ else if($appId && $versionId)
         // Oops! Version not found or other error. do something
         errorpage('Internal Database Access Error. No Version Found.');
         exit;
-    }
-
-    // admin menu
-    if(loggedin() && havepriv("admin")) 
-    {
-        apidb_sidebar_add("admin_menu");
     }
 
     // header
@@ -479,6 +449,10 @@ else if($appId && $versionId)
         echo "<tr><td colspan = 2><center>";
         echo '<form method=post name=message action=admin/editAppVersion.php?appId='.$appId.'&versionId='.$versionId.'>';
         echo '<input type=submit value="Edit Version Info" class=button>';
+        echo '</form>';
+        $url = BASE."admin/deleteAny.php?what=appVersion&versionId=".$_REQUEST['versionId']."&confirmed=yes";
+        echo "<form method=\"post\" name=\"delete\" action=\"javascript:deleteURL(\"Are you sure?\", \"".$url."\")\">";
+        echo '<input type=submit value="Delete Version" class="button">';
         echo '</form>';
         echo '<form method=post name=message action=admin/addAppNote.php?appId='.$appId.'&versionId='.$versionId.'>';
         echo '<input type=submit value="Add Note" class=button>';
