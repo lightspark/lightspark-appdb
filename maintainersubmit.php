@@ -10,6 +10,7 @@ include("path.php");
 require(BASE."include/incl.php");
 require(BASE."include/tableve.php");
 require(BASE."include/category.php");
+require(BASE."include/application.php");
 
 /**
  * Check the input of a submitted form. And output with a list
@@ -93,9 +94,16 @@ if($_REQUEST['maintainReason'])
 {
     // header
     if($versionId)
-        apidb_header("Request to become an application maintainer of ".lookup_app_name($appId)." ".lookup_version_name($versionId));
+    {
+        $oVersion = new Version($versionId);
+        $oApp = new Application($oVersion->iAppId);
+        apidb_header("Request to become an application maintainer of ".$oApp->sName." ".$oVersion->sName);
+    }
     else
-        apidb_header("Request to become an application super maintainer of ".lookup_app_name($appId));
+    {
+        $oApp = new Application($appId);
+        apidb_header("Request to become an application super maintainer of ".$oApp->sName);
+    }
 
     // show add to queue form
 	
@@ -138,12 +146,12 @@ if($_REQUEST['maintainReason'])
 
     echo "<table width='100%' border=0 cellpadding=2 cellspacing=0>\n";
     echo "<tr valign=top><td class=color0>";
-    echo '<b>Application</b></td><td>'.lookup_app_name($appId);
+    echo '<b>Application</b></td><td>'.$oApp->sName;
     echo '</td></tr>',"\n";
     if($versionId)
     {
         echo "<tr valign=top><td class=color0>";
-        echo '<b>Version</b></td><td>'.lookup_version_name($versionId);
+        echo '<b>Version</b></td><td>'.$oVersion->sName;
         echo '</td></tr>',"\n";
     }
     echo "<input type=hidden name='appId' value=$appId>";

@@ -7,9 +7,10 @@
  * application environment
  */ 
 include("path.php");
-require(BASE."include/"."incl.php");
-require(BASE."include/"."tableve.php");
-require(BASE."include/"."category.php");
+require(BASE."include/incl.php");
+require(BASE."include/tableve.php");
+require(BASE."include/category.php");
+require(BASE."include/application.php");
 
 if(!$_SESSION['current']->isLoggedIn())
 {
@@ -24,33 +25,34 @@ $superMaintainer = strip_tags($_POST['superMaintainer']);
 
 if($confirmed)
 {
-
+$oApp = new Application($appId);
     if($superMaintainer)
     {
-        apidb_header("You have resigned as supermaintainer of ".lookup_app_name($appId));
-        $query = "DELETE FROM appMaintainers WHERE userId = ".$_SESSION['current']->userid.
-                 " AND appId = ".$appId." AND superMaintainer = ".$superMaintainer.";";
+        apidb_header("You have resigned as supermaintainer of ".$oApp->sName);
+        $query = "DELETE FROM appMaintainers WHERE userId = ".$_SESSION['current']->iUserId.
+                 " AND appId = ".$oApp->iAppId." AND superMaintainer = ".$superMaintainer.";";
     } else
     {
-        apidb_header("You have resigned as maintainer of ".lookup_app_name($appId));
-        $query = "DELETE FROM appMaintainers WHERE userId = ".$_SESSION['current']->userid.
-                 " AND appId = ".$appId." AND versionId = ".$versionId." AND superMaintainer = ".$superMaintainer.";";
+        $oVersion = new Version($versionId);
+        apidb_header("You have resigned as maintainer of ".$oApp->sName." ".$oVersion->sName);
+        $query = "DELETE FROM appMaintainers WHERE userId = ".$_SESSION['current']->iUserId.
+                 " AND appId = ".$oApp->iAppId." AND versionId = ".$oVersion->iVersionId." AND superMaintainer = ".$superMaintainer.";";
     }
 /*   echo html_frame_start("Removing",400,"",0);
 */
     if($result = query_appdb($query))
     {
         if($superMaintainer)
-            echo "You were removed as a supermaintainer of ".lookup_app_name($appId);
+            echo "You were removed as a supermaintainer of ".$oApp->sName;
         else
-            echo "You were removed as a maintainer of ".lookup_app_name($appId).lookup_version_name($versionId);
+            echo "You were removed as a maintainer of ".$oApp->sName." ".$oVersion->sName;
     }
 } else
 {
     if($superMaintainer)
-        apidb_header("Confirm supermaintainer resignation of ".lookup_app_name($appId));
+        apidb_header("Confirm supermaintainer resignation of ".$oApp->sName);
     else
-        apidb_header("Confirm maintainer resignation of ".lookup_app_name($appId).lookup_version_name ($versionId));
+        apidb_header("Confirm maintainer resignation of ".$oApp->sName." ".$oVersion->sName);
 
 
     echo '<form name="deleteMaintainer" action="maintainerdelete.php" method="post" enctype="multipart/form-data">',"\n";

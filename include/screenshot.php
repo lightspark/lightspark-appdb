@@ -369,7 +369,7 @@ function get_screenshots($iAppId = null, $iVersionId = null)
                    FROM appData, appVersion
                    WHERE appVersion.versionId = appData.versionId
                    AND type = 'image'
-                   AND appId = ".$iAppId;
+                   AND appData.appId = ".$iAppId;
     }
     /*
      * We want all screenshots for this version.

@@ -8,6 +8,7 @@ require(BASE."include/incl.php");
 require(BASE."include/tableve.php");
 require(BASE."include/category.php");
 require(BASE."include/maintainer.php");
+require(BASE."include/application.php");
 require(BASE."include/mail.php");
 
 if(!$_SESSION['current']->hasPriv("admin"))
@@ -111,37 +112,42 @@ if ($_REQUEST['sub'])
         {
             while(list($index, list($appIdOther, $versionIdOther, $superMaintainerOther)) = each($other_apps))
             {
+                $oApp = new Application($appIdOther);
+                $oVersion = new Application($versionIdOther);
                 if($firstDisplay)
                 {
                     $firstDisplay = false;
                     if($superMaintainerOther)
-                        echo "<td>".lookup_app_name($appIdOther)."*</td></tr>\n";
+                        echo "<td>".$oApp->sName."*</td></tr>\n";
                     else
-                        echo "<td>".lookup_app_name($appIdOther).lookup_version_name($versionIdOther)."</td></tr>\n";
+                        echo "<td>".$oApp->sName." ".$oVersion->sName."</td></tr>\n";
                 } else
                 {
                     if($superMaintainerOther)
-                        echo "<td class=color0></td><td>".lookup_app_name($appIdOther)."*</td></tr>\n";
+                        echo "<td class=color0></td><td>".$oApp->sName."*</td></tr>\n";
                     else
-                        echo "<td class=color0></td><td>".lookup_app_name($appIdOther).lookup_version_name($versionIdOther)."</td></tr>\n";
+                        echo "<td class=color0></td><td>".$oApp->sName." ".$oVersion->sName."</td></tr>\n";
                 }
             }
         } else
         {
             echo "<td>User maintains no other applications</td></tr>\n";
         }
-        
+
+        $oApp = new Application($ob->appId);
+        $oVersion = new Application($ob->versionId);
+
         //app name
         echo '<tr valign=top><td class=color0><b>App Name</b></td>',"\n";
-        echo "<td>".lookup_app_name($ob->appId)."</td></tr>\n";
+        echo "<td>".$oApp->sName."</td></tr>\n";
 
         //version
         echo '<tr valign=top><td class=color0><b>App Version</b></td>',"\n";
-        echo "<td>".lookup_version_name($ob->versionId)."</td></tr>\n";
+        echo "<td>".$oVersion->sName."</td></tr>\n";
          
         //maintainReason
         echo '<tr valign=top><td class=color0><b>Maintainer request reason</b></td>',"\n";
-        echo '<td><textarea name="maintainReason" rows=10 cols=35>'.stripslashes($ob->maintainReason).'</textarea></td></tr>',"\n";
+        echo '<td><textarea name="maintainReason" rows=10 cols=35>'.$ob->maintainReason.'</textarea></td></tr>',"\n";
 
         //email response
         echo '<tr valign=top><td class=color0><b>Email reply</b></td>',"\n";
@@ -182,13 +188,14 @@ if ($_REQUEST['sub'])
 
             //delete the item from the queue
             query_appdb("DELETE from appMaintainerQueue where queueId = ".$_REQUEST['queueId'].";");
- 
+            $oApp = new Application($ob->appId);
+            $oVersion = new Version($ob->versionId);
             //Send Status Email
             $sEmail = $oUser->sEmail;
             if ($sEmail)
             {
                 $sSubject =  "Application Maintainer Request Report";
-                $sMsg  = "Your application to be the maintainer of ".lookup_app_name($ob->appId).lookup_version_name($ob->versionId)." has been accepted. ";
+                $sMsg  = "Your application to be the maintainer of ".$oApp->sName." ".$oVersion->sName." has been accepted. ";
                 $sMsg .= $_REQUEST['replyText'];
                 $sMsg .= "We appreciate your help in making the Application Database better for all users.\n\n";
                 
@@ -204,8 +211,10 @@ if ($_REQUEST['sub'])
        $sEmail = $oUser->sEmail;
        if ($sEmail)
        {
+           $oApp = new Application($ob->appId);
+           $oVersion = new Application($ob->versionId);
            $sSubject =  "Application Maintainer Request Report";
-           $sMsg  = "Your application to be the maintainer of ".lookup_app_name($ob->appId).lookup_version_name($ob->versionId)." was rejected. ";
+           $sMsg  = "Your application to be the maintainer of ".$oApp->sName." ".$oVersion->sName." was rejected. ";
            $sMsg .= $_REQUEST['replyText'];
            $sMsg .= "";
            $sMsg .= "-The AppDB admins\n";
@@ -279,12 +288,14 @@ if ($_REQUEST['sub'])
         while($ob = mysql_fetch_object($result))
         {
             $oUser = new User($ob->userId);
+            $oApp = new Application($ob->appId);
+            $oVersion = new Version($ob->versionId);
             if ($c % 2 == 1) { $bgcolor = 'color0'; } else { $bgcolor = 'color1'; }
             echo "<tr class=$bgcolor>\n";
             echo "    <td>".date("Y-n-t h:i:sa", $ob->submitTime)." &nbsp;</td>\n";
             echo "    <td><a href='adminMaintainerQueue.php?sub=view&queueId=$ob->queueId'>$ob->queueId</a></td>\n";
             echo "    <td>".$oUser->sRealName."</td>\n";
-            echo "    <td>".lookup_app_name($ob->appId)."</td>\n";
+            echo "    <td>".$oApp->sName."</td>\n";
 
             if($ob->superMaintainer)
             {
@@ -292,7 +303,7 @@ if ($_REQUEST['sub'])
                 echo "<td>Yes</td>\n";
             } else
             {
-  	              echo "<td>".lookup_version_name($ob->versionId)." &nbsp;</td>\n";
+  	              echo "<td>".$oVersion->sName." &nbsp;</td>\n";
                 echo "<td>No</td>\n";
             }
 
