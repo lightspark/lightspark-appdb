@@ -100,22 +100,26 @@ wine-users mailing list or the wine newsgroup, for more information visit
 <p>Applications which install and run virtually flawless on a out-of-the-box Wine installation make it to the Gold list: </p>
 <table class="gold">
     <tr class="rowtitle">
-    <th>Application</th><th>Version</th><th>Description</th><th>Screenshot</th>
+    <th>Application</th><th>Description</th><th>Screenshot</th>
     </tr>
 <?php
-$sQuery = "SELECT appVotes.appId AS appId, COUNT(appVotes.appId) AS c, appVersion.versionId AS versionId FROM appVotes, appVersion WHERE appVotes.appId = appVersion.appId AND appVersion.maintainer_rating = 'Gold' GROUP BY appVotes.appId ORDER BY c DESC, versionId DESC LIMIT 10";
+$sQuery = "SELECT appVotes.appId AS appId, COUNT( appVotes.appId ) AS c
+           FROM appVotes, appVersion
+           WHERE appVersion.maintainer_rating = 'Gold'
+           GROUP BY appVotes.appId
+           ORDER BY c DESC
+           LIMIT 10";
 $hResult = query_appdb($sQuery);
 while($oRow = mysql_fetch_object($hResult))
 {
     $oApp = new Application($oRow->appId);
-    $oVersion = $oApp->getAppVersion($oRow->versionId);
     // image
-    $img = get_screenshot_img($oRow->appId, $oRow->versionId);
+    $img = get_screenshot_img($oRow->appId);
+    $aDesc = explode("\n",$oApp->data->description,2);
     echo '
     <tr class="white">
-      <td><a href="appview.php?appId='.$oRow->appId.'&versionId='.$oRow->versionId.'">'.$oApp->data->appName.'</a></td>
-        <td>'.$oVersion->versionName.'</td>
-        <td>'.trim(substr($oApp->data->description,0,88)).'...</td>
+      <td><a href="appview.php?appId='.$oRow->appId.'">'.$oApp->data->appName.'</a></td>
+        <td>'.$aDesc[0].'</td>
         <td>'.$img.'</td>
     </tr>';
 }
@@ -126,22 +130,26 @@ while($oRow = mysql_fetch_object($hResult))
 <p>The Silver list contains apps which we hope we can easily fix so they make it to Gold status:</p>
 <table class=silver>
     <tr class=rowtitle>
-      <th>Application</th><th>Version</th><th>Description</th><th>Screenshot</th>
+      <th>Application</th><th>Description</th><th>Screenshot</th>
     </tr>
 <?php
-$sQuery = "SELECT appVotes.appId AS appId, COUNT(appVotes.appId) AS c, appVersion.versionId AS versionId FROM appVotes, appVersion WHERE appVotes.appId = appVersion.appId AND appVersion.maintainer_rating = 'Silver' GROUP BY appVotes.appId ORDER BY c DESC, versionId DESC LIMIT 10";
+$sQuery = "SELECT appVotes.appId AS appId, COUNT( appVotes.appId ) AS c
+           FROM appVotes, appVersion
+           WHERE appVersion.maintainer_rating = 'Silver'
+           GROUP BY appVotes.appId
+           ORDER BY c DESC
+           LIMIT 10";
 $hResult = query_appdb($sQuery);
 while($oRow = mysql_fetch_object($hResult))
 {
     $oApp = new Application($oRow->appId);
-    $oVersion = $oApp->getAppVersion($oRow->versionId);
     // image
-    $img = get_screenshot_img($oRow->appId, $oRow->versionId);
+    $img = get_screenshot_img($oRow->appId);
+    $aDesc = explode("\n",$oApp->data->description,2);
     echo '
     <tr class="white">
-      <td><a href="appview.php?appId='.$oRow->appId.'&versionId='.$oRow->versionId.'">'.$oApp->data->appName.'</a></td>
-        <td>'.$oVersion->versionName.'</td>
-        <td>'.trim(substr($oApp->data->description,0,88)).'...</td>
+      <td><a href="appview.php?appId='.$oRow->appId.'">'.$oApp->data->appName.'</a></td>
+        <td>'.$aDesc[0].'</td>
         <td>'.$img.'</td>
     </tr>';
 }
