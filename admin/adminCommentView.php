@@ -65,13 +65,13 @@ if($commentsPerPage > 100) $commentsPerPage = 100;
 
 /* display page selection links */
 echo "<center>";
-echo "<b>Page $currentPage of $totalPages</b><br>";
+echo "<b>Page $currentPage of $totalPages</b><br />";
 display_range($currentPage, $pageRange, $totalPages, $commentsPerPage);
-echo "<br>";
-echo "<br>";
+echo "<br />";
+echo "<br />";
 
 /* display the option to choose how many comments per-page to disable */
-echo "<form method=get name=message>";
+echo "<form method=\"get\" name=\"message\" action=\"".$_SERVER['PHP_SELF']."\">";
 echo "<b>Number of comments per page:</b>";
 echo "<select name='commentsPerPage'>";
 

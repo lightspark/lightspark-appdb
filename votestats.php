@@ -18,7 +18,7 @@ if($HTTP_POST_VARS)
 apidb_header("Vote Stats - Top $topNumber Applications");
 
 /* display the selection for the top number of apps to view */
-echo "<form method=post name=message>";
+echo "<form method=\"post\" name=\"message\" action=\"".$_SERVER['PHP_SELF']."\">";
 echo "<b>Number of top apps to display:</b>";
 echo "<select name='topNumber'>";
 $topNumberArray = array(25, 50, 100, 200);
@@ -118,11 +118,11 @@ if($subs)
 }
 echo "</select>";
 
-echo "<input type=submit value='Refresh'>";
+echo "<input type=\"submit\" value=\"Refresh\" />";
 echo "</form>";
 
-echo "<br>";
-echo "<br>";
+echo "<br />";
+echo "<br />";
 
 /***************************************************/
 /* build a list of the apps in the chosen category */
@@ -157,8 +157,8 @@ if($result)
     {
         if ($c % 2 == 1) { $bgcolor = "color0"; } else { $bgcolor = "color1"; }
         $link = "<a href='appview.php?appId=$row->appId'>$row->appName</a>";
-	echo "<tr class='".$bgcolor."'><td width='90%'>$c. $link </td> <td> $row->count </td></tr>\n";
-	$c++;
+        echo "<tr class='".$bgcolor."'><td width='90%'>$c. $link </td> <td> $row->count </td></tr>\n";
+        $c++;
     }
 
     echo html_table_end();
@@ -168,7 +168,7 @@ if($result)
     /* think that something went wrong with the server */
     if($c == 1)
     {
-        echo "<h2><center>No apps found in this category</center></h2>";
+        echo "<h2 align=\"center\">No apps found in this category</h2>";
     }
  
     echo "<center><a href='help/?topic=voting'>What does this screen mean?</a></center>\n";

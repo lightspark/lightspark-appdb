@@ -31,23 +31,23 @@ function display_index ()
     $d = opendir($help_path);
     while($entry = readdir($d))
     {
-    	array_push($files, $entry);
+        array_push($files, $entry);
     }
     closedir($d);
     
-    //sort dir
+    // sort dir
     sort($files);
     
     // display dir
     while (list($key,$file) = each($files))
     {
         if(!ereg("(.+)\\.help$", $file, $arr))
-	    continue;
-	
-	$id    = $arr[1];
-	$title = get_help_title("$help_path/$file");
-	
-	echo "  <li> <a href='".$apidb_root."help?topic=$id'> $title </a> </li><p>\n";
+            continue;
+
+        $id    = $arr[1];
+        $title = get_help_title("$help_path/$file");
+
+        echo "  <li> <a href='".$apidb_root."help?topic=$id'> $title </a><p /></li>\n";
     }
 
     echo "</ul><hr noshade>\n";

@@ -2,6 +2,7 @@
 /***********************************/
 /* Application Database Index Page */
 /***********************************/
+
 include("path.php");
 require(BASE."include/"."incl.php");
 
@@ -33,7 +34,7 @@ stomping out Wine issues will be greatly appreciated.</p>
 
 <p>
 If you have anything to contribute (screenshots, howtos), contact us at:
-<a href="mailto:appdb@winehq.org">appdb@winehq.org</a><br>
+<a href="mailto:appdb@winehq.org">appdb@winehq.org</a><br />
 Note that this address is not for end-user support, for end user support please contact the
 wine-users mailing list or the wine newsgroup, for more information visit
 <a href="http://www.winehq.com/site/forums">this page</a>
@@ -56,9 +57,10 @@ wine-users mailing list or the wine newsgroup, for more information visit
     echo "There are <b>$numApps</b> applications currently in the database with\n";
     echo "<a href='appview.php?appId=$voteAppId'>$voteAppName</a> being the\n";
     echo "top <a href='votestats.php'>voted</a> application.\n";
-
-
 ?>
+
+<br /><br />
+
 <h2>Wine 0.9 Supported Applications List</h2>
 
 <p>This is a working version of the application lists which we hope to
@@ -68,7 +70,7 @@ direct formatting related flames to <a href="mailto:dpaun@rogers.com">Dimitrie O
 
 <h3>The Gold List</h3> 
 <p>Applications which install and run virtually flawless on a 
-        out-of-the-box Wine installation make it to the Gold list: <br>
+        out-of-the-box Wine installation make it to the Gold list: </p>
 <table class=gold>
     <tr class=rowtitle>
     <th>Application</th><th>Version</th><th>Description</th><th>Tucows top</th><th>Notes</th><th>Screenshot</th>
@@ -173,10 +175,10 @@ direct formatting related flames to <a href="mailto:dpaun@rogers.com">Dimitrie O
         <td><span class=todo>[TODO]</span></td>
     </tr>
 </table>
-</p>
+<br />
 <h3>The Silver List</h3> 
 <p>The Silver list contains apps which we hope we can easily fix so they make it
-   to Gold status:<br>
+   to Gold status:</p>
 <table class=silver>
     <tr class=rowtitle>
     <th>Application</th><th>Version</th><th>Description</th><th>Tucows top</th><th>Notes</th><th>Screenshot</th>
@@ -266,8 +268,8 @@ echo "<td><a href='".$apidb_root."appview.php?appId=288'>WinMX</a></td>";
         <td><span class=todo>[TODO]</span></td>
     </tr>
 </table>
-</p>
 
+<br /><br />
 
 <h2>Other Wine Application Compatibility Sites</h2>
 <p>
