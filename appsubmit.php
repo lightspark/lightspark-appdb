@@ -91,7 +91,9 @@ if ($_REQUEST['queueName'])
             addslashes($_REQUEST['queueEmail'])."', '".
             addslashes($_REQUEST['queueURL'])."', '".
             addslashes($_REQUEST['queueImage'])."',".
-            "NOW());";
+            "NOW()".",".
+            addslashes($_REQUEST['queueCatId']).");";
+
     mysql_query($query);
 
     if ($error = mysql_error())
@@ -136,7 +138,16 @@ else
 	    echo "<table width='100%' border=0 cellpadding=2 cellspacing=0>\n";
 	    echo '<tr valign=top><td class=color0><b>App Name</b></td><td><input type=text name="queueName" value="" size=20></td></tr>',"\n";
 	    echo '<tr valign=top><td class=color0><b>App Version</b></td><td><input type=text name="queueVersion" value="" size=20></td></tr>',"\n";
+
+        // app Category
+        $w = new TableVE("view");
+        echo '<tr valign=top><td class=color0><b>Category</b></td><td>',"\n";
+        $w->make_option_list("queueCatId","","appCategory","catId","catName");
+        echo '</td></tr>',"\n";
+
+
 	    echo '<tr valign=top><td class=color0><b>App Vendor</b></td><td><input type=text name="queueVendor" value="" size=20></td></tr>',"\n";
+
 
         //alt vendor
         $x = new TableVE("view");
