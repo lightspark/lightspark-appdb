@@ -7,7 +7,7 @@ function apidb_session_start()
     session_start();
 
     if(isset($_SESSION['current']))
-      $_SESSION['current']->connect();
+        $_SESSION['current']->connect();
 }
 
 
@@ -43,11 +43,11 @@ function _session_read($key)
     $result = mysql_query("SELECT data, messages FROM session_list WHERE session_id = '$key'");
     
     if(!$result)
-	return null;
+        return null;
     $r = mysql_fetch_object($result);
 
     if($r->messages)
-	$msg_buffer = explode("|", $r->messages);
+        $msg_buffer = explode("|", $r->messages);
 
     return $r->data;
 }
@@ -59,16 +59,13 @@ function _session_write($key, $value)
 
     opendb();
 
-
     if($msg_buffer)
-	$messages = implode("|", $msg_buffer);
+        $messages = implode("|", $msg_buffer);
     else
-	$messages = "";
-
+        $messages = "";
 
     // remove single quotes
     $value = str_replace("'", "", $value);
-
 
     //DEBUGGING
     if ($apidb_debug)
@@ -76,12 +73,11 @@ function _session_write($key, $value)
 
 
     if(isset($_SESSION['current']))
-       mysql_query("REPLACE session_list VALUES ('$key', ".$_SESSION['current']->userid.", '".get_remote()."', '$value', '$messages', NOW())");
+        mysql_query("REPLACE session_list VALUES ('$key', ".$_SESSION['current']->userid.", '".get_remote()."', '$value', '$messages', NOW())");
     else
-	mysql_query("REPLACE session_list VALUES ('$key', 0, '".get_remote()."', null, '$messages', NOW())");
+        mysql_query("REPLACE session_list VALUES ('$key', 0, '".get_remote()."', null, '$messages', NOW())");
 
     return true;
-
 }
 
 function _session_destroy($key)
@@ -98,10 +94,10 @@ function _session_gc($maxlifetime)
 }
 
 session_set_save_handler("_session_open", 
-			 "_session_close", 
-			 "_session_read",
-			 "_session_write", 
-			 "_session_destroy", 
-			 "_session_gc");
+                         "_session_close", 
+                         "_session_read",
+                         "_session_write", 
+                         "_session_destroy", 
+                         "_session_gc");
 
 ?>
