@@ -50,7 +50,7 @@ class Screenshot {
             $sQuery = "SELECT ".$this->sTable.".*, appVersion.appId AS appId
                        FROM ".$this->sTable.", appVersion 
                        WHERE ".$this->sTable.".versionId = appVersion.versionId 
-                       AND ".$this->sTableId." = ".$this->iScreenshotId." 
+                       AND ".$this->sTableId." = ".$iScreenshotId." 
                        AND type = 'image'";
             if($hResult = query_appdb($sQuery))
             {
