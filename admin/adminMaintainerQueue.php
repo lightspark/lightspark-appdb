@@ -137,10 +137,12 @@ if ($sub)
 
         if (mysql_query($query))
         {
-            $statusMessage = "<p>The application $queueName was successfully added into the database</p>\n";
+            $statusMessage = "<p>The application was successfully added into the database</p>\n";
 
             //delete the item from the queue
             mysql_query("DELETE from appMaintainerQueue where queueId = $queueId;");
+
+            $goodtogo = 1; /* set to 1 so we send the response email */
         } else
         {
            //error
@@ -152,7 +154,7 @@ if ($sub)
         {
                 $ms =  "Application Maintainer Request Report\n";
                 $ms .= "----------------------------------\n\n";
-                $ms .= "Your application to be the maintainer of ".appIdToName($ob->appId).versionIdToName($ob->versionId)." has been accepted";
+                $ms .= "Your application to be the maintainer of ".appIdToName($ob->appId).versionIdToName($ob->versionId)." has been accepted. ";
                 $ms .= "We appreciate your help in making the Application Database better for all users.\n\n";
                 $ms .= "Thanks!\n";
                 $ms .= "-The AppDB admins\n";
@@ -168,23 +170,22 @@ if ($sub)
     }
     else if (($_REQUEST['reject'] || ($sub == 'reject')) && $queueId)
     {
-       if (lookupEmail($ob->userId) && $goodtogo)
+       if (lookupEmail($ob->userId))
        {
-                $ms =  "Application Maintainer Request Report\n";
-                $ms .= "----------------------------------\n\n";
-                $ms .= "Your application to be the maintainer of ".appIdToName($ob->appId).versionIdToName($ob->versionId)." was rejected";
-                $ms .= $_REQUEST['replyText'];
-                $ms .= "";
-                $ms .= "Thanks!\n";
-                $ms .= "-The AppDB admins\n";
+           $ms =  "Application Maintainer Request Report\n";
+           $ms .= "----------------------------------\n\n";
+           $ms .= "Your application to be the maintainer of ".appIdToName($ob->appId).versionIdToName($ob->versionId)." was rejected. ";
+           $ms .= $_REQUEST['replyText'];
+           $ms .= "";
+           $ms .= "-The AppDB admins\n";
                 
-                mail(stripslashes(lookupEmail($ob->userId)),'[AppDB] Maintainer Request Report',$ms);
+           mail(stripslashes(lookupEmail($ob->userId)),'[AppDB] Maintainer Request Report',$ms);
        }
 
        //delete main item
        $query = "DELETE from appMaintainerQueue where queueId = $queueId;";
        $result = mysql_query($query);
-       echo html_frame_start("Delete maintainer application: $ob->queueName",400,"",0);
+       echo html_frame_start("Delete maintainer application",400,"",0);
        if(!$result)
        {
            //error
