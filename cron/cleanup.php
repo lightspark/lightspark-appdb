@@ -76,12 +76,10 @@ function hasDataAssociated($iUserId)
 function deleteUser($iUserId)
 {
     $oUser = new User($iUserId);
-    warnUserDeleted($oUser->sEmail);
+    # TO BE UNCOMMENTED WHEN THERE WILL BE LESS INACTIVE USERS IN THE DATABASE
+    # warnUserDeleted($oUser->sEmail);
+    $oUser->delete();
     echo "user ".$oUser->sEmail." deleted.\n";
-    $sQuery = "DELETE FROM user_list WHERE userid = $iUserId";
-    $hResult = query_appdb($sQuery);
-    $sQuery = "DELETE FROM user_prefs WHERE userid = $iUserId";
-    $hResult = query_appdb($sQuery);
 }
 
 function deleteMaintainer($iUserId)
@@ -89,7 +87,8 @@ function deleteMaintainer($iUserId)
     $oUser = new User($iUserId);
     $sQuery = "DELETE FROM appMaintainers WHERE userId = $iUserId";
     $hResult = query_appdb($sQuery);
-    warnMaintainerDeleted($oUser->sEmail);
+    # TO BE UNCOMMENTED WHEN THERE WILL BE LESS INACTIVE USERS IN THE DATABASE
+    # warnMaintainerDeleted($oUser->sEmail);
     echo "user ".$oUser->sEmail." is not a maintainer anymore.\n";
 }
 
