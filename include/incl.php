@@ -4,6 +4,7 @@
 /*************************************************/
 
 // get modules
+ini_set("memory_limit","64M");
 require(BASE."include/"."config.php");
 require(BASE."include/"."util.php");
 require(BASE."include/"."user.php");
@@ -180,12 +181,18 @@ function redirectref($url = null)
  */
 function addmsg($text, $color = "black")
 {
+    global $hAppdbLink;
+
     if($color)
         $text = "<font color='$color'> $text </font>\n";
 
-    $text = str_replace("'", "\\'", $text);
-    query_appdb("INSERT INTO sessionMessages VALUES (null, null, '".session_id()."', '$text')");
-    echo mysql_error();
+    $text = addslashes($text);
+    $sQuery = "INSERT INTO sessionMessages VALUES (null, null, '".session_id()."', '$text')";
+    if (!mysql_query($sQuery,$hAppdbLink))
+    {
+        echo "An error has occured in addmsg(): ".mysql_error($hAppdbLink);
+        echo $text;
+    }
 }
 
 
