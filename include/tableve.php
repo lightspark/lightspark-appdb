@@ -132,7 +132,7 @@ class TableVE {
 	    echo "Oops: ".mysql_error()."<br>$query<br>\n";
         $nrows   = mysql_num_rows($result);
 
-        echo "<form method=post action='".apidb_url("editapi.php")."'>\n";
+        echo "<form method=post action='".$_SERVER['PHP_SELF']."'>\n";
 
         for($i = 0; $i < $nrows; $i++)
             {
