@@ -24,7 +24,7 @@ require(BASE."include/"."maintainer.php");
 function admin_menu()
 {
     $m = new htmlmenu("Admin");
-    if($_REQUEST['versionId']) {
+    if(isset($_REQUEST['versionId'])) {
         $m->add("Add Note", BASE."admin/addAppNote.php?appId=$appId&versionId=".$_REQUEST['versionId']);
         $m->addmisc("&nbsp;");
 
@@ -204,17 +204,25 @@ function display_versions($appId, $versions)
 }
 
 
-$appId = $_REQUEST['appId'];
-$versionId = $_REQUEST['versionId'];
 
 /**
  * We want to see an application family (=no version) 
  */
-if(!is_numeric($appId))
+if(!is_numeric($_REQUEST['appId']))
 {
-    errorpage("Something went wrong with the IDs");
+    errorpage("Something went wrong with the application ID");
     exit;
 }
+
+$appId = $_REQUEST['appId'];
+
+if(!empty($_REQUEST['versionId']) AND !is_numeric($_REQUEST['versionId']))
+{
+    errorpage("Something went wrong with the version ID");
+    exit;
+}
+
+$versionId = $_REQUEST['versionId'];
 
 if($appId && !$versionId)
 {
