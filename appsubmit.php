@@ -114,7 +114,7 @@ else
 	echo "(Yes, some vendor want to use the appdb for this) or saying \"I haven't tried this app with wine\" ";
 	echo "won't help wine development or wine users.</p>\n";
 	echo "<p>To submit screenshots, please email them to ";
-	echo "<a href='mailto:appdb@winehq.com'>appdb@winehq.com</a></p>\n";
+	echo "<a href='mailto:appdb@winehq.org'>appdb@winehq.org</a></p>\n";
 
 	    echo html_frame_start("New Application Form",400,"",0);
 

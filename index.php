@@ -35,7 +35,7 @@ apidb_header("Wine Application Database");
 
 	<p>
 	If you have anything to contribute (screenshots, howtos), contact us at:
-	<a href="mailto:appdb@winehq.com">appdb@winehq.com</a>
+	<a href="mailto:appdb@winehq.org">appdb@winehq.org</a>
 	</p>
 <?
 
