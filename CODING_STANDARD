@@ -7,28 +7,71 @@ WineHQ Application Database Coding Practice
 Try to make your content validate nicely (http://validator.w3.org/)
 
 - Think about upward compatibility. Some day we might choose another doctype like XHTML 1.0
-(i.e. <br /> instead of <br>, avoid using styles tag and properties (bgcolor, borders & Co) and use stylesheets instead)
+(i.e. <br /> instead of <br>, avoid using style tags and properties (bgcolor, borders & co) and use stylesheets instead)
+
 
 
 #######
 # PHP #
 #######
-- functions are written this way (that way {}'s are lined up):
+/********************/
+/* variables naming */
+/********************/
+variables that don't come from outside your script (i.e. that aren't fetched from superglobals) should be named this way 
+(a.k.a hungarian notation):
+prefix + var_name
+
+Where prefix is one of:
+Scalar types:
+i for integers
+f for floats
+s for strings
+b for booleans
+Compound types:
+a for arrays
+o for objects
+Special type:
+h for handles
+
+the rest of the variable's name is using camel style
+examples:
+$aUsers
+$iTopicId
+$hRecordSet 
+$sQuery
+$hResult
+
+
+/********************/
+/* functions naming */
+/********************/
+1)functions name should be declarative (i.e. put a declarative verb as the first word like in do_someting())
+2)methods (functions inside a class) are named like this: setMyName() (i.e. words separated with an upper case character)
+3)normal functions (outside a class) are named like this: query_appdb() (i.e. words separated with an underscore)
+
+
+/*****************************/
+/* general coding guidelines */
+/*****************************/
+1) functions, loops and if's are written this way (look at the way {}'s are lined up):
 <?php
 function foo() 
 {
     if(isset($var))
     {
         echo "bar";
-    }    
+    } else
+    {
+        echo "foo";
+    }   
 }
 ?>
 
-- indentation is made of 4 spaces (no tabs please)
+2) indentation is made of 4 spaces (no tabs please)
 
-- line length should be no more than 130 characters, preferably < 80
+3) line length should be no more than 130 characters, preferably < 80
 
-- comments: Muli line code should look like this.
+4) comments: Muli line code should look like this.
 
 /**
  * This functions does nothing interesing.
@@ -62,36 +105,11 @@ if(!isset($appId))
     }
 }
 
-- use long php tags (<?php ?>) instead of short ones (<? ?>) as :
- 1) it could be removed from future versions of php
- 2) if conflicts with tags like <?xml version=1.0 ?> that are used in xhtml
+5) use long php tags (<?php ?>) instead of short ones (<? ?>) as :
+ a) it could be removed from future versions of php
+ b) if conflicts with tags like <?xml version=1.0 ?> that are used in xhtml
 
-- do not use vars that require register_globals to be on as:
- 1) it is off by default in php 4.1+
- 2) it is more secure
- 3) it makes it easier to understand where your vars are comming from (forms, session, etc.)
-
-- variables naming
-variables that don't come from outside your script (i.e. that aren't fetched from superglobals) should be named this way 
-(a.k.a hungarian notation):
-prefix + var_name
-
-Where prefix is one of:
-Scalar types:
-i for integers
-f for floats
-s for strings
-b for booleans
-Compound types:
-a for arrays
-o for objects
-Special type:
-h for handles
-
-the rest of the variable's name is using camel style
-examples:
-$aUsers
-$iTopicId
-$hRecordSet 
-$sQuery
-$hResult
+6) do not use vars that require register_globals to be on as:
+ a) it is off by default in php 4.1+
+ b) it is more secure
+ c) it makes it easier to understand where your vars are comming from (forms, session, etc.)
