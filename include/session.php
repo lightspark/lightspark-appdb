@@ -99,4 +99,6 @@ session_set_save_handler("_session_open",
                          "_session_write", 
                          "_session_destroy", 
                          "_session_gc");
+
+session_register($current);
 ?>
