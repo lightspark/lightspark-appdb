@@ -58,10 +58,14 @@ class Screenshot {
      */
     function create($iVersionId = null, $sDescription = null, $hFile = null)
     {
+        $oVersion = new Version($iVersionId);
         // Security, if we are not an administrator or a maintainer, the screenshot must be queued.
-        if(!($_SESSION['current']->hasPriv("admin") || $_SESSION['current']->isMaintainer($_REQUEST['versionId'])))
+        if(!($_SESSION['current']->hasPriv("admin") || $_SESSION['current']->isMaintainer($oVersion->iVersionId) || $_SESSION['current']->isSuperMaintainer($oVersion->iAppId)))
         {
             $this->bQueued = true;
+        } else
+        {
+            $this->bQueued = false;
         }
 
         $aInsert = compile_insert_string(array( 'versionId'    => $iVersionId,
