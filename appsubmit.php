@@ -103,6 +103,38 @@ if (isset($_REQUEST['queueName']))
 #######################################
 else if (isset($_REQUEST['apptype']))
 {
+//FIXME: use absolute path in htmlarea_loader.js to avoid code duplication here
+?>
+<link rel="stylesheet" href="./application.css" type="text/css">
+<!-- load HTMLArea -->
+<script type="text/javascript">
+_editor_url = "./htmlarea/";
+_editor_lang = "en";
+function initDocument() {
+    config = new HTMLArea.Config();
+    config.toolbar = [
+                [ "bold", "italic", "underline", "strikethrough", "separator",
+                  "copy", "cut", "paste", "space", "undo", "redo", "separator",
+                  "justifyleft", "justifycenter", "justifyright", "justifyfull", "separator",
+                  "orderedlist", "unorderedlist", "outdent", "indent", "separator",
+                  "forecolor", "hilitecolor", "separator",
+                  "inserthorizontalrule", "createlink", "inserttable" ]
+        ];
+    config.width = 700;
+    var editor = new HTMLArea("editor",config);
+    editor.config.pageStyle = "@import url(./application.css);";
+    editor.registerPlugin(DynamicCSS);
+    editor.generate();
+}
+
+onload = function() {
+    HTMLArea.loadPlugin("DynamicCSS");
+    HTMLArea.init();
+    HTMLArea.onload = initDocument;
+}
+</script>
+<script type="text/javascript" src="./htmlarea/htmlarea.js"></script>
+<?php
     // set email field if logged in
     if ($_SESSION['current']->isLoggedIn())
         $email = $_SESSION['current']->sEmail;
@@ -146,12 +178,12 @@ else if (isset($_REQUEST['apptype']))
     echo '<tr valign=top><td class=color0>&nbsp;</td><td>',"\n";
     $x->make_option_list("altvendor","","vendor","vendorId","vendorName");
     echo '</td></tr>',"\n";
-    
+  
     echo '<tr valign=top><td class=color0><b>App URL</b></td>',"\n";
     echo '<td><input type=text name="queueURL" value="" size=20></td></tr>',"\n";
-    
-    echo '<tr valign=top><td class=color0><b>App Desc</b></td>',"\n";
-    echo '<td><textarea name="queueDesc" rows=10 cols=35></textarea></td></tr>',"\n";
+    $sDescription = "<p>Enter description here</p>";
+    echo '<tr valign=top><td class=color0><b>Description</b></td>',"\n";
+    echo '<td><p style="width:700px"><textarea cols="80" rows="20" id="editor" name="queueDesc">'.$sDescription.'</textarea></p></td></tr>',"\n";
 
     echo '<tr valign=top><td class=color0><b>Email</b></td>',"\n";
     echo '<td><input type=text name="queueEmail" value="'.$email.'" size=20></td></tr>',"\n";
@@ -182,12 +214,31 @@ else if (isset($_REQUEST['apptype']))
 
     echo '<tr valign=top><td class=color0><b>App Version</b></td>',"\n";
     echo '<td><input type=text name="queueVersion" size=20></td></tr>',"\n";
-
-    echo '<tr valign=top><td class=color0><b>App URL</b></td>',"\n";
-    echo '<td><input type=text name="queueURL" size=20></td></tr>',"\n";
+    $sDescription  = "<p>This is a template; enter version-specific description here</p>";
+    $sDescription .= "<p>
+                               <span class=\"title\">Wine compatibility</span><br />
+                               <span class=\"subtitle\">What works:</span><br />
+                               - settings<br />
+                               - help<br />
+                               <br /><span class=\"subtitle\">What doesn't work:</span><br />
+                               - erasing<br />
+                               <br /><span class=\"subtitle\">What was not tested:</span><br />
+                               - burning<br />
+                               </p>";
+    $oRow->description .= "<p><span class=\"title\">Tested versions</span><br /><table class=\"historyTable\" width=\"90%\" border=\"1\">
+                            <thead class=\"historyHeader\"><tr>
+                            <td>App. version</td><td>Wine version</td><td>Installs?</td><td>Runs?</td><td>Rating</td>
+                            </tr></thead>
+                            <tbody><tr>
+                            <td class=\"gold\">3.23</td><td class=\"gold\">20050111</td><td class=\"gold\">yes</td><td class=\"gold\">yes</td><td class=\"gold\">Gold</td>
+                            </tr><tr>
+                            <td class=\"silver\">3.23</td><td class=\"silver\">20041201</td><td class=\"silver\">yes</td><td class=\"silver\">yes</td><td class=\"silver\">Silver</td>
+                            </tr><tr>
+                            <td class=\"bronze\">3.21</td><td class=\"bronze\">20040615</td><td class=\"bronze\">yes</td><td class=\"bronze\">yes</td><td class=\"bronze\">Bronze</td>
+                            </tr></tbody></table></p><p> <br /> </p>";
 
     echo '<tr valign=top><td class=color0><b>App Desc</b></td>',"\n";
-    echo '<td><textarea name="queueDesc" rows=10 cols=35></textarea></td></tr>',"\n";
+    echo '<td><p style="width:700px"><textarea cols="80" rows="20" id="editor" name="queueDesc">'.$sDescription.'</textarea></p></td></tr>',"\n";
 
     echo '<tr valign=top><td class=color0><b>Email</b></td>',"\n";
     echo '<td><input type=text name="queueEmail" value="'.$email.'" size=20></td></tr>',"\n";

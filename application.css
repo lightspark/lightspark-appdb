@@ -2,25 +2,21 @@
 /* The following styles are used for application description and notes */
 /***********************************************************************/
 
-BODY {
-                     background-color: #FFFFFF;
-                     color: #000000;
-                     font-family: "bitstream vera sans", "verdana", "arial", "helvetica", sans-serif;
-                     margin: 0px 10px 0px 0px;
-                     font-size: 12px;
-     }
-
-thead { font-weight: bold }
-
 .title { font-weight: bold; }
 
 .subtitle { text-decoration: underline; font-style: italic; }
 
 .code { font-family: fixed; font-size: 12px; }
 
-table { border: 1px; 
-        font-family: "bitstream vera sans", "verdana", "arial", "helvetica", sans-serif;
-        font-size: 12px; }
+p {   color: #000000;
+      font-family: "bitstream vera sans", "verdana", "arial", "helvetica", sans-serif;
+      font-size: 12px;
+   }
+thead.historyHeader { font-weight: bold }
+
+table.historyTable { border: 1px; 
+                     font-family: "bitstream vera sans", "verdana", "arial", "helvetica", sans-serif;
+                     font-size: 12px; }
 
 td.gold { background-color: #fff600; }
 td.silver { background-color: silver; }

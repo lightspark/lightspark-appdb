@@ -186,13 +186,20 @@ if ($_REQUEST['sub'])
                 echo '</td></tr>',"\n";
             }
         }
+
         //url
+        // FIXME: don't display this field for appversion
         echo '<tr valign=top><td class=color0><b>App URL</b></td>',"\n";
         echo '<td><input type=text name="queueURL" value="'.stripslashes($ob->queueURL).'" size=20></td></tr>',"\n";
         
         //desc
+?>
+<link rel="stylesheet" href="./application.css" type="text/css">
+<!-- load HTMLArea -->
+<script type="text/javascript" src="../htmlarea/htmlarea_loader.js"></script>
+<?php
         echo '<tr valign=top><td class=color0><b>App Desc</b></td>',"\n";
-        echo '<td><textarea name="queueDesc" rows=10 cols=35>'.stripslashes($ob->queueDesc).'</textarea></td></tr>',"\n";
+        echo '<td><p style="width:700px"><textarea  cols="80" rows="20" id="editor" name="queueDesc">'.stripslashes($ob->queueDesc).'</textarea></p></td></tr>',"\n";
         
         //email message text
         if ($ob->queueEmail)
@@ -249,8 +256,6 @@ if ($_REQUEST['sub'])
                 $aInsert = compile_insert_string( array('appId' => $_REQUEST['appParent'],
                                                         'versionName' => $_REQUEST['queueVersion'],
                                                         'description' => $_REQUEST['queueDesc'],
-                                                        'webPage' => $_REQUEST['queueURL'],
-                                                        'keywords' => "",
                                                         'maintainer_rating' => "",
                                                         'maintainer_release' =>  ""));
                 if (query_appdb("INSERT INTO `appVersion` ({$aInsert['FIELDS']}) VALUES ({$aInsert['VALUES']})"))
@@ -277,8 +282,6 @@ if ($_REQUEST['sub'])
                 $aInsert = compile_insert_string( array('appId' => $_REQUEST['appParent'],
                                                         'versionName' => $_REQUEST['queueVersion'],
                                                         'description' => $_REQUEST['queueDesc'],
-                                                        'webPage' => $_REQUEST['queueURL'],
-                                                        'keywords' => "",
                                                         'maintainer_rating' => "",
                                                         'maintainer_release' =>  ""));
 
@@ -304,16 +307,20 @@ if ($_REQUEST['sub'])
         }
         
         //Send Status Email
-        if ($ob->queueEmail && $goodtogo)
+        if($_REQUEST['type'] == 'ver')
         {
-            $sFullAppName = lookupAppName($_REQUEST['appParent'])." Version: ".lookupVersionName($_REQUEST['appVersion']);
-             
-            $sSubject =  "Application Database Status Report";
-            $sMsg  = "Your application: ".$sFullAppName." has been entered ";
-            $sMsg .= "into the application database.\r\n";
-            $sMsg .= APPDB_ROOT."appview.php?appId=".$_REQUEST['appParent']."&versionId=".$_REQUEST['appVersion']."\r\n";
+            $sFullAppName = lookupAppName($_REQUEST['appParent'])." ".lookupVersionName($_REQUEST['appVersion']);
+            $sUrl = APPDB_ROOT."appview.php?versionId=".$_REQUEST['appVersion'];
+        } else 
+        {
+            $sFullAppName = lookupAppName($_REQUEST['appParent']);
+            $sUrl = APPDB_ROOT."appview.php?appId=".$_REQUEST['appParent'];
+        }
+        $sSubject =  $sFullAppName." has been added into the AppDB";
+        $sMsg  = $sUrl."\n";
+        if ($ob->queueEmail && $goodtogo)
+        {   
             $sMsg .= $emailtext;
-
             mail_appdb($ob->queueEmail, $sSubject ,$sMsg);
         }
         if ($goodtogo)
@@ -321,18 +328,11 @@ if ($_REQUEST['sub'])
             $sEmail = get_notify_email_address_list($_REQUEST['appParent'], $_REQUEST['appVersion']);
             if($sEmail)
             {
-                $sFullAppName = "Application: ".lookupAppName($_REQUEST['appParent']).
-                    " Version: ".lookupVersionName($_REQUEST['appVersion']);
-                $sSubject = "New ".$sFullAppName;
-                $sMsg  = APPDB_ROOT."appview.php?appId=".$_REQUEST['appParent']."&versionId=".$_REQUEST['appVersion']."\r\n";
-                $sMsg .= "New Application added to database:\r\n";
-                $sMsg .= $sFullAppName."\r\n";
-    
                 mail_appdb($sEmail, $sSubject ,$sMsg);
             }
         }
         //done
-        addmsg("<a href=".apidb_fullurl("appview.php")."?appId=".$_REQUEST['appParent']."&versionId=".$_REQUEST['appVersion'].">View App</a>", "green");
+        addmsg("<a href=".apidb_fullurl("appview.php")."?appId=".$_REQUEST['appParent'].">View App</a>", "green");
         redirect(apidb_fullurl("admin/adminAppQueue.php"));
         exit;
     }
@@ -348,22 +348,17 @@ if ($_REQUEST['sub'])
         else
         {   
             //Send Status Email
+            if($_REQUEST['type'] == 'ver')
+            {
+                $sFullAppName = lookupAppName($_REQUEST['appParent'])." ".lookupVersionName($_REQUEST['appVersion']);
+            } else 
+            {
+                $sFullAppName = lookupAppName($_REQUEST['appParent']);
+            }
+            $sSubject =  $sFullAppName." has not been added into the AppDB";
             if ($ob->queueEmail)
             {
-                if($ob->queueCatId == -1) //app version
-                {
-                    $sFullAppName = lookupAppName($_REQUEST['appParent'])." Version: ".$ob->queueVersion;
-                } else
-                {
-                    $sFullAppName = $ob->queueName." Version: ".$ob->queueVersion;
-                }
-            
-                $sSubject =  "Application Database Status Report";
-                $sMsg .= "Your application: ".$sFullAppName." has not been entered ";
-                $sMsg .= "into the application database.\r\n";
-                $sMsg .= "Sorry!\r\n";
-                $sMsg .= $emailtext;
-
+                $sMsg = $emailtext;
                 mail_appdb($ob->queueEmail, $sSubject ,$sMsg);
             }
             //success

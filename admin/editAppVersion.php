@@ -235,8 +235,8 @@ if(isset($_REQUEST['submit1']))
                                <br /><span class=\"subtitle\">What was not tested:</span><br />
                                - burning<br />
                                </p>";
-        $oRow->description .= "<p><span class=\"title\">Tested versions</span><br /><table width=\"90%\" border=\"1\">
-                            <thead><tr>
+        $oRow->description .= "<p><span class=\"title\">Tested versions</span><br /><table class=\"historyTable\" width=\"90%\" border=\"1\">
+                            <thead class=\"historyHeader\"><tr>
                             <td>App. version</td><td>Wine version</td><td>Installs?</td><td>Runs?</td><td>Rating</td>
                             </tr></thead>
                             <tbody><tr>
