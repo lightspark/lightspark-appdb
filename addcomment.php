@@ -60,7 +60,7 @@ if(isset($_REQUEST['body']))
         if (is_numeric($_REQUEST['originator']))
         {
             $oOriginator = new User($_REQUEST['originator']);
-            if ($oOriginator->getPref("send_email"))
+            if ($oOriginator->getPref("send_email")=="yes")
             {
                 $sEmail = $oOriginator->sEmail;
                 $sFullAppName = "Application: ".lookupAppName($_REQUEST['appId'])." Version: ".lookupVersionName($_REQUEST['appId'], $_REQUEST['versionId']);

@@ -344,7 +344,7 @@ function get_notify_email_address_list($appId, $versionId = 0)
         while(list($index, list($userIdValue)) = each($aUserId))
         {
             $oUser = new User($userIdValue);
-            if ($oUser->getPref("send_email"))
+            if ($oUser->getPref("send_email")=="yes")
                 $retval .= $oUser->sEmail." ";
         }
     }
