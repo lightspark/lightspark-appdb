@@ -246,4 +246,6 @@ opendb();
 $session = new session("whq_appdb");
 $session->register("current");
 
+// if we are debugging we need to see all errors
+if(debugging()) error_reporting(E_ALL ^ E_NOTICE);
 ?>
