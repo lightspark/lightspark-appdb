@@ -18,7 +18,7 @@ function banner_display ()
     // opening html
     $banner = "";
     $banner .= "\n\n".'<!-- START BANNER AD -->'."\n";
-    $banner .= "<div align=center class=\"black\">\n";
+    $banner .= "<div align=center id=\"banner\">\n";
 
     // read dir and get list of banners
     $ads = array();

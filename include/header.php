@@ -29,9 +29,7 @@
           <img src="<?php echo $apidb_root; ?>images/blank.gif" width=10 height=1 alt="">
         </td>
         <td width="100%" align="center" valign="middle">
-            <!-- BANNER AD -->
-            <?php echo $banner_ad; ?></td>
-            <!-- END BANNER AD -->
+            <?php echo $banner_ad; ?>
 	    </td>
         <td>
           <img src="<?php echo $apidb_root; ?>images/blank.gif" width=10 height=1 alt="">
