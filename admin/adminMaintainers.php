@@ -47,7 +47,7 @@ if ($sub)
 {
     //get available maintainers
     $query = "SELECT maintainerId, appId, versionId,".
-        "userId, UNIX_TIMESTAMP(submitTime) as submitTime ".
+        "userId, superMaintainer, UNIX_TIMESTAMP(submitTime) as submitTime ".
         "from appMaintainers;";
     $result = mysql_query($query);
 
@@ -83,7 +83,7 @@ if ($sub)
             echo "    <td>".date("Y-n-t h:i:sa", $ob->submitTime)." &nbsp;</td>\n";
             echo "    <td>".lookupUsername($ob->userId)."</td>\n";
             
-            if(isSuperMaintainer($ob->appId))
+            if($ob->superMaintainer)
             {
                 echo "    <td><a href='".$apidb_root."appview.php?appId=$ob->appId'>".appIdToName($ob->appId)."</a></td>\n";
                 echo "    <td>".versionIdToName($ob->versionId)."&nbsp;</td>\n";
