@@ -12,7 +12,7 @@ if(!is_numeric($_REQUEST['appId']) OR !is_numeric($_REQUEST['versionId']))
 }
 
 /* Check for admin privs */
-if(!$_SESSION['current']->hasPriv("admin") && !$_SESSION['current']->isMaintainer($_REQUEST['versionId']) && !isSuperMaintainer($_REQUEST['appId']))
+if(!$_SESSION['current']->hasPriv("admin") && !$_SESSION['current']->isMaintainer($_REQUEST['versionId']) && !$_SESSION['current']->isSuperMaintainer($_REQUEST['appId']))
 {
     errorpage("Insufficient Privileges!");
     exit;

@@ -426,7 +426,7 @@ else if($_REQUEST['versionId'])
     
     echo "</td></tr>";
 
-    if ($_SESSION['current']->hasPriv("admin") || $_SESSION['current']->isMaintainer($oVersion->iVersionId))
+    if ($_SESSION['current']->hasPriv("admin") || $_SESSION['current']->isMaintainer($oVersion->iVersionId) || $_SESSION['current']->isSuperMaintainer($oVersion->iAppId))
     {
         echo '<tr><td colspan="2" align="center">';
         echo '<form method="post" name="message" action="admin/editAppVersion.php">';
