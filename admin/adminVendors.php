@@ -48,7 +48,7 @@ if ($_REQUEST['sub'])
 } else
 {
     //get available vendors
-    $sQuery = "SELECT * from vendor;";
+    $sQuery = "SELECT * FROM vendor ORDER BY vendorName, vendorId;";
     $hResult = query_appdb($sQuery);
 
     if(!$hResult || !mysql_num_rows($hResult))
