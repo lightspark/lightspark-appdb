@@ -146,8 +146,8 @@ function show_note($sType,$oData){
     if (loggedin() && (havepriv("admin") || $_SESSION['current']->is_maintainer($_REQUEST['appId'], $_REQUEST['versionId'])))
     {
         $s .= "<tr width='100%' class=color1 align=center valign=top><td>";
-        $s .= "<form method=post name=message action=admin/editAppNote.php?noteId={$oData->noteId}&appId={$_REQUEST['appId']}&versionId='{$_REQUEST['versionId']}'>";
-        $s .= '<input type=submit value="Edit How to Info" class=button>';
+        $s .= "<form method=post name=message action='admin/editAppNote.php?noteId={$oData->noteId}'>";
+        $s .= '<input type=submit value="Edit Note" class=button>';
         $s .= '</form></td></tr>';
     }
 
