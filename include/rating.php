@@ -210,7 +210,7 @@ function rating_update($vars)
                                                      'userId' => $userId,
                                                      'system' => 'fake',
                                                      'score' => $score_f));
-            query_appdb("UPDATE appVersion SET rating_windows = $r->rating WHERE versionId = $versionId");
+            query_appdb("INSERT INTO appRating ({$aInsert['FIELDS']}) VALUES ({$aInsert['VALUES']})");
         }
 
         $r = rating_for_version($versionId, "fake");
