@@ -32,7 +32,7 @@ if(isset($_REQUEST['submit']))
         $sQuery = "SELECT * FROM appFamily WHERE appId = ".$_REQUEST['appId'];
         $hResult = query_appdb($sQuery);
         $ob = mysql_fetch_object($hResult);
-        $sOld_appName     = $ob->AppName;
+        $sOld_appName     = $ob->appName;
         $sOld_description = $ob->description;
         $iOld_vendorId    = $ob->vendorId;
         $iOld_catId       = $ob->catId;
