@@ -26,19 +26,6 @@ if($_REQUEST['what'])
 {
     switch($_REQUEST['what'])
 	{
-	case "comment":
-            $oComment = new Comment($_REQUEST['commentId']);
-            if( !$_SESSION['current']->isMaintainer($oComment->iVersionId)
-             && !$_SESSION['current']->isSuperMaintainer($oComment->iAppId) 
-             && !$_SESSION['current']->hasPriv("admin") )
-            {
-                errorpage();
-            } else
-            {
-                $oComment->delete();
-                redirect(BASE."appview.php?versionId=".$oComment->iVersionId);
-            }
-	    break;
 	case "category":
 	    // delete category and the apps in it
             $oCategory = new Category($_REQUEST['catId']);
