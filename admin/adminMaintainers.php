@@ -3,13 +3,13 @@
 /* code to view and maintain the list of application maintainers */
 /*****************************************************************/
 
+/*
+ * application environment
+ */ 
 include("path.php");
-require(BASE."include/"."incl.php");
-require(BASE."include/"."tableve.php");
-require(BASE."include/"."category.php");
-require(BASE."include/"."maintainer.php");
+require(BASE."include/incl.php");
 
-//deny access if not logged in
+// deny access if not logged in
 if(!loggedin())
 {
     errorpage("You need to be logged in to use this page.");
@@ -23,22 +23,17 @@ if(!loggedin())
 apidb_header("Admin Maintainers");
 echo '<form name="qform" action="adminMaintainers.php" method="post" enctype="multipart/form-data">',"\n";
 
-if ($sub)
+if ($_REQUEST['sub'])
 {
-    if($sub == 'delete')
+    if($_REQUEST['sub'] == 'delete')
     {
-        $query = "DELETE FROM appMaintainers WHERE maintainerId = $maintainerId;";
-        echo "$query";
-        $result = mysql_query($query);
-        echo html_frame_start("Delete maintainer: $maintainerId",400,"",0);
-        if(!$result)
+        $sQuery = "DELETE FROM appMaintainers WHERE maintainerId = ".$_REQUEST['maintainerId'].";";
+        echo "$sQuery";
+        $hResult = query_appdb($sQuery);
+        echo html_frame_start("Delete maintainer: ".$_REQUEST['maintainerId'],400,"",0);
+        if($hResult)
         {
-            //error
-            echo "<p>Internal Error: unable to delete selected maintainer!</p>\n";
-        }
-        else
-        {
-            //success
+            // success
             echo "<p>Maintainer was successfully deleted</p>\n";
         }
         echo html_frame_end("&nbsp;");
@@ -46,22 +41,20 @@ if ($sub)
     }
 } else
 {
-    //get available maintainers
-    $query = "SELECT maintainerId, appId, versionId,".
-        "userId, superMaintainer, UNIX_TIMESTAMP(submitTime) as submitTime ".
-        "from appMaintainers;";
-    $result = mysql_query($query);
+    // get available maintainers
+    $sQuery = "SELECT * FROM appMaintainers;";
+    $hResult = query_appdb($sQuery);
 
-    if(!$result || !mysql_num_rows($result))
+    if(!$hResult || !mysql_num_rows($hResult))
     {
-        //no apps in queue
+        // no apps
         echo html_frame_start("","90%");
         echo '<p><b>There are no application maintainers.</b></p>',"\n";
         echo html_frame_end("&nbsp;");         
     }
     else
     {
-        //show applist
+        // show applist
         echo html_frame_start("","90%","",0);
         echo "<table width='100%' border=0 cellpadding=3 cellspacing=0>\n\n";
 
@@ -77,7 +70,7 @@ if ($sub)
         echo "</tr>\n\n";
         
         $c = 1;
-        while($ob = mysql_fetch_object($result))
+        while($ob = mysql_fetch_object($hResult))
         {
             if ($c % 2 == 1) { $bgcolor = 'color0'; } else { $bgcolor = 'color1'; }
             echo "<tr class=$bgcolor>\n";
@@ -108,6 +101,4 @@ if ($sub)
 
 echo "</form>";
 apidb_footer();
-
-
 ?>
