@@ -446,8 +446,8 @@ else if($appId && $versionId)
         echo '<form method=post name=message action=admin/editAppVersion.php?appId='.$appId.'&versionId='.$versionId.'>';
         echo '<input type=submit value="Edit Version Info" class=button>';
         echo '</form>';
-        $url = BASE."admin/deleteAny.php?what=appVersion&versionId=".$_REQUEST['versionId']."&confirmed=yes";
-        echo "<form method=\"post\" name=\"delete\" action=\"javascript:deleteURL(\"Are you sure?\", \"".$url."\")\">";
+        $url = BASE."admin/deleteAny.php?what=appVersion&appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']."&confirmed=yes";
+        echo "<form method=\"post\" name=\"delete\" action=\"javascript:deleteURL('Are you sure?', '".$url."')\">";
         echo '<input type=submit value="Delete Version" class="button">';
         echo '</form>';
         echo '<form method=post name=message action=admin/addAppNote.php?appId='.$appId.'&versionId='.$versionId.'>';

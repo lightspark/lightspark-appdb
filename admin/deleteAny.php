@@ -32,24 +32,24 @@ if($_REQUEST['what'])
     switch($_REQUEST['what'])
 	{
 	case "comment":
-	    // delete a comment
-	    //TODO
+	    // TODO: delete a comment
+            redirect(BASE."appview.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']);
 	    break;
 	case "category":
 	    // delete category and the apps in it
 	    deleteCategory($_REQUEST['catId']);
+            redirect(BASE."appbrowse.php");
 	    break;
 	case "appFamily":
 	    // delete app family & all its versions
 	    deleteAppFamily($_REQUEST['appId']);
+            redirect(BASE."appbrowse.php");
 	    break;
 	case "appVersion":
 	    // delete a version
 	    deleteAppVersion($_REQUEST['versionId']);
+            redirect(BASE."appview.php?appId=".$_REQUEST['appId']);
 	    break;
 	}
-
-    //FIXME need to redirect to the page before the confirmation page
-    redirect(BASE."appbrowse.php");
 }
 ?>
