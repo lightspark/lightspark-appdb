@@ -155,7 +155,7 @@ class Application {
 
         if ($sName && $sName!=$this->sName)
         {
-            $sUpdate = compile_update_string(array('appName'    => sName));
+            $sUpdate = compile_update_string(array('appName'    => $sName));
             if (!query_appdb("UPDATE appFamily SET ".$sUpdate." WHERE appId = ".$this->iAppId))
                 return false;
             $sWhatChanged .= "Name was changed from ".$this->sName." to ".$sName.".\n\n";
