@@ -7,7 +7,7 @@
 <!-- start of edit account form -->
 <tr>
     <td> &nbsp; User Name </td>
-    <td> <b> <?=$ext_username;?> </b> </td>
+    <td> <b> <?php echo $ext_username; ?> </b> </td>
 </tr>
 <tr>
     <td> &nbsp; Password </td>
@@ -19,11 +19,11 @@
 </tr>
 <tr>
     <td> &nbsp; Real Name </td>
-    <td> <input type="text" name="ext_realname" value="<?=$ext_realname;?>"> </td>
+    <td> <input type="text" name="ext_realname" value="<?php echo $ext_realname; ?>"> </td>
 </tr>
 <tr>
     <td> &nbsp; Email Address </td>
-    <td> <input type="text" name="ext_email" value="<?=$ext_email;?>"> </td>
+    <td> <input type="text" name="ext_email" value="<?php echo $ext_email; ?>"> </td>
 </tr>
 <tr>
     <td colspan=2>&nbsp;</td>
