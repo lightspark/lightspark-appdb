@@ -104,7 +104,7 @@ function show_note($sType,$oData){
     $s .= add_br(stripslashes($oData->noteDesc));
     $s .= "</td></tr>\n";
 
-    if ($_SESSION['current']->isLoggedIn() && ($_SESSION['current']->hasPriv("admin") || $_SESSION['current']->isMaintainer($_REQUEST['appId'], $_REQUEST['versionId'])))
+    if ($_SESSION['current']->hasPriv("admin") || $_SESSION['current']->isMaintainer($_REQUEST['versionId']))
     {
         $s .= "<tr width='100%' class=color1 align=center valign=top><td>";
         $s .= "<form method=post name=message action='admin/editAppNote.php?noteId={$oData->noteId}'>";
@@ -433,7 +433,7 @@ else if($_REQUEST['versionId'])
     
     echo "</center></td></tr>";
 
-    if ($_SESSION['current']->isLoggedIn() && ($_SESSION['current']->hasPriv("admin") || $_SESSION['current']->isMaintainer($appId, $_REQUEST['versionId'])))
+    if ($_SESSION['current']->hasPriv("admin") || $_SESSION['current']->isMaintainer($_REQUEST['versionId']))
     {
         echo "<tr><td colspan = 2><center>";
         echo '<form method=post name=message action=admin/editAppVersion.php?appId='.$appId.'&versionId='.$_REQUEST['versionId'].'>';
