@@ -75,33 +75,43 @@ class Note {
 
     /**
      * Update note.
-     * FIXME: Informs interested people about the modification.
      * Returns true on success and false on failure.
      */
     function update($sTitle=null, $sDescription=null, $iVersionId=null)
     {
-        if ($sTitle)
+        $sWhatChanged = "";
+
+        if ($sTitle && $sTitle!=$this->sTitle)
         {
-            if (!query_appdb("UPDATE appNotes SET noteTitle = '".$sTitle."' WHERE noteId = ".$this->iNoteId))
+            $sUpdate = compile_update_string(array('noteTitle'    => $sTitle));
+            if (!query_appdb("UPDATE appNotes SET ".$sUpdate." WHERE noteId = ".$this->iNoteId))
                 return false;
+            $sWhatChanged .= "Title was changed from ".$this->sTitle." to ".$sTitle.".\n\n";
             $this->sTitle = $sTitle;
         }
 
-        if ($sDescription)
+        if ($sDescription && $sDescription!=$this->sDescription)
         {
-            if (!query_appdb("UPDATE appNotes SET noteDesc = '".$sDescription."' WHERE noteId = ".$this->iNoteId))
+            $sUpdate = compile_update_string(array('noteDesc' => $sDescription));
+            if (!query_appdb("UPDATE appNotes SET ".$sUpdate." WHERE noteId = ".$this->iNoteId))
                 return false;
+            $sWhatChanged .= "Description was changed from\n ".$this->sDescription."\n to \n".$sDescription.".\n\n";
             $this->sDescription = $sDescription;
         }
 
-        if ($iVersionId)
+        if ($iVersionId && $iVersionId!=$this->iVersionId)
         {
-            if (!query_appdb("UPDATE appNotes SET versionId = '".$iVersionId."' WHERE noteId = ".$this->iNoteId))
+            $sUpdate = compile_update_string(array('versionId' => $iVersionId));
+            if (!query_appdb("UPDATE appNotes SET ".$sUpdate." WHERE noteId = ".$this->iNoteId))
                 return false;
+            $oVersionBefore = new Version($this->iVersionId);
+            $oVersionAfter = new Version($iVersionId);
+            $sWhatChanged .= "Version was changed from ".$oVersionBefore->sName." to ".$oVersionAfter->sName.".\n\n";
             $this->iVersionId = $iVersionId;
-            // FIXME: we need to refetch $this->iAppId.
+            $this->iAppId = $oVersionAfter->iAppId;
         }
-       
+        if($sWhatChanged)
+            $this->mailMaintainers("edit",$sWhatChanged);       
         return true;
     }
 
@@ -109,37 +119,49 @@ class Note {
     /**
      * Removes the current note from the database.
      * Informs interested people about the deletion.
-     * Returns true on success and false on failure.
      */
-    function delete($sReason=null)
+    function delete($bSilent=false)
     {
         $hResult = query_appdb("DELETE FROM appNotes WHERE noteId = '".$this->iNoteId."'");
-        if ($hResult)
+        if(!$bSilent)
+            $this->mailMaintainers(true);
+    }
+
+
+    function mailMaintainers($sAction="add",$sMsg=null)
+    {
+        switch($sAction)
         {
-            $sEmail = get_notify_email_address_list($this->iAppId, $this->iVersionId);
-            if($sEmail)
-            {
-                $sSubject = "Note for ".lookup_app_name($this->iAppId)." ".lookup_version_name($this->iVersionId)." deleted by ".$_SESSION['current']->sRealname;
-                $sMsg  = APPDB_ROOT."appview.php?appId=".$this->iAppId."&versionId=".$this->iVersionId."\n";
-                $sMsg .= "\n";
+            case "add":
+                $sSubject = "Note ".$this->sName." added by ".$_SESSION['current']->sRealname;
+                $sMsg  = APPDB_ROOT."appview.php?versionId=".$this->iVersionId."\n";
+                addmsg("The note was successfully added into the database.", "green");
+            break;
+            case "edit":
+                $sSubject =  "Note for ".lookup_app_name($this->iAppId)." ".lookup_version_name($this->iVersionId)." has been modified by ".$_SESSION['current']->sRealname;
+                addmsg("Note modified.", "green");
+            break;
+            case "delete":
+                $sSubject = "Note for  ".lookup_app_name($this->iAppId)." ".lookup_version_name($this->iVersionId)." has been deleted by ".$_SESSION['current']->sRealname;
                 $sMsg .= "This note was made on ".substr($this->sDateCreated,0,10)." by ".$this->oOwner->sRealname."\n";
                 $sMsg .= "\n";
-                $sMsg .= "Subject: ".$this->sSubject."\n";
+                $sMsg .= "Subject: ".$this->sTitle."\n";
                 $sMsg .= "\n";
                 $sMsg .= $this->sBody."\n";
                 $sMsg .= "\n";
                 $sMsg .= "Because:\n";
-                if($sReason)
-                    $sMsg .= $sReason."\n";
+                if($_REQUEST['replyText'])
+                    $sMsg .= $_REQUEST['replyText']."\n";
                 else
                     $sMsg .= "No reason given.\n";
-                mail_appdb($sEmail, $sSubject ,$sMsg);
-            } 
-            addmsg("Note deleted.", "green");
-            return true;
+
+                addmsg("Note deleted.", "green");
+            break;
         }
-        return false;
-    }
+        $sEmail = get_notify_email_address_list(null, $this->iVersionId);
+        if($sEmail)
+            mail_appdb($sEmail, $sSubject ,$sMsg);
+    } 
 }
 
 
@@ -147,5 +169,4 @@ class Note {
 /*
  * Note functions that are not part of the class
  */
-
 ?>
