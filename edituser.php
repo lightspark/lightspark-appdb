@@ -29,7 +29,7 @@ if(!havepriv("admin"))
 
     global $ext_username, $ext_password1, $ext_password2, $ext_realname, $ext_email, $ext_hasadmin;
 
-if($HTTP_POST_VARS)
+if($_POST)
 {
     if ($ext_password == $ext_password2)
     {

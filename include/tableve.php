@@ -389,8 +389,8 @@ class TableVE {
 	return null;
     }
 
-    /*
-     * update() expects $HTTP_POST_VARS as argument
+    /**
+     * update() expects $_POST as argument
      * this is where things are getting kinda complex, here we update "
      * multiple entries with multiple fields in multiple tables (get it?)
      */

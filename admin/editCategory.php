@@ -21,9 +21,9 @@ apidb_header("Edit Category");
 $t = new TableVE("edit");
 
 
-if($HTTP_POST_VARS)
+if($_POST)
 {
-    $t->update($HTTP_POST_VARS);
+    $t->update($_POST);
 }
 else
 {

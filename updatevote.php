@@ -8,7 +8,7 @@ redirectref();
 
 apidb_header("Testing");
 
-vote_update($HTTP_GET_VARS);
+vote_update($_GET);
 
 apidb_footer();
 

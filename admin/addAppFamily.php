@@ -16,9 +16,9 @@ apidb_header("Add Application Family");
 
 $t = new TableVE("create");
 
-if($HTTP_POST_VARS)
+if($_POST)
 {
-    $t->update($HTTP_POST_VARS);
+    $t->update($_POST);
 }
 else
 {

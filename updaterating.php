@@ -11,7 +11,7 @@ apidb_header("Update Rating");
 
 apidb_session_start();
 
-rating_update($HTTP_GET_VARS);
+rating_update($_GET);
 
 apidb_footer();
 

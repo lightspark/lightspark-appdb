@@ -24,9 +24,9 @@ $t = new TableVE("create");
 if(!$appId)
     $appId = 0;
 
-if($HTTP_POST_VARS)
+if($_POST)
 {
-    $t->update($HTTP_POST_VARS);
+    $t->update($_POST);
 }
 else
 {

@@ -9,7 +9,7 @@ $topNumber = 25;
 $categoryId = "any"; /* default to all categories */
 
 /* process the post variables to override the default settings */
-if($HTTP_POST_VARS)
+if($_POST)
 {
     if(isset($_POST['topNumber'])) $topNumber = $_POST['topNumber'];
     if(isset($_POST['categoryId'])) $categoryId = $_POST['categoryId'];
