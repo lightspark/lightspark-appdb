@@ -16,7 +16,7 @@ create table user_list (
 	unique(username(12))
 );
 
-insert into user_list values (NOW(), 0, 'int', password('testing'), 'Charles Loep',
-	'charles@codeweavers.com', NOW(), 0, 0xffffffff);
-update user_list set userid = 1000 where username = 'int';
+insert into user_list values (NOW(), 0, 'admin', password('testing'), 'Administrator',
+	'Admin@localhost', NOW(), 0, 0xffffffff);
+update user_list set userid = 1000 where username = 'admin';
 

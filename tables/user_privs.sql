@@ -8,3 +8,4 @@ CREATE TABLE user_privs (
 	primary key(userid)
 );
 
+insert into user_privs values (1000, 'admin');
