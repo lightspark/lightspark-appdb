@@ -1,33 +1,38 @@
 <?php
-$public_link = null;
-$private_link = null;
-
-
-function apidb_query($query)
+function query_appdb($sQuery)
 {
-    global $public_link;
+    global $hPublicLink;
 
-    if(!$public_link)
+    if(!$hPublicLink)
     {
-        $public_link = mysql_pconnect($db_public_host, $db_public_user, $db_public_pass);
-        mysql_select_db($db_public_db);
+        $hPublicLink = mysql_pconnect(APPS_DBHOST, APPS_DBUSER, APPS_DBPASS);
+        mysql_select_db(APPS_DB);
     }
-
-    return mysql_query($query, $public_link);
+    $hResult = mysql_query($sQuery, $hPublicLink);
+    if(!$hResult)
+    {
+        $sStatusMessage = "<p><b>Database Error!<br>".mysql_error()."</b></p>\n";
+        addmsg($sStatusMessage, "red");
+    }
+    return $hResult;
 }
 
 
-function userdb_query($query)
+function query_userdb($sQuery)
 {
-    global $private_link;
-    
-    if(!$private_link)
-    {
-        $private_link = mysql_pconnect($db_private_host, $db_private_user, $db_private_pass);
-        mysql_select_db($db_private_db);
-    }
-    
-    return mysql_query($query, $private_link);
-}
+    global $hPrivateLink;
 
+    if(!$hPrivateLink)
+    {
+        $hPrivateLink = mysql_pconnect(USERS_DBHOST, USERS_DBUSER, USERS_DBPASS);
+        mysql_select_db(USERS_DB);
+    }
+    $hResult = mysql_query($sQuery, $hPrivateLink);
+    if(!$hResult)
+    {
+        $sStatusMessage = "<p><b>Database Error!<br>".mysql_error()."</b></p>\n";
+        addmsg($sStatusMessage, "red");
+    }
+    return $hResult;
+}
 ?>
