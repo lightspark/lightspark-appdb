@@ -140,19 +140,18 @@ if($result && mysql_num_rows($result))
 
         // display image
         echo "<td>\n";
-        echo html_frame_start(substr(stripslashes($ob->description),0,20),128,"",0);
         echo $img;
-
+        echo "<div align=center>". substr(stripslashes($ob->description),0,20). "\n";
+        
         //show admin delete link
         if(loggedin() && (havepriv("admin") || 
                $_SESSION['current']->is_maintainer($_REQUEST['appId'],
                                                    $_REQUEST['versionId'])))
         {
-            echo "<div align=center>[<a href='screenshots.php?cmd=delete&imageId=$ob->id&appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']."'>Delete Image</a>]</div>";
+            echo "<br />[<a href='screenshots.php?cmd=delete&imageId=$ob->id&appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']."'>Delete Image</a>]";
         }
 
-        echo html_frame_end("&nbsp;");
-        echo "</td>\n";
+        echo "</div></td>\n";
 
         // end row if counter of 3
         if ($c % 3 == 0) echo "</tr><tr>\n";
