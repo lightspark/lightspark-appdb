@@ -268,7 +268,7 @@ if($appId && !$versionId)
 	//set Vendor
 	$vendor = $app->getVendor();
 
-	//set URK
+	//set URL
 	$appLinkURL = ($data->webPage) ? "<a href='$data->webPage'>".substr(stripslashes($data->webPage),0,30)."</a>": "&nbsp;";
 	
 	//set Image
@@ -283,6 +283,9 @@ if($appId && !$versionId)
 	echo "<tr class=color1 valign=top><td width='100' align=right> <b>App Id</b></td><td width='100%'> ".$data->appId." </td>\n";
 	echo "<tr class=color0 valign=top><td align=right> <b>Vendor</b></td><td> ".
 	     "   <a href='vendorview.php?vendorId=$vendor->vendorId'> ".stripslashes($vendor->vendorName)." </a> &nbsp;\n";
+        echo "<tr class=color0 valign=top><td align=right> <b>BUGS</b></td><td> ".
+	     "   <a href='http://bugs.winehq.org/buglist.cgi?product=Wine&bug_file_loc_type=substring&bug_file_loc=".$data->appId."'>
+             Check for bugs in bugzilla </a> &nbsp;\n";        
 	echo "</td></tr>\n";
 	
 	//display notes
