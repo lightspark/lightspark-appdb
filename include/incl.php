@@ -3,10 +3,7 @@
 /* Main Include Library for Application Database */
 /*************************************************/
 
-// set global path
-$apidb_root = BASE;
-
-//get modules
+// get modules
 require(BASE."include/"."config.php");
 require(BASE."include/"."util.php");
 require(BASE."include/"."user.php");
@@ -25,26 +22,21 @@ function apidb_help_add($desc, $id)
 }
 
 
-//return url with docroot prepended 
-//
+// return url with docroot prepended 
 function apidb_url($path)
 {
-    global $apidb_root;
-    return $apidb_root.$path;
+    return BASE.$path;
 }
 
-//return FULL url with docroot prepended
+// return FULL url with docroot prepended
 function apidb_fullurl($path = "")
 {
-    global $apidb_root;
-    return $apidb_root.$path;
+    return BASE.$path;
 }
 
 function apidb_fullpath($path)
 {
-    global $apidb_root;
-    global $DOCUMENT_ROOT;
-    return $DOCUMENT_ROOT.$apidb_root.$path;
+    return $_SERVER['DOCUMENT_ROOT'].BASE.$path;
 }
 
 
@@ -53,8 +45,6 @@ function apidb_fullpath($path)
  */
 function apidb_header($title = 0)
 {
-    global $apidb_root;
-
     $username = isset($_SESSION['current'])?$_SESSION['current']->username:"";
 
     // Set Page Title
@@ -89,8 +79,6 @@ function apidb_header($title = 0)
  */
 function apidb_footer()
 {
-    global $apidb_root;
-
     echo html_frame_end();
 
     //Close Sidebar and Content Well
@@ -106,7 +94,6 @@ function apidb_footer()
  */
 function apidb_sidebar()
 {
-    global $apidb_root;
     global $sidebar_func_list;
 
     //TURN on GLOBAL ADMIN MENU
@@ -146,8 +133,7 @@ function apidb_sidebar_add($funcname)
 
 function apidb_image($name)
 {
-    global $apidb_root;
-    return $apidb_root."images/$name";
+    return BASE."images/$name";
 }
 
 
@@ -193,13 +179,11 @@ function redirectref($url = null)
  */
 function addmsg($text, $color = "black")
 {
-    global $PHPSESSID;
-
     if($color)
         $text = "<font color='$color'> $text </font>\n";
 
     $text = str_replace("'", "\\'", $text);
-    mysql_query("INSERT INTO sessionMessages VALUES (null, null, '$PHPSESSID', '$text')");
+    mysql_query("INSERT INTO sessionMessages VALUES (null, null, '".session_id()."', '$text')");
     echo mysql_error();
 }
 
@@ -210,9 +194,7 @@ function addmsg($text, $color = "black")
  */
 function dumpmsgbuffer()
 {
-    global $PHPSESSID;
-    
-    $result = mysql_query("SELECT * FROM sessionMessages WHERE sessionId = '$PHPSESSID'");
+    $result = mysql_query("SELECT * FROM sessionMessages WHERE sessionId = '".session_id()."'");
     if(!$result)
         return;
 
@@ -224,7 +206,7 @@ function dumpmsgbuffer()
         echo "<br>\n";
     }
 
-    mysql_query("DELETE FROM sessionMessages WHERE sessionId = '$PHPSESSID'");
+    mysql_query("DELETE FROM sessionMessages WHERE sessionId = '".session_id()."'");
 }
 
 
