@@ -58,13 +58,11 @@ function display_bundle($appId)
         $bgcolor = ($c % 2 == 0) ? "color0" : "color1";
 
         //format desc
-        $desc = substr(stripslashes($ob->description),0,50);
-        if(strlen($desc) == 50) $desc .= " ...";
-
+        $aDesc = explode("\n",$oApp->data->description,2);
         //display row
         echo "<tr class=$bgcolor>\n";
         echo "    <td><a href='appview.php?appId=$ob->appId'>".stripslashes($ob->appName)."</a></td>\n";
-        echo "    <td>$desc &nbsp;</td>\n";
+        echo "    <td>".$aDesc[0]."</td>\n";
         echo "</tr>\n\n";
 
         $c++;
