@@ -170,7 +170,8 @@ if($HTTP_POST_VARS)
     $result = mysql_query("SELECT * FROM appData WHERE appId = $appId AND type = 'url' AND versionId = 0");
     if($result && mysql_num_rows($result) > 0)
     {
-        echo '<tr><td class=color1><b>Delete</b></td><td class=color1><b>Description</b></td><td class=color1><b>URL</b></td></tr>',"\n";
+        echo '<tr><td class=color1><b>Delete</b></td><td class=color1>',"\n";
+        echo '<b>Description</b></td><td class=color1><b>URL</b></td></tr>',"\n";
         while($ob = mysql_fetch_object($result))
         {
             $temp0 = "adelete[".$i."]";
@@ -187,9 +188,14 @@ if($HTTP_POST_VARS)
             echo '<input type=hidden name="'.$temp5.'" value="'.$ob->url.'">',"\n";
             $i++;
 	}
+    } else
+    {
+        echo '<tr><td class=color1></td><td class=color1><b>Description</b></td>',"\n";
+        echo '<td class=color1><b>URL</b></td></tr>',"\n";
+    }
     echo "</td></tr>\n";
     echo '<input type=hidden name="rows" value='.$i.'>';
-    }
+
     echo '<tr><td class=color1>New</td><td class=color1><input size=45% name="url" type="text"></td>',"\n";
     echo '<td class=color1><input size=45% type="text" name="url_desc"></td></tr>',"\n";
      
