@@ -142,6 +142,7 @@ class Screenshot {
         $sUpdate = compile_update_string(array('queued' => "false"));
         if(query_appdb("UPDATE appData SET ".$sUpdate." WHERE id=".$this->iScreenshotId))
         {
+            $this->bQueued = false;
             // we send an e-mail to intersted people
             $this->mailSubmitter();
             $this->mailMaintainers();
