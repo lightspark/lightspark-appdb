@@ -35,7 +35,7 @@ if($body)
     // get current userid
     $userId = (loggedin()) ? $current->userid : 0;
 
-    $result = mysql_query("INSERT INTO appComments VALUES (null, null, $thread, ".
+    $result = mysql_query("INSERT INTO appComments VALUES (NOW(), null, $thread, ".
 			   "$appId, $versionId, $userId, '$hostname', '$subject', ".
 			   "'$body1', 0)");
 		

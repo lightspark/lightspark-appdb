@@ -169,7 +169,7 @@ create table appOwners (
  * user comments
  */
 create table appComments (
-	time		timestamp,
+	time		datetime,
 	commentId	int not null auto_increment,
 	parentId	int default 0,
 	appId		int not null,
@@ -256,7 +256,7 @@ create table appMaintainers (
     appId        int,
     versionId    int,
     userId       int,
-    submitTime   timestamp,
+    submitTime   datetime,
     key(maintainerId)
 );
 
@@ -270,7 +270,7 @@ create table appMaintainerQueue (
     versionId       int,
     userId          int,
     maintainReason  text,
-    submitTime	    timestamp,
+    submitTime	    datetime,
     key(queueId)
 );
 
