@@ -305,6 +305,8 @@ application site. The site contains tips and howtos on getting listed apps to ru
 <p>
 <a href="http://sidenet.ddo.jp/winetips/config.html"><b>Sidenet wine configuration utility</b></a>:  Installs Internet Explorer 6 and Windows Media Player 7 automatically (works also with MSN Messenger and RealPlayer).
 </p>
+<a href="http://www.von-thadden.de/Joachim/WineTools/"><b>WineTools</b></a>: WineTools is an menu driven installer for installing Windows programs under wine (DCOM98, IE6, Windows Core Fonts, Windows System Software, Office & Office Viewer, Adobe Photoshop 7, Illustrator 9, Acrobat Reader 5.1, ...).
+</p>
 <p>&nbsp;</p>
 
 <?php
