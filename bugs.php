@@ -7,13 +7,12 @@
  * application environment
  */
 include("path.php");
-require(BASE."include/"."incl.php");
-require(BASE."include/"."application.php");
-require(BASE."include/"."comments.php");
-require(BASE."include/"."appdb.php");
-require(BASE."include/"."screenshot.php");
-require(BASE."include/"."rating.php");
-require(BASE."include/"."category.php");
+require(BASE."include/incl.php");
+require(BASE."include/application.php");
+require(BASE."include/comments.php");
+require(BASE."include/appdb.php");
+require(BASE."include/screenshot.php");
+require(BASE."include/category.php");
 
 
 function display_catpath($catId, $appId, $versionId = '')
@@ -124,7 +123,6 @@ function display_versions($appId, $versions)
 }
 
 /* code to View an application's Bugs */
-
 $appId = $_REQUEST['appId'];
 
 if(!is_numeric($appId))
@@ -182,20 +180,15 @@ if($appId)
 	echo "</table></td><td class=color2 valign=top width='100%'>\n";
 
 	//Notes
-	echo "<table width='100%' border=0><tr><td width='100%' valign=top><big><b>Welcome</b></big><br />\n";
-?>      
+	echo "<table width='100%' border=0><tr><td width='100%' valign=top><big><b>Welcome</b></big><br />;
         <p>This is the link between the Wine Application Database and Wine's Buzilla. From here you 
         get search for bugs entered against this application. You can also enter new bugs if you log
         into Wine's Bugzilla.</p>
-	
         <p>The link between the Application Database and Bugzilla is based on the bug having the following URL
-<?      
-        echo "<a href='".APPDB_OWNER_URL."appview.php?appId=".$data->appId."'>
-        ".APPDB_OWNER_URL."appview.php?appId=".$data->appId."</a> &nbsp;\n";    
-?>
-        in the bug's "URL" Field. If it is not entered, this search page can not find it.
-<?       
-	echo "</td></tr></table>\n";
+        <a href='".APPDB_OWNER_URL."appview.php?appId=".$data->appId."'>
+        ".APPDB_OWNER_URL."appview.php?appId=".$data->appId."</a> &nbsp;    
+        in the bug's <i>URL</i> Field. If it is not entered, this search page can not find it.
+	</td></tr></table>";
 		
 	echo html_frame_end("For more details and user comments, view the versions of this application.");
 
@@ -212,9 +205,5 @@ else
 	errorpage('Page Called with No Params!');
 	exit;
 }
-
-echo p();
-
 apidb_footer();
-
 ?>
