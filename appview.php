@@ -48,8 +48,8 @@ function display_bundle($appId)
     echo "<table width='100%' border=0 cellpadding=3 cellspacing=1>\n\n";
 
     echo "<tr class=color4>\n";
-    echo "    <td><font color=white>Application Name</font></td>\n";
-    echo "    <td><font color=white>Description</font></td>\n";
+    echo "    <td>Application Name</td>\n";
+    echo "    <td>Description</td>\n";
     echo "</tr>\n\n";
 
     $c = 0;
@@ -128,11 +128,11 @@ function display_versions($iAppId, $aVersionsIds)
         echo "<table width='100%' border=0 cellpadding=3 cellspacing=1>\n\n";
 
         echo "<tr class=color4>\n";
-        echo "    <td width=80><font color=white>Version</font></td>\n";
-        echo "    <td><font color=white>Description</font></td>\n";
-        echo "    <td width=80><font color=white class=small>Rating</font></td>\n";
-        echo "    <td width=80><font color=white class=small>Wine version</font></td>\n";
-        echo "    <td width=40><font color=white class=small>Comments</font></td>\n";
+        echo "    <td width=\"80\">Version</td>\n";
+        echo "    <td>Description</td>\n";
+        echo "    <td width=\"80\">Rating</td>\n";
+        echo "    <td width=\"80\">Wine version</td>\n";
+        echo "    <td width=\"40\">Comments</td>\n";
         echo "</tr>\n\n";
       
         $c = 0;
