@@ -23,11 +23,11 @@ echo html_frame_start("Create New Application DB Account","400","",0)
     </tr>
     <tr>
         <td class=color1> Real Name </td>
-        <td class=color0> <input type="text" name="ext_realname" value='<?if(isset($_POST['ext_realname'])) echo $_POST['ext_realname']?>'> </td>
+        <td class=color0> <input type="text" name="ext_realname" value='<?php if(isset($_POST['ext_realname'])) echo $_POST['ext_realname']?>'> </td>
     </tr>
     <tr>
         <td class=color1> Email Address </td>
-        <td class=color0> <input type="text" name="ext_email" value='<?if(isset($_POST['ext_email'])) echo $_POST['ext_email']?>'> </td>
+        <td class=color0> <input type="text" name="ext_email" value='<?php if(isset($_POST['ext_email'])) echo $_POST['ext_email']?>'> </td>
     </tr>
       
     <tr>
