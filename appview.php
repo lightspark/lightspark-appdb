@@ -284,7 +284,7 @@ if($appId && !$versionId)
 	echo "<tr class=color0 valign=top><td align=right> <b>Vendor</b></td><td> ".
 	     "   <a href='vendorview.php?vendorId=$vendor->vendorId'> ".stripslashes($vendor->vendorName)." </a> &nbsp;\n";
         echo "<tr class=color0 valign=top><td align=right> <b>BUGS</b></td><td> ".
-	     "   <a href='http://bugs.winehq.org/buglist.cgi?product=Wine&bug_file_loc_type=substring&bug_file_loc=".$data->appId."'>
+	     "   <a href='http://bugs.winehq.org/buglist.cgi?product=Wine&bug_file_loc_type=allwords&bug_file_loc=appdb ".$data->appId."'>
              Check for bugs in bugzilla </a> &nbsp;\n";        
 	echo "</td></tr>\n";
 	
