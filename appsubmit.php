@@ -2,11 +2,9 @@
 /************************************/
 /* code to Submit a new application */
 /************************************/
-
-# ENVIRONMENT AND HEADER
 include("path.php");
-require(BASE."include/"."incl.php");
-require(BASE."include/"."tableve.php");
+require(BASE."include/incl.php");
+require(BASE."include/tableve.php");
 
 // Send user to the correct branch of code even if they try to bypass
 // the first page (appsubmit.php without parameters)
@@ -105,9 +103,9 @@ if (isset($_REQUEST['queueName']))
 #######################################
 else if (isset($_REQUEST['apptype']))
 {
-  // set email field if logged in
-  if ($_SESSION['current']->isLoggedIn())
-    $email = $_SESSION['current']->lookup_email($_SESSION['current']->userid);
+    // set email field if logged in
+    if ($_SESSION['current']->isLoggedIn())
+        $email = $_SESSION['current']->sEmail;
 
   // header
   apidb_header("Submit Application");
