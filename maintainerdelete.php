@@ -18,24 +18,22 @@ $versionId = strip_tags($_POST['versionId']);
 $confirmed = strip_tags($_POST['confirmed']);
 $superMaintainer = strip_tags($_POST['superMaintainer']);
 
-// header
-
-if($superMaintainer)
-    apidb_header("Confirm supermaintainer resignation of ".appIdToName($appId));
-else
-    apidb_header("Confirm maintainer resignation of ".appIdToName($appId).versionIdToName($versionId));
-
 if($confirmed)
 {
-    echo html_frame_start("Removing",400,"",0);
 
     if($superMaintainer)
-        $query = "DELETE FROM appMaintainers WHERE userId = '$_SESSION['current']->userid' AND appId = '$appId' AND superMaintainer = '$superMaintainer';";
-    else
-        $query = "DELETE FROM appMaintainers WHERE userId = '$_SESSION['current']->userid' AND appId = '$appId' AND versionId = '$versionId' AND superMaintainer = '$superMaintainer';";
-
-    echo "$query";
-
+    {
+        apidb_header("You have resigned as supermaintainer of ".appIdToName($appId));
+        $query = "DELETE FROM appMaintainers WHERE userId = ".$_SESSION['current']->userid.
+                 " AND appId = ".$appId." AND superMaintainer = ".$superMaintainer.";";
+    } else
+    {
+        apidb_header("You have resigned as maintainer of ".appIdToName($appId));
+        $query = "DELETE FROM appMaintainers WHERE userId = ".$_SESSION['current']->userid.
+                 " AND appId = ".$appId." AND versionId = ".$versionId." AND superMaintainer = ".$superMaintainer.";";
+    }
+/*   echo html_frame_start("Removing",400,"",0);
+*/
     $result = mysql_query($query);
     if($result)
     {
@@ -48,8 +46,15 @@ if($confirmed)
         //error
         echo "<p><b>Database Error!<br>".mysql_error()."</b></p>\n";
     }
+
 } else
 {
+    if($superMaintainer)
+        apidb_header("Confirm supermaintainer resignation of ".appIdToName($appId));
+    else
+        apidb_header("Confirm maintainer resignation of ".appIdToName($appId).versionIdToName($versionId));
+
+
     echo '<form name="deleteMaintainer" action="maintainerdelete.php" method="post" enctype="multipart/form-data">',"\n";
 
     echo html_frame_start("Confirm",400,"",0);
