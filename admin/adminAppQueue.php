@@ -335,7 +335,7 @@ if ($_REQUEST['sub'])
             {
                 $email = "no one";
             }
-            addmsg("mesage sent to: ".$email, "green");
+            addmsg("message sent to: ".$email, "green");
 
         }
         //done

@@ -60,7 +60,7 @@ if($_REQUEST['sub'] == "Submit")
         {
             $email = "no one";
         }
-        addmsg("mesage sent to: ".$email, green);
+        addmsg("message sent to: ".$email, green);
 
         $statusMessage = "<p>Note added into the database</p>\n";
         addmsg($statusMessage,Green);

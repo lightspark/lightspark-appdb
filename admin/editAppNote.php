@@ -60,7 +60,7 @@ if(isset($_REQUEST['sub']))
             $sEmail = "no one";
         }
         
-        addmsg("mesage sent to: ".$sEmail, 'green');
+        addmsg("message sent to: ".$sEmail, 'green');
         // success
         addmsg("Note Deleted.", "green");
     } 
@@ -91,7 +91,7 @@ if(isset($_REQUEST['sub']))
         {
             $sEmail = "no one";
         }
-        addmsg("mesage sent to: ".$sEmail, green);
+        addmsg("message sent to: ".$sEmail, green);
 
         addmsg("Note Updated", "green");
     }

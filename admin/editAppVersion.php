@@ -122,7 +122,7 @@ if(isset($_REQUEST['submit1']))
                 {
                 $email = "no one";
                 }
-                addmsg("mesage sent to: ".$email, green);
+                addmsg("message sent to: ".$email, green);
 
                 addmsg("The Version was successfully updated in the database", "green");
                 redirect(apidb_fullurl("appview.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']));

@@ -122,7 +122,7 @@ if($_SESSION['current']->getpref("confirm_comment_deletion") != "no" &&
                 mail(stripslashes($email), "[AppDB] ".$fullAppName ,$ms);
             } else
                 $email = "no one";
-            addmsg("mesage sent to: ".$email, "green");
+            addmsg("message sent to: ".$email, "green");
             addmsg("Comment deleted", "green");
             redirect(apidb_fullurl("appview.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']));
         }
