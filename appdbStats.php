@@ -4,10 +4,10 @@
 /****************************************************************/
 
 include("path.php");
-require(BASE."include/"."incl.php");
-require(BASE."include/"."tableve.php");
-require(BASE."include/"."category.php");
-require(BASE."include/"."maintainer.php");
+require(BASE."include/incl.php");
+require(BASE."include/tableve.php");
+require(BASE."include/category.php");
+require(BASE."include/maintainer.php");
 
 apidb_header("Appdb Statistics");
 echo html_frame_start("","60%","",0);
@@ -16,31 +16,31 @@ echo "<table width='100%' border=1 cellpadding=3 cellspacing=0>\n\n";
 /* Display the number of users */
 echo "<tr class=color4>\n";
 echo "    <td>Users:</td>\n";
-echo "    <td>".getNumberOfUsers()."</td>\n";
+echo "    <td>".get_number_of_users()."</td>\n";
 echo "</tr>\n\n";
 
 /* Display the active users in the last 30 days */
 echo "<tr class=color4>\n";
 echo "    <td>Users active within the last 30 days:</td>\n";
-echo "    <td>".getActiveUsersWithinDays(30)."</td>\n";
+echo "    <td>".get_active_users_within_days(30)."</td>\n";
 echo "</tr>\n\n";
 
 /* Display the active users in the last 60 days */
 echo "<tr class=color4>\n";
 echo "    <td>Users active within the last 60 days:</td>\n";
-echo "    <td>".getActiveUsersWithinDays(60)."</td>\n";
+echo "    <td>".get_active_users_within_days(60)."</td>\n";
 echo "</tr>\n\n";
 
 /* Display the active users in the last 90 days */
 echo "<tr class=color4>\n";
 echo "    <td>Users active within the last 90 days:</td>\n";
-echo "    <td>".getActiveUsersWithinDays(90)."</td>\n";
+echo "    <td>".get_active_users_within_days(90)."</td>\n";
 echo "</tr>\n\n";
 
 /* Display the inactive users */
 echo "<tr class=color4>\n";
 echo "    <td>Inactive users (not logged in since six months):</td>\n";
-echo "    <td>".(getNumberOfUsers()-getActiveUsersWithinDays(183))."</td>\n";
+echo "    <td>".(get_number_of_users()-get_active_users_within_days(183))."</td>\n";
 echo "</tr>\n\n";
 
 /* Display the number of comments */
@@ -78,6 +78,4 @@ echo html_frame_end("&nbsp;");
 
 echo "</form>";
 apidb_footer();
-
-
 ?>
