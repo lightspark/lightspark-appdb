@@ -65,7 +65,7 @@ $email = getNotifyEmailAddressList($appId, $versionId);
 if($email)
 {
     $fullAppName = "Application: ".lookupAppName($appId)." Version: ".lookupVersionName($appId, $versionId);
-    $ms .= apidb_fullurl("appview.php?appId=$appId&versionId=$versionId")."\n";
+    $ms .= APPDB_ROOT."appview.php?appId=$appId&versionId=$versionId\n";
     $ms .= "\n";
     $ms .= ($current->username ? $current->username : "Anonymous")." deleted comment from ".$fullAppName."\n";
     $ms .= "\n";
