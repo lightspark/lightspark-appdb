@@ -7,8 +7,8 @@
  * application environment
  */ 
 include("path.php");
-include(BASE."include/"."incl.php");
-require(BASE."include/"."category.php");
+include(BASE."include/incl.php");
+require(BASE."include/category.php");
 
 /* default to 25 apps, main categories */
 $topNumber = 25;
@@ -79,12 +79,12 @@ if($catId != 0)
 /*******************************************************************/
 /* add options for all of the categories that we are recursed into */
 echo "<b>Section:</b>";
-echo "<select name='categoryId'>";
+echo '<select name="categoryId">';
 
 if($catId == 0)
-    echo "<option value='any' SELECTED>Any";
+    echo '<option value="any" SELECTED>Any</option>';
 else
-    echo "<option value='any'>Any";
+    echo '<option value="any">Any</option>';
 
 $indent = 1;
 
@@ -101,19 +101,20 @@ foreach ($cat_array_reversed as $i => $value)
 
     echo str_repeat("-", $indent);
     echo stripslashes($cat_name_array_reversed[$i]);
-
+    echo "</option>";
     $indent++;
 }
 
 /******************************************************************/
 /* add to the list all of the sub sections of the current section */
 $cat = new Category($catId);
-$subs = $cat->getCategoryList();
+$subs = $cat->aSubcatsIds;
 
 if($subs)
 {
-    while(list($id, list($name, $desc)) = each($subs))
+    while(list($i, $id) = each($subs))
     {
+        $oSubcat = new Category($id);
         /* if this is the current category, select this option */
         if($id == $catId)
             echo "<option value=$id SELECTED>";
@@ -121,11 +122,11 @@ if($subs)
             echo "<option value=$id>";
 
         echo str_repeat("-", $indent);
-        echo stripslashes($name);
+        echo stripslashes($oSubcat->sName);
     }
 }
 echo '</select>';
-echo '<input type="submit" value="Refresh">';
+echo '<input type="submit" value="Refresh" />';
 echo '</form>';
 echo '<br />';
 echo '<br />';
@@ -187,10 +188,9 @@ if($result = query_appdb($sVoteQuery))
 	echo '<h2 align="center">No apps found in this category</h2>';
     }
  
-    echo "<center><a href='help/?topic=voting'>What does this screen mean?</a></center>\n";
+    echo '<p align="center"><a href="help/?topic=voting">What does this screen mean?</a></p>';
 
 }
 
 apidb_footer();
-
 ?>
