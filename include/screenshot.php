@@ -15,56 +15,39 @@ class Screenshot {
     var $sDescription;
     var $oScreenshotImage;
     var $oThumbnailImage;
-    var $sTable;
-    var $sTableId;
-    var $userId;
     var $bQueued;
     var $iVersionId;
     var $iAppId;
-    var $sDirectory;
     var $sUrl;
+    var $sSubmitTime;
     var $iSubmitterId;
 
     /**    
      * Constructor, fetches the data and image objects if $iScreenshotId is given.
      */
-    function Screenshot($iScreenshotId = null,$bQueued = false)
+    function Screenshot($iScreenshotId = null)
     {
-        if($bQueued)
-        {
-            $this->bQueued = true;
-            $this->sTable = appDataQueue;
-            $this->sTableId = queueId;
-            $this->sDirectory = "queued/screenshots";
-        } else
-        {
-            $this->bQueued = false;
-            $this->sTable = appData;          
-            $this->sTableId = id;
-            $this->sDirectory = "screenshots";
-        }
-
         // we are working on an existing screenshot
         if($iScreenshotId)
         {
-            $sQuery = "SELECT ".$this->sTable.".*, appVersion.appId AS appId
-                       FROM ".$this->sTable.", appVersion 
-                       WHERE ".$this->sTable.".versionId = appVersion.versionId 
-                       AND ".$this->sTableId." = ".$iScreenshotId." 
+            $sQuery = "SELECT appData.*, appVersion.appId AS appId
+                       FROM appData, appVersion 
+                       WHERE appData.versionId = appVersion.versionId 
+                       AND id = ".$iScreenshotId." 
                        AND type = 'image'";
             if($hResult = query_appdb($sQuery))
             {
                 $oRow = mysql_fetch_object($hResult);
                 $this->iScreenshotId = $iScreenshotId;
                 $this->sDescription = $oRow->description;
-                $this->oScreenshotImage = new Image("/data/".$this->sDirectory."/".$oRow->url);
-                $this->oThumbnailImage = new Image("/data/".$this->sDirectory."/thumbnails/".$oRow->url);
-                $this->sSubmitTime = $oRow->submitTime;
+                $this->oScreenshotImage = new Image("/data/screenshots/".$oRow->url);
+                $this->oThumbnailImage = new Image("/data/screenshots/thumbnails/".$oRow->url);
                 $this->iAppId = $oRow->appId;
                 $this->iVersionId = $oRow->versionId;
                 $this->sUrl = $oRow->url;
-                if(!$this->iSubmitterId && $oRow->userId)
-                    $this->iSubmitterId = $oRow->userId;
+                $this->bQueued = $oRow->queued;
+                $this->sSubmitTime = $oRow->submitTime;
+                $this->iSubmitterId = $oRow->submitterId;
            }
         }
     }
@@ -75,38 +58,31 @@ class Screenshot {
      */
     function create($iVersionId = null, $sDescription = null, $hFile = null)
     {
-
-        $aInsert = compile_insert_string(array( 'versionId'    => $iVersionId,
-                                                'type'         => "image",
-                                                'description'  => $sDescription ));
-
         // Security, if we are not an administrator or a maintainer, the screenshot must be queued.
         if(!($_SESSION['current']->hasPriv("admin") || $_SESSION['current']->isMaintainer($_REQUEST['versionId'])))
         {
             $this->bQueued = true;
-            $this->sTable = appDataQueue;
-            $this->sTableId = queueId;
-            $this->iUserId = $userId;
-            $this->sDirectory = "queued/screenshots";
-            $sFields = "({$aInsert['FIELDS']}, userId)";
-            $sValues = "({$aInsert['VALUES']}, '".$_SESSION['current']->iUserId."')";
-        } else
-        {
-            $sFields = "({$aInsert['FIELDS']})";
-            $sValues = "({$aInsert['VALUES']})";
         }
 
-        if(query_appdb("INSERT INTO ".$this->sTable." $sFields VALUES $sValues", "Error while creating a new screenshot."))
+        $aInsert = compile_insert_string(array( 'versionId'    => $iVersionId,
+                                                'type'         => "image",
+                                                'description'  => $sDescription,
+                                                'queued'       => $this->bQueued,
+                                                'submitterId'  => $_SESSION['current']->iUserId ));
+        $sFields = "({$aInsert['FIELDS']})";
+        $sValues = "({$aInsert['VALUES']})";
+
+        if(query_appdb("INSERT INTO appData $sFields VALUES $sValues", "Error while creating a new screenshot."))
         {
             $this->iScreenshotId = mysql_insert_id();
-            if(!move_uploaded_file($hFile['tmp_name'], "data/".$this->sDirectory."/originals/".$this->iScreenshotId))
+            if(!move_uploaded_file($hFile['tmp_name'], "data/screenshots/originals/".$this->iScreenshotId))
             {
 
                 // whoops, moving failed, do something
-                addmsg("Unable to move screenshot from ".$hFile['tmp_name']." to data/".$this->sDirectory."/originals/".$this->iScreenshotId, "red");
+                addmsg("Unable to move screenshot from ".$hFile['tmp_name']." to data/screenshots/originals/".$this->iScreenshotId, "red");
                 $sQuery = "DELETE
-                           FROM ".$this->sTable." 
-                           WHERE ".$this->sTableId." = '".$this->iScreenshotId."'";
+                           FROM appData 
+                           WHERE id = '".$this->iScreenshotId."'";
                 query_appdb($sQuery);
                 return false;
             } else // we managed to copy the file, now we have to process the image
@@ -114,9 +90,9 @@ class Screenshot {
                 $this->sUrl = $this->iScreenshotId;
                 $this->generate();
                 // we have to update the entry now that we know its name
-                $sQuery = "UPDATE ".$this->sTable." 
+                $sQuery = "UPDATE appData 
                            SET url = '".$this->iScreenshotId."' 
-                           WHERE ".$this->sTableId." = '".$this->iScreenshotId."'";
+                           WHERE id = '".$this->iScreenshotId."'";
                 if (!query_appdb($sQuery)) return false;
             }
 
@@ -135,15 +111,15 @@ class Screenshot {
      */
     function delete($bSilent=false)
     {
-        $sQuery = "DELETE FROM ".$this->sTable." 
-                   WHERE ".$this->sTableId." = ".$this->iScreenshotId." 
+        $sQuery = "DELETE FROM appData 
+                   WHERE id = ".$this->iScreenshotId." 
                    AND type = 'image' 
                    LIMIT 1";
         if($hResult = query_appdb($sQuery))
         {
             $this->oScreenshotImage->delete();
             $this->oThumbnailImage->delete();
-            unlink($_SERVER['DOCUMENT_ROOT']."/data/".$this->sDirectory."/originals/".$this->iScreenshotId);
+            unlink($_SERVER['DOCUMENT_ROOT']."/data/screenshots/originals/".$this->iScreenshotId);
             if(!$bSilent)
                 $this->mailMaintainers(true);
         }
@@ -162,37 +138,13 @@ class Screenshot {
         // If we are not in the queue, we can't move the screenshot out of the queue.
         if(!$this->bQueued)
             return false;
-     
-        $aInsert = compile_insert_string(array( 'versionId'    => $this->iVersionId,
-                                                'type'         => "image",
-                                                'description'  => $this->$sDescription ));
-        $sFields = "({$aInsert['FIELDS']})";
-        $sValues = "({$aInsert['VALUES']})";
-        if(query_appdb("INSERT INTO appData $sFields VALUES $sValues", "Error while unqueueing a screenshot."))
+
+        $sUpdate = compile_update_string(array('queued' => "false"));
+        if(query_appdb("UPDATE appData SET ".$sUpdate." WHERE id=".$this->iScreenshotId))
         {
-            $iId = mysql_insert_id();
-
-            // we move the content in the live directory
-            copy("../data/queued/screenshots/".$this->iScreenshotId, "../data/screenshots/".$iId);
-            copy("../data/queued/screenshots/originals/".$this->iScreenshotId, "../data/screenshots/originals/".$iId);
-            copy("../data/queued/screenshots/thumbnails/".$this->iScreenshotId, "../data/screenshots/thumbnails/".$iId);
-
-            // now that we know the url of the screenshot we can update the database
-            $sQuery = "UPDATE appData 
-                       SET url = '".$iId."' 
-                       WHERE id = '".$iId."'";
-            query_appdb($sQuery);
-
-            // we have to delete the queued entry
-            $this->delete(true);
-             
-            // we fetch the new unqueued entry
-            $this->screenshot($iId);
-
             // we send an e-mail to intersted people
             $this->mailSubmitter();
             $this->mailMaintainers();
-
             // the screenshot has been unqueued
             addmsg("The screenshot has been unqueued.", "green");
         }
@@ -216,7 +168,7 @@ class Screenshot {
      */
     function setDescription($sDescription)
     {
-        $sQuery = "UPDATE ".$this->sTableId." SET description = '".$sDescription."' WHERE ".$this->sTableId." = ".$this->iScreenshotId." AND type = 'image'";   
+        $sQuery = "UPDATE id SET description = '".$sDescription."' WHERE id = ".$this->iScreenshotId." AND type = 'image'";   
         if($hResult = query_appdb($sQuery))
             $this->sDescription = $sDescription;
     }
@@ -231,25 +183,25 @@ class Screenshot {
         global $watermark;
         // first we will create the thumbnail
         // load the screenshot
-        $this->oThumbnailImage  = new Image("/data/".$this->sDirectory."/originals/".$this->sUrl);
+        $this->oThumbnailImage  = new Image("/data/screenshots/originals/".$this->sUrl);
         $this->oThumbnailImage->make_thumb(0,0,1,'#000000');
         // store the image
-        $this->oThumbnailImage->output_to_file($_SERVER['DOCUMENT_ROOT']."/data/".$this->sDirectory."/thumbnails/".$this->sUrl);
+        $this->oThumbnailImage->output_to_file($_SERVER['DOCUMENT_ROOT']."/data/screenshots/thumbnails/".$this->sUrl);
             
         // now we'll process the screenshot image for watermarking
         // load the screenshot
-        $this->oScreenshotImage  = new Image("/data/".$this->sDirectory."/originals/".$this->sUrl);
+        $this->oScreenshotImage  = new Image("/data/screenshots/originals/".$this->sUrl);
         // resize the image
         $this->oScreenshotImage->make_full();
         // store the resized image
-        $this->oScreenshotImage->output_to_file($_SERVER['DOCUMENT_ROOT']."/data/".$this->sDirectory."/".$this->sUrl);
+        $this->oScreenshotImage->output_to_file($_SERVER['DOCUMENT_ROOT']."/data/screenshots/".$this->sUrl);
         // reload the resized screenshot
-        $this->oScreenshotImage  = new Image("/data/".$this->sDirectory."/".$this->sUrl);
+        $this->oScreenshotImage  = new Image("/data/screenshots/".$this->sUrl);
 
         // add the watermark to the screenshot
         $this->oScreenshotImage->add_watermark($watermark->get_image_resource());
         // store the watermarked image
-        $this->oScreenshotImage->output_to_file($_SERVER['DOCUMENT_ROOT']."/data/".$this->sDirectory."/".$this->sUrl);
+        $this->oScreenshotImage->output_to_file($_SERVER['DOCUMENT_ROOT']."/data/screenshots/".$this->sUrl);
     }
 
 
@@ -358,7 +310,7 @@ function get_screenshot_img($iAppId = null, $iVersionId = null)
     return $sImg;
 }
 
-function get_screenshots($iAppId = null, $iVersionId = null)
+function get_screenshots($iAppId = null, $iVersionId = null, $bQueued = "false")
 {
     /*
      * We want all screenshots for this app.
@@ -369,7 +321,8 @@ function get_screenshots($iAppId = null, $iVersionId = null)
                    FROM appData, appVersion
                    WHERE appVersion.versionId = appData.versionId
                    AND type = 'image'
-                   AND appData.appId = ".$iAppId;
+                   AND appVersion.appId = ".$iAppId."
+                   AND appData.queued = '".$bQueued."'";
     }
     /*
      * We want all screenshots for this version.
@@ -380,7 +333,8 @@ function get_screenshots($iAppId = null, $iVersionId = null)
                    FROM appData, appVersion
                    WHERE appVersion.versionId = appData.versionId
                    AND type = 'image'
-                   AND appData.versionId = ".$iVersionId;
+                   AND appData.versionId = ".$iVersionId."
+                   AND appData.queued = '".$bQueued."'";
     }
     if($sQuery)
     {

@@ -19,15 +19,15 @@ if(!$_SESSION['current']->hasPriv("admin"))
 
 
 // shows the list of appdata in queue
-if (!$_REQUEST['queueId'])
+if (!$_REQUEST['id'])
 {
 
     apidb_header("Admin Application Data Queue");
 
     // get available appData
-    $sQuery = "SELECT appDataQueue.*, appVersion.appId AS appId 
-               FROM appDataQueue, appVersion 
-               WHERE appVersion.versionId = appDataQueue.versionID;";
+    $sQuery = "SELECT appData.*, appVersion.appId AS appId 
+               FROM appData, appVersion 
+               WHERE appVersion.versionId = appData.versionID AND appData.queued = 'true';";
     $hResult = query_appdb($sQuery);
 
     if(!$hResult || !mysql_num_rows($hResult))
@@ -51,7 +51,7 @@ if (!$_REQUEST['queueId'])
         
         echo "<tr class=color4>\n";
         echo "    <td><font color=white>Submission Date</font></td>\n";
-        echo "    <td><font color=white>Queue Id</font></td>\n";
+        echo "    <td><font color=white>Id</font></td>\n";
         echo "    <td><font color=white>Name (e-mail)</font></td>\n";
         echo "    <td><font color=white>Application Name</font></td>\n";
         echo "    <td><font color=white>Version</font></td>\n";
@@ -64,7 +64,7 @@ if (!$_REQUEST['queueId'])
             if ($c % 2 == 1) { $bgcolor = 'color0'; } else { $bgcolor = 'color1'; }
             echo "<tr class=$bgcolor>\n";
             echo "    <td>".date("Y-n-t h:i:sa", $ob->submitTime)." &nbsp;</td>\n";
-            echo "    <td><a href='adminAppDataQueue.php?queueId=$ob->queueId'>".$ob->queueId."</a></td>\n";
+            echo "    <td><a href='adminAppDataQueue.php?id=$ob->id'>".$ob->id."</a></td>\n";
             if($ob->userId)
             {
                 $oUser = new User($ob->userId);
@@ -83,10 +83,10 @@ if (!$_REQUEST['queueId'])
     }      
 } else // shows a particular appdata
 {
-    $sQuery = "SELECT appDataQueue.*, appVersion.appId AS appId 
-               FROM appDataQueue,appVersion 
-               WHERE appVersion.versionId = appDataQueue.versionId 
-               AND queueId='".$_REQUEST['queueId']."'";
+    $sQuery = "SELECT appData.*, appVersion.appId AS appId 
+               FROM appData,appVersion 
+               WHERE appVersion.versionId = appData.versionId 
+               AND id='".$_REQUEST['id']."'";
     $hResult = query_appdb($sQuery);
     $obj_row = mysql_fetch_object($hResult);
     
@@ -120,19 +120,19 @@ if (!$_REQUEST['queueId'])
         //data
         if($obj_row->type == "image") 
         {
-           $oScreenshot = new Screenshot($obj_row->queueId,true);
+           $oScreenshot = new Screenshot($obj_row->id);
            echo '<tr valign=top><td class=color0><b>Submited image</b></td>',"\n";
            echo '<td>';
-           $imgSRC = '<img width="'.$oScreenshot->oThumbnailImage->width.'" height="'.$oScreenshot->oThumbnailImage->height.'" src="../appimage.php?queued=true&id='.$obj_row->queueId.'" />';
+           $imgSRC = '<img width="'.$oScreenshot->oThumbnailImage->width.'" height="'.$oScreenshot->oThumbnailImage->height.'" src="../appimage.php?queued=true&id='.$obj_row->id.'" />';
            // generate random tag for popup window
            $randName = generate_passwd(5);
            // set image link based on user pref
-           $img = '<a href="javascript:openWin(\'../appimage.php?queued=true&id='.$obj_row->queueId.'\',\''.$randName.'\','.$oScreenshot->oScreenshotImage->width.','.($oScreenshot->oScreenshotImage->height+4).');">'.$imgSRC.'</a>';
+           $img = '<a href="javascript:openWin(\'../appimage.php?queued=true&id='.$obj_row->id.'\',\''.$randName.'\','.$oScreenshot->oScreenshotImage->width.','.($oScreenshot->oScreenshotImage->height+4).');">'.$imgSRC.'</a>';
            if ($_SESSION['current']->isLoggedIn())
            {
                if ($_SESSION['current']->getpref("window:screenshot") == "no")
                { 
-                   $img = '<a href="../appimage.php?queued=true&id='.$obj_row->queueId.'">'.$imgSRC.'</a>';
+                   $img = '<a href="../appimage.php?queued=true&id='.$obj_row->id.'">'.$imgSRC.'</a>';
                }
            }
            echo $img;
@@ -157,7 +157,7 @@ if (!$_REQUEST['queueId'])
 
         echo '</table>',"\n";
         echo '<input type=hidden name="sub" value="inside_form" />',"\n"; 
-        echo '<input type=hidden name="queueId" value="'.$_REQUEST['queueId'].'" />',"\n";  
+        echo '<input type=hidden name="id" value="'.$_REQUEST['id'].'" />',"\n";  
         echo '</form>';
     } elseif ($_REQUEST['add']) // we accepted the request
     { 
@@ -166,7 +166,7 @@ if (!$_REQUEST['queueId'])
         
         if($obj_row->type == "image")
         { 
-            $oScreenshot = new Screenshot($obj_row->queueId,true);
+            $oScreenshot = new Screenshot($obj_row->id);
             $oScreenshot->unQueue();
         }
         elseif ($obj_row->type == "url")
@@ -178,7 +178,7 @@ if (!$_REQUEST['queueId'])
                 $statusMessage = "<p>The application data was successfully added into the database</p>\n";
 
                 //delete the item from the queue
-                query_appdb("DELETE from appDataQueue where queueId = ".$obj_row->queueId.";");
+                query_appdb("DELETE from appData where id = ".$obj_row->id.";");
         
                 //Send Status Email
                 $oUser = new User($obj_row->userId);
@@ -198,7 +198,7 @@ if (!$_REQUEST['queueId'])
     {
         if($obj_row->type == "image")
         { 
-            $oScreenshot = new Screenshot($obj_row->queueId,true);
+            $oScreenshot = new Screenshot($obj_row->id);
             $oScreenshot->delete();
         }
         elseif ($obj_row->type == "url")
@@ -213,7 +213,7 @@ if (!$_REQUEST['queueId'])
             }
 
             //delete main item
-            $sQuery = "DELETE from appDataQueue where queueId = ".$obj_row->queueId.";";
+            $sQuery = "DELETE from appData where id = ".$obj_row->id.";";
             $hResult = query_appdb($sQuery);
             if($hResult)
             {
