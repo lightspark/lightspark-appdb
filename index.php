@@ -76,7 +76,7 @@ wine-users mailing list or the wine newsgroup, for more information visit
         "FROM appVotes, appFamily ".
         "WHERE appVotes.appId = appFamily.appId ".
         "GROUP BY appId ORDER BY count DESC LIMIT 1";
-    $result = mysql_query($voteQuery);
+    $result = query_appdb($voteQuery);
     $ob = mysql_fetch_object($result);
 
     $voteAppId = $ob->appId;
