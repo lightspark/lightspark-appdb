@@ -9,8 +9,7 @@ include("path.php");
 include(BASE."include/"."incl.php");
 include(BASE."include/"."tableve.php");
 
-//FIXME: need to check for admin privs
-if(!loggedin())
+if(!loggedin() || !havepriv("admin"))
 {
     errorpage();
     exit;
