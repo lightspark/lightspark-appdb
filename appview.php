@@ -163,7 +163,7 @@ function display_notes($appId, $versionId = 0)
     while($ob = mysql_fetch_object($result))
 	{
 	    //skip if NONAME
-	    if ($ob->noteTitle == "NONAME") { continue; }
+	    if ($ob->noteTitle == "NONAME" || $ob->noteTitle == "WARNING" || $ob->noteTitle == "HOWTO") { continue; }
 	    
 	    //set link for version
 	    if ($versionId != 0)
@@ -172,7 +172,10 @@ function display_notes($appId, $versionId = 0)
 	    }
 	    
 	    //display row
-	    echo "    <a href='noteview.php?noteId=".$ob->noteId."&appId=$appId".$versionLink."'> $c. ".substr(stripslashes($ob->noteTitle),0,30)."</a><br>\n";
+            if (havepriv("admin") || isMaintainer($appId,$versionId) )
+                 echo "    <a href='admin/editAppNote.php?noteId=".$ob->noteId."&appId=$appId".$versionLink."'> $c. ".substr(stripslashes($ob->noteTitle),0,30)."</a><br>\n";
+            else
+                 echo "    <a href='noteview.php?noteId=".$ob->noteId."&appId=$appId".$versionLink."'> $c. ".substr(stripslashes($ob->noteTitle),0,30)."</a><br>\n";
 	    $c++;
 	}
 
@@ -443,18 +446,36 @@ else if($appId && $versionId)
         echo "</form>";
     } else
     {
+        echo '<form method=post name=message action="account.php?cmd=login">';
         echo '<input type=submit value="Log in to become an app maintainer" class=button>';
+        echo '</form>';
     }
     
     echo "</center></td></tr>";
+
     if (loggedin() && (havepriv("admin") || isMaintainer($appId, $versionId)))
     {
         echo "<tr><td colspan = 2><center>";
-        echo "<a href=admin/editAppVersion.php?appId=".$appId."&versionId=".$versionId.">Edit version</a>";
+        echo '<form method=post name=message action=admin/editAppVersion.php?appId='.$appId.'&versionId='.$versionId.'>';
+        echo '<input type=submit value="Edit Version Info" class=button>';
+        echo '</form>';
+        echo '<form method=post name=message action=admin/addAppNote.php?appId='.$appId.'&versionId='.$versionId.'>';
+        echo '<input type=submit value="Add Note" class=button>';
+        echo '</form>';
+        echo '</form>';
+        echo '<form method=post name=message action=admin/addAppNote.php?appId='.$appId.'&versionId='.$versionId.'>';
+        echo '<input type=hidden name="noteTitle" value="HOWTO">';
+        echo '<input type=submit value="Add How To" class=button>';
+        echo '</form>';
+        echo '</form>';
+        echo '<form method=post name=message action=admin/addAppNote.php?appId='.$appId.'&versionId='.$versionId.'>';
+        echo '<input type=hidden name="noteTitle" value="WARNING">';
+        echo '<input type=submit value="Add Warning" class=button>';
+        echo '</form>';
         echo "</center></td></tr>";
     }
-    echo "</table><td class=color2 valign=top width='100%'>\n";
 
+    echo "</table><td class=color2 valign=top width='100%'>\n";
 
     //Desc Image
     echo "<table width='100%' border=0><tr><td width='100%' valign=top> <b>Description</b><br>\n";
@@ -463,9 +484,60 @@ else if($appId && $versionId)
 
     /* close the table */
     echo "</table>\n";
-		
+
     echo html_frame_end();
 
+    //Show Warnings
+    $result = mysql_query("SELECT * FROM appNotes WHERE appId = $appId and versionId = $versionId and noteTitle = 'WARNING'");
+    if($result && mysql_num_rows($result))
+    {
+        while($ob = mysql_fetch_object($result))
+        {
+            echo html_frame_start("","98%",'',0);
+
+            echo "<table width='100%' border=0 cellspacing=0>","\n";
+            echo "<tr width='100%' bgcolor=red align=center valign=top><td><b>Warning</b><br></td></tr>\n";
+            echo "<tr><td>\n";
+            echo add_br(stripslashes($ob->noteDesc));
+            echo "</td></tr>\n";
+
+            if (loggedin() && (havepriv("admin") || isMaintainer($appId, $versionId)))
+            {
+                echo "<tr width='100%' class=color1 align=center valign=top><td>";
+                echo '<form method=post name=message action=admin/editAppNote.php?noteId='.$ob->noteId.'&appId='.$appId.'&versionId='.$versionId.'>';
+                echo '<input type=submit value="Edit Warning Info" class=button>';
+                echo '</form></td></tr>';
+            }
+            echo "</table>\n";
+            echo html_frame_end();
+        }
+    }
+
+    //Show How tos
+    $result = mysql_query("SELECT * FROM appNotes WHERE appId = $appId and versionId = $versionId and noteTitle = 'HOWTO'");
+    if($result && mysql_num_rows($result))
+    {
+        while($ob = mysql_fetch_object($result))
+        {
+            echo html_frame_start("","98%",'',0);
+
+            echo "<table width='100%' border=0 cellspacing=0>","\n";
+            echo "<tr width='100%' bgcolor=green align=center valign=top><td><b>How To</b><br></td></tr>\n";
+            echo "<tr><td>\n";
+            echo add_br(stripslashes($ob->noteDesc));
+            echo "</td></tr>\n";
+
+            if (loggedin() && (havepriv("admin") || isMaintainer($appId, $versionId)))
+            {
+                echo "<tr width='100%' class=color1 align=center valign=top><td>";
+                echo '<form method=post name=message action=admin/editAppNote.php?noteId='.$ob->noteId.'&appId='.$appId.'&versionId='.$versionId.'>';
+                echo '<input type=submit value="Edit How to Info" class=button>';
+                echo '</form></td></tr>';
+            }
+            echo "</table>\n";
+            echo html_frame_end();
+        }
+    }
     //TODO: code to view/add user experience record
 //    if(!$versionId) 
 //    {

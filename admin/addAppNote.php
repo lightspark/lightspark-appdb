@@ -7,45 +7,104 @@
 
 include("path.php");
 include(BASE."include/"."incl.php");
-include(BASE."include/"."tableve.php");
-include(BASE."include/"."qclass.php");
+require(BASE."include/"."application.php");
 
 global $apidb_root;
 
 //check for admin privs
-if(!loggedin() || (!havepriv("admin") && !$current->ownsApp($appId)) )
+if(!loggedin() || (!havepriv("admin") && !isMaintainer($appId,$versionId)) )
 {
     errorpage("Insufficient Privileges!");
     exit;
 }
 
-apidb_header("Add Application Note");
-
-$t = new TableVE("create");
-
-if($HTTP_POST_VARS)
+//set link for version
+if ($versionId != 0)
 {
-    $t->update($HTTP_POST_VARS);
+    $versionLink = "&versionId=$versionId";
+}
+
+if($sub == "Submit")
+{
+
+    $query = "INSERT into appNotes VALUES (null, '".
+                                addslashes($noteTitle)."', '".
+                                addslashes($noteDesc)."', ".
+                                "$appId , $versionId);"; 
+    if (mysql_query($query))
+    {
+        //successful
+        $email = getNotifyEmailAddressList($appId, $versionId);
+        if($email)
+        {
+            $fullAppName = "Application: ".lookupAppName($appId)." Version: ".lookupVersionName($appId, $versionId);
+            $ms = APPDB_ROOT."appview.php?appId=$appId&versionId=$versionId"."\n";
+            $ms .= "\n";
+            $ms .= ($current->username ? $current->username : "Anonymous")." added note to ".$fullAppName."\n";
+            $ms .= "\n";
+            $ms .= "title: ".$noteTitle."\n";
+            $ms .= "\n";
+            $ms .= $noteDesc."\n";
+            $ms .= "\n";
+            $ms .= STANDARD_NOTIFY_FOOTER;
+
+            mail(stripslashes($email), "[AppDB] ".$fullAppName ,$ms);
+
+        } else
+        {
+            $email = "no one";
+        }
+        addmsg("mesage sent to: ".$email, green);
+
+        $statusMessage = "<p>Note added into the database</p>\n";
+        addmsg($statusMessage,Green);
+    }
+    else
+    {
+        //error
+        addmsg($query,red);
+        $statusMessage = "<p><b>Database Error!<br>".mysql_error()."</b></p>\n";
+        addmsg($statusMessage,red);
+    }
+    redirect(apidb_fullurl("appview.php?appId=".$appId.$versionLink));
+    exit;
 }
 else
 {
-    $table = "appNotes";
+    apidb_header("Add Application Note");
 
-    if (!$versionId) { $versionId = 0; }
+    echo "<form method=post action='addAppNote.php'>\n";
+    echo html_frame_start("Add Application Note $appId", "90%","",0);
+    echo html_table_begin("width='100%' border=0 align=left cellpadding=6 cellspacing=0 class='box-body'");
 
-    //delete old NONAMES
-    mysql_query("DELETE FROM $table WHERE noteTitle = 'NONAME'");
+    echo '<input type=hidden name="appId" value='.$appId.'>';
+    echo '<input type=hidden name="versionId" value='.$versionId.'>';
+    echo '<tr><td colspan=2 class=color4>';
+    echo '<center><b>You can use html to make your Warning, Howto or Note look better.</b></center>';
+    echo '</td></tr>',"\n";
 
-    //show edit form
-    $query = "INSERT INTO $table VALUES(0, 'NONAME', '', $appId, $versionId)";
+    echo add_br($noteDesc);
 
-    if(debugging()) { echo "<p align=center><b>query:</b> $query </p>"; }
+    if ($noteTitle == "HOWTO" || $noteTitle == "WARNING")
+    {
+        echo '<input type=hidden name="noteTitle" value='.$noteTitle.'>';
+        echo '<tr><td class=color1>Type</td><td class=color0>'.$noteTitle.'</td></tr>',"\n";
+    }
+    else
+    {
+        echo '<tr><td class=color1>Title</td><td class=color0><input size=80% type="text" name="noteTitle" type="text" value="'.$noteTitle.'"></td></tr>',"\n";
+    }
+    echo '<tr><td class=color4>Description</td><td class=color0>', "\n";
+    echo '<textarea cols=$50 rows=10 name="noteDesc">'.stripslashes($noteDesc).'</textarea></td></tr>',"\n";
 
-    $t->create($query, $table, "noteId");
+    echo '<tr><td colspan=2 align=center class=color3>',"\n";
+    echo '<input type="submit" name=preview value="Preview">&nbsp',"\n";
+    echo '<input type="submit" name=sub value="Submit"></td></tr>',"\n";
+    echo html_table_end();
+    echo html_frame_end();
     
-    echo html_back_link(1,$apidb_root."appview.php?appId=$appId&versionId=$versionId");
+    echo html_back_link(1,$apidb_root."appview.php?appId=$appId".$versionLink);
+    apidb_footer();
 }
-
-apidb_footer();
 
 ?>
