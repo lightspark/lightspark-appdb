@@ -297,7 +297,7 @@ if($appId && !$versionId)
         if($_SESSION['current']->is_super_maintainer($appId) || havepriv("admin"))
         {
             echo '        <form method="post" name="edit" action="admin/editAppFamily.php"><input type="hidden" name="appId" value="'.$appId.'"><input type="submit" value="Edit App" class="button"></form>';
-            echo '<form method="post" name="message" action="admin/addAppVersion.php?appId='.$_REQUEST['appId'].'">';
+            echo '<form method="post" name="message" action="appsubmit.php?appId='.$_REQUEST['appId'].'&apptype=2">';
             echo '<input type=submit value="Add Version" class="button">';
             echo '</form>';
         }
@@ -316,11 +316,7 @@ if($appId && !$versionId)
 
     echo "    </td></tr>\n";
 
-    echo "    <tr><td>\n";
-    echo "      <center><a href='appsubmit.php?appId=$data->appId&apptype=2'> Submit New Version </a> &nbsp;<center>\n";
-    echo "    </td></tr>\n";
-
-    echo "    </td></tr>\n";
+   echo "    </td></tr>\n";
 
     echo "  </table>\n"; /* close the table that contains the whole left hand side of the upper table */
 
