@@ -13,7 +13,6 @@ require(BASE."include/"."comments.php");
 require(BASE."include/"."appdb.php");
 
 require(BASE."include/"."vote.php");
-require(BASE."include/"."rating.php");
 require(BASE."include/"."category.php");
 require(BASE."include/"."screenshot.php");
 require(BASE."include/"."maintainer.php");
@@ -169,9 +168,8 @@ function display_versions($appId, $versions)
         echo "<tr class=color4>\n";
         echo "    <td width=80><font color=white>Version</font></td>\n";
         echo "    <td><font color=white>Description</font></td>\n";
-        echo "    <td width=80><font color=white class=small>Rating With Windows</font></td>\n";
-        echo "    <td width=80><font color=white class=small>Rating Without Windows</font></td>\n";
-        echo "    <td width=80><font color=white class=small>Maintainer Rating</font></td>\n";
+        echo "    <td width=80><font color=white class=small>Rating</font></td>\n";
+        echo "    <td width=80><font color=white class=small>Wine version</font></td>\n";
         echo "    <td width=40><font color=white class=small>Comments</font></td>\n";
         echo "</tr>\n\n";
       
@@ -185,11 +183,7 @@ function display_versions($appId, $versions)
             $desc = substr(stripslashes($ver->description),0,75);
             if(strlen($desc) == 75)
                 $desc .= " ...";    
-    
-            //get ratings
-            $r_win = rating_stars_for_version($ver->versionId, "windows");
-            $r_fake = rating_stars_for_version($ver->versionId, "fake");
-       
+         
             //count comments
             $r_count = count_comments($appId,$ver->versionId);
     
@@ -197,9 +191,8 @@ function display_versions($appId, $versions)
             echo "<tr class=$bgcolor>\n";
             echo "    <td><a href='appview.php?appId=$appId&versionId=$ver->versionId'>".$ver->versionName."</a></td>\n";
             echo "    <td>$desc &nbsp;</td>\n";
-            echo "    <td align=center>$r_win</td>\n";
-            echo "    <td align=center>$r_fake</td>\n";
             echo "    <td align=center>$ver->maintainer_rating</td>\n";
+            echo "    <td align=center>$ver->maintainer_release</td>\n";
             echo "    <td align=center>$r_count</td>\n";
             echo "</tr>\n\n";
 
@@ -396,12 +389,6 @@ else if($appId && $versionId)
         exit;
     }
 
-    // rating menu
-    if(loggedin()) 
-    {
-        apidb_sidebar_add("rating_menu");
-    }
-
     // admin menu
     if(loggedin() && havepriv("admin")) 
     {
@@ -429,12 +416,6 @@ else if($appId && $versionId)
     // rating Area
     echo "<tr class=color1 valign=top><td> <b>Maintainer Rating</b></td><td>".stripslashes($ver->maintainer_rating)."</td></tr>\n";
     echo "<tr class=color0 valign=top><td> <b>Maintainers Version</b></td><td>".stripslashes($ver->maintainer_release)."</td></tr>\n";
-
-    $r_win = rating_stars_for_version($versionId, "windows");
-    $r_fake = rating_stars_for_version($versionId, "fake");
-
-    echo "<tr class=color1 valign=top><td> <b>User Rating</b></td><td> $r_win \n";
-    echo "<br /> $r_fake </td></tr>\n";
 
     // image
     $img = get_screenshot_img($appId, $versionId);
