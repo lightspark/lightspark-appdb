@@ -361,6 +361,21 @@ function UserWantsEmail($userid)
     return ($ob->value == 'no' ? false : true); 
 }
 
+function isAdministrator($iUserId) 
+{
+    $hResult = query_appdb("SELECT * FROM user_privs WHERE userid = ".$iUserId." AND priv  = 'admin'");
+    if(!$hResult)
+        return 0;
+    return mysql_num_rows($hResult);
+}
+
+function isMaintainer($iUserId) 
+{
+    $hResult = query_appdb("SELECT * FROM appMaintainers WHERE userId = ".$iUserId);
+    if(!$hResult)
+        return 0;
+    return mysql_num_rows($hResult);
+}
 
 /**
  * get the email address of people to notify for this appId and versionId

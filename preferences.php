@@ -1,7 +1,7 @@
 <?php
-/**********************/
-/* preferences editor */
-/**********************/
+/*******************************/
+/* preferences and user editor */
+/*******************************/
 
 /*
  * application environment
@@ -66,7 +66,14 @@ function show_user_fields()
     $ext_realname = $user->lookup_realname($iUserId);
     $ext_email = $user->lookup_email($iUserId);
     $CVSrelease = $user->lookup_CVSrelease($iUserId);
-      
+    // if we are managing anothe user
+    if($iUserId == $_REQUEST['userId'])
+    {
+        if(isAdministrator($iUserId))
+            $ext_hasadmin = 'checked="true"';
+        else
+            $ext_hasadmin = "";
+    }
     include(BASE."include/"."form_edit.php");
 
     echo "<tr><td>&nbsp; Wine version </td><td>";
@@ -96,11 +103,15 @@ if($_POST)
     if ($user->update($iUserId, $str_passwd, $_REQUEST['ext_realname'], $_REQUEST['ext_email'], $_REQUEST['CVSrelease']))
     {
         addmsg("Preferences Updated", "green");
-
-        // we were managing an user, let's go back to the admin.
-        if($iUserId == $_REQUEST['userId'])
+        // we were managing an user, let's go back to the admin after updating tha admin status
+        if($iUserId == $_REQUEST['userId'] && havepriv("admin"))
         {
-            redirect(BASE."admin/adminUsersEdit.php?userId=".$iUserId."&sSearch=".$_REQUEST['sSearch']."&iLimit=".$_REQUEST['iLimit']."&sOrderBy=".$_REQUEST['sOrderBy']."&sSubmit=true");
+            $user->userid = $iUserId;
+            if($_POST['ext_hasadmin']=="on") 
+                $user->addpriv("admin");
+            else 
+                $user->delpriv("admin");
+            redirect(BASE."admin/adminUsers.php?userId=".$iUserId."&sSearch=".$_REQUEST['sSearch']."&iLimit=".$_REQUEST['iLimit']."&sOrderBy=".$_REQUEST['sOrderBy']."&sSubmit=true");
         }
     }
     else
