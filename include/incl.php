@@ -102,7 +102,7 @@ function apidb_footer()
     echo html_frame_end();
 
     //Close Sidebar and Content Well
-    echo "<br></td>\n";
+    echo "<br></td></tr></table>\n";
     
     // Display Footer
     if(!$header_disabled)
