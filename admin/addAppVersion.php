@@ -5,10 +5,9 @@ include(BASE."include/"."incl.php");
 include(BASE."include/"."tableve.php");
 include(BASE."include/"."qclass.php");
 
-//FIXME: need to check for admin privs
-if(!loggedin())
+if(!havepriv("admin")) 
 {
-    errorpage();
+    errorpage("Insufficient Privileges!");
     exit;
 }
 else
@@ -36,7 +35,7 @@ else
     mysql_query("DELETE FROM $table WHERE versionName = 'NONAME'");
 
     if(debugging())
-	echo "$query <br><br>\n";
+	echo "$query <br /><br />\n";
 
     $t->create($query, $table, "versionId");
 }

@@ -6,7 +6,7 @@ include(BASE."include/"."tableve.php");
 include(BASE."include/"."qclass.php");
 
 //check for admin privs
-if(!loggedin() || (!havepriv("admin")) )
+if(!havepriv("admin"))
 {
     errorpage("Insufficient Privileges!");
     exit;

@@ -67,7 +67,7 @@ if($_REQUEST['cmd'])
                     else
                     {
                         //error
-                        $statusMessage = "<p><b>Database Error!<br>".mysql_error()."</b></p>\n";
+                        $statusMessage = "<p><b>Database Error!<br />".mysql_error()."</b></p>\n";
                         addmsg($statusMessage, "red");
                     }
                 }
@@ -121,7 +121,7 @@ if($_REQUEST['cmd'])
                     else
                     {
                         //error
-                        $statusMessage = "<p><b>Database Error!<br>".mysql_error()."</b></p>\n";
+                        $statusMessage = "<p><b>Database Error!<br />".mysql_error()."</b></p>\n";
                         addmsg($statusMessage, "red");
                     }
                 }
@@ -233,7 +233,7 @@ if($result && mysql_num_rows($result))
 
         $c++;
     }
-    echo "</tr></table></div><br>\n";
+    echo "</tr></table></div><br />\n";
 
     echo html_frame_end("Click thumbnail to view image in new window.");
 } else {

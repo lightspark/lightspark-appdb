@@ -99,7 +99,7 @@ else if($_REQUEST['sub'] == 'Preview' OR empty($_REQUEST['submit']))
         echo "<tr><td class=color1>Title</td><td class=color0><input size='80%' type='text' name='noteTitle' type='text' value='{$_REQUEST['noteTitle']}'></td></tr>\n";
     }
     echo '<tr><td class=color4>Description</td><td class=color0>', "\n";
-    echo '<textarea cols=$50 rows=10 name="noteDesc">'.stripslashes($_REQUEST['noteDesc']).'</textarea></td></tr>',"\n";
+    echo '<textarea cols=50 rows=10 name="noteDesc">'.stripslashes($_REQUEST['noteDesc']).'</textarea></td></tr>',"\n";
 
     echo '<tr><td colspan=2 align=center class=color3>',"\n";
     echo '<input type="submit" name=sub value="Preview">&nbsp',"\n";

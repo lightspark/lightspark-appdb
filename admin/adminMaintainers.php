@@ -10,13 +10,9 @@ include("path.php");
 require(BASE."include/incl.php");
 
 // deny access if not logged in
-if(!loggedin())
+if(!havepriv("admin"))
 {
-    errorpage("You need to be logged in to use this page.");
-    exit;
-} else if (!havepriv("admin"))
-{
-    errorpage("You must be an administrator to use this page.");
+    errorpage("Insufficient privileges.");
     exit;
 }
 

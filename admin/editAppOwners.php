@@ -4,7 +4,7 @@
 include("path.php");
 include(BASE."include/"."incl.php");
 
-if(!loggedin() || !havepriv("admin"))
+if(!havepriv("admin"))
 {
     errorpage("Insufficient Privileges","You do not have access to this section of the website");
     exit;

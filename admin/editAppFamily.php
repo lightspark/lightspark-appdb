@@ -147,7 +147,7 @@ if($_POST)
     echo '</td></tr>',"\n";
     echo '<tr><td class=color1>Keywords</td><td class=color0><input size=80% type="text" name="keywords" value="'.$keywords.'"></td></tr>',"\n";
     echo '<tr><td class=color4>Description</td><td class=color0>', "\n";
-    echo '<textarea cols=$50 rows=10 name="description">'.stripslashes($description).'</textarea></td></tr>',"\n";
+    echo '<textarea cols=50 rows=10 name="description">'.stripslashes($description).'</textarea></td></tr>',"\n";
     echo '<tr><td class=color1>Web Page</td><td class=color0><input size=80% type="text" name="webPage" value="'.$webPage.'"></td></tr>',"\n";
     echo '<tr><td class=color4>Category</td><td class=color0>';
     $family->make_option_list("catId", $catId, "appCategory", "catId", "catName");

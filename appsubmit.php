@@ -61,7 +61,7 @@ if (isset($_REQUEST['queueName']))
     $errors = checkInput($_REQUEST);
     if( !empty($errors) )
     {
-        errorpage("We found the following errors:","<ul>$errors</ul><br>Please go back and correct them.");
+        errorpage("We found the following errors:","<ul>$errors</ul><br />Please go back and correct them.");
         echo html_back_link(1);
         exit;
     }

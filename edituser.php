@@ -115,7 +115,7 @@ if($_POST)
 
     echo html_table_end();
     echo html_frame_end();
-    echo "<br> <div align=center> <input type=submit value='Update'> </div> <br>\n";
+    echo "<br /> <div align=center> <input type=submit value='Update'> </div> <br />\n";
     echo "</form>\n";
 }
 

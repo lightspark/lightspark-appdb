@@ -5,7 +5,7 @@ include(BASE."include/"."incl.php");
 include(BASE."include/"."tableve.php");
 include(BASE."include/"."qclass.php");
 
-if(!loggedin() || !havepriv("admin"))
+if(!havepriv("admin"))
 {
     errorpage();
     exit;

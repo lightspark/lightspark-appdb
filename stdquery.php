@@ -59,7 +59,7 @@ if($totalCount == 0)
     $tempResult = mysql_query($query);
     if(!$tempResult)
 	{
-	    echo "$query <br>\n";
+	    echo "$query <br />\n";
 	    echo "An error occurred: ".mysql_error()."<p>";
 	    exit;
 	}
@@ -74,7 +74,7 @@ if($totalCount == 0)
     if(debugging())
     {
 	echo $query;
-	echo "<br><br>";
+	echo "<br /><br />";
     }
 
     echo "Your query returned no data.</body></html>\n";
@@ -100,10 +100,10 @@ if($verbose)
     $query .= " LIMIT $curPos,$endPos";
 
     if(debugging())
-	echo "$query <br><br>\n";
+	echo "$query <br /><br />\n";
 
     add_pn_buttons($vars, $endPos);
-    echo "<br> curPos: $curPos <br> linesPerPage: $linesPerPage <br> totalCount: $totalCount <br>";
+    echo "<br /> curPos: $curPos <br /> linesPerPage: $linesPerPage <br /> totalCount: $totalCount <br />";
  
     if($mode == "edit")
         $t->edit($query);

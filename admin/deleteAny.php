@@ -11,8 +11,7 @@ include(BASE."include/incl.php");
 include(BASE."include/category.php");
 include(BASE."include/application.php");
 
-
-if(!loggedin() || !havepriv("admin"))
+if(!havepriv("admin"))
 {
     errorpage();
     exit;

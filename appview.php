@@ -55,7 +55,7 @@ function admin_menu()
 
 
 /**
- * TODO: what does it do ? 
+ * display the full path of the Category we are looking at
  */
 function display_catpath($catId, $appId, $versionId = '')
 {
@@ -63,7 +63,7 @@ function display_catpath($catId, $appId, $versionId = '')
 
     $catFullPath = make_cat_path($cat->getCategoryPath(), $appId, $versionId);
     echo html_frame_start("",'98%','',2);
-    echo "<p><b>Category: ". $catFullPath ."</b><br>\n";
+    echo "<p><b>Category: ". $catFullPath ."</b><br />\n";
     echo html_frame_end();
 }
 
@@ -290,7 +290,7 @@ if($appId && !$versionId)
         echo "        <tr class=color1><td valign=top align=right> <b>Links</b></td><td>\n";
         while($ob = mysql_fetch_object($result))
         {
-            echo "        <a href='$ob->url'>".substr(stripslashes($ob->description),0,30)."</a> <br>\n";
+            echo "        <a href='$ob->url'>".substr(stripslashes($ob->description),0,30)."</a> <br />\n";
         }
             echo "        </td></tr>\n";
         }
@@ -311,7 +311,7 @@ if($appId && !$versionId)
             if ($inResult && mysql_num_rows($inResult) > 0)
             {
                 $foo = mysql_fetch_object($inResult);
-                echo "        <a href='mailto:$foo->email'>".substr(stripslashes($foo->username),0,30)."</a> <br>\n";
+                echo "        <a href='mailto:$foo->email'>".substr(stripslashes($foo->username),0,30)."</a> <br />\n";
             }
         }
         echo "        </td></tr>\n";
@@ -373,7 +373,7 @@ if($appId && !$versionId)
 
     // description
     echo "  <td class=color2 valign=top width='100%'>\n";
-    echo "    <table width='100%' border=0><tr><td width='100%' valign=top><b>Description</b><br>\n";
+    echo "    <table width='100%' border=0><tr><td width='100%' valign=top><b>Description</b><br />\n";
     echo add_br(stripslashes($data->description));
 
     echo "    </td></tr></table>\n";
@@ -447,7 +447,7 @@ else if($appId && $versionId)
     $r_fake = rating_stars_for_version($versionId, "fake");
 
     echo "<tr class=color1 valign=top><td> <b>Rating</b></td><td> $r_win \n";
-    echo "<br> $r_fake </td></tr>\n";
+    echo "<br /> $r_fake </td></tr>\n";
 
     // image
     $img = get_screenshot_img($appId, $versionId);
@@ -531,7 +531,7 @@ else if($appId && $versionId)
     echo "</table><td class=color2 valign=top width='100%'>\n";
 
     //Desc Image
-    echo "<table width='100%' border=0><tr><td width='100%' valign=top> <b>Description</b><br>\n";
+    echo "<table width='100%' border=0><tr><td width='100%' valign=top> <b>Description</b><br />\n";
     echo add_br(stripslashes($ver->description));
     echo "</td></tr>";
 

@@ -10,10 +10,10 @@ require(BASE."include/"."category.php");
 
 apidb_header("Admin Application Data Queue");
 
-// deny access if not logged in
-if(!loggedin())
+// deny access if not admin
+if(!havepriv("admin"))
 {
-    errorpage("You need to be logged in to use this page.");
+    errorpage("Insufficient privileges.");
     exit;
 }
 

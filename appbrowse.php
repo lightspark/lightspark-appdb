@@ -46,7 +46,7 @@ apidb_header("Browse Applications");
 if($subs)
 {
     echo html_frame_start("",'98%','',2);
-    echo "<p><b>Category: ". $catFullPath ."</b><br>\n";
+    echo "<p><b>Category: ". $catFullPath ."</b><br />\n";
     echo html_frame_end();
     
     echo html_frame_start("","98%","",0);
@@ -61,8 +61,8 @@ if($subs)
     $c = 0;
     while(list($id, list($name, $desc)) = each($subs))
     {
-	   //set row color
-	   $bgcolor = ($c % 2 == 0) ? "color0" : "color1"; 
+        //set row color
+        $bgcolor = ($c % 2) ? "color0" : "color1"; 
 	
 	   //get number of apps
         $appcount = $cat->getAppCount($id);
@@ -91,7 +91,7 @@ $apps = $cat->getAppList($catId);
 if($apps)
 {
     echo html_frame_start("",'98%','',2);
-    echo "<p><b>Category: ". $catFullPath ."</b><br>\n";
+    echo "<p><b>Category: ". $catFullPath ."</b><br />\n";
     echo html_frame_end();
     
     echo html_frame_start("","98%","",0);
@@ -107,7 +107,7 @@ if($apps)
     while(list($id, list($name, $desc)) = each($apps))
     {
 	   //set row color
-	   $bgcolor = ($c % 2 == 0) ? "color0" : "color1";
+	   $bgcolor = ($c % 2) ? "color0" : "color1";
         
         //get number of versions
 	   $query = mysql_query("SELECT count(*) as versions FROM appVersion WHERE appId = $id AND versionName != 'NONAME'");

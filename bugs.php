@@ -22,7 +22,7 @@ function display_catpath($catId, $appId, $versionId = '')
 
     $catFullPath = make_cat_path($cat->getCategoryPath(),$appId, $versionId);
     echo html_frame_start("",'98%','',2);
-    echo "<p><b>Category: ". $catFullPath ."</b><br>\n";
+    echo "<p><b>Category: $catFullPath</b><br />\n";
     echo html_frame_end();
 }
 
@@ -49,7 +49,7 @@ function display_bundle($appId)
     while($ob = mysql_fetch_object($result))
 	{
 	    //set row color
-	    $bgcolor = ($c % 2 == 0) ? "color0" : "color1";
+	    $bgcolor = (($c % 2) ? "color0" : "color1");
 
 	    //format desc
 	    $desc = substr(stripslashes($ob->description),0,50);
@@ -92,7 +92,7 @@ function display_versions($appId, $versions)
 		while(list($idx, $ver) = each($versions))
 		{
 	             //set row color
-	            $bgcolor = ($c % 2 == 0) ? "color0" : "color1";
+	            $bgcolor = (($c % 2) ? "color0" : "color1");
 
 	            //format desc
 	            $desc = substr(stripslashes($ver->description),0,75);
@@ -182,7 +182,7 @@ if($appId)
 	echo "</table></td><td class=color2 valign=top width='100%'>\n";
 
 	//Notes
-	echo "<table width='100%' border=0><tr><td width='100%' valign=top><big><b>Welcome</b></big><br>\n";
+	echo "<table width='100%' border=0><tr><td width='100%' valign=top><big><b>Welcome</b></big><br />\n";
 ?>      
         <p>This is the link between the Wine Application Database and Wine's Buzilla. From here you 
         get search for bugs entered against this application. You can also enter new bugs if you log

@@ -3,7 +3,7 @@
 include("path.php");
 include(BASE."include/"."incl.php");
 
-if(!loggedin() || !havepriv("admin"))
+if(!havepriv("admin"))
 {
     errorpage();
     exit;

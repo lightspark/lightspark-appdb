@@ -67,7 +67,7 @@ if($_REQUEST['maintainReason'])
     $errors = checkAppMaintainerInput($_REQUEST);
     if(!empty($errors))
     {
-        errorpage("We found the following errors:","<ul>$errors</ul><br>Please go back and correct them.");
+        errorpage("We found the following errors:","<ul>$errors</ul><br />Please go back and correct them.");
         exit;
     }
 
@@ -112,7 +112,7 @@ if($_REQUEST['maintainReason'])
     echo "regularly and who is willing to be active in reporting regressions with newer \n";
     echo "versions of wine and to help other users run this application under wine.";
     echo "<p>Being an application maintainer comes with responsibilities. ";
-    echo "<br><br><b>You are expected to:</b>";
+    echo "<br /><br /><b>You are expected to:</b>";
     echo "<li>You are expected to keep the application comments clean, all stale data should be removed</li>";
     echo "<li>Be an active user of that application and version</li>";
     echo "<li>Keep up-to-date with all wine releases, if there are regressions these should be reported to wine-devel</li>";
@@ -126,7 +126,7 @@ if($_REQUEST['maintainReason'])
     echo "appdb admins to identify people that are best suited for the job.  Your request\n";
     echo "may be denied if there are already a handful of maintainers for this app or if you\n";
     echo "don't have the experience with wine that is necessary to help other users out.\n";
-    echo "<br>";
+    echo "<br />";
 
     /* Special message for super maintainer applications */
     if($superMaintainer)
@@ -135,7 +135,7 @@ if($_REQUEST['maintainReason'])
         echo "this application.  We don't expect you to run every version but at least to help keep\n";
         echo "the forums clean of stale or out-of-date information\n";
     }
-    echo "<br><br>";
+    echo "<br /><br />";
 
     if($superMaintainer)
         echo html_frame_start("New Super Maintainer Form",400,"",0);

@@ -38,16 +38,16 @@ $vendor = mysql_fetch_object($result);
 apidb_header("View Vendor");
 echo html_frame_start("Vendor Information",500);
 
-echo "Vendor Name: $vendor->vendorName <br>\n";
+echo "Vendor Name: $vendor->vendorName <br />\n";
 
 if ($vendor->vendorURL) {
-	echo "Vendor URL:  <a href='$vendor->vendorURL'>$vendor->vendorURL</a> <br>\n";
+	echo "Vendor URL:  <a href='$vendor->vendorURL'>$vendor->vendorURL</a> <br />\n";
 }
 
 $result = mysql_query("SELECT * FROM appFamily WHERE vendorId = $vendorId ORDER BY appName");
 if($result)
 {
-    echo "<br>Applications by $vendor->vendorName<br><ol>\n";
+    echo "<br />Applications by $vendor->vendorName<br /><ol>\n";
     while($app = mysql_fetch_object($result))
 	{
 	    echo "<li> <a href='appview.php?appId=$app->appId'> $app->appName </a> </li>\n";

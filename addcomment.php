@@ -128,12 +128,12 @@ else if(loggedin())
   echo html_frame_start($mesTitle,500,"",0);
     
   echo '<table width="100%" border=0 cellpadding=0 cellspacing=1>',"\n";
-  echo "<tr bgcolor=#E0E0E0><td align=right><b>From:</b>&nbsp;</td>\n";
+  echo "<tr class=\"color0\"><td align=right><b>From:</b>&nbsp;</td>\n";
   echo "	<td>&nbsp;".$_SESSION['current']->username."</td></tr>\n";
-  echo "<tr bgcolor=#E0E0E0><td align=right><b>Subject:</b>&nbsp;</td>\n";
+  echo "<tr class=\"color0\"><td align=right><b>Subject:</b>&nbsp;</td>\n";
   echo "	<td>&nbsp;<input type=\"text\" size=\"35\" name=\"subject\" value=\"".$_REQUEST['subject']."\" /> </td></tr>\n";
-  echo "<tr bgcolor=#C0C0C0><td colspan=2><textarea name=\"body\" cols=\"70\" rows=\"15\" wrap=\"virtual\">".$_REQUEST['body']."</textarea></td></tr>\n";
-  echo "<tr bgcolor=#C0C0C0><td colspan=2 align=center>\n";
+  echo "<tr class=\"color1\"><td colspan=2><textarea name=\"body\" cols=\"70\" rows=\"15\" wrap=\"virtual\">".$_REQUEST['body']."</textarea></td></tr>\n";
+  echo "<tr class=\"color1\"><td colspan=2 align=center>\n";
   echo "  <input type=\"SUBMIT\" value=\"Post Comment\" class=\"button\" />\n";
   echo "  <input type=\"RESET\" value=\"Reset\" class=\"button\" />\n";
   echo "</td></tr>\n";

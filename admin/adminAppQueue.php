@@ -9,17 +9,11 @@ require(BASE."include/"."tableve.php");
 require(BASE."include/"."application.php");
 
 //deny access if not logged in
-if(!loggedin())
+if(!havepriv("admin"))
 {
-    errorpage("You need to be logged in to use this page.");
+    errorpage("Insufficient privileges.");
     exit;
 }
-else if (!havepriv("admin"))
-{
-    errorpage("You must be an administrator to use this page.");
-    exit;
-}
-
 
 if ($_REQUEST['sub'])
 {

@@ -65,8 +65,8 @@ if($_SESSION['current']->getpref("confirm_comment_deletion") != "no" &&
     echo htmlify_urls($ob->body), "<br /><br />\n";
     echo html_frame_end();
     echo '<table width="100%" border=0 cellpadding=0 cellspacing=1>',"\n";
-    echo "<tr bgcolor=#C0C0C0><td colspan=2><textarea name=\"str_why\" cols=\"70\" rows=\"15\" wrap=\"virtual\"></textarea></td></tr>\n";
-    echo "<tr bgcolor=#C0C0C0><td colspan=2 align=center>\n";
+    echo "<tr class=color1><td colspan=2><textarea name=\"str_why\" cols=\"70\" rows=\"15\" wrap=\"virtual\"></textarea></td></tr>\n";
+    echo "<tr class=color1><td colspan=2 align=center>\n";
     echo "  <input type=\"SUBMIT\" value=\"Delete Comment\" class=\"button\" />\n";
     echo "</td></tr>\n";
     echo "</table>\n";

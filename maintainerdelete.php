@@ -50,7 +50,7 @@ if($confirmed)
     } else
     {
         //error
-        echo "<p><b>Database Error!<br>".mysql_error()."</b></p>\n";
+        echo "<p><b>Database Error!<br />".mysql_error()."</b></p>\n";
     }
 
 } else

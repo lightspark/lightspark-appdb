@@ -4,6 +4,11 @@
 /************************************************/
 
 include("path.php");
+if(!havepriv("admin"))
+{
+    errorpage("Insufficient privileges.");
+    exit;
+}
 if($info=getimagesize("../data/queued/screenshots/".$_REQUEST['queueId']))
 {
        header('Content-type: '.$info['mime']);

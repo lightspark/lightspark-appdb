@@ -9,14 +9,9 @@ require(BASE."include/"."tableve.php");
 require(BASE."include/"."category.php");
 require_once(BASE."include/"."maintainer.php");
 
-//deny access if not logged in
-if(!loggedin())
+if(!havepriv("admin"))
 {
-    errorpage("You need to be logged in to use this page.");
-    exit;
-} else if (!havepriv("admin"))
-{
-    errorpage("You must be an administrator to use this page.");
+    errorpage("Insufficient privileges.");
     exit;
 }
 
