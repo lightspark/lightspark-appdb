@@ -71,9 +71,9 @@ if (isset($_REQUEST['queueName']))
     if(isset($_REQUEST['altvendor']))
     {
         /* retrieve the actual name here */
-        $sQuery = "select * from vendor where vendorId = '$altvendor';";
+        $sQuery = "select * from vendor where vendorId = ".$_REQUEST['altvendor'].";";
         $result = query_appdb($sQuery);
-        if($result)
+        if($result && mysql_num_rows($result) > 0 )
         {
             $ob = mysql_fetch_object($result);
             $_REQUEST['queueVendor'] = $ob->vendorName;
