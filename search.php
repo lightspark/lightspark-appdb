@@ -7,18 +7,20 @@
  * application environment
  */ 
 include("path.php");
-require(BASE."include/"."incl.php");
-require(BASE."include/"."application.php");
+require(BASE."include/incl.php");
+require(BASE."include/application.php");
 
-$search = str_replace("'", "\\'", $_REQUEST['q']);
-$search = "%$search%";
-
-$query = "SELECT * FROM appFamily WHERE appName != 'NONAME' AND appName LIKE '$search' ORDER BY appName";
-$result = query_appdb($query);
+$sQuery = "SELECT *
+           FROM appFamily
+           WHERE appName != 'NONAME'
+           AND appName LIKE '%".addslashes($_REQUEST['q'])."%'
+           OR keywords LIKE '%".addslashes($_REQUEST['q'])."%'
+           ORDER BY appName";
+$hResult = query_appdb($sQuery);
 
 apidb_header("Search Results");
 
-if(mysql_num_rows($result) == 0)
+if(mysql_num_rows($hResult) == 0)
 {
 	// do something
 	echo html_frame_start("","98%");
@@ -38,7 +40,7 @@ else
 	echo "</tr>\n\n";
 
 	$c = 0;
-	while($ob = mysql_fetch_object($result))
+	while($ob = mysql_fetch_object($hResult))
 	{
 	        //skip if a NONAME
 	        if ($ob->appName == "NONAME") { continue; }
@@ -68,5 +70,4 @@ else
 }
 
 apidb_footer();
-
 ?>
