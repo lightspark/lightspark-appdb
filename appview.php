@@ -265,10 +265,10 @@ if($_REQUEST['appId'])
         /* are we already a maintainer? */
         if($_SESSION['current']->isSuperMaintainer($oApp->iAppId)) /* yep */
         {
-            echo '        <form method=post name=message action="maintainerdelete.php"><input type=submit value="Remove yourself as a super maintainer" class=button>';
+            echo '        <form method="post" name="message" action="maintainerdelete.php"><input type=submit value="Remove yourself as a super maintainer" class="button">';
         } else /* nope */
         {
-            echo '        <form method=post name=message action="maintainersubmit.php"><input type=submit value="Be a super maintainer of this app" class=button>';
+            echo '        <form method=post name=message action="maintainersubmit.php"><input type=submit value="Be a super maintainer of this app" class="button">';
         }
 
         echo "        <input type=\"hidden\" name=\"appId\" value=\"".$oApp->iAppId."\">";
@@ -278,6 +278,9 @@ if($_REQUEST['appId'])
         if($_SESSION['current']->isSuperMaintainer($oApp->iAppId) || $_SESSION['current']->hasPriv("admin"))
         {
             echo '        <form method="post" name="edit" action="admin/editAppFamily.php"><input type="hidden" name="appId" value="'.$_REQUEST['appId'].'"><input type="submit" value="Edit App" class="button"></form>';
+        }
+        if($_SESSION['current']->isLoggedIn())
+        {
             echo '<form method="post" name="message" action="appsubmit.php?appId='.$oApp->iAppId.'&apptype=2">';
             echo '<input type=submit value="Add Version" class="button">';
             echo '</form>';

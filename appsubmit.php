@@ -33,10 +33,10 @@ function checkInput($fields)
     $errors .= "<li>Please enter an application version.</li>\n";
 
   // No vendor entered, and nothing in the list is selected
-  if (empty($fields['vendorName']) && !$fields['vendorId'])
+  if (empty($fields['vendorName']) && !$fields['vendorId'] && !$fields['appId'])
     $errors .= "<li>Please enter a vendor.</li>\n";
 
-  if (empty($fields['appDescription']))
+  if (empty($fields['appDescription']) && !$fields['appId'])
     $errors .= "<li>Please enter a description of your application.</li>\n";
 
   if (empty($errors))
