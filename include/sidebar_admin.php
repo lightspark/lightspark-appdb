@@ -8,7 +8,6 @@ function global_admin_menu() {
     $g = new htmlmenu("Global Admin");
     
     $g->add("Add Category", BASE."admin/addCategory.php");
-    $g->add("Add Application", BASE."admin/addAppFamily.php?catId=0");
     $g->add("Add Vendor", BASE."admin/addVendor.php");
     
     $g->addmisc("&nbsp;");
