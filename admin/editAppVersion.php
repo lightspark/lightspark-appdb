@@ -79,7 +79,7 @@ if($HTTP_POST_VARS)
                 if($email)
                 {
                     $fullAppName = "Application: ".lookupAppName($appId)." Version: ".lookupVersionName($appId, $versionId);
-                    $ms .= APPDB_ROOT."appView.php?appId=$appId&versionId=$versionId"."\n";
+                    $ms .= APPDB_ROOT."appview.php?appId=$appId&versionId=$versionId"."\n";
                     $ms .= "\n";
                     $ms .= ($current->username ? $current->username : "Anonymous")." changed ".$fullAppName."\n";
                     $ms .= "\n";

@@ -314,7 +314,7 @@ if ($sub)
             $ms .= "----------------------------------\n\n";
             $ms .= "Your application: ".$fullAppName." has been entered ";
             $ms .= "into the application database.\n\n";
-            $ms .= APPDB_ROOT."appView.php?appId=$appParent&versionId=$appVersion"."\n\n";
+            $ms .= APPDB_ROOT."appview.php?appId=$appParent&versionId=$appVersion"."\n\n";
             $ms .= "Thanks!\n\n";
             $ms .= $emailtext;
 
