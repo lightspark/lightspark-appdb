@@ -1,43 +1,31 @@
 <?php
+$hAppdbLink = null;
+$hBugzillaLink = null;
+
 function query_appdb($sQuery,$sComment="")
 {
     global $hAppdbLink;
 
-    if(!$hAppdbLink)
+    if(!is_resource($hAppdbLink))
     {
         $hAppdbLink = mysql_connect(APPS_DBHOST, APPS_DBUSER, APPS_DBPASS);
-        mysql_select_db(APPS_DB);
     }
+    mysql_select_db(APPS_DB, $hAppdbLink);
     $hResult = mysql_query($sQuery, $hAppdbLink);
     if(!$hResult) query_error($sQuery, $sComment);
     return $hResult;
 }
-
-function query_userdb($sQuery,$sComment="")
-{
-    global $huserdbLink;
-
-    if(!$huserdbLink)
-    {
-        $huserdbLink = mysql_connect(USERS_DBHOST, USERS_DBUSER, USERS_DBPASS);
-        mysql_select_db(USERS_DB);
-    }
-    $hResult = mysql_query($sQuery, $huserdbLink);
-    if(!$hResult) query_error($sQuery, $sComment);
-    return $hResult;
-}
-
 
 
 function query_bugzilladb($sQuery,$sComment="")
 {
     global $hBugzillaLink;
 
-    if(!$hBugzillaLink)
+    if(!is_resource($hBugzillaLink))
     {
         $hBugzillaLink = mysql_connect(BUGZILLA_DBHOST, BUGZILLA_DBUSER, BUGZILLA_DBPASS);
-        mysql_select_db(BUGZILLA_DB);
     }
+    mysql_select_db(BUGZILLA_DB, $hBugzillaLink);
     $hResult = mysql_query($sQuery, $hBugzillaLink);
     if(!$hResult) query_error($sQuery, $sComment);
     return $hResult;
@@ -47,7 +35,7 @@ function query_bugzilladb($sQuery,$sComment="")
 function query_error($sQuery, $sComment="")
 {
     $sStatusMessage  = "<p><b>Database Error!</b><br />";
-    $sStatusMessage .= "Query: ".$sQuery;
+    $sStatusMessage .= "Query: ".$sQuery."<br />";
     $sStatusMessage .= $sComment ? $sComment."<br />" : "";
     $sStatusMessage .= mysql_error()."</p>\n";
     addmsg($sStatusMessage, "red");

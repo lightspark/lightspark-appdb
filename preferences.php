@@ -17,8 +17,8 @@ if(!loggedin())
 
 function build_prefs_list()
 {
-    $result = query_userdb("SELECT * FROM prefs_list ORDER BY id");
-    while($r = mysql_fetch_object($result))
+    $result = query_appdb("SELECT * FROM prefs_list ORDER BY id");
+    while($result && $r = mysql_fetch_object($result))
         {
             //skip admin options
             //TODO: add a field to prefs_list to flag the user level for the pref
