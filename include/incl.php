@@ -160,7 +160,8 @@ function errorpage($text = null, $message = null)
  */
 function redirect($url)
 {
-    header("Location: ".$url);
+    header("Location: ".$url); 
+    exit;
 }
 
 /**
