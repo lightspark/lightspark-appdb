@@ -59,7 +59,7 @@ if(isset($_REQUEST['body']))
                 $fullAppName = "Application: ".lookupAppName($_REQUEST['appId'])." Version: ".lookupVersionName($_REQUEST['appId'], $_REQUEST['versionId']);
                 $ms .= APPDB_ROOT."appview.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId'].".\n";
                 $ms .= "\n";
-                $ms .= ($_SESSION['current']->username ? $_SESSION['current']->username : "Anonymous")." added comment to ".$fullAppName."\n";
+                $ms .= ($_SESSION['current']->realname ? $_SESSION['current']->realname : "Anonymous")." added comment to ".$fullAppName."\n";
                 $ms .= "\n";
                 $ms .= "Subject: ".$subject."\n";
                 $ms .= "\n";
@@ -80,7 +80,7 @@ if(isset($_REQUEST['body']))
             $fullAppName = "Application: ".lookupAppName($_REQUEST['appId'])." Version: ".lookupVersionName($_REQUEST['appId'], $_REQUEST['versionId']);
             $ms = APPDB_ROOT."appview.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId'].".\n";
             $ms .= "\n";
-            $ms .= $_SESSION['current']->username." added comment to ".$fullAppName."\n";
+            $ms .= $_SESSION['current']->realname." added comment to ".$fullAppName."\n";
             $ms .= "\n";
             $ms .= "Subject: ".$subject."\n";
             $ms .= "\n";
@@ -129,7 +129,7 @@ else if(loggedin())
     
   echo '<table width="100%" border=0 cellpadding=0 cellspacing=1>',"\n";
   echo "<tr class=\"color0\"><td align=right><b>From:</b>&nbsp;</td>\n";
-  echo "	<td>&nbsp;".$_SESSION['current']->username."</td></tr>\n";
+  echo "	<td>&nbsp;".$_SESSION['current']->realname."</td></tr>\n";
   echo "<tr class=\"color0\"><td align=right><b>Subject:</b>&nbsp;</td>\n";
   echo "	<td>&nbsp;<input type=\"text\" size=\"35\" name=\"subject\" value=\"".$_REQUEST['subject']."\" /> </td></tr>\n";
   echo "<tr class=\"color1\"><td colspan=2><textarea name=\"body\" cols=\"70\" rows=\"15\" wrap=\"virtual\">".$_REQUEST['body']."</textarea></td></tr>\n";

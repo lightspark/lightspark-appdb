@@ -76,16 +76,10 @@ function retry($cmd, $msg)
 function cmd_do_new()
 {
     
-    if(ereg("^.+@.+\\..+$", $_POST['ext_username']))
+    if(!ereg("^.+@.+\\..+$", $_POST['ext_email']))
     {
-        $_POST['ext_username'] = "";
-        retry("new", "Invalid Username, must not contain special characters");
-        return;
-    }
-    if(strlen($_POST['ext_username']) < 3)
-    {
-        $_POST['ext_username'] = "";
-        retry("new", "Username must be at least 3 characters");
+        $_POST['ext_email'] = "";
+        retry("new", "Invalid email address");
         return;
     }
     if(strlen($_POST['ext_password']) < 5)
@@ -103,28 +97,22 @@ function cmd_do_new()
         retry("new", "You don't have a Real name?");
         return;
     }
-    if(!ereg("^.+@.+\\..+$", $_POST['ext_email']))
-    {
-        $_POST['ext_email'] = "";
-        retry("new", "Invalid email address");
-        return;
-    }
-
+   
     $user = new User();
 
-    if($user->exists($_POST['ext_username']))
+    if($user->exists($_POST['ext_email']))
     {
-        $_POST['ext_username'] = "";
-        retry("new", "That username is already in use");
+        $_POST['ext_email'] = "";
+        retry("new", "An account with this e-mail is already in use");
         return;
     }
 
-    $result = $user->create($_POST['ext_username'], $_POST['ext_password'], $_POST['ext_realname'], $_POST['ext_email'], $_POST['CVSrelease'] );
+    $result = $user->create($_POST['ext_email'], $_POST['ext_password'], $_POST['ext_realname'], $_POST['CVSrelease'] );
 
     if($result == null)
     {
-        $user->login($_POST['ext_username'], $_POST['ext_password']);
-        addmsg("Account created! (".$_POST['ext_username'].")", "green");
+        $user->login($_POST['ext_email'], $_POST['ext_password']);
+        addmsg("Account created! (".$_POST['ext_email'].")", "green");
         redirect(apidb_fullurl());
     }
     else
@@ -139,7 +127,7 @@ function cmd_send_passwd()
 {
     $user = new User();
     
-    $userid = $user->lookup_userid($_POST['ext_username']);
+    $userid = $user->lookup_userid($_POST['ext_email']);
     $passwd = generate_passwd();
     
     if ($userid)
@@ -169,7 +157,7 @@ function cmd_send_passwd()
     }
     else
     {
-        addmsg("Sorry, that username (". urlencode($_POST['ext_username']) .") does not exist.", "red");
+        addmsg("Sorry, that user (". urlencode($_POST['ext_email']) .") does not exist.", "red");
     }
     
     redirect(apidb_fullurl("account.php?cmd=login"));
@@ -182,12 +170,12 @@ function cmd_send_passwd()
 function cmd_do_login()
 {
     $user = new User();
-    $result = $user->login($_POST['ext_username'], $_POST['ext_password']);
+    $result = $user->login($_POST['ext_email'], $_POST['ext_password']);
 
     if($result == null)
     {
         $_SESSION['current'] = $user;
-        addmsg("You are successfully logged in as '$user->username'.", "green");
+        addmsg("You are successfully logged in as '$user->realname'.", "green");
         redirect(apidb_fullurl("index.php"));    	    
     } else
     {

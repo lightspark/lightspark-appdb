@@ -56,7 +56,7 @@ if ($_REQUEST['sub'])
 
         echo "<tr class=color4>\n";
         echo "    <td><font color=white>Submission Date</font></td>\n";
-        echo "    <td><font color=white>Username</font></td>\n";
+        echo "    <td><font color=white>Name</font></td>\n";
         echo "    <td><font color=white>Application Name</font></td>\n";
         echo "    <td><font color=white>Version</font></td>\n";
         echo "    <td><font color=white>Super maintainer?</font></td>\n";
@@ -71,7 +71,7 @@ if ($_REQUEST['sub'])
             if ($c % 2 == 1) { $bgcolor = 'color0'; } else { $bgcolor = 'color1'; }
             echo "<tr class=$bgcolor>\n";
             echo "    <td>".date("Y-n-t h:i:sa", $ob->submitTime)." &nbsp;</td>\n";
-            echo "    <td>".lookupUsername($ob->userId)."</td>\n";
+            echo "    <td>".lookupRealname($ob->userId)."</td>\n";
             
             if($ob->superMaintainer)
             {

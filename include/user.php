@@ -7,7 +7,6 @@ class User {
 
     var $stamp;
     var $userid;
-    var $username;
     var $realname;
     var $created;
     var $status;
@@ -27,23 +26,17 @@ class User {
      * check if a user exists
      * returns TRUE if the user exists
      */
-    function exists($username)
+    function exists($sEmail)
     {
-        $result = mysql_query("SELECT * FROM user_list WHERE username = '$username'");
+        $result = mysql_query("SELECT * FROM user_list WHERE email = '$sEmail'");
         if(!$result || mysql_num_rows($result) != 1)
             return 0;
          return 1;
     }
 
-
-    function lookup_username($userid)
+    function lookup_userid($sEmail)
     {
-        return lookupUsername($userId);
-    }
-
-    function lookup_userid($username)
-    {
-        $result = mysql_query("SELECT userid FROM user_list WHERE username = '$username'");
+        $result = mysql_query("SELECT userid FROM user_list WHERE email = '$sEmail'");
         if(!$result || mysql_num_rows($result) != 1)
             return null;
         $ob = mysql_fetch_object($result);
@@ -79,28 +72,28 @@ class User {
      * restore a user from the database
      * returns 0 on success and an error msg on failure
      */
-    function restore($username, $password)
+    function restore($sEmail, $sPassword)
     {
-        $result = mysql_query("SELECT stamp, userid, username, realname, ".
+        $result = mysql_query("SELECT stamp, userid, realname, ".
                               "created, status, perm FROM user_list WHERE ".
-                              "username = '$username' AND ".
-                              "password = password('$password')");
+                              "email = '$sEmail' AND ".
+                              "password = password('$sPassword')");
         if(!$result)
             return "Error: ".mysql_error();
 
         if(mysql_num_rows($result) == 0)
-            return "Invalid username or password";
+            return "Invalid e-mail or password";
 
-        list($this->stamp, $this->userid, $this->username, $this->realname, 
+        list($this->stamp, $this->userid, $this->realname, 
              $this->created, $status, $perm) = mysql_fetch_row($result);
 
         return 0;
     }
 
 
-    function login($username, $password)
+    function login($sEmail, $sPassword)
     {
-        $result = $this->restore($username, $password);
+        $result = $this->restore($sEmail, $sPassword);
 
         /* if our result is non-null then we must have had an error */
         if($result != null)
@@ -108,7 +101,7 @@ class User {
 
         /* update the 'stamp' field in the users account to reflect the last time */
         /* they logged in */
-        $myUserId = $this->lookup_userid($username);
+        $myUserId = $this->lookup_userid($sEmail);
         $result = mysql_query("UPDATE user_list SET stamp=null WHERE userid=$myUserId;");
         return 0;
     }
@@ -176,12 +169,12 @@ class User {
      * remove the current, or specified user from the database
      * returns 0 on success and an error msg on failure
      */
-    function remove($username = 0)
+    function remove($sEmail = 0)
     {
-        if($username == 0)
-            $username = $this->username;
+        if($sEmail == 0)
+            $sEmail = $this->email;
 
-        $result = mysql_query("DELETE FROM user_list WHERE username = '$username'");
+        $result = mysql_query("DELETE FROM user_list WHERE email = '$sEmail'");
 
         if(!$result)
             return mysql_error();
@@ -348,16 +341,6 @@ function generate_passwd($pass_len = 10)
 }
 
 
-function lookupUsername($userid)
-{
-    $result = mysql_query("SELECT username FROM user_list WHERE userid = $userid");
-    if(!$result || mysql_num_rows($result) != 1)
-        return null;
-    $ob = mysql_fetch_object($result);
-    return $ob->username;
-}
-
-
 function lookupEmail($userid)
 {
     $result = mysql_query("SELECT email FROM user_list WHERE userid = $userid");
@@ -367,6 +350,14 @@ function lookupEmail($userid)
     return $ob->email;
 }
 
+function lookupRealname($userid)
+{
+    $result = mysql_query("SELECT realname FROM user_list WHERE userid = $userid");
+    if(!$result || mysql_num_rows($result) != 1)
+        return null;
+    $ob = mysql_fetch_object($result);
+    return $ob->realname;
+}
 
 function UserWantsEmail($userid)
 {

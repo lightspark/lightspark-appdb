@@ -67,11 +67,11 @@ if ($_REQUEST['sub'])
             {
                 if($firstDisplay)
                 {
-                    echo "<td>".lookupUsername($userIdValue)."</td></tr>\n";
+                    echo "<td>".lookupRealname($userIdValue)."</td></tr>\n";
                     $firstDisplay = false;
                 } else
                 {
-                    echo "<tr><td class=color0></td><td>".lookupUsername($userIdValue)."</td></tr>\n";
+                    echo "<tr><td class=color0></td><td>".lookupRealname($userIdValue)."</td></tr>\n";
                 }
             }
         }
@@ -84,11 +84,11 @@ if ($_REQUEST['sub'])
             {
                 if($firstDisplay)
                 {
-                    echo "<td>".lookupUsername($userIdValue)."*</td></tr>\n";
+                    echo "<td>".lookupRealname($userIdValue)."*</td></tr>\n";
                     $firstDisplay = false;
                 } else
                 {
-                    echo "<tr><td class=color0></td><td>".lookupUsername($userIdValue)."*</td></tr>\n";
+                    echo "<tr><td class=color0></td><td>".lookupRealname($userIdValue)."*</td></tr>\n";
                 }
             }
         }
@@ -283,7 +283,7 @@ if ($_REQUEST['sub'])
         echo "<tr class=color4>\n";
         echo "    <td><font color=white>Submission Date</font></td>\n";
         echo "    <td><font color=white>Queue Id</font></td>\n";
-        echo "    <td><font color=white>Username</font></td>\n";
+        echo "    <td><font color=white>Name</font></td>\n";
         echo "    <td><font color=white>Application Name</font></td>\n";
         echo "    <td><font color=white>Version</font></td>\n";
         echo "    <td><font color=white>Super maintainer?</font></td>\n";
@@ -298,7 +298,7 @@ if ($_REQUEST['sub'])
             echo "<tr class=$bgcolor>\n";
             echo "    <td>".date("Y-n-t h:i:sa", $ob->submitTime)." &nbsp;</td>\n";
             echo "    <td><a href='adminMaintainerQueue.php?sub=view&queueId=$ob->queueId'>$ob->queueId</a></td>\n";
-            echo "    <td>".lookupUsername($ob->userId)."</td>\n";
+            echo "    <td>".lookupRealname($ob->userId)."</td>\n";
             echo "    <td>".appIdToName($ob->appId)."</td>\n";
 
             if($ob->superMaintainer)

@@ -36,9 +36,8 @@ echo html_frame_start("List Users","400","",0)
   </table>
 	
   <input TYPE="HIDDEN" NAME="orderby" VALUE="userid">
-  <input TYPE="HIDDEN" NAME="searchwhat" VALUE="user_list.username">
+  <input TYPE="HIDDEN" NAME="searchwhat" VALUE="user_list.email">
   <input TYPE="HIDDEN" NAME="fields[]" VALUE="user_list.userid">
-  <input TYPE="HIDDEN" NAME="fields[]" VALUE="user_list.username">
   <input TYPE="HIDDEN" NAME="fields[]" VALUE="user_list.email">
   <input TYPE="HIDDEN" NAME="fields[]" VALUE="user_list.realname">
   <input TYPE="HIDDEN" NAME="fields[]" VALUE="user_list.created">

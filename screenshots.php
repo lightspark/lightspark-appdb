@@ -50,7 +50,7 @@ if($_REQUEST['cmd'])
                             $fullAppName = "Application: ".lookupAppName($_REQUEST['appId'])." Version: ".lookupVersionName($_REQUEST['appId'], $_REQUEST['versionId']);
                             $ms .= APPDB_ROOT."screenshots.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']."\n";
                             $ms .= "\n";
-                            $ms .= $_SESSION['current']->username." added screenshot ".$_REQUEST['screenshot_desc']." to ".$fullAppName."\n";
+                            $ms .= $_SESSION['current']->realname." added screenshot ".$_REQUEST['screenshot_desc']." to ".$fullAppName."\n";
                             $ms .= "\n";
                             $ms .= STANDARD_NOTIFY_FOOTER;
  
@@ -104,7 +104,7 @@ if($_REQUEST['cmd'])
                             $fullAppName = "Application: ".lookupAppName($_REQUEST['appId'])." Version: ".lookupVersionName($_REQUEST['appId'], $_REQUEST['versionId']);
                             $ms .= APPDB_ROOT."admin/adminAppDataQueue.php?queueId=".mysql_insert_id()."\n";
                             $ms .= "\n";
-                            $ms .= ($_SESSION['current']->username ? $_SESSION['current']->username : "an anonymous user")." submitted a screenshot ".$_REQUEST['screenshot_desc']." for ".$fullAppName."\n";
+                            $ms .= ($_SESSION['current']->realname ? $_SESSION['current']->realname : "an anonymous user")." submitted a screenshot ".$_REQUEST['screenshot_desc']." for ".$fullAppName."\n";
                             $ms .= "\n";
                             $ms .= STANDARD_NOTIFY_FOOTER;
  
@@ -142,7 +142,7 @@ if($_REQUEST['cmd'])
                     $fullAppName = "Application: ".lookupAppName($_REQUEST['appId'])." Version: ".lookupVersionName($_REQUEST['appId'], $_REQUEST['versionId']);
                     $ms .= APPDB_ROOT."screenshots.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']."\n";
                     $ms .= "\n";
-                    $ms .= ($_SESSION['current']->username ? $_SESSION['current']->username : "Anonymous")." deleted screenshot from ".$fullAppName."\n";
+                    $ms .= ($_SESSION['current']->realname ? $_SESSION['current']->realname : "Anonymous")." deleted screenshot from ".$fullAppName."\n";
                     $ms .= "\n";
                     $ms .= STANDARD_NOTIFY_FOOTER;
    

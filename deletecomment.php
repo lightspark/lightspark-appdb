@@ -99,16 +99,16 @@ if($_SESSION['current']->getpref("confirm_comment_deletion") != "no" &&
         {
             $email = getNotifyEmailAddressList($_REQUEST['appId'], $_REQUEST['versionId']);
             $notify_user_email=lookupEmail($ob->userId);
-            $notify_user_username=lookupUsername($ob->userId);
+            $notify_user_realname=lookupRealname($ob->userId);
             $email .= $notify_user_email;
             if($email)
             {
                 $fullAppName = "Application: ".lookupAppName($_REQUEST['appId'])." Version: ".lookupVersionName($_REQUEST['appId'], $_REQUEST['versionId']);
                 $ms = APPDB_ROOT."appview.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']."\n";
                 $ms .= "\n";
-                $ms .= $_SESSION['current']->username." deleted comment from ".$fullAppName."\n";
+                $ms .= $_SESSION['current']->realname." deleted comment from ".$fullAppName."\n";
                 $ms .= "\n";
-                $ms .= "This comment was made on ".substr($ob->time,0,10)." by $notify_user_username \n";
+                $ms .= "This comment was made on ".substr($ob->time,0,10)." by $notify_user_realname \n";
                 $ms .= "\n";
                 $ms .= "Subject: ".$subject."\n";
                 $ms .= "\n";

@@ -48,7 +48,7 @@ if (!$_REQUEST['queueId'])
         echo "<tr class=color4>\n";
         echo "    <td><font color=white>Submission Date</font></td>\n";
         echo "    <td><font color=white>Queue Id</font></td>\n";
-        echo "    <td><font color=white>Username (e-mail)</font></td>\n";
+        echo "    <td><font color=white>Name (e-mail)</font></td>\n";
         echo "    <td><font color=white>Application Name</font></td>\n";
         echo "    <td><font color=white>Version</font></td>\n";
         echo "    <td><font color=white>Type</font></td>\n";
@@ -66,7 +66,7 @@ if (!$_REQUEST['queueId'])
                 echo "    <td>".date("Y-n-t h:i:sa", $ob->submitTime)." &nbsp;</td>\n";
                 echo "    <td><a href='adminAppDataQueue.php?queueId=$ob->queueId'>".$ob->queueId."</a></td>\n";
                 if($ob->userId)
-                    echo "    <td>".lookupUsername($ob->userId)." (".lookupEmail($ob->userId).")</td>\n";
+                    echo "    <td>".lookupRealname($ob->userId)." (".lookupEmail($ob->userId).")</td>\n";
                 else
                     echo "    <td>Anonymous</td>\n";
                 echo "<td>".appIdToName($ob->appId)."</td>\n";

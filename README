@@ -37,7 +37,7 @@ To install locally for testing/hacking:
  
 # An AppDB admin user has been automatically created while running 
   the create_tables script
-  username: admin
+  email: admin@localhost
   password: testing
   You should change the password as soon as possible!
 

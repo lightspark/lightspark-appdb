@@ -86,7 +86,7 @@ create table userExperience (
        testPlatform	varchar(100),
        wineVintage	varchar(100),
        entryDate	timestamp not null,
-       userName		text not null,
+       userId		int not null,
        wineCfgFile	text,
        key(uExpId)
 );

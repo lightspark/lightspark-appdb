@@ -8,17 +8,10 @@ function forum_lookup_user ($userid)
     $mailto = '';
     if ($userid > 0)
     {
-        $qstring = "SELECT email,username FROM user_list WHERE userid = '".$userid."' LIMIT 1";   
+        $qstring = "SELECT email FROM user_list WHERE userid = '".$userid."' LIMIT 1";   
         $result = mysql_query($qstring);
         $usr = mysql_fetch_object($result);
-        if ($usr->email)
-        {
-            $mailto = '<a href="mailto:' . $usr->email . '">' . $usr->username . '</a>';
-        }
-        else
-        {
-            $mailto = $usr->username;
-        }
+        $mailto = '<a href="mailto:' . $usr->email . '">' . $usr->realname . '</a>';
         unset($qstring, $result, $usr);
     }
     else

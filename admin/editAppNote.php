@@ -45,7 +45,7 @@ if(isset($_REQUEST['sub']))
        
         if($sEmail)
         {
-            $ms .= ($_SESSION['current']->username ? $_SESSION['current']->username : "Anonymous")." deleted note from ".$sFullAppName."\n";
+            $ms .= ($_SESSION['current']->realname ? $_SESSION['current']->realname : "Anonymous")." deleted note from ".$sFullAppName."\n";
             $ms .= "\n";
             $ms .= "title: ".$sOldNoteTitle."\n";
             $ms .= "\n";
@@ -72,7 +72,7 @@ if(isset($_REQUEST['sub']))
         
         if($sEmail)
         {
-            $ms .= ($_SESSION['current']->username ? $_SESSION['current']->username : "Anonymous")." changed note for ".$sFullAppName."\n";
+            $ms .= ($_SESSION['current']->realname ? $_SESSION['current']->realname : "Anonymous")." changed note for ".$sFullAppName."\n";
             $ms .= "From --------------------------\n";
             $ms .= "title: ".$sOldNoteTitle."\n";
             $ms .= "\n";

@@ -51,7 +51,6 @@ function show_user_fields()
         
         $user = new User();
         
-        $ext_username = $_SESSION['current']->username;
         $ext_realname = $user->lookup_realname($_SESSION['current']->userid);
         $ext_email = $user->lookup_email($_SESSION['current']->userid);
         $CVSrelease = $user->lookup_CVSrelease($_SESSION['current']->userid);
@@ -97,7 +96,7 @@ if($_POST)
 apidb_header("User Preferences");
 
 echo "<form method=post action='preferences.php'>\n";
-echo html_frame_start("Preferences for ".$_SESSION['current']->username, "80%");
+echo html_frame_start("Preferences for ".$_SESSION['current']->realname, "80%");
 echo html_table_begin("width='100%' border=0 align=left cellspacing=0 class='box-body'");
 
 show_user_fields();

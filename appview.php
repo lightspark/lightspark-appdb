@@ -314,7 +314,7 @@ if($appId && !$versionId)
         while(list($index, list($userIdValue)) = each($other_maintainers))
         {
             echo "        <tr><td align=left>\n";
-            echo "        <li>".lookupUsername($userIdValue)."</td></tr>\n";
+            echo "        <li>".lookupRealname($userIdValue)."</td></tr>\n";
         }
     } else
     {
@@ -449,7 +449,7 @@ else if($appId && $versionId)
         while(list($index, list($userIdValue)) = each($other_maintainers))
         {
             echo "<tr class=color0><td align=left colspan=2>";
-            echo "<li>".lookupUsername($userIdValue)."</td></tr>\n";
+            echo "<li>".lookupRealname($userIdValue)."</td></tr>\n";
         }
     } else
     {

@@ -46,7 +46,7 @@ function apidb_fullpath($path)
  */
 function apidb_header($title = 0)
 {
-    $username = isset($_SESSION['current'])?$_SESSION['current']->username:"";
+    $realname = isset($_SESSION['current'])?$_SESSION['current']->realname:"";
 
     // Set Page Title
     $page_title = $title;

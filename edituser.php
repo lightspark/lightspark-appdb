@@ -20,7 +20,7 @@ if(!havepriv("admin"))
     exit;
 }
     $user = new User();
-    $result = query_appdb("SELECT stamp, userid, username, realname, ".
+    $result = query_appdb("SELECT stamp, userid, realname, ".
 			      "created, status, perm FROM user_list WHERE ".
 			      "userid = '$userid'", $user->link);
     if(!$result)
@@ -30,10 +30,8 @@ if(!havepriv("admin"))
     }
 
 
-    list($user->stamp, $user->userid, $user->username, $user->realname, 
+    list($user->stamp, $user->userid, $user->realname, 
 	 $user->created, $status, $perm) = mysql_fetch_row($result);
-
-    global $ext_username, $ext_password1, $ext_password2, $ext_realname, $ext_email, $ext_hasadmin;
 
 if($_POST)
 {
@@ -70,9 +68,6 @@ if($_POST)
     echo html_frame_start("Data for user ID $userid", "80%");
     echo html_table_begin("width='100%' border=0 align=left cellspacing=0 class='box-body'");
     
-
-   
-    $ext_username = $user->lookup_username($userid);
     $ext_realname = $user->lookup_realname($userid);
     $ext_email    = $user->lookup_email($userid);
     if($user->checkpriv("admin"))
@@ -84,8 +79,8 @@ if($_POST)
 ?>
     <input type="hidden" name="userid" value="<?php echo $userid; ?>">
     <tr>
-        <td> &nbsp; User Name </td>
-	<td> <b> <?php echo $ext_username; ?> </b> </td>
+	<td> &nbsp; Email Address </td>
+	<td> <input type="text" name="ext_email" value="<?php echo $ext_email; ?>"> </td>
     </tr>
     <tr>
 	<td> &nbsp; Password </td>
@@ -98,10 +93,6 @@ if($_POST)
     <tr>
 	<td> &nbsp; Real Name </td>
 	<td> <input type="text" name="ext_realname" value="<?php echo $ext_realname; ?>"> </td>
-    </tr>
-    <tr>
-	<td> &nbsp; Email Address </td>
-	<td> <input type="text" name="ext_email" value="<?php echo $ext_email; ?>"> </td>
     </tr>
     <tr>
 	<td> &nbsp; Administrator </td>
