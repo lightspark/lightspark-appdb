@@ -161,9 +161,7 @@ if(strcasecmp($categoryId, "any") == 0)
                   ORDER BY count DESC LIMIT $topNumber";
 }
 
-$result = query_appdb($sVoteQuery);
-
-if($result)
+if($result = query_appdb($sVoteQuery))
 {
     echo html_frame_start("", "90%", '', 0);
     echo html_table_begin("width='100%' align=center");
@@ -191,10 +189,6 @@ if($result)
  
     echo "<center><a href='help/?topic=voting'>What does this screen mean?</a></center>\n";
 
-}
-else
-{
-    echo "Error: " . mysql_error();
 }
 
 apidb_footer();

@@ -211,20 +211,15 @@ function make_cat_path($path, $appId = '', $versionId = '')
 
 function deleteCategory($catId)
 {
-    $r = query_appdb("SELECT appId FROM appFamily WHERE catId = $catId");
+    $r = query_appdb("SELECT appId FROM appFamily WHERE catId = $catId","Failed to delete category $catId");
     if($r)
     {
         while($ob = mysql_fetch_object($r))
             deleteAppFamily($ob->appId);
-        $r = query_appdb("DELETE FROM appCategory WHERE catId = $catId");
+        $r = query_appdb("DELETE FROM appCategory WHERE catId = $catId","Failed to delete category $catId");
        
         if($r)
             addmsg("Category $catId deleted", "green");
-        else
-            addmsg("Failed to delete category $catId:".mysql_error(), "red");
-    } else
-    {
-        addmsg("Failed to delete category $catId: ".mysql_error(), "red");
     }
 }
 

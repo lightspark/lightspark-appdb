@@ -29,16 +29,12 @@ if($cmd)
 	    $result = query_appdb("DELETE FROM appBundle WHERE appId = $appId AND bundleId = $bundleId");
 	    if($result)
 		addmsg("App deleted from bundle", "green");
-	    else
-		addmsg("Failed: " . mysql_error(), "red");
 	}
     if($cmd == "add")
 	{
 	    $result = query_appdb("INSERT INTO appBundle VALUES ($bundleId, $appId)");
 	    if($result)
 		addmsg("App $appId added to Bundle $bundleId", "green");
-	    else
-                addmsg("Failed: " . mysql_error(), "red");
 	}
     redirectref();
     exit;

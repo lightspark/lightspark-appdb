@@ -64,12 +64,6 @@ if($_REQUEST['cmd'])
                         addmsg("The image was successfully added into the database", "green");
                         redirect(apidb_fullurl("screenshots.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']));
                     }
-                    else
-                    {
-                        //error
-                        $statusMessage = "<p><b>Database Error!<br />".mysql_error()."</b></p>\n";
-                        addmsg($statusMessage, "red");
-                    }
                 }
             }
         } else // we are a normal user or an anonymous and submitted a screenshot
@@ -118,12 +112,6 @@ if($_REQUEST['cmd'])
                         addmsg("The image you submitted will be added to the database database after being reviewed", "green");
                         redirect(apidb_fullurl("screenshots.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']));
                     }
-                    else
-                    {
-                        //error
-                        $statusMessage = "<p><b>Database Error!<br />".mysql_error()."</b></p>\n";
-                        addmsg($statusMessage, "red");
-                    }
                 }
             }
         }
@@ -157,7 +145,6 @@ if($_REQUEST['cmd'])
                 redirect(apidb_fullurl("screenshots.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']));
             } else
             {
-                addmsg("Failed to delete image: ".mysql_error(), "red");
                 redirect(apidb_fullurl("screenshots.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']));
             }
         }

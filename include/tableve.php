@@ -126,9 +126,7 @@ class TableVE {
     function edit($query)
     {
         $result  = query_appdb($query);
-	if(!$result)
-	    echo "Oops: ".mysql_error()."<br>$query<br>\n";
-        $nrows   = mysql_num_rows($result);
+	$nrows   = mysql_num_rows($result);
 
         echo "<form method=post action='".$_SERVER['PHP_SELF']."'>\n";
 
@@ -457,13 +455,7 @@ class TableVE {
 			
 			$update .= " WHERE ".$this->get_id($table)." = $value";
 						
-			if(!query_appdb($update))
-			{
-			    $thisError = "<p><font color=black><b>Query:</b>: $update</font></p>\n";
-			    $thisError .= "<p><font color=red>".mysql_error()."</font></p>";
-			    addmsg($thisError,"red");
-			}
-			else
+			if(query_appdb($update))
 			{
 			    addmsg("Database Operation Complete!","green");
 			}

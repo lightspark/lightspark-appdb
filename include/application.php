@@ -81,27 +81,20 @@ class Application {
 
 function deleteAppFamily($appId)
 {
-    $r = query_appdb("DELETE FROM appFamily WHERE appId = $appId");
+    $r = query_appdb("DELETE FROM appFamily WHERE appId = $appId", "Failed to delete appFamily $appId");
     if($r)
     {
-        $r = query_appdb("DELETE FROM appVersion WHERE appId = $appId");
+        $r = query_appdb("DELETE FROM appVersion WHERE appId = $appId", "Failed to delete appVersions");
         if($r)
             addmsg("Application and versions deleted", "green");
-        else
-            addmsg("Failed to delete appVersions: " . mysql_error(), "red");
-    }
-    else
-        addmsg("Failed to delete appFamily $appId: " . mysql_error(), "red");
-    
+    }   
 }
 
 function deleteAppVersion($versionId)
 {
-    $r = query_appdb("DELETE FROM appVersion WHERE versionId = $versionId");
+    $r = query_appdb("DELETE FROM appVersion WHERE versionId = $versionId","Failed to delete appVersion $versionId");
     if($r)
         addmsg("Application Version $versionId deleted", "green");
-    else
-        addmsg("Failed to delete appVersion $versionId: " . mysql_error(), "red");
 }
 
 function lookupVersionName($appId, $versionId)

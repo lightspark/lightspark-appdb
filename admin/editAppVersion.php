@@ -130,9 +130,7 @@ if(isset($_REQUEST['submit1']))
       else
       {
          //error
-               $statusMessage = "<p><b>Database Error!<br />".mysql_error()."</b></p>\n";
-               addmsg($statusMessage, "red");
-               redirect(apidb_fullurl("admin/editAppVersion.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']));
+         redirect(apidb_fullurl("admin/editAppVersion.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']));
       }
       
         } else

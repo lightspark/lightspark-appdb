@@ -262,17 +262,10 @@ if ($_REQUEST['sub'])
                 else
                 {
                     //error
-                    $statusMessage = "<p><b>Database Error!<br>".mysql_error()."</b></p>\n";
-                    $statusMessage .= "<p><b>Note:</b> The application family was successfully added.</p>\n";
+                    $statusMessage = "<p><b>Note:</b> The application family was successfully added.</p>\n";
                     addmsg($statusMessage, "red");
                 }
                 
-            }
-            else
-            {
-               //error
-               $statusMessage = "<p><b>Database Error!<br>".mysql_error()."</b></p>\n";
-               addmsg($statusMessage, "red");
             }
         }
         else if ($_REQUEST['type'] == 'ver')
@@ -297,12 +290,6 @@ if ($_REQUEST['sub'])
                     query_appdb("DELETE from appQueue where queueId = ".$_REQUEST['queueId'].";");
                     $goodtogo = 1;
                                         
-                }
-                else
-                {
-                    //error
-                    $statusMessage = "<p><b>Database Error!<br>".mysql_error()."</b></p>\n";
-                    addmsg($statusMessage,"red");
                 }
             }
             else

@@ -38,19 +38,13 @@ if($confirmed)
     }
 /*   echo html_frame_start("Removing",400,"",0);
 */
-    $result = query_appdb($query);
-    if($result)
+    if($result = query_appdb($query))
     {
         if($superMaintainer)
             echo "You were removed as a supermaintainer of ".appIdToName($appId);
         else
             echo "You were removed as a maintainer of ".appIdToName($appId).versionIdToName($versionId);
-    } else
-    {
-        //error
-        echo "<p><b>Database Error!<br />".mysql_error()."</b></p>\n";
     }
-
 } else
 {
     if($superMaintainer)

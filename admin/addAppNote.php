@@ -65,13 +65,6 @@ if($_REQUEST['sub'] == "Submit")
         $statusMessage = "<p>Note added into the database</p>\n";
         addmsg($statusMessage,Green);
     }
-    else
-    {
-        // error
-        addmsg($query,red);
-        $statusMessage = "<p><b>Database Error!<br>".mysql_error()."</b></p>\n";
-        addmsg($statusMessage,red);
-    }
     redirect(apidb_fullurl("appview.php?appId=".$_REQUEST['appId'].$versionLink));
     exit;
 }

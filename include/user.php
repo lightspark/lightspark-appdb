@@ -79,7 +79,7 @@ class User {
                               "email = '$sEmail' AND ".
                               "password = password('$sPassword')");
         if(!$result)
-            return "Error: ".mysql_error();
+            return "A database error occured";
 
         if(mysql_num_rows($result) == 0)
             return "Invalid e-mail or password";
@@ -122,11 +122,8 @@ class User {
         $sFields = "({$aInsert['FIELDS']}, `password`, `stamp`, `created`)";
         $sValues = "({$aInsert['VALUES']}, password('".$sPassword."'), NOW(), NOW() )";
 
-        if (!query_appdb("INSERT INTO user_list $sFields VALUES $sValues"))
-        {
-            return mysql_error();
-        }
-        return $this->restore($sEmail, $sPassword);
+        query_appdb("INSERT INTO user_list $sFields VALUES $sValues", "Error while creating a new user.");
+        $this->restore($sEmail, $sPassword);
     }
 
 
@@ -176,7 +173,7 @@ class User {
         $result = query_appdb("DELETE FROM user_list WHERE email = '$sEmail'");
 
         if(!$result)
-            return mysql_error();
+            return "A database error occured";
         if(mysql_affected_rows($result) == 0)
             return "No such user.";
         return 0;
