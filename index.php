@@ -1,8 +1,11 @@
 <?php
 /***********************************/
-/* Application Database Index Page */
+/* application database index page */
 /***********************************/
 
+/*
+ * application evironment
+ */ 
 include("path.php");
 require(BASE."include/"."incl.php");
 

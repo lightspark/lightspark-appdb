@@ -3,8 +3,8 @@
 /* code to display an application */
 /**********************************/
 
-/**
- * APPLICATION ENVIRONMENT
+/*
+ * application evironment
  */
 include("path.php");
 require(BASE."include/"."incl.php");

@@ -1,5 +1,11 @@
 <?php
+/*************************/
+/* code to modify rating */
+/*************************/
 
+/*
+ * application evironment
+ */ 
 include("path.php");
 include(BASE."include/"."incl.php");
 include(BASE."include/"."rating.php");

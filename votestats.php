@@ -1,5 +1,11 @@
 <?php
+/*********************/
+/* voting statistics */
+/*********************/
 
+/*
+ * application evironment
+ */ 
 include("path.php");
 include(BASE."include/"."incl.php");
 require(BASE."include/"."category.php");

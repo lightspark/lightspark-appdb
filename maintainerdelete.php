@@ -1,5 +1,11 @@
 <?php
+/*******************************/
+/* code to delete a maintainer */
+/*******************************/
 
+/*
+ * application evironment
+ */ 
 include("path.php");
 require(BASE."include/"."incl.php");
 require(BASE."include/"."tableve.php");

@@ -1,5 +1,11 @@
 <?php
-    
+/************************/
+/* code to edit an user */
+/************************/
+
+/*
+ * application evironment
+ */    
 include("path.php");
 include(BASE."include/"."incl.php");
 

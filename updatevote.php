@@ -1,5 +1,11 @@
 <?php
+/*************************/
+/* code to modify voting */
+/*************************/
 
+/*
+ * application evironment
+ */ 
 include("path.php");
 include(BASE."include/"."incl.php");
 include(BASE."include/"."vote.php");

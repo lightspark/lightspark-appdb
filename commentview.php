@@ -5,6 +5,9 @@
 /* script expects appId, versionId and threadId as argument */
 /************************************************************/
 
+/*
+ * application evironment
+ */
 include("path.php");
 include(BASE."include/"."incl.php");
 require(BASE."include/"."comments.php");

@@ -1,5 +1,11 @@
 <?php
-    
+/**********************/
+/* preferences editor */
+/**********************/
+
+/*
+ * application evironment
+ */     
 include("path.php");
 include(BASE."include/"."incl.php");
 

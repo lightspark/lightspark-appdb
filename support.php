@@ -1,8 +1,11 @@
 <?php
-/*************************************/
-/* Application Database Support Page */
-/*************************************/
+/****************/
+/* support page */
+/****************/
 
+/*
+ * application evironment
+ */ 
 include("path.php");
 require(BASE."include/"."incl.php");
 

@@ -1,7 +1,20 @@
 <?php
+/*******************************/
+/* code to submit a maintainer */
+/*******************************/
 
-// Check the input of a submitted form. And output with a list
-// of errors. (<ul></ul>)
+/*
+ * application evironment
+ */ 
+include("path.php");
+require(BASE."include/"."incl.php");
+require(BASE."include/"."tableve.php");
+require(BASE."include/"."category.php");
+
+/**
+ * Check the input of a submitted form. And output with a list
+ * of errors. (<ul></ul>)
+ */
 function checkAppMaintainerInput( $fields )
 {
     $errors = "";
@@ -21,10 +34,6 @@ function checkAppMaintainerInput( $fields )
     }
 }
 
-include("path.php");
-require(BASE."include/"."incl.php");
-require(BASE."include/"."tableve.php");
-require(BASE."include/"."category.php");
 
 if(!loggedin())
 {

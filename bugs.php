@@ -1,9 +1,11 @@
 <?php
-/*
- * Application Database - appview.php
- *
- */
+/*********************************/
+/* bugs linked to an application */
+/*********************************/
 
+/*
+ * application evironment
+ */
 include("path.php");
 require(BASE."include/"."incl.php");
 require(BASE."include/"."application.php");

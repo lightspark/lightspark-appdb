@@ -5,12 +5,13 @@
 /* cmd and imageId                                                 */
 /*******************************************************************/
 
-/**
- * APPLICATION ENVIRONMENT
- */
+/*
+ * application evironment
+ */ 
 include("path.php");
 require(BASE."include/"."incl.php");
 require(BASE."include/"."application.php");
+
 if($_REQUEST['cmd'])
 {
     //process screenshot upload

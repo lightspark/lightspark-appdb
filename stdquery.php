@@ -1,5 +1,11 @@
 <?php
+/**************************/
+/* FIXME: add description */
+/**************************/
 
+/*
+ * application evironment
+ */ 
 include("path.php");
 require(BASE."include/"."incl.php");
 require(BASE."include/"."qclass.php");
