@@ -12,35 +12,35 @@ include("path.php");
 require(BASE."include/"."incl.php");
 require(BASE."include/"."application.php");
 
-if($cmd)
+if($_REQUEST['cmd'])
 {
-    if(havepriv("admin") || isMaintainer($appId, $versionId))
+    if(havepriv("admin") || isMaintainer($_REQUEST['appId'], $_REQUEST['versionId']))
     {
     //process screenshot upload
-    if($cmd == "screenshot_upload")
+    if($_REQUEST['cmd'] == "screenshot_upload")
     {    
-        if(!copy($imagefile, "data/screenshots/".$appId."-".$versionId."-".basename($imagefile_name)))
+        if(!copy($_FILES['imagefile']['tmp_name'], "data/screenshots/".$_REQUEST['appId']."-".$_REQUEST['versionId']."-".basename($_FILES['imagefile']['name'])))
         {
             // whoops, copy failed. do something
-            errorpage("debug: copy failed; $imagefile; $imagefile_name");
+            errorpage("debug: copy failed; (".$_FILES['imagefile']['tmp_name'].";".$_FILES['imagefile']['name']);
             exit;
         }
 
-        $query = "INSERT INTO appData VALUES (null, $appId, $versionId, 'image', ".
-        "'".addslashes($screenshot_desc)."', '".$appId."-".$versionId."-".basename($imagefile_name)."')";
+        $query = "INSERT INTO appData VALUES (null, ".$_REQUEST['appId'].", ".$_REQUEST['versionId'].", 'image', ".
+        "'".addslashes($_REQUEST['screenshot_desc'])."', '".$_REQUEST['appId']."-".$_REQUEST['versionId']."-".basename($_FILES['imagefile']['name'])."')";
 
         if(debugging()) addmsg("<p align=center><b>query:</b> $query </p>",green);
     
         if (mysql_query($query))
         {
             //success
-            $email = getNotifyEmailAddressList($appId, $versionId);
+            $email = getNotifyEmailAddressList($_REQUEST['appId'], $_REQUEST['versionId']);
             if($email)
             {
-                 $fullAppName = "Application: ".lookupAppName($appId)." Version: ".lookupVersionName($appId, $versionId);
-                 $ms .= APPDB_ROOT."screenshots.php?appId=$appId&versionId=$versionId"."\n";
+                 $fullAppName = "Application: ".lookupAppName($_REQUEST['appId'])." Version: ".lookupVersionName($_REQUEST['appId'], $_REQUEST['versionId']);
+                 $ms .= APPDB_ROOT."screenshots.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']."\n";
                  $ms .= "\n";
-                 $ms .= ($_SESSION['current']->username ? $_SESSION['current']->username : "Anonymous")." added screenshot ".$screenshot_desc." to ".$fullAppName."\n";
+                 $ms .= ($_SESSION['current']->username ? $_SESSION['current']->username : "Anonymous")." added screenshot ".$_REQUEST['screenshot_desc']." to ".$fullAppName."\n";
                  $ms .= "\n";
                  $ms .= STANDARD_NOTIFY_FOOTER;
 
@@ -52,7 +52,7 @@ if($cmd)
             addmsg("mesage sent to: ".$email, green);
 
             addmsg("The image was successfully added into the database", "green");
-            redirect(apidb_fullurl("screenshots.php?appId=$appId&versionId=$versionId"));
+            redirect(apidb_fullurl("screenshots.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']));
         }
         else
         {
@@ -62,16 +62,16 @@ if($cmd)
         }
     } else
     {
-        if($cmd == "delete")
+        if($_REQUEST['cmd'] == "delete")
         {
-            $result = mysql_query("DELETE FROM appData WHERE id = $imageId");
+            $result = mysql_query("DELETE FROM appData WHERE id = ".$_REQUEST['imageId']);
             if($result)
                 {
-                    $email = getNotifyEmailAddressList($appId, $versionId);
+                    $email = getNotifyEmailAddressList($_REQUEST['appId'], $_REQUEST['versionId']);
                     if($email)
                     {
-                        $fullAppName = "Application: ".lookupAppName($appId)." Version: ".lookupVersionName($appId, $versionId);
-                        $ms .= APPDB_ROOT."screenshots.php?appId=$appId&versionId=$versionId"."\n";
+                        $fullAppName = "Application: ".lookupAppName($_REQUEST['appId'])." Version: ".lookupVersionName($_REQUEST['appId'], $_REQUEST['versionId']);
+                        $ms .= APPDB_ROOT."screenshots.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']."\n";
                         $ms .= "\n";
                         $ms .= ($_SESSION['current']->username ? $_SESSION['current']->username : "Anonymous")." deleted screenshot from ".$fullAppName."\n";
                         $ms .= "\n";
@@ -86,11 +86,11 @@ if($cmd)
                     addmsg("mesage sent to: ".$email, green);
 
                     addmsg("Image deleted", "green");
-                    redirect(apidb_fullurl("screenshots.php?appId=$appId&versionId=$versionId"));
+                    redirect(apidb_fullurl("screenshots.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']));
                 } else
                 {
                     addmsg("Failed to delete image: ".mysql_error(), "red");
-                    redirect(apidb_fullurl("screenshots.php?appId=$appId&versionId=$versionId"));
+                    redirect(apidb_fullurl("screenshots.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']));
                 }
             }
         } 
@@ -99,17 +99,17 @@ if($cmd)
 }
 
 if($_REQUEST['versionId'])
-    $result = mysql_query("SELECT * FROM appData WHERE type = 'image' AND appId = $appId AND versionId = $versionId");
+    $result = mysql_query("SELECT * FROM appData WHERE type = 'image' AND appId = ".$_REQUEST['appId']." AND versionId = ".$_REQUEST['versionId']);
 else
-    $result = mysql_query("SELECT * FROM appData WHERE type = 'image' AND appId = $appId ORDER BY versionId");
+    $result = mysql_query("SELECT * FROM appData WHERE type = 'image' AND appId = ".$_REQUEST['appId']." ORDER BY versionId");
      
-if((!$result || !mysql_num_rows($result)) && (!havepriv("admin") && !isMaintainer($appId, $versionId))) 
+if((!$result || !mysql_num_rows($result)) && (!havepriv("admin") && !isMaintainer($_REQUEST['appId'], $_REQUEST['versionId']))) 
 {
     errorpage("No Screenshots Found","There are no screenshots currently linked to this application.");
     exit;
 } else
 {
-    $app=new Application($appId);
+    $app=new Application($_REQUEST['appId']);
     apidb_header("Screenshots");
     if($result && mysql_num_rows($result))
     {
@@ -156,9 +156,9 @@ if((!$result || !mysql_num_rows($result)) && (!havepriv("admin") && !isMaintaine
             echo $img;
 
             //show admin delete link
-            if(loggedin() && (havepriv("admin") || isMaintainer($appId, $versionId)))
+            if(loggedin() && (havepriv("admin") || isMaintainer($_REQUEST['appId'], $_REQUEST['versionId'])))
             {
-                echo "<div align=center>[<a href='screenshots.php?cmd=delete&imageId=$ob->id&appId=$appId&versionId=$versionId'>Delete Image</a>]</div>";
+                echo "<div align=center>[<a href='screenshots.php?cmd=delete&imageId=$ob->id&appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']."'>Delete Image</a>]</div>";
             }
 
             echo html_frame_end("&nbsp;");
@@ -188,10 +188,10 @@ if((!$result || !mysql_num_rows($result)) && (!havepriv("admin") && !isMaintaine
        
         echo '</table>',"\n";
         echo html_frame_end();
-        echo '<input type="hidden" name="MAX_FILE_SIZE" value="10000000">',"\n";
-        echo '<input type="hidden" name="cmd" value="screenshot_upload">',"\n";
-        echo '<input type="hidden" name="appId" value="'.$appId.'">',"\n";
-        echo '<input type="hidden" name="versionId" value="'.$versionId.'"></form>',"\n";
+        echo '<input type="hidden" name="MAX_FILE_SIZE" value="10000000" />',"\n";
+        echo '<input type="hidden" name="cmd" value="screenshot_upload" />',"\n";
+        echo '<input type="hidden" name="appId" value="'.$_REQUEST['appId'].'" />',"\n";
+        echo '<input type="hidden" name="versionId" value="'.$_REQUEST['versionId'].'"></form />',"\n";
     }
     echo html_back_link(1);
 
