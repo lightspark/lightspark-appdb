@@ -89,9 +89,11 @@ elseif (isset($_REQUEST['versionName']) && is_numeric($_REQUEST['appId']))
  */
 elseif (isset($_REQUEST['apptype']))
 {
+// header
+apidb_header("Submit Application");
+
 //FIXME: use absolute path in htmlarea_loader.js to avoid code duplication here
 ?>
-<link rel="stylesheet" href="./application.css" type="text/css">
 <!-- load HTMLArea -->
 <script type="text/javascript">
 _editor_url = "./htmlarea/";
@@ -156,10 +158,8 @@ onload = function() {
                             <td class=\"silver\">3.23</td><td class=\"silver\">20041201</td><td class=\"silver\">yes</td><td class=\"silver\">yes</td><td class=\"silver\">Silver</td>
                             </tr><tr>
                             <td class=\"bronze\">3.21</td><td class=\"bronze\">20040615</td><td class=\"bronze\">yes</td><td class=\"bronze\">yes</td><td class=\"bronze\">Bronze</td>
-                            </tr></tbody></table></p><p> <br /> </p>";
+                            </tr></tbody></table></p><p><br /></p>";
 
-    // header
-    apidb_header("Submit Application");
 
     // show add to queue form
     echo '<form name="newApp" action="appsubmit.php" method="post">'."\n";
