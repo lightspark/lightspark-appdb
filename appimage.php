@@ -109,5 +109,5 @@ if($type == "jpeg")
 
 // Clear the memory
 imagedestroy($im);
-imagedestroy($sim);
+if(is_resource($sim))imagedestroy($sim);
 ?>
