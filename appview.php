@@ -84,7 +84,10 @@ function get_screenshot_img($appId, $versionId="")
     }
     
     $img = html_frame_start("",'128','',2);
-    $img .= "<a href='screenshots.php?appId=$appId&versionId=$versionId'>$imgFile</a>";
+    if($versionId || mysql_num_rows($result))
+        $img .= "<a href='screenshots.php?appId=$appId&versionId=$versionId'>$imgFile</a>";
+    else // no link for adding app screenshot as screenshots are linked to versions
+        $img .= $imgFile; 
     $img .= html_frame_end()."<br />";
     
     return $img;
