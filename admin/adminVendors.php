@@ -22,14 +22,25 @@ if ($_REQUEST['sub'])
 {
     if($_REQUEST['sub'] == 'delete')
     {
-        $sQuery = "DELETE FROM vendor WHERE vendorId = ".$_REQUEST['vendorId'].";";
-        echo "$sQuery";
+        $sQuery = "SELECT * FROM appFamily WHERE vendorId = ".$_REQUEST['vendorId'].";";
+        if (debugging())  echo "$sQuery";
         $hResult = query_appdb($sQuery);
-        echo html_frame_start("Delete vendor: ".$_REQUEST['vendorId'],400,"",0);
-        if($hResult)
+
+
+        if(!$hResult || !mysql_num_rows($hResult))
         {
-            //success
-            echo "<p>Vendor was successfully deleted</p>\n";
+            $sQuery = "DELETE FROM vendor WHERE vendorId = ".$_REQUEST['vendorId'].";";
+            if (debugging()) echo "$sQuery";
+            $hResult = query_appdb($sQuery);
+            echo html_frame_start("Delete vendor: ".$_REQUEST['vendorId'],400,"",0);
+            if($hResult)
+            {
+                //success
+                echo "<p>Vendor was successfully deleted</p>\n";
+            }
+        } else
+        {
+            echo "<p><b> Error: Can not delete a vendor with applications attached to it!</b></p>\n";
         }
         echo html_frame_end("&nbsp;");
         echo html_back_link(1,'adminVendors.php');
@@ -64,7 +75,7 @@ if ($_REQUEST['sub'])
         {
             if ($c % 2 == 1) { $bgcolor = 'color0'; } else { $bgcolor = 'color1'; }
             echo "<tr class=$bgcolor>\n";
-            echo "    <td>".$ob->vendorName."</td>\n";
+            echo "    <td><a href=".BASE."vendorview.php?vendorId=".$ob->vendorId.">".$ob->vendorName."</a></td>\n";
             echo "    <td><a href=\"".$ob->vendorURL."\">".$ob->vendorURL."</a></td>\n";
             echo "    <td>[<a href='adminVendors.php?sub=delete&vendorId=$ob->vendorId'>delete</a>]</td>\n";
             echo "</tr>\n\n";

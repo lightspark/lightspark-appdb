@@ -16,6 +16,7 @@ else
     $admin_mode = 1;
 }
 
+$vendorId = $_REQUEST['vendorId'];
 apidb_header("Edit Vendor Information");
 
 $t = new TableVE("edit");
