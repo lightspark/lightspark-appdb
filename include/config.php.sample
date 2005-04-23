@@ -10,8 +10,8 @@
 define("APPDB_DEBUG","0"); //turns debugging on/off
 define("APPDB_THUMBNAIL_WIDTH","128"); // width of the screenshot's thumbnails
 define("APPDB_THUMBNAIL_HEIGHT","128"); // height of the screenshot's thumbnails
-define("APPDB_SCREENSHOT_MAXWIDTH","800"); // width of the screenshot's thumbnails
-define("APPDB_SCREENSHOT_MAXHEIGHT","600"); // height of the screenshot's thumbnails
+define("APPDB_SCREENSHOT_MAXWIDTH","1024"); // width of the screenshot's thumbnails
+define("APPDB_SCREENSHOT_MAXHEIGHT","768"); // height of the screenshot's thumbnails
 define("APPDB_ROOT", "http://appdb.winehq.org/");  // path to AppDB
 define("APPDB_OWNER","WineHQ"); // with what product/company is this AppDB related ?
 define("APPDB_OWNER_URL","http://www.winehq.org/"); // website of this product/company
