@@ -155,6 +155,18 @@ function getQueuedAppCount()
     return $ob->queued_apps;
 }
 
+function getQueuedVersionCount()
+{
+    $qstring = "SELECT count(*) as queued_versions FROM appVersion WHERE queued='true'";
+    $result = query_appdb($qstring);
+    $ob = mysql_fetch_object($result);
+
+    /* we don't want to count the versions that are implicit in the applications */
+    /* that are in the queue */
+    return $ob->queued_versions - getQueuedAppCount();
+}
+
+
 /* get the number of queued appdata */
 function getQueuedAppDataCount()
 {
