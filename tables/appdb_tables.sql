@@ -134,7 +134,6 @@ create table appComments (
 	subject		varchar(128),
 	body		text,
 	key(commentId),
-	index(appId),
 	index(versionId)
 );
 
