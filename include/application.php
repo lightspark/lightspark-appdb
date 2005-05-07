@@ -237,6 +237,13 @@ class Application {
                 $oUrl = new Url($iUrlId);
                 $oUrl->delete($bSilent);
             }
+
+            // remove any supermaintainers for this application so we don't orphan them
+            $sQuery = "DELETE from appMaintainers WHERE appId='".$this->iAppId."';";
+            if(!($hResult = query_appdb($sQuery)))
+            {
+                addmsg("Error removing app maintainers for the deleted application!", "red");
+            }
         }
         if(!$bSilent)
             $this->mailSupermaintainers("delete");

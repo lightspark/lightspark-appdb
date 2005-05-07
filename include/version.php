@@ -240,10 +240,18 @@ class Version {
                 $oUrl = new Url($iUrlId);
                 $oUrl->delete($bSilent);
             }
+
+            // remove any maintainers for this version so we don't orphan them
+            $sQuery = "DELETE from appMaintainers WHERE versionId='".$this->iVersionId."';";
+            if(!($hResult = query_appdb($sQuery)))
+            {
+                addmsg("Error removing version maintainers for the deleted version!", "red");
+            }
         }
         if(!$bSilent)
             $this->mailMaintainers("delete");
-            $this->mailSubmitter(true);
+
+        $this->mailSubmitter(true);
     }
 
 
