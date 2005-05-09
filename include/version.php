@@ -189,7 +189,12 @@ class Version {
             $sUpdate = compile_update_string(array('maintainer_rating'    => $sTestedRating));
             if (!query_appdb("UPDATE appVersion SET maintainer_rating = '".$sTestedRating."' WHERE versionId = ".$this->iVersionId))
                 return false;
-            $sWhatChanged .= "Rating was changed from ".$this->sTestedRating." to ".$sTestedRating.".\n\n";
+
+            if($this->sTestedRating)
+                $sWhatChanged .= "Rating was changed from ".$this->sTestedRating." to ".$sTestedRating.".\n\n";
+            else
+                $sWhatChanged .= "Rating was changed to ".$sTestedRating.".\n\n";
+
             $this->sTestedRating = $sTestedRating;
         }
      
