@@ -327,7 +327,7 @@ class Application {
             case "delete":
                 $sSubject = $this->sName." has been deleted by ".$_SESSION['current']->sRealname;
 
-                /* if replyText is set we should report the reason the application was deleted
+                /* if replyText is set we should report the reason the application was deleted */
                 if($_REQUEST['replyText'])
                 {
                     $sMsg .= "Reason given:\n";
