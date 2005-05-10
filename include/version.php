@@ -190,7 +190,7 @@ class Version {
             if (!query_appdb("UPDATE appVersion SET maintainer_rating = '".$sTestedRating."' WHERE versionId = ".$this->iVersionId))
                 return false;
 
-            if($this->sTestedRating)
+            if($this->sTestedRating != "")
                 $sWhatChanged .= "Rating was changed from ".$this->sTestedRating." to ".$sTestedRating.".\n\n";
             else
                 $sWhatChanged .= "Rating was changed to ".$sTestedRating.".\n\n";
