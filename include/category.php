@@ -167,6 +167,37 @@ class Category {
         $path[] = array(0, "ROOT");
         return array_reverse($path);
     }
+
+    /* return the total number of applications in this category */
+    function getApplicationCount($depth = null)
+    {
+        $MAX_DEPTH = 5;
+
+        if($depth)
+            $depth++;
+        else
+            $depth = 0;
+
+        /* if we've reached our max depth, just return 0 and stop recursing */
+        if($depth >= $MAX_DEPTH)
+            return 0;
+
+        $totalApps = 0;
+
+        /* add on all apps in each category this category includes */
+        if($this->aSubcatsIds)
+        {
+            while(list($i, $iSubcatId) = each($this->aSubcatsIds))
+            {
+                $subCat = new Category($iSubcatId);
+                $totalApps += $subCat->getApplicationCount($depth);
+            }
+        }
+
+        $totalApps += sizeof($this->aApplicationsIds); /* add on the apps at this category level */
+        
+        return $totalApps;
+    }
 }
 
 

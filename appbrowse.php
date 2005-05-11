@@ -65,18 +65,18 @@ if($subs)
         //set row color
         $bgcolor = ($i % 2) ? "color0" : "color1"; 
 	
-	   //get number of apps
-           $appcount = sizeof($oSubCat->aApplicationsIds);
+        //get number of apps in this sub-category
+        $appcount = $oSubCat->getApplicationCount();
 
-	   //format desc
-	   $desc = substr(stripslashes($oSubCat->sDescription),0,70);
+        //format desc
+        $desc = substr(stripslashes($oSubCat->sDescription),0,70);
 
-	   //display row
-	   echo "<tr class=$bgcolor>\n";
-	   echo "    <td><a href='appbrowse.php?catId=$iSubcatId'>".$oSubCat->sName."</a></td>\n";
-	   echo "    <td>$desc &nbsp;</td>\n";
-	   echo "    <td>$appcount &nbsp;</td>\n";
-	   echo "</tr>\n\n";
+        //display row
+        echo "<tr class=$bgcolor>\n";
+        echo "    <td><a href='appbrowse.php?catId=$iSubcatId'>".$oSubCat->sName."</a></td>\n";
+        echo "    <td>$desc &nbsp;</td>\n";
+        echo "    <td>$appcount &nbsp;</td>\n";
+        echo "</tr>\n\n";
     }
     
     echo "</table>\n\n";
@@ -106,11 +106,11 @@ if($apps)
     {
         $oApp = new Application($iAppId);
 
-	//set row color
-	$bgcolor = ($i % 2) ? "color0" : "color1";
+        //set row color
+        $bgcolor = ($i % 2) ? "color0" : "color1";
         
         //format desc
-	$desc = trim_description($oApp->sDescription);
+        $desc = trim_description($oApp->sDescription);
 	
         //display row
         echo "<tr class=$bgcolor>\n";
