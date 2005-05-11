@@ -185,11 +185,10 @@ if($result = query_appdb($sVoteQuery))
     /* think that something went wrong with the server */
     if($c == 1)
     {
-	echo '<h2 align="center">No apps found in this category</h2>';
+        echo '<h2 align="center">No apps found in this category, please vote for your favorite apps!</h2>';
     }
  
     echo '<p align="center"><a href="help/?topic=voting">What does this screen mean?</a></p>';
-
 }
 
 apidb_footer();

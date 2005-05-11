@@ -55,12 +55,12 @@ function vote_count_app_total($appId)
 function vote_add($appId, $slot, $userId = null)
 {
     if(!$userId)
-        {
+    {
         if($_SESSION['current']->isLoggedIn())
             $userId = $_SESSION['current']->iUserId;
-            else
-                return;
-        }
+        else
+            return;
+    }
 
     if($slot > MAX_VOTES)
         return;
@@ -77,13 +77,15 @@ function vote_remove($slot, $userId = null)
 {
     
     if(!$userId)
-        {
-            if($_SESSION['current']->isLoggedIn())
-                $userId = $_SESSION['current']->iUserId;
-            else
-                return;
-        }
-    query_appdb("DELETE FROM appVotes WHERE userId = $userId AND slot = $slot");
+    {
+        if($_SESSION['current']->isLoggedIn())
+            $userId = $_SESSION['current']->iUserId;
+        else
+            return;
+    }
+
+    $sQuery="DELETE FROM appVotes WHERE userId = $userId AND slot = $slot";
+    query_appdb($sQuery);
 }
 
 
@@ -149,24 +151,56 @@ function vote_update($vars)
 
     if( !is_numeric($vars['appId']) OR !is_numeric($vars['slot']))
     {
-        addmsg("No application or vote slot selected", "red");
+        if(is_numeric($vars['appId']))
+           redirect(apidb_fullurl("appview.php?appId=".$vars["appId"]));
+        else
+            redirect(apidb_fullurl("index.php"));
+
         return;
     }
     
     if($vars["vote"])
-	{
-	    addmsg("Registered vote for App #".$vars["appId"], "green");
-	    vote_add($vars["appId"], $vars["slot"]);
-            redirect(apidb_fullurl("appview.php?appId=".$vars["appId"]));
-	}
-    else
-    if($vars["clear"])
-	{
-	    addmsg("Removed vote for App #".$vars["appId"], "green");
+    {
+        addmsg("Registered vote for App #".$vars["appId"], "green");
+        vote_add($vars["appId"], $vars["slot"]);
+    } else if($vars["clear"])
+    {
+        /* see if we have a vote in this slot, if we don't there is */
+        /* little reason to remove it or even mention that we did anything */
+        if(is_vote_in_slot($vars["slot"]))
+        {
             vote_remove($vars["slot"]);
-            redirect(apidb_fullurl("appview.php?appId=".$vars["appId"]));
-	}
+            addmsg("Removed vote for App #".$vars["appId"], "green");
+        }
+    }
+
+    redirect(apidb_fullurl("appview.php?appId=".$vars["appId"]));
 }
 
+// tell us if there is a vote in a given slot so we don't
+// display incorrect information to the user or go
+// through the trouble of trying to remove a vote that doesn't exist
+function is_vote_in_slot($slot, $userId = null)
+{
+    if(!$userId)
+    {
+        if($_SESSION['current']->isLoggedIn())
+            $userId = $_SESSION['current']->iUserId;
+        else
+            return;
+    }
+
+    $sQuery="SELECT COUNT(*) as count from appVotes WHERE userId = '".$userId."' AND slot = '".$slot."';";
+    if($hResult = query_appdb($sQuery))
+    {
+        $oRow = mysql_fetch_object($hResult);        
+        if($oRow->count != 0)
+            return true;
+        else
+            return false;
+    }
+    
+    return false;
+}
 
 ?>
