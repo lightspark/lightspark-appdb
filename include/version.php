@@ -171,7 +171,12 @@ class Version {
             $sUpdate = compile_update_string(array('description'    => $sDescription));
             if (!query_appdb("UPDATE appVersion SET ".$sUpdate." WHERE versionId = ".$this->iVersionId))
                 return false;
-            $sWhatChanged .= "Description was changed from\n ".$this->sDescription."\n to \n".$sDescription.".\n\n";
+
+            if($this->sDescription != "")
+                $sWhatChanged .= "Description was changed from\n ".$this->sDescription."\n to \n".$sDescription.".\n\n";
+            else
+                $sWhatChanged .= "Description was changed to \n".$sDescription.".\n\n";
+                
             $this->sDescription = $sDescription;
         }
 
@@ -180,7 +185,12 @@ class Version {
             $sUpdate = compile_update_string(array('maintainer_release'    => $sTestedRelease));
             if (!query_appdb("UPDATE appVersion SET ".$sUpdate." WHERE versionId = ".$this->iVersionId))
                 return false;
-            $sWhatChanged .= "Last tested release was changed from ".$this->sTestedRelease." to ".$sTestedRelease.".\n\n";
+
+            if($this->sTestedRelease != "")
+                $sWhatChanged .= "Last tested release was changed from ".$this->sTestedRelease." to ".$sTestedRelease.".\n\n";
+            else
+                $sWhatChanged .= "Last tested release was changed to ".$sTestedRelease.".\n\n";
+
             $this->sTestedRelease = $sTestedRelease;
         }
 
