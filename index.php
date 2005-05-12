@@ -70,10 +70,17 @@ If you have screenshots or links to contribute, please browse the database and u
     $voteAppId = $ob->appId;
     $voteAppName = $ob->appName;
 
-    
-    echo "There are <b>$numApps</b> applications currently in the database with\n";
-    echo "<a href='appview.php?appId=$voteAppId'>$voteAppName</a> being the\n";
-    echo "top <a href='votestats.php'>voted</a> application.\n";
+    /* don't mention the top application if there are no votes yet */
+    if($voteAppId != "")
+    {
+       echo "There are <b>$numApps</b> applications currently in the database with\n";
+       echo "<a href='appview.php?appId=$voteAppId'>$voteAppName</a> being the\n";
+       echo "top <a href='votestats.php'>voted</a> application.\n";
+    } else
+    {
+       echo "There are <b>$numApps</b> applications currently in the database, please\n";
+       echo "<a href=\"".BASE."help/?topic=voting\" title=\"help on voting\" style=\"cursor: help\">vote</a> for your favorite application.\n";
+    }
 ?>
 
 <br /><br />
@@ -89,26 +96,7 @@ If you have screenshots or links to contribute, please browse the database and u
     <th>Application</th><th>Description</th><th>Screenshot</th>
     </tr>
 <?php
-$sQuery = "SELECT appVotes.appId AS appId, COUNT( appVotes.appId ) AS c
-           FROM appVotes, appVersion
-           WHERE appVersion.maintainer_rating = 'Gold'
-           AND appVersion.appId = appVotes.appId
-           GROUP BY appVotes.appId
-           ORDER BY c DESC
-           LIMIT 10";
-$hResult = query_appdb($sQuery);
-while($oRow = mysql_fetch_object($hResult))
-{
-    $oApp = new Application($oRow->appId);
-    // image
-    $img = get_screenshot_img($oRow->appId);
-    echo '
-    <tr class="white">
-      <td><a href="appview.php?appId='.$oRow->appId.'">'.$oApp->sName.'</a></td>
-        <td>'.trim_description($oApp->sDescription).'</td>
-        <td>'.$img.'</td>
-    </tr>';
-}
+  outputTopXRowAppsFromRating('Gold', 10);
 ?>
 </table>
 <br />
@@ -119,26 +107,7 @@ while($oRow = mysql_fetch_object($hResult))
       <th>Application</th><th>Description</th><th>Screenshot</th>
     </tr>
 <?php
-$sQuery = "SELECT appVotes.appId AS appId, COUNT( appVotes.appId ) AS c
-           FROM appVotes, appVersion
-           WHERE appVersion.maintainer_rating = 'Silver'
-           AND appVersion.appId = appVotes.appId
-           GROUP BY appVotes.appId
-           ORDER BY c DESC
-           LIMIT 10";
-$hResult = query_appdb($sQuery);
-while($oRow = mysql_fetch_object($hResult))
-{
-    $oApp = new Application($oRow->appId);
-    // image
-    $img = get_screenshot_img($oRow->appId);
-    echo '
-    <tr class="white">
-      <td><a href="appview.php?appId='.$oRow->appId.'">'.$oApp->sName.'</a></td>
-        <td>'.trim_description($oApp->sDescription).'</td>
-        <td>'.$img.'</td>
-    </tr>';
-}
+  outputTopXRowAppsFromRating('Silver', 10);
 ?>
 </table>
 

@@ -253,4 +253,52 @@ function lookupVendorName($vendorId)
     return $vendor->vendorName;
 }
 
+/* Output the rows for the Top-X tables on the main page */
+function outputTopXRowAppsFromRating($rating, $num_apps)
+{
+    $sQuery = "SELECT appVotes.appId AS appId, COUNT( appVotes.appId ) AS c
+           FROM appVotes, appVersion
+           WHERE appVersion.maintainer_rating = '$rating'
+           AND appVersion.appId = appVotes.appId
+           GROUP BY appVotes.appId
+           ORDER BY c DESC
+           LIMIT $num_apps";
+    $hResult = query_appdb($sQuery);
+    $num_apps-=mysql_num_rows($hResult); /* take away the rows we are outputting here */
+    while($oRow = mysql_fetch_object($hResult))
+    {
+        $oApp = new Application($oRow->appId);
+        // image
+        $img = get_screenshot_img($oRow->appId);
+        echo '
+    <tr class="white">
+      <td><a href="appview.php?appId='.$oRow->appId.'">'.$oApp->sName.'</a></td>
+        <td>'.trim_description($oApp->sDescription).'</td>
+        <td>'.$img.'</td>
+    </tr>';
+    }
+
+    /* if we have any empty spots in the list, get these from applications with images */
+    $sQuery = "SELECT DISTINCT appVersion.appId as appId
+           FROM appVersion, appData
+           WHERE appVersion.maintainer_rating = '$rating'
+           AND appVersion.versionId = appData.versionId
+           AND appData.type = 'image'
+           AND appData.queued = 'false'
+           LIMIT $num_apps";
+    $hResult = query_appdb($sQuery);
+    while($oRow = mysql_fetch_object($hResult))
+    {
+        $oApp = new Application($oRow->appId);
+        // image
+        $img = get_screenshot_img($oRow->appId);
+        echo '
+    <tr class="white">
+      <td><a href="appview.php?appId='.$oRow->appId.'">'.$oApp->sName.'</a></td>
+        <td>'.trim_description($oApp->sDescription).'</td>
+        <td>'.$img.'</td>
+    </tr>';
+    }
+}
+
 ?>
