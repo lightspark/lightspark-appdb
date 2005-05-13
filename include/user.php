@@ -145,6 +145,7 @@ class User {
         $hResult3 = query_appdb("DELETE FROM user_prefs WHERE userid = '".$this->iUserId."'");
         $hResult4 = query_appdb("DELETE FROM appVotes WHERE userid = '".$this->iUserId."'");
         $hResult5 = query_appdb("DELETE FROM appMaintainers WHERE userid = '".$this->iUserId."'");
+        $hResult6 = query_appdb("DELETE FROM appComments WHERE userId = '".$this->iUserId."'");
         return($hResult = query_appdb("DELETE FROM user_list WHERE userid = '".$this->iUserId."'"));
     }
 

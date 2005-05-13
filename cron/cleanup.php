@@ -62,7 +62,7 @@ function hasDataAssociated($iUserId)
     $ob = mysql_fetch_object($hResult);
     if($ob->c != 0) return true;
 
-    $sQuery = "SELECT count(userId) as c FROM appMaintainerQueue WHERE userId = $iUserId";
+    $sQuery = "SELECT count(userId) as c FROM appMaintainers WHERE userId = $iUserId";
     $hResult = query_appdb($sQuery);
     $ob = mysql_fetch_object($hResult);
     if($ob->c != 0) return true;
