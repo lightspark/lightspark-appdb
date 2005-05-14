@@ -16,6 +16,7 @@ function global_sidebar_menu() {
     $g->add("Submit Application", BASE."appsubmit.php?apptype=1");
     $g->add("Help &amp; Documentation", BASE."help/");
     $g->add("AppDB Stats", BASE."appdbStats.php");
+    $g->add("Email your suggestions for improving the AppDB", "mailto:appdb@winehq.org");
     $g->done();    
 
     $g = new htmlmenu("Search");
@@ -28,7 +29,7 @@ function global_sidebar_menu() {
 function app_search_box($q = '')
 {
    $str =  "</span><form method=\"get\" action=\"".BASE."search.php\">\n";
-   $str .= "<input type=text name=q value='$q' size=8 class=searchfield>";
+   $str .= "<input type=text name=q value='$q' size=11 class=searchfield>";
    $str .= "<input type=submit value='Search' class=searchbutton>\n";
    $str .= "</form>\n<span>";
    return $str;

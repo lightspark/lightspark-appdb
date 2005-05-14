@@ -18,8 +18,7 @@ apidb_header("Wine Application Database");
 <h1>Welcome</h1>
 
 <p>This is the Wine Application Database (AppDB). From here you get info on application
-compatibility with Wine. For developers, you can get information on the APIs used in an
-application.</p>
+compatibility with Wine.</p>
 <?php
 $str_benefits="
     <ul>
