@@ -52,6 +52,8 @@ if ($_REQUEST['sub'])
         echo '<form name="qform" action="adminAppQueue.php" method="post" enctype="multipart/form-data">',"\n";
         echo '<input type="hidden" name="sub" value="add">',"\n"; 
 
+        echo html_back_link(1,'adminAppQueue.php');
+
         if ($oVersion) //app version
         { 
             //help
@@ -91,20 +93,17 @@ if ($_REQUEST['sub'])
             echo '</table></form>',"\n";
         } else // application
         { 
+            echo html_frame_start("Potential duplicate applications in the database","90%","",0);
+            $hResult = searchForApplication($oApp->sName);
+            outputSearchTableForhResult($oApp->sName, $hResult);
+            echo html_frame_end("&nbsp;");
+
             //help
             echo "<div align=center><table width='90%' border=0 cellpadding=3 cellspacing=0><tr><td>\n\n";
             echo "<p>This is the full view of the application waiting to be approved. \n";
             echo "You need to pick a category before submitting \n";
             echo "it into the database. If you approve this application,\n";
             echo "an email will be sent to the author of the submission.<p>\n";
-            echo "<p>There are two kinds of applications in this database:</p>\n";
-            echo "<ol>\n";
-            echo "    <li><b>App Family</b> This is a parent group application, that will have multiple versions under it.<br>\n";
-            echo "    To add this submission as a Family, choose 'Application' from the type drop down. Then set the category.\n";
-            echo "    The version and app parent fields will be ignored in this type.<br>\n";
-            echo "    If the vendor does not exist, leave the vendor drop down unset, and the field will be used.</li><p>\n";
-            echo "    <li><b>App Version</b> This type of application will be nested under the selected application parent.\n";
-            echo "    The category, name, and vendor fields will be ignored.</li>\n";
             echo "<p>Click delete to remove the selected item from the queue. An email will automatically be sent to the\n";
             echo "submitter to let them know the item was deleted.</p>\n\n";        
             echo "</td></tr></table></div>\n\n";    
