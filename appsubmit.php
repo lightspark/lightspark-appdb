@@ -172,11 +172,27 @@ onload = function() {
     echo "database. The application will be reviewed by the AppDB Administrator\n";
     echo "and you will be notified via email if this application will be added to\n";
     echo "the database.</p>\n";
+    echo "<p>Before continuing please check that you have:\n";
+    echo "<ul>\n";
+    if ($_REQUEST['apptype'] == 1)
+    {
+        echo " <li>Searched for this application in the database.  Duplicate submissions will be rejected.</li>\n";
+        echo " <li>Really want to submit an application instead of a new version of an application\n";
+        echo "   that is already in the database. If this is the case browse to the application\n";
+        echo "   and click on 'Submit new version'</li>\n";
+    }
+    echo " <li>Entered a valid version for this application.  This is the application\n";
+    echo "   version, NOT the wine version(which goes in the testing results section of the template</li>\n";
+    echo " <li>Tested this application under Wine.  There are tens of thousands of applications\n";
+    echo "   for windows, we don't need placeholder entries in the database.  Please enter as complete \n";
+    echo "   as possible testing results in the version template provided below</li>\n";
+    echo "</ul></p>";
     echo "<p>Please don't forget to mention which Wine version you used, how well it worked\n";
     echo "and if any workaround were needed. Having app descriptions just sponsoring the app\n";
     echo "(Yes, some vendor want to use the appdb for this) or saying \"I haven't tried this app with Wine\" ";
     echo "won't help Wine development or Wine users.</p>\n";
-    echo "<p>After your application has been added you'll be able to submit screenshots for it.</p>";
+    echo "<p>After your application has been added you'll be able to submit screenshots for it, post";
+    echo " messages in its forums or become a maintainer to help others trying to run the application.</p>";
 
     // new application and version
     if ($_REQUEST['apptype'] == 1)

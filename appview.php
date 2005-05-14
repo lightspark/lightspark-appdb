@@ -277,7 +277,7 @@ if($_REQUEST['appId'])
         if($_SESSION['current']->isLoggedIn())
         {
             echo '<form method="post" name="message" action="appsubmit.php?appId='.$oApp->iAppId.'&amp;apptype=2">';
-            echo '<input type=submit value="Add Version" class="button">';
+            echo '<input type=submit value="Submit new version" class="button">';
             echo '</form>';
         }
         if($_SESSION['current']->hasPriv("admin"))
