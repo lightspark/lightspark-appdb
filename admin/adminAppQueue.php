@@ -56,6 +56,11 @@ if ($_REQUEST['sub'])
 
         if ($oVersion) //app version
         { 
+            echo html_frame_start("Potential duplicate versions in the database","90%","",0);
+            $oApp = new Application($oVersion->iAppId);
+            display_versions($oApp->iAppId, $oApp->aVersionsIds);
+            echo html_frame_end("&nbsp;");
+
             //help
             echo "<div align=center><table width='90%' border=0 cellpadding=3 cellspacing=0><tr><td>\n\n";
             echo "<p>This is the full view of the application version waiting to be approved. \n";
