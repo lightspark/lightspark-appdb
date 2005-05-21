@@ -306,7 +306,7 @@ else
             echo "<tr class=\"$bgcolor\">\n";
             echo "    <td>".print_date(mysqltimestamp_to_unixtimestamp($oApp->sSubmitTime))."</td>\n";
             echo "    <td>\n";
-            echo $oSubmitter->sEmail ? "<a href=\"mailto:".$oUser->sEmail."\">":"";
+            echo $oSubmitter->sEmail ? "<a href=\"mailto:".$oSubmitter->sEmail."\">":"";
             echo $oSubmitter->sRealname;
             echo $oSubmitter->sEmail ? "</a>":"";
             echo "    </td>\n";
@@ -366,7 +366,7 @@ else
             echo "<tr class=\"$bgcolor\">\n";
             echo "    <td>".print_date(mysqltimestamp_to_unixtimestamp($oApp->sSubmitTime))."</td>\n";
             echo "    <td>\n";
-            echo $oSubmitter->sEmail ? "<a href=\"mailto:".$oUser->sEmail."\">":"";
+            echo $oSubmitter->sEmail ? "<a href=\"mailto:".$oSubmitter->sEmail."\">":"";
             echo $oSubmitter->sRealname;
             echo $oSubmitter->sEmail ? "</a>":"";
             echo "    </td>\n";
