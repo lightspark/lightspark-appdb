@@ -162,7 +162,7 @@ class Version {
             $sUpdate = compile_update_string(array('versionName'    => $sName));
             if (!query_appdb("UPDATE appVersion SET ".$sUpdate." WHERE versionId = ".$this->iVersionId))
                 return false;
-            $sWhatChanged .= "Name was changed from ".$this->sName." to ".$sName.".\n\n";
+            $sWhatChanged .= "Name was changed from:\n\t'".$this->sName."'\nto:\n\t'".$sName."'\n\n";
             $this->sName = $sName;
         }     
 

@@ -54,7 +54,8 @@ class Note {
         if(query_appdb("INSERT INTO appNotes $sFields VALUES $sValues", "Error while creating a new note."))
         {
             $this->note(mysql_insert_id());
-            $this->mailMaintainers("add");
+            $sWhatChanged = "Description is:\n".$sDescription.".\n\n";
+            $this->mailMaintainers("add", $sWhatChanged);
             return true;
         }
         else
@@ -123,7 +124,7 @@ class Note {
         {
             case "add":
                 $sSubject = "Note ".$this->sTitle." for ".lookup_app_name($this->iAppId)." ".lookup_version_name($this->iVersionId)." added by ".$_SESSION['current']->sRealname;
-                $sMsg  = APPDB_ROOT."appview.php?versionId=".$this->iVersionId."\n";
+                $sMsg .= APPDB_ROOT."appview.php?versionId=".$this->iVersionId."\n";
                 addmsg("The note was successfully added into the database.", "green");
             break;
             case "edit":
