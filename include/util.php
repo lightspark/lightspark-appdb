@@ -404,7 +404,7 @@ function outputSearchTableForhResult($search_words, $hResult)
 		
             //display row
             echo "<tr class=$bgcolor>\n";
-            echo "    <td>".html_ahref($ob->appName,"appview.php?appId=$ob->appId")."</td>\n";
+            echo "    <td>".html_ahref($ob->appName,BASE."appview.php?appId=$ob->appId")."</td>\n";
             echo "    <td>".trim_description($ob->description)."</td>\n";
             echo "    <td>$y->versions &nbsp;</td>\n";
             echo "</tr>\n\n";
@@ -447,7 +447,7 @@ function display_versions($iAppId, $aVersionsIds)
 
             //display row
             echo "<tr class=$bgcolor>\n";
-            echo "    <td><a href=\"appview.php?versionId=".$iVersionId."\">".$oVersion->sName."</a></td>\n";
+            echo "    <td><a href=\"".BASE."appview.php?versionId=".$iVersionId."\">".$oVersion->sName."</a></td>\n";
             echo "    <td>".trim_description($oVersion->sDescription)."</td>\n";
             echo "    <td align=center>".$oVersion->sTestedRating."</td>\n";
             echo "    <td align=center>".$oVersion->sTestedRelease."</td>\n";
