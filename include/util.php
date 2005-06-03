@@ -315,9 +315,64 @@ function searchForApplication($search_words)
     return $hResult;
 }
 
+function searchForApplicationFuzzy($search_words, $minMatchingPercent)
+{
+    $foundAValue = false;
+    $excludeAppIdArray = array();
+    $appIdArray = array();
+
+    /* add on all of the like matches that we can find */
+    $hResult = searchForApplication($search_words);
+    while($oRow = mysql_fetch_object($hResult))
+    {
+        array_push($excludeAppIdArray, $oRow->appId);
+    }
+
+    /* add on all of the fuzzy matches we can find */
+    $sQuery = "SELECT appName, appId FROM appFamily WHERE queued = 'false'";
+    foreach ($excludeAppIdArray as $key=>$value)
+    {
+        $sQuery.=" AND appId != '$value'";
+    }
+    $sQuery.=";";
+
+    $hResult = query_appdb($sQuery);
+    while($oRow = mysql_fetch_object($hResult))
+    {
+        similar_text($oRow->appName, $search_words, $similarity_pst);
+        if(number_format($similarity_pst, 0) > $minMatchingPercent)
+        {
+            $foundAValue = true;
+            array_push($appIdArray, $oRow->appId);
+        }
+    }
+
+    if($foundAValue == false)
+        return null;
+
+    $sQuery = "SELECT * from appFamily WHERE ";
+
+    $firstEntry = true;
+    foreach ($appIdArray as $key=>$value)
+    {
+        if($firstEntry == true)
+        {
+            $sQuery.="appId='$value'";
+            $firstEntry = false;
+        } else
+        {
+            $sQuery.=" OR appId='$value'";
+        }
+    }
+    $sQuery.=" ORDER BY appName;";
+
+    $hResult = query_appdb($sQuery);
+    return $hResult;
+}
+
 function outputSearchTableForhResult($search_words, $hResult)
 {
-    if(mysql_num_rows($hResult) == 0)
+    if(($hResult == null) || (mysql_num_rows($hResult) == 0))
     {
         // do something
         echo html_frame_start("","98%");
