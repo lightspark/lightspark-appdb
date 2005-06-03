@@ -336,9 +336,13 @@ function searchForApplicationFuzzy($search_words, $minMatchingPercent)
     }
     $sQuery.=";";
 
+    /* capitalize the search words */
+    $search_words = strtoupper($search_words);
+
     $hResult = query_appdb($sQuery);
     while($oRow = mysql_fetch_object($hResult))
     {
+        $oRow->appName = strtoupper($oRow->appName); /* convert the appname to upper case */
         similar_text($oRow->appName, $search_words, $similarity_pst);
         if(number_format($similarity_pst, 0) > $minMatchingPercent)
         {
