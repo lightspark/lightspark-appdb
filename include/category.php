@@ -28,7 +28,7 @@ class Category {
              */
             $sQuery = "SELECT *
                        FROM appCategory
-                       WHERE catId = ".$iCatId;
+                       WHERE catId = ".$iCatId." ORDER BY catName;";
             if($hResult = query_appdb($sQuery))
             {
                 $oRow = mysql_fetch_object($hResult);
@@ -45,7 +45,7 @@ class Category {
             $sQuery = "SELECT appId
                        FROM appFamily
                        WHERE catId = ".$iCatId."
-                       AND queued = 'false'";
+                       AND queued = 'false' ORDER BY appName";
             if($hResult = query_appdb($sQuery))
             {
                 while($oRow = mysql_fetch_object($hResult))
@@ -59,7 +59,7 @@ class Category {
              */
             $sQuery = "SELECT catId
                        FROM appCategory
-                       WHERE catParent = ".$iCatId;
+                       WHERE catParent = ".$iCatId." ORDER BY catName;";
             if($hResult = query_appdb($sQuery))
             {
                 while($oRow = mysql_fetch_object($hResult))
