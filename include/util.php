@@ -466,4 +466,123 @@ function display_versions($iAppId, $aVersionsIds)
     }
 }
 
+/* pass in $isVersion of true if we are processing changes for an app version */
+/* or false if processing changes for an application family */
+function process_app_version_changes($isVersion)
+{
+    if($isVersion)
+    {
+        $oVersion = new Version($_REQUEST['versionId']);
+        $oApp = new Application($_REQUEST['appId']);
+    }
+
+    // commit changes of form to database
+    if(($_REQUEST['submit'] == "Update Database") && $isVersion) /* is a version */
+    {
+        $oVersion->update($_REQUEST['versionName'], $_REQUEST['description'], $_REQUEST['maintainer_release'], $_REQUEST['maintainer_rating']);
+    } else if(($_REQUEST['submit'] == "Update Database") && !$isVersion) /* is an application */
+    {
+        $oApp = new Application($_REQUEST['appId']);
+        $oApp->update($_REQUEST['appName'], $_REQUEST['description'], $_REQUEST['keywords'], $_REQUEST['webPage'], $_REQUEST['vendorId'], $_REQUEST['catId']);
+    } else if($_REQUEST['submit'] == "Update URL")
+    {
+
+        $sWhatChanged = "";
+        $bAppChanged = false;
+
+        if (!empty($_REQUEST['url_desc']) && !empty($_REQUEST['url']) )
+        {
+            // process added URL
+            if($_SESSION['current']->showDebuggingInfos()) { echo "<p align=center><b>{$_REQUEST['url']}:</b> {$_REQUEST['url_desc']} </p>"; }
+
+            if($isVersion)
+            {
+                $aInsert = compile_insert_string( array('versionId' => $_REQUEST['versionId'],
+                                             'type' => 'url',
+                                             'description' => $_REQUEST['url_desc'],
+                                             'url' => $_REQUEST['url']));
+            } else
+            {
+                $aInsert = compile_insert_string( array( 'appId' => $_REQUEST['appId'],
+                                             'type' => 'url',
+                                             'description' => $_REQUEST['url_desc'],
+                                             'url' => $_REQUEST['url']));
+            
+            }
+            
+            $sQuery = "INSERT INTO appData ({$aInsert['FIELDS']}) VALUES ({$aInsert['VALUES']})";
+	    
+            if($_SESSION['current']->showDebuggingInfos()) { echo "<p align=center><b>query:</b> $sQuery </p>"; }
+
+            if (query_appdb($sQuery))
+            {
+                addmsg("The URL was successfully added into the database", "green");
+                $sWhatChanged .= "  Added Url:     Description: ".stripslashes($_REQUEST['url_desc'])."\n";
+                $sWhatChanged .= "                         Url: ".stripslashes($_REQUEST['url'])."\n";
+                $bAppChanged = true;
+            }
+        }
+        
+        // Process changed URLs  
+        for($i = 0; $i < $_REQUEST['rows']; $i++)
+        {
+            if($_SESSION['current']->showDebuggingInfos()) { echo "<p align=center><b>{$_REQUEST['adescription'][$i]}:</b> {$_REQUEST['aURL'][$i]}: {$_REQUEST['adelete'][$i]} : {$_REQUEST['aId'][$i]} : .{$_REQUEST['aOldDesc'][$i]}. : {$_REQUEST['aOldURL'][$i]}</p>"; }
+
+            if ($_REQUEST['adelete'][$i] == "on")
+            {
+	            $hResult = query_appdb("DELETE FROM appData WHERE id = '{$_REQUEST['aId'][$i]}'");
+
+                if($hResult)
+                {
+                    addmsg("<p><b>Successfully deleted URL ".$_REQUEST['aOldDesc'][$i]." (".$_REQUEST['aOldURL'][$i].")</b></p>\n",'green');
+                    $sWhatChanged .= "Deleted Url:     Description: ".stripslashes($_REQUEST['aOldDesc'][$i])."\n";
+                    $sWhatChanged .= "                         url: ".stripslashes($_REQUEST['aOldURL'][$i])."\n";
+                    $bAppChanged = true;
+                }
+
+
+            }
+            else if( $_REQUEST['aURL'][$i] != $_REQUEST['aOldURL'][$i] || $_REQUEST['adescription'][$i] != $_REQUEST['aOldDesc'][$i])
+            {
+                if(empty($_REQUEST['aURL'][$i]) || empty($_REQUEST['adescription'][$i]))
+                    addmsg("The URL or description was blank. URL not changed in the database", "red");
+                else
+                {
+                    $sUpdate = compile_update_string( array( 'description' => $_REQUEST['adescription'][$i],
+                                                     'url' => $_REQUEST['aURL'][$i]));
+                    if (query_appdb("UPDATE appData SET $sUpdate WHERE id = '{$_REQUEST['aId'][$i]}'"))
+                    {
+                         addmsg("<p><b>Successfully updated ".$_REQUEST['aOldDesc'][$i]." (".$_REQUEST['aOldURL'][$i].")</b></p>\n",'green');
+                         $sWhatChanged .= "Changed Url: Old Description: ".stripslashes($_REQUEST['aOldDesc'][$i])."\n";
+                         $sWhatChanged .= "                     Old Url: ".stripslashes($_REQUEST['aOldURL'][$i])."\n";
+                         $sWhatChanged .= "             New Description: ".stripslashes($_REQUEST['adescription'][$i])."\n";
+                         $sWhatChanged .= "                     New url: ".stripslashes($_REQUEST['aURL'][$i])."\n";
+                         $bAppChanged = true;
+                    }
+                }
+            }
+        }
+        if ($bAppChanged)
+        {
+            $sEmail = get_notify_email_address_list($_REQUEST['appId']);
+            if($sEmail)
+            {
+                if($isVersion)
+                    $sSubject = "Links for ".$oApp->sName." ".$oVersion->sName." have been updated by ".$_SESSION['current']->sRealname;
+                else
+                    $sSubject = "Links for ".$oApp->sName." have been updated by ".$_SESSION['current']->sRealname;
+                    
+                $sMsg  = APPDB_ROOT."appview.php?appId=".$_REQUEST['appId']."\n";
+                $sMsg .= "\n";
+                $sMsg .= "The following changes have been made:";
+                $sMsg .= "\n";
+                $sMsg .= $sWhatChanged."\n";
+                $sMsg .= "\n";
+
+                mail_appdb($sEmail, $sSubject ,$sMsg);
+            }
+        }
+    }
+}
+
 ?>

@@ -18,95 +18,12 @@ if(!$_SESSION['current']->hasPriv("admin") && !$_SESSION['current']->isMaintaine
     exit;
 }
 
-if(isset($_REQUEST['submit1']))
+/* process the changes the user entered into the web form */
+if(isset($_REQUEST['submit']))
 {
-    $oVersion = new Version($_REQUEST['versionId']);
-    $oApp = new Application($_REQUEST['appId']);
-    if($_REQUEST['submit1'] == "Update Database")
-    {
-        $oVersion->update($_REQUEST['versionName'], $_REQUEST['description'], $_REQUEST['maintainer_release'], $_REQUEST['maintainer_rating']);
-    }
-    else if($_REQUEST['submit1'] == "Update URL")
-    {
-
-        $sWhatChanged = "";
-        $bAppChanged = false;
-
-        if (!empty($_REQUEST['url_desc']) && !empty($_REQUEST['url']) )
-        {
-            // process added URL
-            $aInsert = compile_insert_string( array('versionId' => $_REQUEST['versionId'],
-                                             'type' => 'url',
-                                             'description' => $_REQUEST['url_desc'],
-                                             'url' => $_REQUEST['url']));
-            
-            $sQuery = "INSERT INTO appData ({$aInsert['FIELDS']}) VALUES ({$aInsert['VALUES']})";
-	    
-            if (query_appdb($sQuery))
-            {
-                addmsg("The URL was successfully added into the database", "green");
-                $sWhatChanged .= "  Added Url:     Description: ".stripslashes($_REQUEST['url_desc'])."\n";
-                $sWhatChanged .= "                         Url: ".stripslashes($_REQUEST['url'])."\n";
-                $bAppChanged = true;
-            }
-        }
-        
-        // Process changed URLs  
-        for($i = 0; $i < $_REQUEST['rows']; $i++)
-        {
-            if ($_REQUEST['adelete'][$i] == "on")
-            {
-	            $hResult = query_appdb("DELETE FROM appData WHERE id = '{$_REQUEST['aId'][$i]}'");
-
-                if($hResult)
-                {
-                    addmsg("Successfully deleted URL ".$_REQUEST['aOldDesc'][$i]." (".$_REQUEST['aOldURL'][$i].").","green");
-                    $sWhatChanged .= "Deleted Url:     Description: ".stripslashes($_REQUEST['aOldDesc'][$i])."\n";
-                    $sWhatChanged .= "                         url: ".stripslashes($_REQUEST['aOldURL'][$i])."\n";
-                    $bAppChanged = true;
-                }
-
-
-            }
-            else if( $_REQUEST['aURL'][$i] != $_REQUEST['aOldURL'][$i] || $_REQUEST['adescription'][$i] != $_REQUEST['aOldDesc'][$i])
-            {
-                if(empty($_REQUEST['aURL'][$i]) || empty($_REQUEST['adescription'][$i]))
-                    addmsg("The URL or description was blank. URL not changed in the database", "red");
-                else
-                {
-                    $sUpdate = compile_update_string( array( 'description' => $_REQUEST['adescription'][$i],
-                                                     'url' => $_REQUEST['aURL'][$i]));
-                    if (query_appdb("UPDATE appData SET $sUpdate WHERE id = '{$_REQUEST['aId'][$i]}'"))
-                    {
-                         addmsg("<p><b>Successfully updated ".$_REQUEST['aOldDesc'][$i]." (".$_REQUEST['aOldURL'][$i].")</b></p>\n",'green');
-                         $sWhatChanged .= "Changed Url: Old Description: ".stripslashes($_REQUEST['aOldDesc'][$i])."\n";
-                         $sWhatChanged .= "                     Old Url: ".stripslashes($_REQUEST['aOldURL'][$i])."\n";
-                         $sWhatChanged .= "             New Description: ".stripslashes($_REQUEST['adescription'][$i])."\n";
-                         $sWhatChanged .= "                     New url: ".stripslashes($_REQUEST['aURL'][$i])."\n";
-                         $bAppChanged = true;
-                    }
-                }
-            }
-        }
-        if ($bAppChanged)
-        {
-            $sEmail = get_notify_email_address_list($_REQUEST['appId']);
-            if($sEmail)
-            {
-                $sSubject = "Links for ".$oApp->sName." ".$oVersion->sName." have been updated by ".$_SESSION['current']->sRealname;
-                $sMsg  = APPDB_ROOT."appview.php?appId=".$_REQUEST['appId']."\n";
-                $sMsg .= "\n";
-                $sMsg .= "The following changes have been made:";
-                $sMsg .= "\n";
-                $sMsg .= $sWhatChanged."\n";
-                $sMsg .= "\n";
-
-                mail_appdb($sEmail, $sSubject ,$sMsg);
-            }
-        }
-    }
+    process_app_version_changes(true);
     redirect(apidb_fullurl("appview.php?versionId=".$_REQUEST['versionId']));
-} else
+} else /* or display the webform for making changes */
 {
 ?>
 <link rel="stylesheet" href="./application.css" type="text/css">
@@ -161,7 +78,7 @@ if(isset($_REQUEST['submit1']))
     make_bugzilla_version_list("maintainer_release", $oVersion->sTestedRelease);
     echo '</td></tr>',"\n";
 
-    echo '<tr><td colspan=2 align=center class=color3><input type="submit" name="submit1" value="Update Database" /></td></tr>',"\n";
+    echo '<tr><td colspan=2 align=center class=color3><input type="submit" name="submit" value="Update Database" /></td></tr>',"\n";
 
     echo html_table_end();
     echo html_frame_end();
@@ -206,7 +123,7 @@ if(isset($_REQUEST['submit1']))
     echo '<tr><td class=color1>New</td><td class=color1><input size="45" type="text" name="url_desc"></td>',"\n";
     echo '<td class=color1><input size=45% name="url" type="text"></td></tr>',"\n";
      
-    echo '<tr><td colspan=3 align=center class="color3"><input type="submit" name="submit1" value="Update URL"></td></tr>',"\n";
+    echo '<tr><td colspan=3 align=center class="color3"><input type="submit" name="submit" value="Update URL"></td></tr>',"\n";
          
     echo '</table>',"\n";
     echo html_frame_end();
