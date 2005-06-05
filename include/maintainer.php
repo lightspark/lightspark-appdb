@@ -25,7 +25,7 @@ function getAppsFromUserId($userId)
 }
 
 /*
- * get the userIds of maintainers for this appId and versionId
+ * get the userIds of maintainers for a versionId
  */
 function getMaintainersUserIdsFromAppIdVersionId($versionId)
 {
