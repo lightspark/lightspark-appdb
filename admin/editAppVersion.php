@@ -128,6 +128,19 @@ if(isset($_REQUEST['submit']))
     echo '</table>',"\n";
     echo html_frame_end();
     echo "</form>";
+
+    /* only admins can move versions */
+    if($_SESSION['current']->hasPriv("admin"))
+    {
+        // move version form
+        echo '<form enctype="multipart/form-data" action="moveAppVersion.php" method="post">',"\n";
+        echo '<input type=hidden name="appId" value='.$oVersion->iAppId.'>';
+        echo '<input type=hidden name="versionId" value='.$oVersion->iVersionId.'>';
+        echo html_frame_start("Move version to another application","90%","",0);
+        echo '<center><input type="submit" name="view" value="Move this version"></center>',"\n";
+        echo html_frame_end();
+    }
+
     echo html_back_link(1,BASE."appview.php?versionId=".$oVersion->iVersionId);
     apidb_footer();
 }

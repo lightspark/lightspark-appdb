@@ -215,7 +215,7 @@ class Version {
                 return false;
             $oAppBefore = new Application($this->iAppId);
             $oAppAfter = new Application($iAppId);
-            $sWhatChanged .= "Application was changed from ".$oAppBefore->sName." to ".$oAppAfter->sName.".\n\n";
+            $sWhatChanged .= "Version was moved from application ".$oAppBefore->sName." to application ".$oAppAfter->sName.".\n\n";
             $this->iAppId = $iAppId;
         }
         if($sWhatChanged)
