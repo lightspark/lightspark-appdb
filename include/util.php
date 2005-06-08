@@ -585,4 +585,16 @@ function process_app_version_changes($isVersion)
     }
 }
 
+function perform_search_and_output_results($search_words)
+{
+    echo "<center><b>Like matches</b></center>";
+    $hResult = searchForApplication($search_words);
+    outputSearchTableForhResult($search_words, $hResult);
+
+    $minMatchingPercent = 60;
+    echo "<center><b>Fuzzy matches - minimum ".$minMatchingPercent."% match</b></center>";
+    $hResult = searchForApplicationFuzzy($search_words, $minMatchingPercent);
+    outputSearchTableForhResult($search_words, $hResult);
+}
+
 ?>

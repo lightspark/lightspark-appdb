@@ -12,15 +12,6 @@ require(BASE."include/application.php");
 
 
 apidb_header("Search Results");
-
-echo "<center><b>Like matches</b></center>";
-$hResult = searchForApplication($_REQUEST['q']);
-outputSearchTableForhResult($_REQUEST['q'], $hResult);
-
-$minMatchingPercent = 60;
-echo "<center><b>Fuzzy matches - minimum ".$minMatchingPercent."% match</b></center>";
-$hResult = searchForApplicationFuzzy($_REQUEST['q'], $minMatchingPercent);
-outputSearchTableForhResult($_REQUEST['q'], $hResult);
-
+perform_search_and_output_results($_REQUEST['q']);
 apidb_footer();
 ?>

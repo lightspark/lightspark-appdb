@@ -99,8 +99,7 @@ if ($_REQUEST['sub'])
         } else // application
         { 
             echo html_frame_start("Potential duplicate applications in the database","90%","",0);
-            $hResult = searchForApplication($oApp->sName);
-            outputSearchTableForhResult($oApp->sName, $hResult);
+            perform_search_and_output_results($oApp->sName);
             echo html_frame_end("&nbsp;");
 
             //help
