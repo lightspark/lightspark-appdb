@@ -62,7 +62,7 @@ if(isset($_REQUEST['action']))
             $url = BASE."appview.php?appId=".$oRow->appId;
             echo '<a href="'.$url.'">'.substr($oRow->appName, 0, 30).'</a></td><td> - '.$oRow->appId.'</td>';
             echo "<td style='padding-left:20px;'><a href='moveAppVersion.php?action=move&versionId=$oVersion->iVersionId&appId=$oRow->appId'>Move here</a></td></tr>";
-            echo '<tr style="border-left: thin solid; border-right:thin solid; background: #FAFAD2;"><td style="padding-left:40px;" colspan="3" align="left">'.$oRow->versionName.'</td></tr>';
+            echo '<tr style="border-left: thin solid; border-right:thin solid; background: #FAFBE2;"><td style="padding-left:40px;" colspan="3" align="left">'.$oRow->versionName.'</td></tr>';
         } else /* just add another version */
         {
             echo '<tr style="border-left: thin solid; border-right:thin solid; background: #FAFBE2;"><td style="padding-left:40px;" colspan="3" align="left">'.$oRow->versionName.'</td></tr>';
