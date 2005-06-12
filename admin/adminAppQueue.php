@@ -17,6 +17,59 @@ function get_vendor_from_keywords($sKeywords)
     return($aKeywords[$iLastElt]);
 }
 
+/* allows the admin to click on a row and mark the current application as a duplicate */
+/* of the selected application */
+function outputSearchTableForDuplicateFlagging($currentAppId, $hResult)
+{
+    if(($hResult == null) || (mysql_num_rows($hResult) == 0))
+    {
+        // do nothing, we have no results
+    } else
+    {
+        echo html_frame_start("","98%","",0);
+        echo "<table width='100%' border=0 cellpadding=3 cellspacing=1>\n\n";
+
+        $c = 0;
+        while($ob = mysql_fetch_object($hResult))
+        {
+            //skip if a NONAME
+            if ($ob->appName == "NONAME") { continue; }
+		
+            //set row color
+            $bgcolor = ($c % 2) ? 'color0' : 'color1';
+		
+            //count versions
+            $query = query_appdb("SELECT count(*) as versions FROM appVersion WHERE appId = $ob->appId AND versionName != 'NONAME'");
+            $y = mysql_fetch_object($query);
+
+            //display row
+            echo "<tr class=$bgcolor>\n";
+            /* map the merging of the current app to the app we are displaying in the table */
+            echo "    <td>".html_ahref($ob->appName,"adminAppQueue.php?sub=duplicate&appId=".$currentAppId."&appIdMergeTo=".$ob->appId)."</td>\n";
+            echo "    <td>$y->versions versions &nbsp;</td>\n";
+            echo "</tr>\n\n";
+
+            $c++;    
+
+            //set row color
+            $bgcolor = ($c % 2) ? 'color0' : 'color1';
+
+            /* add the versions to the table */
+            $oApp = new Application($ob->appId);
+            foreach($oApp->aVersionsIds as $iVersionId)
+            {
+                $oVersion = new Version($iVersionId);
+                echo "<tr class=$bgcolor><td></td><td>".$oVersion->sName."</td></tr>\n";
+            }
+
+            $c++;    
+        }
+
+        echo "</table>\n\n";
+        echo html_frame_end();
+    }
+}
+
 //deny access if not logged in
 if(!$_SESSION['current']->hasPriv("admin"))
 {
@@ -29,6 +82,16 @@ if ($_REQUEST['sub'])
     if(is_numeric($_REQUEST['appId']))
     {
         $oApp = new Application($_REQUEST['appId']);
+
+        /* if we are processing a queued application there MUST be an implicitly queued */
+        /* version to go along with it.  Find this version so we can display its information */
+        /* during application processing so the admin can make a better choice about */
+        /* whether to accept or reject the overall application */
+        $sQuery = "Select versionId from appVersion where appId='".$_REQUEST['appId']."';";
+        $hResult = query_appdb($sQuery);
+        $oRow = mysql_fetch_object($hResult);
+
+        $oVersion = new Version($oRow->versionId);
     } elseif(is_numeric($_REQUEST['versionId']))
     {
         $oVersion = new Version($_REQUEST['versionId']);
@@ -54,7 +117,7 @@ if ($_REQUEST['sub'])
 
         echo html_back_link(1,'adminAppQueue.php');
 
-        if ($oVersion) //app version
+        if (!$oApp) //app version
         { 
             echo html_frame_start("Potential duplicate versions in the database","90%","",0);
             $oApp = new Application($oVersion->iAppId);
@@ -83,7 +146,6 @@ if ($_REQUEST['sub'])
             echo '<tr valign=top><td class="color0"><b>Version name</b></td>',"\n";
             echo '<td><input type=text name="versionName" value="'.$oVersion->sName.'" size="20"></td></tr>',"\n";
 
-
             echo '<tr valign=top><td class=color0><b>Description</b></td>',"\n";
             echo '<td><p style="width:700px"><textarea  cols="80" rows="20" id="editor" name="versionDescription">'.$oVersion->sDescription.'</textarea></p></td></tr>',"\n";
         
@@ -100,6 +162,16 @@ if ($_REQUEST['sub'])
         { 
             echo html_frame_start("Potential duplicate applications in the database","90%","",0);
             perform_search_and_output_results($oApp->sName);
+            echo html_frame_end("&nbsp;");
+
+            echo html_frame_start("Delete application as duplicate of this application:","90%","",0);
+            echo "Clicking on an entry in this table will delete this application.";
+            echo " It will also modify the version";
+            echo " application to have an appId of the existing application and keep it queued for processing";
+            $hResult = searchForApplication($oApp->sName);
+            outputSearchTableForDuplicateFlagging($oApp->iAppId, $hResult);
+            $hResult = searchForApplicationFuzzy($oApp->sName, 60);
+            outputSearchTableForDuplicateFlagging($oApp->iAppId, $hResult);
             echo html_frame_end("&nbsp;");
 
             //help
@@ -178,10 +250,18 @@ if ($_REQUEST['sub'])
             echo '<tr valign=top><td class="color0"><b>App URL</b></td>',"\n";
             echo '<td><input type=text name="webpage" value="'.$oApp->sWebpage.'" size="20"></td></tr>',"\n";
       
-            //desc
-  
-            echo '<tr valign=top><td class=color0><b>Description</b></td>',"\n";
-            echo '<td><p style="width:700px"><textarea  cols="80" rows="20" id="editor" name="description">'.$oApp->sDescription.'</textarea></p></td></tr>',"\n";
+            // application desc
+            echo '<tr valign=top><td class=color0><b>Application Description</b></td>',"\n";
+            echo '<td><p style="width:700px"><textarea  cols="80" rows="20" id="editor" name="applicationDescription">'.$oApp->sDescription.'</textarea></p></td></tr>',"\n";
+
+            // version name
+            echo '<tr valign=top><td class="color0"><b>Version name</b></td>',"\n";
+            echo '<td><input type=text name="versionName" value="'.$oVersion->sName.'" size="20"></td></tr>',"\n";
+
+            // version description
+            echo '<tr valign=top><td class=color0><b>Version Description</b></td>',"\n";
+            echo '<td><p style="width:700px"><textarea  cols="80" rows="20" id="editor" name="versionDescription">'.$oVersion->sDescription.'</textarea></p></td></tr>',"\n";
+        
         
             echo '<tr valign=top><td class="color0"><b>email Text</b></td>',"\n";
             echo '<td><textarea name="replyText" rows=10 cols=35></textarea></td></tr>',"\n";
@@ -189,7 +269,8 @@ if ($_REQUEST['sub'])
             echo '<tr valign=top><td class=color3 align=center colspan=2>' ,"\n";
             echo '<input type="hidden" name="appId" value="'.$oApp->iAppId.'" />';
             echo '<input type=submit value=" Submit App Into Database " class=button>&nbsp',"\n";
-            echo '<input name="sub" type="submit" value="Delete" class="button" /></td></tr>',"\n";
+            echo '<input name="sub" type="submit" value="Delete" class="button" />',"\n";
+            echo '</td></tr>',"\n";
             echo '</table></form>',"\n";
         }
 
@@ -208,7 +289,7 @@ if ($_REQUEST['sub'])
             }
             
             $oApp = new Application($_REQUEST['appId']);
-            $oApp->update($_REQUEST['appName'], $_REQUEST['description'], $_REQUEST['keywords'], $_REQUEST['webpage'], $_REQUEST['vendorId'], $_REQUEST['catId']);
+            $oApp->update($_REQUEST['appName'], $_REQUEST['applicationDescription'], $_REQUEST['keywords'], $_REQUEST['webpage'], $_REQUEST['vendorId'], $_REQUEST['catId']);
             $oApp->unQueue();
         } else if(is_numeric($_REQUEST['versionId']) && is_numeric($_REQUEST['appId']))  // version
         {
@@ -217,6 +298,21 @@ if ($_REQUEST['sub'])
             $oVersion->unQueue();
         }
         
+        redirect(apidb_fullurl("admin/adminAppQueue.php"));
+    }
+    else if ($_REQUEST['sub'] == 'duplicate')
+    {
+        if(is_numeric($_REQUEST['appIdMergeTo']))
+        {
+            /* move this version submission under the existing app */
+            $oVersion->update(null, null, null, null, $_REQUEST['appIdMergeTo']);
+        
+            /* delete the appId that is the duplicate */
+            $oApp->delete();
+
+        }
+
+        /* redirect back to the main page */
         redirect(apidb_fullurl("admin/adminAppQueue.php"));
     }
     else if ($_REQUEST['sub'] == 'Delete')
@@ -254,7 +350,7 @@ if ($_REQUEST['sub'])
         redirect(apidb_fullurl("admin/adminAppQueue.php"));
     }
 }
-else
+else /* if ($_REQUEST['sub']) is not defined, display the main app queue page */
 {
     apidb_header("Admin App Queue");
     // get queued apps
