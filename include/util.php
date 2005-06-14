@@ -304,13 +304,40 @@ function outputTopXRowAppsFromRating($rating, $num_apps)
 /* search the database and return a hResult from the query_appdb() */
 function searchForApplication($search_words)
 {
+    /* split search words up so we can see if any of them match a vendor name or vendor url */
+    $split_words = split(" ", $search_words);
+    $vendorIdArray = array();
+
+    /* find all of the vendors whos names or urls match words in our */
+    /* search parameters */
+    foreach ($split_words as $key=>$value)
+    {
+        $sQuery = "SELECT vendorId from vendor where vendorName LIKE '%".addslashes($value)."%'
+                                       OR vendorURL LIKE '%".addslashes($value)."%'";
+        $hResult = query_appdb($sQuery);
+        while($oRow = mysql_fetch_object($hResult))
+        {
+            array_push($vendorIdArray, $oRow->vendorId);
+        }
+    }
+
+    /* base query */
     $sQuery = "SELECT *
-           FROM appFamily
+           FROM appFamily, vendor
            WHERE appName != 'NONAME'
+           AND appFamily.vendorId = vendor.vendorId
            AND queued = 'false'
            AND (appName LIKE '%".addslashes($search_words)."%'
-           OR keywords LIKE '%".addslashes($search_words)."%')
-           ORDER BY appName";
+           OR keywords LIKE '%".addslashes($search_words)."%'";
+
+    /* append to the query any vendors that we matched with */
+    foreach($vendorIdArray as $key=>$value)
+    {
+        $sQuery.=" OR appFamily.vendorId=$value";
+    }
+
+    $sQuery.=" ) ORDER BY appName";
+
     $hResult = query_appdb($sQuery);
     return $hResult;
 }
