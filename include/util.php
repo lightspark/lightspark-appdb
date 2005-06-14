@@ -587,6 +587,10 @@ function process_app_version_changes($isVersion)
 
 function perform_search_and_output_results($search_words)
 {
+    /* trim off leading and trailing spaces in $search_words */
+    /* to improve matching accuracy */
+    $search_words = trim($search_words);
+
     echo "<center><b>Like matches</b></center>";
     $hResult = searchForApplication($search_words);
     outputSearchTableForhResult($search_words, $hResult);
