@@ -618,7 +618,60 @@ function perform_search_and_output_results($search_words)
     /* to improve matching accuracy */
     $search_words = trim($search_words);
 
+    /* Remove any of the words in the ignore_words array.  these are far too common */
+    /* and will result in way too many matches if we leave them in */
+    /* We will also remove any single letter search words */
+    $ignore_words = array('I', 'a', 'about', 'an', 'are', 'as', 'at', 'be', 'by', 'com',
+                          'de', 'en', 'for', 'from', 'how', 'in', 'is', 'it', 'la', 'of',
+                          'on', 'or', 'that', 'the', 'this', 'to', 'was', 'what', 'when',
+                          'where', 'who', 'will', 'with', 'und', 'the', 'www');
+
+    $filtered_search = "";
+
+    /* search each word in $search_words */
+    $split_words = split(" ", $search_words);
+    foreach($split_words as $key=>$value)
+    {
+        /* search each item in the $ignore_words array */
+        $found = false;
+        foreach($ignore_words as $ik=>$iv)
+        {
+            /* if we find a match we should flag it as so */
+            if(strtoupper($value) == strtoupper($iv))
+            {
+                $found = true;
+                break; /* break out of this foreach loop */
+            }
+        }
+
+        /* remove all single letters */
+        if((strlen($value) == 1) && !is_numeric($value))
+            $found = true;
+
+        /* if we didn't find this word, keep it */
+        if($found == false)
+        {
+            if($filtered_search)
+                $filtered_search.=" $value";
+            else
+                $filtered_search="$value";
+        } else
+        {
+            if($removed_words == "")
+                $removed_words.="'".$value."'";
+            else
+                $removed_words.=", '".$value."'";
+        }
+    }
+
+    echo "<b>Searching for '".$filtered_search."'";
+    if($removed_words)
+        echo ", removed '".$removed_words."' from your search as they are too common</b>";
     echo "<center><b>Like matches</b></center>";
+
+    /* replace the existing search with the filtered_search */
+    $search_words = $filtered_search;
+
     $hResult = searchForApplication($search_words);
     outputSearchTableForhResult($search_words, $hResult);
 
