@@ -76,7 +76,7 @@ class Comment {
             }
             if($sEmail)
             {
-                $sSubject = "Comment for ".lookup_app_name($this->iAppId)." ".lookup_version_name($this->iVersionId)." added by ".$_SESSION['current']->sRealname;
+                $sSubject = "Comment for '".lookup_app_name($this->iAppId)." ".lookup_version_name($this->iVersionId)."' added by ".$_SESSION['current']->sRealname;
                 $sMsg  = APPDB_ROOT."appview.php?versionId=".$this->iVersionId."\n";
                 $sMsg .= "\n";
                 $sMsg .= "Subject: ".$this->sSubject."\r\n";
