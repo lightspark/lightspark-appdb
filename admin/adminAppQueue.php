@@ -147,7 +147,7 @@ if ($_REQUEST['sub'])
             echo '<td><input type=text name="versionName" value="'.$oVersion->sName.'" size="20"></td></tr>',"\n";
 
             echo '<tr valign=top><td class=color0><b>Description</b></td>',"\n";
-            echo '<td><p style="width:700px"><textarea  cols="80" rows="20" id="editor" name="versionDescription">'.$oVersion->sDescription.'</textarea></p></td></tr>',"\n";
+            echo '<td><p style="width:700px"><textarea  cols="80" rows="20" id="versioneditor" name="versionDescription">'.$oVersion->sDescription.'</textarea></p></td></tr>',"\n";
         
             echo '<tr valign=top><td class="color0"><b>email Text</b></td>',"\n";
             echo '<td><textarea name="replyText" rows="10" cols="35"></textarea></td></tr>',"\n";
@@ -252,7 +252,7 @@ if ($_REQUEST['sub'])
       
             // application desc
             echo '<tr valign=top><td class=color0><b>Application Description</b></td>',"\n";
-            echo '<td><p style="width:700px"><textarea  cols="80" rows="20" id="editor" name="applicationDescription">'.$oApp->sDescription.'</textarea></p></td></tr>',"\n";
+            echo '<td><p style="width:700px"><textarea  cols="80" rows="20" id="applicationeditor" name="applicationDescription">'.$oApp->sDescription.'</textarea></p></td></tr>',"\n";
 
             // version name
             echo '<tr valign=top><td class="color0"><b>Version name</b></td>',"\n";
@@ -260,7 +260,7 @@ if ($_REQUEST['sub'])
 
             // version description
             echo '<tr valign=top><td class=color0><b>Version Description</b></td>',"\n";
-            echo '<td><p style="width:700px"><textarea  cols="80" rows="20" id="editor" name="versionDescription">'.$oVersion->sDescription.'</textarea></p></td></tr>',"\n";
+            echo '<td><p style="width:700px"><textarea  cols="80" rows="20" id="versioneditor" name="versionDescription">'.$oVersion->sDescription.'</textarea></p></td></tr>',"\n";
         
         
             echo '<tr valign=top><td class="color0"><b>email Text</b></td>',"\n";
