@@ -329,10 +329,18 @@ function get_screenshot_img($iAppId = null, $iVersionId = null)
     }
     
     $sImg = html_frame_start("",'128','',2);
-    if($iVersionId || mysql_num_rows($hResult))
-        $sImg .= "<a href='screenshots.php?appId=$iAppId&amp;versionId=$iVersionId'>$sImgFile <br />Submit&nbsp;Screenshot</a>";
-    else // no link for adding app screenshot as screenshots are linked to versions
+    if(mysql_num_rows($hResult))
+    {
+        /* if we are displaying a screenshot for a particular version, display text to indicate that */
+        /* the user may click to submit a screenshot */
+        if($iVersionId)
+            $sImg .= "<a href='screenshots.php?appId=$iAppId&amp;versionId=$iVersionId'>$sImgFile<br /><center>Submit&nbsp;Screenshot</center></a>";
+        else
+            $sImg .= "<a href='screenshots.php?appId=$iAppId&amp;versionId=$iVersionId'>$sImgFile</a>";
+    } else // no link for adding app screenshot as screenshots are linked to versions
+    {
         $sImg .= $sImgFile; 
+    }
     $sImg .= html_frame_end()."<br />";
     
     return $sImg;
