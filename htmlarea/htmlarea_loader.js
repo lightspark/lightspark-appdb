@@ -17,6 +17,8 @@ function initDocument() {
     editor.config.pageStyle = "@import url(../application.css);";
     editor.registerPlugin(DynamicCSS);
     editor.generate();
+
+    HTMLArea.replace("editor2", config);
 }
 
 onload = function() {
