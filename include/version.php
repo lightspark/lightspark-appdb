@@ -331,6 +331,8 @@ class Version {
                         $oSubmitter = new User($this->iSubmitterId);
                         $sMsg .= "This version has been submitted by ".$oSubmitter->sRealname.".";
                         $sMsg .= "\n";
+                        $sMsg .= "Appdb admin reply text:\n";
+                        $sMsg .= $_REQUEST['replyText']."\n"; /* append the reply text, if there is any */
                     }
                     addmsg("The version was successfully added into the database.", "green");
                 } else // Version queued.
