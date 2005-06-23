@@ -321,11 +321,11 @@ function get_screenshot_img($iAppId = null, $iVersionId = null)
     }
     if(!$hResult || !mysql_num_rows($hResult))
     {
-        $sImgFile = '<img src="'.BASE.'images/no_screenshot.png" alt="No Screenshot" />';
+        $sImgFile = '<center><img src="'.BASE.'images/no_screenshot.png" alt="No Screenshot" /></center>';
     } else
     {
         $oRow = mysql_fetch_object($hResult);
-        $sImgFile = '<img src="appimage.php?thumbnail=true&amp;id='.$oRow->id.'" alt="'.$oRow->description.'" />';
+        $sImgFile = '<center><img src="appimage.php?thumbnail=true&amp;id='.$oRow->id.'" alt="'.$oRow->description.'" /></center>';
     }
     
     $sImg = html_frame_start("",'128','',2);
