@@ -329,15 +329,18 @@ function get_screenshot_img($iAppId = null, $iVersionId = null)
     }
     
     $sImg = html_frame_start("",'128','',2);
+
+    /* we have screenshots */
     if(mysql_num_rows($hResult))
     {
-        /* if we are displaying a screenshot for a particular version, display text to indicate that */
-        /* the user may click to submit a screenshot */
         if($iVersionId)
-            $sImg .= "<a href='screenshots.php?appId=$iAppId&amp;versionId=$iVersionId'>$sImgFile<br /><center>Submit&nbsp;Screenshot</center></a>";
+            $sImg .= "<a href='screenshots.php?appId=$iAppId&amp;versionId=$iVersionId'>$sImgFile<br /><center>View/Submit&nbsp;Screenshot</center></a>";
         else
-            $sImg .= "<a href='screenshots.php?appId=$iAppId&amp;versionId=$iVersionId'>$sImgFile</a>";
-    } else // no link for adding app screenshot as screenshots are linked to versions
+            $sImg .= "<a href='screenshots.php?appId=$iAppId&amp;versionId=$iVersionId'>$sImgFile<br /><center>View&nbsp;Screenshot</center></a>";
+    } else if($iVersionId) /* we are asking for a specific app version but it has no screenshots */
+    {
+        $sImg .= "<a href='screenshots.php?appId=$iAppId&amp;versionId=$iVersionId'>$sImgFile<br /><center>Submit&nbsp;Screenshot</center></a>";
+    } else /* we have no screenshots and we aren't a specific version, we don't allow adding screenshots for an app */
     {
         $sImg .= $sImgFile; 
     }
