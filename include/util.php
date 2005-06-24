@@ -301,9 +301,72 @@ function outputTopXRowAppsFromRating($rating, $num_apps)
     }
 }
 
+
+/* remove common words from $search_words to improve our searching results */
+function cleanupSearchWords($search_words)
+{
+    /* trim off leading and trailing spaces in $search_words */
+    /* to improve matching accuracy */
+    $search_words = trim($search_words);
+
+    /* Remove any of the words in the ignore_words array.  these are far too common */
+    /* and will result in way too many matches if we leave them in */
+    /* We will also remove any single letter search words */
+    $ignore_words = array('I', 'a', 'about', 'an', 'are', 'as', 'at', 'be', 'by', 'com',
+                          'de', 'en', 'for', 'from', 'how', 'in', 'is', 'it', 'la', 'of',
+                          'on', 'or', 'that', 'the', 'this', 'to', 'was', 'what', 'when',
+                          'where', 'who', 'will', 'with', 'und', 'the', 'www');
+
+    $filtered_search = "";
+
+    /* search each word in $search_words */
+    $split_words = split(" ", $search_words);
+    foreach($split_words as $key=>$value)
+    {
+        /* search each item in the $ignore_words array */
+        $found = false;
+        foreach($ignore_words as $ik=>$iv)
+        {
+            /* if we find a match we should flag it as so */
+            if(strtoupper($value) == strtoupper($iv))
+            {
+                $found = true;
+                break; /* break out of this foreach loop */
+            }
+        }
+
+        /* remove all single letters */
+        if((strlen($value) == 1) && !is_numeric($value))
+            $found = true;
+
+        /* if we didn't find this word, keep it */
+        if($found == false)
+        {
+            if($filtered_search)
+                $filtered_search.=" $value";
+            else
+                $filtered_search="$value";
+        } else
+        {
+            if($removed_words == "")
+                $removed_words.="'".$value."'";
+            else
+                $removed_words.=", '".$value."'";
+        }
+    }
+
+    /* replace the existing search with the filtered_search */
+    $search_words = $filtered_search;
+
+    return $search_words;
+}
+
 /* search the database and return a hResult from the query_appdb() */
 function searchForApplication($search_words)
 {
+    /* cleanup search words */
+    $search_words = cleanupSearchWords($search_words);
+
     /* split search words up so we can see if any of them match a vendor name or vendor url */
     $split_words = split(" ", $search_words);
     $vendorIdArray = array();
@@ -344,6 +407,9 @@ function searchForApplication($search_words)
 
 function searchForApplicationFuzzy($search_words, $minMatchingPercent)
 {
+    /* cleanup search words */
+    $search_words = cleanupSearchWords($search_words);
+
     $foundAValue = false;
     $excludeAppIdArray = array();
     $appIdArray = array();
@@ -614,64 +680,9 @@ function process_app_version_changes($isVersion)
 
 function perform_search_and_output_results($search_words)
 {
-    /* trim off leading and trailing spaces in $search_words */
-    /* to improve matching accuracy */
-    $search_words = trim($search_words);
+    echo "<b>Searching for '".$search_words."'";
 
-    /* Remove any of the words in the ignore_words array.  these are far too common */
-    /* and will result in way too many matches if we leave them in */
-    /* We will also remove any single letter search words */
-    $ignore_words = array('I', 'a', 'about', 'an', 'are', 'as', 'at', 'be', 'by', 'com',
-                          'de', 'en', 'for', 'from', 'how', 'in', 'is', 'it', 'la', 'of',
-                          'on', 'or', 'that', 'the', 'this', 'to', 'was', 'what', 'when',
-                          'where', 'who', 'will', 'with', 'und', 'the', 'www');
-
-    $filtered_search = "";
-
-    /* search each word in $search_words */
-    $split_words = split(" ", $search_words);
-    foreach($split_words as $key=>$value)
-    {
-        /* search each item in the $ignore_words array */
-        $found = false;
-        foreach($ignore_words as $ik=>$iv)
-        {
-            /* if we find a match we should flag it as so */
-            if(strtoupper($value) == strtoupper($iv))
-            {
-                $found = true;
-                break; /* break out of this foreach loop */
-            }
-        }
-
-        /* remove all single letters */
-        if((strlen($value) == 1) && !is_numeric($value))
-            $found = true;
-
-        /* if we didn't find this word, keep it */
-        if($found == false)
-        {
-            if($filtered_search)
-                $filtered_search.=" $value";
-            else
-                $filtered_search="$value";
-        } else
-        {
-            if($removed_words == "")
-                $removed_words.="'".$value."'";
-            else
-                $removed_words.=", '".$value."'";
-        }
-    }
-
-    echo "<b>Searching for '".$filtered_search."'";
-    if($removed_words)
-        echo ", removed '".$removed_words."' from your search as they are too common</b>";
     echo "<center><b>Like matches</b></center>";
-
-    /* replace the existing search with the filtered_search */
-    $search_words = $filtered_search;
-
     $hResult = searchForApplication($search_words);
     outputSearchTableForhResult($search_words, $hResult);
 
