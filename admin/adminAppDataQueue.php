@@ -62,7 +62,7 @@ if (!$_REQUEST['id'])
         {   
             if ($c % 2 == 1) { $bgcolor = 'color0'; } else { $bgcolor = 'color1'; }
             echo "<tr class=\"$bgcolor\">\n";
-            echo "<td>".print_date(mysqltimestamp_to_unixtimestamp($oApp->sSubmitTime))."</td>\n";
+            echo "<td>".print_date(mysqltimestamp_to_unixtimestamp($ob->submitTime))."</td>\n";
             $oUser = new User($ob->submitterId);
             echo "<td>";
             echo $oUser->sEmail ? "<a href=\"mailto:".$oUser->sEmail."\">":"";
