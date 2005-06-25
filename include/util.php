@@ -256,6 +256,10 @@ function lookupVendorName($vendorId)
 /* Output the rows for the Top-X tables on the main page */
 function outputTopXRowAppsFromRating($rating, $num_apps)
 {
+    /* list of appIds we've already output, so we don't output */
+    /* them again when filling in any empty spots in the list */
+    $appIdArray = array();
+
     $sQuery = "SELECT appVotes.appId AS appId, COUNT( appVotes.appId ) AS c
            FROM appVotes, appVersion
            WHERE appVersion.maintainer_rating = '$rating'
@@ -267,6 +271,8 @@ function outputTopXRowAppsFromRating($rating, $num_apps)
     $num_apps-=mysql_num_rows($hResult); /* take away the rows we are outputting here */
     while($oRow = mysql_fetch_object($hResult))
     {
+        array_push($appIdArray, $oRow->appId); /* keep track of the apps we've already output */
+
         $oApp = new Application($oRow->appId);
         // image
         $img = get_screenshot_img($oRow->appId);
@@ -284,8 +290,15 @@ function outputTopXRowAppsFromRating($rating, $num_apps)
            WHERE appVersion.maintainer_rating = '$rating'
            AND appVersion.versionId = appData.versionId
            AND appData.type = 'image'
-           AND appData.queued = 'false'
-           LIMIT $num_apps";
+           AND appData.queued = 'false'";
+
+    /* make sure we exclude any apps we've already output */
+    foreach($appIdArray as $key=>$value)
+        $sQuery.="AND appVersion.appId != '".$value."' ";
+
+    $sQuery.=" LIMIT $num_apps";
+
+    /* get the list that will fill the empty spots */
     $hResult = query_appdb($sQuery);
     while($oRow = mysql_fetch_object($hResult))
     {
