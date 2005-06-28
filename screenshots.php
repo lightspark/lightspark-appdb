@@ -72,7 +72,7 @@ if($hResult && mysql_num_rows($hResult))
         $imgSRC = '<img src="appimage.php?thumbnail=true&id='.$oRow->id.'" alt="'.$oScreenshot->description.'" width="'.$oScreenshot->oThumnailImage->width.'" height="'.$oScreenshot->oThumnailImage->height.'">';
 
         // set image link based on user pref
-        $img = '<a href="javascript:openWin(\'appimage.php?id='.$oRow->id.'\',\''.$randName.'\','.$oScreenshot->oScreenshotImage->width.','.($oScreenshot->oScreenshotImage->height+4).');">'.$imgSRC.'</a>';
+        $img = '<a href="appimage.php?id='.$oRow->id.'" onclick="javascript:openWin(\'appimage.php?id='.$oRow->id.'\',\''.$randName.'\','.$oScreenshot->oScreenshotImage->width.','.($oScreenshot->oScreenshotImage->height+4).');return false;">'.$imgSRC.'</a>';
         if ($_SESSION['current']->isLoggedIn())
         {
             if ($_SESSION['current']->getpref("window:screenshot") == "no")
