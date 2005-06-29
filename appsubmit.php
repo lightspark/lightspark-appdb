@@ -8,6 +8,33 @@ require(BASE."include/tableve.php");
 require(BASE."include/mail.php");
 require(BASE."include/application.php");
 
+    /*
+     * Templates
+     * FIXME: put templates in config file or somewhere else.
+     */
+    //$sAppDescription = "<p>Enter description here</p>";
+    $sVersionDescription = "<p>This is a template; enter version-specific description here</p>
+                            <p>
+                               <span class=\"title\">Wine compatibility</span><br />
+                               <span class=\"subtitle\">What works:</span><br />
+                               - settings<br />
+                               - help<br />
+                               <br /><span class=\"subtitle\">What doesn't work:</span><br />
+                               - erasing<br />
+                               <br /><span class=\"subtitle\">What was not tested:</span><br />
+                               - burning<br />
+                               </p>
+                               <p><span class=\"title\">Tested versions</span><br /><table class=\"historyTable\" width=\"90%\" border=\"1\">
+                            <thead class=\"historyHeader\"><tr>
+                            <td>App. version</td><td>Wine version</td><td>Installs?</td><td>Runs?</td><td>Rating</td>
+                            </tr></thead>
+                            <tbody><tr>
+                            <td class=\"gold\">3.23</td><td class=\"gold\">20050111</td><td class=\"gold\">yes</td><td class=\"gold\">yes</td><td class=\"gold\">Gold</td>
+                            </tr><tr>
+                            <td class=\"silver\">3.23</td><td class=\"silver\">20041201</td><td class=\"silver\">yes</td><td class=\"silver\">yes</td><td class=\"silver\">Silver</td>
+                            </tr><tr>
+                            <td class=\"bronze\">3.21</td><td class=\"bronze\">20040615</td><td class=\"bronze\">yes</td><td class=\"bronze\">yes</td><td class=\"bronze\">Bronze</td>
+                            </tr></tbody></table></p><p><br /></p>";
 
 if(!$_SESSION['current']->isLoggedIn())
 {
@@ -51,22 +78,23 @@ function checkInput($fields)
 if (isset($_REQUEST['appName']))
 {
     // Check input and exit if we found errors
+
     $errors = checkInput($_REQUEST);
-    if(!empty($errors))
+    if(empty($errors))
     {
-        errorpage("We found the following errors:","<ul>$errors</ul><br />Please go back and correct them.");
-        echo html_back_link(1);
-        exit;
+        if($vendorName) $_REQUEST['vendorId']="";
+
+        $oApplication = new Application();
+        // FIXME When two htmlarea will be able to live on the same page 
+        // without problems under gecko, remove the <p></p> around appDescrion
+        $oApplication->create($_REQUEST['appName'], "<p>".$_REQUEST['appDescription']."</p>", $_REQUEST['keywords']." *** ".$_REQUEST['vendorName'], $_REQUEST['webpage'],$_REQUEST['vendorId'], $_REQUEST['catId']);
+        $oVersion = new Version();
+        $oVersion->create($_REQUEST['versionName'], $_REQUEST['versionDescription'], null, null, $oApplication->iAppId);
+        redirect(apidb_fullurl("index.php"));
     }
-    
-    if($vendorName) $_REQUEST['vendorId']="";
-    $oApplication = new Application();
-// FIXME When two htmlarea will be able to live on the same page without problems under gecko, remove the <p></p> around appDescrion
-    $oApplication->create($_REQUEST['appName'], "<p>".$_REQUEST['appDescription']."</p>", $_REQUEST['keywords']." *** ".$_REQUEST['vendorName'], $_REQUEST['webpage'],$_REQUEST['vendorId'], $_REQUEST['catId']);
-    $oVersion = new Version();
-    $oVersion->create($_REQUEST['versionName'], $_REQUEST['versionDescription'], null, null, $oApplication->iAppId);
-    redirect(apidb_fullurl("index.php"));
+
 } 
+
 /*
  * User submitted a version
  */
@@ -74,21 +102,19 @@ elseif (isset($_REQUEST['versionName']) && is_numeric($_REQUEST['appId']))
 {
     // Check input and exit if we found errors
     $errors = checkInput($_REQUEST);
-    if(!empty($errors))
+    if(empty($errors))
     {
-        errorpage("We found the following errors:","<ul>$errors</ul><br />Please go back and correct them.");
-        echo html_back_link(1);
-        exit;
-    }
 
-    $oVersion = new Version();
-    $oVersion->create($_REQUEST['versionName'], $_REQUEST['versionDescription'], null, null, $_REQUEST['appId']);
-    redirect(apidb_fullurl("index.php"));
+        $oVersion = new Version();
+        $oVersion->create($_REQUEST['versionName'], $_REQUEST['versionDescription'], null, null, $_REQUEST['appId']);
+        redirect(apidb_fullurl("index.php"));
+    }
 }
+
 /*
  * User wants to submit an application or version
  */
-elseif (isset($_REQUEST['apptype']))
+if (isset($_REQUEST['apptype']))
 {
 // header
 apidb_header("Submit Application");
@@ -137,35 +163,6 @@ onload = function() {
 <script type="text/javascript" src="./htmlarea/htmlarea.js"></script>
 <?php
 
-    /*
-     * Templates
-     * FIXME: put templates in config file or somewhere else.
-     */
-    //$sAppDescription = "<p>Enter description here</p>";
-    $sVersionDescription = "<p>This is a template; enter version-specific description here</p>
-                            <p>
-                               <span class=\"title\">Wine compatibility</span><br />
-                               <span class=\"subtitle\">What works:</span><br />
-                               - settings<br />
-                               - help<br />
-                               <br /><span class=\"subtitle\">What doesn't work:</span><br />
-                               - erasing<br />
-                               <br /><span class=\"subtitle\">What was not tested:</span><br />
-                               - burning<br />
-                               </p>
-                               <p><span class=\"title\">Tested versions</span><br /><table class=\"historyTable\" width=\"90%\" border=\"1\">
-                            <thead class=\"historyHeader\"><tr>
-                            <td>App. version</td><td>Wine version</td><td>Installs?</td><td>Runs?</td><td>Rating</td>
-                            </tr></thead>
-                            <tbody><tr>
-                            <td class=\"gold\">3.23</td><td class=\"gold\">20050111</td><td class=\"gold\">yes</td><td class=\"gold\">yes</td><td class=\"gold\">Gold</td>
-                            </tr><tr>
-                            <td class=\"silver\">3.23</td><td class=\"silver\">20041201</td><td class=\"silver\">yes</td><td class=\"silver\">yes</td><td class=\"silver\">Silver</td>
-                            </tr><tr>
-                            <td class=\"bronze\">3.21</td><td class=\"bronze\">20040615</td><td class=\"bronze\">yes</td><td class=\"bronze\">yes</td><td class=\"bronze\">Bronze</td>
-                            </tr></tbody></table></p><p><br /></p>";
-
-
     // show add to queue form
     echo '<form name="newApp" action="appsubmit.php" method="post">'."\n";
     echo "<p>This page is for submitting new applications to be added to this\n";
@@ -193,6 +190,13 @@ onload = function() {
     echo "won't help Wine development or Wine users.</p>\n";
     echo "<p>After your application has been added you'll be able to submit screenshots for it, post";
     echo " messages in its forums or become a maintainer to help others trying to run the application.</p>";
+    if(!empty($errors))
+    {
+        echo '<font color="red">',"\n";
+        echo '<p class="red"> We found the following errors:</p><ul>'.$errors.'</ul>Please correct them.';
+        echo '</font><br />',"\n";
+        echo '<p></p>',"\n";
+    }
 
     // new application and version
     if ($_REQUEST['apptype'] == 1)
@@ -200,46 +204,33 @@ onload = function() {
         echo html_frame_start("New Application Form",400,"",0);
         echo "<table width='100%' border=0 cellpadding=2 cellspacing=0>\n";
         echo '<tr valign=top><td class="color0"><b>Application name</b></td>',"\n";
-        echo '<td><input type="text" name="appName" value="" size="20"></td></tr>',"\n";
-        echo '<tr valign=top><td class="color0"><b>Version name</b></td>',"\n";
-        echo '<td><input type=text name="versionName" value="" size="20"></td></tr>',"\n";
+        echo '<td><input type="text" name="appName" value="'.$_REQUEST['appName'].'" size="20"></td></tr>',"\n";
 
         // app Category
         $w = new TableVE("view");
         echo '<tr valign=top><td class="color0"><b>Category</b></td><td>',"\n";
-        $w->make_option_list("catId","","appCategory","catId","catName");
+        $w->make_option_list("catId",$_REQUEST['catId'],"appCategory","catId","catName");
         echo '</td></tr>',"\n";
 
         echo '<tr valign=top><td class="color0"><b>Vendor</b></td>',"\n";
-        echo '<td><input type=text name="vendorName" value="" size="20"></td></tr>',"\n";
+        echo '<td><input type=text name="vendorName" value="'.$_REQUEST['vendorName'].'" size="20"></td></tr>',"\n";
 
         // alt vendor
         $x = new TableVE("view");
         echo '<tr valign=top><td class="color0">&nbsp;</td><td>',"\n";
-        $x->make_option_list("vendorId","","vendor","vendorId","vendorName");
+        $x->make_option_list("vendorId",$_REQUEST['vendorId'],"vendor","vendorId","vendorName");
         echo '</td></tr>',"\n";
   
         echo '<tr valign=top><td class="color0"><b>URL</b></td>',"\n";
-        echo '<td><input type=text name="webpage" value="" size=20></td></tr>',"\n";
+        echo '<td><input type=text name="webpage" value="'.$_REQUEST['webpage'].'" size=20></td></tr>',"\n";
 
         echo '<tr valign=top><td class="color0"><b>Keywords</b></td>',"\n";
-        echo '<td><input size="80%" type="text" name="keywords"></td></tr>',"\n";
-
+        echo '<td><input size="80%" type="text" name="keywords" value="'.$_REQUEST['keywords'].'"></td></tr>',"\n";
 
         echo '<tr valign=top><td class="color0"><b>Application Description</b></td>',"\n";
-        echo '<td><p style="width:700px"><textarea cols="80" rows="20" id="editor" name="appDescription">'.$sAppDescription.'</textarea></p></td></tr>',"\n";
+        echo '<td><p><textarea cols="80" rows="20" name="appDescription">';
+        echo $_REQUEST['appDescription'].'</textarea></p></td></tr>',"\n";
 
-        echo '<tr valign=top><td class="color0"><b>Version Description</b></td>',"\n";
-        echo '<td><p style="width:700px"><textarea cols="80" rows="20" id="editor2" name="versionDescription">'.$sVersionDescription.'</textarea></p></td></tr>',"\n";
-
-
-        echo '<tr valign=top><td class=color3 align=center colspan=2>',"\n";
-        echo '<input type=submit value="Submit New Application" class="button"> </td></tr>',"\n";
-        echo '</table>',"\n";    
-
-        echo html_frame_end();
-
-        echo "</form>";
     }           
     // new version
     else
@@ -253,22 +244,42 @@ onload = function() {
         echo '<tr valign=top><td class=color0><b>Application</b></td><td>',"\n";
         $x->make_option_list("appId",$_REQUEST['appId'],"appFamily","appId","appName");
         echo '</td></tr>',"\n";
+    }
+    echo '<tr valign=top><td class="color0"><b>Version name</b></td>',"\n";
+    echo '<td><input type="text" name="versionName" value="'.$_REQUEST['versionName'].'" size="20"></td></tr>',"\n";
+    if(trim(strip_tags($_REQUEST['versionDescription']))=="")
+    {
+        $_REQUEST['versionDescription'] = $sVersionDescription;
+    }   
+    echo '<tr valign=top><td class=color0><b>Version description</b></td>',"\n";
+    echo '<td><p style="width:700px">',"\n";
+    echo '<textarea cols="80" rows="20" id="editor2" name="versionDescription">',"\n";
 
-        echo '<tr valign=top><td class="color0"><b>Version name</b></td>',"\n";
-        echo '<td><input type="text" name="versionName" size="20"></td></tr>',"\n";
-    
-        echo '<tr valign=top><td class=color0><b>Version description</b></td>',"\n";
-        echo '<td><p style="width:700px"><textarea cols="80" rows="20" id="editor2" name="versionDescription">'.$sVersionDescription.'</textarea></p></td></tr>',"\n";
+    /* if magic quotes are enabled we need to strip them before we output the 'versionDescription' */
+    /* again.  Otherwise we will stack up magic quotes each time the user resubmits after having */
+    /* an error */
+    if(get_magic_quotes_gpc())
+        echo stripslashes($_REQUEST['versionDescription']).'</textarea></p></td></tr>',"\n";
+    else
+        echo $_REQUEST['versionDescription'].'</textarea></p></td></tr>',"\n";
 
+    echo '<input type="hidden" name="apptype" value="'.$_REQUEST['apptype'].'">',"\n";
+
+    // new application and version
+    if ($_REQUEST['apptype'] == 1)
+    {
+        echo '<tr valign=top><td class=color3 align=center colspan=2>',"\n";
+        echo '<input type=submit value="Submit New Application" class="button"> </td></tr>',"\n";
+    }
+    // new version
+    else
+    {
         echo '<tr valign=top><td class="color3" align="center" colspan="2">',"\n";
         echo '<input type=submit value="Submit New Version" class="button"> </td></tr>',"\n";	  
-  	  
-        echo '</table>',"\n";    
-
-        echo html_frame_end();
-
-        echo "</form>";
     }
+    echo '</table>',"\n";    
+    echo html_frame_end();
+    echo "</form>";
 }
 apidb_footer();
 ?>
