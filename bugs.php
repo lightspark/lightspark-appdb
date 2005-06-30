@@ -118,7 +118,7 @@ if($appId)
              "&bug_status=UNCONFIRMED&bug_status=NEW&bug_status=ASSIGNED&bug_status=REOPENED&bug_file_loc_type=allwords&bug_file_loc=appdb ".$oApp->iAppId."'>
              Look for Open bugs in bugzilla </a> &nbsp;\n";        
         echo "<tr class=color1 valign=top><td width='250' align=right> <b>Submit a New Bug</b></td><td width='75%'> ".
-             "   <a href='".BUGZILLA_ROOT."enter_bug.cgi?product=Wine&bug_file_loc=".APPDB_OWNER_URL."appview.php?appid=".$oApp->iAppId."'>
+             "   <a href='".BUGZILLA_ROOT."enter_bug.cgi?product=Wine&bug_file_loc=".APPDB_ROOT."appview.php?appId=".$oApp->iAppId."'>
              Submit a new bug in bugzilla </a> &nbsp;\n";
     	echo "</td></tr>\n";
 	   
@@ -130,8 +130,8 @@ if($appId)
         get search for bugs entered against this application. You can also enter new bugs if you log
         into Wine's Bugzilla.</p>
         <p>The link between the Application Database and Bugzilla is based on the bug having the following URL
-        <a href='".APPDB_OWNER_URL."appview.php?appId=".$oApp->iAppId."'>
-        ".APPDB_OWNER_URL."appview.php?appId=".$oApp->iAppId."</a> &nbsp;    
+        <a href='".APPDB_ROOT."appview.php?appId=".$oApp->iAppId."'>
+        ".APPDB_ROOT."appview.php?appId=".$oApp->iAppId."</a> &nbsp;    
         in the bug's <i>URL</i> Field. If it is not entered, this search page can not find it.
 	</td></tr></table>";
 		
