@@ -222,29 +222,32 @@ class Application {
      */
     function delete($bSilent=false)
     {
+        foreach($this->aVersionsIds as $iVersionId)
+        {
+            $oVersion = new Version($iVersionId);
+            $oVersion->delete($bSilent);
+        }
+        foreach($this->aUrlsIds as $iUrlId)
+        {
+            $oUrl = new Url($iUrlId);
+            $oUrl->delete($bSilent);
+        }
+
+        // remove any supermaintainers for this application so we don't orphan them
+        $sQuery = "DELETE from appMaintainers WHERE appId='".$this->iAppId."';";
+        if(!($hResult = query_appdb($sQuery)))
+        {
+            addmsg("Error removing app maintainers for the deleted application!", "red");
+        }
+
         $sQuery = "DELETE FROM appFamily 
                    WHERE appId = ".$this->iAppId." 
                    LIMIT 1";
-        if($hResult = query_appdb($sQuery))
+        if(!($hResult = query_appdb($sQuery)))
         {
-            foreach($this->aVersionsIds as $iVersionId)
-            {
-                $oVersion = new Version($iVersionId);
-                $oVersion->delete($bSilent);
-            }
-            foreach($this->aUrlsIds as $iUrlId)
-            {
-                $oUrl = new Url($iUrlId);
-                $oUrl->delete($bSilent);
-            }
-
-            // remove any supermaintainers for this application so we don't orphan them
-            $sQuery = "DELETE from appMaintainers WHERE appId='".$this->iAppId."';";
-            if(!($hResult = query_appdb($sQuery)))
-            {
-                addmsg("Error removing app maintainers for the deleted application!", "red");
-            }
+            addmsg("Error deleting application!", "red");
         }
+
         if(!$bSilent)
             $this->mailSupermaintainers("delete");
     }

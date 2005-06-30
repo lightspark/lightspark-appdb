@@ -230,39 +230,44 @@ class Version {
      */
     function delete($bSilent=false)
     {
+        /* remove all of the items this version contains */
+        foreach($this->aNotesIds as $iNoteId)
+        {
+            $oNote = new Note($iNoteId);
+            $oNote->delete($bSilent);
+        }
+        foreach($this->aCommentsIds as $iCommentId)
+        {
+            $oComment = new Comment($iCommentId);
+            $oComment->delete($bSilent);
+        }
+        foreach($this->aScreenshotsIds as $iScreenshotId)
+        {
+            $oScreenshot = new Screenshot($iScreenshotId);
+            $oScreenshot->delete($bSilent);
+        }
+        foreach($this->aUrlsIds as $iUrlId)
+        {
+            $oUrl = new Url($iUrlId);
+            $oUrl->delete($bSilent);
+        }
+
+        // remove any maintainers for this version so we don't orphan them
+        $sQuery = "DELETE from appMaintainers WHERE versionId='".$this->iVersionId."';";
+        if(!($hResult = query_appdb($sQuery)))
+        {
+            addmsg("Error removing version maintainers for the deleted version!", "red");
+        }
+
+        /* now delete the version */
         $sQuery = "DELETE FROM appVersion 
                    WHERE versionId = ".$this->iVersionId." 
                    LIMIT 1";
-        if($hResult = query_appdb($sQuery))
+        if(!($hResult = query_appdb($sQuery)))
         {
-            foreach($this->aNotesIds as $iNoteId)
-            {
-                $oNote = new Note($iNoteId);
-                $oNote->delete($bSilent);
-            }
-            foreach($this->aCommentsIds as $iCommentId)
-            {
-                $oComment = new Comment($iCommentId);
-                $oComment->delete($bSilent);
-            }
-            foreach($this->aScreenshotsIds as $iScreenshotId)
-            {
-                $oScreenshot = new Screenshot($iScreenshotId);
-                $oScreenshot->delete($bSilent);
-            }
-            foreach($this->aUrlsIds as $iUrlId)
-            {
-                $oUrl = new Url($iUrlId);
-                $oUrl->delete($bSilent);
-            }
-
-            // remove any maintainers for this version so we don't orphan them
-            $sQuery = "DELETE from appMaintainers WHERE versionId='".$this->iVersionId."';";
-            if(!($hResult = query_appdb($sQuery)))
-            {
-                addmsg("Error removing version maintainers for the deleted version!", "red");
-            }
+            addmsg("Error removing the deleted version!", "red");
         }
+
         if(!$bSilent)
             $this->mailMaintainers("delete");
 
@@ -348,7 +353,7 @@ class Version {
                 addmsg("Version modified.", "green");
             break;
             case "delete":
-                $sSubject = "Version '".$this->sName." of ".$oApp->sName."' has been deleted by ".$_SESSION['current']->sRealname;
+                $sSubject = "Version '".$this->sName."' of '".$oApp->sName."' has been deleted by ".$_SESSION['current']->sRealname;
 
                 /* if replyText is set we should report the reason the application was deleted */
                 if($_REQUEST['replyText'])
