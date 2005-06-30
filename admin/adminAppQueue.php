@@ -319,10 +319,6 @@ if ($_REQUEST['sub'])
     {
         if (is_numeric($_REQUEST['appId']) && !is_numeric($_REQUEST['versionId'])) // application
         {
-            // delete the application entry
-            $oApp = new Application($_REQUEST['appId']);
-            $oApp->delete();
-
             // get the queued versions that refers to the application entry we just removed
             // and delete them as we implicitly added a version entry when adding a new application
             $sQuery = "SELECT versionId FROM appVersion WHERE appVersion.appId = '".$_REQUEST['appId']."' AND appVersion.queued = 'true';";
@@ -335,6 +331,10 @@ if ($_REQUEST['sub'])
                     $oVersion->delete();
                 }
             }
+
+            // delete the application entry
+            $oApp = new Application($_REQUEST['appId']);
+            $oApp->delete();
         } else if(is_numeric($_REQUEST['versionId']))  // version
         {
             $oVersion = new Version($_REQUEST['versionId']);
