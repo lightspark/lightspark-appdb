@@ -27,12 +27,13 @@ if ($_REQUEST['REQUEST_METHOD']='HEAD')
               WHERE id = ".$iId."
               AND type = 'image' LIMIT 1";
    if (!($hResult = query_appdb($sQuery) &&
-         $fImage = fopen($_SERVER['DOCUMENT_ROOT']."/data/screenshots/".$iId)))
+         $fImage = fopen($_SERVER['DOCUMENT_ROOT']."/data/screenshots/".$iId, "rb")))
    {
       header("404 No such image");
       exit;
    }
-   $iModTime = fstat($fImage)['mtime'];
+   $fstat_val = fstat($fImage);
+   $iModTime = $fstat_val['mtime'];
    $sMagic = fread($fImage,8);
    fclose($fImage);
    if (strcmp("\x89PNG\r\n\x1A\n",$sMagic)==0) 
@@ -54,8 +55,9 @@ $oScreenshot = new screenshot($_REQUEST['id'],$_REQUEST['queued']);
 	     /* at this point, we know that .../screenshots/$id and
 	      *  .../screenshots/thumbnails/$id both exist;  normally 
 	      *  they would both be created at the same time. */
-$iModTime = stat($_SERVER['DOCUMENT_ROOT']
-		 ."/data/screenshots/".$_REQUEST['id'])['mtime'];
+$fstat_val = stat($_SERVER['DOCUMENT_ROOT']
+                  ."/data/screenshots/".$_REQUEST['id']);
+$iModTime = $fstat_val['mtime'];
 
 header("Cache-Control: public");
 header("Expires: ");
