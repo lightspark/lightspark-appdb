@@ -147,6 +147,7 @@ function errorpage($text = null, $message = null)
     if (!$text) {
         $text = "You must be logged in to perform that operation.";
     }
+    header("HTTP/1.0 404 Object not found or user is not logged in");
     apidb_header("Oops");
     echo "<div align=center><font color=red><b>$text</b></font></div>\n";
     echo "<p>$message</p>\n";
@@ -176,6 +177,24 @@ function redirectref($url = null)
     redirect($url);
 }
 
+/**
+ * format a date as required for HTTP by RFC 2068 sec 3.3.1 
+ */
+function fHttpDate($iDate) {
+   return gmdate("D, d M Y H:i:s",$iDate)." GMT";
+}
+
+/**
+ *  parse all the date formats required by HTTP 1.1 into PHP time values
+ */
+function pHttpDate($sDate) {
+   $iDate = strtotime($sDate);
+   if ($iDate != -1) return $iDate;
+		/* the RFC also requires asctime() format... */
+   $aTs = strptime($sDate,"%a %b  %e %H:%M:%S %Y");
+   $iDate = gmmktime($aTs[2],$aTs[1],$aTs[0],$aTs[4],$aTs[3],$aTs[5],0);
+   return $iDate;
+}
 
 /**
  * msgs will be displayed on the Next page view of the same user
