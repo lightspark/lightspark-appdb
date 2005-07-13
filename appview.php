@@ -13,6 +13,7 @@ require(BASE."include/appdb.php");
 require(BASE."include/vote.php");
 require(BASE."include/category.php");
 require(BASE."include/maintainer.php");
+require(BASE."include/mail.php");
 
 
 $oApp = new Application($_REQUEST['appId']);
@@ -125,7 +126,43 @@ if(!is_numeric($_REQUEST['appId']) && !is_numeric($_REQUEST['versionId']))
     exit;
 }
 
+if ($_REQUEST['sub'])
+{
+    if(($_REQUEST['sub'] == 'delete' ) && ($_REQUEST['buglinkId']))
+    {
+        if(($_SESSION['current']->hasPriv("admin") ||
+            $_SESSION['current']->isMaintainer($oVersion->iVersionId) ||
+            $_SESSION['current']->isSuperMaintainer($oVersion->iAppId)))
+        {
+            $oBuglink = new bug($_REQUEST['buglinkId']);
+            $oBuglink->delete();
+            redirect(apidb_fullurl("appview.php?versionId=".$_REQUEST['versionId']));
+            exit;
+        }
+ 
+    }
+    if(($_REQUEST['sub'] == 'unqueue' ) && ($_REQUEST['buglinkId']))
+    {
+        if(($_SESSION['current']->hasPriv("admin") ||
+            $_SESSION['current']->isMaintainer($oVersion->iVersionId) ||
+            $_SESSION['current']->isSuperMaintainer($oVersion->iAppId)))
+        {
+            $oBuglink = new bug($_REQUEST['buglinkId']);
+            $oBuglink->unqueue();
+            redirect(apidb_fullurl("appview.php?versionId=".$_REQUEST['versionId']));
+            exit;
+        }
+ 
+    }
+    if(($_REQUEST['sub'] == 'Submit a new bug link.' ) && ($_REQUEST['buglinkId']))
+    {
+        $oBuglink = new bug();
+        $oBuglink->create($_REQUEST['versionId'],$_REQUEST['buglinkId']);
+        redirect(apidb_fullurl("appview.php?versionId=".$_REQUEST['versionId']));
+        exit;
+    }
 
+}
 
 /**
  * We want to see an application family (=no version).
@@ -429,6 +466,8 @@ else if($_REQUEST['versionId'])
     echo "</table>\n";
 
     echo html_frame_end();
+
+    view_version_bugs($oVersion->iVersionId, $oVersion->aBuglinkIds);    
 
     $rNotes = query_appdb("SELECT * FROM appNotes WHERE versionId = ".$oVersion->iVersionId);
     
