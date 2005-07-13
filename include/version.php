@@ -373,6 +373,7 @@ class Version {
             break;
             case "edit":
                 $sSubject =  "'".$oApp->sName." ".$this->sName."' has been modified by ".$_SESSION['current']->sRealname;
+                $sMsg  = APPDB_ROOT."appview.php?versionId=".$this->iVersionId."\n";
                 addmsg("Version modified.", "green");
             break;
             case "delete":

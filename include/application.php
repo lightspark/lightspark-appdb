@@ -325,6 +325,7 @@ class Application {
             break;
             case "edit":
                 $sSubject =  $this->sName." has been modified by ".$_SESSION['current']->sRealname;
+                $sMsg  = APPDB_ROOT."appview.php?appId=".$this->iAppId."\n";
                 addmsg("Application modified.", "green");
             break;
             case "delete":
