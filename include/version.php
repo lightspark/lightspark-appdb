@@ -7,6 +7,7 @@ require_once(BASE."include/note.php");
 require_once(BASE."include/comment.php");
 require_once(BASE."include/url.php");
 require_once(BASE."include/screenshot.php");
+require_once(BASE."include/bugs.php");
 
 /**
  * Version class for handling versions.
@@ -25,6 +26,7 @@ class Version {
     var $aCommentsIds;        // an array that contains the commentId of every comment linked to this version
     var $aScreenshotsIds;     // an array that contains the screenshotId of every screenshot linked to this version
     var $aUrlsIds;            // an array that contains the screenshotId of every url linked to this version
+    var $aBuglinkIds;         // an array that contains the buglinkId of every bug linked to this version
 
     /**    
      * constructor, fetches the data.
@@ -109,6 +111,22 @@ class Version {
                         $this->aScreenshotsIds[] = $oRow->id;
                     else
                         $this->aUrlsIds[] = $oRow->id;
+                }
+            }
+
+            /*
+             * We fetch Bug linkIds. 
+             */
+            $this->aBuglinkIds = array();
+            $sQuery = "SELECT *
+                       FROM buglinks
+                       WHERE versionId = ".$iVersionId."
+                       ORDER BY bug_id";
+            if($hResult = query_appdb($sQuery))
+            {
+                while($oRow = mysql_fetch_object($hResult))
+                {
+                    $this->aBuglinkIds[] = $oRow->linkId;
                 }
             }
         }
@@ -250,6 +268,11 @@ class Version {
         {
             $oUrl = new Url($iUrlId);
             $oUrl->delete($bSilent);
+        }
+        foreach($this->$aBuglinkIds as $iBug_id)
+        {
+            $oBug = new bug($iBug_id);
+            $oBug->delete($bSilent);
         }
 
         // remove any maintainers for this version so we don't orphan them
