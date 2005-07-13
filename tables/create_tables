@@ -23,3 +23,7 @@ mysql -p -u root < app_category.sql
 
 echo Adding maintainers
 mysql -p -u root < maintainers.sql
+
+echo Adding bug links
+mysql -p -u root < buglinks.sql
+
