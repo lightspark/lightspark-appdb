@@ -1,0 +1,322 @@
+<?php
+/******************************************/
+/* bug class and related functions */
+/******************************************/
+
+
+/**
+ * Bug Link class for handling Bug Links and thumbnails
+ */
+class Bug {
+    var $iLinkId;
+    var $iBug_id;
+    var $sShort_desc;
+    var $sBug_status;
+    var $sResolution;
+    var $iVersionId;
+    var $iAppId;
+    var $sSubmitTime;
+    var $iSubmitterId;
+    var $bQueued;
+
+    /**    
+     * Constructor, fetches the data and bug objects if $ilinkId is given.
+     */
+    function bug($iLinkId = null)
+    {
+        // we are working on an existing Bug
+        if(is_numeric($iLinkId))
+        {
+            $sQuery = "SELECT buglinks.*, appVersion.appId AS appId
+                       FROM buglinks, appVersion 
+                       WHERE buglinks.versionId = appVersion.versionId 
+                       AND linkid = ".$iLinkId;
+            if($hResult = query_appdb($sQuery))
+            {
+                $oRow = mysql_fetch_object($hResult);
+                $this->iLinkId = $iLinkId;
+                $this->iAppId = $oRow->appId;
+                $this->iBug_id = $oRow->bug_id;
+                $this->iVersionId = $oRow->versionId;
+                $this->bQueued = ($oRow->queued=="true")?true:false;
+                $this->sSubmitTime = $oRow->submitTime;
+                $this->iSubmitterId = $oRow->submitterId;
+                /* lets fill in some blanks */ 
+                if ($this->iBug_id)
+                {
+                    $sQuery = "SELECT *
+                              FROM bugs 
+                              WHERE bug_id = ".$this->iBug_id;
+                    if($hResult = query_bugzilladb($sQuery))
+                    {
+                        $oRow = mysql_fetch_object($hResult);
+                        $this->sShort_desc = $oRow->short_desc;
+                        $this->sBug_status = $oRow->bug_status;
+                        $this->sResolution = $oRow->Resolution;
+                    }
+                }
+            }
+        }
+    }
+ 
+
+    /**
+     * Creates a new Bug.
+     */
+    function create($iVersionId = null, $iBug_id = null)
+    {
+        $oVersion = new Version($iVersionId);
+        // Security, if we are not an administrator or a maintainer, the Bug must be queued.
+        if(!($_SESSION['current']->hasPriv("admin") || $_SESSION['current']->isMaintainer($oVersion->iVersionId) || $_SESSION['current']->isSuperMaintainer($oVersion->iAppId)))
+        {
+            $this->bQueued = true;
+        } else
+        {
+            $this->bQueued = false;
+        }
+        /* lets check for a valid bug id */
+
+        if(!is_numeric($iBug_id))
+        {
+            addmsg($iBug_id." is not a valid bug number.", "red");
+            return false;
+        }
+
+        /* check that bug # exists in bugzilla*/
+
+        $sQuery = "SELECT *
+                   FROM bugs 
+                   WHERE bug_id = ".$iBug_id;
+        if(!($hResult = query_bugzilladb($sQuery)))
+        {
+            addmsg("There is no bug in Bugzilla with that bug number.", "red");
+            return false;
+        }
+
+        /* Check for Duplicates */
+
+        $sQuery = "SELECT *
+                   FROM buglinks 
+                   WHERE versionId = ".$iVersionId;
+        if($hResult = query_appdb($sQuery))
+        {
+            while($oRow = mysql_fetch_object($hResult))
+            {
+                if($oRow->bug_id == $iBug_id)
+                {
+                   addmsg("The Bug link has already been submitted.", "red");
+                   return false;
+                }
+            }
+        } 
+
+        /* passed the checks so lets insert the puppy! */
+
+        $aInsert = compile_insert_string(array( 'versionId'    => $iVersionId,
+                                                'bug_id'       => $iBug_id,
+                                                'queued'       => $this->bQueued?"true":"false",
+                                                'submitterId'  => $_SESSION['current']->iUserId ));
+        $sFields = "({$aInsert['FIELDS']})";
+        $sValues = "({$aInsert['VALUES']})";
+        if(query_appdb("INSERT INTO buglinks $sFields VALUES $sValues", "Error while creating a new Bug link."))
+        {
+            $this->iLinkId = mysql_insert_id();
+            $this->bug($this->iLinkId);
+            $this->mailMaintainers();
+            return true;
+        }else
+        {
+            return false;
+        }
+    }
+
+
+    /**    
+     * Deletes the Bug from the database. 
+     * and request its deletion from the filesystem (including the thumbnail).
+     */
+    function delete($bSilent=false)
+    {
+        $sQuery = "DELETE FROM buglinks 
+                   WHERE linkId = ".$this->iLinkId;
+        if($hResult = query_appdb($sQuery))
+        {
+            if(!$bSilent)
+                $this->mailMaintainers(true);
+        }
+        if($this->iSubmitterId)
+        {
+            $this->mailSubmitter(true);
+        }
+
+    }
+
+
+    /**
+     * Move Bug out of the queue.
+     */
+    function unQueue()
+    {
+        // If we are not in the queue, we can't move the Bug out of the queue.
+        if(!$this->bQueued)
+            return false;
+
+        $sUpdate = compile_update_string(array('queued' => "false"));
+        if(query_appdb("UPDATE buglinks SET ".$sUpdate." WHERE linkId=".$this->iLinkId))
+        {
+            $this->bQueued = false;
+            // we send an e-mail to intersted people
+            $this->mailSubmitter();
+            $this->mailMaintainers();
+            // the Bug has been unqueued
+            addmsg("The Bug has been unqueued.", "green");
+        }
+    }
+
+
+    function mailSubmitter($bRejected=false)
+    {
+        if($this->iSubmitterId)
+        {
+            $oSubmitter = new User($this->iSubmitterId);
+            if(!$bRejected)
+            {
+                $sSubject =  "Submitted Bug Link accepted";
+                $sMsg  = "The Bug Link you submitted for ".lookup_app_name($this->appId)." ".lookup_version_name($this->versionId)." has been accepted.";
+            } else
+            {
+                 $sSubject =  "Submitted Bug Link rejected";
+                 $sMsg  = "The Bug Link you submitted for ".lookup_app_name($this->appId)." ".lookup_version_name($this->versionId)." has been rejected.";
+            }
+            $sMsg .= $_REQUEST['replyText']."\n";
+            $sMsg .= "We appreciate your help in making the Application Database better for all users.";
+                
+            mail_appdb($oSubmitter->sEmail, $sSubject ,$sMsg);
+        }
+    }
+
+ 
+    function mailMaintainers($bDeleted=false)
+    {
+        if(!$bDeleted)
+        {
+            if(!$this->bQueued)
+            {
+                $sSubject = "Bug Link for ".lookup_app_name($this->iAppId)." ".lookup_version_name($this->iVersionId)." added by ".$_SESSION['current']->sRealname;
+                $sMsg  = APPDB_ROOT."appview.php?versionId=".$this->iVersionId."\n";
+                if($this->iSubmitterId)
+                {
+                    $oSubmitter = new User($this->iSubmitterId);
+                    $sMsg .= "This Bug Link has been submitted by ".$oSubmitter->sRealname.".";
+                    $sMsg .= "\n";
+                }
+                addmsg("The Bug Link was successfully added into the database.", "green");
+            } else // Bug Link queued.
+            {
+                $sSubject = "Bug Link for ".lookup_app_name($this->iAppId)." ".lookup_version_name($this->iVersionId)." submitted by ".$_SESSION['current']->sRealname;
+                $sMsg  = APPDB_ROOT."appview.php?versionId=".$this->iVersionId."\n";
+                $sMsg .= "This Bug Link has been queued.";
+                $sMsg .= "\n";
+                addmsg("The Bug Link you submitted will be added to the database database after being reviewed.", "green");
+            }
+        } else // Bug Link deleted.
+        {
+            $sSubject = "Bug Link for ".lookup_app_name($this->iAppId)." ".lookup_version_name($this->iVersionId)." deleted by ".$_SESSION['current']->sRealname;
+            $sMsg  = APPDB_ROOT."appview.php?versionId=".$this->iVersionId."\n";
+            addmsg("Bug Link deleted.", "green");
+        }
+
+        $sEmail = get_notify_email_address_list(null, $this->iVersionId);
+        if($sEmail)
+        {
+            mail_appdb($sEmail, $sSubject ,$sMsg);
+        }
+    } 
+}
+
+
+/*
+ * Bug Link functions that are not part of the class
+ */
+
+function view_version_bugs($iVersionId = null, $aBuglinkIds)
+{
+    $bCanEdit = FALSE;
+    $oVersion = new Version($iVersionId);
+    // Security, if we are an administrator or a maintainer, we can remove or ok links.
+    if(($_SESSION['current']->hasPriv("admin") ||
+                 $_SESSION['current']->isMaintainer($oVersion->iVersionId) ||
+                 $_SESSION['current']->isSuperMaintainer($oVersion->iAppId)))
+    {
+        $bCanEdit = TRUE;
+    } 
+    
+    //start format table
+    if($_SESSION['current']->isLoggedIn())
+    {
+        echo "<form method=post action='appview.php?versionId=".$iVersionId."'>\n";
+    }
+    echo html_frame_start("Known bugs","98%",'',0);
+    echo "<table width=\"100%\" border=\"0\" cellpadding=\"3\" cellspacing=\"1\">\n\n";
+    echo "<tr class=color4>\n";
+    echo "    <td align=center width=\"80\">Bug #</td>\n";
+    echo "    <td>Description</td>\n";
+    echo "    <td align=center width=\"80\">Status</td>\n";
+    echo "    <td align=center width=\"80\">Resolution</td>\n";
+    echo "    <td align=center width=\"80\">Other Apps affected</td>\n";
+
+    if($bCanEdit == true)
+    {
+        echo "    <td align=center width=\"80\">delete</td>\n";
+        echo "    <td align=center width=\"80\">checked</td>\n";
+    }
+    echo "</tr>\n\n";
+
+    $c = 0;
+    foreach($aBuglinkIds as $iBuglinkId)
+    {
+        $oBuglink = new bug($iBuglinkId);
+
+        // set row color
+        $bgcolor = ($c % 2 == 0) ? "color0" : "color1";
+
+        //display row
+        echo "<tr class=$bgcolor>\n";
+        echo "<td align=center><a href='".BUGZILLA_ROOT."show_bug.cgi?id=".$oBuglink->iBug_id."'>".$oBuglink->iBug_id."</a></td>\n";
+        echo "<td>".$oBuglink->sShort_desc."</td>\n";
+        echo "<td align=center>".$oBuglink->sBug_status."</td>","\n";
+        echo "<td align=center>".$oBuglink->sResolution."</td>","\n";
+//        echo "<td align=center>".$oBuglink->sResolution."</td>","\n";
+        echo "<td align=center><a href='viewbugs.php?bug_id=".$oBuglink->iBug_id."'>View</a></td>\n";
+ 
+        
+        if($bCanEdit == true)
+        {
+            echo "<td align=center>[<a href='appview.php?sub=delete&buglinkId=".$oBuglink->iLinkId."&versionId=".$oBuglink->iVersionId."'>delete</a>]</td>\n";
+            if ($oBuglink->bQueued)
+            {
+                echo "<td align=center>[<a href='appview.php?sub=unqueue&buglinkId=".$oBuglink->iLinkId."&versionId=".$oBuglink->iVersionId."'>OK</a>]</td>\n";
+            } else
+            {
+                echo "<td align=center>Yes</td>\n";
+            }
+               
+        }
+        echo "</tr>\n\n";
+ 
+
+        $c++;   
+    }
+    if($_SESSION['current']->isLoggedIn())
+    {
+        echo '<input type="hidden" name="versionId" value="'.$oBuglink->iVersionId.'">',"\n";
+        echo '<tr class=color3><td align=center>',"\n";
+        echo '<input type="text" name="buglinkId" value="'.$_REQUEST['buglinkId'].'" size="8"></td>',"\n";
+        echo '<td><input type="submit" name="sub" value="Submit a new bug link."></td>',"\n";
+        echo '<td colspan=6></td></tr>',"\n";
+    }
+    echo '</table>',"\n";
+    echo html_frame_end();
+}    
+
+?>
