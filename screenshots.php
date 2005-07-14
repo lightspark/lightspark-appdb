@@ -23,9 +23,15 @@ if($_REQUEST['cmd'])
     // process screenshot upload
     if($_REQUEST['cmd'] == "screenshot_upload")
     {   
-        $oScreenshot = new Screenshot();
-        $oScreenshot->create($_REQUEST['versionId'], $_REQUEST['screenshot_desc'], $_FILES['imagefile']);
-        $oScreenshot->free();
+        if($_FILES['imagefile']['size']>600000)
+        {
+            addmsg("Your screenshot was not accepted because it is too big. Please try to keep your screenshots under 600KB by saving games/video screenshots to jpeg and normal applications to png you might be able to achieve very good results with less bytes", "red");
+        } else
+        {
+            $oScreenshot = new Screenshot();
+            $oScreenshot->create($_REQUEST['versionId'], $_REQUEST['screenshot_desc'], $_FILES['imagefile']);
+            $oScreenshot->free();
+        }
     } elseif($_REQUEST['cmd'] == "delete" && is_numeric($_REQUEST['imageId'])) // process screenshot deletion
     {
         $oScreenshot = new Screenshot($_REQUEST['imageId']);
@@ -119,10 +125,9 @@ if($_REQUEST['versionId'])
     echo '<tr><td class="color1">Description</td><td class="color0"><input type="text" name="screenshot_desc" maxlength="20" size="24"></td></tr>',"\n";
        
     echo '<tr><td colspan=2 align=center class=color3><input type="submit" value="Send File"></td></tr>',"\n";
-       
     echo '</table>',"\n";
     echo html_frame_end();
-    echo '<input type="hidden" name="MAX_FILE_SIZE" value="10000000" />',"\n";
+    echo '<input type="hidden" name="MAX_FILE_SIZE" value="4000000" />',"\n";
     echo '<input type="hidden" name="cmd" value="screenshot_upload" />',"\n";
     echo '<input type="hidden" name="versionId" value="'.$_REQUEST['versionId'].'"></form />',"\n";
 }
