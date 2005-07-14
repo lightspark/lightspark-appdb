@@ -71,7 +71,7 @@ else
     }
     echo '<tr><td class=color4>Description</td><td class=color0>', "\n";
     echo '<p style="width:700px">', "\n";
-    echo '<textarea cols="80" rows="20" id="editor" name="noteDesc">'.stripslashes($_REQUEST['noteDesc']).'</textarea>',"\n";
+    echo '<textarea cols="80" rows="20" id="editor" name="noteDesc">'.$_REQUEST['noteDesc'].'</textarea>',"\n";
     echo '</p>';
     echo '</td></tr><tr><td colspan="2" align="center" class="color3">',"\n";
     echo '<input type="submit" name=preview value="Preview">&nbsp',"\n";
