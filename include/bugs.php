@@ -87,7 +87,7 @@ class Bug {
         $sQuery = "SELECT *
                    FROM bugs 
                    WHERE bug_id = ".$iBug_id;
-        if(!($hResult = query_bugzilladb($sQuery)))
+        if(mysql_num_rows(query_bugzilladb($sQuery, "checking bugzilla")) == 0)
         {
             addmsg("There is no bug in Bugzilla with that bug number.", "red");
             return false;
@@ -98,7 +98,7 @@ class Bug {
         $sQuery = "SELECT *
                    FROM buglinks 
                    WHERE versionId = ".$iVersionId;
-        if($hResult = query_appdb($sQuery))
+        if($hResult = query_appdb($sQuery,"looking for duplicates"))
         {
             while($oRow = mysql_fetch_object($hResult))
             {
@@ -108,7 +108,7 @@ class Bug {
                    return false;
                 }
             }
-        } 
+        }
 
         /* passed the checks so lets insert the puppy! */
 
@@ -120,8 +120,22 @@ class Bug {
         $sValues = "({$aInsert['VALUES']})";
         if(query_appdb("INSERT INTO buglinks $sFields VALUES $sValues", "Error while creating a new Bug link."))
         {
+            /* The following should work but it does not! */
             $this->iLinkId = mysql_insert_id();
             $this->bug($this->iLinkId);
+            /* Start of hack to get around the previous not working */
+            $sQuery = "SELECT buglinks.*, appVersion.appId AS appId
+                       FROM buglinks, appVersion 
+                       WHERE buglinks.versionId = appVersion.versionId 
+                       AND buglinks.versionId = ".$iVersionId."
+                       AND buglinks.bug_id = ".$iBug_id;
+            if($hResult = query_appdb($sQuery))
+            {
+                $oRow = mysql_fetch_object($hResult);
+                $this->bug($oRow->linkId);
+            }
+            /*End of Hack */
+
             $this->mailMaintainers();
             return true;
         }else
@@ -182,11 +196,11 @@ class Bug {
             if(!$bRejected)
             {
                 $sSubject =  "Submitted Bug Link accepted";
-                $sMsg  = "The Bug Link you submitted for ".lookup_app_name($this->appId)." ".lookup_version_name($this->versionId)." has been accepted.";
+                $sMsg  = "The Bug Link you submitted for ".lookup_app_name($this->iAppId)." ".lookup_version_name($this->iVersionId)." has been accepted.";
             } else
             {
                  $sSubject =  "Submitted Bug Link rejected";
-                 $sMsg  = "The Bug Link you submitted for ".lookup_app_name($this->appId)." ".lookup_version_name($this->versionId)." has been rejected.";
+                 $sMsg  = "The Bug Link you submitted for ".lookup_app_name($this->iAppId)." ".lookup_version_name($this->iVersionId)." has been rejected.";
             }
             $sMsg .= $_REQUEST['replyText']."\n";
             $sMsg .= "We appreciate your help in making the Application Database better for all users.";
@@ -217,7 +231,7 @@ class Bug {
                 $sMsg  = APPDB_ROOT."appview.php?versionId=".$this->iVersionId."\n";
                 $sMsg .= "This Bug Link has been queued.";
                 $sMsg .= "\n";
-                addmsg("The Bug Link you submitted will be added to the database database after being reviewed.", "green");
+                addmsg("The Bug Link you submitted will be added to the database after being reviewed.", "green");
             }
         } else // Bug Link deleted.
         {
@@ -243,6 +257,7 @@ function view_version_bugs($iVersionId = null, $aBuglinkIds)
 {
     $bCanEdit = FALSE;
     $oVersion = new Version($iVersionId);
+
     // Security, if we are an administrator or a maintainer, we can remove or ok links.
     if(($_SESSION['current']->hasPriv("admin") ||
                  $_SESSION['current']->isMaintainer($oVersion->iVersionId) ||
@@ -286,7 +301,6 @@ function view_version_bugs($iVersionId = null, $aBuglinkIds)
         echo "<td>".$oBuglink->sShort_desc."</td>\n";
         echo "<td align=center>".$oBuglink->sBug_status."</td>","\n";
         echo "<td align=center>".$oBuglink->sResolution."</td>","\n";
-//        echo "<td align=center>".$oBuglink->sResolution."</td>","\n";
         echo "<td align=center><a href='viewbugs.php?bug_id=".$oBuglink->iBug_id."'>View</a></td>\n";
  
         
@@ -309,7 +323,7 @@ function view_version_bugs($iVersionId = null, $aBuglinkIds)
     }
     if($_SESSION['current']->isLoggedIn())
     {
-        echo '<input type="hidden" name="versionId" value="'.$oBuglink->iVersionId.'">',"\n";
+        echo '<input type="hidden" name="versionId" value="'.$iVersionId.'">',"\n";
         echo '<tr class=color3><td align=center>',"\n";
         echo '<input type="text" name="buglinkId" value="'.$_REQUEST['buglinkId'].'" size="8"></td>',"\n";
         echo '<td><input type="submit" name="sub" value="Submit a new bug link."></td>',"\n";
