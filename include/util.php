@@ -242,6 +242,22 @@ function getNumberOfImages()
     return $row->num_images;
 }
 
+/* Get the number of queued bug links in the database */
+function getNumberOfQueuedBugLinks()
+{
+    $result = query_appdb("SELECT count(*) as num_buglinks FROM buglinks WHERE queued='true';");
+    $row = mysql_fetch_object($result);
+    return $row->num_buglinks;
+}
+
+/* Get the number of bug links in the database */
+function getNumberOfBugLinks()
+{
+    $result = query_appdb("SELECT count(*) as num_buglinks FROM buglinks;");
+    $row = mysql_fetch_object($result);
+    return $row->num_buglinks;
+}
+
 function lookupVendorName($vendorId)
 {
     $sResult = query_appdb("SELECT * FROM vendor ".
@@ -704,6 +720,62 @@ function perform_search_and_output_results($search_words)
     echo "<center><b>Fuzzy matches - minimum ".$minMatchingPercent."% match</b></center>";
     $hResult = searchForApplicationFuzzy($search_words, $minMatchingPercent);
     outputSearchTableForhResult($search_words, $hResult);
+}
+
+function display_page_range($currentPage=1, $pageRange=1, $totalPages=1, $linkurl=NULL)
+{
+    if($linkurl==NULL)
+    {
+        $linkurl = $_SERVER['PHP_SELF']."?";
+    }
+    /* display the links to each of these pages */
+    $currentPage = max(1,(min($currentPage,$totalPages)));
+    $pageRange = min($pageRange,$totalPages);
+
+    if($currentPage <= ceil($pageRange/2))
+    {
+        $startPage = 1;
+        $endPage = $pageRange;
+    } else
+    {
+        if($currentPage + ($pageRange/2) > $totalPages)
+        {
+            $startPage = $totalPages - $pageRange;
+            $endPage = $totalPages;
+        } else
+        {
+            $startPage = $currentPage - floor($pageRange/2);
+            $endPage = $currentPage + floor($pageRange/2);
+        }
+    }
+    $startPage = max(1,$startPage);
+
+    if($currentPage != 1)
+    {
+        echo "<a href='".$linkurl."&page=1'>|&lt</a>&nbsp";
+        $previousPage = $currentPage - 1;
+        echo "<a href='".$linkurl."&page=$previousPage'>&lt</a>&nbsp";
+    } else
+    {
+        echo "|&lt &lt ";
+    }
+    /* display the desired range */
+    for($x = $startPage; $x <= $endPage; $x++)
+    {
+        if($x != $currentPage)
+            echo "<a href='".$linkurl."&page=".$x."'>$x</a> ";
+        else
+            echo "$x ";
+    }
+
+    if($currentPage < $totalPages)
+    {
+        $nextPage = $currentPage + 1;
+        echo "<a href='".$linkurl."&page=$nextPage'>&gt</a> ";
+        echo "<a href='".$linkurl."&page=$totalPages'>&gt|</a> ";
+    } else
+        echo "&gt &gt|";
+    
 }
 
 ?>
