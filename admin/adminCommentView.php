@@ -10,91 +10,54 @@ require(BASE."include/comment.php");
 
 apidb_header("Comments");
 
-function display_range($currentPage, $pageRange, $totalPages, $commentsPerPage)
-{
-    /* display the links to each of these pages */
-    if($currentPage != 0)
-    {
-        $previousPage = $currentPage - 1;
-        echo "<a href='adminCommentView.php?page=$previousPage&commentsPerPage=$commentsPerPage'>Previous</a> ";
-    } else
-        echo "Previous ";
+/* display a range of 10 pages */
+$pageRange = 10;
 
-    /* display the next 10 and previous 10 pages */
-    $pageRange = 10;
+$ItemsPerPage = 10;
+$currentPage = 1;
 
-    if($currentPage > $pageRange)
-        $startPage = $currentPage - $pageRange;
-    else
-        $startPage = 0;
-
-    if($currentPage + $pageRange < $totalPages)
-        $endPage = $currentPage + $pageRange;
-    else
-        $endPage = $totalPages;
-
-    /* display the desired range */
-    for($x = $startPage; $x <= $endPage; $x++)
-    {
-        if($x != $currentPage)
-            echo "<a href='adminCommentView.php?page=$x&commentsPerPage=$commentsPerPage'>$x</a> ";
-        else
-            echo "$x ";
-    }
-
-    if($currentPage < $totalPages)
-    {
-        $nextPage = $currentPage + 1;
-        echo "<a href='adminCommentView.php?page=$nextPage&commentsPerPage=$commentsPerPage'>Next</a> ";
-    } else
-        echo "Next ";
-}
-
-$commentsPerPage = 10;
-$currentPage = 0;
-
+if($_REQUEST['ItemsPerPage'])
+    $ItemsPerPage = $_REQUEST['ItemsPerPage'];
 if($_REQUEST['page'])
     $currentPage = $_REQUEST['page'];
 
-if($_REQUEST['commentsPerPage'])
-    $commentsPerPage = $_REQUEST['commentsPerPage'];
+$totalPages = ceil(getNumberOfComments()/$ItemsPerPage);
 
-$totalPages = floor(getNumberOfComments()/$commentsPerPage);
+if($ItemsPerPage > 100) $ItemsPerPage = 100;
 
-if($commentsPerPage > 100) $commentsPerPage = 100;
 
 /* display page selection links */
 echo "<center>";
 echo "<b>Page $currentPage of $totalPages</b><br />";
-display_range($currentPage, $pageRange, $totalPages, $commentsPerPage);
+display_page_range($currentPage, $pageRange, $totalPages, $_SERVER['PHP_SELF']."?ItemsPerPage=".$ItemsPerPage);
 echo "<br />";
 echo "<br />";
 
 /* display the option to choose how many comments per-page to display */
 echo "<form method=\"get\" name=\"message\" action=\"".$_SERVER['PHP_SELF']."\">";
 echo "<b>Number of comments per page:</b>";
-echo "<select name='commentsPerPage'>";
+echo "&nbsp<select name='ItemsPerPage'>";
 
-$commentsPerPageArray = array(10, 20, 50, 100);
-foreach($commentsPerPageArray as $i => $value)
+$ItemsPerPageArray = array(10, 20, 50, 100, 500);
+foreach($ItemsPerPageArray as $i => $value)
 {
-    if($commentsPerPageArray[$i] == $commentsPerPage)
-        echo "<option value='$commentsPerPageArray[$i]' SELECTED>$commentsPerPageArray[$i]";
+    if($ItemsPerPageArray[$i] == $ItemsPerPage)
+        echo "<option value='$ItemsPerPageArray[$i]' SELECTED>$ItemsPerPageArray[$i]";
     else
-        echo "<option value='$commentsPerPageArray[$i]'>$commentsPerPageArray[$i]";
+        echo "<option value='$ItemsPerPageArray[$i]'>$ItemsPerPageArray[$i]";
 }
 echo "</select>";
 
 echo "<input type=hidden name=page value=$currentPage>";
-echo "<input type=submit value='Refresh'>";
+echo "&nbsp<input type=submit value='Refresh'>";
 echo "</form>";
 
 echo "</center>";
 
 /* query for all of the commentId's, ordering by their time in reverse order */
-$offset = $currentPage * $commentsPerPage;
+$offset = (($currentPage-1) * $ItemsPerPage);
 $commentIds = query_appdb("SELECT commentId from appComments ORDER BY ".
-                          "appComments.time ASC LIMIT $offset, $commentsPerPage;");
+                          "appComments.time ASC LIMIT $offset, $ItemsPerPage;");
 while ($ob = mysql_fetch_object($commentIds))
 {
     $qstring = "SELECT from_unixtime(unix_timestamp(time), \"%W %M %D %Y, %k:%i\") as time, ".
@@ -107,8 +70,9 @@ while ($ob = mysql_fetch_object($commentIds))
 }
 
 /* display page selection links */
+
 echo "<center>";
-display_range($currentPage, $pageRange, $totalPages, $commentsPerPage);
+display_page_range($currentPage, $pageRange, $totalPages, $_SERVER['PHP_SELF']."?ItemsPerPage=".$ItemsPerPage);
 echo "</center>";
 
 apidb_footer();
