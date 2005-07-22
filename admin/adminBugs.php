@@ -145,11 +145,11 @@ if ($_REQUEST['sub'])
             echo '    <td align=center>'.$oRow->bug_status.'</td>',"\n";
             echo '    <td>'.$oRow->short_desc.'</td>',"\n";
             echo '    <td>',"\n";
-            echo '    <a href="appview.php?appId='.$oRow->appId.'">'.$oRow->appName.'</a>',"\n";
+            echo '    <a href="'.apidb_fullurl('appview.php?appId='.$oRow->appId).'">'.$oRow->appName.'</a>',"\n";
             echo '    </td>',"\n";
             echo '    <td>'.$oRow->appDescription.'</td>',"\n";
             echo '    <td>',"\n";
-            echo '    <a href="appview.php?versionId='.$oRow->versionId.'">'.$oRow->versionName.'</a>',"\n";
+            echo '    <a href="'.apidb_fullurl('appview.php?versionId='.$oRow->versionId).'">'.$oRow->versionName.'</a>',"\n";
             echo '    </td>',"\n";
             echo '    <td align=center>[<a href="adminBugs.php?sub=delete',"\n";
             echo          '&buglinkId='.$oRow->linkId,"\n";
