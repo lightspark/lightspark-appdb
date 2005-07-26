@@ -5,10 +5,10 @@
 /************************************************************/
 
 include("path.php");
-include(BASE."include/"."incl.php");
-require(BASE."include/"."screenshot.php");
-
-apidb_header("Screenshots");
+include(BASE."include/incl.php");
+require(BASE."include/screenshot.php");
+require(BASE."include/application.php");
+require(BASE."include/mail.php");
 
 // deny access if not admin
 if(!$_SESSION['current']->hasPriv("admin"))
@@ -16,12 +16,31 @@ if(!$_SESSION['current']->hasPriv("admin"))
     errorpage("Insufficient privileges.");
     exit;
 }
+/*
+ * We issued a delete command.
+ */ 
+if($_REQUEST['cmd'])
+{
+    // process screenshot deletion
+    if($_REQUEST['cmd'] == "delete" && is_numeric($_REQUEST['imageId']))
+    {
+        $oScreenshot = new Screenshot($_REQUEST['imageId']);
+        $oScreenshot->delete();
+        $oScreenshot->free();
+    } 
+    redirect($_SERVER['PHP_SELF'].
+             "?ItemsPerPage=".$_REQUEST['ItemsPerPage'].
+             "&page=".$_REQUEST['page']);
+    exit;
+
+}
 
 
+apidb_header("Screenshots");
 // regenerate all screenshots
 if($_REQUEST['regenerate'])
 {
-    $sQuery = "SELECT id FROM appData";
+    $sQuery = "SELECT id FROM appData WHERE type = 'image'";
     $hResult = query_appdb($sQuery);
     while($oRow = mysql_fetch_object($hResult))
     {
@@ -32,108 +51,104 @@ if($_REQUEST['regenerate'])
         set_time_limit(60);
     }
 }
+echo "<center>";
+echo "<a href=\"".$_SERVER['PHP_SELF'].
+     "?regenerate=true\">Regenerate all screenshots ! ".
+      "(use only if you know what you are doing)</a><br />";
+echo "</center>";
 
-echo "<a href=\"".$_SERVER['PHP_SELF']."?regenerate=true\">Regenerate all screenshots ! (use only if you know what you are doing)</a><br />";
+/* display a range of 10 pages */
+$pageRange = 10;
 
-function display_range($currentPage, $pageRange, $totalPages, $screenshotsPerPage)
-{
-    /* display the links to each of these pages */
-    if($currentPage != 0)
-    {
-        $previousPage = $currentPage - 1;
-        echo "<a href='adminScreenshots.php?page=$previousPage&screenshotsPerPage=$screenshotsPerPage'>Previous</a> ";
-    } else
-        echo "Previous ";
+$ItemsPerPage = 6;
+$currentPage = 1;
 
-    /* display the next 10 and previous 10 pages */
-    $pageRange = 10;
-
-    if($currentPage > $pageRange)
-        $startPage = $currentPage - $pageRange;
-    else
-        $startPage = 0;
-
-    if($currentPage + $pageRange < $totalPages)
-        $endPage = $currentPage + $pageRange;
-    else
-        $endPage = $totalPages;
-
-    /* display the desired range */
-    for($x = $startPage; $x <= $endPage; $x++)
-    {
-        if($x != $currentPage)
-            echo "<a href='adminScreenshots.php?page=$x&screenshotsPerPage=$screenshotsPerPage'>$x</a> ";
-        else
-            echo "$x ";
-    }
-
-    if($currentPage < $totalPages)
-    {
-        $nextPage = $currentPage + 1;
-        echo "<a href='adminScreenshots.php?page=$nextPage&screenshotsPerPage=$screenshotsPerPage'>Next</a> ";
-    } else
-        echo "Next ";
-}
-
-$screenshotsPerPage = 10;
-$currentPage = 0;
-
+if($_REQUEST['ItemsPerPage'])
+    $ItemsPerPage = $_REQUEST['ItemsPerPage'];
 if($_REQUEST['page'])
     $currentPage = $_REQUEST['page'];
 
-if($_REQUEST['screenshotsPerPage'])
-    $screenshotsPerPage = $_REQUEST['screenshotsPerPage'];
+$ItemsPerPage = min($ItemsPerPage,100);
+$totalPages = max(ceil($BugLinks/$ItemsPerPage),1);
+$currentPage = min($currentPage,$totalPages);
+$offset = (($currentPage-1) * $ItemsPerPage);
 
-$totalPages = floor(getNumberOfComments()/$screenshotsPerPage);
-
-if($screenshotsPerPage > 100) $screenshotsPerPage = 100;
 
 /* display page selection links */
 echo "<center>";
 echo "<b>Page $currentPage of $totalPages</b><br />";
-display_range($currentPage, $pageRange, $totalPages, $screenshotsPerPage);
+display_page_range($currentPage, $pageRange, $totalPages,
+                  $_SERVER['PHP_SELF']."?ItemsPerPage=".$ItemsPerPage);
 echo "<br />";
 echo "<br />";
 
-/* display the option to choose how many comments per-page to disable */
-echo "<form method=\"get\" name=\"message\" action=\"".$_SERVER['PHP_SELF']."\">";
-echo "<b>Number of comments per page:</b>";
-echo "<select name='screenshotsPerPage'>";
+/* display the option to choose how many screenshots per-page to display */
+echo '<form method="get" name="message" action="'.$_SERVER['PHP_SELF'].'">';
+echo '<b>Number of Screenshots per page:</b>';
+echo "&nbsp<select name='ItemsPerPage'>";
 
-$screenshotsPerPageArray = array(10, 20, 50, 100);
-foreach($screenshotsPerPageArray as $i => $value)
+$ItemsPerPageArray = array(6, 9, 12, 15, 18, 21, 24);
+foreach($ItemsPerPageArray as $i => $value)
 {
-    if($screenshotsPerPageArray[$i] == $screenshotsPerPage)
-        echo "<option value='$screenshotsPerPageArray[$i]' SELECTED>$screenshotsPerPageArray[$i]";
+    if($ItemsPerPageArray[$i] == $ItemsPerPage)
+        echo "<option value='$ItemsPerPageArray[$i]' SELECTED>$ItemsPerPageArray[$i]";
     else
-        echo "<option value='$screenshotsPerPageArray[$i]'>$screenshotsPerPageArray[$i]";
+        echo "<option value='$ItemsPerPageArray[$i]'>$ItemsPerPageArray[$i]";
 }
 echo "</select>";
 
 echo "<input type=hidden name=page value=$currentPage>";
-echo "<input type=submit value='Refresh'>";
+echo "&nbsp<input type=submit value='Refresh'>";
 echo "</form>";
 
 echo "</center>";
 
-/* query for all of the commentId's, ordering by their time in reverse order */
-$offset = $currentPage * $screenshotsPerPage;
-$commentIds = query_appdb("SELECT id from appData ORDER BY ".
-                          "id ASC LIMIT $offset, $screenshotsPerPage;");
-while ($ob = mysql_fetch_object($commentIds))
+/* query for all of the Screenshots in assending order */
+$Ids = query_appdb("SELECT * from appData 
+                    WHERE type = 'image' 
+                    ORDER BY id ASC LIMIT $offset, $ItemsPerPage;");
+$c = 1;
+echo "<div align=center><table><tr>\n";
+while ($oRow = mysql_fetch_object($Ids))
 {
-    $qstring = "SELECT id, appId, versionId, type, description ".
-        "FROM appData WHERE id = $ob->id;";
-    $result = query_appdb($qstring);
+    // display thumbnail
+    $oVersion = new version($oRow->versionId);
+    $oApp = new Application($oVersion->iAppId);
+    $img = get_thumbnail($oRow->id);
+    echo "<td align=center>\n";
+    echo $img;
+    echo "<div align=center>". substr($oRow->description,0,20). "\n";
 
-    /* call view_app_comment to display the comment */
-    $comment_ob = mysql_fetch_object($result);
-    // TODO: display the thumbnail with link to screenshot
+    echo "<br />[<a href='".apidb_fullurl("appview.php");
+    echo "?appId=".$oApp->iAppId."'>";
+    echo $oApp->sName."</a>]";    
+
+    echo "<br />[<a href='".apidb_fullurl("appview.php");
+    echo "?versionId=".$oVersion->iVersionId."'>";
+    echo "Version: ".$oVersion->sName."</a>]";
+    
+    //show admin delete link
+    if($_SESSION['current']->isLoggedIn() && 
+      ($_SESSION['current']->hasPriv("admin") || 
+       $_SESSION['current']->isMaintainer($_REQUEST['versionId'])))
+    {
+        echo "<br />[<a href='".$_SERVER['PHP_SELF'];
+        echo "?cmd=delete&imageId=$oRow->id";
+        echo "&page=".$currentPage."&ItemsPerPage=".$ItemsPerPage."'>";
+        echo "Delete Image</a>]";
+    }
+    echo "</div></td>\n";
+   // end row if counter of 3
+   if ($c % 3 == 0) echo "</tr><tr>\n";
+   $c++;
+
 }
+echo "</tr></table></div><br />\n";
 
 /* display page selection links */
 echo "<center>";
-display_range($currentPage, $pageRange, $totalPages, $screenshotsPerPage);
+display_page_range($currentPage, $pageRange, $totalPages,
+                   $_SERVER['PHP_SELF']."?ItemsPerPage=".$ItemsPerPage);
 echo "</center>";
 
 apidb_footer();
