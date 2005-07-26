@@ -382,4 +382,35 @@ function get_screenshots($iAppId = null, $iVersionId = null, $bQueued = "false")
     }
     return false;
 }
+
+function get_thumbnail($id)
+{
+    $oScreenshot = new Screenshot($id);
+
+    // generate random tag for popup window
+    $randName = generate_passwd(5);
+    // set img tag        
+    $imgSRC  = '<img src="'.apidb_fullurl("appimage.php").
+               '?thumbnail=true&id='.$id.'" alt="'.$oScreenshot->sDescription.
+               '" width="'.$oScreenshot->oThumnailImage->width.
+               '" height="'.$oScreenshot->oThumnailImage->height.'">';
+    $img = '<a href="'.apidb_fullurl("appimage.php").
+           '?id='.$id.
+           '" onclick="javascript:openWin(\''.apidb_fullurl("appimage.php").
+           '?id='.$id.'\',\''.$randName.'\','.
+           $oScreenshot->oScreenshotImage->width.','.
+           ($oScreenshot->oScreenshotImage->height+4).
+           ');return false;">'.$imgSRC.'</a>';
+
+    // set image link based on user pref
+    if ($_SESSION['current']->isLoggedIn())
+    {
+        if ($_SESSION['current']->getpref("window:screenshot") == "no")
+        {
+            $img = '<a href="'.apidb_fullurl("appimage.php").
+                   '?imageId='.$id.'">'.$imgSRC.'</a>';
+        }
+    }
+    return $img;
+}
 ?>
