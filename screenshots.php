@@ -71,22 +71,7 @@ if($hResult && mysql_num_rows($hResult))
             echo html_frame_start("Version ".lookup_version_name($currentVersionId));
             echo "<div align=center><table><tr>\n";
         }
-        $oScreenshot = new Screenshot($oRow->id);
-        // generate random tag for popup window
-        $randName = generate_passwd(5);
-        // set img tag        
-        $imgSRC = '<img src="appimage.php?thumbnail=true&id='.$oRow->id.'" alt="'.$oScreenshot->description.'" width="'.$oScreenshot->oThumnailImage->width.'" height="'.$oScreenshot->oThumnailImage->height.'">';
-
-        // set image link based on user pref
-        $img = '<a href="appimage.php?id='.$oRow->id.'" onclick="javascript:openWin(\'appimage.php?id='.$oRow->id.'\',\''.$randName.'\','.$oScreenshot->oScreenshotImage->width.','.($oScreenshot->oScreenshotImage->height+4).');return false;">'.$imgSRC.'</a>';
-        if ($_SESSION['current']->isLoggedIn())
-        {
-            if ($_SESSION['current']->getpref("window:screenshot") == "no")
-            {
-                $img = '<a href="appimage.php?imageId='.$oRow->id.'">'.$imgSRC.'</a>';
-            }
-        }
-
+        $img = get_thumbnail($oRow->id);
         // display image
         echo "<td>\n";
         echo $img;
