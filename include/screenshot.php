@@ -134,7 +134,7 @@ class Screenshot {
         {
             $this->oScreenshotImage->delete();
             $this->oThumbnailImage->delete();
-            unlink($_SERVER['DOCUMENT_ROOT']."/data/screenshots/originals/".$this->iScreenshotId);
+            unlink(appdb_fullpath("/data/screenshots/originals/".$this->iScreenshotId));
             if(!$bSilent)
                 $this->mailMaintainers(true);
         }
@@ -208,7 +208,7 @@ class Screenshot {
         }
         $this->oThumbnailImage->make_thumb(0,0,1,'#000000');
         // store the image
-        $this->oThumbnailImage->output_to_file($_SERVER['DOCUMENT_ROOT']."/data/screenshots/thumbnails/".$this->sUrl);
+        $this->oThumbnailImage->output_to_file(appdb_fullpath("/data/screenshots/thumbnails/".$this->sUrl));
             
         // now we'll process the screenshot image for watermarking
         // load the screenshot
@@ -217,7 +217,7 @@ class Screenshot {
         // resize the image
         $this->oScreenshotImage->make_full();
         // store the resized image
-        $this->oScreenshotImage->output_to_file($_SERVER['DOCUMENT_ROOT']."/data/screenshots/".$this->sUrl);
+        $this->oScreenshotImage->output_to_file(appdb_fullpath("/data/screenshots/".$this->sUrl));
         // reload the resized screenshot
         $this->oScreenshotImage  = new Image("/data/screenshots/".$this->sUrl);
         if(!$this->oScreenshotImage->isLoaded()) return false;
@@ -225,7 +225,7 @@ class Screenshot {
         // add the watermark to the screenshot
         $this->oScreenshotImage->add_watermark($watermark->get_image_resource());
         // store the watermarked image
-        $this->oScreenshotImage->output_to_file($_SERVER['DOCUMENT_ROOT']."/data/screenshots/".$this->sUrl);
+        $this->oScreenshotImage->output_to_file(appdb_fullpath("/data/screenshots/".$this->sUrl));
          
         return true;
     }
@@ -321,7 +321,7 @@ function get_screenshot_img($iAppId = null, $iVersionId = null)
     }
     if(!$hResult || !mysql_num_rows($hResult))
     {
-        $sImgFile = '<center><img src="'.BASE.'images/no_screenshot.png" alt="No Screenshot" /></center>';
+        $sImgFile = '<center><img src="'.appdb_fullpath("images/no_screenshot.png").'" alt="No Screenshot" /></center>';
     } else
     {
         $oRow = mysql_fetch_object($hResult);

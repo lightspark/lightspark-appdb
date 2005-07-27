@@ -21,8 +21,7 @@ class Image {
      */
     function Image($sRelativePath)
     {
-        $this->file = $_SERVER['DOCUMENT_ROOT'].$sRelativePath;
-       
+        $this->file = appdb_fullpath($sRelativePath);
         $info = @getimagesize($this->file);       
         
         if( empty($info) )

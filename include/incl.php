@@ -36,9 +36,13 @@ function apidb_fullurl($path = "")
     return BASE.$path;
 }
 
-function apidb_fullpath($path)
+function appdb_fullpath($path)
 {
-    return $_SERVER['DOCUMENT_ROOT'].BASE.$path;
+    /* IE: we know this file is in /yyy/xxx/include, we want to get the /yyy/xxx 
+    /* so we call dirname  on this file path twice */
+    $fullpath = dirname(dirname(__FILE__))."//".$path;
+    /* get rid of potential double slashes due to string concat */
+    return str_replace("//", "/", $fullpath); 
 }
 
 
