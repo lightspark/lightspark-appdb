@@ -328,7 +328,7 @@ else if($_REQUEST['versionId'])
     }
 
     // header
-    apidb_header("Viewing App Version - ".$oVersion->sName);
+    apidb_header("Viewing App- ".$oApp->sName." Version - ".$oVersion->sName);
 
     // cat
     display_catpath($oApp->iCatId, $oApp->iAppId, $oVersion->iVersionId);
