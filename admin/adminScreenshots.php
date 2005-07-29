@@ -69,7 +69,7 @@ if($_REQUEST['page'])
     $currentPage = $_REQUEST['page'];
 
 $ItemsPerPage = min($ItemsPerPage,100);
-$totalPages = max(ceil($BugLinks/$ItemsPerPage),1);
+$totalPages = ceil(getNumberOfImages()/$ItemsPerPage);
 $currentPage = min($currentPage,$totalPages);
 $offset = (($currentPage-1) * $ItemsPerPage);
 
