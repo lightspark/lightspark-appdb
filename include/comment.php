@@ -27,7 +27,6 @@ class Comment {
     {
         if(is_numeric($iCommentId))
         {
-
             $sQuery = "SELECT appComments.*, appVersion.appId AS appId
                        FROM appComments, appVersion
                        WHERE appComments.versionId = appVersion.versionId 
@@ -147,7 +146,7 @@ class Comment {
             $sEmail .= $this->oOwner->sEmail;
             if($sEmail)
             {
-                $sSubject = "Comment for ".lookup_app_name($this->iAppId)." ".lookup_version_name($this->iVersionId)." deleted by ".$_SESSION['current']->sRealname;
+                $sSubject = "Comment for '".lookup_app_name($this->iAppId)." ".lookup_version_name($this->iVersionId)."' deleted by ".$_SESSION['current']->sRealname;
                 $sMsg  = APPDB_ROOT."appview.php?versionId=".$this->iVersionId."\n";
                 $sMsg .= "\n";
                 $sMsg .= "This comment was made on ".substr($this->sDateCreated,0,10)." by ".$this->oOwner->sRealname."\n";
