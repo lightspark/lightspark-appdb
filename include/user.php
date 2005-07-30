@@ -201,6 +201,13 @@ class User {
     function isMaintainer($iVersionId=null)
     {
         if(!$this->isLoggedIn()) return false;
+
+        /* if we are a super maintainer, we are a maintainer of this version as well */
+        $oVersion = new Version($iVersionId);
+        if($this->isSuperMaintainer($oVersion->iAppId))
+            return true;
+
+        /* otherwise check if we maintain this specific version */
         if($iVersionId)
         {
             $sQuery = "SELECT * FROM appMaintainers WHERE userid = '".$this->iUserId."' AND versionId = '$iVersionId'";
