@@ -79,18 +79,20 @@ class Screenshot {
         if(query_appdb("INSERT INTO appData $sFields VALUES $sValues", "Error while creating a new screenshot."))
         {
             $this->iScreenshotId = mysql_insert_id();
-            if(!move_uploaded_file($hFile['tmp_name'], "data/screenshots/originals/".$this->iScreenshotId))
-            {
 
+            /* make sure we supply the full path to move_uploaded_file() */
+            $moveToPath = appdb_fullpath("data/screenshots/originals/").$this->iScreenshotId;
+            if(!move_uploaded_file($hFile['tmp_name'], $moveToPath))
+            {
                 // whoops, moving failed, do something
-                addmsg("Unable to move screenshot from ".$hFile['tmp_name']." to data/screenshots/originals/".$this->iScreenshotId, "red");
+                addmsg("Unable to move screenshot from '".$hFile['tmp_name']."' to '".$moveToPath."'", "red");
                 $sQuery = "DELETE
                            FROM appData 
                            WHERE id = '".$this->iScreenshotId."'";
                 query_appdb($sQuery);
                 return false;
             } else // we managed to copy the file, now we have to process the image
-            {   
+            {
                 $this->sUrl = $this->iScreenshotId;
                 if($this->generate())
                 {
