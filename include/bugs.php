@@ -327,7 +327,7 @@ function view_version_bugs($iVersionId = null, $aBuglinkIds)
         echo '<tr class=color3><td align=center>',"\n";
         echo '<input type="text" name="buglinkId" value="'.$_REQUEST['buglinkId'].'" size="8"></td>',"\n";
         echo '<td><input type="submit" name="sub" value="Submit a new bug link."></td>',"\n";
-        echo '<td colspan=6></td></tr>',"\n";
+        echo '<td colspan=6></td></tr></form>',"\n";
     }
     echo '</table>',"\n";
     echo html_frame_end();
