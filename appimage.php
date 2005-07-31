@@ -35,7 +35,7 @@ if ($_REQUEST['REQUEST_METHOD']='HEAD')
      
      /* we need to use the url field from appData, this is the name of the file */
      /* in the filesystem */
-     $fImage = fopen(appdb_fullpath("data/screenshots/".$oRow->id), "rb");
+     $fImage = fopen(appdb_fullpath("data/screenshots/".$oRow->url), "rb");
    }
 
    /* if the query failed or if we didn't find the image, we should */
