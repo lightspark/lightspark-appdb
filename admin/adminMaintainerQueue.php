@@ -62,7 +62,7 @@ if ($_REQUEST['sub'])
 
         $firstDisplay = true; /* if false we need to fix up table rows appropriately */
 
-        $other_users = getMaintainersUserIdsFromAppIdVersionId($ob->appId, $ob->versionId);
+        $other_users = getMaintainersUserIdsFromAppIdVersionId($ob->versionId);
         if($other_users)
         {
             $foundMaintainers = true;
@@ -174,37 +174,15 @@ if ($_REQUEST['sub'])
     }
     else if ($_REQUEST['add'] && $_REQUEST['queueId'])
     {
-        // insert the new entry into the maintainers list
-        $query = "INSERT into appMaintainers VALUES(null,".
-                    "$ob->appId,".
-                    "$ob->versionId,".
-                    "$ob->userId,".
-                    "$ob->superMaintainer,".
-                    "NOW());";
+        /* create a new user object for the maintainer */
+        $maintainerUser = new User($ob->userId);
 
-        if (query_appdb($query))
-        {
-            $statusMessage = "<p>The maintainer was successfully added into the database</p>\n";
-
-            //delete the item from the queue
-            query_appdb("DELETE from appMaintainerQueue where queueId = ".$_REQUEST['queueId'].";");
-            $oApp = new Application($ob->appId);
-            $oVersion = new Version($ob->versionId);
-            //Send Status Email
-            $sEmail = $oUser->sEmail;
-            if ($sEmail)
-            {
-                $sSubject =  "Application Maintainer Request Report";
-                $sMsg  = "Your application to be the maintainer of ".$oApp->sName." ".$oVersion->sName." has been accepted. ";
-                $sMsg .= $_REQUEST['replyText'];
-                $sMsg .= "We appreciate your help in making the Application Database better for all users.\n\n";
-                
-                mail_appdb($sEmail, $sSubject ,$sMsg);
-            }
-        
-            //done
-            addmsg("<p><b>$statusMessage</b></p>", 'green');
-        }
+        /* add the user as a maintainer and return the statusMessage */
+        $statusMessage = $maintainerUser->addAsMaintainer($ob->appId, $ob->versionId,
+                                                          $ob->superMaintainer,
+                                                          $_REQUEST['queueId']);
+        //done
+        addmsg("<p><b>$statusMessage</b></p>", 'green');
     }
     else if (($_REQUEST['reject'] || ($_REQUEST['sub'] == 'reject')) && $_REQUEST['queueId'])
     {

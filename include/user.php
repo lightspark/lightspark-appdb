@@ -242,6 +242,58 @@ class User {
         return mysql_num_rows($hResult);
     }
 
+     /**
+      * Add the user as a maintainer
+      */
+    function addAsMaintainer($iAppId, $iVersionId, $bSuperMaintainer, $iQueueId)
+     {
+         /* if the user isn't already a supermaintainer of the application and */
+         /* if they are trying to become a maintainer and aren't already a maintainer of */
+         /* the version, then continue processing the request */
+         if(!$this->isSuperMaintainer($iAppId) &&
+            ((!$bSuperMaintainer && !$this->isMaintainer($iVersionId)) | $bSuperMaintainer))
+         {
+            // insert the new entry into the maintainers list
+            $sQuery = "INSERT into appMaintainers VALUES(null,".
+                "$iAppId,".
+                "$iVersionId,".
+                "$this->iUserId,".
+                "$bSuperMaintainer,".
+                "NOW());";
+
+            if (query_appdb($sQuery))
+            {
+                $statusMessage = "<p>The maintainer was successfully added into the database</p>\n";
+
+                //delete the item from the queue
+                query_appdb("DELETE from appMaintainerQueue where queueId = ".$iQueueId.";");
+                $oApp = new Application($iAppId);
+                $oVersion = new Version($iVersionId);
+                //Send Status Email
+                $sEmail = $oUser->sEmail;
+                if ($sEmail)
+                {
+                    $sSubject =  "Application Maintainer Request Report";
+                    $sMsg  = "Your application to be the maintainer of ".$oApp->sName." ".$oVersion->sName." has been accepted. ";
+                    $sMsg .= $_REQUEST['replyText'];
+                    $sMsg .= "We appreciate your help in making the Application Database better for all users.\n\n";
+
+                    mail_appdb($sEmail, $sSubject ,$sMsg);
+                }       
+            }
+        } else
+        {
+            //delete the item from the queue
+            query_appdb("DELETE from appMaintainerQueue where queueId = ".$iQueueId.";");
+
+            if($this->isSuperMaintainer($iAppId) && !$bSuperMaintainer)
+                $statusMessage = "<p>User is already a super maintainer of this application</p>\n";
+            else
+                $statusMessage = "<p>User is already a maintainer/super maintainer of this application/version</p>\n";
+        }
+
+        return $statusMessage;
+     }
 
     function addPriv($sPriv)
     {
