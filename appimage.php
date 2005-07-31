@@ -24,11 +24,23 @@ if ($_REQUEST['REQUEST_METHOD']='HEAD')
       errorpage("Bad parameter");
       exit;
    }
-   $sQuery = "SELECT id FROM appData 
+   $sQuery = "SELECT id, url FROM appData 
               WHERE id = ".$iId."
               AND type = 'image' LIMIT 1";
-   if (!($hResult = query_appdb($sQuery) &&
-         $fImage = fopen(appdb_fullpath("data/screenshots/".$iId), "rb")))
+   $hResult = query_appdb($sQuery);
+   $fImage = 0;
+   if($hResult)
+   {
+     $oRow = mysql_fetch_object($hResult);
+     
+     /* we need to use the url field from appData, this is the name of the file */
+     /* in the filesystem */
+     $fImage = fopen(appdb_fullpath("data/screenshots/".$oRow->id), "rb");
+   }
+
+   /* if the query failed or if we didn't find the image, we should */
+   /* report a 404 to the browser */
+   if(!$hResult || !$fImage)
    {
       header("404 No such image");
       exit;
