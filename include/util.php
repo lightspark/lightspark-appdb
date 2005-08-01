@@ -245,17 +245,25 @@ function getNumberOfImages()
 /* Get the number of queued bug links in the database */
 function getNumberOfQueuedBugLinks()
 {
-    $result = query_appdb("SELECT count(*) as num_buglinks FROM buglinks WHERE queued='true';");
-    $row = mysql_fetch_object($result);
-    return $row->num_buglinks;
+    $hResult = query_appdb("SELECT count(*) as num_buglinks FROM buglinks WHERE queued='true';");
+    if($hResult)
+    {
+      $row = mysql_fetch_object($hResult);
+      return $row->num_buglinks;
+    }
+    return 0;
 }
 
 /* Get the number of bug links in the database */
 function getNumberOfBugLinks()
 {
-    $result = query_appdb("SELECT count(*) as num_buglinks FROM buglinks;");
-    $row = mysql_fetch_object($result);
-    return $row->num_buglinks;
+    $hResult = query_appdb("SELECT count(*) as num_buglinks FROM buglinks;");
+    if($hResult)
+    {
+      $row = mysql_fetch_object($hResult);
+      return $row->num_buglinks;
+    }
+    return 0;
 }
 
 function lookupVendorName($vendorId)
