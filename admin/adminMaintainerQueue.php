@@ -66,7 +66,7 @@ if ($_REQUEST['sub'])
         if($other_users)
         {
             $foundMaintainers = true;
-            while(list($index, list($userIdValue)) = each($other_users))
+            while(list($index, $userIdValue) = each($other_users))
             {
                 $oUser = new User($userIdValue);
                 if($firstDisplay)
@@ -84,7 +84,7 @@ if ($_REQUEST['sub'])
         if($other_users)
         {
             $foundMaintainers = true;
-            while(list($index, list($userIdValue)) = each($other_users))
+            while(list($index, $userIdValue) = each($other_users))
             {
                 $oUser = new User($userIdValue);
                 if($firstDisplay)
