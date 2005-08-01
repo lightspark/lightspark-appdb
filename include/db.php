@@ -27,6 +27,7 @@ function query_bugzilladb($sQuery,$sComment="")
     {
         // The last argument makes sure we are really opening a new connection
         $hBugzillaLink = mysql_connect(BUGZILLA_DBHOST, BUGZILLA_DBUSER, BUGZILLA_DBPASS,true);
+        if(!$hBugzillaLink) return;
         mysql_select_db(BUGZILLA_DB, $hBugzillaLink);
     }
     
