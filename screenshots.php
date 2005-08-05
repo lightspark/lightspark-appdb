@@ -10,7 +10,7 @@
  */ 
 include("path.php");
 require(BASE."include/incl.php");
-require(BASE."include/screenshot.php");
+require_once(BASE."include/screenshot.php");
 require(BASE."include/application.php");
 require(BASE."include/mail.php");
 

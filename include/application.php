@@ -115,7 +115,6 @@ class Application {
      */
     function create($sName=null, $sDescription=null, $sKeywords=null, $sWebpage=null, $iVendorId=null, $iCatId=null)
     {
-
         // Security, if we are not an administrator the application must be queued.
         if(!($_SESSION['current']->hasPriv("admin")))
             $this->bQueued = true;
@@ -222,6 +221,10 @@ class Application {
      */
     function delete($bSilent=false)
     {
+        /* don't let non-admins delete applications */
+        if(!($_SESSION['current']->hasPriv("admin")))
+            return;
+
         foreach($this->aVersionsIds as $iVersionId)
         {
             $oVersion = new Version($iVersionId);

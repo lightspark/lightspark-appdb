@@ -11,8 +11,8 @@ function global_admin_menu() {
     $g->add("Add Vendor", BASE."admin/addVendor.php");
     
     $g->addmisc("&nbsp;");
-    $g->add("View App Queue (".getQueuedAppCount()."/".getQueuedVersionCount().")", BASE."admin/adminAppQueue.php");
-    $g->add("View App Data Queue (".getQueuedAppDataCount().")", BASE."admin/adminAppDataQueue.php");
+    $g->add("View App Queue (".$_SESSION['current']->getQueuedAppCount()."/".$_SESSION['current']->getQueuedVersionCount().")", BASE."admin/adminAppQueue.php");
+    $g->add("View App Data Queue (".$_SESSION['current']->getQueuedAppDataCount().")", BASE."admin/adminAppDataQueue.php");
     $g->add("View Maintainer Queue (".getQueuedMaintainerCount().")", BASE."admin/adminMaintainerQueue.php");
     $g->add("View Maintainer Entries (".getMaintainerCount().")", BASE."admin/adminMaintainers.php");
     $g->add("View Vendors (".getVendorCount().")", BASE."admin/adminVendors.php");
@@ -23,7 +23,6 @@ function global_admin_menu() {
     $g->add("Comments Management", BASE."admin/adminCommentView.php");
     $g->add("Screenshots Management", BASE."admin/adminScreenshots.php");
     $g->done();
-
 }
 
 ?>

@@ -87,7 +87,7 @@ if (isset($_REQUEST['appName']))
         $oApplication = new Application();
         // FIXME When two htmlarea will be able to live on the same page 
         // without problems under gecko, remove the <p></p> around appDescrion
-        $oApplication->create($_REQUEST['appName'], "<p>".$_REQUEST['appDescription']."</p>", $_REQUEST['keywords']." *** ".$_REQUEST['vendorName'], $_REQUEST['webpage'],$_REQUEST['vendorId'], $_REQUEST['catId']);
+        $oApplication->create($_REQUEST['appName'], "<p>".$_REQUEST['appDescription']."</p>", $_REQUEST['keywords']." *** ".$_REQUEST['vendorName'], $_REQUEST['webpage'], $_REQUEST['vendorId'], $_REQUEST['catId']);
         $oVersion = new Version();
         $oVersion->create($_REQUEST['versionName'], $_REQUEST['versionDescription'], null, null, $oApplication->iAppId);
         redirect(apidb_fullurl("index.php"));

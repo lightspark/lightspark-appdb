@@ -70,8 +70,8 @@ function outputSearchTableForDuplicateFlagging($currentAppId, $hResult)
     }
 }
 
-//deny access if not logged in
-if(!$_SESSION['current']->hasPriv("admin"))
+//deny access if not logged in or not a super maintainer of any applications
+if(!$_SESSION['current']->hasPriv("admin") && !$_SESSION['current']->isSuperMaintainer())
 {
     errorpage("Insufficient privileges.");
     exit;
@@ -81,6 +81,13 @@ if ($_REQUEST['sub'])
 {
     if(is_numeric($_REQUEST['appId']))
     {
+        /* make sure the user is authorized to view this application request */
+        if(!$_SESSION['current']->hasPriv("admin"))
+        {
+            errorpage("Insufficient privileges.");
+            exit;
+        }
+
         $oApp = new Application($_REQUEST['appId']);
 
         /* if we are processing a queued application there MUST be an implicitly queued */
@@ -91,9 +98,23 @@ if ($_REQUEST['sub'])
         $hResult = query_appdb($sQuery);
         $oRow = mysql_fetch_object($hResult);
 
+        /* make sure the user has permission to view this version */
+        if(!$_SESSION['current']->hasAppVersionModifyPermission($oRow->versionId))
+        {
+            errorpage("Insufficient privileges.");
+            exit;
+        }
+
         $oVersion = new Version($oRow->versionId);
     } elseif(is_numeric($_REQUEST['versionId']))
     {
+        /* make sure the user has permission to view this version */
+        if(!$_SESSION['current']->hasAppVersionModifyPermission($_REQUEST['versionId']))
+        {
+            errorpage("Insufficient privileges.");
+            exit;
+        }
+
         $oVersion = new Version($_REQUEST['versionId']);
     } else
     {
@@ -309,7 +330,6 @@ if ($_REQUEST['sub'])
         
             /* delete the appId that is the duplicate */
             $oApp->delete();
-
         }
 
         /* redirect back to the main page */
@@ -353,9 +373,9 @@ if ($_REQUEST['sub'])
 else /* if ($_REQUEST['sub']) is not defined, display the main app queue page */
 {
     apidb_header("Admin App Queue");
-    // get queued apps
-    $sQuery = "SELECT appId FROM appFamily WHERE queued = 'true'";
-    $hResult = query_appdb($sQuery);
+
+    // get queued apps that the current user should see
+    $hResult = $_SESSION['current']->getAppQueueQuery(true); /* query for the app family */
 
     if(!$hResult || !mysql_num_rows($hResult))
     {
@@ -416,8 +436,7 @@ else /* if ($_REQUEST['sub']) is not defined, display the main app queue page */
     }
 
      // get queued versions (only versions where application are not queued already)
-     $sQuery = "SELECT versionId FROM appVersion, appFamily WHERE appFamily.appId = appVersion.appId and appFamily.queued = 'false' AND appVersion.queued = 'true'";
-     $hResult = query_appdb($sQuery);
+     $hResult = $_SESSION['current']->getAppQueueQuery(false); /* query for the app version */
 
      if(!$hResult || !mysql_num_rows($hResult))
      {

@@ -107,6 +107,10 @@ function apidb_sidebar()
     {
         include(BASE."include/sidebar_admin.php");
         apidb_sidebar_add("global_admin_menu");
+    } else if($_SESSION['current']->isMaintainer()) /* if the user maintains anything, add their menus */
+    {
+        include(BASE."include/sidebar_maintainer_admin.php");
+        apidb_sidebar_add("global_maintainer_admin_menu");
     }
 
     // Login Menu

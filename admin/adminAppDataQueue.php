@@ -9,25 +9,20 @@ require(BASE."include/mail.php");
 require(BASE."include/tableve.php");
 require(BASE."include/application.php");
 
-// deny access if not admin
-if(!$_SESSION['current']->hasPriv("admin"))
+// deny access if not admin or at least some kind of maintainer
+if(!$_SESSION['current']->hasPriv("admin") && !$_SESSION['current']->isMaintainer())
 {
     errorpage("Insufficient privileges.");
     exit;
 }
 
-
 // shows the list of appdata in queue
 if (!$_REQUEST['id'])
 {
-
     apidb_header("Admin Application Data Queue");
 
-    // get available appData
-    $sQuery = "SELECT appData.*, appVersion.appId AS appId 
-               FROM appData, appVersion 
-               WHERE appVersion.versionId = appData.versionID AND appData.queued = 'true';";
-    $hResult = query_appdb($sQuery);
+    /* retrieve the queued apps */
+    $hResult = $_SESSION['current']->getAppDataQuery("*", false, true);
 
     if(!$hResult || !mysql_num_rows($hResult))
     {
@@ -81,11 +76,7 @@ if (!$_REQUEST['id'])
     }      
 } else // shows a particular appdata
 {
-    $sQuery = "SELECT appData.*, appVersion.appId AS appId 
-               FROM appData,appVersion 
-               WHERE appVersion.versionId = appData.versionId 
-               AND id='".$_REQUEST['id']."'";
-    $hResult = query_appdb($sQuery);
+    $hResult = $_SESSION['current']->getAppDataQuery($_REQUEST['id'], false, false);
     $obj_row = mysql_fetch_object($hResult);
     
     if(!$_REQUEST['sub']=="inside_form")
@@ -211,9 +202,7 @@ if (!$_REQUEST['id'])
             }
 
             //delete main item
-            $sQuery = "DELETE from appData where id = ".$obj_row->id.";";
-            $hResult = query_appdb($sQuery);
-            if($hResult)
+            if($_SESSION['current']->deleteAppData($obj_row->id))
             {
                //success
                echo "<p>Application data  was successfully deleted from the Queue.</p>\n";

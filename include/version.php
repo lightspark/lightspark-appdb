@@ -248,6 +248,12 @@ class Version {
      */
     function delete($bSilent=false)
     {
+        /* is the current user allowed to delete this version? */
+        if(!$_SESSION['current']->hasPriv("admin") && !$_SESSION['current']->hasAppVersionModifyPermission($iVersionId))
+        {
+            return;
+        }
+
         /* remove all of the items this version contains */
         foreach($this->aNotesIds as $iNoteId)
         {
@@ -303,6 +309,12 @@ class Version {
      */
     function unQueue()
     {
+        /* is the current user allowed to delete this version? */
+        if(!$_SESSION['current']->hasPriv("admin") && !$_SESSION['current']->hasAppVersionModifyPermission($iVersionId))
+        {
+            return;
+        }
+
         // If we are not in the queue, we can't move the version out of the queue.
         if(!$this->bQueued)
             return false;

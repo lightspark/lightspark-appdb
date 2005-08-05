@@ -3,7 +3,7 @@
 /* screenshot class and related functions */
 /******************************************/
 
-require(BASE."include/image.php");
+require_once(BASE."include/image.php");
 // load the watermark
 $watermark = new image("/images/watermark.png");
 
@@ -128,11 +128,9 @@ class Screenshot {
      */
     function delete($bSilent=false)
     {
-        $sQuery = "DELETE FROM appData 
-                   WHERE id = ".$this->iScreenshotId." 
-                   AND type = 'image' 
-                   LIMIT 1";
-        if($hResult = query_appdb($sQuery))
+        /* the user object should delete the app data entry */
+        /* we can perform better permissions checking there */
+        if($_SESSION['current']->deleteAppData($this->iScreenshotId))
         {
             $this->oScreenshotImage->delete();
             $this->oThumbnailImage->delete();

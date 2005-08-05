@@ -5,17 +5,20 @@
 
 include("path.php");
 require(BASE."include/"."incl.php");
-require(BASE."include/"."screenshot.php");
+require_once(BASE."include/"."screenshot.php");
 
 /* an image doesn't have a link, so a cookie makes no sense */
 header("Set-Cookie: ");
 header("Pragma: ");
 
-if(!$_SESSION['current']->hasPriv("admin") && $_REQUEST['queued'])
+/* if the user isn't supposed to be viewing this image */
+/* display an error message and exit */
+if(!$_SESSION['current']->canViewImage($_REQUEST['id']))
 {
-   errorpage("Insufficient privileges.");
-   exit;
+    errorpage("Insufficient privileges.");
+    exit;
 }
+
 if ($_REQUEST['REQUEST_METHOD']='HEAD')
 {
    /* WARNING! optimization of logic in include/screenshots.php */

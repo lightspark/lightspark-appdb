@@ -3,6 +3,7 @@
 /* user class and related functions */
 /************************************/
 
+require_once(BASE."include/version.php");
 
 /**
  * User class for handling users
@@ -232,7 +233,7 @@ class User {
         if($iAppId)
         {
             $sQuery = "SELECT * FROM appMaintainers WHERE userid = '$this->iUserId' AND appId = '$iAppId' AND superMaintainer = '1'";
-        } else
+        } else /* are we super maintainer of any applications? */
         {
             $sQuery = "SELECT * FROM appMaintainers WHERE userid = '$this->iUserId' AND superMaintainer = '1'";
         }
@@ -295,6 +296,49 @@ class User {
         return $statusMessage;
      }
 
+    /* get the number of queued applications */
+    function getQueuedAppCount()
+    {
+        /* return 0 because non-admins have no way to process new apps */
+        if(!$this->hasPriv("admin"))
+            return 0;
+
+        $qstring = "SELECT count(*) as queued_apps FROM appFamily WHERE queued='true'";
+        $result = query_appdb($qstring);
+        $ob = mysql_fetch_object($result);
+        return $ob->queued_apps;
+    }
+
+    function getQueuedVersionCount()
+    {
+        if($this->hasPriv("admin"))
+        {
+            $qstring = "SELECT count(*) as queued_versions FROM appVersion WHERE queued='true'";
+        } else
+        {
+            /* find all queued versions of applications that the user is a super maintainer of */
+            $qstring = "SELECT count(*) as queued_versions FROM appVersion, appMaintainers
+                        WHERE queued='true' AND appMaintainers.superMaintainer ='1'
+                        AND appVersion.appId = appMaintainers.appId
+                        AND appMaintainers.userId ='".$this->iUserId."';";
+        }
+        $result = query_appdb($qstring);
+        $ob = mysql_fetch_object($result);
+
+        /* we don't want to count the versions that are implicit in the applications */
+        /* that are in the queue */
+        return $ob->queued_versions - $this->getQueuedAppCount();
+    }
+
+
+    /* get the number of queued appdata */
+    function getQueuedAppDataCount()
+    {
+        $hResult = $this->getAppDataQuery(0, true, false);
+        $ob = mysql_fetch_object($hResult);
+        return $ob->queued_appdata;
+    }
+
     function addPriv($sPriv)
     {
         if(!$this->isLoggedIn() || !$sPriv)
@@ -342,6 +386,168 @@ class User {
      function wantsEmail()
      {
          return ($this->isLoggedIn() && $this->getPref("send_email","yes")=="yes");
+     }
+
+     /**
+      * Return an app query based on the user permissions and an iAppDataId
+      * Used to display appropriate appdata entries based upon admin vs. maintainer
+      * as well as to determine if the maintainer has permission to delete an appdata entry
+      */
+     function getAppDataQuery($iAppDataId, $queryQueuedCount, $queryQueued)
+     {
+         /* either look for queued app data entries */
+         /* or ones that match the given id */
+         if($queryQueuedCount)
+         {
+             $selectTerms = "count(*) as queued_appdata";
+             $additionalTerms = "AND appData.queued='true'";
+         } else if($queryQueued)
+         {
+             $selectTerms = "appData.*, appVersion.appId AS appId";
+             $additionalTerms = "AND appData.queued='true'";
+         } else
+         {
+             $selectTerms = "appData.*, appVersion.appId AS appId";
+             $additionalTerms = "AND id='".$iAppDataId."'";
+         }
+
+         if($_SESSION['current']->hasPriv("admin"))
+         {
+             $sQuery = "SELECT ".$selectTerms."
+               FROM appData,appVersion 
+               WHERE appVersion.versionId = appData.versionId 
+               ".$additionalTerms.";";
+         } else
+         {
+             /* select versions where we supermaintain the application or where */
+             /* we maintain the appliation, and where the versions we supermaintain */
+             /* or maintain are in the appData list */
+             /* then apply some additional terms */
+             $sQuery = "select ".$selectTerms." from appMaintainers, appVersion, appData where
+                        (
+                         ((appMaintainers.appId = appVersion.appId) AND
+                          (appMaintainers.superMaintainer = '0'))
+                         OR
+                          ((appMaintainers.versionId = appVersion.versionId)
+                           AND (appMaintainers.superMaintainer = '0'))
+                        )
+                        AND appData.versionId = appVersion.versionId
+                        AND appMaintainers.userId = '".$this->iUserId."'
+                        ".$additionalTerms.";";
+         }
+
+         return query_appdb($sQuery);
+     }
+
+     /**
+      * Delete appData
+      */
+     function deleteAppData($iAppDataId)
+     {
+         $isMaintainer = false;
+
+         /* if we aren't an admin we should see if we can find any results */
+         /* for a query based on this appDataId, if we can then */
+         /* we have permission to delete the entry */
+         if(!$this->hasPriv("admin"))
+         {
+             $hResult = $this->getAppDataQuery($iAppDataId, false, false);
+             if(!$hResult)
+                 return false;
+
+             echo "result rows:".mysql_num_row($hResult);
+
+             if(mysql_num_rows($hResult) > 0)
+                 $isMaintainer = true;
+         }
+
+         /* do we have permission to delete this item? */
+         if($this->hasPriv("admin") || $isMaintainer)
+         {
+             $sQuery = "DELETE from appData where id = ".$iAppDataId."
+                        LIMIT 1;";
+             $hResult = query_appdb($sQuery);
+             if($hResult)
+                 return true;
+         }
+
+         return false;
+     }
+
+     /**
+      * Returns true or false depending on whether the user can view the image
+      */
+     function canViewImage($iImageId)
+     {
+         $oScreenshot = new Screenshot($iImageId);
+
+         if(!$oScreenshot->bQueued ||
+            ($oScreenshot->bQueued && ($this->hasPriv("admin") ||
+                                       $this->isMaintainer($oScreenshot->iVersionId) ||
+                                       $this->isSuperMaintainer($oScreenshot->iAppId))))
+             return true;
+
+         return false;
+     }
+
+     /**
+      * Retrieve the list of applications in the app queue that this user can see
+      */
+     function getAppQueueQuery($queryAppFamily)
+     {
+         if($this->hasPriv("admin"))
+         {
+             if($queryAppFamily)
+             {
+                 $sQuery = "SELECT appFamily.appId FROM appFamily WHERE queued = 'true'";
+             } else
+             {
+                 $sQuery = "SELECT appVersion.versionId FROM appVersion, appFamily
+                            WHERE appFamily.appId = appVersion.appId 
+                            AND appFamily.queued = 'false' AND appVersion.queued = 'true'";
+             }
+         } else
+         {
+             if($queryAppFamily)
+             {
+                 $sQuery = "SELECT appFamily.appId FROM appFamily, appMaintainers
+                            WHERE queued = 'true'
+                            AND appFamily.appId = appMaintainers.appId
+                            AND appMaintainers.superMaintainer = '1'
+                            AND appMaintainers.userId = '".$this->iUserId."';";
+             } else
+             {
+                 $sQuery = "SELECT appVersion.versionId FROM appVersion, appFamily, appMaintainers
+                            WHERE appFamily.appId = appVersion.appId 
+                            AND appFamily.queued = 'false' AND appVersion.queued = 'true'
+                            AND appFamily.appId = appMaintainers.appId
+                            AND appMaintainers.superMaintainer = '1'
+                            AND appMaintainers.userId = '".$this->iUserId."';";
+             }
+         }
+
+         return query_appdb($sQuery);
+     }
+
+     /**
+      * Does the user have permission to modify on this version?
+      */
+     function hasAppVersionModifyPermission($iVersionId)
+     {
+         if($this->hasPriv("admin"))
+             return true;
+
+         $sQuery = "SELECT appVersion.versionId FROM appVersion, appFamily, appMaintainers
+                      WHERE appFamily.appId = appVersion.appId 
+                      AND appFamily.appId = appMaintainers.appId
+                      AND appMaintainers.superMaintainer = '1'
+                      AND appMaintainers.userId = '".$this->iUserId."'
+                      AND appVersion.versionId = '".$iVersionId."';";
+         $hResult = query_appdb($sQuery);
+         if(mysql_num_rows($hResult))
+             return true;
+         else
+             return false;
      }
 }
 
