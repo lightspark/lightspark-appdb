@@ -239,11 +239,11 @@ class Screenshot {
             if(!$bRejected)
             {
                 $sSubject =  "Submitted screenshot accepted";
-                $sMsg  = "The screenshot you submitted for ".lookup_app_name($this->appId)." ".lookup_version_name($this->versionId)." has been accepted.";
+                $sMsg  = "The screenshot you submitted for ".lookup_app_name($this->iAppId)." ".lookup_version_name($this->iVersionId)." has been accepted.";
             } else
             {
                  $sSubject =  "Submitted screenshot rejected";
-                 $sMsg  = "The screenshot you submitted for ".lookup_app_name($this->appId)." ".lookup_version_name($this->versionId)." has been rejected.";
+                 $sMsg  = "The screenshot you submitted for ".lookup_app_name($this->iAppId)." ".lookup_version_name($this->iVersionId)." has been rejected.";
             }
             $sMsg .= $_REQUEST['replyText']."\n";
             $sMsg .= "We appreciate your help in making the Application Database better for all users.";
