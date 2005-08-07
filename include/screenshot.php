@@ -321,7 +321,7 @@ function get_screenshot_img($iAppId = null, $iVersionId = null)
     }
     if(!$hResult || !mysql_num_rows($hResult))
     {
-        $sImgFile = '<center><img src="'.appdb_fullpath("images/no_screenshot.png").'" alt="No Screenshot" /></center>';
+        $sImgFile = '<center><img src="images/no_screenshot.png" alt="No Screenshot" /></center>';
     } else
     {
         $oRow = mysql_fetch_object($hResult);
