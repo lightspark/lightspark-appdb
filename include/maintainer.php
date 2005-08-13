@@ -29,10 +29,15 @@ function getAppsFromUserId($userId)
  */
 function getMaintainersUserIdsFromAppIdVersionId($versionId)
 {
+    $retval = array();
+
+    /* early out if the versionId isn't valid */
+    if($versionId == 0)
+        return $retval;
+    
     $query = "SELECT userId FROM ".
                           "appMaintainers WHERE versionId = '$versionId';";
     $result = query_appdb($query);
-    $retval = array();
     $c = 0;
     while($row = mysql_fetch_object($result))
     {
