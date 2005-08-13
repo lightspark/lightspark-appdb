@@ -52,7 +52,7 @@ class Bug {
                         $oRow = mysql_fetch_object($hResult);
                         $this->sShort_desc = $oRow->short_desc;
                         $this->sBug_status = $oRow->bug_status;
-                        $this->sResolution = $oRow->Resolution;
+                        $this->sResolution = $oRow->resolution;
                     }
                 }
             }
