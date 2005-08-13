@@ -153,7 +153,7 @@ if ($_REQUEST['sub'])
             echo '    </td>',"\n";
             echo '    <td align=center>[<a href="adminBugs.php?sub=delete',"\n";
             echo          '&buglinkId='.$oRow->linkId,"\n";
-            echo          '&Queuedonly='.$QueuedOnly,"\n";
+            echo          '&QueuedOnly='.$QueuedOnly,"\n";
             echo          '&ItemsPerPage='.$ItemsPerPage,"\n";
             echo          '&page='.$currentPage,"\n";
             echo          '">delete</a>]</td>',"\n";
@@ -162,7 +162,7 @@ if ($_REQUEST['sub'])
             {
                 echo '<td align=center>[<a href="adminBugs.php?sub=unqueue',"\n";
                 echo      '&buglinkId='.$oRow->linkId,"\n";
-                echo      '&Queuedonly='.$QueuedOnly,"\n";
+                echo      '&QueuedOnly='.$QueuedOnly,"\n";
                 echo      '&ItemsPerPage='.$ItemsPerPage,"\n";
                 echo      '&page='.$currentPage,"\n";
                 echo '">OK</a>]</td>',"\n";
