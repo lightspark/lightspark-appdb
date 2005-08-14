@@ -12,7 +12,7 @@ require(BASE."include/mail.php");
 
 function get_vendor_from_keywords($sKeywords)
 {
-    $aKeywords = explode(" *** ",$keywords);
+    $aKeywords = explode(" *** ",$sKeywords);
     $iLastElt = (sizeOf($aKeywords)-1);
     return($aKeywords[$iLastElt]);
 }
