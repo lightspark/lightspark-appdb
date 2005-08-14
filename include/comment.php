@@ -366,18 +366,18 @@ function view_app_comments($versionId, $threadId = 0)
     {
     // FIXME we need to change this so not logged in users can change current view as well
         if (isset($_REQUEST['cmode']))
-            $_SESSION['current']->setpref("comments:mode", $_REQUEST['cmode']);
+            $_SESSION['current']->setPref("comments:mode", $_REQUEST['cmode']);
 
-            $sel[$_SESSION['current']->getpref("comments:mode")] = 'selected';
-            echo '<td><form method="post" name="smode" action="appview.php">',"\n";
-            echo "<b>Application Comments</b> $messageCount total comments ";
-            echo '<b>Mode</b> <select name="cmode" onchange="document.smode.submit();">',"\n";
-            echo '   <option value="flat" '.$sel['flat'].'>Flat</option>',"\n";
-            echo '   <option value="threaded" '.$sel['threaded'].'>Threaded</option>',"\n";
-            echo '   <option value="nested" '.$sel['nested'].'>Nested</option>',"\n";
-            echo '   <option value="off" '.$sel['off'].'>No Comments</option>',"\n";
-            echo '</select>',"\n";
-            echo '<input type="hidden" name="versionId" value="'.$versionId.'"></form></td>',"\n";
+        $sel[$_SESSION['current']->getPref("comments:mode")] = 'selected';
+        echo '<td><form method="post" name="smode" action="appview.php">',"\n";
+        echo "<b>Application Comments</b> $messageCount total comments ";
+        echo '<b>Mode</b> <select name="cmode" onchange="document.smode.submit();">',"\n";
+        echo '   <option value="flat" '.$sel['flat'].'>Flat</option>',"\n";
+        echo '   <option value="threaded" '.$sel['threaded'].'>Threaded</option>',"\n";
+        echo '   <option value="nested" '.$sel['nested'].'>Nested</option>',"\n";
+        echo '   <option value="off" '.$sel['off'].'>No Comments</option>',"\n";
+        echo '</select>',"\n";
+        echo '<input type="hidden" name="versionId" value="'.$versionId.'"></form></td>',"\n";
     }
     
     // blank space
@@ -404,7 +404,7 @@ function view_app_comments($versionId, $threadId = 0)
     if ($_SESSION['current']->isLoggedIn())
         $mode = $_SESSION['current']->getPref("comments:mode");
     else
-        $mode = "flat";
+        $mode = "threaded"; /* default non-logged in users to threaded comment display mode */
 
     switch ($mode)
     {
