@@ -519,7 +519,7 @@ function outputSearchTableForhResult($search_words, $hResult)
             $bgcolor = ($c % 2) ? 'color0' : 'color1';
 		
             //count versions
-            $query = query_appdb("SELECT count(*) as versions FROM appVersion WHERE appId = $ob->appId AND versionName != 'NONAME'");
+            $query = query_appdb("SELECT count(*) as versions FROM appVersion WHERE appId = $ob->appId AND versionName != 'NONAME' and queued = 'false'");
             $y = mysql_fetch_object($query);
 		
             //display row
