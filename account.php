@@ -105,12 +105,18 @@ function cmd_do_new()
 
     if($result == true)
     {
-        $user->login($_POST['ext_email'], $_POST['ext_password']);
+        /* if we can log the user in, log them in automatically */
+        if($user->login($_POST['ext_email'], $_POST['ext_password']))
+            $_SESSION['current'] = $user;
+
         addmsg("Account created! (".$_POST['ext_email'].")", "green");
         redirect(apidb_fullurl());
     }
     else
+    {
+        $_SESSION['current'] = "";
         retry("new", "Failed to create account");
+    }
 }
 
 
@@ -155,7 +161,6 @@ function cmd_send_passwd()
     
     redirect(apidb_fullurl("account.php?cmd=login"));
 }
-
 
 /**
  * on login handler
