@@ -247,7 +247,7 @@ if ($_REQUEST['sub'])
              */
             if(!$iVendorId)
             {
-                $sQuery = "select * from vendor where vendorname like '%$ob->queueVendor%';";
+                $sQuery = "select * from vendor where vendorname like '%".$sVendor."%';";
                 $hResult = query_appdb($sQuery);
                 if($hResult)
                 {
