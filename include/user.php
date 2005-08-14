@@ -80,15 +80,15 @@ class User {
             return false;
         } else
         {
-        $aInsert = compile_insert_string(array( 'realname' => $sRealname,
-                                                'email' => $sEmail,
-                                                'CVSrelease' => $sWineRelease ));
+            $aInsert = compile_insert_string(array( 'realname' => $sRealname,
+                                                    'email' => $sEmail,
+                                                    'CVSrelease' => $sWineRelease ));
 
-        $sFields = "({$aInsert['FIELDS']}, `password`, `stamp`, `created`)";
-        $sValues = "({$aInsert['VALUES']}, password('".$sPassword."'), NOW(), NOW() )";
+            $sFields = "({$aInsert['FIELDS']}, `password`, `stamp`, `created`)";
+            $sValues = "({$aInsert['VALUES']}, password('".$sPassword."'), NOW(), NOW() )";
 
-        query_appdb("INSERT INTO user_list $sFields VALUES $sValues", "Error while creating a new user.");
-        return $this->login($sEmail, $sPassword);
+            query_appdb("INSERT INTO user_list $sFields VALUES $sValues", "Error while creating a new user.");
+            return $this->login($sEmail, $sPassword);
         }
     }
 
@@ -411,7 +411,7 @@ class User {
              $additionalTerms = "AND id='".$iAppDataId."'";
          }
 
-         if($_SESSION['current']->hasPriv("admin"))
+         if($this->hasPriv("admin"))
          {
              $sQuery = "SELECT ".$selectTerms."
                FROM appData,appVersion 
