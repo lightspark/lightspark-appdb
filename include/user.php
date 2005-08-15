@@ -88,7 +88,11 @@ class User {
             $sValues = "({$aInsert['VALUES']}, password('".$sPassword."'), NOW(), NOW() )";
 
             query_appdb("INSERT INTO user_list $sFields VALUES $sValues", "Error while creating a new user.");
-            return $this->login($sEmail, $sPassword);
+
+            $retval = $this->login($sEmail, $sPassword);
+            $this->setPref("comments:mode", "threaded"); /* set the users default comments:mode to threaded */
+
+            return $retval;
         }
     }
 
