@@ -19,7 +19,7 @@ class Application {
     var $sKeywords;
     var $sDescription;
     var $sWebpage;
-    var $bQueued;
+    var $sQueued;
     var $sSubmitTime;
     var $iSubmitterId;
     var $aVersionsIds;  // an array that contains the versionId of every version linked to this app.
@@ -58,7 +58,7 @@ class Application {
                         $this->sKeywords = $oRow->keywords;
                         $this->sDescription = $oRow->description;
                         $this->sWebpage = $oRow->webPage;
-                        $this->bQueued = ($oRow->queued=="true")?true:false;
+                        $this->sQueued = $oRow->queued;
                     }
                     $this->aVersionsIds[] = $oRow->versionId;
                 }
@@ -86,7 +86,7 @@ class Application {
                     $this->sKeywords = $oRow->keywords;
                     $this->sDescription = $oRow->description;
                     $this->sWebpage = $oRow->webPage;
-                    $this->bQueued = ($oRow->queued=="true")?true:false;
+                    $this->sQueued = $oRow->queued;
                 }
             }
 
@@ -117,9 +117,9 @@ class Application {
     {
         // Security, if we are not an administrator the application must be queued.
         if(!($_SESSION['current']->hasPriv("admin")))
-            $this->bQueued = true;
+            $this->sQueued = 'true';
         else
-            $this->bQueued = false;
+            $this->sQueued = 'false';
 
         $aInsert = compile_insert_string(array( 'appName'    => $sName,
                                                 'description'=> $sDescription,
@@ -128,7 +128,7 @@ class Application {
                                                 'vendorId'   => $iVendorId,
                                                 'catId'      => $iCatId,
                                                 'submitterId'=> $_SESSION['current']->iUserId,
-                                                'queued'     => $this->bQueued?"true":"false" ));
+                                                'queued'     => $this->sQueued));
         $sFields = "({$aInsert['FIELDS']})";
         $sValues = "({$aInsert['VALUES']})";
 
@@ -262,14 +262,14 @@ class Application {
     function unQueue()
     {
         // If we are not in the queue, we can't move the application out of the queue.
-        if(!$this->bQueued)
+        if(!$this->sQueued == 'true')
             return false;
 
         $sUpdate = compile_update_string(array('queued'  => "false",
                                                'keywords'=> str_replace(" *** ","",$this->sKeywords) ));
         if(query_appdb("UPDATE appFamily SET ".$sUpdate." WHERE appId = ".$this->iAppId))
         {
-            $this->bQueued = false;
+            $this->sQueued = 'false';
             // we send an e-mail to intersted people
             $this->mailSubmitter();
             $this->mailSupermaintainers();
@@ -279,24 +279,77 @@ class Application {
         }
     }
 
+    function Reject()
+    {
+        // If we are not in the queue, we can't move the application out of the queue.
+        if(!$this->sQueued == 'true')
+            return false;
 
-    function mailSubmitter($bRejected=false)
+        $sUpdate = compile_update_string(array('queued'    => "rejected"));
+        if(query_appdb("UPDATE appFamily SET ".$sUpdate." WHERE appId = ".$this->iAppId))
+        {
+            $this->sQueued = 'rejected';
+            // we send an e-mail to intersted people
+            $this->mailSubmitter("reject");
+            $this->mailSupermaintainers("reject");
+
+            // the application has been rejectedd
+            addmsg("The application has been rejected.", "green");
+        }
+    }
+    function ReQueue()
+    {
+        // If we are not in the rejected, we can't move the application into the queue.
+        if(!$this->sQueued == 'rejected')
+            return false;
+
+        $sUpdate = compile_update_string(array('queued'    => "true"));
+        if(query_appdb("UPDATE appFamily SET ".$sUpdate." WHERE appId = ".$this->iAppId))
+        {
+            $this->sQueued = 'true';
+            // we send an e-mail to intersted people
+            $this->mailSupermaintainers();
+
+            // the application has been re-queued
+            addmsg("The application has been re-queued.", "green");
+        }
+    }
+
+    function mailSubmitter($sAction="add")
     {
         if($this->iSubmitterId)
         {
             $oSubmitter = new User($this->iSubmitterId);
-            if(!$bRejected)
+            switch($sAction)
             {
-                $sSubject =  "Submitted application accepted";
-                $sMsg  = "The application you submitted (".$this->sName.") has been accepted.";
-            } else
-            {
-                 $sSubject =  "Submitted application rejected";
-                 $sMsg  = "The application you submitted (".$this->sName.") has been rejected.";
-            }
+            case "add":
+               {
+                   $sSubject =  "Submitted application accepted";
+                   $sMsg  = "The application you submitted (".$oApp->sName." ".$this->sName.") has been accepted.";
+               }
+            break;
+            case "reject":
+                {
+                    $sSubject =  "Submitted application rejected";
+                    $sMsg  = "The application you submitted (".$oApp->sName." ".$this->sName.") has been rejected.";
+                    $sMsg .= APPDB_ROOT."admin/resubmitRejectedApps.php?sub=view&appId=".$this->iAppId."\n";
+
+                    $sMsg .= "Reason given:\n";
+                    $sMsg .= $_REQUEST['replyText']."\n"; /* append the reply text, if there is any */
+                }
+            break;
+            case "delete":
+                {
+                    $sSubject =  "Submitted application deleted";
+                    $sMsg  = "The application you submitted (".$oApp->sName." ".$this->sName.") has been deleted.";
+                    $sMsg .= "Reason given:\n";
+                    $sMsg .= $_REQUEST['replyText']."\n"; /* append the reply text, if there is any */
+                }
+            break;
+
             $sMsg .= $_REQUEST['replyText']."\n";
             $sMsg .= "We appreciate your help in making the Application Database better for all users.";
-                
+            }
             mail_appdb($oSubmitter->sEmail, $sSubject ,$sMsg);
         }
     }
@@ -307,7 +360,7 @@ class Application {
         switch($sAction)
         {
             case "add":
-                if(!$this->bQueued)
+                if(!$this->sQueued == 'true')
                 {
                     $sSubject = $this->sName." has been added by ".$_SESSION['current']->sRealname;
                     $sMsg  = APPDB_ROOT."appview.php?appId=".$this->iAppId."\n";
@@ -323,7 +376,7 @@ class Application {
                     $sSubject = $this->sName." has been submitted by ".$_SESSION['current']->sRealname;
                     $sMsg .= "This application has been queued.";
                     $sMsg .= "\n";
-                    addmsg("The application you submitted will be added to the database database after being reviewed.", "green");
+                    addmsg("The application you submitted will be added to the database after being reviewed.", "green");
                 }
             break;
             case "edit":
@@ -342,6 +395,18 @@ class Application {
                 }
 
                 addmsg("Application deleted.", "green");
+            break;
+            case "reject":
+                $sSubject = $this->sName." has been rejected by ".$_SESSION['current']->sRealname;
+
+                /* if replyText is set we should report the reason the application was rejected */
+                if($_REQUEST['replyText'])
+                {
+                    $sMsg .= "Reason given:\n";
+                    $sMsg .= $_REQUEST['replyText']."\n"; /* append the reply text, if there is any */
+                }
+
+                addmsg("Application rejected.", "green");
             break;
         }
         $sEmail = get_notify_email_address_list($this->iAppId);

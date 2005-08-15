@@ -41,7 +41,7 @@ create table appFamily (
 	catId		int,
 	submitTime	timestamp(14) NOT NULL,
 	submitterId	int(11) NOT NULL default '0',
-	queued		enum('true','false') NOT NULL default 'false',
+	queued		enum('true','false','rejected') NOT NULL default 'false',
 	key(appId)
 );
 
@@ -58,7 +58,7 @@ create table appVersion (
 	maintainer_release text,
 	submitTime	timestamp(14) NOT NULL,
 	submitterId	int(11) NOT NULL default '0',
-	queued		enum('true','false') NOT NULL default 'false',
+	queued		enum('true','false','rejected') NOT NULL default 'false',
 	key(versionId)
 );
 

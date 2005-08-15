@@ -5,7 +5,7 @@
 
 require_once(BASE."include/maintainer.php");
 require_once(BASE."include/application.php");
-
+require_once(BASE."include/user.php");
 
 function global_sidebar_login() {
   
@@ -32,6 +32,10 @@ function global_sidebar_login() {
                     $g->addmisc("<a href='".BASE."appview.php?versionId=$versionId'>".lookup_app_name($appId)." ".lookup_version_name($versionId)."</a>", "center");
             }
         }
+        $appsRejected = $_SESSION['current']->getAllRejectedApps();
+        if($appsRejected)
+            $g->addmisc("<a href='".BASE."admin/resubmitRejectedApps.php?'>Review Rejected Apps</a>", "center");
+
     }
     else
     {

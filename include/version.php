@@ -22,6 +22,7 @@ class Version {
     var $sSubmitTime;
     var $iSubmitterId;
     var $sDate;
+    var $sQueued;
     var $aNotesIds;           // an array that contains the noteId of every note linked to this version
     var $aCommentsIds;        // an array that contains the commentId of every comment linked to this version
     var $aScreenshotsIds;     // an array that contains the screenshotId of every screenshot linked to this version
@@ -59,7 +60,7 @@ class Version {
                     $this->sTestedRelease = $oRow->maintainer_release;
                     $this->sTestedRating = $oRow->maintainer_rating;
                     $this->sWebpage = $oRow->webPage;
-                    $this->bQueued = ($oRow->queued=="true")?true:false;
+                    $this->sQueued = $oRow->queued;
                 }
             }
 
@@ -140,9 +141,9 @@ class Version {
     {
         // Security, if we are not an administrator or an appmaintainer the version must be queued.
         if(!($_SESSION['current']->hasPriv("admin") || $_SESSION['current']->isSupermaintainer($iAppId)))
-            $this->bQueued = true;
+            $this->sQueued = 'true';
         else
-            $this->bQueued = false;
+            $this->sQueued = 'false';
 
         $aInsert = compile_insert_string(array( 'versionName'       => $sName,
                                                 'description'       => $sDescription,
@@ -150,7 +151,7 @@ class Version {
                                                 'maintainer_rating' => $sTestedRating,
                                                 'appId'             => $iAppId,
                                                 'submitterId'       => $_SESSION['current']->iUserId,
-                                                'queued'            => $this->bQueued?"true":"false" ));
+                                                'queued'            => $this->sQueued ));
         $sFields = "({$aInsert['FIELDS']})";
         $sValues = "({$aInsert['VALUES']})";
 
@@ -249,7 +250,9 @@ class Version {
     function delete($bSilent=false)
     {
         /* is the current user allowed to delete this version? */
-        if(!$_SESSION['current']->hasPriv("admin") && !$_SESSION['current']->hasAppVersionModifyPermission($iVersionId))
+        if(!$_SESSION['current']->hasPriv("admin") && 
+           !$_SESSION['current']->hasAppVersionModifyPermission($iVersionId) &&
+           !(($_SESSION['current']->iUserId == $this->iSubmitterId) && ($this->sQueued == 'rejected')))
         {
             return;
         }
@@ -300,7 +303,7 @@ class Version {
         if(!$bSilent)
             $this->mailMaintainers("delete");
 
-        $this->mailSubmitter(true);
+        $this->mailSubmitter("delete");
     }
 
 
@@ -316,15 +319,15 @@ class Version {
         }
 
         // If we are not in the queue, we can't move the version out of the queue.
-        if(!$this->bQueued)
+        if(!$this->sQueued == 'true')
             return false;
 
         $sUpdate = compile_update_string(array('queued'    => "false"));
         if(query_appdb("UPDATE appVersion SET ".$sUpdate." WHERE versionId = ".$this->iVersionId))
         {
-            $this->bQueued = false;
+            $this->sQueued = 'false';
             // we send an e-mail to intersted people
-            $this->mailSubmitter();
+            $this->mailSubmitter("unQueue");
             $this->mailMaintainers();
 
             // the version has been unqueued
@@ -332,25 +335,91 @@ class Version {
         }
     }
 
+    function Reject($bSilent=false)
+    {
+        /* is the current user allowed to delete this version? */
+        if(!$_SESSION['current']->hasPriv("admin") && !$_SESSION['current']->hasAppVersionModifyPermission($iVersionId))
+        {
+            return;
+        }
 
-    function mailSubmitter($bRejected=false)
+        // If we are not in the queue, we can't move the version out of the queue.
+        if(!$this->sQueued == 'true')
+            return false;
+
+        $sUpdate = compile_update_string(array('queued'    => "rejected"));
+        if(query_appdb("UPDATE appVersion SET ".$sUpdate." WHERE versionId = ".$this->iVersionId))
+        {
+            $this->sQueued = 'rejected';
+            // we send an e-mail to intersted people
+            if(!$bSilent)
+            {
+                $this->mailSubmitter("reject");
+                $this->mailMaintainers("reject");
+            }
+            // the version has been unqueued
+            addmsg("The version has been rejected.", "green");
+        }
+    }
+
+    function ReQueue()
+    {
+        /* is the current user allowed to delete this version? */
+        if(!$_SESSION['current']->hasPriv("admin") &&
+           !$_SESSION['current']->hasAppVersionModifyPermission($iVersionId) &&
+           !$_SESSION['current']->iUserId == $this->iSubmitterId)
+        {
+            return;
+        }
+
+        $sUpdate = compile_update_string(array('queued'    => "true"));
+        if(query_appdb("UPDATE appVersion SET ".$sUpdate." WHERE versionId = ".$this->iVersionId))
+        {
+            $this->sQueued = 'true';
+            // we send an e-mail to intersted people
+            $this->mailMaintainers();
+
+            // the version has been unqueued
+            addmsg("The version has been re-submitted", "green");
+        }
+    }
+
+    function mailSubmitter($sAction="add")
     {
         if($this->iSubmitterId)
         {
             $oApp = new Application($this->appId);
             $oSubmitter = new User($this->iSubmitterId);
-            if(!$bRejected)
+            switch($sAction)
             {
-                $sSubject =  "Submitted version accepted";
-                $sMsg  = "The version you submitted (".$oApp->sName." ".$this->sName.") has been accepted.";
-            } else
-            {
-                 $sSubject =  "Submitted version rejected";
-                 $sMsg  = "The version you submitted (".$oApp->sName." ".$this->sName.") has been rejected.";
+            case "add":
+               {
+                   $sSubject =  "Submitted version accepted";
+                   $sMsg  = "The version you submitted (".$oApp->sName." ".$this->sName.") has been accepted.";
+               }
+            break;
+            case "reject":
+                {
+                    $sSubject =  "Submitted version rejected";
+                    $sMsg  = "The version you submitted (".$oApp->sName." ".$this->sName.") has been rejected.";
+                    $sMsg .= APPDB_ROOT."admin/resubmitRejectedApps.php?sub=view&versionId=".$this->iVersionId."\n";
+                    $sMsg .= "Reason given:\n";
+                    $sMsg .= $_REQUEST['replyText']."\n"; /* append the reply text, if there is any */
+                }
+
+            break;
+            case "delete":
+                {
+                    $sSubject =  "Submitted version deleted";
+                    $sMsg  = "The version you submitted (".$oApp->sName." ".$this->sName.") has been deleted.";
+                    $sMsg .= "Reason given:\n";
+                    $sMsg .= $_REQUEST['replyText']."\n"; /* append the reply text, if there is any */
+                }
+            break;
             }
             $sMsg .= $_REQUEST['replyText']."\n";
             $sMsg .= "We appreciate your help in making the Version Database better for all users.";
-                
+        
             mail_appdb($oSubmitter->sEmail, $sSubject ,$sMsg);
         }
     }
@@ -362,7 +431,7 @@ class Version {
         switch($sAction)
         {
             case "add":
-                if(!$this->bQueued)
+                if($this->sQueued == "false")
                 {
                     $sSubject = "Version ".$this->sName." of ".$oApp->sName." added by ".$_SESSION['current']->sRealname;
                     $sMsg  = APPDB_ROOT."appview.php?versionId=".$this->iVersionId."\n";
@@ -380,7 +449,7 @@ class Version {
                     $sSubject = "Version '".$this->sName."' of '".$oApp->sName."' submitted by ".$_SESSION['current']->sRealname;
                     $sMsg .= "This version has been queued.";
                     $sMsg .= "\n";
-                    addmsg("The version you submitted will be added to the database database after being reviewed.", "green");
+                    addmsg("The version you submitted will be added to the database after being reviewed.", "green");
                 }
             break;
             case "edit":
@@ -399,6 +468,20 @@ class Version {
                 }
 
                 addmsg("Version deleted.", "green");
+            break;
+            case "reject":
+                $sSubject = "Version '".$this->sName."' of '".$oApp->sName."' has been rejected by ".$_SESSION['current']->sRealname;
+
+                 /* if replyText is set we should report the reason the application was rejected */
+                if($_REQUEST['replyText'])
+                {
+                    $sMsg  = APPDB_ROOT."admin/resubmitRejectedApps.php?versionId=".$this->iVersionId."\n";
+
+                    $sMsg .= "Reason given:\n";
+                    $sMsg .= $_REQUEST['replyText']."\n"; /* append the reply text, if there is any */
+                }
+
+                addmsg("Version rejected.", "green");
             break;
         }
         $sEmail = get_notify_email_address_list(null, $this->iVersionId);

@@ -533,6 +533,60 @@ class User {
          return query_appdb($sQuery);
      }
 
+     function getAppRejectQueueQuery($queryAppFamily)
+     {
+         if($this->hasPriv("admin"))
+         {
+             if($queryAppFamily)
+             {
+                 $sQuery = "SELECT appFamily.appId FROM appFamily WHERE queued = 'rejected'";
+             } else
+             {
+                 $sQuery = "SELECT appVersion.versionId FROM appVersion, appFamily
+                            WHERE appFamily.appId = appVersion.appId 
+                            AND appFamily.queued = 'false' AND appVersion.queued = 'rejected'";
+             }
+         } else
+         {
+             if($queryAppFamily)
+             {
+                 $sQuery = "SELECT appFamily.appId FROM appFamily
+                            WHERE queued = 'rejected'
+                            AND appFamily.submitterId = '".$this->iUserId."';";
+             } else
+             {
+                 $sQuery = "SELECT appVersion.versionId FROM appVersion, appFamily
+                            WHERE appFamily.appId = appVersion.appId 
+                            AND appFamily.queued = 'false' AND appVersion.queued = 'rejected'
+                            AND appVersion.submitterId = '".$this->iUserId."';";
+             }
+         }
+
+         return query_appdb($sQuery);
+     }
+
+     function getAllRejectedApps()
+     {
+         $result = query_appdb("SELECT appVersion.versionId, appFamily.appId 
+                               FROM appVersion, appFamily
+                               WHERE appFamily.appId = appVersion.appId 
+                               AND (appFamily.queued = 'rejected' OR appVersion.queued = 'rejected')
+                               AND appVersion.submitterId = '".$this->iUserId."';");
+
+         if(!$result || mysql_num_rows($result) == 0)
+             return;
+
+         $retval = array();
+         $c = 0;
+         while($row = mysql_fetch_object($result))
+         {
+             $retval[$c] = array($row->appId, $row->versionId);
+             $c++;
+         }
+
+         return $retval;
+     }
+
      /**
       * Does the user have permission to modify on this version?
       */
@@ -553,6 +607,30 @@ class User {
          else
              return false;
      }
+
+     function isAppSubmitter($iAppId)
+     {
+         $sQuery = "SELECT appId FROM appFamily
+                    WHERE submitterId = '".$this->iUserId."'
+                    AND appId = '".$iAppId."';";
+         $hResult = query_appdb($sQuery);
+         if(mysql_num_rows($hResult))
+             return true;
+         else
+             return false;
+    }
+     function isVersionSubmitter($iVersionId)
+     {
+         $sQuery = "SELECT appVersion.versionId FROM appVersion, appFamily
+                    WHERE appFamily.appId = appVersion.appId 
+                    AND appVersion.submitterId = '".$this->iUserId."'
+                    AND appVersion.versionId = '".$iVersionId."';";
+         $hResult = query_appdb($sQuery);
+         if(mysql_num_rows($hResult))
+             return true;
+         else
+             return false;
+    }
 }
 
 
