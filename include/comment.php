@@ -368,7 +368,7 @@ function view_app_comments($versionId, $threadId = 0)
         if (isset($_REQUEST['cmode']))
             $_SESSION['current']->setPref("comments:mode", $_REQUEST['cmode']);
 
-        $sel[$_SESSION['current']->getPref("comments:mode")] = 'selected';
+        $sel[$_SESSION['current']->getPref("comments:mode", "threaded")] = 'selected';
         echo '<td><form method="post" name="smode" action="appview.php">',"\n";
         echo "<b>Application Comments</b> $messageCount total comments ";
         echo '<b>Mode</b> <select name="cmode" onchange="document.smode.submit();">',"\n";
@@ -402,7 +402,7 @@ function view_app_comments($versionId, $threadId = 0)
     
     //hide or display depending on pref
     if ($_SESSION['current']->isLoggedIn())
-        $mode = $_SESSION['current']->getPref("comments:mode");
+        $mode = $_SESSION['current']->getPref("comments:mode", "threaded");
     else
         $mode = "threaded"; /* default non-logged in users to threaded comment display mode */
 
