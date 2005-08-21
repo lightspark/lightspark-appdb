@@ -251,7 +251,7 @@ class Version {
     {
         /* is the current user allowed to delete this version? */
         if(!$_SESSION['current']->hasPriv("admin") && 
-           !$_SESSION['current']->hasAppVersionModifyPermission($iVersionId) &&
+           !$_SESSION['current']->hasAppVersionModifyPermission($this->iVersionId) &&
            !(($_SESSION['current']->iUserId == $this->iSubmitterId) && ($this->sQueued == 'rejected')))
         {
             return;
@@ -366,7 +366,7 @@ class Version {
     {
         /* is the current user allowed to delete this version? */
         if(!$_SESSION['current']->hasPriv("admin") &&
-           !$_SESSION['current']->hasAppVersionModifyPermission($iVersionId) &&
+           !$_SESSION['current']->hasAppVersionModifyPermission($this->iVersionId) &&
            !$_SESSION['current']->iUserId == $this->iSubmitterId)
         {
             return;
