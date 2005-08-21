@@ -313,7 +313,7 @@ class Version {
     function unQueue()
     {
         /* is the current user allowed to delete this version? */
-        if(!$_SESSION['current']->hasPriv("admin") && !$_SESSION['current']->hasAppVersionModifyPermission($iVersionId))
+        if(!$_SESSION['current']->hasPriv("admin") && !$_SESSION['current']->hasAppVersionModifyPermission($this->iVersionId))
         {
             return;
         }
@@ -338,7 +338,7 @@ class Version {
     function Reject($bSilent=false)
     {
         /* is the current user allowed to delete this version? */
-        if(!$_SESSION['current']->hasPriv("admin") && !$_SESSION['current']->hasAppVersionModifyPermission($iVersionId))
+        if(!$_SESSION['current']->hasPriv("admin") && !$_SESSION['current']->hasAppVersionModifyPermission($this->iVersionId))
         {
             return;
         }
