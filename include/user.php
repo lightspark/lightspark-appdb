@@ -430,7 +430,7 @@ class User {
              $sQuery = "select ".$selectTerms." from appMaintainers, appVersion, appData where
                         (
                          ((appMaintainers.appId = appVersion.appId) AND
-                          (appMaintainers.superMaintainer = '0'))
+                          (appMaintainers.superMaintainer = '1'))
                          OR
                           ((appMaintainers.versionId = appVersion.versionId)
                            AND (appMaintainers.superMaintainer = '0'))
