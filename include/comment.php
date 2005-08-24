@@ -66,7 +66,9 @@ class Comment {
             $this->comment(mysql_insert_id());
             $sEmail = get_notify_email_address_list($this->iAppId, $this->iVersionId);
             $sEmail .= $this->oOwner->sEmail." ";
-            // fetches e-mails from parent comments
+
+            // fetches e-mails from parent comments, all parents are notified that a
+            // comment was added to the thread
             while($iParentId)
             {
                 $oParent = new Comment($iParentId);
@@ -75,6 +77,16 @@ class Comment {
             }
             if($sEmail)
             {
+                $aEmailArray = explode(" ", $sEmail);      /* break the long email string into parts by spaces */
+                $aEmailArray = array_unique($aEmailArray); /* remove duplicates */
+
+                /* build the single string of all emails up */
+                $sEmail = "";
+                foreach($aEmailArray as $key=>$value)
+                {
+                    $sEmail.="$value ";
+                }
+
                 $sSubject = "Comment for '".lookup_app_name($this->iAppId)." ".lookup_version_name($this->iVersionId)."' added by ".$_SESSION['current']->sRealname;
                 $sMsg  = APPDB_ROOT."appview.php?versionId=".$this->iVersionId."\n";
                 $sMsg .= "\n";
@@ -212,9 +224,9 @@ function view_app_comment($ob)
     
     // only add RE: once
     if(eregi("RE:", $ob->subject))
-	$subject = $ob->subject;
+        $subject = $ob->subject;
     else
-	$subject = "RE: ".$ob->subject;
+        $subject = "RE: ".$ob->subject;
 
     // reply post buttons
     echo "	[<a href=\"addcomment.php?appId=$ob->appId&amp;versionId=$ob->versionId\"><small>post new</small></a>] \n";
@@ -225,8 +237,8 @@ function view_app_comment($ob)
 
     // delete message button, for admins
     if ($_SESSION['current']->hasPriv("admin")
-     || $_SESSION['current']->isMaintainer($ob->versionId) 
-     || $_SESSION['current']->isSuperMaintainer($ob->appId))
+        || $_SESSION['current']->isMaintainer($ob->versionId) 
+        || $_SESSION['current']->isSuperMaintainer($ob->appId))
     {
         echo "<tr>";
         echo "<td><form method=\"post\" name=\"message\" action=\"".BASE."deletecomment.php\"><input type=\"submit\" value=\"Delete\" class=\"button\">\n";
@@ -237,8 +249,7 @@ function view_app_comment($ob)
 
     echo "</table>\n";
 
-    echo html_frame_end();
-        
+    echo html_frame_end();   
 }
 
 
