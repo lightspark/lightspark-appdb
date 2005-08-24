@@ -10,7 +10,7 @@
  */
 include("path.php");
 include(BASE."include/incl.php");
-require(BASE."include/comment.php");
+require_once(BASE."include/comment.php");
 
 apidb_header("Comments");
 
@@ -20,7 +20,7 @@ if(!is_numeric($_REQUEST['appId']) OR !is_numeric($_REQUEST['versionId']) OR (is
     exit;
 }
 
-view_app_comments($_REQUEST['appId'], $_REQUEST['versionId'], $_REQUEST['threadId']);
+view_app_comments($_REQUEST['versionId'], $_REQUEST['threadId']);
 
 apidb_footer();
 ?>
