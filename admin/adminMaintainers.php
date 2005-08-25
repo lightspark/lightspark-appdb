@@ -81,7 +81,7 @@ if ($_REQUEST['sub'])
                 echo "    <td style=\"$style\"><a href=\"mailto:".$oUser->sEmail."\">".$oUser->sRealname."</a></td>\n";
                 $count = $oUser->getMaintainerCount(true);
                 if($count == 0)
-                    echo "    <td style=\"$style\"></td>\n";
+                    echo "    <td style=\"$style\">&nbsp</td>\n";
                 else if($count <= 1)
                     echo "    <td style=\"$style\">".$count." app</td>\n";
                 else
@@ -90,7 +90,7 @@ if ($_REQUEST['sub'])
 
                 $count = $oUser->getMaintainerCount(false);
                 if($count == 0)
-                    echo "    <td style=\"$style\"></td>\n";
+                    echo "    <td style=\"$style\">&nbsp</td>\n";
                 else if($count <= 1)
                     echo "    <td style=\"$style\">".$count." version</td>\n";
                 else
