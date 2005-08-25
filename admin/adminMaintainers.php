@@ -78,7 +78,11 @@ if ($_REQUEST['sub'])
 
                 echo "<tr class=color4>\n";
                 echo "    <td style=\"$style;border-left:thin solid\">Maintainer summary</td>\n";
-                echo "    <td style=\"$style\"><a href=\"mailto:".$oUser->sEmail."\">".$oUser->sRealname."</a></td>\n";
+                if($oUser->sRealname == "")
+                    echo "    <td style=\"$style\"><a href=\"mailto:".$oUser->sEmail."\">&nbsp</a></td>\n";
+                else
+                    echo "    <td style=\"$style\"><a href=\"mailto:".$oUser->sEmail."\">".$oUser->sRealname."</a></td>\n";
+
                 $count = $oUser->getMaintainerCount(true);
                 if($count == 0)
                     echo "    <td style=\"$style\">&nbsp</td>\n";
