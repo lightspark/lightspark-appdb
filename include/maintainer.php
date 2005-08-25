@@ -8,8 +8,10 @@
  */
 function getAppsFromUserId($userId)
 {
-    $result = query_appdb("SELECT appId, versionId, superMaintainer FROM ".
-                          "appMaintainers WHERE userId = '$userId'");
+    /* retrieve the list of application and order them by application name */
+    $result = query_appdb("SELECT appMaintainers.appId, versionId, superMaintainer, appName FROM ".
+                          "appFamily, appMaintainers WHERE appFamily.appId = appMaintainers.appId ".
+                          "AND userId = '$userId' ORDER BY appName");
     if(!$result || mysql_num_rows($result) == 0)
         return;
 
