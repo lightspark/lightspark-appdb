@@ -38,7 +38,8 @@ if ($_REQUEST['sub'])
 } else
 {
     // get available maintainers
-    $sQuery = "SELECT * FROM appMaintainers;";
+    $sQuery = "SELECT * FROM appMaintainers, user_list where appMaintainers.userId = user_list.userid";
+    $sQuery.= " ORDER BY realname;";
     $hResult = query_appdb($sQuery);
 
     if(!$hResult || !mysql_num_rows($hResult))
@@ -63,10 +64,44 @@ if ($_REQUEST['sub'])
         echo "</tr>\n\n";
         
         $c = 1;
+        $oldUserId = 0;
         while($ob = mysql_fetch_object($hResult))
         {
             $oUser = new User($ob->userId);
             if ($c % 2 == 1) { $bgcolor = 'color0'; } else { $bgcolor = 'color1'; }
+
+            /* if this is a new user we should print a header that has the aggregate of the applications */
+            /* the user super maintains and versions they maintain */
+            if($ob->userId != $oldUserId)
+            {
+                $style = "border-top:thin solid;border-bottom:thin solid";
+
+                echo "<tr class=color4>\n";
+                echo "    <td style=\"$style;border-left:thin solid\">Maintainer summary</td>\n";
+                echo "    <td style=\"$style\"><a href=\"mailto:".$oUser->sEmail."\">".$oUser->sRealname."</a></td>\n";
+                $count = $oUser->getMaintainerCount(true);
+                if($count == 0)
+                    echo "    <td style=\"$style\"></td>\n";
+                else if($count <= 1)
+                    echo "    <td style=\"$style\">".$count." app</td>\n";
+                else
+                    echo "    <td style=\"$style\">".$count." apps</td>\n";
+
+
+                $count = $oUser->getMaintainerCount(false);
+                if($count == 0)
+                    echo "    <td style=\"$style\"></td>\n";
+                else if($count <= 1)
+                    echo "    <td style=\"$style\">".$count." version</td>\n";
+                else
+                    echo "    <td style=\"$style\">".$count." versions</td>\n";
+
+                echo "    <td align=\"center\" style=\"$style;border-right:thin solid\">&nbsp</td>\n";
+                echo "</tr>\n\n";
+
+                $oldUserId = $ob->userId;
+            }
+
             echo "<tr class=$bgcolor>\n";
             echo "    <td>".print_date(mysqldatetime_to_unixtimestamp($ob->submitTime))." &nbsp;</td>\n";
             echo "    <td><a href=\"mailto:".$oUser->sEmail."\">".$oUser->sRealname."</a></td>\n";

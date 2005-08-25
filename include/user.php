@@ -247,6 +247,19 @@ class User {
         return mysql_num_rows($hResult);
     }
 
+    function getMaintainerCount($bSuperMaintainer)
+    {
+        if(!$this->isLoggedIn()) return 0;
+
+        $sQuery = "SELECT count(*) as cnt from appMaintainers WHERE userid = '$this->iUserId' AND superMaintainer = '$bSuperMaintainer'";
+        $hResult = query_appdb($sQuery);
+        if(!$hResult)
+            return 0;
+        $ob = mysql_fetch_object($hResult);
+        return $ob->cnt;
+    }
+
+
      /**
       * Add the user as a maintainer
       */
