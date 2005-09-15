@@ -26,6 +26,7 @@ include(BASE."include/mail.php");
  * if(5 AND 3) then 7
  */
 
+notifyAdminsOfCleanupExecution();
 
 $hSixMonth = inactiveSince(6);
 while($oRow = mysql_fetch_object($hSixMonth))
@@ -132,5 +133,17 @@ function warnMaintainerDeleted($sEmail)
     $sMsg .= "Please feel free to enroll again as a maintainer anytime.\r\n";
 
     mail_appdb($sEmail, $sSubject, $sMsg);
+}
+
+/* email all admins that the appdb cleanup script is executing */
+/* so we admins have some visibility into the background cleanup */
+/* events of the appdb */
+function notifyAdminsOfCleanupExecution()
+{
+    $sSubject  = "Cleanup script running\r\n";
+    $sMsg  = "Appdb cleanup cron script is executing.\r\n";
+    $sEmail = get_notify_email_address_list(null, null); /* get list admins */
+    if($sEmail)
+        mail_appdb($sEmail, $sSubject, $sMsg);
 }
 ?>

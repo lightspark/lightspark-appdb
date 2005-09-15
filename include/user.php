@@ -698,16 +698,18 @@ function get_notify_email_address_list($iAppId = null, $iVersionId = null)
                    FROM appMaintainers
                    WHERE appId = '".$iAppId."'";
     }
-    $hResult = query_appdb($sQuery);
-    if(mysql_num_rows($hResult) > 0)
+    if($sQuery)
     {
-        while($oRow = mysql_fetch_object($hResult))
+        $hResult = query_appdb($sQuery);
+        if(mysql_num_rows($hResult) > 0)
         {
-            $aUserId[$c] = array($oRow->userId);
-            $c++;
+            while($oRow = mysql_fetch_object($hResult))
+            {
+                $aUserId[$c] = array($oRow->userId);
+                $c++;
+            }
         }
     }
-
 
     /*
      * Retrieve administrators.
