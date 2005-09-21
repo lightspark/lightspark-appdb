@@ -398,6 +398,7 @@ class Application {
             break;
             case "reject":
                 $sSubject = $this->sName." has been rejected by ".$_SESSION['current']->sRealname;
+                $sMsg .= APPDB_ROOT."admin/resubmitRejectedApps.php?sub=view&appId=".$this->iAppId."\n";
 
                 /* if replyText is set we should report the reason the application was rejected */
                 if($_REQUEST['replyText'])

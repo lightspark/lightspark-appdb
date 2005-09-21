@@ -471,12 +471,11 @@ class Version {
             break;
             case "reject":
                 $sSubject = "Version '".$this->sName."' of '".$oApp->sName."' has been rejected by ".$_SESSION['current']->sRealname;
+                $sMsg .= APPDB_ROOT."admin/resubmitRejectedApps.php?sub=view&versionId=".$this->iVersionId."\n";
 
                  /* if replyText is set we should report the reason the application was rejected */
                 if($_REQUEST['replyText'])
                 {
-                    $sMsg  = APPDB_ROOT."admin/resubmitRejectedApps.php?versionId=".$this->iVersionId."\n";
-
                     $sMsg .= "Reason given:\n";
                     $sMsg .= $_REQUEST['replyText']."\n"; /* append the reply text, if there is any */
                 }
