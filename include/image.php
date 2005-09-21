@@ -196,14 +196,17 @@ class Image {
     function resize_image($new_width, $new_height)
     {
         // GD 2.x
-        // $new = imagecreatetruecolor($new_width, $new_height);
-        // GD 1.x
-        $new = imagecreate($new_width, $new_height);
-        
-        // GD 2.x
-        // imagecopyresampled($new,$this->image,0,0,0,0,$new_width,$new_height,$this->width,$this->height);
-        // GD 1.x
-        imagecopyresized($new,$this->image,0,0,0,0,$new_width,$new_height,$this->width,$this->height);
+        if(function_exists("imagecreatetruecolor"))
+        {
+            $new = imagecreatetruecolor($new_width, $new_height);
+            imagecopyresampled($new,$this->image,0,0,0,0,
+                               $new_width,$new_height,$this->width,$this->height);
+        } else // GD 1.x
+        {
+            $new = imagecreate($new_width, $new_height);
+            imagecopyresized($new,$this->image,0,0,0,0,
+                             $new_width,$new_height,$this->width,$this->height);
+        }
         
         $this->set_debuglog("imagecopyresized($new,$this->image,0,0,0,0,$new_width,$new_height,$this->width,$this->height);");     
         imagedestroy($this->image);
@@ -229,19 +232,27 @@ class Image {
         /* We multiply the border width by two because there are are borders
         at both sides */
         // GD 2.x
-        // $new = imagecreatetruecolor($new_width + ($border_width*2), $new_height + ($border_width*2));
-        // GD 1.x
-        $new = imagecreate($new_width + ($border_width*2), $new_height + ($border_width*2));
-        
+        if(function_exists("imagecreatetruecolor"))
+        {
+            $new = imagecreatetruecolor($new_width + ($border_width*2), $new_height + ($border_width*2));
+        } else // GD 1.x
+        {
+            $new = imagecreate($new_width + ($border_width*2), $new_height + ($border_width*2));
+        }
+
         /* Make the border by filling it completely,
         later on we will overwrite everything except the border */
         $color = ImageColorAllocate( $new, $r, $g, $b );
         imagefill($new,0,0,$color);
         
         // GD 2.x
-        // imagecopyresampled($new,$this->image,$border_width,$border_width,0,0, $new_width,$new_height,$this->width,$this->height);
-        // GD 1.x
-        imagecopyresized($new,$this->image,$border_width,$border_width,0,0,$new_width,$new_height,$this->width,$this->height);
+        if(function_exists("imagecopyresampled"))
+        {
+             imagecopyresampled($new,$this->image,$border_width,$border_width,0,0, $new_width,$new_height,$this->width,$this->height);
+        } else // GD 1.x
+        {
+            imagecopyresized($new,$this->image,$border_width,$border_width,0,0,$new_width,$new_height,$this->width,$this->height);
+        }
         
         $this->set_debuglog("imagecopyresized($new,$this->image,$border_width,$border_width,0,0,"
                            ." $new_width,$new_height,$this->width,$this->height); with a $border_width px border"
