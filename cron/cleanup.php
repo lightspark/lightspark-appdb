@@ -28,6 +28,7 @@ include(BASE."include/mail.php");
 
 notifyAdminsOfCleanupExecution();
 
+/*
 $hSixMonth = inactiveSince(6);
 while($oRow = mysql_fetch_object($hSixMonth))
 {
@@ -47,7 +48,7 @@ while($oRow = mysql_fetch_object($hSevenMonth))
     elseif(!hasDataAssociated($oRow->userid))
         deleteUser($oRow->userid);    
 }
-
+*/
 
 function inactiveSince($iMonths)
 {
