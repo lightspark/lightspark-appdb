@@ -11,6 +11,7 @@ function global_sidebar_menu() {
 
     $g = new htmlmenu("AppDB");
     $g->add("AppDB Home", BASE);
+    $g->add("Screenshots", BASE."viewScreenshots.php");
     $g->add("Browse Apps", BASE."appbrowse.php");
     $g->add("Top 25", BASE."votestats.php");
     $g->add("Submit Application", BASE."appsubmit.php?apptype=1");
