@@ -247,6 +247,20 @@ function lookupVendorName($vendorId)
     return $vendor->vendorName;
 }
 
+/* used by outputTopXRowAppsFromRating() to reduce duplicated code */
+function outputTopXRow($oRow)
+{
+    $oVersion = new Version($oRow->versionId);
+    $oApp = new Application($oVersion->iAppId);
+    $img = get_screenshot_img($oRow->versionId); // image
+    echo '
+    <tr class="white">
+      <td><a href="appview.php?versionId='.$oRow->versionId.'">'.$oApp->sName.' '.$oVersion->sName.'</a></td>
+        <td>'.trim_description($oApp->sDescription).'</td>
+        <td>'.$img.'</td>
+    </tr>';
+}
+
 /* Output the rows for the Top-X tables on the main page */
 function outputTopXRowAppsFromRating($rating, $num_apps)
 {
@@ -254,7 +268,7 @@ function outputTopXRowAppsFromRating($rating, $num_apps)
     /* them again when filling in any empty spots in the list */
     $appIdArray = array();
 
-    $sQuery = "SELECT appVotes.appId AS appId, COUNT( appVotes.appId ) AS c
+    $sQuery = "SELECT appVotes.appId AS appId, appVersion.versionId, COUNT( appVotes.appId ) AS c
            FROM appVotes, appVersion
            WHERE appVersion.maintainer_rating = '$rating'
            AND appVersion.appId = appVotes.appId
@@ -266,20 +280,11 @@ function outputTopXRowAppsFromRating($rating, $num_apps)
     while($oRow = mysql_fetch_object($hResult))
     {
         array_push($appIdArray, $oRow->appId); /* keep track of the apps we've already output */
-
-        $oApp = new Application($oRow->appId);
-        // image
-        $img = get_screenshot_img($oRow->appId);
-        echo '
-    <tr class="white">
-      <td><a href="appview.php?appId='.$oRow->appId.'">'.$oApp->sName.'</a></td>
-        <td>'.trim_description($oApp->sDescription).'</td>
-        <td>'.$img.'</td>
-    </tr>';
+        outputTopXRow($oRow);
     }
 
     /* if we have any empty spots in the list, get these from applications with images */
-    $sQuery = "SELECT DISTINCT appVersion.appId as appId
+    $sQuery = "SELECT DISTINCT appVersion.appId as appId, appVersion.versionId
            FROM appVersion, appData
            WHERE appVersion.maintainer_rating = '$rating'
            AND appVersion.versionId = appData.versionId
@@ -296,15 +301,7 @@ function outputTopXRowAppsFromRating($rating, $num_apps)
     $hResult = query_appdb($sQuery);
     while($oRow = mysql_fetch_object($hResult))
     {
-        $oApp = new Application($oRow->appId);
-        // image
-        $img = get_screenshot_img($oRow->appId);
-        echo '
-    <tr class="white">
-      <td><a href="appview.php?appId='.$oRow->appId.'">'.$oApp->sName.'</a></td>
-        <td>'.trim_description($oApp->sDescription).'</td>
-        <td>'.$img.'</td>
-    </tr>';
+        outputTopXRow($oRow);
     }
 }
 
