@@ -15,6 +15,7 @@ class User {
     var $sStamp;
     var $sDateCreated;
     var $sWineRelease;
+    var $bInactivityWarned;
 
     /**
      * Constructor.
@@ -36,6 +37,7 @@ class User {
             $this->sStamp = $oRow->stamp;
             $this->sDateCreated = $oRow->created;
             $this->sWineRelease = $oRow->CVSrelease;
+            $this->bInactivityWarned = $oRow->inactivity_warned;
         }
         return $this->isLoggedIn();
     }
@@ -60,8 +62,8 @@ class User {
         $this->sWineRelease = $oRow->CVSrelease;
         if($this->isLoggedIn())
         {
-            // Update timestamp
-            query_appdb("UPDATE user_list SET stamp=null WHERE userid=".$this->iUserId);
+            // Update timestamp and clear the inactivity flag if it was set
+            query_appdb("UPDATE user_list SET stamp=NOW(), inactivity_warned='false' WHERE userid=".$this->iUserId);
             return true;
         }
         return false;
@@ -631,7 +633,8 @@ class User {
              return true;
          else
              return false;
-    }
+     }
+
      function isVersionSubmitter($iVersionId)
      {
          $sQuery = "SELECT appVersion.versionId FROM appVersion, appFamily
@@ -644,6 +647,57 @@ class User {
          else
              return false;
     }
+
+     /* if this user has data associated with them we will return true */
+     /* otherwise we return false */
+     function hasDataAssociated()
+     {
+         $sQuery = "SELECT count(userId) as c FROM appComments WHERE userId = $this->iUserId";
+         $hResult = query_appdb($sQuery);
+         $ob = mysql_fetch_object($hResult);
+         if($ob->c != 0) return true;
+
+         $sQuery = "SELECT count(userId) as c FROM appMaintainers WHERE userId = $this->iUserId";
+         $hResult = query_appdb($sQuery);
+         $ob = mysql_fetch_object($hResult);
+         if($ob->c != 0) return true;
+
+         $sQuery = "SELECT count(userId) as c FROM appVotes WHERE userId = $this->iUserId";
+         $hResult = query_appdb($sQuery);
+         $ob = mysql_fetch_object($hResult);
+         if($ob->c != 0) return true;
+
+         return false;
+     }
+
+     /* warn the user that their account has been marked as inactive */
+     function warnForInactivity()
+     {
+         /* we don't want to warn users that have data associated with them */
+         if(hasDataAssociated())
+         {
+             return;
+         }
+
+         if($this->isMaintainer())
+         {
+             $sSubject  = "Warning: inactivity detected";
+             $sMsg  = "You didn't log in in the past six month to the AppDB.\r\n";
+             $sMsg .= "As a maintainer we would be pleased to see you once in a while.\r\n";
+             $sMsg .= "Please log in or you will lose your maintainer's abilities in one month.\r\n";
+         } else
+         {
+             $sSubject  = "Warning: inactivity detected";
+             $sMsg  = "You didn't log in in the past six month to the AppDB.\r\n";
+             $sMsg .= "Please log in or your account will automatically be deleted in one month.\r\n";
+         }
+
+         mail_appdb($this->sEmail, $sSubject, $sMsg);
+
+         /* mark this user as being inactive and set the appropriate timestamp */
+         $sQuery = "update user_list set inactivity_warned='true', inactivity_warn_stamp=NOW() where userid=".$this->iUserId;
+         query_appdb($sQuery);
+     }
 }
 
 

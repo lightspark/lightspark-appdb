@@ -28,61 +28,47 @@ include(BASE."include/mail.php");
 
 notifyAdminsOfCleanupExecution();
 
-/*
-$hSixMonth = inactiveSince(6);
-while($oRow = mysql_fetch_object($hSixMonth))
+/* users inactive for 6 months that haven't been warned already */
+$hUsersToWarn = unwarnedAndInactiveSince(6);
+while($oRow = mysql_fetch_object($hUsersToWarn))
 {
     $oUser = new User($oRow->userid);
-    if($oUser->isMaintainer())
-        warnMaintainer($oUser->sEmail);
-    elseif(!hasDataAssociated($oRow->userid))
-        warnUser($oUser->sEmail);    
+    $oUser->warnForInactivity();
 }
 
-$hSevenMonth = inactiveSince(7);
-while($oRow = mysql_fetch_object($hSevenMonth))
+/* warned >= 1 month ago */
+$hUsersToDelete = warnedSince(1);
+while($oRow = mysql_fetch_object($hUsersToDelete))
 {
     $oUser = new User($oRow->userid);
     if($oUser->isMaintainer())
         deleteMaintainer($oRow->userid);
-    elseif(!hasDataAssociated($oRow->userid))
+    elseif(!$oUser->hasDataAssociated())
         deleteUser($oRow->userid);    
 }
-*/
 
-function inactiveSince($iMonths)
+
+/* Users that are unwarned and inactive since $iMonths */
+function unwarnedAndInactiveSince($iMonths)
 {
-    $sQuery = "SELECT userid FROM user_list WHERE DATE_SUB(CURDATE(),INTERVAL $iMonths MONTH) >= stamp";
+    $sQuery = "SELECT userid FROM user_list WHERE DATE_SUB(CURDATE(),INTERVAL $iMonths MONTH) >= stamp AND inactivity_warned='false'";
     $hResult = query_appdb($sQuery);
     return $hResult;
 }
 
-function hasDataAssociated($iUserId)
+/* users that were warned at least $iMonths ago */
+function warnedSince($iMonths)
 {
-    $sQuery = "SELECT count(userId) as c FROM appComments WHERE userId = $iUserId";
+    $sQuery  = "SELECT userid FROM user_list WHERE DATE_SUB(CURDATE(),INTERVAL $iMonths MONTH) >= inactivity_warn_stamp ";
+    $sQuery .= "AND inactivity_warned='true'";
     $hResult = query_appdb($sQuery);
-    $ob = mysql_fetch_object($hResult);
-    if($ob->c != 0) return true;
-
-    $sQuery = "SELECT count(userId) as c FROM appMaintainers WHERE userId = $iUserId";
-    $hResult = query_appdb($sQuery);
-    $ob = mysql_fetch_object($hResult);
-    if($ob->c != 0) return true;
-
-    $sQuery = "SELECT count(userId) as c FROM appVotes WHERE userId = $iUserId";
-    $hResult = query_appdb($sQuery);
-    $ob = mysql_fetch_object($hResult);
-    if($ob->c != 0) return true;
-
-    return false;
+    return $hResult;
 }
-
 
 function deleteUser($iUserId)
 {
     $oUser = new User($iUserId);
-    # TO BE UNCOMMENTED WHEN THERE WILL BE LESS INACTIVE USERS IN THE DATABASE
-    # warnUserDeleted($oUser->sEmail);
+    warnUserDeleted($oUser->sEmail);
     $oUser->delete();
     echo "user ".$oUser->sEmail." deleted.\n";
 }
@@ -92,28 +78,8 @@ function deleteMaintainer($iUserId)
     $oUser = new User($iUserId);
     $sQuery = "DELETE FROM appMaintainers WHERE userId = $iUserId";
     $hResult = query_appdb($sQuery);
-    # TO BE UNCOMMENTED WHEN THERE WILL BE LESS INACTIVE USERS IN THE DATABASE
-    # warnMaintainerDeleted($oUser->sEmail);
+    warnMaintainerDeleted($oUser->sEmail);
     echo "user ".$oUser->sEmail." is not a maintainer anymore.\n";
-}
-
-function warnUser($sEmail)
-{
-    $sSubject  = "Warning: inactivity detected";
-    $sMsg  = "You didn't log in in the past six month to the AppDB.\r\n";
-    $sMsg .= "Please log in or your account will automatically be deleted in one month.\r\n";
-
-    mail_appdb($sEmail, $sSubject, $sMsg);
-}
-
-function warnMaintainer($sEmail)
-{
-    $sSubject  = "Warning: inactivity detected";
-    $sMsg  = "You didn't log in in the past six month to the AppDB.\r\n";
-    $sMsg .= "As a maintainer we would be pleased to see you once in a while.\r\n";
-    $sMsg .= "Please log in or you will lose your maintainer's abilities in one month.\r\n";
-
-    mail_appdb($sEmail, $sSubject, $sMsg);
 }
 
 function warnUserDeleted($sEmail)
