@@ -197,9 +197,6 @@ if($_REQUEST['appId'])
     echo "        <tr class=color0 valign=top><td width=\"100\"><b>Name</b></td><td width='100%'> ".$oApp->sName." </td>\n";
     echo "        <tr class=\"color1\"><td><b>Vendor</b></td><td> ".
          "        <a href='vendorview.php?vendorId=$oVendor->iVendorId'> ".$oVendor->sName." </a> &nbsp;\n";
-    echo "        <tr class=\"color0\"><td><b>BUGS</b></td><td> ".
-         "        <a href=\"bugs.php?appId=".$oApp->iAppId."\">Check for bugs in bugzilla </a> &nbsp;\n";
-    echo "        </td></tr>\n";
     echo "        <tr class=\"color0\"><td><b>Votes</b></td><td> ";
     echo vote_count_app_total($oApp->iAppId);
     echo "        </td></tr>\n";
