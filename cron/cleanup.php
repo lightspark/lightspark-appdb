@@ -10,28 +10,20 @@ include(BASE."include/incl.php");
 include(BASE."include/mail.php");
 
 /*
- * Let:
- * 1) you did not log in for six month
- * 2) you don't have any data associated                                               
- * 3) you are a maintainer
- * 4) you receive a warning e-mail
- * 5) you did not log in for seven month
- * 6) your account is deleted
- * 7) you are not a maintainer anymore
- * 
- * The rules are the following:
- * if(1 AND 2) then 4
- * if(1 AND 3) then 4
- * if(5 AND 2) then 6
- * if(5 AND 3) then 7
+ * Warn users that have been inactive for some number of months
+ * If it has been some period of time since the user was warned
+ *   the user is deleted if they don't have any pending appdb data
  */
 
-notifyAdminsOfCleanupExecution();
+$usersWarned = 0;
+$usersDeleted = 0;
+$usersToBeDeletedButHaveData = 0;
 
 /* users inactive for 6 months that haven't been warned already */
 $hUsersToWarn = unwarnedAndInactiveSince(6);
 while($oRow = mysql_fetch_object($hUsersToWarn))
 {
+    $usersWarned++;
     $oUser = new User($oRow->userid);
     $oUser->warnForInactivity();
 }
@@ -41,11 +33,17 @@ $hUsersToDelete = warnedSince(1);
 while($oRow = mysql_fetch_object($hUsersToDelete))
 {
     $oUser = new User($oRow->userid);
-    if($oUser->isMaintainer())
-        deleteMaintainer($oRow->userid);
-    elseif(!$oUser->hasDataAssociated())
-        deleteUser($oRow->userid);    
+    if(!$oUser->hasDataAssociated())
+    {
+        $usersDeleted++;
+        deleteUser($oRow->userid);
+    } else
+    {
+        $usersToBeDeletedButHaveData++;
+    }
 }
+
+notifyAdminsOfCleanupExecution($usersWarned, $usersDeleted, $usersToBeDeletedButHaveData);
 
 
 /* Users that are unwarned and inactive since $iMonths */
@@ -73,15 +71,6 @@ function deleteUser($iUserId)
     echo "user ".$oUser->sEmail." deleted.\n";
 }
 
-function deleteMaintainer($iUserId)
-{
-    $oUser = new User($iUserId);
-    $sQuery = "DELETE FROM appMaintainers WHERE userId = $iUserId";
-    $hResult = query_appdb($sQuery);
-    warnMaintainerDeleted($oUser->sEmail);
-    echo "user ".$oUser->sEmail." is not a maintainer anymore.\n";
-}
-
 function warnUserDeleted($sEmail)
 {
     $sSubject  = "Warning: account removed";
@@ -92,23 +81,16 @@ function warnUserDeleted($sEmail)
     mail_appdb($sEmail, $sSubject, $sMsg);
 }
 
-function warnMaintainerDeleted($sEmail)
-{
-    $sSubject  = "Warning: maintainer rights revoked\r\n";
-    $sMsg  = "You didn't log in in the past seven month to the AppDB.\r\n";
-    $sMsg .= "As a result, you are not a maintainer anymore.\r\n";
-    $sMsg .= "Please feel free to enroll again as a maintainer anytime.\r\n";
-
-    mail_appdb($sEmail, $sSubject, $sMsg);
-}
-
 /* email all admins that the appdb cleanup script is executing */
 /* so we admins have some visibility into the background cleanup */
 /* events of the appdb */
-function notifyAdminsOfCleanupExecution()
+function notifyAdminsOfCleanupExecution($usersWarned, $usersDeleted, $usersToBeDeletedButHaveData)
 {
     $sSubject  = "Cleanup script running\r\n";
-    $sMsg  = "Appdb cleanup cron script is executing.\r\n";
+    $sMsg  = "Appdb cleanup cron script executed.\r\n";
+    $sMsg .= "Status:\r\n";
+    $sMsg .= "Users warned:".$usersWarned." Users deleted:".$usersDeleted."\r\n";
+    $sMsg .= "Users pending deletion but have appdb data:".$usersToBeDeletedButHaveData."\r\n";
     $sEmail = get_notify_email_address_list(null, null); /* get list admins */
     if($sEmail)
         mail_appdb($sEmail, $sSubject, $sMsg);
