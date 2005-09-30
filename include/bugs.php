@@ -136,7 +136,7 @@ class Bug {
             }
             /*End of Hack */
 
-            $this->mailMaintainers();
+            $this->SendNotificationMail();
             return true;
         }else
         {
@@ -156,7 +156,7 @@ class Bug {
         if($hResult = query_appdb($sQuery))
         {
             if(!$bSilent)
-                $this->mailMaintainers(true);
+                $this->SendNotificationMail(true);
         }
         if($this->iSubmitterId)
         {
@@ -181,7 +181,7 @@ class Bug {
             $this->bQueued = false;
             // we send an e-mail to intersted people
             $this->mailSubmitter();
-            $this->mailMaintainers();
+            $this->SendNotificationMail();
             // the Bug has been unqueued
             addmsg("The Bug has been unqueued.", "green");
         }
@@ -210,7 +210,7 @@ class Bug {
     }
 
  
-    function mailMaintainers($bDeleted=false)
+    function SendNotificationMail($bDeleted=false)
     {
         if(!$bDeleted)
         {

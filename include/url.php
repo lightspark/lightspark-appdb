@@ -70,7 +70,7 @@ class Url {
         {
             $this->iUrlId = mysql_insert_id();
             $this->url($this->iUrlId,$this->bQueued);
-            $this->mailMaintainers();
+            $this->SendNotificationMail();
             return true;
         }
         else
@@ -91,7 +91,7 @@ class Url {
         if($hResult = query_appdb($sQuery))
         {
             if(!$bSilent)
-                $this->mailMaintainers(true);
+                $this->SendNotificationMail(true);
         }
         if($this->iSubmitterId)
         {
@@ -114,7 +114,7 @@ class Url {
         {
             // we send an e-mail to intersted people
             $this->mailSubmitter();
-            $this->mailMaintainers();
+            $this->SendNotificationMail();
             // the url has been unqueued
             addmsg("The url has been unqueued.", "green");
         }
@@ -170,7 +170,7 @@ class Url {
             $this->iAppId = $iAppId;
         }
         if($sWhatChanged)
-            $this->mailMaintainers("edit",$sWhatChanged);       
+            $this->SendNotificationMail("edit",$sWhatChanged);       
         return true;
     }
 
@@ -197,7 +197,7 @@ class Url {
     }
 
  
-    function mailMaintainers($bDeleted=false)
+    function SendNotificationMail($bDeleted=false)
     {
         if(!$bDeleted)
         {

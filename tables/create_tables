@@ -27,3 +27,6 @@ mysql -p -u root < maintainers.sql
 echo Adding bug links
 mysql -p -u root < buglinks.sql
 
+echo Adding monitors
+mysql -p -u root < monitors.sql
+

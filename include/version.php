@@ -159,7 +159,7 @@ class Version {
         {
             $this->iVersionId = mysql_insert_id();
             $this->version($this->iVersionId);
-            $this->mailMaintainers();
+            $this->SendNotificationMail();
             return true;
         }
         else
@@ -238,7 +238,7 @@ class Version {
             $this->iAppId = $iAppId;
         }
         if($sWhatChanged)
-            $this->mailMaintainers("edit",$sWhatChanged);
+            $this->SendNotificationMail("edit",$sWhatChanged);
         return true;
     }
 
@@ -301,7 +301,7 @@ class Version {
         }
 
         if(!$bSilent)
-            $this->mailMaintainers("delete");
+            $this->SendNotificationMail("delete");
 
         $this->mailSubmitter("delete");
     }
@@ -328,7 +328,7 @@ class Version {
             $this->sQueued = 'false';
             // we send an e-mail to intersted people
             $this->mailSubmitter("unQueue");
-            $this->mailMaintainers();
+            $this->SendNotificationMail();
 
             // the version has been unqueued
             addmsg("The version has been unqueued.", "green");
@@ -355,7 +355,7 @@ class Version {
             if(!$bSilent)
             {
                 $this->mailSubmitter("reject");
-                $this->mailMaintainers("reject");
+                $this->SendNotificationMail("reject");
             }
             // the version has been unqueued
             addmsg("The version has been rejected.", "green");
@@ -377,7 +377,7 @@ class Version {
         {
             $this->sQueued = 'true';
             // we send an e-mail to intersted people
-            $this->mailMaintainers();
+            $this->SendNotificationMail();
 
             // the version has been unqueued
             addmsg("The version has been re-submitted", "green");
@@ -425,7 +425,7 @@ class Version {
     }
 
  
-    function mailMaintainers($sAction="add",$sMsg=null)
+    function SendNotificationMail($sAction="add",$sMsg=null)
     {
         $oApp = new Application($this->iAppId);
         switch($sAction)

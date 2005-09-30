@@ -14,6 +14,7 @@ require(BASE."include/vote.php");
 require(BASE."include/category.php");
 require(BASE."include/maintainer.php");
 require(BASE."include/mail.php");
+require(BASE."include/monitor.php");
 
 
 $oApp = new Application($_REQUEST['appId']);
@@ -158,6 +159,24 @@ if ($_REQUEST['sub'])
     {
         $oBuglink = new bug();
         $oBuglink->create($_REQUEST['versionId'],$_REQUEST['buglinkId']);
+        redirect(apidb_fullurl("appview.php?versionId=".$_REQUEST['versionId']));
+        exit;
+    }
+    if($_REQUEST['sub'] == 'StartMonitoring')
+    {
+        $oMonitor = new Monitor();
+        $oMonitor->create($_SESSION['current']->iUserId,$_REQUEST['appId'],$_REQUEST['versionId']);
+        redirect(apidb_fullurl("appview.php?versionId=".$_REQUEST['versionId']));
+        exit;
+    }
+    if($_REQUEST['sub'] == 'StopMonitoring')
+    {
+        $oMonitor = new Monitor();
+        $oMonitor->find($_SESSION['current']->iUserId,$_REQUEST['appId'],$_REQUEST['versionId']);
+        if($oMonitor->iMonitorId)
+        {
+            $oMonitor->delete();
+        }
         redirect(apidb_fullurl("appview.php?versionId=".$_REQUEST['versionId']));
         exit;
     }
@@ -397,6 +416,9 @@ else if($_REQUEST['versionId'])
             echo '<form method="post" name="message" action="maintainerdelete.php">';
             echo '<input type="submit" value="Remove yourself as a supermaintainer" class="button">';
             echo '<input type="hidden" name="superMaintainer" value="1">';
+            echo "<input type=hidden name=\"appId\" value=\"".$oApp->iAppId."\">";
+            echo "<input type=hidden name=\"versionId\" value=\"".$oVersion->iVersionId."\">";
+            echo "</form>";
         } else
         {
             /* are we already a maintainer? */
@@ -405,16 +427,28 @@ else if($_REQUEST['versionId'])
                 echo '<form method="post" name="message" action="maintainerdelete.php">';
                 echo '<input type="submit" value="Remove yourself as a maintainer" class=button>';
                 echo '<input type="hidden" name="superMaintainer" value="0">';
+                echo "<input type=hidden name=\"appId\" value=\"".$oApp->iAppId."\">";
+                echo "<input type=hidden name=\"versionId\" value=\"".$oVersion->iVersionId."\">";
+                echo "</form>";
             } else /* nope */
             {
                 echo '<form method="post" name="message" action="maintainersubmit.php">';
                 echo '<input type="submit" value="Be a maintainer for this app" class="button" title="Click here to know more about maintainers.">';
+                echo "<input type=hidden name=\"appId\" value=\"".$oApp->iAppId."\">";
+                echo "<input type=hidden name=\"versionId\" value=\"".$oVersion->iVersionId."\">";
+                echo "</form>";
+                $oMonitor = new Monitor();
+                $oMonitor->find($_SESSION['current']->iUserId,$oApp->iAppId,$oVersion->iVersionId);
+                if(!$oMonitor->iMonitorId)
+                {
+                    echo '<form method=post name=message action=appview.php?versionId='.$oVersion->iVersionId.'&appId='.$oApp->iAppId.'>';
+                    echo '<input type=hidden name="sub" value="StartMonitoring" />';
+                    echo '<input type=submit value="Monitor Version" class="button" />';
+                    echo "</form>";
+                }
             }
         }
 
-        echo "<input type=hidden name=\"appId\" value=\"".$oApp->iAppId."\">";
-        echo "<input type=hidden name=\"versionId\" value=\"".$oVersion->iVersionId."\">";
-        echo "</form>";
     } else
     {
         echo '<form method="post" name="message" action="account.php">';
@@ -451,7 +485,19 @@ else if($_REQUEST['versionId'])
         echo '</form>';
         echo "</td></tr>";
     }
+    $oMonitor = new Monitor();
+    $oMonitor->find($_SESSION['current']->iUserId,$oApp->iAppId,$oVersion->iVersionId);
+    if($oMonitor->iMonitorId)
+    {
 
+        echo '<tr><td colspan="2" align="center">';
+        echo '</form>';
+        echo '<form method=post name=message action=appview.php?versionId='.$oVersion->iVersionId.'>';
+        echo '<input type=hidden name="sub" value="StopMonitoring" />';
+        echo '<input type=submit value="Stop Monitoring Version" class="button" />';
+        echo '</form>';
+        echo "</td></tr>";
+    } 
     echo "</table><td class=color2 valign=top width='100%'>\n";
 
     // description

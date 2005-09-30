@@ -55,7 +55,7 @@ class Note {
         {
             $this->note(mysql_insert_id());
             $sWhatChanged = "Description is:\n".$sDescription.".\n\n";
-            $this->mailMaintainers("add", $sWhatChanged);
+            $this->SendNotificationMail("add", $sWhatChanged);
             return true;
         }
         else
@@ -101,7 +101,7 @@ class Note {
             $this->iAppId = $oVersionAfter->iAppId;
         }
         if($sWhatChanged)
-            $this->mailMaintainers("edit",$sWhatChanged);       
+            $this->SendNotificationMail("edit",$sWhatChanged);       
         return true;
     }
 
@@ -114,11 +114,11 @@ class Note {
     {
         $hResult = query_appdb("DELETE FROM appNotes WHERE noteId = '".$this->iNoteId."'");
         if(!$bSilent)
-            $this->mailMaintainers("delete");
+            $this->SendNotificationMail("delete");
     }
 
 
-    function mailMaintainers($sAction="add",$sMsg=null)
+    function SendNotificationMail($sAction="add",$sMsg=null)
     {
         switch($sAction)
         {

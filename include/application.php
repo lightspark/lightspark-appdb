@@ -136,7 +136,7 @@ class Application {
         {
             $this->iAppId = mysql_insert_id();
             $this->application($this->iAppId);
-            $this->mailSupermaintainers();  // Only administrators will be mailed as no supermaintainers exist for this app.
+            $this->SendNotificationMail();  // Only administrators will be mailed as no supermaintainers exist for this app.
             return true;
         }
         else
@@ -210,7 +210,7 @@ class Application {
             $this->iCatId = $iCatId;
         }
         if($sWhatChanged)
-            $this->mailSupermaintainers("edit",$sWhatChanged);
+            $this->SendNotificationMail("edit",$sWhatChanged);
         return true;
     }
 
@@ -252,7 +252,7 @@ class Application {
         }
 
         if(!$bSilent)
-            $this->mailSupermaintainers("delete");
+            $this->SendNotificationMail("delete");
     }
 
 
@@ -272,7 +272,7 @@ class Application {
             $this->sQueued = 'false';
             // we send an e-mail to intersted people
             $this->mailSubmitter();
-            $this->mailSupermaintainers();
+            $this->SendNotificationMail();
 
             // the application has been unqueued
             addmsg("The application has been unqueued.", "green");
@@ -291,7 +291,7 @@ class Application {
             $this->sQueued = 'rejected';
             // we send an e-mail to intersted people
             $this->mailSubmitter("reject");
-            $this->mailSupermaintainers("reject");
+            $this->SendNotificationMail("reject");
 
             // the application has been rejectedd
             addmsg("The application has been rejected.", "green");
@@ -308,7 +308,7 @@ class Application {
         {
             $this->sQueued = 'true';
             // we send an e-mail to intersted people
-            $this->mailSupermaintainers();
+            $this->SendNotificationMail();
 
             // the application has been re-queued
             addmsg("The application has been re-queued.", "green");
@@ -355,7 +355,7 @@ class Application {
     }
 
  
-    function mailSupermaintainers($sAction="add",$sMsg=null)
+    function SendNotificationMail($sAction="add",$sMsg=null)
     {
         switch($sAction)
         {
