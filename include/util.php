@@ -769,4 +769,203 @@ function display_page_range($currentPage=1, $pageRange=1, $totalPages=1, $linkur
     
 }
 
+// Expand a path like /something/somedirectory/../ to /something
+// from http://us2.php.net/realpath
+function SimplifyPath($path) {
+  $dirs = explode('/',$path);
+
+  for($i=0; $i<count($dirs);$i++) {
+   if($dirs[$i]=="." || $dirs[$i]=="") {
+     array_splice($dirs,$i,1);
+     $i--;
+   }
+
+   if($dirs[$i]=="..") {
+     $cnt = count($dirs);
+     $dirs=Simplify($dirs, $i);
+     $i-= $cnt-count($dirs);
+   }
+  }
+  return implode('/',$dirs);
+}
+
+function Simplify($dirs, $idx) {
+  if($idx==0) return $dirs;
+
+  if($dirs[$idx-1]=="..") Simplify($dirs, $idx-1);
+  else  array_splice($dirs,$idx-1,2);
+
+  return $dirs;
+}
+// End of snippet of code copied from php.net
+
+// Use the directory of PHP_SELF and BASE and the relative path
+// to get a simplified path to an appdb directory or file
+// Used for the Xinha _editor_url because some plugins like SpellChecker
+// won't work with relative paths like ../xinha
+function GetSimplifiedPath($relative)
+{
+    return "/".SimplifyPath(dirname($_SERVER[PHP_SELF])."/".BASE.$relative);
+}
+
+function HtmlAreaLoaderScript($aTextareas)
+{
+    echo '
+  <script type="text/javascript">';
+    // You must set _editor_url to the URL (including trailing slash) where
+    // where xinha is installed, it's highly recommended to use an absolute URL
+    //  eg: _editor_url = "/path/to/xinha/";
+    // You may try a relative URL if you wish]
+    //  eg: _editor_url = "../";
+    // in this example we do a little regular expression to find the absolute path.
+    // NOTE: we use GetSimplifiedPath() because we cannot use a relative path and have
+    //   all of the plugins work correctly.  Specifically the SpellChecker plugin
+    //   requires a absolute url path to the xinha directory
+    echo '
+    _editor_url  = "'.GetSimplifiedPath("xinha/").'", \'\';
+    _editor_lang = "en";      // And the language we need to use in the editor.
+  </script>';
+
+    echo '
+  <!-- Load up the actual editor core -->
+  <script type="text/javascript" src="'.BASE.'xinha/htmlarea.js"></script>
+
+  <script type="text/javascript">
+    xinha_editors = null;
+    xinha_init    = null;
+    xinha_config  = null;
+    xinha_plugins = null;
+
+    // This contains the names of textareas we will make into Xinha editors
+    xinha_init = xinha_init ? xinha_init : function()
+    {';
+      /** STEP 1 ***************************************************************
+       * First, what are the plugins you will be using in the editors on this
+       * page.  List all the plugins you will need, even if not all the editors
+       * will use all the plugins.
+       ************************************************************************/
+
+      echo '
+      xinha_plugins = xinha_plugins ? xinha_plugins :
+      [
+       \'CharacterMap\',
+       \'CharCounter\',
+       \'ContextMenu\',
+       \'FullScreen\',
+       \'ListType\',
+       \'SpellChecker\',
+       \'Stylist\',
+       \'SuperClean\',
+       \'TableOperations\',
+       \'DynamicCSS\',
+       \'FindReplace\'
+      ];
+
+      // THIS BIT OF JAVASCRIPT LOADS THE PLUGINS, NO TOUCHING  :)
+      if(!HTMLArea.loadPlugins(xinha_plugins, xinha_init)) return;';
+
+      /** STEP 2 ***************************************************************
+       * Now, what are the names of the textareas you will be turning into
+       * editors?
+       ************************************************************************/
+
+      // NOTE: we generate the editor names here so we can easily have any number of htmlarea editors
+      //  and can reuse all of this code
+      echo '
+      xinha_editors = xinha_editors ? xinha_editors :
+      [';
+
+      $firstEntry = true;
+      foreach($aTextareas as $key=>$value)
+      {
+          if($firstEntry)
+          {
+              echo "'$value'";
+              $firstEntry = false;
+          } else
+          {
+              echo ", '$value'";
+          }
+      }
+
+      echo '
+      ];';
+
+      /** STEP 3 ***************************************************************
+       * We create a default configuration to be used by all the editors.
+       * If you wish to configure some of the editors differently this will be
+       * done in step 5.
+       *
+       * If you want to modify the default config you might do something like this.
+       *
+       *   xinha_config = new HTMLArea.Config();
+       *   xinha_config.width  = \'640px\';
+       *   xinha_config.height = \'420px\';
+       *
+       *************************************************************************/
+
+       echo '
+
+       xinha_config = new HTMLArea.Config();
+
+       xinha_config.toolbar = [
+        ["popupeditor"],
+        ["separator","fontsize","bold","italic","underline","strikethrough"],
+        ["separator","forecolor","hilitecolor","textindicator"],
+        ["separator","subscript","superscript"],
+        ["linebreak","separator","justifyleft","justifycenter","justifyright","justifyfull"],
+        ["separator","insertorderedlist","insertunorderedlist","outdent","indent"],
+        ["separator","inserthorizontalrule","createlink","inserttable"],
+        ["separator","undo","redo","selectall"], (HTMLArea.is_gecko ? [] : ["cut","copy","paste","overwrite","saveas"]),
+        ["separator","killword","removeformat","toggleborders","lefttoright", "righttoleft","separator","htmlmode","about"]
+        ];
+    
+       xinha_config.pageStyle = "@import url('.BASE."application.css".');";
+       ';
+
+
+      /** STEP 4 ***************************************************************
+       * We first create editors for the textareas.
+       *
+       * You can do this in two ways, either
+       *
+       *   xinha_editors   = HTMLArea.makeEditors(xinha_editors, xinha_config, xinha_plugins);
+       *
+       * if you want all the editor objects to use the same set of plugins, OR;
+       *
+       *   xinha_editors = HTMLArea.makeEditors(xinha_editors, xinha_config);
+       *   xinha_editors['myTextArea'].registerPlugins(['Stylist','FullScreen']);
+       *   xinha_editors['anotherOne'].registerPlugins(['CSS','SuperClean']);
+       *
+       * if you want to use a different set of plugins for one or more of the
+       * editors.
+       ************************************************************************/
+
+       echo '
+       xinha_editors   = HTMLArea.makeEditors(xinha_editors, xinha_config, xinha_plugins);';
+
+      /** STEP 5 ***************************************************************
+       * If you want to change the configuration variables of any of the
+       * editors,  this is the place to do that, for example you might want to
+       * change the width and height of one of the editors, like this...
+       *
+       *   xinha_editors.myTextArea.config.width  = '640px';
+       *   xinha_editors.myTextArea.config.height = '480px';
+       *
+       ************************************************************************/
+
+
+      /** STEP 6 ***************************************************************
+       * Finally we "start" the editors, this turns the textareas into
+       * Xinha editors.
+       ************************************************************************/
+       echo '
+      HTMLArea.startEditors(xinha_editors);
+    }
+
+    window.onload = xinha_init;
+    </SCRIPT>
+      ';
+}
+
 ?>

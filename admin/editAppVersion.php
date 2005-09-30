@@ -25,11 +25,9 @@ if(isset($_REQUEST['submit']))
     redirect(apidb_fullurl("appview.php?versionId=".$_REQUEST['versionId']));
 } else /* or display the webform for making changes */
 {
-?>
-<link rel="stylesheet" href="./application.css" type="text/css">
-<!-- load HTMLArea -->
-<script type="text/javascript" src="../htmlarea/htmlarea_loader.js"></script>
-<?php
+
+    HtmlAreaLoaderScript(array("editor")); /* load the appropriate htmlarea controls */
+
     $oVersion = new Version($_REQUEST['versionId']);
 
     apidb_header("Edit Application Version");

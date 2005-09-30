@@ -39,11 +39,8 @@ if($_REQUEST['sub'] == "Submit")
 }
 else if($_REQUEST['sub'] == 'Preview' OR empty($_REQUEST['submit']))
 {
-?>
-<link rel="stylesheet" href="./application.css" type="text/css">
-<!-- load HTMLArea -->
-<script type="text/javascript" src="../htmlarea/htmlarea_loader.js"></script>
-<?php
+    HtmlAreaLoaderScript(array("editor"));
+    
     apidb_header("Add Application Note");
 
     echo "<form method=post action='addAppNote.php'>\n";

@@ -128,11 +128,7 @@ if ($_REQUEST['sub'])
     {
         $x = new TableVE("view");
         apidb_header("Admin App Queue");
-?>
-<link rel="stylesheet" href="./application.css" type="text/css">
-<!-- load HTMLArea -->
-<script type="text/javascript" src="../htmlarea/htmlarea_loader.js"></script>
-<?php
+
         echo '<form name="qform" action="adminAppQueue.php" method="post" enctype="multipart/form-data">',"\n";
         echo '<input type="hidden" name="sub" value="add">',"\n"; 
 
@@ -140,6 +136,8 @@ if ($_REQUEST['sub'])
 
         if (!$oApp) //app version
         { 
+            HtmlAreaLoaderScript(array("editor"));
+        
             echo html_frame_start("Potential duplicate versions in the database","90%","",0);
             $oApp = new Application($oVersion->iAppId);
             display_versions($oApp->iAppId, $oApp->aVersionsIds);
@@ -181,7 +179,9 @@ if ($_REQUEST['sub'])
             echo '<input name="sub" type=submit value="Reject" class="button"></td></tr>',"\n";
             echo '</table></form>',"\n";
         } else // application
-        { 
+        {
+            HtmlAreaLoaderScript(array("editor", "editor2"));
+
             echo html_frame_start("Potential duplicate applications in the database","90%","",0);
             perform_search_and_output_results($oApp->sName);
             echo html_frame_end("&nbsp;");
@@ -274,7 +274,7 @@ if ($_REQUEST['sub'])
       
             // application desc
             echo '<tr valign=top><td class=color0><b>Application Description</b></td>',"\n";
-            echo '<td><p style="width:700px"><textarea  cols="80" rows="20" name="applicationDescription">'.stripslashes($oApp->sDescription).'</textarea></p></td></tr>',"\n";
+            echo '<td><p style="width:700px"><textarea  id="editor" cols="80" rows="20" name="applicationDescription">'.stripslashes($oApp->sDescription).'</textarea></p></td></tr>',"\n";
 
             // version name
             echo '<tr valign=top><td class="color0"><b>Version name</b></td>',"\n";
@@ -282,7 +282,7 @@ if ($_REQUEST['sub'])
 
             // version description
             echo '<tr valign=top><td class=color0><b>Version Description</b></td>',"\n";
-            echo '<td><p style="width:700px"><textarea  cols="80" rows="20" id="editor" name="versionDescription">'.stripslashes($oVersion->sDescription).'</textarea></p></td></tr>',"\n";
+            echo '<td><p style="width:700px"><textarea  cols="80" rows="20" id="editor2" name="versionDescription">'.stripslashes($oVersion->sDescription).'</textarea></p></td></tr>',"\n";
         
         
             echo '<tr valign=top><td class="color0"><b>email Text</b></td>',"\n";

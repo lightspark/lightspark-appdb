@@ -45,11 +45,9 @@ else
         $_REQUEST['appId'] = $oNote->iAppId;
         $_REQUEST['versionId'] = $oNote->iVersionId;
     }
-?>
-<link rel="stylesheet" href="./application.css" type="text/css">
-<!-- load HTMLArea -->
-<script type="text/javascript" src="../htmlarea/htmlarea_loader.js"></script>
-<?php
+
+    HtmlAreaLoaderScript(array("editor"));
+    
     // show form
     apidb_header("Edit Application Note");
 

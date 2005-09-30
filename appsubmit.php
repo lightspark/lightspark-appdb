@@ -12,7 +12,7 @@ require(BASE."include/application.php");
      * Templates
      * FIXME: put templates in config file or somewhere else.
      */
-    //$sAppDescription = "<p>Enter description here</p>";
+    $sAppDescription = "<p>Enter a description of the application here</p>";
     $sVersionDescription = "<p>This is a template; enter version-specific description here</p>
                             <p>
                                <span class=\"title\">Wine compatibility</span><br />
@@ -85,9 +85,7 @@ if (isset($_REQUEST['appName']))
         if($vendorName) $_REQUEST['vendorId']="";
 
         $oApplication = new Application();
-        // FIXME When two htmlarea will be able to live on the same page 
-        // without problems under gecko, remove the <p></p> around appDescrion
-        $oApplication->create($_REQUEST['appName'], "<p>".$_REQUEST['appDescription']."</p>", $_REQUEST['keywords']." *** ".$_REQUEST['vendorName'], $_REQUEST['webpage'], $_REQUEST['vendorId'], $_REQUEST['catId']);
+        $oApplication->create($_REQUEST['appName'], $_REQUEST['appDescription'], $_REQUEST['keywords']." *** ".$_REQUEST['vendorName'], $_REQUEST['webpage'], $_REQUEST['vendorId'], $_REQUEST['catId']);
         $oVersion = new Version();
         $oVersion->create($_REQUEST['versionName'], $_REQUEST['versionDescription'], null, null, $oApplication->iAppId);
         redirect(apidb_fullurl("index.php"));
@@ -116,52 +114,10 @@ elseif (isset($_REQUEST['versionName']) && is_numeric($_REQUEST['appId']))
  */
 if (isset($_REQUEST['apptype']))
 {
-// header
-apidb_header("Submit Application");
+    // header
+    apidb_header("Submit Application");
 
-//FIXME: use absolute path in htmlarea_loader.js to avoid code duplication here
-?>
-<!-- load HTMLArea -->
-<script type="text/javascript">
-_editor_url = "./htmlarea/";
-_editor_lang = "en";
-function initDocument() {
-    config = new HTMLArea.Config();
-    config.toolbar = [
-                [ "bold", "italic", "underline", "strikethrough", "separator",
-                  "copy", "cut", "paste", "space", "undo", "redo", "separator",
-                  "justifyleft", "justifycenter", "justifyright", "justifyfull", "separator",
-                  "orderedlist", "unorderedlist", "outdent", "indent", "separator",
-                  "forecolor", "hilitecolor", "separator",
-                  "inserthorizontalrule", "createlink", "inserttable" ]
-        ];
-    config.width = 700;
-    config.pageStyle = "@import url(./application.css);";
-// FIXME: when both editors and stylesheets are used, sometimes one of the editor is readonly under gecko
-// var editor = new HTMLArea("editor",config);
-// editor.registerPlugin(DynamicCSS);
-<?php
-// if($_REQUEST['apptype'] == 1) // we have two editors, one for application and one for version.
-//{
-?>
-    var editor2 = new HTMLArea("editor2",config);
-    editor2.generate();
-    editor2.registerPlugin(DynamicCSS);
-<?php
-//}
-?>
-// FIXME: when both editors and stylesheets are used, sometimes one of the editor is readonly under gecko
-// editor.generate();
-}
-
-onload = function() {
-    HTMLArea.loadPlugin("DynamicCSS");
-    HTMLArea.init();
-    HTMLArea.onload = initDocument;
-}
-</script>
-<script type="text/javascript" src="./htmlarea/htmlarea.js"></script>
-<?php
+    HtmlAreaLoaderScript(array("editor", "editor2"));
 
     // show add to queue form
     echo '<form name="newApp" action="appsubmit.php" method="post">'."\n";
@@ -169,7 +125,7 @@ onload = function() {
     echo "database. The application will be reviewed by the AppDB Administrator\n";
     echo "and you will be notified via email if this application will be added to\n";
     echo "the database.</p>\n";
-    echo "<p>Before continuing please check that you have:\n";
+    echo "<p><h2>Before continuing please check that you have:</h2>\n";
     echo "<ul>\n";
     if ($_REQUEST['apptype'] == 1)
     {
@@ -179,15 +135,18 @@ onload = function() {
         echo "   and click on 'Submit new version'</li>\n";
     }
     echo " <li>Entered a valid version for this application.  This is the application\n";
-    echo "   version, NOT the wine version(which goes in the testing results section of the template</li>\n";
+    echo "   version, NOT the wine version(which goes in the testing results section of the template)</li>\n";
     echo " <li>Tested this application under Wine.  There are tens of thousands of applications\n";
     echo "   for windows, we don't need placeholder entries in the database.  Please enter as complete \n";
     echo "   as possible testing results in the version template provided below</li>\n";
     echo "</ul></p>";
     echo "<p>Please don't forget to mention which Wine version you used, how well it worked\n";
     echo "and if any workaround were needed. Having app descriptions just sponsoring the app\n";
-    echo "(Yes, some vendor want to use the appdb for this) or saying \"I haven't tried this app with Wine\" ";
+    echo "(Yes, some vendors want to use the appdb for this) or saying \"I haven't tried this app with Wine\" ";
     echo "won't help Wine development or Wine users.</p>\n";
+    echo "<b><span style=\"color:red\">Please only submit applications/versions that you have tested.\n";
+    echo "Submissions without testing information or not using the provided template will be rejected.\n";
+    echo "If you can't see the in-browser editors below please try Firefox, Mozilla or Opera browsers.\n</span></b>";
     echo "<p>After your application has been added you'll be able to submit screenshots for it, post";
     echo " messages in its forums or become a maintainer to help others trying to run the application.</p>";
     if(!empty($errors))
@@ -228,7 +187,11 @@ onload = function() {
         echo '<td><input size="80%" type="text" name="keywords" value="'.$_REQUEST['keywords'].'"></td></tr>',"\n";
 
         echo '<tr valign=top><td class="color0"><b>Application Description</b></td>',"\n";
-        echo '<td><p><textarea cols="80" rows="20" name="appDescription">';
+        if(trim(strip_tags($_REQUEST['appDescription']))=="")
+        {
+            $_REQUEST['appDescription'] = $sAppDescription;
+        }   
+        echo '<td><p><textarea cols="80" rows="20" id="editor" name="appDescription">';
         echo $_REQUEST['appDescription'].'</textarea></p></td></tr>',"\n";
 
     }           

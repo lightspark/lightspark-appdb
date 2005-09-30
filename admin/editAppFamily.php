@@ -30,11 +30,8 @@ if(isset($_REQUEST['submit']))
 else
 // Show the form for editing the Application Family 
 {
-?>
-<link rel="stylesheet" href="./application.css" type="text/css">
-<!-- load HTMLArea -->
-<script type="text/javascript" src="../htmlarea/htmlarea_loader.js"></script>
-<?php
+    HtmlAreaLoaderScript(array("editor"));
+
     $family = new TableVE("edit");
 
     $result = query_appdb("SELECT * from appFamily WHERE appId = '{$_REQUEST['appId']}'");
