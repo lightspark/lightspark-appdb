@@ -1,0 +1,13 @@
+Removed:
+ plugins/Abbreviation
+ plugins/BackgroundImage
+ plugins/EditTag
+ plugins/Equation - don't think we need this
+ plugins/FormOperations
+ plugins/InsertMarquee - scrolling text?  blah
+ plugins/InsertSmiley - no thanks
+ plugins/InsertWords
+ plugins/ImageManager
+ plugins/LangMarks
+ plugins/NoteServer - musical notes
+ plugins/Template
