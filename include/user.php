@@ -315,6 +315,35 @@ class User {
         return $statusMessage;
      }
 
+    /* remove maintainership */
+    /* if $iAppId and $iVersionId are null, delete all maintainership for this user */
+    function deleteMaintainer($iAppId = null, $iVersionId = null)
+    {
+        /* remove supermaintainer */
+        if($iAppId && ($iVersionId == null))
+        {
+            $superMaintainer = 1;
+            $sQuery = "DELETE FROM appMaintainers WHERE userId = ".$this->iUserId.
+                " AND appId = ".$iAppId." AND superMaintainer = ".$superMaintainer.";";
+        } else if($iAppId && $iVersionId) /* remove a normal maintainer */
+        {
+            $superMaintainer = 0;
+            $sQuery = "DELETE FROM appMaintainers WHERE userId = ".$this->iUserId.
+                 " AND appId = ".$iAppId." AND versionId = ".$iVersionId." AND superMaintainer = ".$superMaintainer.";";
+        } else if(($iAppId == null) && ($iVersionId == null)) /* remove all maintainership by this user */
+        {
+            $sQuery = "DELETE FROM appMaintainers WHERE userId = ".$this->iUserId.";";
+        }
+
+        if($sQuery)
+        {
+            if($result = query_appdb($sQuery))
+                return true;
+        }
+        
+        return false;
+    }
+
     /* get the number of queued applications */
     function getQueuedAppCount()
     {

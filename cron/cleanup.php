@@ -17,7 +17,9 @@ include(BASE."include/mail.php");
 
 $usersWarned = 0;
 $usersDeleted = 0;
-$usersToBeDeletedButHaveData = 0;
+$usersWithData = 0; /* users marked for deletion that have data */
+
+notifyAdminsOfCleanupStart();
 
 /* users inactive for 6 months that haven't been warned already */
 $hUsersToWarn = unwarnedAndInactiveSince(6);
@@ -39,11 +41,17 @@ while($oRow = mysql_fetch_object($hUsersToDelete))
         deleteUser($oRow->userid);
     } else
     {
-        $usersToBeDeletedButHaveData++;
+        /* is the user a maintainer?  if so remove their maintainer privilages */
+        if($oUser->isMaintainer())
+        {
+            $oUser->deleteMaintainer();
+        }
+
+        $usersWithData++;
     }
 }
 
-notifyAdminsOfCleanupExecution($usersWarned, $usersDeleted, $usersToBeDeletedButHaveData);
+notifyAdminsOfCleanupExecution($usersWarned, $usersDeleted, $usersWithData);
 
 
 /* Users that are unwarned and inactive since $iMonths */
@@ -81,16 +89,25 @@ function warnUserDeleted($sEmail)
     mail_appdb($sEmail, $sSubject, $sMsg);
 }
 
+function notifyAdminsOfCleanupStart()
+{
+    $sSubject  = "Cleanup script starting\r\n";
+    $sMsg  = "Appdb cleanup cron script started.\r\n";
+    $sEmail = get_notify_email_address_list(null, null); /* get list admins */
+    if($sEmail)
+        mail_appdb($sEmail, $sSubject, $sMsg);
+}
+
 /* email all admins that the appdb cleanup script is executing */
 /* so we admins have some visibility into the background cleanup */
 /* events of the appdb */
-function notifyAdminsOfCleanupExecution($usersWarned, $usersDeleted, $usersToBeDeletedButHaveData)
+function notifyAdminsOfCleanupExecution($usersWarned, $usersDeleted, $usersWithData)
 {
-    $sSubject  = "Cleanup script running\r\n";
+    $sSubject  = "Cleanup script summary\r\n";
     $sMsg  = "Appdb cleanup cron script executed.\r\n";
     $sMsg .= "Status:\r\n";
     $sMsg .= "Users warned:".$usersWarned." Users deleted:".$usersDeleted."\r\n";
-    $sMsg .= "Users pending deletion but have appdb data:".$usersToBeDeletedButHaveData."\r\n";
+    $sMsg .= "Users pending deletion but have appdb data:".$usersWithData."\r\n";
     $sEmail = get_notify_email_address_list(null, null); /* get list admins */
     if($sEmail)
         mail_appdb($sEmail, $sSubject, $sMsg);

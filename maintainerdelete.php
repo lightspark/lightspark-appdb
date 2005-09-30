@@ -24,22 +24,20 @@ $superMaintainer = strip_tags($_POST['superMaintainer']);
 
 if($confirmed)
 {
-$oApp = new Application($appId);
+    $oApp = new Application($appId);
     if($superMaintainer)
     {
         apidb_header("You have resigned as supermaintainer of ".$oApp->sName);
-        $query = "DELETE FROM appMaintainers WHERE userId = ".$_SESSION['current']->iUserId.
-                 " AND appId = ".$oApp->iAppId." AND superMaintainer = ".$superMaintainer.";";
+        $result = $_SESSION['current']->deleteMaintainer($oApp->iAppId, null); 
     } else
     {
         $oVersion = new Version($versionId);
         apidb_header("You have resigned as maintainer of ".$oApp->sName." ".$oVersion->sName);
-        $query = "DELETE FROM appMaintainers WHERE userId = ".$_SESSION['current']->iUserId.
-                 " AND appId = ".$oApp->iAppId." AND versionId = ".$oVersion->iVersionId." AND superMaintainer = ".$superMaintainer.";";
+        $result = $_SESSION['current']->deleteMaintainer($oApp->iAppId, $oVersion->iVersionId);
     }
 /*   echo html_frame_start("Removing",400,"",0);
 */
-    if($result = query_appdb($query))
+    if($result)
     {
         if($superMaintainer)
             echo "You were removed as a supermaintainer of ".$oApp->sName;
