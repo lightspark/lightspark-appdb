@@ -21,9 +21,9 @@ drop table if exists sessionMessages;
  * vendor information
  */
 create table vendor (
-       vendorId		int not null auto_increment,
+       vendorId   int not null auto_increment,
        vendorName	varchar(100) not null,
-       vendorURL	varchar(200),
+       vendorURL  varchar(200),
        key(vendorId)
 );
 
@@ -32,16 +32,16 @@ create table vendor (
  * application
  */
 create table appFamily (
-	appId		int not null auto_increment,
-	appName		varchar(100) not null,
-	vendorId	int not null,
-	keywords	text,
-	description	text,
-	webPage		varchar(100),
-	catId		int,
-	submitTime	timestamp(14) NOT NULL,
-	submitterId	int(11) NOT NULL default '0',
-	queued		enum('true','false','rejected') NOT NULL default 'false',
+	appId	        int not null auto_increment,
+	appName       varchar(100) not null,
+	vendorId      int not null,
+	keywords      text,
+	description   text,
+	webPage       varchar(100),
+	catId         int,
+	submitTime    timestamp(14) NOT NULL,
+	submitterId   int(11) NOT NULL default '0',
+	queued        enum('true','false','rejected') NOT NULL default 'false',
 	key(appId)
 );
 
@@ -50,29 +50,29 @@ create table appFamily (
  * a version of an application
  */
 create table appVersion (
-	versionId          int not null auto_increment,
-	appId              int not null,
-	versionName        varchar(100) not null,
-	description        text,
-	maintainer_rating  text,
-	maintainer_release text,
-	submitTime	timestamp(14) NOT NULL,
-	submitterId	int(11) NOT NULL default '0',
-	queued		enum('true','false','rejected') NOT NULL default 'false',
-	key(versionId)
+  versionId             int not null auto_increment,
+  appId                 int not null,
+  versionName           varchar(100) not null,
+  description           text,
+  maintainer_rating     text,
+  maintainer_release    text,
+  submitTime            timestamp(14) NOT NULL,
+  submitterId           int(11) NOT NULL default '0',
+  queued                enum('true','false','rejected') NOT NULL default 'false',
+  key(versionId)
 );
 
 
 create table userExperience (
-       uExpId		int not null auto_increment,
-       versionId	int not null,
-       userComments	text,
-       testPlatform	varchar(100),
-       wineVintage	varchar(100),
-       entryDate	timestamp not null,
-       userId		int not null,
-       wineCfgFile	text,
-       key(uExpId)
+  uExpId         int not null auto_increment,
+  versionId      int not null,
+  userComments   text,
+  testPlatform   varchar(100),
+  wineVintage    varchar(100),
+  entryDate      timestamp not null,
+  userId         int not null,
+  wineCfgFile    text,
+  key(uExpId)
 );
        
 
@@ -80,10 +80,10 @@ create table userExperience (
  * application category
  */    
 create table appCategory (
-	catId		int not null auto_increment,
-	catName		varchar(64) not null,
-	catDescription	text,
-	catParent	int default 0,
+	catId           int not null auto_increment,
+	catName	        varchar(64) not null,
+	catDescription  text,
+	catParent       int default 0,
 	key(catId)
 );
 
@@ -92,10 +92,10 @@ create table appCategory (
  * bundleId is the appId of the 'owner app'
  */
 create table appBundle (
-	bundleId	int not null,
-	appId		int not null,
-	key(bundleId),
-	index(appId)
+  bundleId        int not null,
+  appId           int not null,
+  key(bundleId),
+  index(appId)
 );
 
 
@@ -103,21 +103,21 @@ create table appBundle (
  * appHitStats and catHitStats are to record statistics
  */
 create table appHitStats (
-	appHitId	int not null auto_increment,
-	time		timestamp,
-	ip		varchar(16),
-	appId		int not null,	
-	count		int,
-	key(appHitId)
+  appHitId  int not null auto_increment,
+  time      timestamp,
+  ip        varchar(16),
+  appId     int not null,	
+  count     int,
+  key(appHitId)
 );
 
 create table catHitStats (
-	catHitId	int not null auto_increment,
-	time		timestamp,
-	ip		varchar(16),
-	catId		int not null,
-	count		int,
-	key(catHitId)
+  catHitId  int not null auto_increment,
+  time      timestamp,
+  ip        varchar(16),
+  catId     int not null,
+  count     int,
+  key(catHitId)
 );
 
 
@@ -125,16 +125,16 @@ create table catHitStats (
  * user comments
  */
 create table appComments (
-	time		datetime,
-	commentId	int not null auto_increment,
-	parentId	int default 0,
-	versionId	int not null,
-	userId		int,
-	hostname	varchar(80),
-	subject		varchar(128),
-	body		text,
-	key(commentId),
-	index(versionId)
+  time        datetime,
+  commentId   int not null auto_increment,
+  parentId    int default 0,
+  versionId   int not null,
+  userId      int,
+  hostname    varchar(80),
+  subject     varchar(128),
+  body        text,
+  key(commentId),
+  index(versionId)
 );
 
 
@@ -143,15 +143,15 @@ create table appComments (
  * links to screenshots and other stuff
  */
 create table appData (
-	id		int not null auto_increment,
-	appId		int not null,
-	versionId	int default 0,
-	type		enum('image', 'url', 'bug'),
-	description	text,
-	url		varchar(255) default NULL,
-	submitTime	timestamp(14) NOT NULL,
-	submitterId	int(11) NOT NULL default '0',
-	queued		enum('true','false') NOT NULL default 'false',
+	id            int not null auto_increment,
+	appId         int not null,
+	versionId	    int default 0,
+	type          enum('image', 'url', 'bug'),
+	description	  text,
+	url	          varchar(255) default NULL,
+	submitTime    timestamp(14) NOT NULL,
+	submitterId   int(11) NOT NULL default '0',
+	queued        enum('true','false') NOT NULL default 'false',
 	KEY id (id),
 	KEY versionId (versionId)
 );
