@@ -401,7 +401,9 @@ class Version {
             case "reject":
                 {
                     $sSubject =  "Submitted version rejected";
-                    $sMsg  = "The version you submitted (".$oApp->sName." ".$this->sName.") has been rejected.";
+                    $sMsg  = "The version you submitted (".$oApp->sName." ".$this->sName.") has been rejected. ";
+                    $sMsg .= "Clicking on the link in this email will allow you to modify and resubmit the version. ";
+                    $sMsg .= "A link to your queue of applications and versions will also show up on the left hand side of the Appdb site once you have logged in. ";
                     $sMsg .= APPDB_ROOT."admin/resubmitRejectedApps.php?sub=view&versionId=".$this->iVersionId."\n";
                     $sMsg .= "Reason given:\n";
                     $sMsg .= $_REQUEST['replyText']."\n"; /* append the reply text, if there is any */
