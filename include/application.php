@@ -332,8 +332,9 @@ class Application {
                 {
                     $sSubject =  "Submitted application rejected";
                     $sMsg  = "The application you submitted (".$oApp->sName." ".$this->sName.") has been rejected.";
+                    $sMsg .= "Clicking on the link in this email will allow you to modify and resubmit the application. ";
+                    $sMsg .= "A link to your queue of applications and versions will also show up on the left hand side of the Appdb site once you have logged in. ";
                     $sMsg .= APPDB_ROOT."admin/resubmitRejectedApps.php?sub=view&appId=".$this->iAppId."\n";
-
                     $sMsg .= "Reason given:\n";
                     $sMsg .= $_REQUEST['replyText']."\n"; /* append the reply text, if there is any */
                 }
