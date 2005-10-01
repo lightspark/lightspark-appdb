@@ -5,7 +5,6 @@ use apidb;
 drop table if exists vendor;
 drop table if exists appFamily;
 drop table if exists appVersion;
-drop table if exists userExperience;
 drop table if exists appCategory;
 drop table if exists appHitStats;
 drop table if exists catHitStats;
@@ -62,19 +61,6 @@ create table appVersion (
   key(versionId)
 );
 
-
-create table userExperience (
-  uExpId         int not null auto_increment,
-  versionId      int not null,
-  userComments   text,
-  testPlatform   varchar(100),
-  wineVintage    varchar(100),
-  entryDate      timestamp not null,
-  userId         int not null,
-  wineCfgFile    text,
-  key(uExpId)
-);
-       
 
 /*
  * application category
