@@ -117,8 +117,6 @@ if (isset($_REQUEST['apptype']))
     // header
     apidb_header("Submit Application");
 
-    HtmlAreaLoaderScript(array("editor", "editor2"));
-
     // show add to queue form
     echo '<form name="newApp" action="appsubmit.php" method="post">'."\n";
     echo "<p>This page is for submitting new applications to be added to this\n";
@@ -160,6 +158,8 @@ if (isset($_REQUEST['apptype']))
     // new application and version
     if ($_REQUEST['apptype'] == 1)
     {
+        HtmlAreaLoaderScript(array("editor", "editor2"));
+
         echo html_frame_start("New Application Form",400,"",0);
         echo "<table width='100%' border=0 cellpadding=2 cellspacing=0>\n";
         echo '<tr valign=top><td class="color0"><b>Application name</b></td>',"\n";
@@ -198,6 +198,8 @@ if (isset($_REQUEST['apptype']))
     // new version
     else
     {
+        HtmlAreaLoaderScript(array("editor2"));
+
         echo html_frame_start("New Version Form",400,"",0);
 
         echo "<table width='100%' border=0 cellpadding=2 cellspacing=0>\n";
