@@ -28,7 +28,13 @@ while($oRow = mysql_fetch_object($hUsersToWarn))
     $usersWarned++;
     $oUser = new User($oRow->userid);
     $oUser->warnForInactivity();
+
+    /* every 25 users send a progress email */
+    if(($usersWarned % 25) == 0)
+        emailProgress(0, $usersWarned);
 }
+
+notifyAdminsOfProgress();
 
 /* warned >= 1 month ago */
 $hUsersToDelete = warnedSince(1);
@@ -49,6 +55,12 @@ while($oRow = mysql_fetch_object($hUsersToDelete))
 
         $usersWithData++;
     }
+
+    /* every 25 users send a progress email */
+    if(($usersDeleted % 25) == 0)
+        emailProgress(1, $usersDeleted);
+    if(($usersWithData % 25) == 0)
+        emailProgress(2, $usersWithData);
 }
 
 notifyAdminsOfCleanupExecution($usersWarned, $usersDeleted, $usersWithData);
@@ -111,5 +123,34 @@ function notifyAdminsOfCleanupExecution($usersWarned, $usersDeleted, $usersWithD
     $sEmail = get_notify_email_address_list(null, null); /* get list admins */
     if($sEmail)
         mail_appdb($sEmail, $sSubject, $sMsg);
+}
+
+/* email all admins that the appdb cleanup script is executing */
+/* so we admins have some visibility into the background cleanup */
+/* events of the appdb */
+function notifyAdminsOfProgress()
+{
+    $sSubject  = "Cleanup script in the middle\r\n";
+    $sMsg  = "Appdb cleanup cron script is in between processing warnings and processing deletions.\r\n";
+    if($sEmail)
+        mail_appdb("cmorgan@alum.wpi.edu", $sSubject, $sMsg);
+}
+
+
+/* email all admins that the appdb cleanup script is executing */
+/* so we admins have some visibility into the background cleanup */
+/* events of the appdb */
+function emailProgress($value, $processedNumber)
+{
+    $sSubject  = "Cleanup script is processing\r\n";
+    if($value == 0)
+        $sMsg = "warning processed: ".$processedNumber;
+    else if($value == 1)
+        $sMsg = "deleting processed: ".$processedNumber;
+    else if($value == 2)
+        $sMsg = "deleting with data: ".$processedNumber;
+
+    if($sEmail)
+        mail_appdb("cmorgan@alum.wpi.edu", $sSubject, $sMsg);
 }
 ?>
