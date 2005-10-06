@@ -47,7 +47,7 @@ $superMaintainer = strip_tags($_POST['superMaintainer']);
 
 /* if we have a versionId to check against see if */
 /* the user is already a maintainer */
-if(isset($_POST['versionId']) && $_SESSION['current']->isMaintainer($versionId))
+if(!$superMaintainer && $_SESSION['current']->isMaintainer($versionId))
 {
     echo "You are already a maintainer of this app!";
     exit;
