@@ -17,6 +17,6 @@ create table user_list (
 );
 
 insert into user_list values (NOW(), 0, password('testing'), 'Administrator',
-	'Admin@localhost', NOW(), 0);
+	'Admin@localhost', NOW(), NOW(), 'false' ,'' );
 update user_list set userid = 1000 where email = 'Admin@localhost';
 
