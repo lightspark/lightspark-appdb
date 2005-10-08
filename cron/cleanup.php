@@ -23,6 +23,7 @@ notifyAdminsOfCleanupStart();
 
 /* users inactive for 6 months that haven't been warned already */
 $hUsersToWarn = unwarnedAndInactiveSince(6);
+notifyAdminsOfProgress("Got through unwarnedAndInactiveSince");
 while($oRow = mysql_fetch_object($hUsersToWarn))
 {
     $usersWarned++;
@@ -38,6 +39,7 @@ notifyAdminsOfProgress();
 
 /* warned >= 1 month ago */
 $hUsersToDelete = warnedSince(1);
+notifyAdminsOfProgress("Got through warnedSince");
 while($oRow = mysql_fetch_object($hUsersToDelete))
 {
     $oUser = new User($oRow->userid);
@@ -70,7 +72,9 @@ notifyAdminsOfCleanupExecution($usersWarned, $usersDeleted, $usersWithData);
 function unwarnedAndInactiveSince($iMonths)
 {
     $sQuery = "SELECT userid FROM user_list WHERE DATE_SUB(CURDATE(),INTERVAL $iMonths MONTH) >= stamp AND inactivity_warned='false'";
+    notifyAdminsOfProgress("in unwarnedAndInactiveSince ".$sQuery);
     $hResult = query_appdb($sQuery);
+    notifyAdminsOfProgress("in unwarnedAndInactiveSince after $hResult");
     return $hResult;
 }
 
@@ -128,12 +132,13 @@ function notifyAdminsOfCleanupExecution($usersWarned, $usersDeleted, $usersWithD
 /* email all admins that the appdb cleanup script is executing */
 /* so we admins have some visibility into the background cleanup */
 /* events of the appdb */
-function notifyAdminsOfProgress()
+function notifyAdminsOfProgress($sMsg="")
 {
     $sSubject  = "Cleanup script in the middle\r\n";
-    $sMsg  = "Appdb cleanup cron script is in between processing warnings and processing deletions.\r\n";
+    $sMsg  .= "Appdb cleanup cron script is in between processing warnings and processing deletions.\r\n";
+    $sEmail = "cmorgan@alum.wpi.edu";
     if($sEmail)
-        mail_appdb("cmorgan@alum.wpi.edu", $sSubject, $sMsg);
+        mail_appdb($sEmail, $sSubject, $sMsg);
 }
 
 
@@ -150,7 +155,8 @@ function emailProgress($value, $processedNumber)
     else if($value == 2)
         $sMsg = "deleting with data: ".$processedNumber;
 
+    $sEmail = "cmorgan@alum.wpi.edu";
     if($sEmail)
-        mail_appdb("cmorgan@alum.wpi.edu", $sSubject, $sMsg);
+        mail_appdb($sEmail, $sSubject, $sMsg);
 }
 ?>
