@@ -24,45 +24,51 @@ notifyAdminsOfCleanupStart();
 /* users inactive for 6 months that haven't been warned already */
 $hUsersToWarn = unwarnedAndInactiveSince(6);
 notifyAdminsOfProgress("Got through unwarnedAndInactiveSince");
-while($oRow = mysql_fetch_object($hUsersToWarn))
+if($hUsersToWarn)
 {
-    $usersWarned++;
-    $oUser = new User($oRow->userid);
-    $oUser->warnForInactivity();
+    while($oRow = mysql_fetch_object($hUsersToWarn))
+    {
+        $usersWarned++;
+        $oUser = new User($oRow->userid);
+        $oUser->warnForInactivity();
 
-    /* every 25 users send a progress email */
-    if(($usersWarned % 25) == 0)
-        emailProgress(0, $usersWarned);
+        /* every 25 users send a progress email */
+        if(($usersWarned % 25) == 0)
+            emailProgress(0, $usersWarned);
+    }
 }
 
-notifyAdminsOfProgress();
+notifyAdminsOfProgress("in the middle between warning and deleting");
 
 /* warned >= 1 month ago */
 $hUsersToDelete = warnedSince(1);
 notifyAdminsOfProgress("Got through warnedSince");
-while($oRow = mysql_fetch_object($hUsersToDelete))
+if($hUsersToDelete)
 {
-    $oUser = new User($oRow->userid);
-    if(!$oUser->hasDataAssociated())
+    while($oRow = mysql_fetch_object($hUsersToDelete))
     {
-        $usersDeleted++;
-        deleteUser($oRow->userid);
-    } else
-    {
-        /* is the user a maintainer?  if so remove their maintainer privilages */
-        if($oUser->isMaintainer())
+        $oUser = new User($oRow->userid);
+        if(!$oUser->hasDataAssociated())
         {
-            $oUser->deleteMaintainer();
+            $usersDeleted++;
+            deleteUser($oRow->userid);
+        } else
+        {
+            /* is the user a maintainer?  if so remove their maintainer privilages */
+            if($oUser->isMaintainer())
+            {
+                $oUser->deleteMaintainer();
+            }
+
+            $usersWithData++;
         }
 
-        $usersWithData++;
+        /* every 25 users send a progress email */
+        if(($usersDeleted % 25) == 0)
+            emailProgress(1, $usersDeleted);
+        if(($usersWithData % 25) == 0)
+            emailProgress(2, $usersWithData);
     }
-
-    /* every 25 users send a progress email */
-    if(($usersDeleted % 25) == 0)
-        emailProgress(1, $usersDeleted);
-    if(($usersWithData % 25) == 0)
-        emailProgress(2, $usersWithData);
 }
 
 notifyAdminsOfCleanupExecution($usersWarned, $usersDeleted, $usersWithData);
