@@ -705,7 +705,7 @@ class User {
          /* we don't want to warn users that have data associated with them */
          if($this->hasDataAssociated())
          {
-             return;
+             return false;
          }
 
          if($this->isMaintainer())
@@ -726,6 +726,8 @@ class User {
          /* mark this user as being inactive and set the appropriate timestamp */
          $sQuery = "update user_list set inactivity_warned='true', inactivity_warn_stamp=NOW() where userid=".$this->iUserId;
          query_appdb($sQuery);
+
+         return true;
      }
 }
 
