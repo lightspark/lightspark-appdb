@@ -23,7 +23,6 @@ notifyAdminsOfCleanupStart();
 
 /* users inactive for 6 months that haven't been warned already */
 $hUsersToWarn = unwarnedAndInactiveSince(6);
-notifyAdminsOfProgress("Got through unwarnedAndInactiveSince");
 if($hUsersToWarn)
 {
     while($oRow = mysql_fetch_object($hUsersToWarn))
@@ -31,18 +30,11 @@ if($hUsersToWarn)
         $usersWarned++;
         $oUser = new User($oRow->userid);
         $oUser->warnForInactivity();
-
-        /* every 25 users send a progress email */
-        if(($usersWarned % 25) == 0)
-            emailProgress(0, $usersWarned);
     }
 }
 
-notifyAdminsOfProgress("in the middle between warning and deleting");
-
 /* warned >= 1 month ago */
 $hUsersToDelete = warnedSince(1);
-notifyAdminsOfProgress("Got through warnedSince");
 if($hUsersToDelete)
 {
     while($oRow = mysql_fetch_object($hUsersToDelete))
@@ -62,12 +54,6 @@ if($hUsersToDelete)
 
             $usersWithData++;
         }
-
-        /* every 25 users send a progress email */
-        if(($usersDeleted % 25) == 0)
-            emailProgress(1, $usersDeleted);
-        if(($usersWithData % 25) == 0)
-            emailProgress(2, $usersWithData);
     }
 }
 
@@ -78,10 +64,7 @@ notifyAdminsOfCleanupExecution($usersWarned, $usersDeleted, $usersWithData);
 function unwarnedAndInactiveSince($iMonths)
 {
     $sQuery = "SELECT userid FROM user_list WHERE DATE_SUB(CURDATE(),INTERVAL $iMonths MONTH) >= stamp AND inactivity_warned='false'";
-    notifyAdminsOfProgress("in unwarnedAndInactiveSince ".$sQuery);
     $hResult = query_appdb($sQuery);
-    notifyAdminsOfProgress("in unwarnedAndInactiveSince after $hResult");
-    notifyAdminsOfProgress("retrieved ".mysql_num_rows($hResult)." rows");
     return $hResult;
 }
 
@@ -135,35 +118,3 @@ function notifyAdminsOfCleanupExecution($usersWarned, $usersDeleted, $usersWithD
     if($sEmail)
         mail_appdb($sEmail, $sSubject, $sMsg);
 }
-
-/* email all admins that the appdb cleanup script is executing */
-/* so we admins have some visibility into the background cleanup */
-/* events of the appdb */
-function notifyAdminsOfProgress($sMsg="")
-{
-    $sSubject  = "Cleanup script progress\r\n";
-    $sMsg  .= "Appdb cleanup cron script is processing warnings and processing deletions.\r\n";
-    $sEmail = "cmorgan@alum.wpi.edu";
-    if($sEmail)
-        mail_appdb($sEmail, $sSubject, $sMsg);
-}
-
-
-/* email all admins that the appdb cleanup script is executing */
-/* so we admins have some visibility into the background cleanup */
-/* events of the appdb */
-function emailProgress($value, $processedNumber)
-{
-    $sSubject  = "Cleanup script is processing\r\n";
-    if($value == 0)
-        $sMsg = "warning processed: ".$processedNumber;
-    else if($value == 1)
-        $sMsg = "deleting processed: ".$processedNumber;
-    else if($value == 2)
-        $sMsg = "deleting with data: ".$processedNumber;
-
-    $sEmail = "cmorgan@alum.wpi.edu";
-    if($sEmail)
-        mail_appdb($sEmail, $sSubject, $sMsg);
-}
-?>
