@@ -703,7 +703,7 @@ class User {
      function warnForInactivity()
      {
          /* we don't want to warn users that have data associated with them */
-         if(hasDataAssociated())
+         if($this->hasDataAssociated())
          {
              return;
          }
