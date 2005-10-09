@@ -16,6 +16,7 @@ include(BASE."include/mail.php");
  */
 
 $usersWarned = 0;
+$usersUnwarnedWithData = 0; /* users we would normally warn but who have data */
 $usersDeleted = 0;
 $usersWithData = 0; /* users marked for deletion that have data */
 
@@ -27,9 +28,18 @@ if($hUsersToWarn)
 {
     while($oRow = mysql_fetch_object($hUsersToWarn))
     {
-        $usersWarned++;
         $oUser = new User($oRow->userid);
-        $oUser->warnForInactivity();
+
+        /* if we get back true the user was warned and flaged as being warned */
+        /* if we get back false we didn't warn the user and didn't flag the user as warned */
+        /*  because they have data associated with their account */
+        if($oUser->warnForInactivity())
+        {
+            $usersWarned++;
+        } else
+        {
+            $usersUnwarnedWithData++;
+        }
     }
 }
 
@@ -57,7 +67,7 @@ if($hUsersToDelete)
     }
 }
 
-notifyAdminsOfCleanupExecution($usersWarned, $usersDeleted, $usersWithData);
+notifyAdminsOfCleanupExecution($usersWarned, $usersUnwarnedWithData, $usersDeleted, $usersWithData);
 
 
 /* Users that are unwarned and inactive since $iMonths */
@@ -107,12 +117,13 @@ function notifyAdminsOfCleanupStart()
 /* email all admins that the appdb cleanup script is executing */
 /* so we admins have some visibility into the background cleanup */
 /* events of the appdb */
-function notifyAdminsOfCleanupExecution($usersWarned, $usersDeleted, $usersWithData)
+function notifyAdminsOfCleanupExecution($usersWarned, $usersUnwarnedWithData, $usersDeleted, $usersWithData)
 {
     $sSubject  = "Cleanup script summary\r\n";
     $sMsg  = "Appdb cleanup cron script executed.\r\n";
     $sMsg .= "Status:\r\n";
-    $sMsg .= "Users warned:".$usersWarned." Users deleted:".$usersDeleted."\r\n";
+    $sMsg .= "Users warned:".$usersWarned." users we would warn, but don't because they have data associated:".$usersUnwarnedWithData."\r\n";
+    $sMsg .= "Users deleted:".$usersDeleted."\r\n";
     $sMsg .= "Users pending deletion but have appdb data:".$usersWithData."\r\n";
     $sEmail = get_notify_email_address_list(null, null); /* get list admins */
     if($sEmail)
