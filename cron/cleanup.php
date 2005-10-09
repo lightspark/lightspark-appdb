@@ -75,6 +75,7 @@ function unwarnedAndInactiveSince($iMonths)
     notifyAdminsOfProgress("in unwarnedAndInactiveSince ".$sQuery);
     $hResult = query_appdb($sQuery);
     notifyAdminsOfProgress("in unwarnedAndInactiveSince after $hResult");
+    notifyAdminsOfProgress("retrieved ".mysql_num_rows($hResult)." rows");
     return $hResult;
 }
 
@@ -134,8 +135,8 @@ function notifyAdminsOfCleanupExecution($usersWarned, $usersDeleted, $usersWithD
 /* events of the appdb */
 function notifyAdminsOfProgress($sMsg="")
 {
-    $sSubject  = "Cleanup script in the middle\r\n";
-    $sMsg  .= "Appdb cleanup cron script is in between processing warnings and processing deletions.\r\n";
+    $sSubject  = "Cleanup script progress\r\n";
+    $sMsg  .= "Appdb cleanup cron script is processing warnings and processing deletions.\r\n";
     $sEmail = "cmorgan@alum.wpi.edu";
     if($sEmail)
         mail_appdb($sEmail, $sSubject, $sMsg);
