@@ -583,23 +583,23 @@ function display_versions($iAppId, $aVersionsIds)
 /* or false if processing changes for an application family */
 function process_app_version_changes($isVersion)
 {
+    /* load up the version or application depending on which values are set */
     if($isVersion)
-    {
         $oVersion = new Version($_REQUEST['versionId']);
+    else
         $oApp = new Application($_REQUEST['appId']);
-    }
 
     // commit changes of form to database
     if(($_REQUEST['submit'] == "Update Database") && $isVersion) /* is a version */
     {
-        $oVersion->update($_REQUEST['versionName'], $_REQUEST['description'], $_REQUEST['maintainer_release'], $_REQUEST['maintainer_rating']);
+        $oVersion->GetOutputEditorValues();
+        $oVersion->update();
     } else if(($_REQUEST['submit'] == "Update Database") && !$isVersion) /* is an application */
     {
-        $oApp = new Application($_REQUEST['appId']);
-        $oApp->update($_REQUEST['appName'], $_REQUEST['description'], $_REQUEST['keywords'], $_REQUEST['webPage'], $_REQUEST['vendorId'], $_REQUEST['catId']);
+        $oApp->GetOutputEditorValues();
+        $oApp->update();
     } else if($_REQUEST['submit'] == "Update URL")
     {
-
         $sWhatChanged = "";
         $bAppChanged = false;
 
@@ -810,6 +810,8 @@ function GetSimplifiedPath($relative)
 
 function HtmlAreaLoaderScript($aTextareas)
 {
+    static $outputIndex = 0;
+
     echo '
   <script type="text/javascript">';
     // You must set _editor_url to the URL (including trailing slash) where
@@ -831,22 +833,32 @@ function HtmlAreaLoaderScript($aTextareas)
   <script type="text/javascript" src="'.BASE.'xinha/htmlarea.js"></script>
 
   <script type="text/javascript">
-    xinha_editors = null;
-    xinha_init    = null;
-    xinha_config  = null;
-    xinha_plugins = null;
+    xinha_editors_'.$outputIndex.' = null;
+    xinha_init_'.$outputIndex.'    = null;';
 
+    /* only need to nll out the first set of config and plugins */
+    /* as we will reuse these for additional htmlareas */
+    if($outputIndex == 0)
+    {
+        echo '
+    xinha_config_'.$outputIndex.'  = null;
+    xinha_plugins_'.$outputIndex.' = null;';
+    }
+
+    echo '
     // This contains the names of textareas we will make into Xinha editors
-    xinha_init = xinha_init ? xinha_init : function()
+    xinha_init_'.$outputIndex.' = xinha_init_'.$outputIndex.' ? xinha_init_'.$outputIndex.' : function()
     {';
+
       /** STEP 1 ***************************************************************
        * First, what are the plugins you will be using in the editors on this
        * page.  List all the plugins you will need, even if not all the editors
        * will use all the plugins.
        ************************************************************************/
-
+    if($outputIndex == 0)
+    {
       echo '
-      xinha_plugins = xinha_plugins ? xinha_plugins :
+      xinha_plugins_'.$outputIndex.' = xinha_plugins_'.$outputIndex.' ? xinha_plugins_'.$outputIndex.' :
       [
        \'CharacterMap\',
        \'CharCounter\',
@@ -862,7 +874,13 @@ function HtmlAreaLoaderScript($aTextareas)
       ];
 
       // THIS BIT OF JAVASCRIPT LOADS THE PLUGINS, NO TOUCHING  :)
-      if(!HTMLArea.loadPlugins(xinha_plugins, xinha_init)) return;';
+      if(!HTMLArea.loadPlugins(xinha_plugins_'.$outputIndex.', xinha_init_'.$outputIndex.')) return;';
+    } else
+    {
+      echo '
+      // THIS BIT OF JAVASCRIPT LOADS THE PLUGINS, NO TOUCHING  :)
+      if(!HTMLArea.loadPlugins(xinha_plugins_0, xinha_init_'.$outputIndex.')) return;';   
+    }
 
       /** STEP 2 ***************************************************************
        * Now, what are the names of the textareas you will be turning into
@@ -872,7 +890,7 @@ function HtmlAreaLoaderScript($aTextareas)
       // NOTE: we generate the editor names here so we can easily have any number of htmlarea editors
       //  and can reuse all of this code
       echo '
-      xinha_editors = xinha_editors ? xinha_editors :
+      xinha_editors_'.$outputIndex.' = xinha_editors_'.$outputIndex.' ? xinha_editors_'.$outputIndex.' :
       [';
 
       $firstEntry = true;
@@ -903,12 +921,13 @@ function HtmlAreaLoaderScript($aTextareas)
        *   xinha_config.height = \'420px\';
        *
        *************************************************************************/
-
+      /* We only need the configuration output for the first htmlarea on a given page */
+      if($outputIndex == 0)
+      {
        echo '
+       xinha_config_'.$outputIndex.' = new HTMLArea.Config();
 
-       xinha_config = new HTMLArea.Config();
-
-       xinha_config.toolbar = [
+       xinha_config_'.$outputIndex.'.toolbar = [
         ["popupeditor"],
         ["separator","fontsize","bold","italic","underline","strikethrough"],
         ["separator","forecolor","hilitecolor","textindicator"],
@@ -920,9 +939,9 @@ function HtmlAreaLoaderScript($aTextareas)
         ["separator","killword","removeformat","toggleborders","lefttoright", "righttoleft","separator","htmlmode","about"]
         ];
     
-       xinha_config.pageStyle = "@import url('.BASE."application.css".');";
+       xinha_config_'.$outputIndex.'.pageStyle = "@import url('.BASE."application.css".');";
        ';
-
+      }
 
       /** STEP 4 ***************************************************************
        * We first create editors for the textareas.
@@ -942,7 +961,8 @@ function HtmlAreaLoaderScript($aTextareas)
        ************************************************************************/
 
        echo '
-       xinha_editors   = HTMLArea.makeEditors(xinha_editors, xinha_config, xinha_plugins);';
+       xinha_editors_'.$outputIndex.'   = HTMLArea.makeEditors(xinha_editors_'.$outputIndex.',
+          xinha_config_0, xinha_plugins_0);';
 
       /** STEP 5 ***************************************************************
        * If you want to change the configuration variables of any of the
@@ -960,12 +980,28 @@ function HtmlAreaLoaderScript($aTextareas)
        * Xinha editors.
        ************************************************************************/
        echo '
-      HTMLArea.startEditors(xinha_editors);
+      HTMLArea.startEditors(xinha_editors_'.$outputIndex.');
+    }';
+
+    if($outputIndex != 0)
+    {
+      echo '
+      var old_on_load = window.onload;
+      window.onload = function() {
+      if (typeof old_on_load == "function") old_on_load();
+        xinha_init_'.$outputIndex.'();
+      }';
+    } else
+    {
+        echo '
+    window.onload = xinha_init_'.$outputIndex.';';
     }
 
-    window.onload = xinha_init;
+    echo '    
     </SCRIPT>
       ';
+
+    $outputIndex++; /* increment the output index */
 }
 
 ?>

@@ -137,7 +137,7 @@ class Version {
     /**
      * Creates a new version.
      */
-    function create($sName=null, $sDescription=null, $sTestedRelease=null, $sTestedRating=null, $iAppId=null)
+    function create()
     {
         // Security, if we are not an administrator or an appmaintainer the version must be queued.
         if(!($_SESSION['current']->hasPriv("admin") || $_SESSION['current']->isSupermaintainer($iAppId)))
@@ -145,11 +145,11 @@ class Version {
         else
             $this->sQueued = 'false';
 
-        $aInsert = compile_insert_string(array( 'versionName'       => $sName,
-                                                'description'       => $sDescription,
-                                                'maintainer_release'=> $sTestedRelease,
-                                                'maintainer_rating' => $sTestedRating,
-                                                'appId'             => $iAppId,
+        $aInsert = compile_insert_string(array( 'versionName'       => $this->sName,
+                                                'description'       => $this->sDescription,
+                                                'maintainer_release'=> $this->sTestedRelease,
+                                                'maintainer_rating' => $this->sTestedRating,
+                                                'appId'             => $this->iAppId,
                                                 'submitterId'       => $_SESSION['current']->iUserId,
                                                 'queued'            => $this->sQueued ));
         $sFields = "({$aInsert['FIELDS']})";
@@ -163,7 +163,9 @@ class Version {
             return true;
         }
         else
+        {
             return false;
+        }
     }
 
 
@@ -172,71 +174,66 @@ class Version {
      * FIXME: Use compile_update_string instead of addslashes.
      * Returns true on success and false on failure.
      */
-    function update($sName=null, $sDescription=null, $sTestedRelease=null, $sTestedRating=null, $iAppId=null)
+    function update()
     {
         $sWhatChanged = "";
 
-        if ($sName && $sName!=$this->sName)
+        $oVersion = new Version($this->iVersionId);
+
+        if ($this->sName && ($this->sName!=$oVersion->sName))
         {
-            $sUpdate = compile_update_string(array('versionName'    => $sName));
+            $sUpdate = compile_update_string(array('versionName'    => $this->sName));
             if (!query_appdb("UPDATE appVersion SET ".$sUpdate." WHERE versionId = ".$this->iVersionId))
                 return false;
-            $sWhatChanged .= "Name was changed from:\n\t'".$this->sName."'\nto:\n\t'".$sName."'\n\n";
-            $this->sName = $sName;
+            $sWhatChanged .= "Name was changed from:\n\t'".$oVersion->sName."'\nto:\n\t'".$this->sName."'\n\n";
         }     
 
-        if ($sDescription && $sDescription!=$this->sDescription)
+        if ($this->sDescription && ($this->sDescription!=$oVersion->sDescription))
         {
-            $sUpdate = compile_update_string(array('description'    => $sDescription));
+            $sUpdate = compile_update_string(array('description'    => $this->sDescription));
             if (!query_appdb("UPDATE appVersion SET ".$sUpdate." WHERE versionId = ".$this->iVersionId))
                 return false;
 
-            if($this->sDescription != "")
-                $sWhatChanged .= "Description was changed from\n ".$this->sDescription."\n to \n".$sDescription.".\n\n";
+            if($oVersion->sDescription != "")
+                $sWhatChanged .= "Description was changed from\n ".$oVersion->sDescription."\n to \n".$this->sDescription.".\n\n";
             else
-                $sWhatChanged .= "Description was changed to \n".$sDescription.".\n\n";
-                
-            $this->sDescription = $sDescription;
+                $sWhatChanged .= "Description was changed to \n".$this->sDescription.".\n\n";
         }
 
-        if ($sTestedRelease && $sTestedRelease!=$this->sTestedRelease)
+        if ($this->sTestedRelease && ($this->sTestedRelease!=$oVersion->sTestedRelease))
         {
             $sUpdate = compile_update_string(array('maintainer_release'    => $sTestedRelease));
             if (!query_appdb("UPDATE appVersion SET ".$sUpdate." WHERE versionId = ".$this->iVersionId))
                 return false;
 
-            if($this->sTestedRelease != "")
-                $sWhatChanged .= "Last tested release was changed from ".$this->sTestedRelease." to ".$sTestedRelease.".\n\n";
+            if($oVersion->sTestedRelease != "")
+                $sWhatChanged .= "Last tested release was changed from ".$oVersion->sTestedRelease." to ".$this->sTestedRelease.".\n\n";
             else
-                $sWhatChanged .= "Last tested release was changed to ".$sTestedRelease.".\n\n";
-
-            $this->sTestedRelease = $sTestedRelease;
+                $sWhatChanged .= "Last tested release was changed to ".$this->sTestedRelease.".\n\n";
         }
 
-        if ($sTestedRating && $sTestedRating!=$this->sTestedRating)
+        if ($this->sTestedRating && ($this->sTestedRating!=$oVersion->sTestedRating))
         {
-            $sUpdate = compile_update_string(array('maintainer_rating'    => $sTestedRating));
-            if (!query_appdb("UPDATE appVersion SET maintainer_rating = '".$sTestedRating."' WHERE versionId = ".$this->iVersionId))
+            $sUpdate = compile_update_string(array('maintainer_rating'    => $this->sTestedRating));
+            if (!query_appdb("UPDATE appVersion SET ".$sUpdate."' WHERE versionId = ".$this->iVersionId))
                 return false;
 
             if($this->sTestedRating != "")
-                $sWhatChanged .= "Rating was changed from ".$this->sTestedRating." to ".$sTestedRating.".\n\n";
+                $sWhatChanged .= "Rating was changed from ".$oVersion->sTestedRating." to ".$this->sTestedRating.".\n\n";
             else
-                $sWhatChanged .= "Rating was changed to ".$sTestedRating.".\n\n";
-
-            $this->sTestedRating = $sTestedRating;
+                $sWhatChanged .= "Rating was changed to ".$this->sTestedRating.".\n\n";
         }
      
-        if ($iAppId && $iAppId!=$this->iAppId)
+        if ($this->iAppId && ($this->iAppId!=$oVersion->iAppId))
         {
-            $sUpdate = compile_update_string(array('appId'    => $iAppId));
+            $sUpdate = compile_update_string(array('appId'    => $this->iAppId));
             if (!query_appdb("UPDATE appVersion SET ".$sUpdate." WHERE versionId = ".$this->iVersionId))
                 return false;
-            $oAppBefore = new Application($this->iAppId);
-            $oAppAfter = new Application($iAppId);
+            $oAppBefore = new Application($oVersion->iAppId);
+            $oAppAfter = new Application($this->iAppId);
             $sWhatChanged .= "Version was moved from application ".$oAppBefore->sName." to application ".$oAppAfter->sName.".\n\n";
-            $this->iAppId = $iAppId;
         }
+
         if($sWhatChanged)
             $this->SendNotificationMail("edit",$sWhatChanged);
         return true;
@@ -489,5 +486,99 @@ class Version {
         if($sEmail)
             mail_appdb($sEmail, $sSubject ,$sMsg);
     } 
+
+    /* output html and the current versions information for editing */
+    /* if $editParentApplication is true that means we need to display fields */
+    /* to let the user change the parent application of this version */
+    /* otherwise, if $editParentAppliation is false, we leave them out */
+    function OutputEditor($editParentApplication)
+    {
+        HtmlAreaLoaderScript(array("version_editor"));
+        echo html_frame_start("Version Form", "90%", "", 0);
+        echo "<table width='100%' border=0 cellpadding=2 cellspacing=0>\n";
+
+        if($editParentApplication)
+        {
+            // app parent
+            $x = new TableVE("view");
+            echo '<tr valign=top><td class=color0><b>Application</b></td>', "\n";
+            echo '<td>',"\n";
+            $x->make_option_list("appId",$this->iAppId,"appFamily","appId","appName");
+            echo '</td></tr>',"\n";
+        }
+
+        // version name
+        echo '<tr valign=top><td class="color0"><b>Version name</b></td>',"\n";
+        echo '<td><input size="20" type="text" name="versionName" value="'.$this->sName.'"></td></tr>',"\n";
+
+        // version description
+        echo '<tr valign=top><td class=color0><b>Version description</b></td>',"\n";
+        echo '<td><p><textarea cols="80" rows="20" id="version_editor" name="versionDescription">',"\n";
+
+        /* if magic quotes are enabled we need to strip them before we output the 'versionDescription' */
+        /* again.  Otherwise we will stack up magic quotes each time the user resubmits after having */
+        /* an error */
+        if(get_magic_quotes_gpc())
+            echo stripslashes($this->sDescription).'</textarea></p></td></tr>',"\n";
+        else
+            echo $this->sDescription.'</textarea></p></td></tr>',"\n";
+
+        echo '</table>',"\n";
+
+        echo html_frame_end();
+    }
+
+    function CheckOutputEditorInput()
+    {
+        $errors = "";
+
+        if (empty($_REQUEST['versionName']))
+            $errors .= "<li>Please enter an application version.</li>\n";
+
+        if (empty($_REQUEST['versionDescription']))
+            $errors .= "<li>Please enter a version description.</li>\n";
+
+        return $errors;
+    }
+
+    /* retrieves values from $_REQUEST that were output by OutputEditor() */
+    function GetOutputEditorValues()
+    {
+        if(get_magic_quotes_gpc())
+        {
+            $this->sName = stripslashes($_REQUEST['versionName']);
+            $this->sDescription = stripslashes($_REQUEST['versionDescription']);
+        } else
+        {
+            $this->sName = $_REQUEST['versionName'];
+            $this->sDescription = $_REQUEST['versionDescription'];
+        }
+    }
+}
+
+function GetDefaultVersionDescription()
+{
+    return "<p>This is a template; enter version-specific description here</p>
+                            <p>
+                               <span class=\"title\">Wine compatibility</span><br />
+                               <span class=\"subtitle\">What works:</span><br />
+                               - settings<br />
+                               - help<br />
+                               <br /><span class=\"subtitle\">What doesn't work:</span><br />
+                               - erasing<br />
+                               <br /><span class=\"subtitle\">What was not tested:</span><br />
+                               - burning<br />
+                               </p>
+                               <p><span class=\"title\">Tested versions</span><br /><table class=\"historyTable\" width=\"90%\" border=\"1\">
+                            <thead class=\"historyHeader\"><tr>
+                            <td>App. version</td><td>Wine version</td><td>Installs?</td><td>Runs?</td><td>Rating</td>
+                            </tr></thead>
+                            <tbody><tr>
+                            <td class=\"gold\">3.23</td><td class=\"gold\">20050111</td><td class=\"gold\">yes</td><td class=\"gold\">yes</td><td class=\"gold\">Gold</td>
+                            </tr><tr>
+                            <td class=\"silver\">3.23</td><td class=\"silver\">20041201</td><td class=\"silver\">yes</td><td class=\"silver\">yes</td><td class=\"silver\">Silver</td>
+                            </tr><tr>
+                            <td class=\"bronze\">3.21</td><td class=\"bronze\">20040615</td><td class=\"bronze\">yes</td><td class=\"bronze\">yes</td><td class=\"bronze\">Bronze</td>
+                            </tr></tbody></table></p><p><br /></p>";
 }
 ?>

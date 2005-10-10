@@ -74,8 +74,6 @@ if ($_REQUEST['sub'])
 
         if (!$oApp) //app version
         { 
-            HtmlAreaLoaderScript(array("editor"));
-
             echo html_frame_start("Potential duplicate versions in the database","90%","",0);
             $oApp = new Application($oVersion->iAppId);
             display_versions($oApp->iAppId, $oApp->aVersionsIds);
@@ -89,35 +87,8 @@ if ($_REQUEST['sub'])
             echo "<p>Click delete to remove the selected item from the queue an email will automatically be sent to the\n";
             echo "submitter to let him know the item was deleted.</p>\n\n";        
             echo "</td></tr></table></div>\n\n";    
-
-            echo html_frame_start("Rejected Version Form",400,"",0);
-            echo "<table width='100%' border=0 cellpadding=2 cellspacing=0>\n";
-
-            //app parent
-            echo '<tr valign=top><td class=color0><b>Application</b></td><td>',"\n";
-            $x->make_option_list("appId",$oVersion->iAppId,"appFamily","appId","appName");
-            echo '</td></tr>',"\n";
-
-            //version
-            echo '<tr valign=top><td class="color0"><b>Version name</b></td>',"\n";
-            echo '<td><input type=text name="versionName" value="'.$oVersion->sName.'" size="20"></td></tr>',"\n";
-
-            echo '<tr valign=top><td class=color0><b>Description</b></td>',"\n";
-            echo '<td><p style="width:700px"><textarea  cols="80" rows="20" id="editor" name="versionDescription">'.stripslashes($oVersion->sDescription).'</textarea></p></td></tr>',"\n";
-        
-            echo '<tr valign=top><td class="color0"><b>email Text</b></td>',"\n";
-            echo '<td><textarea name="replyText" rows="10" cols="35"></textarea></td></tr>',"\n";
-        
-
-            echo '<tr valign=top><td class=color3 align=center colspan=2>' ,"\n";
-            echo '<input type="hidden" name="versionId" value="'.$oVersion->iVersionId.'" />';
-            echo '<input type="submit" value="Re-Submit Version Into Database " class="button">&nbsp',"\n";
-            echo '<input name="sub" type=submit value="Delete" class="button"></td></tr>',"\n";
-            echo '</table></form>',"\n";
         } else // application
         { 
-            HtmlAreaLoaderScript(array("editor"));
-
             echo html_frame_start("Potential duplicate applications in the database","90%","",0);
             perform_search_and_output_results($oApp->sName);
             echo html_frame_end("&nbsp;");
@@ -131,20 +102,6 @@ if ($_REQUEST['sub'])
             echo "submitter to let them know the item was deleted.</p>\n\n";        
             echo "</td></tr></table></div>\n\n";    
     
-            //view application details
-            echo html_frame_start("New Application Form",400,"",0);
-            echo "<table width='100%' border=0 cellpadding=2 cellspacing=0>\n";
-
-            //category
-            echo '<tr valign=top><td class="color0>"<b>Category</b></td><td>',"\n";
-            $x->make_option_list("catId",$oApp->iCatId,"appCategory","catId","catName");
-            echo '</td></tr>',"\n";
-                
-            //name
-            echo '<tr valign=top><td class="color0"><b>App Name</b></td>',"\n";
-            echo '<td><input type="text" name="appName" value="'.$oApp->sName.'" size=20></td></tr>',"\n";
-        
-            
             // vendor/alt vendor fields
             // if user selected a predefined vendorId:
             $iVendorId = $oApp->iVendorId;
@@ -153,7 +110,6 @@ if ($_REQUEST['sub'])
             // Use the first match if we found one and clear out the vendor field,
             // otherwise don't pick a vendor
             // N.B. The vendor string is the last word of the keywords field !
-
             if(!$iVendorId)
             {
                 $sVendor = get_vendor_from_keywords($oApp->sKeywords);
@@ -164,7 +120,6 @@ if ($_REQUEST['sub'])
                     $oRow = mysql_fetch_object($hResult);
                     $iVendorId = $oRow->vendorId;
                 }
-                
             }
             
             // try for a partial match
@@ -182,44 +137,39 @@ if ($_REQUEST['sub'])
             //vendor field
             if($iVendorId)
                 $sVendor = "";
-            echo '<tr valign=top><td class="color0"><b>App Vendor</b></td>',"\n";
-            echo '<td><input type=text name="sVendor" value="'.$sVendor.'" size="20"></td>',"\n";
-            echo '</tr>',"\n";
-            
-            echo '<tr valign=top><td class="color0">&nbsp;</td><td>',"\n";
-            $x->make_option_list("vendorId", $iVendorId ,"vendor","vendorId","vendorName");
-            echo '</td></tr>',"\n";
+        }
 
-            //url
-            echo '<tr valign=top><td class="color0"><b>App URL</b></td>',"\n";
-            echo '<td><input type=text name="webpage" value="'.$oApp->sWebpage.'" size="20"></td></tr>',"\n";
-      
-            // application desc
-            echo '<tr valign=top><td class=color0><b>Application Description</b></td>',"\n";
-            echo '<td><p style="width:700px"><textarea  cols="80" rows="20" id="editor" name="applicationDescription">'.stripslashes($oApp->sDescription).'</textarea></p></td></tr>',"\n";
+        if($oApp)
+        {
+            $oApp->OutputEditor($sVendor);
+            $oVersion->OutputEditor(false);
+        } else
+        {
+            $oVersion->OutputEditor(true);
+        }
 
-            // version name
-            echo '<tr valign=top><td class="color0"><b>Version name</b></td>',"\n";
-            echo '<td><input type=text name="versionName" value="'.$oVersion->sName.'" size="20"></td></tr>',"\n";
+        echo '<tr valign=top><td class="color0"><b>email Text</b></td>',"\n";
+        echo '<td><textarea name="replyText" style="width: 100%" rows="10" cols="35"></textarea></td></tr>',"\n";
 
-            // version description
-            echo '<tr valign=top><td class=color0><b>Version Description</b></td>',"\n";
-            echo '<td><p style="width:700px"><textarea  cols="80" rows="20" id="editor2" name="versionDescription">'.$oVersion->sDescription.'</textarea></p></td></tr>',"\n";
-        
-        
-            echo '<tr valign=top><td class="color0"><b>email Text</b></td>',"\n";
-            echo '<td><textarea name="replyText" rows=10 cols=35></textarea></td></tr>',"\n";
-
+        if($oApp) // application
+        {
             echo '<tr valign=top><td class=color3 align=center colspan=2>' ,"\n";
             echo '<input type="hidden" name="appId" value="'.$oApp->iAppId.'" />';
             echo '<input type=submit value=" Re-Submit App Into Database " class=button>&nbsp',"\n";
             echo '<input name="sub" type="submit" value="Delete" class="button" />',"\n";
             echo '</td></tr>',"\n";
             echo '</table></form>',"\n";
+        } else // version
+        {
+            echo '<tr valign=top><td class=color3 align=center colspan=2>' ,"\n";
+            echo '<input type="hidden" name="versionId" value="'.$oVersion->iVersionId.'" />';
+            echo '<input type="submit" value="Re-Submit Version Into Database " class="button">&nbsp',"\n";
+            echo '<input name="sub" type=submit value="Delete" class="button"></td></tr>',"\n";
+            echo '</table></form>',"\n";
         }
 
         echo html_frame_end("&nbsp;");
-        echo html_back_link(1,$_SERVER['PHP_SELF']);
+        echo html_back_link(1, $_SERVER['PHP_SELF']);
     }
     else  if ($_REQUEST['sub'] == 'ReQueue')
     {

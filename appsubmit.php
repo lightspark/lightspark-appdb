@@ -8,34 +8,6 @@ require(BASE."include/tableve.php");
 require(BASE."include/mail.php");
 require(BASE."include/application.php");
 
-    /*
-     * Templates
-     * FIXME: put templates in config file or somewhere else.
-     */
-    $sAppDescription = "<p>Enter a description of the application here</p>";
-    $sVersionDescription = "<p>This is a template; enter version-specific description here</p>
-                            <p>
-                               <span class=\"title\">Wine compatibility</span><br />
-                               <span class=\"subtitle\">What works:</span><br />
-                               - settings<br />
-                               - help<br />
-                               <br /><span class=\"subtitle\">What doesn't work:</span><br />
-                               - erasing<br />
-                               <br /><span class=\"subtitle\">What was not tested:</span><br />
-                               - burning<br />
-                               </p>
-                               <p><span class=\"title\">Tested versions</span><br /><table class=\"historyTable\" width=\"90%\" border=\"1\">
-                            <thead class=\"historyHeader\"><tr>
-                            <td>App. version</td><td>Wine version</td><td>Installs?</td><td>Runs?</td><td>Rating</td>
-                            </tr></thead>
-                            <tbody><tr>
-                            <td class=\"gold\">3.23</td><td class=\"gold\">20050111</td><td class=\"gold\">yes</td><td class=\"gold\">yes</td><td class=\"gold\">Gold</td>
-                            </tr><tr>
-                            <td class=\"silver\">3.23</td><td class=\"silver\">20041201</td><td class=\"silver\">yes</td><td class=\"silver\">yes</td><td class=\"silver\">Silver</td>
-                            </tr><tr>
-                            <td class=\"bronze\">3.21</td><td class=\"bronze\">20040615</td><td class=\"bronze\">yes</td><td class=\"bronze\">yes</td><td class=\"bronze\">Bronze</td>
-                            </tr></tbody></table></p><p><br /></p>";
-
 if(!$_SESSION['current']->isLoggedIn())
 {
     // you must be logged in to submit app
@@ -44,50 +16,43 @@ if(!$_SESSION['current']->isLoggedIn())
     exit;
 }
 
-// Check the input of a submitted form. And output with a list
-// of errors. (<ul></ul>)
-function checkInput($fields)
-{
-  $errors = "";
-
-  if (strlen($fields['appName']) > 200 )
-    $errors .= "<li>Your application name is too long.</li>\n";
-
-  if (empty($fields['appName']) && !$fields['appId'])
-    $errors .= "<li>Please enter an application name.</li>\n";
-
-  if (empty($fields['versionName']))
-    $errors .= "<li>Please enter an application version.</li>\n";
-
-  // No vendor entered, and nothing in the list is selected
-  if (empty($fields['vendorName']) && !$fields['vendorId'] && !$fields['appId'])
-    $errors .= "<li>Please enter a vendor.</li>\n";
-
-  if (empty($fields['appDescription']) && !$fields['appId'])
-    $errors .= "<li>Please enter a description of your application.</li>\n";
-
-  if (empty($errors))
-    return "";
-  else
-    return $errors;
-}
-
 /*
  * User submitted an application
  */
 if (isset($_REQUEST['appName']))
 {
-    // Check input and exit if we found errors
+    $errors = "";
 
-    $errors = checkInput($_REQUEST);
+    // Check input and exit if we found errors
+    $oApplication = new Application();
+    $errors .= $oApplication->CheckOutputEditorInput();
+
+    $oVersion = new Version();
+    $errors .= $oVersion->CheckOutputEditorInput();
+
     if(empty($errors))
     {
-        if($vendorName) $_REQUEST['vendorId']="";
+        if($_REQUEST['appVendorName'])
+        {
+             $_REQUEST['vendorId']="";
+             //FIXME: fix this when we fix vendor submission
+             if($_SESSION['current']->hasPriv("admin"))
+             {
+                $oVendor = new Vendor();
+                $oVendor->create($_REQUEST['appVendorName'],$_REQUEST['appWebpage']);
+             }
+        }
+        $oApplication->GetOutputEditorValues(); /* load the values from $_REQUEST */
 
-        $oApplication = new Application();
-        $oApplication->create($_REQUEST['appName'], $_REQUEST['appDescription'], $_REQUEST['keywords']." *** ".$_REQUEST['vendorName'], $_REQUEST['webpage'], $_REQUEST['vendorId'], $_REQUEST['catId']);
-        $oVersion = new Version();
-        $oVersion->create($_REQUEST['versionName'], $_REQUEST['versionDescription'], null, null, $oApplication->iAppId);
+        //FIXME: remove this when we fix vendor submission
+        $oApplication->sKeywords = $_REQUEST['appKeywords']." *** ".$_REQUEST['appVendorName'];
+        
+        $oApplication->create();
+
+        $oVersion->GetOutputEditorValues();
+        $oVersion->iAppId = $oApplication->iAppId; /* get the iAppId from the application that was just created */
+        $oVersion->create();
+
         redirect(apidb_fullurl("index.php"));
     }
 
@@ -99,12 +64,14 @@ if (isset($_REQUEST['appName']))
 elseif (isset($_REQUEST['versionName']) && is_numeric($_REQUEST['appId']))
 {
     // Check input and exit if we found errors
-    $errors = checkInput($_REQUEST);
+
+    $oVersion = new Version();
+    $errors = $oVersion->CheckOutputEditorInput();
+
     if(empty($errors))
     {
-
-        $oVersion = new Version();
-        $oVersion->create($_REQUEST['versionName'], $_REQUEST['versionDescription'], null, null, $_REQUEST['appId']);
+        $oVersion->GetOutputEditorValues();
+        $oVersion->create();
         redirect(apidb_fullurl("index.php"));
     }
 }
@@ -155,78 +122,31 @@ if (isset($_REQUEST['apptype']))
         echo '<p></p>',"\n";
     }
 
-    // new application and version
-    if ($_REQUEST['apptype'] == 1)
+    if($_REQUEST['apptype'] == 1 && (trim(strip_tags($_REQUEST['appDescription']))==""))
     {
-        HtmlAreaLoaderScript(array("editor", "editor2"));
-
-        echo html_frame_start("New Application Form",400,"",0);
-        echo "<table width='100%' border=0 cellpadding=2 cellspacing=0>\n";
-        echo '<tr valign=top><td class="color0"><b>Application name</b></td>',"\n";
-        echo '<td><input type="text" name="appName" value="'.$_REQUEST['appName'].'" size="20"></td></tr>',"\n";
-
-        // app Category
-        $w = new TableVE("view");
-        echo '<tr valign=top><td class="color0"><b>Category</b></td><td>',"\n";
-        $w->make_option_list("catId",$_REQUEST['catId'],"appCategory","catId","catName");
-        echo '</td></tr>',"\n";
-
-        echo '<tr valign=top><td class="color0"><b>Vendor</b></td>',"\n";
-        echo '<td><input type=text name="vendorName" value="'.$_REQUEST['vendorName'].'" size="20"></td></tr>',"\n";
-
-        // alt vendor
-        $x = new TableVE("view");
-        echo '<tr valign=top><td class="color0">&nbsp;</td><td>',"\n";
-        $x->make_option_list("vendorId",$_REQUEST['vendorId'],"vendor","vendorId","vendorName");
-        echo '</td></tr>',"\n";
-  
-        echo '<tr valign=top><td class="color0"><b>URL</b></td>',"\n";
-        echo '<td><input type=text name="webpage" value="'.$_REQUEST['webpage'].'" size=20></td></tr>',"\n";
-
-        echo '<tr valign=top><td class="color0"><b>Keywords</b></td>',"\n";
-        echo '<td><input size="80%" type="text" name="keywords" value="'.$_REQUEST['keywords'].'"></td></tr>',"\n";
-
-        echo '<tr valign=top><td class="color0"><b>Application Description</b></td>',"\n";
-        if(trim(strip_tags($_REQUEST['appDescription']))=="")
-        {
-            $_REQUEST['appDescription'] = $sAppDescription;
-        }   
-        echo '<td><p><textarea cols="80" rows="20" id="editor" name="appDescription">';
-        echo $_REQUEST['appDescription'].'</textarea></p></td></tr>',"\n";
-
-    }           
-    // new version
-    else
-    {
-        HtmlAreaLoaderScript(array("editor2"));
-
-        echo html_frame_start("New Version Form",400,"",0);
-
-        echo "<table width='100%' border=0 cellpadding=2 cellspacing=0>\n";
-
-        // app parent
-        $x = new TableVE("view");
-        echo '<tr valign=top><td class=color0><b>Application</b></td><td>',"\n";
-        $x->make_option_list("appId",$_REQUEST['appId'],"appFamily","appId","appName");
-        echo '</td></tr>',"\n";
+        $_REQUEST['appDescription'] = GetDefaultApplicationDescription();
     }
-    echo '<tr valign=top><td class="color0"><b>Version name</b></td>',"\n";
-    echo '<td><input type="text" name="versionName" value="'.$_REQUEST['versionName'].'" size="20"></td></tr>',"\n";
+
     if(trim(strip_tags($_REQUEST['versionDescription']))=="")
     {
-        $_REQUEST['versionDescription'] = $sVersionDescription;
-    }   
-    echo '<tr valign=top><td class=color0><b>Version description</b></td>',"\n";
-    echo '<td><p style="width:700px">',"\n";
-    echo '<textarea cols="80" rows="20" id="editor2" name="versionDescription">',"\n";
+        $_REQUEST['versionDescription'] = GetDefaultVersionDescription();
+    }
 
-    /* if magic quotes are enabled we need to strip them before we output the 'versionDescription' */
-    /* again.  Otherwise we will stack up magic quotes each time the user resubmits after having */
-    /* an error */
-    if(get_magic_quotes_gpc())
-        echo stripslashes($_REQUEST['versionDescription']).'</textarea></p></td></tr>',"\n";
-    else
-        echo $_REQUEST['versionDescription'].'</textarea></p></td></tr>',"\n";
+    $oApp = new Application();
+    $oApp->GetOutputEditorValues(); /* retrieve the values from the current $_REQUEST */
+    $oVersion = new Version();
+    $oVersion->GetOutputEditorValues(); /* retrieve the values from the current $_REQUEST */
+
+    /* output the appropriate editors depending on whether we are processing an */
+    /* application and a version or just a version */
+    if($_REQUEST['apptype'] == 1)
+    {
+        $oApp->OutputEditor($_REQUEST['appVendorName']);
+        $oVersion->OutputEditor(false);
+    } else
+    {
+        $oVersion->OutputEditor(true);
+    }
 
     echo '<input type="hidden" name="apptype" value="'.$_REQUEST['apptype'].'">',"\n";
 
@@ -243,7 +163,6 @@ if (isset($_REQUEST['apptype']))
         echo '<input type=submit value="Submit New Version" class="button"> </td></tr>',"\n";	  
     }
     echo '</table>',"\n";    
-    echo html_frame_end();
     echo "</form>";
 }
 apidb_footer();

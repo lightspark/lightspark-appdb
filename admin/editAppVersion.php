@@ -26,49 +26,23 @@ if(isset($_REQUEST['submit']))
 } else /* or display the webform for making changes */
 {
 
-    HtmlAreaLoaderScript(array("editor")); /* load the appropriate htmlarea controls */
-
     $oVersion = new Version($_REQUEST['versionId']);
+
+    /* if the sDescription is empty, put the default in */
+    if(trim(strip_tags($oVersion->sDescription))=="")
+        $oVersion->sDescription = GetDefaultVersionDescription();
 
     apidb_header("Edit Application Version");
 
     echo "<form method=post action='editAppVersion.php'>\n";
-    echo html_frame_start("Data for Application ID: ".$oVersion->iAppId." Version ID: ".$oVersion->iVersionId, "90%","",0);
-    echo html_table_begin("width='100%' border=0 align=left cellpadding=6 cellspacing=0 class='box-body'");
+
+    $oVersion->OutputEditor(false); /* false = not allowing the user to modify the parent application */
+
     echo '<input type="hidden" name="appId" value='.$oVersion->iAppId.' />';
     echo '<input type="hidden" name="versionId" value='.$oVersion->iVersionId.' />';
-    echo '<tr><td class=color1>Name</td><td class=color0>'.lookup_app_name($oVersion->iAppId).'</td></tr>',"\n";
-    echo '<tr><td class=color4>Version</td><td class=color0><input size=80% type="text" name="versionName" type="text" value="'.$oVersion->sName.'" /></td></tr>',"\n";
-    echo '<tr><td class="color4">Version specific description</td><td class="color0">', "\n";
-    // FIXME: put templates in config file or somewhere else.
-    if(trim(strip_tags($oVersion->sDescription))=="")
-    {
-        $oVersion->sDescription  = "<p>This is a template; enter version-specific description here</p>";
-        $oVersion->sDescription .= "<p>
-                               <span class=\"title\">Wine compatibility</span><br />
-                               <span class=\"subtitle\">What works:</span><br />
-                               - settings<br />
-                               - help<br />
-                               <br /><span class=\"subtitle\">What doesn't work:</span><br />
-                               - erasing<br />
-                               <br /><span class=\"subtitle\">What was not tested:</span><br />
-                               - burning<br />
-                               </p>";
-        $oVersion->sDescription .= "<p><span class=\"title\">Tested versions</span><br /><table class=\"historyTable\" width=\"90%\" border=\"1\">
-                            <thead class=\"historyHeader\"><tr>
-                            <td>App. version</td><td>Wine version</td><td>Installs?</td><td>Runs?</td><td>Rating</td>
-                            </tr></thead>
-                            <tbody><tr>
-                            <td class=\"gold\">3.23</td><td class=\"gold\">20050111</td><td class=\"gold\">yes</td><td class=\"gold\">yes</td><td class=\"gold\">Gold</td>
-                            </tr><tr>
-                            <td class=\"silver\">3.23</td><td class=\"silver\">20041201</td><td class=\"silver\">yes</td><td class=\"silver\">yes</td><td class=\"silver\">Silver</td>
-                            </tr><tr>
-                            <td class=\"bronze\">3.21</td><td class=\"bronze\">20040615</td><td class=\"bronze\">yes</td><td class=\"bronze\">yes</td><td class=\"bronze\">Bronze</td>
-                            </tr></tbody></table></p><p> <br /> </p>";
-    }
-    echo '<p style="width:700px">', "\n";
-    echo '<textarea cols="80" rows="30" id="editor" name="description">'.$oVersion->sDescription.'</textarea></td></tr>',"\n";
-    echo '</p>';
+
+    echo html_frame_start("Info", "90%", "", 0);
+    echo "<table border=0 cellpadding=2 cellspacing=0>\n";
     echo '<tr><td class="color4">Rating</td><td class="color0">',"\n";
     make_maintainer_rating_list("maintainer_rating", $oVersion->sTestedRating);
     echo '</td></tr>',"\n";

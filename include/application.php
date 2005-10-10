@@ -113,7 +113,7 @@ class Application {
     /**
      * Creates a new application.
      */
-    function create($sName=null, $sDescription=null, $sKeywords=null, $sWebpage=null, $iVendorId=null, $iCatId=null)
+    function create()
     {
         // Security, if we are not an administrator the application must be queued.
         if(!($_SESSION['current']->hasPriv("admin")))
@@ -121,12 +121,12 @@ class Application {
         else
             $this->sQueued = 'false';
 
-        $aInsert = compile_insert_string(array( 'appName'    => $sName,
-                                                'description'=> $sDescription,
-                                                'keywords'   => $sKeywords,
-                                                'webPage'    => $sWebpage,
-                                                'vendorId'   => $iVendorId,
-                                                'catId'      => $iCatId,
+        $aInsert = compile_insert_string(array( 'appName'    => $this->sName,
+                                                'description'=> $this->sDescription,
+                                                'keywords'   => $this->sKeywords,
+                                                'webPage'    => $this->sWebpage,
+                                                'vendorId'   => $this->iVendorId,
+                                                'catId'      => $this->iCatId,
                                                 'submitterId'=> $_SESSION['current']->iUserId,
                                                 'queued'     => $this->sQueued));
         $sFields = "({$aInsert['FIELDS']})";
@@ -148,66 +148,63 @@ class Application {
      * Update application.
      * Returns true on success and false on failure.
      */
-    function update($sName=null, $sDescription=null, $sKeywords=null, $sWebpage=null, $iVendorId=null, $iCatId=null)
+    function update()
     {
         $sWhatChanged = "";
 
-        if ($sName && $sName!=$this->sName)
+        /* create an instance of ourselves so we can see what has changed */
+        $oApp = new Application($this->iAppId);
+
+        if ($this->sName && ($this->sName!=$oApp->sName))
         {
-            $sUpdate = compile_update_string(array('appName'    => $sName));
+            $sUpdate = compile_update_string(array('appName'    => $this->sName));
             if (!query_appdb("UPDATE appFamily SET ".$sUpdate." WHERE appId = ".$this->iAppId))
                 return false;
-            $sWhatChanged .= "Name was changed from ".$this->sName." to ".$sName.".\n\n";
-            $this->sName = $sName;
+            $sWhatChanged .= "Name was changed from ".$oApp->sName." to ".$this->sName.".\n\n";
         }     
 
-        if ($sDescription && $sDescription!=$this->sDescription)
+        if ($this->sDescription && ($this->sDescription!=$oApp->sDescription))
         {
-            $sUpdate = compile_update_string(array('description'    => $sDescription));
+            $sUpdate = compile_update_string(array('description'    => $this->sDescription));
             if (!query_appdb("UPDATE appFamily SET ".$sUpdate." WHERE appId = ".$this->iAppId))
                 return false;
-            $sWhatChanged .= "Description was changed from\n ".$this->sDescription."\n to \n".$sDescription.".\n\n";
-            $this->sDescription = $sDescription;
+            $sWhatChanged .= "Description was changed from\n ".$oApp->sDescription."\n to \n".$this->sDescription.".\n\n";
         }
 
-        if ($sKeywords && $sKeywords!=$this->sKeywords)
+        if ($this->sKeywords && ($this->sKeywords!=$oApp->sKeywords))
         {
-            $sUpdate = compile_update_string(array('keywords'    => $sKeywords));
+            $sUpdate = compile_update_string(array('keywords'    => $this->sKeywords));
             if (!query_appdb("UPDATE appFamily SET ".$sUpdate." WHERE appId = ".$this->iAppId))
                 return false;
-            $sWhatChanged .= "Keywords were changed from\n ".$this->sKeywords."\n to \n".$sKeywords.".\n\n";
-            $this->sKeywords = $sKeywords;
+            $sWhatChanged .= "Keywords were changed from\n ".$oApp->sKeywords."\n to \n".$this->sKeywords.".\n\n";
         }
 
-        if ($sWebpage && $sWebpage!=$this->sWebpage)
+        if ($this->sWebpage && ($this->sWebpage!=$oApp->sWebpage))
         {
-            $sUpdate = compile_update_string(array('webPage'    => $sWebpage));
+            $sUpdate = compile_update_string(array('webPage'    => $this->sWebpage));
             if (!query_appdb("UPDATE appFamily SET ".$sUpdate." WHERE appId = ".$this->iAppId))
                 return false;
-            $sWhatChanged .= "Web page was changed from ".$this->sWebpage." to ".$sWebpage.".\n\n";
-            $this->sWebpage = $sWebpage;
+            $sWhatChanged .= "Web page was changed from ".$oApp->sWebpage." to ".$this->sWebpage.".\n\n";
         }
      
-        if ($iVendorId && $iVendorId!=$this->iVendorId)
+        if ($this->iVendorId && ($this->iVendorId!=$oApp->iVendorId))
         {
-            $sUpdate = compile_update_string(array('vendorId'    => $iVendorId));
+            $sUpdate = compile_update_string(array('vendorId'    => $this->iVendorId));
             if (!query_appdb("UPDATE appFamily SET ".$sUpdate." WHERE appId = ".$this->iAppId))
                 return false;
-            $oVendorBefore = new Vendor($this->iVendorId);
-            $oVendorAfter = new Vendor($iVendorId);
+            $oVendorBefore = new Vendor($oApp->iVendorId);
+            $oVendorAfter = new Vendor($this->iVendorId);
             $sWhatChanged .= "Vendor was changed from ".$oVendorBefore->sName." to ".$oVendorBefore->sName.".\n\n";
-            $this->iVendorId = $iVendorId;
         }
 
-        if ($iCatId && $iCatId!=$this->iCatId)
+        if ($this->iCatId && ($this->iCatId!=$oApp->iCatId))
         {
-            $sUpdate = compile_update_string(array('catId'    => $iCatId));
+            $sUpdate = compile_update_string(array('catId'    => $this->iCatId));
             if (!query_appdb("UPDATE appFamily SET ".$sUpdate." WHERE appId = ".$this->iAppId))
                 return false;
-            $oCatBefore = new Category($this->iCatId);
-            $oCatAfter = new Category($iCatId);
+            $oCatBefore = new Category($oApp->iCatId);
+            $oCatAfter = new Category($this->iCatId);
             $sWhatChanged .= "Vendor was changed from ".$oCatBefore->sName." to ".$oCatAfter->sName.".\n\n";
-            $this->iCatId = $iCatId;
         }
         if($sWhatChanged)
             $this->SendNotificationMail("edit",$sWhatChanged);
@@ -415,6 +412,98 @@ class Application {
         if($sEmail)
             mail_appdb($sEmail, $sSubject ,$sMsg);
     } 
+
+
+    /* output a html table and this applications values to the fields for editing */
+    function OutputEditor($sVendorName)
+    {
+        HtmlAreaLoaderScript(array("app_editor"));
+
+        echo html_frame_start("Application Form", "90%", "", 0);
+        echo "<table width='100%' border=0 cellpadding=2 cellspacing=0>\n";
+        echo '<tr valign=top><td class="color0"><b>Application name</b></td>',"\n";
+        echo '<td><input size="20" type="text" name="appName" value="'.$this->sName.'"></td></tr>',"\n";
+
+        // app Category
+        $w = new TableVE("view");
+        echo '<tr valign=top><td class="color0"><b>Category</b></td><td>',"\n";
+        $w->make_option_list("appCatId", $this->iCatId,"appCategory","catId","catName");
+        echo '</td></tr>',"\n";
+
+        // vendor name
+        echo '<tr valign=top><td class="color0"><b>Vendor</b></td>',"\n";
+        echo '<td><input size="20" type=text name="appVendorName" value="'.$sVendorName.'"></td></tr>',"\n";
+
+        // alt vendor
+        $x = new TableVE("view");
+        echo '<tr valign=top><td class="color0">&nbsp;</td><td>',"\n";
+        $x->make_option_list("appVendorId", $this->iVendorId,"vendor","vendorId","vendorName");
+        echo '</td></tr>',"\n";
+
+        // url
+        echo '<tr valign=top><td class="color0"><b>URL</b></td>',"\n";
+        echo '<td><input size="20" type=text name="appWebpage" value="'.$this->sWebpage.'"></td></tr>',"\n";
+
+        echo '<tr valign=top><td class="color0"><b>Keywords</b></td>',"\n";
+        echo '<td><input size="90%" type="text" name="appKeywords" value="'.$this->sKeywords.'"></td></tr>',"\n";
+
+        echo '<tr valign=top><td class="color0"><b>Application Description</b></td>',"\n";
+        echo '<td><p><textarea cols="80" rows="20" id="app_editor" name="appDescription">';
+
+        if(get_magic_quotes_gpc())
+            echo stripslashes($this->sDescription).'</textarea></p></td></tr>',"\n";
+        else
+            echo $this->sDescription.'</textarea></p></td></tr>',"\n";
+
+        echo "</table>\n";
+
+        echo html_frame_end();
+    }
+
+    function CheckOutputEditorInput()
+    {
+        $errors = "";
+
+        if (empty($_REQUEST['appCatId']) && !$_REQUEST['appId'])
+            $errors .= "<li>Please enter a category for your application.</li>\n";
+
+        if (strlen($_REQUEST['appName']) > 200 )
+            $errors .= "<li>Your application name is too long.</li>\n";
+
+        if (empty($_REQUEST['appName']) && !$_REQUEST['appId'])
+            $errors .= "<li>Please enter an application name.</li>\n";
+
+        // No vendor entered, and nothing in the list is selected
+        if (empty($_REQUEST['appVendorName']) && !$_REQUEST['appVendorId'] && !$_REQUEST['appId'])
+            $errors .= "<li>Please enter a vendor.</li>\n";
+
+        if (empty($_REQUEST['appDescription']) && !$_REQUEST['appId'])
+            $errors .= "<li>Please enter a description of your application.</li>\n";
+
+        return $errors;
+    }
+
+    /* retrieves values from $_REQUEST that were output by OutputEditor() */
+    function GetOutputEditorValues()
+    {
+        if(get_magic_quotes_gpc())
+        {
+            $this->sName = stripslashes($_REQUEST['appName']);
+            $this->sDescription = stripslashes($_REQUEST['appDescription']);
+            $this->iCatId = stripslashes($_REQUEST['appCatId']);
+            $this->iVendorId = stripslashes($_REQUEST['appVendorId']);
+            $this->sWebpage = stripslashes($_REQUEST['appWebpage']);
+            $this->sKeywords = stripslashes($_REQUEST['appKeywords']);
+        } else
+        {
+            $this->sName = $_REQUEST['appName'];
+            $this->sDescription = $_REQUEST['appDescription'];
+            $this->iCatId = $_REQUEST['appCatId'];
+            $this->iVendorId = $_REQUEST['appVendorId'];
+            $this->sWebpage = $_REQUEST['appWebpage'];
+            $this->sKeywords = $_REQUEST['appKeywords'];
+        }
+    }
 }
 
 
@@ -458,5 +547,10 @@ function trim_description($sDescription)
     $aDesc = explode("</p><p>",$aDesc[0],2);
     $aDesc = explode("</p><p /><p>",$aDesc[0],2);
     return trim(strip_tags($aDesc[0]));
+}
+
+function GetDefaultApplicationDescription()
+{
+    return "<p>Enter a description of the application here</p>";
 }
 ?>

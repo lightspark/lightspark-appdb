@@ -136,11 +136,9 @@ if ($_REQUEST['sub'])
 
         if (!$oApp) //app version
         { 
-            HtmlAreaLoaderScript(array("editor"));
-        
             echo html_frame_start("Potential duplicate versions in the database","90%","",0);
-            $oApp = new Application($oVersion->iAppId);
-            display_versions($oApp->iAppId, $oApp->aVersionsIds);
+            $oAppForVersion = new Application($oVersion->iAppId);
+            display_versions($oAppForVersion->iAppId, $oAppForVersion->aVersionsIds);
             echo html_frame_end("&nbsp;");
 
             //help
@@ -152,37 +150,9 @@ if ($_REQUEST['sub'])
             echo "<p>Click delete to remove the selected item from the queue an email will automatically be sent to the\n";
             echo "submitter to let him know the item was deleted.</p>\n\n";        
             echo "</td></tr></table></div>\n\n";    
-
-            echo html_frame_start("New Version Form",400,"",0);
-            echo "<table width='100%' border=0 cellpadding=2 cellspacing=0>\n";
-
-            //app parent
-            echo '<tr valign=top><td class=color0><b>Application</b></td><td>',"\n";
-            $x->make_option_list("appId",$oVersion->iAppId,"appFamily","appId","appName");
-            echo '</td></tr>',"\n";
-
-            //version
-            echo '<tr valign=top><td class="color0"><b>Version name</b></td>',"\n";
-            echo '<td><input type=text name="versionName" value="'.$oVersion->sName.'" size="20"></td></tr>',"\n";
-
-            echo '<tr valign=top><td class=color0><b>Description</b></td>',"\n";
-            echo '<td><p style="width:700px"><textarea  cols="80" rows="20" id="editor" name="versionDescription">'.stripslashes($oVersion->sDescription).'</textarea></p></td></tr>',"\n";
-        
-            echo '<tr valign=top><td class="color0"><b>email Text</b></td>',"\n";
-            echo '<td><textarea name="replyText" rows="10" cols="35"></textarea></td></tr>',"\n";
-        
-
-            echo '<tr valign=top><td class=color3 align=center colspan=2>' ,"\n";
-            echo '<input type="hidden" name="versionId" value="'.$oVersion->iVersionId.'" />';
-            echo '<input type="submit" value=" Submit Version Into Database " class="button">&nbsp',"\n";
-            echo '<input name="sub" type=submit value="Delete" class="button">',"\n";
-            echo '<input name="sub" type=submit value="Reject" class="button"></td></tr>',"\n";
-            echo '</table></form>',"\n";
         } else // application
         {
-            HtmlAreaLoaderScript(array("editor", "editor2"));
-
-            echo html_frame_start("Potential duplicate applications in the database","90%","",0);
+            echo html_frame_start("Potential duplicate applications in the database", "90%", "", 0);
             perform_search_and_output_results($oApp->sName);
             echo html_frame_end("&nbsp;");
 
@@ -206,19 +176,6 @@ if ($_REQUEST['sub'])
             echo "submitter to let them know the item was deleted.</p>\n\n";        
             echo "</td></tr></table></div>\n\n";    
     
-            //view application details
-            echo html_frame_start("New Application Form",400,"",0);
-            echo "<table width='100%' border=0 cellpadding=2 cellspacing=0>\n";
-
-            //category
-            echo '<tr valign=top><td class="color0>"<b>Category</b></td><td>',"\n";
-            $x->make_option_list("catId",$oApp->iCatId,"appCategory","catId","catName");
-            echo '</td></tr>',"\n";
-                
-            //name
-            echo '<tr valign=top><td class="color0"><b>App Name</b></td>',"\n";
-            echo '<td><input type="text" name="appName" value="'.$oApp->sName.'" size=20></td></tr>',"\n";
-         
             /*
              * vendor/alt vendor fields
              * if user selected a predefined vendorId:
@@ -260,44 +217,41 @@ if ($_REQUEST['sub'])
             //vendor field
             if($iVendorId)
                 $sVendor = "";
-            echo '<tr valign=top><td class="color0"><b>App Vendor</b></td>',"\n";
-            echo '<td><input type=text name="sVendor" value="'.$sVendor.'" size="20"></td>',"\n";
-            echo '</tr>',"\n";
-            
-            echo '<tr valign=top><td class="color0">&nbsp;</td><td>',"\n";
-            $x->make_option_list("vendorId", $iVendorId ,"vendor","vendorId","vendorName");
-            echo '</td></tr>',"\n";
-
-            //url
-            echo '<tr valign=top><td class="color0"><b>App URL</b></td>',"\n";
-            echo '<td><input type=text name="webpage" value="'.$oApp->sWebpage.'" size="20"></td></tr>',"\n";
-      
-            // application desc
-            echo '<tr valign=top><td class=color0><b>Application Description</b></td>',"\n";
-            echo '<td><p style="width:700px"><textarea  id="editor" cols="80" rows="20" name="applicationDescription">'.stripslashes($oApp->sDescription).'</textarea></p></td></tr>',"\n";
-
-            // version name
-            echo '<tr valign=top><td class="color0"><b>Version name</b></td>',"\n";
-            echo '<td><input type=text name="versionName" value="'.$oVersion->sName.'" size="20"></td></tr>',"\n";
-
-            // version description
-            echo '<tr valign=top><td class=color0><b>Version Description</b></td>',"\n";
-            echo '<td><p style="width:700px"><textarea  cols="80" rows="20" id="editor2" name="versionDescription">'.stripslashes($oVersion->sDescription).'</textarea></p></td></tr>',"\n";
-        
-        
-            echo '<tr valign=top><td class="color0"><b>email Text</b></td>',"\n";
-            echo '<td><textarea name="replyText" rows=10 cols=35></textarea></td></tr>',"\n";
-
-            echo '<tr valign=top><td class=color3 align=center colspan=2>' ,"\n";
-            echo '<input type="hidden" name="appId" value="'.$oApp->iAppId.'" />';
-            echo '<input type=submit value=" Submit App Into Database " class=button>&nbsp',"\n";
-            echo '<input name="sub" type="submit" value="Delete" class="button" />',"\n";
-            echo '<input name="sub" type="submit" value="Reject" class="button" />',"\n";
-            echo '</td></tr>',"\n";
-            echo '</table></form>',"\n";
         }
 
-        echo html_frame_end("&nbsp;");
+        /* output the appropriate editors depending on whether we are processing an application */
+        /* and a version or just a version */
+        if($oApp)
+        {
+            $oApp->OutputEditor($sVendor);
+            $oVersion->OutputEditor(false);
+        } else
+        {
+            $oVersion->OutputEditor(true);
+        }
+                                
+        echo html_frame_start("Reply text", "90%", "", 0);
+        echo "<table width='100%' border=0 cellpadding=2 cellspacing=0>\n";
+        echo '<tr valign=top><td class="color0"><b>email Text</b></td>',"\n";
+        echo '<td><textarea name="replyText" style="width: 100%" cols="80" rows="10"></textarea></td></tr>',"\n";
+
+        echo '<tr valign=top><td class=color3 align=center colspan=2>' ,"\n";
+        if ($oApp) //application
+        {
+            echo '<input type="hidden" name="appId" value="'.$oApp->iAppId.'" />';
+            echo '<input type=submit value=" Submit App Into Database " class=button>&nbsp',"\n";
+        } else // app version
+        {
+            echo '<input type="hidden" name="versionId" value="'.$oVersion->iVersionId.'" />';
+            echo '<input type="submit" value=" Submit Version Into Database " class="button">&nbsp',"\n";
+        }
+
+        echo '<input name="sub" type="submit" value="Delete" class="button" />',"\n";
+        echo '<input name="sub" type="submit" value="Reject" class="button" />',"\n";
+        echo '</td></tr>',"\n";
+        echo '</table>',"\n";
+        echo '</form>',"\n";
+        echo html_frame_end();
         echo html_back_link(1,'adminAppQueue.php');
     }
     else if ($_REQUEST['sub'] == 'add')
@@ -305,10 +259,10 @@ if ($_REQUEST['sub'])
         if (is_numeric($_REQUEST['appId']) && !is_numeric($_REQUEST['versionId'])) // application
         {
             // add new vendor
-            if($sVendor)
+            if($_REQUEST['appVendorName'])
             {
                 $oVendor = new Vendor();
-                $oVendor->create($sVendor);
+                $oVendor->create($_REQUEST['appVendorName'],$_REQUEST['appWebpage']);
             }
             
             $oApp = new Application($_REQUEST['appId']);
