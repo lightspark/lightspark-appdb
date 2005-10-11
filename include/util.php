@@ -986,9 +986,9 @@ function HtmlAreaLoaderScript($aTextareas)
     if($outputIndex != 0)
     {
       echo '
-      var old_on_load = window.onload;
+      var old_on_load_'.$outputIndex.' = window.onload;
       window.onload = function() {
-      if (typeof old_on_load == "function") old_on_load();
+      if (typeof old_on_load_'.$outputIndex.' == "function") old_on_load_'.$outputIndex.'();
         xinha_init_'.$outputIndex.'();
       }';
     } else
