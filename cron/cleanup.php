@@ -121,8 +121,10 @@ function notifyAdminsOfCleanupExecution($usersWarned, $usersUnwarnedWithData, $u
 {
     $sSubject  = "Cleanup script summary\r\n";
     $sMsg  = "Appdb cleanup cron script executed.\r\n";
-    $sMsg .= "Status:\r\n";
-    $sMsg .= "Users warned:".$usersWarned." users we would warn, but don't because they have data associated:".$usersUnwarnedWithData."\r\n";
+    $sMsg .= "Status\r\n";
+    $sMsg .= "--------------------------\r\n";
+    $sMsg .= "Users warned:".$usersWarned."\r\n";
+    $sMsg .= "Users we would warn, but don't because they have data associated:".$usersUnwarnedWithData."\r\n";
     $sMsg .= "Users deleted:".$usersDeleted."\r\n";
     $sMsg .= "Users pending deletion but have appdb data:".$usersWithData."\r\n";
     $sEmail = get_notify_email_address_list(null, null); /* get list admins */
