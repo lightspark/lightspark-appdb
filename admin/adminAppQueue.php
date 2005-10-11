@@ -266,12 +266,14 @@ if ($_REQUEST['sub'])
             }
             
             $oApp = new Application($_REQUEST['appId']);
-            $oApp->update($_REQUEST['appName'], $_REQUEST['applicationDescription'], $_REQUEST['keywords'], $_REQUEST['webpage'], $_REQUEST['vendorId'], $_REQUEST['catId']);
+            $oApp->GetOutputEditorValues();
+            $oApp->update();
             $oApp->unQueue();
         } else if(is_numeric($_REQUEST['versionId']) && is_numeric($_REQUEST['appId']))  // version
         {
             $oVersion = new Version($_REQUEST['versionId']);
-            $oVersion->update($_REQUEST['versionName'], $_REQUEST['versionDescription'],null,null,$_REQUEST['appId']);
+            $oVersion->GetOutputEditorValues();
+            $oVersion->update();
             $oVersion->unQueue();
         }
         
@@ -282,7 +284,8 @@ if ($_REQUEST['sub'])
         if(is_numeric($_REQUEST['appIdMergeTo']))
         {
             /* move this version submission under the existing app */
-            $oVersion->update(null, null, null, null, $_REQUEST['appIdMergeTo']);
+            $oVersion->iAppId = $_REQUEST['appIdMergeTo'];
+            $oVersion->update();
         
             /* delete the appId that is the duplicate */
             $oApp->delete();
