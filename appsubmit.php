@@ -142,11 +142,9 @@ if (isset($_REQUEST['apptype']))
     if($_REQUEST['apptype'] == 1)
     {
         $oApp->OutputEditor($_REQUEST['appVendorName']);
-        $oVersion->OutputEditor(false);
-    } else
-    {
-        $oVersion->OutputEditor(true);
     }
+
+    $oVersion->OutputEditor(false); /* don't let the user change the parent application */
 
     echo '<input type="hidden" name="apptype" value="'.$_REQUEST['apptype'].'">',"\n";
 
