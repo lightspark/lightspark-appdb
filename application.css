@@ -6,7 +6,7 @@
 
 .subtitle { text-decoration: underline; font-style: italic; }
 
-.code { font-family: fixed; font-size: 12px; }
+.code { font-family: monospace; font-size: 12px; }
 
 p {
       font-family: "bitstream vera sans", "verdana", "arial", "helvetica", sans-serif;

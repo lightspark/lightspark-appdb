@@ -23,7 +23,7 @@ A.hidden            { text-decoration: none; color: #000000; }
 OL,UL,P             { font-size: 12px; }
 TD,TR,TH            { font-size: 12px; }
 INPUT               { font-size: 12px; }
-PRE                 { font-family: Fixed; font-size: 12px; }
+PRE                 { font-family: monospace; font-size: 12px; }
 
 /* Hn Sizes */
 H1                  { font-size: 180%; }
