@@ -69,6 +69,11 @@ if($hUsersToDelete)
 
 notifyAdminsOfCleanupExecution($usersWarned, $usersUnwarnedWithData, $usersDeleted, $usersWithData);
 
+/* check to see if there are orphaned versions in the database */
+orphanVersionCheck();
+
+
+
 
 /* Users that are unwarned and inactive since $iMonths */
 function unwarnedAndInactiveSince($iMonths)
@@ -127,6 +132,32 @@ function notifyAdminsOfCleanupExecution($usersWarned, $usersUnwarnedWithData, $u
     $sMsg .= "Users we would warn, but don't because they have data associated:".$usersUnwarnedWithData."\r\n";
     $sMsg .= "Users deleted:".$usersDeleted."\r\n";
     $sMsg .= "Users pending deletion but have appdb data:".$usersWithData."\r\n";
+    $sEmail = get_notify_email_address_list(null, null); /* get list admins */
+    if($sEmail)
+        mail_appdb($sEmail, $sSubject, $sMsg);
+}
+
+/* check for and report orphaned versions in the database */
+/* we don't report anything if no orphans are found */
+function orphanVersionCheck()
+{
+    $sQuery = "select versionId, versionName from appVersion where appId = 0";
+    $hResult = query_appdb($sQuery);
+    $found_orphans = false;
+
+    $sMsg = "Found these orphaned versions in the database:\r\n";
+
+    /* don't report anything if no orphans are found */
+    if(mysql_num_rows($hResult) == 0)
+        return;
+
+    while($oRow = mysql_fetch_object($hResult))
+    {
+        $sMsg .= "versionId: ".$oRow->versionId." Name: ".$oRow->versionName."\r\n";
+    }
+
+    $sSubject = "Versions orphaned in the database\r\n";
+
     $sEmail = get_notify_email_address_list(null, null); /* get list admins */
     if($sEmail)
         mail_appdb($sEmail, $sSubject, $sMsg);
