@@ -124,11 +124,7 @@ function notifyAdminsOfCleanupStart()
 /* events of the appdb */
 function notifyAdminsOfCleanupExecution($usersWarned, $usersUnwarnedWithData, $usersDeleted, $usersWithData)
 {
-    /* retrieve the number of users that have been warned and are pending deletion */
-    $sQuery = "select count(*) as count from user_list where inactivity_warned = 'true'";
-    $hResult = query_appdb($sQuery);
-    $oRow = mysql_fetch_object($hResult);
-    $warnedUsers = $oRow->count;
+    $warnedUsers = get_inactive_users_pending_deletion();
 
     $sSubject  = "Cleanup script summary\r\n";
     $sMsg  = "Appdb cleanup cron script executed.\r\n";

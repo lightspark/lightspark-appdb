@@ -42,6 +42,12 @@ echo "    <td>Inactive users (not logged in since six months):</td>\n";
 echo "    <td>".(get_number_of_users()-get_active_users_within_days(183))."</td>\n";
 echo "</tr>\n\n";
 
+/* Display the users who were warned and pending deletion */
+echo "<tr class=color4>\n";
+echo "    <td>Inactive users pending deletion:</td>\n";
+echo "    <td>".get_inactive_users_pending_deletion()."</td>\n";
+echo "</tr>\n\n";
+
 /* Display the number of comments */
 echo "<tr class=color4>\n";
 echo "    <td>Comments:</td>\n";

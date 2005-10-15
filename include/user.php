@@ -883,6 +883,19 @@ function get_active_users_within_days($days)
 
 
 /**
+ * Get the count of users who have been warned for inactivity and are
+ * pending deletion after the X month grace period
+ */
+function get_inactive_users_pending_deletion()
+{
+    /* retrieve the number of users that have been warned and are pending deletion */
+    $sQuery = "select count(*) as count from user_list where inactivity_warned = 'true'";
+    $hResult = query_appdb($sQuery);
+    $oRow = mysql_fetch_object($hResult);
+    return $oRow->count;
+}
+
+/**
  * Check if a user exists.
  * returns the userid if the user exists
  */
