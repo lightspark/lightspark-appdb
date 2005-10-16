@@ -224,10 +224,10 @@ if ($_REQUEST['sub'])
         if($oApp)
         {
             $oApp->OutputEditor($sVendor);
-            $oVersion->OutputEditor(false);
+            $oVersion->OutputEditor(false, false);
         } else
         {
-            $oVersion->OutputEditor(true);
+            $oVersion->OutputEditor(false, false);
         }
                                 
         echo html_frame_start("Reply text", "90%", "", 0);
@@ -238,11 +238,11 @@ if ($_REQUEST['sub'])
         echo '<tr valign=top><td class=color3 align=center colspan=2>' ,"\n";
         if ($oApp) //application
         {
-            echo '<input type="hidden" name="appId" value="'.$oApp->iAppId.'" />';
+            echo '<input type="hidden" name="apptype" value="application" />';
             echo '<input type=submit value=" Submit App Into Database " class=button>&nbsp',"\n";
         } else // app version
         {
-            echo '<input type="hidden" name="versionId" value="'.$oVersion->iVersionId.'" />';
+            echo '<input type="hidden" name="apptype" value="version" />';
             echo '<input type="submit" value=" Submit Version Into Database " class="button">&nbsp',"\n";
         }
 
@@ -256,7 +256,7 @@ if ($_REQUEST['sub'])
     }
     else if ($_REQUEST['sub'] == 'add')
     {
-        if (is_numeric($_REQUEST['appId']) && !is_numeric($_REQUEST['versionId'])) // application
+        if (($_REQUEST['apptype'] == "application") && is_numeric($_REQUEST['appId'])) // application
         {
             // add new vendor
             if($_REQUEST['appVendorName'])
@@ -269,14 +269,14 @@ if ($_REQUEST['sub'])
             $oApp->GetOutputEditorValues();
             $oApp->update();
             $oApp->unQueue();
-        } else if(is_numeric($_REQUEST['versionId']) && is_numeric($_REQUEST['appId']))  // version
+        } else if(($_REQUEST['apptype'] == "version") && is_numeric($_REQUEST['versionId']))  // version
         {
             $oVersion = new Version($_REQUEST['versionId']);
             $oVersion->GetOutputEditorValues();
             $oVersion->update();
             $oVersion->unQueue();
         }
-        
+  
         redirect(apidb_fullurl("admin/adminAppQueue.php"));
     }
     else if ($_REQUEST['sub'] == 'duplicate')
@@ -296,7 +296,7 @@ if ($_REQUEST['sub'])
     }
     else if ($_REQUEST['sub'] == 'Delete')
     {
-        if (is_numeric($_REQUEST['appId']) && !is_numeric($_REQUEST['versionId'])) // application
+        if (($_REQUEST['apptype'] == "application") && is_numeric($_REQUEST['appId'])) // application
         {
             // get the queued versions that refers to the application entry we just removed
             // and delete them as we implicitly added a version entry when adding a new application
@@ -314,7 +314,7 @@ if ($_REQUEST['sub'])
             // delete the application entry
             $oApp = new Application($_REQUEST['appId']);
             $oApp->delete();
-        } else if(is_numeric($_REQUEST['versionId']))  // version
+        } else if(($_REQUEST['apptype'] == "version") && is_numeric($_REQUEST['versionId']))  // version
         {
             $oVersion = new Version($_REQUEST['versionId']);
             $oVersion->delete();
@@ -324,7 +324,7 @@ if ($_REQUEST['sub'])
     }
     else if ($_REQUEST['sub'] == 'Reject')
     {
-        if (is_numeric($_REQUEST['appId']) && !is_numeric($_REQUEST['versionId'])) // application
+        if (($_REQUEST['apptype'] == "application") && is_numeric($_REQUEST['appId'])) // application
         {
             // get the queued versions that refers to the application entry we just removed
             // and delete them as we implicitly added a version entry when adding a new application
@@ -342,7 +342,7 @@ if ($_REQUEST['sub'])
             // delete the application entry
             $oApp = new Application($_REQUEST['appId']);
             $oApp->reject();
-        } else if(is_numeric($_REQUEST['versionId']))  // version
+        } else if(($_REQUEST['apptype'] == "version") && is_numeric($_REQUEST['versionId']))  // version
         {
             $oVersion = new Version($_REQUEST['versionId']);
             $oVersion->reject();
@@ -474,7 +474,7 @@ else /* if ($_REQUEST['sub']) is not defined, display the main app queue page */
             echo "    <td>".$sVendor."</td>\n";
             echo "    <td>".$oApp->sName."</td>\n";
             echo "    <td>".$oVersion->sName."</td>\n";
-            echo "    <td align=\"center\">[<a href=\"adminAppQueue.php?sub=view&versionId=".$oVersion->iVersionId."\">process</a>]</td>\n";
+            echo "    <td align=\"center\">[<a href=".$_SERVER['PHP_SELF']."?sub=view&versionId=".$oVersion->iVersionId.">process</a>]</td>\n";
             echo "</tr>\n\n";
             $c++;
         }

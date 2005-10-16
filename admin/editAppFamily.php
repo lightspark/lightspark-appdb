@@ -46,8 +46,6 @@ else
 
     echo "<form method=\"post\" action=\"editAppFamily.php\">\n";
 
-    echo '<input type="hidden" name="appId" value="'.$oApp->iAppId.'">';
-
     $oApp->OutputEditor("");
 
     echo '<table border=0 cellpadding=6 cellspacing=0 width="100%">', "\n";

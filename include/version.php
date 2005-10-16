@@ -215,7 +215,7 @@ class Version {
         if ($this->sTestedRating && ($this->sTestedRating!=$oVersion->sTestedRating))
         {
             $sUpdate = compile_update_string(array('maintainer_rating'    => $this->sTestedRating));
-            if (!query_appdb("UPDATE appVersion SET ".$sUpdate."' WHERE versionId = ".$this->iVersionId))
+            if (!query_appdb("UPDATE appVersion SET ".$sUpdate." WHERE versionId = ".$this->iVersionId))
                 return false;
 
             if($this->sTestedRating != "")
@@ -491,11 +491,13 @@ class Version {
     /* if $editParentApplication is true that means we need to display fields */
     /* to let the user change the parent application of this version */
     /* otherwise, if $editParentAppliation is false, we leave them out */
-    function OutputEditor($editParentApplication)
+    function OutputEditor($editParentApplication, $editRatingAndRelease)
     {
         HtmlAreaLoaderScript(array("version_editor"));
         echo html_frame_start("Version Form", "90%", "", 0);
         echo "<table width='100%' border=0 cellpadding=2 cellspacing=0>\n";
+
+        echo '<input type="hidden" name="versionId" value='.$this->iVersionId.' />';
 
         if($editParentApplication)
         {
@@ -505,6 +507,9 @@ class Version {
             echo '<td>',"\n";
             $x->make_option_list("appId",$this->iAppId,"appFamily","appId","appName");
             echo '</td></tr>',"\n";
+        } else
+        {
+            echo '<input type="hidden" name="appId" value='.$this->iAppId.' />';
         }
 
         // version name
@@ -526,6 +531,24 @@ class Version {
         echo '</table>',"\n";
 
         echo html_frame_end();
+
+        if($editRatingAndRelease)
+        {
+            echo html_frame_start("Info", "90%", "", 0);
+            echo "<table border=0 cellpadding=2 cellspacing=0>\n";
+            echo '<tr><td class="color4">Rating</td><td class="color0">',"\n";
+            make_maintainer_rating_list("maintainer_rating", $this->sTestedRating);
+            echo '</td></tr>',"\n";
+            echo '<tr><td class=color1>Release</td><td class=color0>',"\n";
+            make_bugzilla_version_list("maintainer_release", $this->sTestedRelease);
+            echo '</td></tr>',"\n";
+            echo html_table_end();
+            echo html_frame_end();
+        } else
+        {
+            echo '<input type="hidden" name="maintainer_rating" value='.$this->sTestedRating.' />';
+            echo '<input type="hidden" name="maintainer_release" value='.$this->sTestedRelease.' />';
+        }
     }
 
     function CheckOutputEditorInput()
@@ -546,12 +569,22 @@ class Version {
     {
         if(get_magic_quotes_gpc())
         {
+            $this->iAppId = stripslashes($_REQUEST['appId']);
+            $this->iVersionId = stripslashes($_REQUEST['versionId']);
             $this->sName = stripslashes($_REQUEST['versionName']);
             $this->sDescription = stripslashes($_REQUEST['versionDescription']);
+
+            $this->sTestedRating = stripslashes($_REQUEST['maintainer_rating']);
+            $this->sTestedRelease = stripslashes($_REQUEST['maintainer_release']);
         } else
         {
+            $this->iAppId = $_REQUEST['appId'];
+            $this->iVersionId = $_REQUEST['versionId'];
             $this->sName = $_REQUEST['versionName'];
             $this->sDescription = $_REQUEST['versionDescription'];
+
+            $this->sTestedRating = $_REQUEST['maintainer_rating'];
+            $this->sTestedRelease = $_REQUEST['maintainer_release'];
         }
     }
 }

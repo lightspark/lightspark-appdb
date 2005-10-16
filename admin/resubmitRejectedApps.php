@@ -75,8 +75,8 @@ if ($_REQUEST['sub'])
         if (!$oApp) //app version
         { 
             echo html_frame_start("Potential duplicate versions in the database","90%","",0);
-            $oApp = new Application($oVersion->iAppId);
-            display_versions($oApp->iAppId, $oApp->aVersionsIds);
+            $oAppForVersion = new Application($oVersion->iAppId);
+            display_versions($oAppForVersion->iAppId, $oAppForVersion->aVersionsIds);
             echo html_frame_end("&nbsp;");
 
             //help
@@ -142,27 +142,26 @@ if ($_REQUEST['sub'])
         if($oApp)
         {
             $oApp->OutputEditor($sVendor);
-            $oVersion->OutputEditor(false);
+            $oVersion->OutputEditor(false, false);
         } else
         {
-            $oVersion->OutputEditor(true);
+            $oVersion->OutputEditor(false, false);
         }
 
-        echo '<tr valign=top><td class="color0"><b>email Text</b></td>',"\n";
-        echo '<td><textarea name="replyText" style="width: 100%" rows="10" cols="35"></textarea></td></tr>',"\n";
+        echo "<table width='100%' border=0 cellpadding=2 cellspacing=2>\n";
 
         if($oApp) // application
         {
+            echo '<input type="hidden" name="apptype" value="application" />';
             echo '<tr valign=top><td class=color3 align=center colspan=2>' ,"\n";
-            echo '<input type="hidden" name="appId" value="'.$oApp->iAppId.'" />';
             echo '<input type=submit value=" Re-Submit App Into Database " class=button>&nbsp',"\n";
             echo '<input name="sub" type="submit" value="Delete" class="button" />',"\n";
             echo '</td></tr>',"\n";
             echo '</table></form>',"\n";
         } else // version
         {
+            echo '<input type="hidden" name="apptype" value="version" />';
             echo '<tr valign=top><td class=color3 align=center colspan=2>' ,"\n";
-            echo '<input type="hidden" name="versionId" value="'.$oVersion->iVersionId.'" />';
             echo '<input type="submit" value="Re-Submit Version Into Database " class="button">&nbsp',"\n";
             echo '<input name="sub" type=submit value="Delete" class="button"></td></tr>',"\n";
             echo '</table></form>',"\n";
@@ -173,7 +172,7 @@ if ($_REQUEST['sub'])
     }
     else  if ($_REQUEST['sub'] == 'ReQueue')
     {
-        if (is_numeric($_REQUEST['appId']) && !is_numeric($_REQUEST['versionId'])) // application
+        if (($_REQUEST['apptype'] == "application") && is_numeric($_REQUEST['appId'])) // application
         {
             // get the queued versions that refers to the application entry we just removed
             // and delete them as we implicitly added a version entry when adding a new application
@@ -184,19 +183,21 @@ if ($_REQUEST['sub'])
                 while($oRow = mysql_fetch_object($hResult))
                 {
                     $oVersion = new Version($oRow->versionId);
-                    $oVersion->update($_REQUEST['versionName'], $_REQUEST['versionDescription'],null,null,$_REQUEST['appId']);
+                    $oVersion->GetOutputEditorValues();
+                    $oVersion->update();
                     $oVersion->ReQueue();
                 }
             }
 
-            // delete the application entry
             $oApp = new Application($_REQUEST['appId']);
-            $oApp->update($_REQUEST['appName'], $_REQUEST['applicationDescription'], $_REQUEST['keywords'], $_REQUEST['webpage'], $_REQUEST['vendorId'], $_REQUEST['catId']);
+            $oApp->GetOutputEditorValues();
+            $oApp->update();
             $oApp->ReQueue();
-        } else if(is_numeric($_REQUEST['versionId']))  // version
+        } else if(($_REQUEST['apptype'] == "version") && is_numeric($_REQUEST['versionId']))  // version
         {
             $oVersion = new Version($_REQUEST['versionId']);
-            $oVersion->update($_REQUEST['versionName'], $_REQUEST['versionDescription'],null,null,$_REQUEST['appId']);
+            $oVersion->GetOutputEditorValues();
+            $oVersion->update();
             $oVersion->ReQueue();
         }
         
@@ -204,7 +205,7 @@ if ($_REQUEST['sub'])
     }
     else  if ($_REQUEST['sub'] == 'Delete')
     {
-        if (is_numeric($_REQUEST['appId']) && !is_numeric($_REQUEST['versionId'])) // application
+        if (($_REQUEST['apptype'] == "application") && is_numeric($_REQUEST['appId'])) // application
         {
             // get the queued versions that refers to the application entry we just removed
             // and delete them as we implicitly added a version entry when adding a new application
@@ -222,7 +223,7 @@ if ($_REQUEST['sub'])
             // delete the application entry
             $oApp = new Application($_REQUEST['appId']);
             $oApp->delete();
-        } else if(is_numeric($_REQUEST['versionId']))  // version
+        } else if(($_REQUEST['apptype'] == "version") && is_numeric($_REQUEST['versionId']))  // version
         {
             $oVersion = new Version($_REQUEST['versionId']);
             $oVersion->delete();
@@ -363,5 +364,5 @@ else // if ($_REQUEST['sub']) is not defined, display the main app queue page
 
     }
 }
-apidb_footer();       
+apidb_footer();
 ?>

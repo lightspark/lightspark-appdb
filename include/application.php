@@ -419,6 +419,8 @@ class Application {
     {
         HtmlAreaLoaderScript(array("app_editor"));
 
+        echo '<input type="hidden" name="appId" value="'.$this->iAppId.'">';
+
         echo html_frame_start("Application Form", "90%", "", 0);
         echo "<table width='100%' border=0 cellpadding=2 cellspacing=0>\n";
         echo '<tr valign=top><td class="color0"><b>Application name</b></td>',"\n";
@@ -464,20 +466,20 @@ class Application {
     {
         $errors = "";
 
-        if (empty($_REQUEST['appCatId']) && !$_REQUEST['appId'])
+        if (empty($_REQUEST['appCatId']))
             $errors .= "<li>Please enter a category for your application.</li>\n";
 
         if (strlen($_REQUEST['appName']) > 200 )
             $errors .= "<li>Your application name is too long.</li>\n";
 
-        if (empty($_REQUEST['appName']) && !$_REQUEST['appId'])
+        if (empty($_REQUEST['appName']))
             $errors .= "<li>Please enter an application name.</li>\n";
 
         // No vendor entered, and nothing in the list is selected
-        if (empty($_REQUEST['appVendorName']) && !$_REQUEST['appVendorId'] && !$_REQUEST['appId'])
+        if (empty($_REQUEST['appVendorName']) && !$_REQUEST['appVendorId'])
             $errors .= "<li>Please enter a vendor.</li>\n";
 
-        if (empty($_REQUEST['appDescription']) && !$_REQUEST['appId'])
+        if (empty($_REQUEST['appDescription']))
             $errors .= "<li>Please enter a description of your application.</li>\n";
 
         return $errors;
@@ -488,6 +490,7 @@ class Application {
     {
         if(get_magic_quotes_gpc())
         {
+            $this->iAppId = stripslashes($_REQUEST['appId']);
             $this->sName = stripslashes($_REQUEST['appName']);
             $this->sDescription = stripslashes($_REQUEST['appDescription']);
             $this->iCatId = stripslashes($_REQUEST['appCatId']);
@@ -496,6 +499,7 @@ class Application {
             $this->sKeywords = stripslashes($_REQUEST['appKeywords']);
         } else
         {
+            $this->iAppId = $_REQUEST['appId'];
             $this->sName = $_REQUEST['appName'];
             $this->sDescription = $_REQUEST['appDescription'];
             $this->iCatId = $_REQUEST['appCatId'];

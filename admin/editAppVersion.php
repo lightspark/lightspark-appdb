@@ -36,25 +36,18 @@ if(isset($_REQUEST['submit']))
 
     echo "<form method=post action='editAppVersion.php'>\n";
 
-    $oVersion->OutputEditor(false); /* false = not allowing the user to modify the parent application */
-
-    echo '<input type="hidden" name="appId" value='.$oVersion->iAppId.' />';
-    echo '<input type="hidden" name="versionId" value='.$oVersion->iVersionId.' />';
-
-    echo html_frame_start("Info", "90%", "", 0);
-    echo "<table border=0 cellpadding=2 cellspacing=0>\n";
-    echo '<tr><td class="color4">Rating</td><td class="color0">',"\n";
-    make_maintainer_rating_list("maintainer_rating", $oVersion->sTestedRating);
-    echo '</td></tr>',"\n";
-    echo '<tr><td class=color1>Release</td><td class=color0>',"\n";
-    make_bugzilla_version_list("maintainer_release", $oVersion->sTestedRelease);
-    echo '</td></tr>',"\n";
-
-    echo '<tr><td colspan=2 align=center class=color3><input type="submit" name="submit" value="Update Database" /></td></tr>',"\n";
-
+    if($_SESSION['current']->hasPriv("admin"))
+        $oVersion->OutputEditor(true, true); /* false = not allowing the user to modify the parent application */
+    else
+        $oVersion->OutputEditor(false, true); /* false = not allowing the user to modify the parent application */
+        
+    echo '<table border=0 cellpadding=2 cellspacing=0 width="100%">',"\n";
+    echo '<tr><td colspan=2 align=center class=color2><input type="submit" name="submit" value="Update Database" /></td></tr>',"\n";
     echo html_table_end();
-    echo html_frame_end();
+
     echo "</form>";
+
+    echo "<br/><br/>\n";
 
     // url edit form
     echo '<form enctype="multipart/form-data" action="editAppVersion.php" method="post">',"\n";

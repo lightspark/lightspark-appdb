@@ -144,7 +144,8 @@ if (isset($_REQUEST['apptype']))
         $oApp->OutputEditor($_REQUEST['appVendorName']);
     }
 
-    $oVersion->OutputEditor(false); /* don't let the user change the parent application */
+    $oVersion->OutputEditor(false, false); /* don't let the user change the parent application,
+                                            don't display the rating and distribution dropdowns */
 
     echo '<input type="hidden" name="apptype" value="'.$_REQUEST['apptype'].'">',"\n";
 
