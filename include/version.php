@@ -202,7 +202,7 @@ class Version {
 
         if ($this->sTestedRelease && ($this->sTestedRelease!=$oVersion->sTestedRelease))
         {
-            $sUpdate = compile_update_string(array('maintainer_release'    => $sTestedRelease));
+            $sUpdate = compile_update_string(array('maintainer_release'    => $this->sTestedRelease));
             if (!query_appdb("UPDATE appVersion SET ".$sUpdate." WHERE versionId = ".$this->iVersionId))
                 return false;
 
