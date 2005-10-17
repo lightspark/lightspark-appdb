@@ -15,6 +15,7 @@ require(BASE."include/category.php");
 require(BASE."include/maintainer.php");
 require(BASE."include/mail.php");
 require(BASE."include/monitor.php");
+require_once(BASE."include/testResults.php");
 
 
 $oApp = new Application($_REQUEST['appId']);
@@ -503,8 +504,19 @@ else if($_REQUEST['versionId'])
     // description
     echo "<table width='100%' border=0><tr><td width='100%' valign=top> <b>Description</b><br />\n";
     echo $oVersion->sDescription;
-    echo "</td></tr>";
 
+    // Show testing data
+    $oTest = new TestData($_REQUEST['iTestingId']);
+    $iCurrentTest = $oTest->ShowTestResult($oTest->iTestingId,$oVersion->iVersionId);
+    if($iCurrentTest)
+        $oTest->ShowVersionsTestingTable($oVersion->iVersionId,$iCurrentTest,$_SERVER['PHP_SELF']."?versionId=".$oVersion->iVersionId."&iTestingId=");
+    echo '<form method=post name=message action=testResults.php?sub=view&iVersionId='.$oVersion->iVersionId.'>';
+    echo '<input type=submit value="Add Testing Data" class="button" />';
+    echo '</form>';
+    
+
+    echo "</td></tr>";
+    
     /* close the table */
     echo "</table>\n";
 
