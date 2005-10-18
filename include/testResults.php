@@ -379,7 +379,7 @@ class testData{
             echo '<a href="'.BASE.'distributionView.php?iDistributionId='.$oTest->iDistributionId.'">',"\n";
             echo $oDistribution->sName.'</a>',"\n";
             echo '    </td>',"\n";
-            echo '    <td>'.date("M d Y", mysqldatetime_to_unixtimestamp($oTest->sSubmitTime)).'</td>',"\n";
+            echo '    <td>'.date("M d Y", mysqltimestamp_to_unixtimestamp($oTest->sSubmitTime)).'</td>',"\n";
             echo '    <td>'.$oTest->sTestedRelease.'&nbsp</td>',"\n";
             echo '    <td>'.$oTest->sInstalls.'&nbsp</td>',"\n";
             echo '    <td>'.$oTest->sRuns.'&nbsp</td>',"\n";

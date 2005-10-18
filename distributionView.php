@@ -33,18 +33,20 @@ else
     echo $oDistribution->sName;
 
     if ($oDistribution->sUrl) 
+    {
         echo " (".$oDistribution->sUrl.")";
         echo "</a> <br />\n";
-
-    echo "<br />\n";
+    }
+    else 
+        echo "<br />\n";
 
     if($oDistribution->aTestingIds)
     {
-        echo "<br />Testing results for ".$oDistribution->sName."<br /><ol>\n";
-        echo '<p><span class="title">Testing Results</span><br />',"\n";
+        echo '<p><span class="title">Testing Results for '.$oDistribution->sName.'</span><br />',"\n";
         echo '<table width="100%" border="1">',"\n";
         echo '<thead class="historyHeader">',"\n";
         echo '<tr>',"\n";
+        echo '<td>Application Version</td>',"\n";
         echo '<td>Submitter</td>',"\n";
         echo '<td>Date Submitted</td>',"\n";
         echo '<td>Wine version</td>',"\n";
@@ -60,16 +62,18 @@ else
             $oSubmitter = new User($oTest->iSubmitterId);
             $bgcolor = $oTest->sTestedRating;
             echo '<tr class='.$bgcolor.'>',"\n";
-            echo '    <td>',"\n";
+            echo '<td><a href="'.BASE.'appview.php?versionId='.$oTest->iVersionId.'&iTestingId='.$oTest->iTestingId.'">',"\n";
+            echo $oApp->sName.' '.$oVersion->sName.'</a></td>',"\n";
+            echo '<td>',"\n";
             echo $oSubmitter->sEmail ? "<a href=\"mailto:".$oSubmitter->sEmail."\">":"";
             echo $oSubmitter->sRealname;
             echo $oSubmitter->sEmail ? "</a>":"";
-            echo '    </td>',"\n";
-            echo '    <td>'.date("M d Y", mysqldatetime_to_unixtimestamp($oTest->sSubmitTime)).'</td>',"\n";
-            echo '    <td>'.$oTest->sTestedRelease.'&nbsp</td>',"\n";
-            echo '    <td>'.$oTest->sInstalls.'&nbsp</td>',"\n";
-            echo '    <td>'.$oTest->sRuns.'&nbsp</td>',"\n";
-            echo '    <td>'.$oTest->sTestedRating.'&nbsp</td>',"\n";
+            echo '</td>',"\n";
+            echo '<td>'.date("M d Y", mysqltimestamp_to_unixtimestamp($oTest->sSubmitTime)).'</td>',"\n";
+            echo '<td>'.$oTest->sTestedRelease.'&nbsp</td>',"\n";
+            echo '<td>'.$oTest->sInstalls.'&nbsp</td>',"\n";
+            echo '<td>'.$oTest->sRuns.'&nbsp</td>',"\n";
+            echo '<td>'.$oTest->sTestedRating.'&nbsp</td>',"\n";
             echo '</tr>',"\n";
         }
         echo '</table>',"\n";
