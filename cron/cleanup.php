@@ -148,15 +148,17 @@ function orphanVersionCheck()
     $hResult = query_appdb($sQuery);
     $found_orphans = false;
 
-    $sMsg = "Found these orphaned versions in the database:\r\n";
+    $sMsg = "Found these orphaned versions in the database with\r\n";
+    $sMSg = "this sql command '".$sQuery."'\r\n";
 
     /* don't report anything if no orphans are found */
     if(mysql_num_rows($hResult) == 0)
         return;
 
+    $sMsg .= "versionId/name\r\n";
     while($oRow = mysql_fetch_object($hResult))
     {
-        $sMsg .= "versionId: ".$oRow->versionId." Name: ".$oRow->versionName."\r\n";
+        $sMsg .= $oRow->versionId."/".$oRow->versionName."\r\n";
     }
 
     $sSubject = "Versions orphaned in the database\r\n";
