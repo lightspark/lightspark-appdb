@@ -2,6 +2,7 @@
 /***********/
 /* SideBar */
 /***********/
+require_once(BASE."include/distributions.php");
   
 function global_sidebar_menu() {
   
@@ -17,6 +18,8 @@ function global_sidebar_menu() {
     $g->add("Submit Application", BASE."appsubmit.php?apptype=1");
     $g->add("Help &amp; Documentation", BASE."help/");
     $g->add("AppDB Stats", BASE."appdbStats.php");
+    $g->add("View Distributions (".getNumberOfDistributions().")", BASE."distributionView.php");
+
     $g->add("Email your suggestions for improving the AppDB", "mailto:appdb@winehq.org");
     $g->done();    
 

@@ -11,13 +11,70 @@ require(BASE."include/incl.php");
 require(BASE."include/distributions.php");
 require(BASE."include/testResults.php");
 
+if ($_REQUEST['sub'])
+{
+    if(!$_SESSION['current']->hasPriv("admin"))
+    {
+        errorpage("Insufficient privileges.");
+        exit;
+    }
+
+    if($_REQUEST['sub'] == 'delete')
+    {
+        $oDistribution = new distribution($_REQUEST['iDistributionId']);
+        $oDistribution->delete();
+        redirect($_SERVER['PHP_SELF']);
+    }
+} 
 $oDistribution = new distribution($_REQUEST['iDistributionId']);
 
 //exit with error if no vendor
 if(!$oDistribution->iDistributionId) 
 {
-    errorpage("No Distribution ID specified!");
-    exit;
+    apidb_header("View Distributions");
+
+    //get available Distributions
+    $sQuery = "SELECT distributionId FROM distributions ORDER BY name, distributionId;";
+    $hResult = query_appdb($sQuery);
+
+    // show Distribution list
+    echo html_frame_start("","90%","",0);
+    echo "<table width='100%' border=0 cellpadding=3 cellspacing=0>\n\n";
+
+    echo "<tr class=color4>\n";
+    echo "    <td>Distribution name</td>\n";
+    echo "    <td>Distribution url</td>\n";
+    echo "    <td align=\"right\">Linked Tests</td>\n";
+    if ($_SESSION['current']->hasPriv("admin"))
+        echo "    <td align=\"center\">Action</td>\n";
+    echo "</tr>\n\n";
+       
+    $c = 1;
+    while($ob = mysql_fetch_object($hResult))
+    {
+        if ($c % 2 == 1) { $bgcolor = 'color0'; } else { $bgcolor = 'color1'; }
+        $oDistribution = new distribution($ob->distributionId);
+        echo "<tr class=\"$bgcolor\">\n";
+        echo "    <td><a href=\"".BASE."distributionView.php?iDistributionId=".$oDistribution->iDistributionId."\">","\n";
+        echo $oDistribution->sName."</a></td>\n";
+        echo "    <td><a href=\"".$oDistribution->sUrl."\">".$oDistribution->sUrl."</a></td>\n";
+        echo "    <td align=\"right\">".sizeof($oDistribution->aTestingIds)."</td>\n";
+        if ($_SESSION['current']->hasPriv("admin"))
+        {
+            echo "    <td align=\"center\">";
+            echo "[<a href='".BASE."admin/editDistribution.php?iDistributionId=".$oDistribution->iDistributionId."'>edit</a>]";
+            if(!sizeof($oDistribution->aTestingIds))
+                echo " &nbsp; [<a href='".$_SERVER['PHP_SELF']."?sub=delete&iDistributionId=".$oDistribution->iDistributionId."'>delete</a>]";
+            echo "        </td>\n";
+        }
+        echo "</tr>\n";
+         $c++;
+    }
+    echo "</table>\n\n";
+    echo html_frame_end("&nbsp;");
+    if ($_SESSION['current']->hasPriv("admin"))
+        echo "[<a href='".BASE."admin/editDistribution.php'>Add New Distribution</a>]";
+    apidb_footer();
 } 
 else
 {
@@ -36,9 +93,10 @@ else
     {
         echo " (".$oDistribution->sUrl.")";
         echo "</a> <br />\n";
-    }
-    else 
+    } else 
+    {
         echo "<br />\n";
+    }
 
     if($oDistribution->aTestingIds)
     {

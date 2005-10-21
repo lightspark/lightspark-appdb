@@ -135,6 +135,8 @@ p.indent            { padding-left: 1em; padding-right: 1em;}
 /* App Support status */
 .gold               { background-color: #fff600; }
 .silver             { background-color: silver; }
+.bronze             { background-color: #fcba0a; }
+.Garbage            { background-color: #999966; }
 
 
 /*******************************************************************/

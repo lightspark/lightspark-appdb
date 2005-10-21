@@ -11,7 +11,6 @@ function global_admin_menu() {
     
     $g->add("Add Category", BASE."admin/addCategory.php");
     $g->add("Add Vendor", BASE."admin/addVendor.php");
-    $g->add("Add Distribution", BASE."admin/editDistribution.php");
     
     $g->addmisc("&nbsp;");
     $g->add("View App Queue (".$_SESSION['current']->getQueuedAppCount()."/".$_SESSION['current']->getQueuedVersionCount().")", BASE."admin/adminAppQueue.php");
@@ -21,7 +20,6 @@ function global_admin_menu() {
     $g->add("View Vendors (".getVendorCount().")", BASE."admin/adminVendors.php");
     $g->add("View Bug Links (".getNumberOfQueuedBugLinks()."/".getNumberOfBugLinks().")", BASE."admin/adminBugs.php");
     $g->add("View Test Results Queue (".getNumberOfQueuedTests().")", BASE."admin/adminTestResults.php");
-    $g->add("View Distributions (".getNumberOfDistributions().")", BASE."admin/adminDistributions.php");
 
     $g->addmisc("&nbsp;");
     $g->add("Users Management", BASE."admin/adminUsers.php");

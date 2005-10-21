@@ -5,7 +5,7 @@ require(BASE."include/distributions.php");
 
 if(!$_SESSION['current']->hasPriv("admin"))
 {
-    errorpage();
+    errorpage("Insufficient privileges.");
     exit;
 }
 
@@ -22,7 +22,7 @@ if($_REQUEST['Submit'])
        $oDistribution->create();
     } 
   
-    redirect(apidb_fullurl("admin/adminDistributions.php"));
+    redirect(apidb_fullurl("distributionView.php"));
     exit;
 }
 else
