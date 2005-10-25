@@ -7,69 +7,105 @@
  * application environment
  */ 
 include("path.php");
-require(BASE."include/incl.php");
-require(BASE."include/application.php");
+require_once(BASE."include/incl.php");
+require_once(BASE."include/application.php");
+require_once(BASE."include/vendor.php");
 
-$vendorId = $_REQUEST['vendorId'];
+$oVendor = new Vendor($_REQUEST['vendorId']);
 
-//exit with error if no vendor
-if(!$vendorId) {
-    errorpage("No vendor ID specified!");
-    exit;
-}
-
-//get vendor, die with error if no match
-$result = query_appdb("SELECT * FROM vendor WHERE vendorId = $vendorId");
-if(!$result || mysql_num_rows($result) != 1) {
-    errorpage("Invalid vendor ID!");
-    exit;
-}
-
-//show admin sidebar if user is admin
-if($_SESSION['current']->hasPriv("admin")) {
-    apidb_sidebar_add("admin_menu");
-}
-
-//get data
-$vendor = mysql_fetch_object($result);
-
-//display page
-apidb_header("View Vendor");
-echo html_frame_start("Vendor Information",500);
-
-echo "Vendor Name: $vendor->vendorName <br />\n";
-
-if ($vendor->vendorURL) {
-	echo "Vendor URL:  <a href='$vendor->vendorURL'>$vendor->vendorURL</a> <br />\n";
-}
-
-$result = query_appdb("SELECT * FROM appFamily WHERE vendorId = $vendorId ORDER BY appName");
-if($result)
+if ($_REQUEST['sub'])
 {
-    echo "<br />Applications by $vendor->vendorName<br /><ol>\n";
-    while($app = mysql_fetch_object($result))
-	{
-	    echo "<li> <a href='appview.php?appId=$app->appId'> $app->appName </a> </li>\n";
-	}
-    echo "</ol>\n";
-}
+    if(!$_SESSION['current']->hasPriv("admin"))
+    {
+        errorpage("Insufficient privileges.");
+        exit;
+    }
 
-echo html_frame_end();
-echo html_back_link(1);
-apidb_footer();
+    if($_REQUEST['sub'] == 'delete')
+    {
+        $oVendor->delete();
+        redirect($_SERVER['PHP_SELF']);
+   }
+
+} 
 
 
-
-// SUBS //
-
-//admin menu for sidebar
-function admin_menu()
+if($oVendor->iVendorId)
 {
-    global $vendorId;
+    //display page
+    apidb_header("View Vendor");
+    echo html_frame_start("Vendor Information",500);
 
-    $m = new htmlmenu("Admin");
-    $m->add("Edit this vendor", "admin/editVendor.php?vendorId=$vendorId");
-    $m->done();
+    echo 'Vendor Name: '.$oVendor->sName.'<br />',"\n";
+
+    if ($oVendor->sWebpage)
+        echo 'Vendor URL:  <a href="'.$oVendor->sWebpage.'">'.$oVendor->vendorURL.'</a> <br />',"\n";
+
+
+    if($oVendor->aApplicationsIds)
+    {
+        echo '<br />Applications by '.$oVendor->sName.'<br /><ol>',"\n";
+        foreach($oVendor->aApplicationsIds as $iAppId)
+        {
+            $oApp  = new application($iAppId);
+            echo '<li> <a href="appview.php?appId='.$oApp->iAppId.'">'.$oApp->sName.'</a> </li>',"\n";
+        }
+        echo '.</ol>',"\n";
+    }
+
+
+    echo html_frame_end();
+    echo html_back_link(1);
+    apidb_footer();
+
+}
+else
+{
+    apidb_header("View Vendors");
+
+    //get available vendors
+    $sQuery = "SELECT vendorId FROM vendor ORDER BY vendorName, vendorId;";
+    $hResult = query_appdb($sQuery);
+
+    // show vendorlist
+    echo "<table width='100%' border=0 cellpadding=3 cellspacing=0>\n\n";
+
+    echo '<tr class="color4">',"\n";
+    echo '<td>Vendor name</td>',"\n";
+    echo '<td>Vendor\'s Web Page</td>',"\n";
+    echo '<td align="right">linked Apps</td>',"\n";
+    if ($_SESSION['current']->hasPriv("admin"))
+    {
+        echo '<td align="center">Action</td>',"\n";
+    }
+    echo '</tr>',"\n";
+        
+    $c = 1;
+    while($ob = mysql_fetch_object($hResult))
+    {
+        if ($c % 2 == 1) { $bgcolor = 'color0'; } else { $bgcolor = 'color1'; }
+        $oVendor = new Vendor($ob->vendorId);
+        echo '<tr class="'.$bgcolor.'">',"\n";
+        echo '<td><a href="'.BASE.'vendorview.php?vendorId='.$oVendor->iVendorId.'">'.$oVendor->sName.'</a></td>',"\n";
+        echo '<td><a href="'.$oVendor->sWebpage.'">'.substr($oVendor->sWebpage,0,30).'</a></td>',"\n";
+        echo '<td align="right">'.sizeof($oVendor->aApplicationsIds).'</td>',"\n";
+        if ($_SESSION['current']->hasPriv("admin"))
+        {
+            echo '<td align="center">',"\n";
+            echo '[<a href="'.BASE.'admin/editVendor.php?iVendorId='.$oVendor->iVendorId.'">edit</a>]',"\n";
+            if(!sizeof($oVendor->aApplicationsIds)) 
+                echo '&nbsp[<a href="'.$_SERVER['PHP_SELF'].'?sub=delete&vendorId='.$oVendor->iVendorId.'">delete</a>]',"\n";
+            echo '</td>',"\n";
+        }
+        echo '</tr>',"\n";
+        $c++;
+    }
+
+    echo '<tr><td>',"\n";
+    echo html_back_link(1);
+    echo '</td></tr></table>',"\n";
+    apidb_footer();
+
 }
 
 ?>

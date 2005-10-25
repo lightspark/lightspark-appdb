@@ -1,44 +1,39 @@
 <?php
 include("path.php");
-require(BASE."include/incl.php");
-require(BASE."include/vendor.php");
+require_once(BASE."include/incl.php");
+require_once(BASE."include/vendor.php");
 
 if(!$_SESSION['current']->hasPriv("admin"))
 {
     errorpage();
     exit;
 }
-$oVendor = new Vendor($_REQUEST['vendorId']);
-if($_REQUEST['submit'])
+
+$oVendor = new Vendor($_REQUEST['iVendorId']);
+if($_REQUEST['Submit'])
 {
-    $oVendor->update($_REQUEST['name'],$_REQUEST['webpage']);
-    redirect(apidb_fullurl("admin/adminVendors.php"));
+    $oVendor->update($_REQUEST['sName'],$_REQUEST['sWebpage']);
+    redirect(apidb_fullurl("vendorview.php"));
 }
 else
 {
-    apidb_header("Edit Vendor");
-    echo "<form method=\"post\" action=\"addVendor.php\">
-          <input type=\"hidden\" name=\"vendorId\" value=\"".$oVendor->iVendorId."\" /> 
-          <table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"2\">
-            <tr>
-              <td width=\"15%\" class=\"box-label\"><b>Vendor name</b></td>
-              <td class=\"box-body\">
-                <input type=\"text\" size=\"50\" name=\"name\" value=\"".$oVendor->sName."\" /> 
-              </td>
-            </tr>
-            <tr>
-              <td width=\"15%\" class=\"box-label\"><b>Vendor URL</b></td>
-              <td class=\"box-body\">
-                <input type=\"text\" size=\"50\" name=\"webpage\" value=\"".$oVendor->sWebpage."\" /> 
-              </td>
-            </tr>
-            <tr>
-              <td colspan=\"2\" class=\"box-body\">
-                <input type=\"submit\" name=\"submit\" value=\"Submit\" />
-              </td>
-            </tr>
-          </table>
-          </form>";
+    if($oVendor->iVendorId)
+        apidb_header("Edit Vendor");
+    else
+        apidb_header("Add Vendor");
+
+    // Show the form
+    echo '<form name="qform" action="'.$_SERVER['PHP_SELF'].'" method="post" enctype="multipart/form-data">',"\n";
+
+    $oVendor->OutputEditor();
+
+    echo '<tr valign=top><td class=color3 align=center colspan=2>',"\n";
+    echo '<input name="Submit" type="submit" value="Submit" class="button" >&nbsp',"\n";
+    echo '</td></tr>',"\n";
+
+    echo "</form>";
+    echo html_frame_end("&nbsp;");
     apidb_footer();
+
 }
 ?>

@@ -10,7 +10,7 @@ function global_admin_menu() {
     $g = new htmlmenu("Global Admin");
     
     $g->add("Add Category", BASE."admin/addCategory.php");
-    $g->add("Add Vendor", BASE."admin/addVendor.php");
+    $g->add("Add Vendor", BASE."admin/editVendor.php");
     
     $g->addmisc("&nbsp;");
     $g->add("View App Queue (".$_SESSION['current']->getQueuedAppCount()."/".$_SESSION['current']->getQueuedVersionCount().")", BASE."admin/adminAppQueue.php");

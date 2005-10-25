@@ -115,5 +115,36 @@ class Vendor {
             addmsg("The vendor has been deleted.", "green");
         }
     }
+
+    function OutputEditor()
+    {
+        echo html_frame_start("Vendor Form", "90%", "", 0);
+        echo "<table width='100%' border=0 cellpadding=2 cellspacing=0>\n";
+
+        // Name
+        echo '<tr valign=top><td class="color1" width="20%"><b>Vendor Name</b></td>',"\n";
+        echo '<td class="color0"><input type=text name="sName" value="'.$this->sName.'" size="50"></td></tr>',"\n";
+        // Url
+        echo '<tr valign=top><td class="color1"><b>Vendor Url</b></td>',"\n";
+        echo '<td class="color0"><input type=text name="sWebpage" value="'.$this->sWebpage.'" size="50"></td></tr>',"\n";
+
+        echo  '<input type="hidden" name="iVendorId" value="'.$this->iVendorId.'">',"\n";
+
+        echo "</table>\n";
+        echo html_frame_end();
+    }
+
+}
+
+/* Get the total number of Vendors in the database */
+function getNumberOfVendors()
+{
+    $hResult = query_appdb("SELECT count(*) as num_vendors FROM vendor");
+    if($hResult)
+    {
+      $row = mysql_fetch_object($hResult);
+      return $row->num_vendors;
+    }
+    return 0;
 }
 ?>
