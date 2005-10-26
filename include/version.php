@@ -40,7 +40,7 @@ class Version {
             /*
              * We fetch the data related to this version.
              */
-            if(!$this->versionId)
+            if(!$this->iVersionId)
             {
                 $sQuery = "SELECT *
                            FROM appVersion
