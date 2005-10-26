@@ -322,8 +322,6 @@ class testData{
                                 WHERE testingId = '".$iCurrentTest."';");
         if(!$hResult || mysql_num_rows($hResult) == 0)
         {
-        echo '<p><b>over hers</b><br />',"\n";
-
             $hResult = query_appdb("SELECT * 
                                     FROM testResults
                                     WHERE versionId = '".$iVersionId."'
