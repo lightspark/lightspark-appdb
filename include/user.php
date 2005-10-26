@@ -779,7 +779,7 @@ class User {
       */
      function canCreateApplication()
      {
-         return isLoggedIn();
+         return $this->isLoggedIn();
      }
 
      /**
