@@ -132,6 +132,9 @@ class Category {
      */
     function delete($bSilent=false)
     {
+        if(!$_SESSION['current']->canDeleteCategory($this))
+            return false;
+
         if(sizeof($this->aApplicationsIds)>0)
         {
             addmsg("The category has not been deleted because there are still applications linked to it.", "red");
@@ -143,6 +146,8 @@ class Category {
             query_appdb($sQuery);
             addmsg("The category has been deleted.", "green");
         }
+
+        return true;
     }
 
 
@@ -232,8 +237,7 @@ function make_cat_path($path, $appId = '', $versionId = '')
             $oVersion = new Version($versionId);
             $str .= " &gt; ".html_ahref($oApp->sName,"appview.php?appId=$appId");
             $str .= " &gt; ".$oVersion->sName;
-        }
-        else
+        } else
         {
             $str .= " &gt; ".$oApp->sName;
         }

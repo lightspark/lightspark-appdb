@@ -33,62 +33,38 @@ class Application {
         // we are working on an existing application
         if(is_numeric($iAppId))
         {
-            /*
-             * We fetch application data and versionsIds. 
-             */
-            $sQuery = "SELECT appFamily.*, appVersion.versionId AS versionId
-                       FROM appFamily, appVersion 
-                       WHERE appFamily.appId = appVersion.appId 
-                       AND appVersion.queued='false'
-                       AND appFamily.appId = ".$iAppId." ORDER BY versionName";
+            /* fetch this applications information */
+            $sQuery = "SELECT *
+                       FROM appFamily 
+                       WHERE appId = ".$iAppId;
             if($hResult = query_appdb($sQuery))
             {
-                $this->aVersionsIds = array();
+                $oRow = mysql_fetch_object($hResult);
+                $this->iAppId = $iAppId;
+                $this->iVendorId = $oRow->vendorId;
+                $this->iCatId = $oRow->catId;
+                $this->iSubmitterId = $oRow->submitterId;
+                $this->sSubmitTime = $oRow->submitTime;
+                $this->sDate = $oRow->submitTime;
+                $this->sName = $oRow->appName;
+                $this->sKeywords = $oRow->keywords;
+                $this->sDescription = $oRow->description;
+                $this->sWebpage = $oRow->webPage;
+                $this->sQueued = $oRow->queued;
+            }
+
+            /* fetch versions of this application, if there are any */
+            $this->aVersionsIds = array();
+            $sQuery = "SELECT versionId FROM appVersion WHERE
+                       appId =".$this->iAppId;
+            if($hResult = query_appdb($sQuery))
+            {
                 while($oRow = mysql_fetch_object($hResult))
                 {
-                    if(!$this->iAppId)
-                    {
-                        $this->iAppId = $iAppId;
-                        $this->iVendorId = $oRow->vendorId;
-                        $this->iCatId = $oRow->catId;
-                        $this->iSubmitterId = $oRow->submitterId;
-                        $this->sSubmitTime = $oRow->submitTime;
-                        $this->sDate = $oRow->submitTime;
-                        $this->sName = $oRow->appName;
-                        $this->sKeywords = $oRow->keywords;
-                        $this->sDescription = $oRow->description;
-                        $this->sWebpage = $oRow->webPage;
-                        $this->sQueued = $oRow->queued;
-                    }
                     $this->aVersionsIds[] = $oRow->versionId;
                 }
             }
 
-            /*
-             * Then we fetch the data related to this application if the first query didn't return anything.
-             * This can happen if an application has no version linked to it.
-             */
-            if(!$this->appId)
-            {
-                $sQuery = "SELECT *
-                           FROM appFamily 
-                           WHERE appId = ".$iAppId;
-                if($hResult = query_appdb($sQuery))
-                {
-                    $oRow = mysql_fetch_object($hResult);
-                    $this->iAppId = $iAppId;
-                    $this->iVendorId = $oRow->vendorId;
-                    $this->iCatId = $oRow->catId;
-                    $this->iSubmitterId = $oRow->submitterId;
-                    $this->sSubmitTime = $oRow->submitTime;
-                    $this->sDate = $oRow->submitTime;
-                    $this->sName = $oRow->appName;
-                    $this->sKeywords = $oRow->keywords;
-                    $this->sDescription = $oRow->description;
-                    $this->sWebpage = $oRow->webPage;
-                    $this->sQueued = $oRow->queued;
-                }
-            }
 
             /*
              * We fetch urlsIds. 
@@ -115,8 +91,10 @@ class Application {
      */
     function create()
     {
-        // Security, if we are not an administrator the application must be queued.
-        if(!($_SESSION['current']->hasPriv("admin")))
+        if(!$_SESSION['current']->canCreateApplication())
+            return;
+
+        if($_SESSION['current']->appCreatedMustBeQueued())
             $this->sQueued = 'true';
         else
             $this->sQueued = 'false';
@@ -138,9 +116,10 @@ class Application {
             $this->application($this->iAppId);
             $this->SendNotificationMail();  // Only administrators will be mailed as no supermaintainers exist for this app.
             return true;
-        }
-        else
+        } else
+        {
             return false;
+        }
     }
 
 
@@ -151,6 +130,10 @@ class Application {
     function update()
     {
         $sWhatChanged = "";
+
+        /* if the user doesn't have permission to modify this application, don't let them */
+        if(!$_SESSION['current']->canModifyApplication($this))
+            return;
 
         /* create an instance of ourselves so we can see what has changed */
         $oApp = new Application($this->iAppId);
@@ -211,16 +194,16 @@ class Application {
         return true;
     }
 
-
     /**    
      * Deletes the application from the database. 
      * and request the deletion of linked elements.
      */
     function delete($bSilent=false)
     {
-        /* don't let non-admins delete applications */
-        if(!($_SESSION['current']->hasPriv("admin")))
-            return;
+        /* make sure the current user has the appropriate permission to delete
+           this application */
+        if(!$_SESSION['current']->canDeleteApplication($this))
+            return false;
 
         foreach($this->aVersionsIds as $iVersionId)
         {
@@ -250,6 +233,8 @@ class Application {
 
         if(!$bSilent)
             $this->SendNotificationMail("delete");
+
+        return true;
     }
 
 
@@ -258,6 +243,9 @@ class Application {
      */
     function unQueue()
     {
+        if(!$_SESSION['current']->canUnQueueApplication())
+            return;
+
         // If we are not in the queue, we can't move the application out of the queue.
         if(!$this->sQueued == 'true')
             return false;
@@ -278,6 +266,9 @@ class Application {
 
     function Reject()
     {
+        if(!$_SESSION['current']->canRejectApplication($this))
+            return;
+
         // If we are not in the queue, we can't move the application out of the queue.
         if(!$this->sQueued == 'true')
             return false;
@@ -296,6 +287,9 @@ class Application {
     }
     function ReQueue()
     {
+        if(!$_SESSION->canRequeueApplication())
+            return false;
+
         // If we are not in the rejected, we can't move the application into the queue.
         if(!$this->sQueued == 'rejected')
             return false;

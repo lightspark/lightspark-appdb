@@ -139,8 +139,10 @@ class Version {
      */
     function create()
     {
-        // Security, if we are not an administrator or an appmaintainer the version must be queued.
-        if(!($_SESSION['current']->hasPriv("admin") || $_SESSION['current']->isSupermaintainer($iAppId)))
+        if(!$_SESSION['current']->canCreateVersion())
+            return;
+
+        if($_SESSION['current']->versionCreatedMustBeQueued($this))
             $this->sQueued = 'true';
         else
             $this->sQueued = 'false';
@@ -177,6 +179,9 @@ class Version {
     function update()
     {
         $sWhatChanged = "";
+
+        if(!$_SESSION['current']->hasAppVersionModifyPermission($this))
+            return;
 
         $oVersion = new Version($this->iVersionId);
 
@@ -247,12 +252,8 @@ class Version {
     function delete($bSilent=false)
     {
         /* is the current user allowed to delete this version? */
-        if(!$_SESSION['current']->hasPriv("admin") && 
-           !$_SESSION['current']->hasAppVersionModifyPermission($this->iVersionId) &&
-           !(($_SESSION['current']->iUserId == $this->iSubmitterId) && ($this->sQueued == 'rejected')))
-        {
-            return;
-        }
+        if(!$_SESSION['current']->canDeleteVersion($this))
+            return false;
 
         /* remove all of the items this version contains */
         foreach($this->aNotesIds as $iNoteId)
@@ -275,7 +276,7 @@ class Version {
             $oUrl = new Url($iUrlId);
             $oUrl->delete($bSilent);
         }
-        foreach($this->$aBuglinkIds as $iBug_id)
+        foreach($this->aBuglinkIds as $iBug_id)
         {
             $oBug = new bug($iBug_id);
             $oBug->delete($bSilent);
@@ -301,6 +302,8 @@ class Version {
             $this->SendNotificationMail("delete");
 
         $this->mailSubmitter("delete");
+
+        return true;
     }
 
 
@@ -309,11 +312,8 @@ class Version {
      */
     function unQueue()
     {
-        /* is the current user allowed to delete this version? */
-        if(!$_SESSION['current']->hasPriv("admin") && !$_SESSION['current']->hasAppVersionModifyPermission($this->iVersionId))
-        {
+        if(!$_SESSION['current']->canUnQueueVersion($this))
             return;
-        }
 
         // If we are not in the queue, we can't move the version out of the queue.
         if(!$this->sQueued == 'true')
@@ -334,11 +334,8 @@ class Version {
 
     function Reject($bSilent=false)
     {
-        /* is the current user allowed to delete this version? */
-        if(!$_SESSION['current']->hasPriv("admin") && !$_SESSION['current']->hasAppVersionModifyPermission($this->iVersionId))
-        {
+        if(!$_SESSION['current']->canRejectVersion($this))
             return;
-        }
 
         // If we are not in the queue, we can't move the version out of the queue.
         if(!$this->sQueued == 'true')
@@ -361,13 +358,8 @@ class Version {
 
     function ReQueue()
     {
-        /* is the current user allowed to delete this version? */
-        if(!$_SESSION['current']->hasPriv("admin") &&
-           !$_SESSION['current']->hasAppVersionModifyPermission($this->iVersionId) &&
-           !$_SESSION['current']->iUserId == $this->iSubmitterId)
-        {
+        if(!$_SESSION['current']->canRequeueVersion($this))
             return;
-        }
 
         $sUpdate = compile_update_string(array('queued'    => "true"));
         if(query_appdb("UPDATE appVersion SET ".$sUpdate." WHERE versionId = ".$this->iVersionId))

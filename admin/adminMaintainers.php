@@ -24,7 +24,6 @@ if ($_REQUEST['sub'])
     if($_REQUEST['sub'] == 'delete')
     {
         $sQuery = "DELETE FROM appMaintainers WHERE maintainerId = ".$_REQUEST['maintainerId'].";";
-        echo "$sQuery";
         $hResult = query_appdb($sQuery);
         echo html_frame_start("Delete maintainer: ".$_REQUEST['maintainerId'],400,"",0);
         if($hResult)

@@ -25,44 +25,30 @@ if($_REQUEST['confirmed'] != "yes")
 if($_REQUEST['what'])
 {
     switch($_REQUEST['what'])
-	{
-	case "category":
-	    // delete category and the apps in it
-            $oCategory = new Category($_REQUEST['catId']);
-            if( !$_SESSION['current']->hasPriv("admin") )
-            {
-                errorpage();
-            } else
-            {
-                $oCategory->delete();
-                redirect(BASE."appbrowse.php");
-            }
-	    break;
-	case "appFamily":
-	    // delete app family & all its versions
-            $oApp = new Application($_REQUEST['appId']);
-            if( !$_SESSION['current']->hasPriv("admin") )
-            {
-                errorpage();
-            } else
-            {
-                $oApp->delete();
-                redirect(BASE."appbrowse.php");
-            }
-	    break;
-	case "appVersion":
-	    // delete a version
-            $oVersion = new Version($_REQUEST['versionId']);
-            if( !$_SESSION['current']->isSuperMaintainer($oVersion->iAppId) 
-             && !$_SESSION['current']->hasPriv("admin") )
-            {
-                errorpage();
-            } else
-            {
-                $oVersion->delete();
-                redirect(BASE."appview.php?appId=".$_REQUEST['appId']);
-            }
-	    break;
-	}
+    {
+    case "category":
+        // delete category and the apps in it
+        $oCategory = new Category($_REQUEST['catId']);
+        if(!$oCategory->delete())
+            errorpage();
+        else
+            redirect(BASE."appbrowse.php");
+        break;
+    case "appFamily":
+        // delete app family & all its versions
+        $oApp = new Application($_REQUEST['appId']);
+        if(!$oApp->delete())
+            errorpage();
+        else
+            redirect(BASE."appbrowse.php");
+        break;
+    case "appVersion":
+        $oVersion = new Version($_REQUEST['versionId']);
+        if(!$oVersion->delete())
+            errorpage();
+        else
+            redirect(BASE."appview.php?appId=".$_REQUEST['appId']);
+        break;
+    }
 }
 ?>

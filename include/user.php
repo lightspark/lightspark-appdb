@@ -492,47 +492,13 @@ class User {
       */
      function deleteAppData($iAppDataId)
      {
-         $isMaintainer = false;
+         if(!$_SESSION['current']->canDeleteAppDataId($iAppDataId))
+             return false;
 
-         /* if we aren't an admin we should see if we can find any results */
-         /* for a query based on this appDataId, if we can then */
-         /* we have permission to delete the entry */
-         if(!$this->hasPriv("admin"))
-         {
-             $hResult = $this->getAppDataQuery($iAppDataId, false, false);
-             if(!$hResult)
-                 return false;
-
-             echo "result rows:".mysql_num_row($hResult);
-
-             if(mysql_num_rows($hResult) > 0)
-                 $isMaintainer = true;
-         }
-
-         /* do we have permission to delete this item? */
-         if($this->hasPriv("admin") || $isMaintainer)
-         {
-             $sQuery = "DELETE from appData where id = ".$iAppDataId."
+         $sQuery = "DELETE from appData where id = ".$iAppDataId."
                         LIMIT 1;";
-             $hResult = query_appdb($sQuery);
-             if($hResult)
-                 return true;
-         }
-
-         return false;
-     }
-
-     /**
-      * Returns true or false depending on whether the user can view the image
-      */
-     function canViewImage($iImageId)
-     {
-         $oScreenshot = new Screenshot($iImageId);
-
-         if(!$oScreenshot->bQueued ||
-            ($oScreenshot->bQueued && ($this->hasPriv("admin") ||
-                                       $this->isMaintainer($oScreenshot->iVersionId) ||
-                                       $this->isSuperMaintainer($oScreenshot->iAppId))))
+         $hResult = query_appdb($sQuery);
+         if($hResult)
              return true;
 
          return false;
@@ -631,27 +597,6 @@ class User {
          return $retval;
      }
 
-     /**
-      * Does the user have permission to modify on this version?
-      */
-     function hasAppVersionModifyPermission($iVersionId)
-     {
-         if($this->hasPriv("admin"))
-             return true;
-
-         $sQuery = "SELECT appVersion.versionId FROM appVersion, appFamily, appMaintainers
-                      WHERE appFamily.appId = appVersion.appId 
-                      AND appFamily.appId = appMaintainers.appId
-                      AND appMaintainers.superMaintainer = '1'
-                      AND appMaintainers.userId = '".$this->iUserId."'
-                      AND appVersion.versionId = '".$iVersionId."';";
-         $hResult = query_appdb($sQuery);
-         if(mysql_num_rows($hResult))
-             return true;
-         else
-             return false;
-     }
-
      function isAppSubmitter($iAppId)
      {
          $sQuery = "SELECT appId FROM appFamily
@@ -728,6 +673,288 @@ class User {
          query_appdb($sQuery);
 
          return true;
+     }
+
+
+
+
+
+
+     /************************/
+     /* Permission functions */
+     /************************/
+
+     function canDeleteCategory($oCategory)
+     {
+        if($this->hasPriv("admin"))
+            return true;
+
+        return false;
+     }
+
+     /**
+      * Returns true or false depending on whether the user can view the image
+      */
+     function canViewImage($iImageId)
+     {
+         $oScreenshot = new Screenshot($iImageId);
+
+         if(!$oScreenshot->bQueued ||
+            ($oScreenshot->bQueued && ($this->hasPriv("admin") ||
+                                       $this->isMaintainer($oScreenshot->iVersionId) ||
+                                       $this->isSuperMaintainer($oScreenshot->iAppId))))
+             return true;
+
+         return false;
+     }
+
+     function canDeleteAppDataId($iAppDataId)
+     {
+         /* admins can delete anything */
+         if($this->hasPriv("admin"))
+             return true;
+
+         $isMaintainer = false;
+
+         /* if we aren't an admin we should see if we can find any results */
+         /* for a query based on this appDataId, if we can then */
+         /* we have permission to delete the entry */
+         $hResult = $this->getAppDataQuery($iAppDataId, false, false);
+         if(!$hResult)
+             return false;
+
+         if(mysql_num_rows($hResult) > 0)
+             $isMaintainer = true;
+
+         /* if this user maintains the app data, they can delete it */
+         if($isMaintainer)
+             return true;
+
+         return false;
+     }
+
+     /***************************/
+     /* application permissions */
+     function canViewApplication($oApp)
+     {
+         /* if the application isn't queued */
+         if($oApp->sQueued == 'false')
+             return true;
+
+         if($this->hasPriv("admin"))
+             return true;
+
+         /* if this user is the submitter and the application is queued */
+         if(($this->iUserId == $oApp->iSubmitterId) &&
+            ($oApp->sQueued != 'false'))
+             return true;
+
+         return false;
+     }
+
+     /**
+      * Does the user have permission to modify this application?
+      */
+     function canModifyApplication($oApp)
+     {
+         if($this->hasPriv("admin"))
+             return true;
+
+         /* is this user a super maintainer of this app? */
+         if($this->isSuperMaintainer($oApp->iAppId))
+             return true;
+         
+         /* if the user is the submitter of the application */
+         /* and the application is still queued */
+         /* the user can modify the app */
+         if(($this->iUserId == $oApp->iSubmitterId) &&
+            ($oApp->sQueued != 'false'))
+             return true;
+
+         return false;
+     }
+
+     /**
+      * Can this user create applications?
+      */
+     function canCreateApplication()
+     {
+         return isLoggedIn();
+     }
+
+     /**
+      * Returns 'true' if the current user has the permission to delete
+      * this application, 'false' otherwise
+      */
+     function canDeleteApplication($oApp)
+     {
+         if($this->hasPriv("admin"))
+             return true;
+
+         /* is this the user that submitted the application and is still queued */
+         if(($oApp->sQueued != 'false') && ($oApp->iSubmitterId == $this->iUserId))
+             return true;
+
+         return false;
+     }
+
+     /* Can this user unQueue applications? */
+     function canUnQueueApplication()
+     {
+         return $this->hasPriv("admin");
+     }
+
+     /* Can this user Requeue an application? */
+     function canRequeueApplication()
+     {
+         return $this->hasPriv("admin");
+     }
+
+     /* Can the user reject application? */
+     function canRejectApplication()
+     {
+         return $this->hasPriv("admin");
+     }
+
+     /**
+      * Does the created application have to be queued for admin processing?
+      */
+     function appCreatedMustBeQueued()
+     {
+         return !$this->hasPriv("admin");
+     }
+
+
+     /***********************/
+     /* version permissions */
+
+     function canViewVersion($oVersion)
+     {
+         /* if the version isn't queued */
+         if($oVersion->sQueued == 'false')
+             return true;
+
+         if($this->hasPriv("admin"))
+             return true;
+
+         /* if the user is the submitter and the version is still queued */
+         if(($this->iUserId == $oVersion->iSubmitterId) &&
+            ($oVersion->sQueued != 'false'))
+             return true;
+
+         /* if this user supermaintains the application this version belongs to */
+         if($this->isSupermaintainer($oVersion->iAppId))
+             return true;
+
+         return false;
+     }
+
+     /**
+      * Does the user have permission to modify on this version?
+      */
+     function hasAppVersionModifyPermission($oVersion)
+     {
+         if($this->hasPriv("admin"))
+             return true;
+
+         $sQuery = "SELECT appVersion.versionId FROM appVersion, appFamily, appMaintainers
+                      WHERE appFamily.appId = appVersion.appId 
+                      AND appFamily.appId = appMaintainers.appId
+                      AND appMaintainers.superMaintainer = '1'
+                      AND appMaintainers.userId = '".$this->iUserId."'
+                      AND appVersion.versionId = '".$oVersion->iVersionId."';";
+         $hResult = query_appdb($sQuery);
+         if(mysql_num_rows($hResult))
+             return true;
+         else
+             return false;
+     }
+
+     /**
+      * Can this user create a version?
+      */
+     function canCreateVersion()
+     {
+         return $this->isLoggedIn();
+     }
+
+     function versionCreatedMustBeQueued($oVersion)
+     {
+         if($this->hasPriv("admin"))
+             return false;
+
+         if($this->isSupermaintainer($oVersion->iAppId))
+             return false;
+
+         return true;
+     }
+
+
+     /**
+      * Returns 'true' if the current user has the permission to delete
+      * this version, 'false' otherwise
+      */
+     function canDeleteVersion($oVersion)
+     {
+         if($this->hasPriv("admin"))
+             return true;
+
+         /* if the app is anything other than not queued and if the user is the submitter */
+         /* then allow the user to delete the app */
+         if(($oVersion->sQueued != 'false') && ($oVersion->iSubmitterId == $this->iUserId))
+             return true;
+         
+         /* is this user a supermaintainer of the application this version is under? */
+         if($this->isSuperMaintainer($oVersion->iAppId))
+             return true;
+
+         return false;
+     }
+
+     /**
+      * Can the user unqueue this version?
+      */
+     function canUnQueueVersion($oVersion)
+     {
+         if($this->hasPriv("admin"))
+             return true;
+         
+         if($this->hasAppVersionModifyPermission($oVersion->iVersionId))
+             return true;
+
+         return false;
+     }
+
+     /**
+      * Can the user reject this version?
+      */
+     function canRejectVersion($oVersion)
+     {
+         if($this->hasPriv("admin"))
+             return true;
+
+         if($this->hasAppVersionModifyPermission($oVersion->iVersionId))
+             return true;
+
+         return false;
+     }
+
+     /**
+      * Can the user reject this version?
+      */
+     function canRequeueVersion($oVersion)
+     {
+         if($this->hasPriv("admin"))
+             return true;
+
+         if($this->hasAppVersionModifyPermission($oVersion->iVersionId))
+             return true;
+
+         if(($this->iUserId == $oVersion->iSubmitterId) &&
+            ($oVersion->sQueued != 'false'))
+             return true;
+
+         return false;
      }
 }
 
