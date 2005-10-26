@@ -55,8 +55,19 @@ class Application {
 
             /* fetch versions of this application, if there are any */
             $this->aVersionsIds = array();
-            $sQuery = "SELECT versionId FROM appVersion WHERE
-                       appId =".$this->iAppId;
+
+            /* only admins can view all versions */
+            //FIXME: it would be nice to move this permission into the user class as well as keep it generic
+            if($_SESSION['current']->hasPriv("admin"))
+            {
+                $sQuery = "SELECT versionId FROM appVersion WHERE
+                            appId =".$this->iAppId;
+            } else
+            {
+                $sQuery = "SELECT versionId FROM appVersion WHERE
+                            queued = 'false' AND
+                            appId =".$this->iAppId;
+            }
             if($hResult = query_appdb($sQuery))
             {
                 while($oRow = mysql_fetch_object($hResult))
