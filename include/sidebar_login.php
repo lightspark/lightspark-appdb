@@ -34,7 +34,7 @@ function global_sidebar_login() {
         }
         $appsRejected = $_SESSION['current']->getAllRejectedApps();
         if($appsRejected)
-            $g->addmisc("<a href='".BASE."admin/resubmitRejectedApps.php?'>Review Rejected Apps</a>", "center");
+            $g->addmisc("<a href='".BASE."appsubmit.php?'>Review Rejected Apps</a>", "center");
 
     }
     else

@@ -16,7 +16,7 @@ function global_sidebar_menu() {
     $g->add("Screenshots", BASE."viewScreenshots.php");
     $g->add("Browse Apps", BASE."appbrowse.php");
     $g->add("Top 25", BASE."votestats.php");
-    $g->add("Submit Application", BASE."appsubmit.php?apptype=1");
+    $g->add("Submit Application", BASE."appsubmit.php?sub=view&apptype=application");
     $g->add("Help &amp; Documentation", BASE."help/");
     $g->add("AppDB Stats", BASE."appdbStats.php");
     $g->add("View Distributions (".getNumberOfDistributions().")", BASE."distributionView.php");

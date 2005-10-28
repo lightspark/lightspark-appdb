@@ -8,6 +8,7 @@ require_once(BASE."include/comment.php");
 require_once(BASE."include/url.php");
 require_once(BASE."include/screenshot.php");
 require_once(BASE."include/bugs.php");
+//require_once(BASE."include/testResults.php");
 
 /**
  * Version class for handling versions.
@@ -28,6 +29,7 @@ class Version {
     var $aScreenshotsIds;     // an array that contains the screenshotId of every screenshot linked to this version
     var $aUrlsIds;            // an array that contains the screenshotId of every url linked to this version
     var $aBuglinkIds;         // an array that contains the buglinkId of every bug linked to this version
+    var $aTestingIds;         // an array that contains the buglinkId of every bug linked to this version
 
     /**    
      * constructor, fetches the data.
@@ -130,6 +132,22 @@ class Version {
                     $this->aBuglinkIds[] = $oRow->linkId;
                 }
             }
+
+            /*
+             * We fetch Test ResultsIds. 
+             */
+            $this->aTestingIds = array();
+            $sQuery = "SELECT *
+                       FROM testResults
+                       WHERE versionId = ".$iVersionId."
+                       ORDER BY testingId";
+            if($hResult = query_appdb($sQuery))
+            {
+                while($oRow = mysql_fetch_object($hResult))
+                {
+                    $this->aTestingIds[] = $oRow->linkId;
+                }
+            }
         }
     }
 
@@ -160,7 +178,7 @@ class Version {
         if(query_appdb("INSERT INTO appVersion $sFields VALUES $sValues", "Error while creating a new version."))
         {
             $this->iVersionId = mysql_insert_id();
-            $this->version($this->iVersionId);
+            $this->Version($this->iVersionId);
             $this->SendNotificationMail();
             return true;
         }
@@ -173,8 +191,6 @@ class Version {
 
     /**
      * Update version.
-     * FIXME: Use compile_update_string instead of addslashes.
-     * Returns true on success and false on failure.
      */
     function update()
     {
@@ -393,7 +409,7 @@ class Version {
                     $sMsg  = "The version you submitted (".$oApp->sName." ".$this->sName.") has been rejected. ";
                     $sMsg .= "Clicking on the link in this email will allow you to modify and resubmit the version. ";
                     $sMsg .= "A link to your queue of applications and versions will also show up on the left hand side of the Appdb site once you have logged in. ";
-                    $sMsg .= APPDB_ROOT."admin/resubmitRejectedApps.php?sub=view&versionId=".$this->iVersionId."\n";
+                    $sMsg .= APPDB_ROOT."appsubmit.php?sub=view&apptype=version&versionId=".$this->iVersionId."\n";
                     $sMsg .= "Reason given:\n";
                     $sMsg .= $_REQUEST['replyText']."\n"; /* append the reply text, if there is any */
                 }
@@ -606,4 +622,47 @@ function GetDefaultVersionDescription()
                             <td class=\"bronze\">3.21</td><td class=\"bronze\">20040615</td><td class=\"bronze\">yes</td><td class=\"bronze\">yes</td><td class=\"bronze\">Bronze</td>
                             </tr></tbody></table></p><p><br /></p>";
 }
+
+function showVersionList($hResult)
+{
+        //show applist
+        echo html_frame_start("","90%","",0);
+        echo "<table width=\"100%\" border=\"0\" cellpadding=\"3\" cellspacing=\"0\">
+               <tr class=color4>
+                  <td>Submission Date</td>
+                  <td>Submitter</td>
+                  <td>Vendor</td>
+                  <td>Application</td>
+                  <td>Version</td>
+                  <td align=\"center\">Action</td>
+               </tr>";
+        
+        $c = 1;
+        while($oRow = mysql_fetch_object($hResult))
+        {
+            $oVersion = new Version($oRow->versionId);
+            $oApp = new Application($oVersion->iAppId);
+            $oSubmitter = new User($oVersion->iSubmitterId);
+            $oVendor = new Vendor($oApp->iVendorId);
+            $sVendor = $oVendor->sName;
+            if ($c % 2 == 1) { $bgcolor = 'color0'; } else { $bgcolor = 'color1'; }
+            echo "<tr class=\"$bgcolor\">\n";
+            echo "    <td>".print_date(mysqltimestamp_to_unixtimestamp($oVersion->sSubmitTime))."</td>\n";
+            echo "    <td>\n";
+            echo $oSubmitter->sEmail ? "<a href=\"mailto:".$oSubmitter->sEmail."\">":"";
+            echo $oSubmitter->sRealname;
+            echo $oSubmitter->sEmail ? "</a>":"";
+            echo "    </td>\n";
+            echo "    <td>".$sVendor."</td>\n";
+            echo "    <td>".$oApp->sName."</td>\n";
+            echo "    <td>".$oVersion->sName."</td>\n";
+            echo "    <td align=\"center\">[<a href=".$_SERVER['PHP_SELF']."?apptype=version&sub=view&versionId=".$oVersion->iVersionId.">process</a>]</td>\n";
+            echo "</tr>\n\n";
+            $c++;
+        }
+        echo "</table>\n\n";
+        echo html_frame_end("&nbsp;");
+
+}
+
 ?>

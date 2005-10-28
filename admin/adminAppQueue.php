@@ -8,6 +8,7 @@ require(BASE."include/incl.php");
 require(BASE."include/tableve.php");
 require(BASE."include/application.php");
 require(BASE."include/mail.php");
+require_once(BASE."include/testResults.php");
 
 
 function get_vendor_from_keywords($sKeywords)
@@ -76,10 +77,11 @@ if(!$_SESSION['current']->hasPriv("admin") && !$_SESSION['current']->isSuperMain
     errorpage("Insufficient privileges.");
     exit;
 }
+$oTest = new testData($_REQUEST['iTestingId']);
 
 if ($_REQUEST['sub'])
 {
-    if(is_numeric($_REQUEST['appId']))
+    if($_REQUEST['apptype'] == 'application')
     {
         /* make sure the user is authorized to view this application request */
         if(!$_SESSION['current']->hasPriv("admin"))
@@ -90,23 +92,16 @@ if ($_REQUEST['sub'])
 
         $oApp = new Application($_REQUEST['appId']);
 
-        /* if we are processing a queued application there MUST be an implicitly queued */
-        /* version to go along with it.  Find this version so we can display its information */
-        /* during application processing so the admin can make a better choice about */
-        /* whether to accept or reject the overall application */
+        // if we are processing a queued application there MUST be an implicitly queued 
+        // version to go along with it.  
         $sQuery = "Select versionId from appVersion where appId='".$_REQUEST['appId']."';";
         $hResult = query_appdb($sQuery);
         $oRow = mysql_fetch_object($hResult);
 
-        /* make sure the user has permission to view this version */
-        if(!$_SESSION['current']->hasAppVersionModifyPermission($oRow->versionId))
-        {
-            errorpage("Insufficient privileges.");
-            exit;
-        }
-
         $oVersion = new Version($oRow->versionId);
-    } elseif(is_numeric($_REQUEST['versionId']))
+
+    } 
+    else if($_REQUEST['apptype'] == 'version')
     {
         /* make sure the user has permission to view this version */
         if(!$_SESSION['current']->hasAppVersionModifyPermission($_REQUEST['versionId']))
@@ -120,6 +115,142 @@ if ($_REQUEST['sub'])
     {
         //error no Id!
         addmsg("Application Not Found!", "red");
+        redirect(apidb_fullurl("admin/adminAppQueue.php"));
+    }
+
+    // Get the Testing results if they exist
+    $sQuery = "Select testingId from testResults where versionId='".$oVersion->iVersionId."';";
+    $hResult = query_appdb($sQuery);
+    if($hResult)
+    {
+        $oRow = mysql_fetch_object($hResult);
+        $oTest = new testdata($oRow->testingId);
+    }
+    else
+    {
+        $oTest = new testResult();
+    }
+
+    if($_REQUEST['sub'] == 'add')
+    {
+        if (($_REQUEST['apptype'] == "application") && is_numeric($_REQUEST['appId'])) // application
+        {
+            // add new vendor
+            if($_REQUEST['appVendorName'])
+            {
+                $oVendor = new Vendor();
+                $oVendor->create($_REQUEST['appVendorName'],$_REQUEST['appWebpage']);
+            }
+            
+            $oApp = new Application($_REQUEST['appId']);
+            $oApp->GetOutputEditorValues();
+            $oApp->update();
+            $oApp->unQueue();
+        } else if(($_REQUEST['apptype'] == "version") && is_numeric($_REQUEST['versionId']))  // version
+        {
+            $oVersion = new Version($_REQUEST['versionId']);
+            $oVersion->GetOutputEditorValues();
+            $oVersion->update();
+            $oVersion->unQueue();
+            foreach($oVersion->aVersionIds as $iTestingId)
+            {
+                $oTest = new Version($iTestingId);
+                $oTest->GetOutputEditorValues();
+                $oTest->iVersionId = $oVersion->iVersionId;
+                $oTest->iVersionId = $oVersion->iVersionId;
+                $oTest->Update();
+                $oTest->unQueue();
+            }
+        }
+  
+        redirect(apidb_fullurl("admin/adminAppQueue.php"));
+    }
+    else if ($_REQUEST['sub'] == 'duplicate')
+    {
+        if(is_numeric($_REQUEST['appIdMergeTo']))
+        {
+            /* move this version submission under the existing app */
+            $oVersion->iAppId = $_REQUEST['appIdMergeTo'];
+            $oVersion->update();
+        
+            /* delete the appId that is the duplicate */
+            $oApp->delete();
+        }
+
+        /* redirect back to the main page */
+        redirect(apidb_fullurl("admin/adminAppQueue.php"));
+    }
+    else if ($_REQUEST['sub'] == 'Delete')
+    {
+
+        if (($_REQUEST['apptype'] == "application") && is_numeric($_REQUEST['appId'])) // application
+        {
+            // get the queued versions that refers to the application entry we just removed
+            // and delete them as we implicitly added a version entry when adding a new application
+            $sQuery = "SELECT versionId FROM appVersion WHERE appVersion.appId = '".$_REQUEST['appId']."' AND appVersion.queued = 'true';";
+            $hResult = query_appdb($sQuery);
+            if($hResult)
+            {
+                while($oRow = mysql_fetch_object($hResult))
+                {
+                    $oVersion = new Version($oRow->versionId);
+                    $oVersion->delete();
+                }
+            }
+
+            // delete the application entry
+            $oApp = new Application($_REQUEST['appId']);
+            $oApp->delete();
+
+        } else if(($_REQUEST['apptype'] == "version") && is_numeric($_REQUEST['versionId']))  // version
+        {
+            $oVersion = new Version($_REQUEST['versionId']);
+            $oVersion->delete();
+        }
+        foreach($oVersion->aVersionIds as $iTestingId)
+        {
+            $oTest = new Version($iTestingId);
+            $oTest->delete();
+        }
+
+        redirect(apidb_fullurl("admin/adminAppQueue.php"));
+    }
+    else if ($_REQUEST['sub'] == 'Reject')
+    {
+        if (($_REQUEST['apptype'] == "application") && is_numeric($_REQUEST['appId'])) // application
+        {
+            // get the queued versions that refers to the application entry we just removed
+            // and delete them as we implicitly added a version entry when adding a new application
+            $sQuery = "SELECT versionId FROM appVersion WHERE appVersion.appId = '".$_REQUEST['appId']."' AND appVersion.queued = 'true';";
+            $hResult = query_appdb($sQuery);
+            if($hResult)
+            {
+                while($oRow = mysql_fetch_object($hResult))
+                {
+                    $oVersion = new Version($oRow->versionId);
+                    $oVersion->reject(true);
+                }
+            }
+
+            // delete the application entry
+            $oApp = new Application($_REQUEST['appId']);
+            $oApp->reject();
+        } else if(($_REQUEST['apptype'] == "version") && is_numeric($_REQUEST['versionId']))  // version
+        {
+            $oVersion = new Version($_REQUEST['versionId']);
+            $oVersion->reject();
+
+        }
+        foreach($oVersion->aVersionIds as $iTestingId)
+        {
+            $oTest = new Version($iTestingId);
+            $oTest->GetOutputEditorValues();
+            $oTest->iVersionId = $oVersion->iVersionId;
+            $oTest->Update();
+            $oTest->reject();
+        }
+
+        
         redirect(apidb_fullurl("admin/adminAppQueue.php"));
     }
 
@@ -229,6 +360,7 @@ if ($_REQUEST['sub'])
         {
             $oVersion->OutputEditor(false, false);
         }
+        $oTest->OutputEditor($_REQUEST['sDistribution']);
                                 
         echo html_frame_start("Reply text", "90%", "", 0);
         echo "<table width='100%' border=0 cellpadding=2 cellspacing=0>\n";
@@ -253,102 +385,6 @@ if ($_REQUEST['sub'])
         echo '</form>',"\n";
         echo html_frame_end();
         echo html_back_link(1,'adminAppQueue.php');
-    }
-    else if ($_REQUEST['sub'] == 'add')
-    {
-        if (($_REQUEST['apptype'] == "application") && is_numeric($_REQUEST['appId'])) // application
-        {
-            // add new vendor
-            if($_REQUEST['appVendorName'])
-            {
-                $oVendor = new Vendor();
-                $oVendor->create($_REQUEST['appVendorName'],$_REQUEST['appWebpage']);
-            }
-            
-            $oApp = new Application($_REQUEST['appId']);
-            $oApp->GetOutputEditorValues();
-            $oApp->update();
-            $oApp->unQueue();
-        } else if(($_REQUEST['apptype'] == "version") && is_numeric($_REQUEST['versionId']))  // version
-        {
-            $oVersion = new Version($_REQUEST['versionId']);
-            $oVersion->GetOutputEditorValues();
-            $oVersion->update();
-            $oVersion->unQueue();
-        }
-  
-        redirect(apidb_fullurl("admin/adminAppQueue.php"));
-    }
-    else if ($_REQUEST['sub'] == 'duplicate')
-    {
-        if(is_numeric($_REQUEST['appIdMergeTo']))
-        {
-            /* move this version submission under the existing app */
-            $oVersion->iAppId = $_REQUEST['appIdMergeTo'];
-            $oVersion->update();
-        
-            /* delete the appId that is the duplicate */
-            $oApp->delete();
-        }
-
-        /* redirect back to the main page */
-        redirect(apidb_fullurl("admin/adminAppQueue.php"));
-    }
-    else if ($_REQUEST['sub'] == 'Delete')
-    {
-        if (($_REQUEST['apptype'] == "application") && is_numeric($_REQUEST['appId'])) // application
-        {
-            // get the queued versions that refers to the application entry we just removed
-            // and delete them as we implicitly added a version entry when adding a new application
-            $sQuery = "SELECT versionId FROM appVersion WHERE appVersion.appId = '".$_REQUEST['appId']."' AND appVersion.queued = 'true';";
-            $hResult = query_appdb($sQuery);
-            if($hResult)
-            {
-                while($oRow = mysql_fetch_object($hResult))
-                {
-                    $oVersion = new Version($oRow->versionId);
-                    $oVersion->delete();
-                }
-            }
-
-            // delete the application entry
-            $oApp = new Application($_REQUEST['appId']);
-            $oApp->delete();
-        } else if(($_REQUEST['apptype'] == "version") && is_numeric($_REQUEST['versionId']))  // version
-        {
-            $oVersion = new Version($_REQUEST['versionId']);
-            $oVersion->delete();
-        }
-        
-        redirect(apidb_fullurl("admin/adminAppQueue.php"));
-    }
-    else if ($_REQUEST['sub'] == 'Reject')
-    {
-        if (($_REQUEST['apptype'] == "application") && is_numeric($_REQUEST['appId'])) // application
-        {
-            // get the queued versions that refers to the application entry we just removed
-            // and delete them as we implicitly added a version entry when adding a new application
-            $sQuery = "SELECT versionId FROM appVersion WHERE appVersion.appId = '".$_REQUEST['appId']."' AND appVersion.queued = 'true';";
-            $hResult = query_appdb($sQuery);
-            if($hResult)
-            {
-                while($oRow = mysql_fetch_object($hResult))
-                {
-                    $oVersion = new Version($oRow->versionId);
-                    $oVersion->reject(true);
-                }
-            }
-
-            // delete the application entry
-            $oApp = new Application($_REQUEST['appId']);
-            $oApp->reject();
-        } else if(($_REQUEST['apptype'] == "version") && is_numeric($_REQUEST['versionId']))  // version
-        {
-            $oVersion = new Version($_REQUEST['versionId']);
-            $oVersion->reject();
-        }
-        
-        redirect(apidb_fullurl("admin/adminAppQueue.php"));
     }
     else
     {
@@ -381,45 +417,8 @@ else /* if ($_REQUEST['sub']) is not defined, display the main app queue page */
         echo "</td></tr></table></div>\n\n";
     
         //show applist
-        echo html_frame_start("","90%","",0);
-        echo "<table width=\"100%\" border=\"0\" cellpadding=\"3\" cellspacing=\"0\">
-               <tr class=color4>
-                  <td>Submission Date</td>
-                  <td>Submitter</td>
-                  <td>Vendor</td>
-                  <td>Application</td>
-                  <td align=\"center\">Action</td>
-               </tr>";
-        
-        $c = 1;
-        while($oRow = mysql_fetch_object($hResult))
-        {
-            $oApp = new Application($oRow->appId);
-            $oSubmitter = new User($oApp->iSubmitterId);
-            if($oApp->iVendorId)
-            {
-                $oVendor = new Vendor($oApp->iVendorId);
-                $sVendor = $oVendor->sName;
-            } else
-            {
-                $sVendor = get_vendor_from_keywords($oApp->sKeywords);
-            }
-            if ($c % 2 == 1) { $bgcolor = 'color0'; } else { $bgcolor = 'color1'; }
-            echo "<tr class=\"$bgcolor\">\n";
-            echo "    <td>".print_date(mysqltimestamp_to_unixtimestamp($oApp->sSubmitTime))."</td>\n";
-            echo "    <td>\n";
-            echo $oSubmitter->sEmail ? "<a href=\"mailto:".$oSubmitter->sEmail."\">":"";
-            echo $oSubmitter->sRealname;
-            echo $oSubmitter->sEmail ? "</a>":"";
-            echo "    </td>\n";
-            echo "    <td>".$sVendor."</td>\n";
-            echo "    <td>".$oApp->sName."</td>\n";
-            echo "    <td align=\"center\">[<a href=\"adminAppQueue.php?sub=view&appId=".$oApp->iAppId."\">process</a>]</td>\n";
-            echo "</tr>\n\n";
-            $c++;
-        }
-        echo "</table>\n\n";
-        echo html_frame_end("&nbsp;");
+        showAppList($hResult);
+
     }
 
      // get queued versions (only versions where application are not queued already)
@@ -443,43 +442,8 @@ else /* if ($_REQUEST['sub']) is not defined, display the main app queue page */
         echo "the AppDB.<br>\n";
         echo "</td></tr></table></div>\n\n";
     
-        //show applist
-        echo html_frame_start("","90%","",0);
-        echo "<table width=\"100%\" border=\"0\" cellpadding=\"3\" cellspacing=\"0\">
-               <tr class=color4>
-                  <td>Submission Date</td>
-                  <td>Submitter</td>
-                  <td>Vendor</td>
-                  <td>Application</td>
-                  <td>Version</td>
-                  <td align=\"center\">Action</td>
-               </tr>";
-        
-        $c = 1;
-        while($oRow = mysql_fetch_object($hResult))
-        {
-            $oVersion = new Version($oRow->versionId);
-            $oApp = new Application($oVersion->iAppId);
-            $oSubmitter = new User($oVersion->iSubmitterId);
-            $oVendor = new Vendor($oApp->iVendorId);
-            $sVendor = $oVendor->sName;
-            if ($c % 2 == 1) { $bgcolor = 'color0'; } else { $bgcolor = 'color1'; }
-            echo "<tr class=\"$bgcolor\">\n";
-            echo "    <td>".print_date(mysqltimestamp_to_unixtimestamp($oVersion->sSubmitTime))."</td>\n";
-            echo "    <td>\n";
-            echo $oSubmitter->sEmail ? "<a href=\"mailto:".$oSubmitter->sEmail."\">":"";
-            echo $oSubmitter->sRealname;
-            echo $oSubmitter->sEmail ? "</a>":"";
-            echo "    </td>\n";
-            echo "    <td>".$sVendor."</td>\n";
-            echo "    <td>".$oApp->sName."</td>\n";
-            echo "    <td>".$oVersion->sName."</td>\n";
-            echo "    <td align=\"center\">[<a href=".$_SERVER['PHP_SELF']."?sub=view&versionId=".$oVersion->iVersionId.">process</a>]</td>\n";
-            echo "</tr>\n\n";
-            $c++;
-        }
-        echo "</table>\n\n";
-        echo html_frame_end("&nbsp;");
+        //show version list
+        showVersionList($hResult);
 
     }
 }

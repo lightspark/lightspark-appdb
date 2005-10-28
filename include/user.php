@@ -805,9 +805,18 @@ class User {
      }
 
      /* Can this user Requeue an application? */
-     function canRequeueApplication()
+     function canRequeueApplication($oApp)
      {
-         return $this->hasPriv("admin");
+         if($oApp->sQueued == 'false')
+             return false;
+
+         if($this->hasPriv("admin"))
+             return true;
+
+         if(($oApp->sQueued != 'false') && ($oApp->iSubmitterId == $this->iUserId))
+             return true;
+
+         return false;
      }
 
      /* Can the user reject application? */

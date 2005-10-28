@@ -257,10 +257,6 @@ class Application {
         if(!$_SESSION['current']->canUnQueueApplication())
             return;
 
-        // If we are not in the queue, we can't move the application out of the queue.
-        if(!$this->sQueued == 'true')
-            return false;
-
         $sUpdate = compile_update_string(array('queued'  => "false",
                                                'keywords'=> str_replace(" *** ","",$this->sKeywords) ));
         if(query_appdb("UPDATE appFamily SET ".$sUpdate." WHERE appId = ".$this->iAppId))
@@ -298,11 +294,7 @@ class Application {
     }
     function ReQueue()
     {
-        if(!$_SESSION->canRequeueApplication())
-            return false;
-
-        // If we are not in the rejected, we can't move the application into the queue.
-        if(!$this->sQueued == 'rejected')
+        if(!$_SESSION['current']->canRequeueApplication($this))
             return false;
 
         $sUpdate = compile_update_string(array('queued'    => "true"));
@@ -336,7 +328,7 @@ class Application {
                     $sMsg  = "The application you submitted (".$oApp->sName." ".$this->sName.") has been rejected.";
                     $sMsg .= "Clicking on the link in this email will allow you to modify and resubmit the application. ";
                     $sMsg .= "A link to your queue of applications and versions will also show up on the left hand side of the Appdb site once you have logged in. ";
-                    $sMsg .= APPDB_ROOT."admin/resubmitRejectedApps.php?sub=view&appId=".$this->iAppId."\n";
+                    $sMsg .= APPDB_ROOT."appsubmit.php?sub=view&apptype=applicationappId=".$this->iAppId."\n";
                     $sMsg .= "Reason given:\n";
                     $sMsg .= $_REQUEST['replyText']."\n"; /* append the reply text, if there is any */
                 }
@@ -561,5 +553,49 @@ function trim_description($sDescription)
 function GetDefaultApplicationDescription()
 {
     return "<p>Enter a description of the application here</p>";
+}
+
+function showAppList($hResult)
+{
+        //show applist
+        echo html_frame_start("","90%","",0);
+        echo "<table width=\"100%\" border=\"0\" cellpadding=\"3\" cellspacing=\"0\">
+               <tr class=color4>
+                  <td>Submission Date</td>
+                  <td>Submitter</td>
+                  <td>Vendor</td>
+                  <td>Application</td>
+                  <td align=\"center\">Action</td>
+               </tr>";
+        
+        $c = 1;
+        while($oRow = mysql_fetch_object($hResult))
+        {
+            $oApp = new Application($oRow->appId);
+            $oSubmitter = new User($oApp->iSubmitterId);
+            if($oApp->iVendorId)
+            {
+                $oVendor = new Vendor($oApp->iVendorId);
+                $sVendor = $oVendor->sName;
+            } else
+            {
+                $sVendor = get_vendor_from_keywords($oApp->sKeywords);
+            }
+            if ($c % 2 == 1) { $bgcolor = 'color0'; } else { $bgcolor = 'color1'; }
+            echo "<tr class=\"$bgcolor\">\n";
+            echo "    <td>".print_date(mysqltimestamp_to_unixtimestamp($oApp->sSubmitTime))."</td>\n";
+            echo "    <td>\n";
+            echo $oSubmitter->sEmail ? "<a href=\"mailto:".$oSubmitter->sEmail."\">":"";
+            echo $oSubmitter->sRealname;
+            echo $oSubmitter->sEmail ? "</a>":"";
+            echo "    </td>\n";
+            echo "    <td>".$sVendor."</td>\n";
+            echo "    <td>".$oApp->sName."</td>\n";
+            echo "    <td align=\"center\">[<a href=".$_SERVER['PHP_SELF']."?apptype=application&sub=view&appId=".$oApp->iAppId.">process</a>]</td>\n";
+            echo "</tr>\n\n";
+            $c++;
+        }
+        echo "</table>\n\n";
+        echo html_frame_end("&nbsp;");
 }
 ?>
