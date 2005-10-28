@@ -597,32 +597,6 @@ class Version {
     }
 }
 
-function GetDefaultVersionDescription()
-{
-    return "<p>This is a template; enter version-specific description here</p>
-                            <p>
-                               <span class=\"title\">Wine compatibility</span><br />
-                               <span class=\"subtitle\">What works:</span><br />
-                               - settings<br />
-                               - help<br />
-                               <br /><span class=\"subtitle\">What doesn't work:</span><br />
-                               - erasing<br />
-                               <br /><span class=\"subtitle\">What was not tested:</span><br />
-                               - burning<br />
-                               </p>
-                               <p><span class=\"title\">Tested versions</span><br /><table class=\"historyTable\" width=\"90%\" border=\"1\">
-                            <thead class=\"historyHeader\"><tr>
-                            <td>App. version</td><td>Wine version</td><td>Installs?</td><td>Runs?</td><td>Rating</td>
-                            </tr></thead>
-                            <tbody><tr>
-                            <td class=\"gold\">3.23</td><td class=\"gold\">20050111</td><td class=\"gold\">yes</td><td class=\"gold\">yes</td><td class=\"gold\">Gold</td>
-                            </tr><tr>
-                            <td class=\"silver\">3.23</td><td class=\"silver\">20041201</td><td class=\"silver\">yes</td><td class=\"silver\">yes</td><td class=\"silver\">Silver</td>
-                            </tr><tr>
-                            <td class=\"bronze\">3.21</td><td class=\"bronze\">20040615</td><td class=\"bronze\">yes</td><td class=\"bronze\">yes</td><td class=\"bronze\">Bronze</td>
-                            </tr></tbody></table></p><p><br /></p>";
-}
-
 function showVersionList($hResult)
 {
         //show applist

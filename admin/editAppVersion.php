@@ -28,10 +28,6 @@ if(isset($_REQUEST['submit']))
 
     $oVersion = new Version($_REQUEST['versionId']);
 
-    /* if the sDescription is empty, put the default in */
-    if(trim(strip_tags($oVersion->sDescription))=="")
-        $oVersion->sDescription = GetDefaultVersionDescription();
-
     apidb_header("Edit Application Version");
 
     echo "<form method=post action='editAppVersion.php'>\n";
