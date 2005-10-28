@@ -325,7 +325,7 @@ class testData{
             $hResult = query_appdb("SELECT * 
                                     FROM testResults
                                     WHERE versionId = '".$iVersionId."'
-                                    ORDER BY testedRelease DESC ;");
+                                    ORDER BY testedDate DESC ;");
             if(!$hResult || mysql_num_rows($hResult) == 0)
                 return false;
         }
@@ -345,7 +345,7 @@ class testData{
         $hResult = query_appdb("SELECT * 
                                 FROM testResults
                                 WHERE versionId = '".$iVersionId."'
-                                ORDER BY testedRelease DESC;");
+                                ORDER BY testedDate DESC;");
         if(!$hResult || mysql_num_rows($hResult) == 0)
              return;
         echo '<p><span class="title">Testing Results</span><br />',"\n";
@@ -354,7 +354,7 @@ class testData{
         echo '<tr>',"\n";
         echo '<td></td>',"\n";
         echo '<td>Distribution</td>',"\n";
-        echo '<td>Date Submitted</td>',"\n";
+        echo '<td>Test date</td>',"\n";
         echo '<td>Wine version</td>',"\n";
         echo '<td>Installs?</td>',"\n";
         echo '<td>Runs?</td>',"\n";
@@ -377,7 +377,7 @@ class testData{
             echo '<a href="'.BASE.'distributionView.php?iDistributionId='.$oTest->iDistributionId.'">',"\n";
             echo $oDistribution->sName.'</a>',"\n";
             echo '    </td>',"\n";
-            echo '    <td>'.date("M d Y", mysqltimestamp_to_unixtimestamp($oTest->sSubmitTime)).'</td>',"\n";
+            echo '    <td>'.date("M d Y", mysqltimestamp_to_unixtimestamp($oTest->sTestedDate)).'</td>',"\n";
             echo '    <td>'.$oTest->sTestedRelease.'&nbsp</td>',"\n";
             echo '    <td>'.$oTest->sInstalls.'&nbsp</td>',"\n";
             echo '    <td>'.$oTest->sRuns.'&nbsp</td>',"\n";
