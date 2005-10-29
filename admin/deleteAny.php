@@ -7,10 +7,12 @@
  * application environment
  */
 include("path.php");
-include(BASE."include/incl.php");
-include(BASE."include/category.php");
-include(BASE."include/application.php");
-include(BASE."include/mail.php");
+require_once(BASE."include/incl.php");
+require_once(BASE."include/category.php");
+require_once(BASE."include/application.php");
+require_once(BASE."include/mail.php");
+require_once(BASE."include/monitor.php");
+
 
 if($_REQUEST['confirmed'] != "yes")
 {

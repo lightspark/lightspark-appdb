@@ -8,7 +8,6 @@ require_once(BASE."include/comment.php");
 require_once(BASE."include/url.php");
 require_once(BASE."include/screenshot.php");
 require_once(BASE."include/bugs.php");
-//require_once(BASE."include/testResults.php");
 
 /**
  * Version class for handling versions.
@@ -29,7 +28,8 @@ class Version {
     var $aScreenshotsIds;     // an array that contains the screenshotId of every screenshot linked to this version
     var $aUrlsIds;            // an array that contains the screenshotId of every url linked to this version
     var $aBuglinkIds;         // an array that contains the buglinkId of every bug linked to this version
-    var $aTestingIds;         // an array that contains the buglinkId of every bug linked to this version
+    var $aTestingIds;         // an array that contains the testingId of every test result linked to this version
+    var $aMonitorIds;         // an array that contains the monitorId of every monitor linked to this version
 
     /**    
      * constructor, fetches the data.
@@ -134,7 +134,7 @@ class Version {
             }
 
             /*
-             * We fetch Test ResultsIds. 
+             * We fetch Test Results Ids. 
              */
             $this->aTestingIds = array();
             $sQuery = "SELECT *
@@ -145,7 +145,22 @@ class Version {
             {
                 while($oRow = mysql_fetch_object($hResult))
                 {
-                    $this->aTestingIds[] = $oRow->linkId;
+                    $this->aTestingIds[] = $oRow->testingId;
+                }
+            }
+            /*
+             * We fetch monitor Ids. 
+             */
+            $this->aTestingIds = array();
+            $sQuery = "SELECT *
+                       FROM appMonitors
+                       WHERE versionId = ".$iVersionId."
+                       ORDER BY monitorId";
+            if($hResult = query_appdb($sQuery))
+            {
+                while($oRow = mysql_fetch_object($hResult))
+                {
+                    $this->aMonitorIds[] = $oRow->monitorId;
                 }
             }
         }
@@ -296,6 +311,16 @@ class Version {
         {
             $oBug = new bug($iBug_id);
             $oBug->delete($bSilent);
+        }
+        foreach($this->aTestingIds as $iTestId)
+        {
+            $oTest = new testData($iTestId);
+            $oTest->delete($bSilent);
+        }
+        foreach($this->aMonitorIds as $iMonitorId)
+        {
+            $oMonitor = new Monitor($iMonitorId);
+            $oMonitor->delete($bSilent);
         }
 
         // remove any maintainers for this version so we don't orphan them

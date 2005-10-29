@@ -23,7 +23,7 @@ class Monitor {
         {
             $sQuery = "SELECT *
                        FROM appMonitors
-                       WHERE MonitorId = '".$iMonitorId."'";
+                       WHERE monitorId = '".$iMonitorId."'";
             $hResult = query_appdb($sQuery);
             $oRow = mysql_fetch_object($hResult);
             $this->iMonitorId = $oRow->monitorId;
@@ -85,7 +85,7 @@ class Monitor {
      */
     function delete($bSilent=false)
     {
-        $hResult = query_appdb("DELETE FROM appMonitors WHERE MonitorId = '".$this->iMonitorId."'");
+        $hResult = query_appdb("DELETE FROM appMonitors WHERE monitorId = '".$this->iMonitorId."'");
         if(!$bSilent)
             $this->SendNotificationMail("delete");
     }
