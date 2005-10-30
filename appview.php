@@ -313,7 +313,7 @@ if($_REQUEST['appId'])
     echo html_frame_end("For more details and user comments, view the versions of this application.");
 
     // display versions
-    display_versions($oApp->iAppId,$oApp->aVersionsIds);
+    display_approved_versions($oApp->aVersionsIds);
 
     // display bundle
     display_bundle($oApp->iAppId);

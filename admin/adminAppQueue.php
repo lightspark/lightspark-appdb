@@ -269,7 +269,7 @@ if ($_REQUEST['sub'])
         { 
             echo html_frame_start("Potential duplicate versions in the database","90%","",0);
             $oAppForVersion = new Application($oVersion->iAppId);
-            display_versions($oAppForVersion->iAppId, $oAppForVersion->aVersionsIds);
+            display_approved_versions($oAppForVersion->aVersionsIds);
             echo html_frame_end("&nbsp;");
 
             //help
