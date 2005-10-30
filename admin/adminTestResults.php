@@ -15,8 +15,8 @@ require_once(BASE."include/distributions.php");
 
 if ($_REQUEST['sub'])
 {
-    if (!($_SESSION['current']->hasPriv("admin")) && 
-        !($_SESSION['current']->hasAppVersionModifyPermission($_REQUEST['iVersionId'])))
+    $oTest = new testData($_REQUEST['iTestingId']);
+    if (!($_SESSION['current']->hasAppVersionModifyPermission($oTest->iVersionId)))
     {
         errorpage("Insufficient privileges.");
         exit;
@@ -54,36 +54,51 @@ if ($_REQUEST['sub'])
     {
         $oTest = new testData($_REQUEST['iTestingId']);
     }
+    $oVersion = new Version($oTest->iVersionId);
+    $oApp = new application($oVersion->iAppId);
+    $sVersionInfo = $oApp->sName." ".$oVersion->sName;
 
     if ($_REQUEST['sub'] == 'view')
     {
         switch($oTest->sQueued)
         {
-        case "new":
-            apidb_header("Submit new testing results");
-            $_REQUEST['sTestedDate'] = date('Y-m-d H:i:s');
-            break;
         case "true":
-        case "rejected":
-            apidb_header("Edit new testing results");
+            apidb_header("Edit new testing results for ".$sVersionInfo);
             break;
-        case "False":
-            apidb_header("Edit testing results");
+        case "rejected":
+            apidb_header("Edit rejected testing results for ".$sVersionInfo);
+            break;
+        case "false":
+            apidb_header("Edit testing results for ".$sVersionInfo);
             break;
         }
         echo '<form name="qform" action="'.$_SERVER['PHP_SELF'].'" method="post" enctype="multipart/form-data">',"\n";
         // View Testing Details
         echo "<table width='100%' border=0 cellpadding=2 cellspacing=0>\n";
-/*
-            //help
-            echo "<div align=center><table width='90%' border=0 cellpadding=3 cellspacing=0><tr><td>\n\n";
-            echo "<p>This is the full view of the rejected application. \n";
-            echo "You need to pick a category before submitting \n";
-            echo "it into the database.\n";
-            echo "<p>Click delete to remove the selected item from the queue. An email will automatically be sent to the\n";
-            echo "submitter to let them know the item was deleted.</p>\n\n";        
-            echo "</td></tr></table></div>\n\n";    
-*/    
+
+        //help
+        echo "<div align=center><table width='100%' border=0 cellpadding=3 cellspacing=0><tr><td>\n\n";
+        switch($oTest->sQueued)
+        {
+        case "false":
+            echo "<p>This Testing result has already been verified and accepted int the database. \n";
+            echo "You can edit the entry and the save it back to the database by clicking on save. \n";
+            break;
+        case "true":
+            echo "<p>This Testing result has not yet been and accepted into the database. \n";
+            echo "You can edit the entry and ether submit it into the database by clicking on Submit or you can reject it \n";
+            echo "for further editing by the submitter by clicking on Reject. \n";
+            break;
+        case "rejected":
+            echo "<p>This Testing result has been rejected and is awaiting further information from the submitter. \n";
+            echo "You can edit the entry and ether submit it into the database by clicking on Submit or you can save it \n";
+            echo "for further editing by the submitter by clicking on Save. \n";
+            break;
+        }
+        echo "<p>Click delete to remove it entirly from the database. An email will automatically be sent to the\n";
+        echo "submitter to let them know the item was deleted.</p>\n\n";        
+        echo "</td></tr></table></div>\n\n";    
+
         $oTest->OutputEditor();
 
         echo '<a href="'.$_SERVER['PHP_SELF'].'">Back</a>';
@@ -94,7 +109,7 @@ if ($_REQUEST['sub'])
         switch($oTest->sQueued)
         {
         case "false":
-            echo '<input name="sub" type="submit" value="Submit" class="button" >&nbsp',"\n";
+            echo '<input name="sub" type="submit" value="Save" class="button" >&nbsp',"\n";
             echo '<input name="sub" type="submit" value="Delete" class="button" >',"\n";
             break;
         case "true":
