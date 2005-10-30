@@ -866,17 +866,16 @@ class User {
          if($this->hasPriv("admin"))
              return true;
 
-         $sQuery = "SELECT appVersion.versionId FROM appVersion, appFamily, appMaintainers
-                      WHERE appFamily.appId = appVersion.appId 
-                      AND appFamily.appId = appMaintainers.appId
-                      AND appMaintainers.superMaintainer = '1'
-                      AND appMaintainers.userId = '".$this->iUserId."'
-                      AND appVersion.versionId = '".$oVersion->iVersionId."';";
-         $hResult = query_appdb($sQuery);
-         if(mysql_num_rows($hResult))
+         if($this->isSuperMaintainer($oVersion->iAppId))
              return true;
-         else
-             return false;
+
+         if($this->isMaintainer($oVersion->iVersionId))
+             return true;
+
+         if(($oVersion->sQueued != 'false') && ($this->iUserId == $oVersion->iSubmitterId))
+             return true;
+
+         return false;
      }
 
      /**
