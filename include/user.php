@@ -872,6 +872,7 @@ class User {
          if($this->isMaintainer($oVersion->iVersionId))
              return true;
 
+         /* the version is queued and the user is the submitter */
          if(($oVersion->sQueued != 'false') && ($this->iUserId == $oVersion->iSubmitterId))
              return true;
 
