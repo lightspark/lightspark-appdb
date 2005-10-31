@@ -190,7 +190,7 @@ if ($_REQUEST['sub'])
        if ($sEmail)
        {
            $oApp = new Application($ob->appId);
-           $oVersion = new Application($ob->versionId);
+           $oVersion = new Version($ob->versionId);
            $sSubject =  "Application Maintainer Request Report";
            $sMsg  = "Your application to be the maintainer of ".$oApp->sName." ".$oVersion->sName." was rejected. ";
            $sMsg .= $_REQUEST['replyText'];
