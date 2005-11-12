@@ -46,7 +46,7 @@ function outputSearchTableForDuplicateFlagging($currentAppId, $hResult)
             //display row
             echo "<tr class=$bgcolor>\n";
             /* map the merging of the current app to the app we are displaying in the table */
-            echo "    <td>".html_ahref($ob->appName,"adminAppQueue.php?sub=duplicate&appId=".$currentAppId."&appIdMergeTo=".$ob->appId)."</td>\n";
+            echo "    <td>".html_ahref($ob->appName,"adminAppQueue.php?sub=duplicate&apptype=application&appId=".$currentAppId."&appIdMergeTo=".$ob->appId)."</td>\n";
             echo "    <td>$y->versions versions &nbsp;</td>\n";
             echo "</tr>\n\n";
 
@@ -172,9 +172,10 @@ if ($_REQUEST['sub'])
             /* move this version submission under the existing app */
             $oVersion->iAppId = $_REQUEST['appIdMergeTo'];
             $oVersion->update();
-        
+
             /* delete the appId that is the duplicate */
-            $oApp->delete();
+            $oAppDelete = new Application($oApp->iAppId);
+            $oAppDelete->delete();
         }
 
         /* redirect back to the main page */
