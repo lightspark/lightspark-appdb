@@ -15,7 +15,6 @@ class testData{
     var $sTestedRelease;
     var $iDistributionId;
     var $sTestedDate;
-    var $sTestedRelease;
     var $sInstalls;
     var $sRuns;
     var $sTestedRating;

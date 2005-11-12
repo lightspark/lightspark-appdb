@@ -261,7 +261,7 @@ if ($_REQUEST['sub'])
             echo "</td></tr></table></div>\n\n";    
             } else
             {
-                newSubmition();
+                newSubmition('');
             }
             // vendor/alt vendor fields
             // if user selected a predefined vendorId:
