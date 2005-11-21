@@ -25,8 +25,13 @@
         <td>
           <img src="<?php echo BASE; ?>images/blank.gif" width="10" height="1" alt="">
         </td>
-        <td width="100%" align="center" valign="middle">
-            <?php echo $banner_ad; ?>
+        <td width="468" align="center" valign="middle">
+            <!-- BANNER AD -->
+            <iframe src="http://www.winehq.org/bin/ad" scrolling="no" frameBorder="0" height="60" width="468"></iframe>
+            <!-- END BANNER AD -->
+	    </td>
+        <td>
+          <img src="<?php echo BASE; ?>images/blank.gif" width=10 height=1 alt="">
         </td>
        </tr>
        </table>

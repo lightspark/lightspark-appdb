@@ -58,10 +58,6 @@ function apidb_header($title = 0)
     if ($title)
          $title = " - $title";
 
-    // banner ad
-    include(BASE."include/banner.php");
-    $banner_ad = banner_display();
-
     // Display Header
     include(BASE."include/header.php");
 
