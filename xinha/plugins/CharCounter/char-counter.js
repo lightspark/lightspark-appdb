@@ -5,7 +5,7 @@
 
 function CharCounter(editor) {
     this.editor = editor;
-};
+}
 
 CharCounter._pluginInfo = {
     name : "CharCounter",
@@ -24,10 +24,11 @@ CharCounter.prototype._lc = function(string) {
 
 
 CharCounter.prototype.onGenerate = function() {
-    var self = this;
+  var self = this;
+  if (this.charCount==null) {
     var charCount = document.createElement("span");
     charCount.style.padding = "2px 5px";
-     if(HTMLArea.is_ie) {
+    if(HTMLArea.is_ie) {
       charCount.style.styleFloat = "right";
     } else {
       charCount.style.cssFloat = "right";
@@ -46,11 +47,12 @@ CharCounter.prototype.onGenerate = function() {
     this.editor._statusBar.appendChild(charCount);
     this.editor._statusBar.appendChild(brk);
     this.charCount = charCount;
+  }
 };
 
 CharCounter.prototype.onUpdateToolbar = function() {
     this.updateCharCount();
-}
+};
 
 CharCounter.prototype.onMode = function (mode)
 {
@@ -67,7 +69,7 @@ CharCounter.prototype.onMode = function (mode)
       alert("Mode <" + mode + "> not defined!");
       return false;
   }
-}
+};
 
 CharCounter.prototype.updateCharCount = function(ev) {
     editor = this.editor;
@@ -84,4 +86,4 @@ CharCounter.prototype.updateCharCount = function(ev) {
 //    this.charCount.innerHTML = this._lc("Words") + ": " + words + " | " + this._lc("Chars") + ": " + contents.length;
     this.charCount.innerHTML = this._lc("Chars") + ": " + contents.length;
     return(contents.length);
-}
+};

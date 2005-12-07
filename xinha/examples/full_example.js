@@ -5,17 +5,18 @@
     --  from full_example-body.html.
     --
     --  $HeadURL: http://svn.xinha.python-hosting.com/trunk/examples/full_example.js $
-    --  $LastChangedDate: 2005-09-15 00:09:22 +1200 (Thu, 15 Sep 2005) $
-    --  $LastChangedRevision: 318 $
-    --  $LastChangedBy: mokhet $
+    --  $LastChangedDate: 2005-10-29 12:28:08 -0400 (Sat, 29 Oct 2005) $
+    --  $LastChangedRevision: 416 $
+    --  $LastChangedBy: gogo $
     --------------------------------------------------------------------------*/
 
   var num     = 1;
   if(window.parent && window.parent != window)
   {
     var f = window.parent.menu.document.forms[0];
-    _editor_lang = f.lang.value;
-    _editor_skin = f.skin.value;
+    _editor_lang = f.lang[f.lang.selectedIndex].value;
+    _editor_skin = f.skin[f.skin.selectedIndex].value;
+    
     num = parseInt(f.num.value);
     if(isNaN(num))
     {
@@ -101,6 +102,10 @@
         var f = window.parent.menu.document.forms[0];
         config.CharacterMap.mode = f.elements['CharacterMapMode'].options[f.elements['CharacterMapMode'].selectedIndex].value;
       }
+    }
+    
+    if(typeof Filter != 'undefined') {
+      xinha_config.Filters = ["Word", "Paragraph"]
     }
 
     return config;

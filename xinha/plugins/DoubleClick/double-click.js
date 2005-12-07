@@ -48,7 +48,7 @@ function DoubleClick(editor) {
 		img: [ function(e) {e.execCommand("insertimage");} ],
 		td: [ function(e) {e.execCommand("inserttable");} ]
 	};
-};
+}
 
 DoubleClick.prototype.onGenerate = function() {
 	var self = this;
@@ -67,4 +67,4 @@ DoubleClick.prototype.onDoubleClick = function(ev) {
 	if (this.editor.dblClickList[tagName] != undefined) {
 		this.editor.dblClickList[tagName][0](this.editor, target);
 	}
-}
+};

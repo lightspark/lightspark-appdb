@@ -1,7 +1,6 @@
 // I18N constants
 // LANG: "no", ENCODING: UTF-8
 // translated: Kim Steinhaug, http://www.steinhaug.com/, kim@steinhaug.com
-
 { 
   "Quick Tag Editor": "Kjapp TAGG Editor",
   "Enter the TAG you want to insert": "Skriv inn taggen du vil ønsker å sette inn",
@@ -13,6 +12,6 @@
   "ATTRIBUTES": "ATTRIBUTTER",
   "TAGs": "TAGGer",
   "Colors": "Farger",
-  "Ok": "Ok",
+  "Ok": "OK",
   "Cancel": "Avbryt"
 };

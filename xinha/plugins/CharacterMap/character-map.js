@@ -53,13 +53,13 @@ function CharacterMap( editor )
 
     editor.hidePanel( editor._CharacterMap );
   }
-};
+}
 
 // configuration mode : panel or popup
 HTMLArea.Config.prototype.CharacterMap =
 {
   'mode': 'popup' // configuration mode : panel or popup
-}
+};
 
 CharacterMap._pluginInfo =
 {

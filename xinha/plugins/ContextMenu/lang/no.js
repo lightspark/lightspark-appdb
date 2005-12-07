@@ -1,11 +1,9 @@
 // I18N constants
 // LANG: "no", ENCODING: UTF-8
 // translated: Kim Steinhaug, http://www.steinhaug.com/, kim@steinhaug.com
-
 // Used key commands
 // C,D,e, ,I, ,k,k,l,M, ,n,o,R, ,s,T, ,w   : English
 //       H B j      R m    F       v       : Norwegian
-
 {
   "Cut": "Klipp ut",
   "Copy": "Kopier",
@@ -52,4 +50,4 @@
   "Insert paragraph after": "Sett inn paragraf etter",
   "Insert a paragraph after the current node": "Sett inn paragraf etter gjeldende node",
   "How did you get here? (Please report!)": "Hva skjedde? (Vennligst beskriv)"
-}
+};

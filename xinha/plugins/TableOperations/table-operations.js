@@ -42,7 +42,7 @@ function TableOperations(editor) {
 
 	// add a new line in the toolbar
 	cfg.toolbar.push(toolbar);
-};
+}
 
 TableOperations._pluginInfo = {
 	name          : "TableOperations",
@@ -57,7 +57,7 @@ TableOperations._pluginInfo = {
 
 TableOperations.prototype._lc = function(string) {
     return HTMLArea._lc(string, 'TableOperations');
-}
+};
 
 /************************
  * UTILITIES
@@ -168,7 +168,7 @@ TableOperations.prototype.dialogTableProperties = function() {
 
 		function selected(val) {
 			return val ? " selected" : "";
-		};
+		}
 
 		// dialog contents
 		dialog.content.style.width = "400px";
@@ -223,7 +223,7 @@ TableOperations.prototype.dialogTableProperties = function() {
   </tr> \
   <tr> \
     <td> \
-      <fieldset><legend>Frame and borders</legend> \
+      <fieldset><legend>" + HTMLArea._lc("Frame and borders", "TableOperations") + "</legend> \
         <table width='100%'> \
           <tr> \
             <td class='label'>" + HTMLArea._lc("Borders", "TableOperations") + ":</td> \
@@ -321,7 +321,7 @@ TableOperations.prototype.dialogRowCellProperties = function(cell) {
 
 		function selected(val) {
 			return val ? " selected" : "";
-		};
+		}
 
 		// dialog contents
 		dialog.content.style.width = "400px";
@@ -391,7 +391,7 @@ TableOperations.prototype.buttonPress = function(editor, button_id) {
 			td.rowSpan = 1;
 			td.innerHTML = mozbr;
 		}
-	};
+	}
 
 	function splitRow(td) {
 		var n = parseInt("" + td.rowSpan);
@@ -410,7 +410,7 @@ TableOperations.prototype.buttonPress = function(editor, button_id) {
 		}
 		editor.forceRedraw();
 		editor.updateToolbar();
-	};
+	}
 
 	function splitCol(td) {
 		var nc = parseInt("" + td.colSpan);
@@ -425,7 +425,7 @@ TableOperations.prototype.buttonPress = function(editor, button_id) {
 		}
 		editor.forceRedraw();
 		editor.updateToolbar();
-	};
+	}
 
 	function splitCell(td) {
 		var nc = parseInt("" + td.colSpan);
@@ -435,7 +435,7 @@ TableOperations.prototype.buttonPress = function(editor, button_id) {
 		while (nc-- > 0) {
 			splitRow(items[index++]);
 		}
-	};
+	}
 
 	function selectNextNode(el) {
 		var node = el.nextSibling;
@@ -452,7 +452,7 @@ TableOperations.prototype.buttonPress = function(editor, button_id) {
 			node = el.parentNode;
 		}
 		editor.selectNodeContents(node);
-	};
+	}
 
 	switch (button_id) {
 		// ROWS
@@ -505,18 +505,20 @@ TableOperations.prototype.buttonPress = function(editor, button_id) {
 		}
 		var rows = td.parentNode.parentNode.rows;
 		var index = td.cellIndex;
+    var lastColumn = (td.parentNode.cells.length == index + 1);
 		for (var i = rows.length; --i >= 0;) {
-      /*
-      var tr = rows;
-      var otd = tr.insertCell(index + (/after/.test(button_id) ? 1 : 0));
-      otd.innerHTML = mozbr;
-      */
-			var tr = rows[i];
-			var ref = tr.cells[index + (/after/.test(button_id) ? 1 : 0)];
+			var tr = rows[i];			
 			var otd = editor._doc.createElement("td");
 			otd.innerHTML = mozbr;
-			tr.insertBefore(otd, ref);
-
+      if (lastColumn && HTMLArea.is_ie) 
+      {
+        tr.insertBefore(otd);
+      } 
+      else 
+      {
+        var ref = tr.cells[index + (/after/.test(button_id) ? 1 : 0)];
+        tr.insertBefore(otd, ref);
+      }
 		}
 		editor.focusEditor();
 		break;
@@ -778,12 +780,20 @@ TableOperations.processStyle = function(params, element) {
 					ch = '\\"';
 				}
 				style.textAlign = '"' + ch + '"';
+			} else if (val == "-") {
+			    style.textAlign = "";
 			} else {
 				style.textAlign = val;
 			}
 			break;
 		    case "f_st_verticalAlign":
-			style.verticalAlign = val;
+		    element.vAlign = "";
+			if (val == "-") {
+			    style.verticalAlign = "";
+			    
+		    } else {
+			    style.verticalAlign = val;
+			}
 			break;
 		    case "f_st_float":
 			style.cssFloat = val;
@@ -924,7 +934,7 @@ TableOperations.createStyleLayoutFieldset = function(doc, editor, el) {
 	select.style.marginLeft = select.style.marginRight = "0.5em";
 	td.appendChild(select);
 	select.name = "f_st_textAlign";
-	options = ["Left", "Center", "Right", "Justify"];
+	options = ["Left", "Center", "Right", "Justify", "-"];
 	if (tagname == "td") {
 		options.push("Char");
 	}
@@ -939,7 +949,7 @@ TableOperations.createStyleLayoutFieldset = function(doc, editor, el) {
 		option = doc.createElement("option");
 		option.value = val;
 		option.innerHTML = HTMLArea._lc(Val, "TableOperations");
-		option.selected = (el.style.textAlign.toLowerCase() == val);
+		option.selected = ((el.style.textAlign.toLowerCase() == val) || (el.style.textAlign == "" && Val == "-"));
 		select.appendChild(option);
 	}
 	function setCharVisibility(value) {
@@ -948,7 +958,7 @@ TableOperations.createStyleLayoutFieldset = function(doc, editor, el) {
 			input.focus();
 			input.select();
 		}
-	};
+	}
 	select.onchange = function() { setCharVisibility(this.value == "char"); };
 	setCharVisibility(select.value == "char");
 
@@ -987,14 +997,14 @@ TableOperations.createStyleLayoutFieldset = function(doc, editor, el) {
 	select.name = "f_st_verticalAlign";
 	select.style.marginLeft = "0.5em";
 	td.appendChild(select);
-	options = ["Top", "Middle", "Bottom", "Baseline"];
+	options = ["Top", "Middle", "Bottom", "Baseline", "-"];
 	for (var i = 0; i < options.length; ++i) {
 		var Val = options[i];
 		var val = Val.toLowerCase();
 		option = doc.createElement("option");
 		option.value = val;
 		option.innerHTML = HTMLArea._lc(Val, "TableOperations");
-		option.selected = (el.style.verticalAlign.toLowerCase() == val);
+		option.selected = ((el.style.verticalAlign.toLowerCase() == val) || (el.style.verticalAlign == "" && Val == "-"));
 		select.appendChild(option);
 	}
 
@@ -1098,7 +1108,7 @@ TableOperations.createStyleFieldset = function(doc, editor, el) {
 				el.select();
 			}
 		}
-	};
+	}
 	select.onchange = function() { setBorderFieldsStatus(this.value == "none"); };
 
 	input = doc.createElement("input");

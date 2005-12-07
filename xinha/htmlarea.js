@@ -27,19 +27,19 @@
     --     included in the top 10 lines of the file (see the embedded edit mode)
     --
     --  $HeadURL: http://svn.xinha.python-hosting.com/trunk/htmlarea.js $
-    --  $LastChangedDate: 2005-09-14 19:13:33 +1200 (Wed, 14 Sep 2005) $
-    --  $LastChangedRevision: 316 $
-    --  $LastChangedBy: niko $
+    --  $LastChangedDate: 2005-11-07 03:36:41 -0500 (Mon, 07 Nov 2005) $
+    --  $LastChangedRevision: 421 $
+    --  $LastChangedBy: gocher $
     --------------------------------------------------------------------------*/
 
 HTMLArea.version =
 {
   'Release'   : 'Trunk',
   'Head'      : '$HeadURL: http://svn.xinha.python-hosting.com/trunk/htmlarea.js $'.replace(/^[^:]*: (.*) \$$/, '$1'),
-  'Date'      : '$LastChangedDate: 2005-09-14 19:13:33 +1200 (Wed, 14 Sep 2005) $'.replace(/^[^:]*: ([0-9-]*) ([0-9:]*) ([+0-9]*) \((.*)\) \$/, '$4 $2 $3'),
-  'Revision'  : '$LastChangedRevision: 316 $'.replace(/^[^:]*: (.*) \$$/, '$1'),
-  'RevisionBy': '$LastChangedBy: niko $'.replace(/^[^:]*: (.*) \$$/, '$1')
-}
+  'Date'      : '$LastChangedDate: 2005-11-07 03:36:41 -0500 (Mon, 07 Nov 2005) $'.replace(/^[^:]*: ([0-9-]*) ([0-9:]*) ([+0-9]*) \((.*)\) \$/, '$4 $2 $3'),
+  'Revision'  : '$LastChangedRevision: 421 $'.replace(/^[^:]*: (.*) \$$/, '$1'),
+  'RevisionBy': '$LastChangedBy: gocher $'.replace(/^[^:]*: (.*) \$$/, '$1')
+};
 
 if (typeof _editor_url == "string") {
   // Leave exactly one backslash at the end of _editor_url
@@ -95,9 +95,9 @@ function HTMLArea(textarea, config)
     // Before we modify anything, get the initial textarea size
     this._initial_ta_size =
     {
-      w: textarea.style.width ? textarea.style.width   : (textarea.offsetWidth + 'px'),
-      h: textarea.style.height ? textarea.style.height : (textarea.offsetHeight + 'px')
-    }
+      w: textarea.style.width ? textarea.style.width   : (textarea.offsetWidth ? (textarea.offsetWidth + 'px') : (textarea.cols+'em')),
+      h: textarea.style.height ? textarea.style.height : (textarea.offsetHeight ? (textarea.offsetHeight + 'px') : (textarea.rows+'em'))
+    };
 
     this._editMode = "wysiwyg";
     this.plugins = {};
@@ -144,6 +144,7 @@ function HTMLArea(textarea, config)
 
     for(var i in panels)
     {
+      if (!panels[i].container) continue; // prevent iterating over wrong type
       panels[i].div = panels[i].container; // legacy
       panels[i].container.className = 'panels ' + i;
       HTMLArea.freeLater(panels[i], 'container');
@@ -151,7 +152,7 @@ function HTMLArea(textarea, config)
     }
     HTMLArea.freeLater(this, '_textArea');
   }
-};
+}
 
 HTMLArea.onload = function(){};
 HTMLArea.init = function() {
@@ -203,7 +204,7 @@ HTMLArea.Config = function () {
     right:  '200px',
     top:    '100px', // Height
     bottom: '100px'
-  }
+  };
 
   // enable creation of a status bar?
   this.statusBar = true;
@@ -278,7 +279,6 @@ HTMLArea.Config = function () {
   // URL-s
   this.imgURL = "images/";
   this.popupURL = "popups/";
-  this.helpURL  = _editor_url + "reference.html";
 
   // remove tags (these have to be a regexp, or null if this functionality is not desired)
   this.htmlRemoveTags = null;
@@ -315,8 +315,9 @@ HTMLArea.Config = function () {
     ["linebreak","separator","justifyleft","justifycenter","justifyright","justifyfull"],
     ["separator","insertorderedlist","insertunorderedlist","outdent","indent"],
     ["separator","inserthorizontalrule","createlink","insertimage","inserttable"],
-    ["separator","undo","redo","selectall"], (HTMLArea.is_gecko ? [] : ["cut","copy","paste","overwrite","saveas"]),
-    ["separator","killword","removeformat","toggleborders","lefttoright", "righttoleft","separator","htmlmode","about"]
+    ["separator","undo","redo","selectall","print"], (HTMLArea.is_gecko ? [] : ["cut","copy","paste","overwrite","saveas"]),
+    ["separator","killword","clearfonts","removeformat","toggleborders","splitblock","lefttoright", "righttoleft"],
+    ["separator","htmlmode","showhelp","about"]
   ];
 
 
@@ -370,7 +371,8 @@ HTMLArea.Config = function () {
    "insert_image": "insert_image.html",
    "insert_table": "insert_table.html",
    "select_color": "select_color.html",
-   "about": "about.html"
+   "about": "about.html",
+   "help": "editor_help.html"
   };
 
 
@@ -433,7 +435,7 @@ HTMLArea.Config = function () {
 
     htmlmode: [ "Toggle HTML Source", ["ed_buttons_main.gif",7,0], true, function(e) {e.execCommand("htmlmode");} ],
     toggleborders: [ "Toggle Borders", ["ed_buttons_main.gif",7,2], false, function(e) { e._toggleBorders() } ],
-    print:         [ "Print document", ["ed_buttons_main.gif",8,1], false, function(e) {e._iframe.contentWindow.print();} ],
+    print: [ "Print document", ["ed_buttons_main.gif",8,1], false, function(e) {if (HTMLArea.is_gecko) {e._iframe.contentWindow.print();} else {e.focusEditor(); print();}} ],
     saveas: [ "Save as", "ed_saveas.gif", false, function(e) {e.execCommand("saveas",false,"noname.htm");} ],
     about: [ "About this editor", ["ed_buttons_main.gif",8,2], true, function(e) {e.execCommand("about");} ],
     showhelp: [ "Help using editor", ["ed_buttons_main.gif",9,2], true, function(e) {e.execCommand("showhelp");} ],
@@ -444,7 +446,7 @@ HTMLArea.Config = function () {
     overwrite: [ "Insert/Overwrite", "ed_overwrite.gif", false, function(e) {e.execCommand("overwrite");} ],
 
     wordclean:     [ "MS Word Cleaner", ["ed_buttons_main.gif",5,3], false, function(e) {e._wordClean();} ],
-    clearfonts:    [ "Clear Inline Font Specifications", ["ed_buttons_main.gif",5,4], false, function(e) {e._clearFonts();} ],
+    clearfonts:    [ "Clear Inline Font Specifications", ["ed_buttons_main.gif",5,4], true, function(e) {e._clearFonts();} ],
     removeformat:  [ "Remove formatting", ["ed_buttons_main.gif",4,4], false, function(e) {e.execCommand("removeformat");} ],
     killword:      [ "Clear MSOffice tags", ["ed_buttons_main.gif",4,3], false, function(e) {e.execCommand("killword");} ]
 
@@ -475,7 +477,8 @@ HTMLArea.Config = function () {
   // initialize tooltips from the I18N module and generate correct image path
   for (var i in this.btnList) {
     var btn = this.btnList[i];
-    if(typeof btn[1] != 'string')
+    if (typeof btn != 'object') continue; // prevent iterating over wrong type
+    if (typeof btn[1] != 'string')
     {
       btn[1][0] = _editor_url + this.imgURL + btn[1][0];
     }
@@ -536,7 +539,7 @@ HTMLArea.prototype.registerPanel = function(side, object)
   {
     object.drawPanelIn(panel);
   }
-}
+};
 
 /** The following helper function registers a dropdown box with the editor
  * configuration.  You still have to add it to the toolbar, same as with the
@@ -695,7 +698,7 @@ HTMLArea.Config.prototype.addToolbarElement = function(id, where, position) {
       }
     }
   }
-}
+};
 
 /** Helper function: replace all TEXTAREA-s in the document with HTMLArea-s. */
 HTMLArea.replaceAll = function(config) {
@@ -731,16 +734,16 @@ HTMLArea.prototype._createToolbar = function () {
 	this._htmlArea.appendChild(toolbar);      
   
   return toolbar;
-}
+};
 
 
 HTMLArea.prototype._setConfig = function(config) {
 	this.config = config;
-}
+};
 
 HTMLArea.prototype._addToolbar = function() {
 	this._createToolbar1(this, this._toolbar, this._toolbarObjects);
-}
+};
 
 // separate from previous createToolBar to allow dynamic change of toolbar
 HTMLArea.prototype._createToolbar1 = function (editor, toolbar, tb_objects) {
@@ -788,7 +791,7 @@ HTMLArea.prototype._createToolbar1 = function (editor, toolbar, tb_objects) {
     tb_body.appendChild(tb_row);
 
     table.className = 'toolbarRow'; // meh, kinda.
-  }; // END of function: newLine
+  } // END of function: newLine
 
   // init first line
   newLine();
@@ -820,7 +823,7 @@ HTMLArea.prototype._createToolbar1 = function (editor, toolbar, tb_objects) {
       }
       this[id] = newval;
     }
-  }; // END of function: setButtonStatus
+  } // END of function: setButtonStatus
 
   // this function will handle creation of combo boxes.  Receives as
   // parameter the name of a button as defined in the toolBar config.
@@ -880,6 +883,7 @@ HTMLArea.prototype._createToolbar1 = function (editor, toolbar, tb_objects) {
       tb_objects[txt] = obj;
       
       for (var i in options) {
+        if (typeof(options[i]) != 'string') continue;  // prevent iterating over wrong type
         var op = document.createElement("option");
         op.innerHTML = HTMLArea._lc(i);
         op.value = options[i];
@@ -890,7 +894,7 @@ HTMLArea.prototype._createToolbar1 = function (editor, toolbar, tb_objects) {
       });
     }
     return el;
-  }; // END of function: createSelect
+  } // END of function: createSelect
 
   // appends a new button to toolbar
   function createButton(txt) {
@@ -1005,14 +1009,14 @@ HTMLArea.prototype._createToolbar1 = function (editor, toolbar, tb_objects) {
           img.style.top = '0px';
           img.style.left = '0px';
         }
-      }
+      };
       
     } else if (!el) {
       el = createSelect(txt);
     }
 
     return el;
-  };
+  }
 
   var first = true;
   for (var i = 0; i < this.config.toolbar.length; ++i) {
@@ -1136,7 +1140,7 @@ HTMLArea.makeBtnImg = function(imgDef, doc)
   }
   i_contain.appendChild(img);
   return i_contain;
-}
+};
 
 HTMLArea.prototype._createStatusBar = function() {
   var statusbar = document.createElement("div");
@@ -1276,7 +1280,7 @@ HTMLArea.prototype.generate = function ()
     'sb_row'    :document.createElement('tr'),
     'sb_cell'   :document.createElement('td')  // status bar
 
-  }
+  };
 
   HTMLArea.freeLater(this._framework);
   
@@ -1436,13 +1440,13 @@ HTMLArea.prototype.generate = function ()
 
       case 'toolbar':
       {
-        width = this._toolBar.offsetWidth;
+        width = this._toolBar.offsetWidth + 'px';
       }
       break;
 
       default :
       {
-        width = this.config.width;
+        width = /[^0-9]/.test(this.config.width) ? this.config.width : this.config.width + 'px';
       }
       break;
     }
@@ -1457,7 +1461,7 @@ HTMLArea.prototype.generate = function ()
 
       default :
       {
-        height = this.config.height;
+        height = /[^0-9]/.test(this.config.height) ? this.config.height : this.config.height + 'px';
       }
       break;
     }
@@ -1467,7 +1471,7 @@ HTMLArea.prototype.generate = function ()
     HTMLArea.addDom0Event(window, 'resize', function(e) { editor.sizeEditor(); });
 
     this.notifyOn('panel_change',function(){editor.sizeEditor();});
-  }
+  };
 
   /**
    *  Size the editor to a specific size, or just refresh the size (when window resizes for example)
@@ -1649,7 +1653,7 @@ HTMLArea.prototype.generate = function ()
     this._textArea.style.width  = this._iframe.style.width;
 
     this.notifyOf('resize', {width:this._htmlArea.offsetWidth, height:this._htmlArea.offsetHeight});
-  }
+  };
 
   HTMLArea.prototype.addPanel = function(side)
   {
@@ -1666,7 +1670,7 @@ HTMLArea.prototype.generate = function ()
     this.notifyOf('panel_change', {'action':'add','panel':div});
 
     return div;
-  }
+  };
 
   HTMLArea.prototype.removePanel = function(panel)
   {
@@ -1681,7 +1685,7 @@ HTMLArea.prototype.generate = function ()
     }
     this._panels[panel.side].panels = clean;
     this.notifyOf('panel_change', {'action':'remove','panel':panel});
-  }
+  };
 
   HTMLArea.prototype.hidePanel = function(panel)
   {
@@ -1690,7 +1694,7 @@ HTMLArea.prototype.generate = function ()
       panel.style.display = 'none';
       this.notifyOf('panel_change', {'action':'hide','panel':panel});
     }
-  }
+  };
 
   HTMLArea.prototype.showPanel = function(panel)
   {
@@ -1699,7 +1703,7 @@ HTMLArea.prototype.generate = function ()
       panel.style.display = '';
       this.notifyOf('panel_change', {'action':'show','panel':panel});
     }
-  }
+  };
 
   HTMLArea.prototype.hidePanels = function(sides)
   {
@@ -1718,7 +1722,7 @@ HTMLArea.prototype.generate = function ()
       }
     }
     this.notifyOf('panel_change', {'action':'multi_hide','sides':sides});
-  }
+  };
 
   HTMLArea.prototype.showPanels = function(sides)
   {
@@ -1737,7 +1741,7 @@ HTMLArea.prototype.generate = function ()
       }
     }
     this.notifyOf('panel_change', {'action':'multi_show','sides':sides});
-  }
+  };
 
   HTMLArea.objectProperties = function(obj)
   {
@@ -1747,7 +1751,7 @@ HTMLArea.prototype.generate = function ()
       props[props.length] = x;
     }
     return props;
-  }
+  };
 
   /*
    * EDITOR ACTIVATION NOTES:
@@ -1765,7 +1769,7 @@ HTMLArea.prototype.generate = function ()
     {
       return false;
     }
-  }
+  };
 
   HTMLArea._someEditorHasBeenActivated = false;
   HTMLArea._currentlyActiveEditor      = false;
@@ -1807,7 +1811,7 @@ HTMLArea.prototype.generate = function ()
 
     var editor = this;
     this.enableToolbar();
-  }
+  };
 
   HTMLArea.prototype.deactivateEditor = function()
   {
@@ -1833,7 +1837,7 @@ HTMLArea.prototype.generate = function ()
     }
 
     HTMLArea._currentlyActiveEditor = false;
-  }
+  };
 
   HTMLArea.prototype.initIframe = function()
   {
@@ -1880,7 +1884,7 @@ HTMLArea.prototype.generate = function ()
            + ".htmtableborders, .htmtableborders td, .htmtableborders th {border : 1px dashed lightgrey ! important;} \n"
            + "</style>\n";
       html += "<style type=\"text/css\">"
-           + "html, body { border: 0px; } \n"
+           + "html, body { border: 0px;  background-color: #ffffff; } \n"
            + "span.macro, span.macro ul, span.macro div, span.macro p {background : #CCCCCC;}\n"
            + "</style>\n";
 
@@ -1913,33 +1917,23 @@ HTMLArea.prototype.generate = function ()
     doc.write(html);
     doc.close();
 
-    // if we have multiple editors some bug in Mozilla makes some lose editing ability
-    HTMLArea._addEvents
-    (
-      doc,
-      ["mousedown"],
-      function() { editor.activateEditor(); return true; }
-    );
-
-
-    // intercept some events; for updating the toolbar & keyboard handlers
-    HTMLArea._addEvents
-      (doc, ["keydown", "keypress", "mousedown", "mouseup", "drag"],
-       function (event) {
-         return editor._editorEvent(HTMLArea.is_ie ? editor._iframe.contentWindow.event : event);
-       });
-
-    // check if any plugins have registered refresh handlers
-    for (var i in editor.plugins) {
-      var plugin = editor.plugins[i].instance;
-      HTMLArea.refreshPlugin(plugin);
-    }
-
-    // specific editor initialization
-    if(typeof editor._onGenerate == "function") {
-      editor._onGenerate();
-    }
+    this.setEditorEvents();
+  };
+  
+/** Delay a function until the document is ready for operations.  See ticket:547 */
+HTMLArea.prototype.whenDocReady = function(doFunction)
+{
+  var editor = this;  
+  
+  if(!this._doc.body)
+  {
+    setTimeout(function() {editor.whenDocReady(doFunction)}, 50); 
   }
+  else
+  {
+    doFunction();
+  }
+}
 
 // Switches editor mode; parameter can be "textmode" or "wysiwyg".  If no
 // parameter was passed this function toggles between modes.
@@ -1996,7 +1990,7 @@ HTMLArea.prototype.setMode = function(mode) {
 
   for (var i in this.plugins) {
     var plugin = this.plugins[i].instance;
-    if (typeof plugin.onMode == "function") plugin.onMode(mode);
+    if (plugin && typeof plugin.onMode == "function") plugin.onMode(mode);
   }
 };
 
@@ -2022,10 +2016,45 @@ HTMLArea.prototype.setFullHTML = function(html) {
     this._doc.write(html);
     this._doc.close();
     if(reac) this.activateEditor();
+    this.setEditorEvents();
     return true;
   }
 };
 
+HTMLArea.prototype.setEditorEvents = function() {
+  var editor=this;
+  var doc=this._doc;
+  editor.whenDocReady(
+    function() {
+      // if we have multiple editors some bug in Mozilla makes some lose editing ability
+      HTMLArea._addEvents
+      (
+        doc,
+        ["mousedown"],
+        function() { editor.activateEditor(); return true; }
+      );
+
+      // intercept some events; for updating the toolbar & keyboard handlers
+      HTMLArea._addEvents
+        (doc, ["keydown", "keypress", "mousedown", "mouseup", "drag"],
+         function (event) {
+           return editor._editorEvent(HTMLArea.is_ie ? editor._iframe.contentWindow.event : event);
+         });
+
+      // check if any plugins have registered refresh handlers
+      for (var i in editor.plugins) {
+        var plugin = editor.plugins[i].instance;
+        HTMLArea.refreshPlugin(plugin);
+      };
+
+      // specific editor initialization
+      if(typeof editor._onGenerate == "function") {
+        editor._onGenerate();
+      }
+    }
+  );
+};
+  
 /***************************************************
  *  Category: PLUGINS
  ***************************************************/
@@ -2168,13 +2197,13 @@ HTMLArea.loadPlugins = function(plugins, callbackIfNotReady)
     setTimeout(function() { if(HTMLArea.loadPlugins(plugins, callbackIfNotReady)) callbackIfNotReady(); }, 150);
   }
   return retVal;
-}
+};
 
 // refresh plugin by calling onGenerate or onGenerateOnce method.
 HTMLArea.refreshPlugin = function(plugin) {
-  if (typeof plugin.onGenerate == "function")
+  if (plugin && typeof plugin.onGenerate == "function")
     plugin.onGenerate();
-  if (typeof plugin.onGenerateOnce == "function") {
+  if (plugin && typeof plugin.onGenerateOnce == "function") {
     plugin.onGenerateOnce();
     plugin.onGenerateOnce = null;
   }
@@ -2210,7 +2239,7 @@ HTMLArea.prototype.debugTree = function() {
     for (; --indent >= 0;)
       ta.value += " ";
     ta.value += str + "\n";
-  };
+  }
   function _dt(root, level) {
     var tag = root.tagName.toLowerCase(), i;
     var ns = HTMLArea.is_ie ? root.scopeName : root.prefix;
@@ -2218,7 +2247,7 @@ HTMLArea.prototype.debugTree = function() {
     for (i = root.firstChild; i; i = i.nextSibling)
       if (i.nodeType == 1)
         _dt(i, level + 2);
-  };
+  }
   _dt(this._doc.body, 0);
   document.body.appendChild(ta);
 };
@@ -2260,7 +2289,7 @@ HTMLArea.prototype._wordClean = function() {
     txt += "Final document length: " + editor._doc.body.innerHTML.length + "\n";
     txt += "Clean-up took " + (((new Date()).getTime() - stats.T) / 1000) + " seconds";
     alert(txt);
-  };
+  }
   function clearClass(node) {
     var newc = node.className.replace(/(^|\s)mso.*?(\s|$)/ig, ' ');
     if (newc != node.className) {
@@ -2270,7 +2299,7 @@ HTMLArea.prototype._wordClean = function() {
         ++stats.mso_class;
       }
     }
-  };
+  }
   function clearStyle(node) {
     var declarations = node.style.cssText.split(/\s*;\s*/);
     for (var i = declarations.length; --i >= 0;)
@@ -2280,7 +2309,7 @@ HTMLArea.prototype._wordClean = function() {
         declarations.splice(i, 1);
       }
     node.style.cssText = declarations.join("; ");
-  };
+  }
   function stripTag(el) {
     if (HTMLArea.is_ie)
       el.outerHTML = HTMLArea.htmlEncode(el.innerText);
@@ -2290,14 +2319,14 @@ HTMLArea.prototype._wordClean = function() {
       HTMLArea.removeFromParent(el);
     }
     ++stats.mso_xmlel;
-  };
+  }
   function checkEmpty(el) {
     if (/^(a|span|b|strong|i|em|font)$/i.test(el.tagName) &&
         !el.firstChild) {
       HTMLArea.removeFromParent(el);
       ++stats.empty_tags;
     }
-  };
+  }
   function parseTree(root) {
     var tag = root.tagName.toLowerCase(), i, next;
     if ((HTMLArea.is_ie && root.scopeName != 'HTML') || (!HTMLArea.is_ie && /:/.test(tag))) {
@@ -2313,7 +2342,7 @@ HTMLArea.prototype._wordClean = function() {
       }
     }
     return true;
-  };
+  }
   parseTree(this._doc.body);
   // showStats();
   // this.debugTree();
@@ -2326,19 +2355,19 @@ HTMLArea.prototype._wordClean = function() {
 HTMLArea.prototype._clearFonts = function() {
   var D = this.getInnerHTML();
 
-  if(confirm('Would you like to clear font typefaces?'))
+  if(confirm(HTMLArea._lc("Would you like to clear font typefaces?")))
   {
     D = D.replace(/face="[^"]*"/gi, '');
     D = D.replace(/font-family:[^;}"']+;?/gi, '');
   }
 
-  if(confirm('Would you like to clear font sizes?'))
+  if(confirm(HTMLArea._lc("Would you like to clear font sizes?")))
   {
     D = D.replace(/size="[^"]*"/gi, '');
     D = D.replace(/font-size:[^;}"']+;?/gi, '');
   }
 
-  if(confirm('Would you like to clear font colours?'))
+  if(confirm(HTMLArea._lc("Would you like to clear font colours?")))
   {
     D = D.replace(/color="[^"]*"/gi, '');
     D = D.replace(/([^-])color:[^;}"']+;?/gi, '$1');
@@ -2348,12 +2377,12 @@ HTMLArea.prototype._clearFonts = function() {
   D = D.replace(/<(font|span)\s*>/gi, '');
   this.setHTML(D);
   this.updateToolbar();
-}
+};
 
 HTMLArea.prototype._splitBlock = function()
 {
-  this._doc.execCommand('formatblock', false, '<div>');
-}
+  this._doc.execCommand('formatblock', false, 'div');
+};
 
 HTMLArea.prototype.forceRedraw = function() {
   this._doc.body.style.visibility = "hidden";
@@ -2438,14 +2467,15 @@ HTMLArea.prototype.disableToolbar = function(except)
     {
       continue;
     }
+    if (typeof(btn.state) != 'function') continue;  // prevent iterating over wrong type
     btn.state("enabled", false);
   }
-}
+};
 
 HTMLArea.prototype.enableToolbar = function()
 {
   this.updateToolbar();
-}
+};
 
 if(!Array.prototype.contains)
 {
@@ -2458,7 +2488,7 @@ if(!Array.prototype.contains)
     }
 
     return false;
-  }
+  };
 }
 
 if(!Array.prototype.indexOf)
@@ -2472,7 +2502,7 @@ if(!Array.prototype.indexOf)
     }
 
     return null;
-  }
+  };
 }
 
 
@@ -2533,6 +2563,7 @@ HTMLArea.prototype.updateToolbar = function(noStatus) {
     var btn = this._toolbarObjects[i];
     var cmd = i;
     var inContext = true;
+    if (typeof(btn.state) != 'function') continue;  // prevent iterating over wrong type
     if (btn.context && !text) {
       inContext = false;
       var context = btn.context;
@@ -2614,7 +2645,10 @@ HTMLArea.prototype.updateToolbar = function(noStatus) {
         var blocks = [ ];
         for(var i in this.config['formatblock'])
         {
-          blocks[blocks.length] = this.config['formatblock'][i];
+          if (typeof(this.config['formatblock'][i]) == 'string')  // prevent iterating over wrong type
+          {
+            blocks[blocks.length] = this.config['formatblock'][i];
+          }
         }
 
         var deepestAncestor = this._getFirstAncestor(this._getSelection(), blocks);
@@ -2718,12 +2752,12 @@ HTMLArea.prototype.updateToolbar = function(noStatus) {
   // check if any plugins have registered refresh handlers
   for (var i in this.plugins) {
     var plugin = this.plugins[i].instance;
-    if (typeof plugin.onUpdateToolbar == "function")
+    if (plugin && typeof plugin.onUpdateToolbar == "function")
       plugin.onUpdateToolbar();
   }
 
 
-}
+};
 
 /** Returns a node after which we can insert other nodes, in the current
  * selection.  The selection is removed.  It splits a text node, if needed.
@@ -2782,7 +2816,19 @@ HTMLArea.prototype.getParentElement = function(sel) {
   var range = this._createRange(sel);
   if (HTMLArea.is_ie) {
     switch (sel.type) {
-        case "Text":
+        case "Text":         
+      // try to circumvent a bug in IE:
+      // the parent returned is not always the real parent element    
+      var parent = range.parentElement();
+      while (true)
+      {
+        var TestRange = range.duplicate();
+        TestRange.moveToElementText(parent);
+        if (TestRange.inRange(range)) break;
+        if ((parent.nodeType != 1) || (parent.tagName.toLowerCase() == 'body')) break;
+        parent = parent.parentElement;
+      }
+      return parent;
         case "None":
       // It seems that even for selection of type "None",
       // there _is_ a parent element and it's value is not
@@ -2863,7 +2909,7 @@ HTMLArea.prototype._getFirstAncestor = function(sel, types)
   }
 
   return null;
-}
+};
 
 /**
  * Returns the selected element, if any.  That is,
@@ -2941,7 +2987,7 @@ HTMLArea.prototype._activeElement = function(sel)
     }
     return null;
   }
-}
+};
 
 
 HTMLArea.prototype._selectionEmpty = function(sel)
@@ -2958,7 +3004,7 @@ HTMLArea.prototype._selectionEmpty = function(sel)
   }
 
   return true;
-}
+};
 
 HTMLArea.prototype._getAncestorBlock = function(sel)
 {
@@ -3004,7 +3050,7 @@ HTMLArea.prototype._getAncestorBlock = function(sel)
   }
 
   return null;
-}
+};
 
 HTMLArea.prototype._createImplicitBlock = function(type)
 {
@@ -3025,7 +3071,7 @@ HTMLArea.prototype._createImplicitBlock = function(type)
   // Expand UP
 
   // Expand DN
-}
+};
 
 HTMLArea.prototype._formatBlock = function(block_format)
 {
@@ -3125,7 +3171,7 @@ HTMLArea.prototype._formatBlock = function(block_format)
     }
   }
 
-}
+};
 
 // Selects the contents inside the given node
 HTMLArea.prototype.selectNodeContents = function(node, pos) {
@@ -3171,6 +3217,7 @@ HTMLArea.prototype.selectNodeContents = function(node, pos) {
 HTMLArea.prototype.insertHTML = function(html) {
   var sel = this._getSelection();
   var range = this._createRange(sel);
+  this.focusEditor();
   if (HTMLArea.is_ie) {
     range.pasteHTML(html);
   } else {
@@ -3222,10 +3269,8 @@ HTMLArea.prototype._createLink = function(link) {
   if (typeof link == "undefined") {
     link = this.getParentElement();
     if (link) {
-      if (/^img$/i.test(link.tagName))
+      while (link && !/^a$/i.test(link.tagName))
         link = link.parentNode;
-      if (!/^a$/i.test(link.tagName))
-        link = null;
     }
   }
   if (!link) {
@@ -3324,18 +3369,20 @@ HTMLArea.prototype._insertImage = function(image) {
       return false;
     }
     var img = image;
-    if (!img) {
-      var sel = editor._getSelection();
-      var range = editor._createRange(sel);
-      editor._doc.execCommand("insertimage", false, param.f_url);
+    if (!img) {      
       if (HTMLArea.is_ie) {
+        var sel = editor._getSelection();
+        var range = editor._createRange(sel);
+        editor._doc.execCommand("insertimage", false, param.f_url);
         img = range.parentElement();
         // wonder if this works...
         if (img.tagName.toLowerCase() != "img") {
           img = img.previousSibling;
         }
       } else {
-        img = range.startContainer.previousSibling;
+        img = document.createElement('img');
+        img.src = param.f_url;
+        editor.insertNodeAtSelection(img);
         if (!img.tagName) {
           // if the cursor is at the beginning of the document
           img = range.startContainer.firstChild;
@@ -3398,8 +3445,8 @@ HTMLArea.prototype._insertTable = function() {
         if (cellwidth)
           td.style.width = cellwidth + "%";
         tr.appendChild(td);
-        // Mozilla likes to see something inside the cell.
-        (HTMLArea.is_gecko) && td.appendChild(doc.createElement("br"));
+        // Browsers like to see something inside the cell (&nbsp;).
+        td.appendChild(doc.createTextNode('\u00a0'));
       }
     }
     if (HTMLArea.is_ie) {
@@ -3426,7 +3473,7 @@ HTMLArea.prototype._comboSelected = function(el, txt) {
       case "fontsize": this.execCommand(txt, false, value); break;
       case "formatblock":
     // (HTMLArea.is_ie) && (value = "<" + value + ">");
-    value = "<" + value + ">"
+    if(!HTMLArea.is_gecko || value !== 'blockquote') {   value = "<" + value + ">";}
     this.execCommand(txt, false, value);
     break;
       default:
@@ -3472,7 +3519,7 @@ HTMLArea.prototype.execCommand = function(cmdID, UI, param) {
       case "inserttable": this._insertTable(); break;
       case "insertimage": this._insertImage(); break;
       case "about"    : this._popupDialog(editor.config.URIs["about"], null, this); break;
-      case "showhelp" : window.open(this.config.helpURL, "ha_help"); break;
+      case "showhelp" : this._popupDialog(editor.config.URIs["help"], null, this); break;
 
       case "killword": this._wordClean(); break;
 
@@ -3537,7 +3584,7 @@ HTMLArea.prototype._editorEvent = function(ev) {
     for (var i in editor.plugins)
     {
       var plugin = editor.plugins[i].instance;
-      if (typeof plugin.onKeyPress == "function")
+      if (plugin && typeof plugin.onKeyPress == "function")
         if (plugin.onKeyPress(ev))
           return false;
     }
@@ -3641,7 +3688,7 @@ HTMLArea.prototype._editorEvent = function(ev) {
         editor._unlinkOnUndo = true;
 
         return a;
-      }
+      };
 
       switch(ev.which)
       {
@@ -4064,7 +4111,7 @@ HTMLArea.prototype.scrollToElement = function(e)
     }
     this._iframe.contentWindow.scrollTo(left, top);
   }
-}
+};
 
 // retrieve the HTML
 HTMLArea.prototype.getHTML = function() {
@@ -4130,7 +4177,7 @@ HTMLArea.prototype.outwardHtml = function(html)
   }
 
   return html;
-}
+};
 
 HTMLArea.prototype.inwardHtml = function(html)
 {
@@ -4138,9 +4185,12 @@ HTMLArea.prototype.inwardHtml = function(html)
   // mozilla, this is the 21st century calling!
   if (HTMLArea.is_gecko) {
     html = html.replace(/<(\/?)strong(\s|>|\/)/ig, "<$1b$2");
-    html = html.replace(/<(\/?)em(\s|>|\/)/ig, "<$1i$2");
-    html = html.replace(/<(\/?)strike(\s|>|\/)/ig, "<$1del$2");
+    html = html.replace(/<(\/?)em(\s|>|\/)/ig, "<$1i$2");    
   }
+  
+  // Both IE and Gecko use strike instead of del (#523)
+  html = html.replace(/<(\/?)del(\s|>|\/)/ig, "<$1strike$2");
+ 
 
   // replace window.open to that any clicks won't open a popup in designMode
   html = html.replace("onclick=\"window.open(", "onclick=\"try{if(document.designMode &amp;&amp; document.designMode == 'on') return false;}catch(e){} window.open(");
@@ -4154,7 +4204,7 @@ HTMLArea.prototype.inwardHtml = function(html)
 
   html = this.fixRelativeLinks(html);
   return html;
-}
+};
 
 HTMLArea.prototype.outwardSpecialReplacements = function(html)
 {
@@ -4162,13 +4212,14 @@ HTMLArea.prototype.outwardSpecialReplacements = function(html)
   {
     var from = this.config.specialReplacements[i];
     var to   = i;
+    if (typeof(from.replace) != 'function' || typeof(to.replace) != 'function') continue;  // prevent iterating over wrong type    
     // alert('out : ' + from + '=>' + to);
     var reg = new RegExp(from.replace(HTMLArea.RE_Specials, '\\$1'), 'g');
     html = html.replace(reg, to.replace(/\$/g, '$$$$'));
     //html = html.replace(from, to);
   }
   return html;
-}
+};
 
 HTMLArea.prototype.inwardSpecialReplacements = function(html)
 {
@@ -4177,6 +4228,8 @@ HTMLArea.prototype.inwardSpecialReplacements = function(html)
   {
     var from = i;
     var to   = this.config.specialReplacements[i];
+
+    if (typeof(from.replace) != 'function' || typeof(to.replace) != 'function') continue;  // prevent iterating over wrong type
     // alert('in : ' + from + '=>' + to);
     //
     // html = html.replace(reg, to);
@@ -4185,7 +4238,7 @@ HTMLArea.prototype.inwardSpecialReplacements = function(html)
     html = html.replace(reg, to.replace(/\$/g, '$$$$')); // IE uses doubled dollar signs to escape backrefs, also beware that IE also implements $& $_ and $' like perl.
   }
   return html;
-}
+};
 
 
 HTMLArea.prototype.fixRelativeLinks = function(html)
@@ -4224,7 +4277,7 @@ HTMLArea.prototype.fixRelativeLinks = function(html)
   }
 
   return html;
-}
+};
 
 // retrieve the HTML (fastest version, but uses innerHTML)
 HTMLArea.prototype.getInnerHTML = function() {
@@ -4279,12 +4332,12 @@ HTMLArea.cloneObject = function(obj) {
   var newObj = new Object;
 
   // check for array objects
-  if (obj.constructor.toString().indexOf("function Array(") == 1) {
+  if (obj.constructor.toString().match( /\s*function Array\(/ )) {
     newObj = obj.constructor();
   }
 
   // check for function objects (as usual, IE is fucked up)
-  if (obj.constructor.toString().indexOf("function Function(") == 1) {
+  if (obj.constructor.toString().match( /\s*function Function\(/ )) {
     newObj = obj; // just copy reference to it
   } else for (var n in obj) {
     var node = obj[n];
@@ -4355,16 +4408,23 @@ HTMLArea.flushEvents = function()
   var e = null;
   while(e = HTMLArea._eventFlushers.pop())
   {
-    if(e.length == 3)
+    try
     {
-      HTMLArea._removeEvent(e[0], e[1], e[2]);
-      x++;
+      if(e.length == 3)
+      {
+        HTMLArea._removeEvent(e[0], e[1], e[2]);
+        x++;
+      }
+      else if (e.length == 2)
+      {
+        e[0]['on' + e[1]] = null;
+        e[0]._xinha_dom0Events[e[1]] = null;
+        x++;
+      }
     }
-    else if (e.length == 2)
+    catch(e)
     {
-      e[0]['on' + e[1]] = null;
-      e[0]._xinha_dom0Events[e[1]] = null;
-      x++;
+      // Do Nothing
     }
   }
   
@@ -4388,7 +4448,7 @@ HTMLArea.flushEvents = function()
   */
   
   // alert('Flushed ' + x + ' events.');
-}
+};
 
 HTMLArea._addEvent = function(el, evname, func) {
   if (HTMLArea.is_ie) {
@@ -4421,8 +4481,10 @@ HTMLArea._removeEvents = function(el, evs, func) {
 
 HTMLArea._stopEvent = function(ev) {
   if (HTMLArea.is_ie) {
-    ev.cancelBubble = true;
-    ev.returnValue = false;
+    try{
+      ev.cancelBubble = true;
+      ev.returnValue = false;
+    } catch(e){}
   } else {
     ev.preventDefault();
     ev.stopPropagation();
@@ -4449,7 +4511,7 @@ HTMLArea.addDom0Event = function(el, ev, fn)
 {
   HTMLArea._prepareForDom0Events(el, ev);
   el._xinha_dom0Events[ev].unshift(fn);
-}
+};
 
 
 /**
@@ -4462,7 +4524,7 @@ HTMLArea.prependDom0Event = function(el, ev, fn)
 {
   HTMLArea._prepareForDom0Events(el, ev);
   el._xinha_dom0Events[ev].push(fn);
-}
+};
 
 /**
  * Prepares an element to receive more than one DOM-0 event handler
@@ -4507,11 +4569,11 @@ HTMLArea._prepareForDom0Events = function(el, ev)
         el._xinha_tempEventHandler = null;
       }
       return allOK;
-    }
+    };
 
     HTMLArea._eventFlushers.push([el, ev]);
   }
-}
+};
 
 HTMLArea.prototype.notifyOn = function(ev, fn)
 {
@@ -4522,7 +4584,7 @@ HTMLArea.prototype.notifyOn = function(ev, fn)
   }
 
   this._notifyListeners[ev].push(fn);
-}
+};
 
 HTMLArea.prototype.notifyOf = function(ev, args)
 {
@@ -4535,7 +4597,7 @@ HTMLArea.prototype.notifyOf = function(ev, args)
       this._notifyListeners[ev][i](ev, args);
     }
   }
-}
+};
 
 
 HTMLArea._removeClass = function(el, className) {
@@ -4582,9 +4644,13 @@ HTMLArea._paraContainerTags = " body td th caption fieldset div";
 HTMLArea.isParaContainer = function(el)
 {
   return el && el.nodeType == 1 && (HTMLArea._paraContainerTags.indexOf(" " + el.tagName.toLowerCase() + " ") != -1);
-}
+};
 
-HTMLArea._closingTags = " head script style div span tr td tbody table em strong b i strike code cite dfn abbr acronym font a title textarea select form ";
+// These are all the tags for which the end tag is not optional or 
+// forbidden, taken from the list at:
+//   http://www.w3.org/TR/REC-html40/index/elements.html
+HTMLArea._closingTags = " a abbr acronym address applet b bdo big blockquote button caption center cite code del dfn dir div dl em fieldset font form frameset h1 h2 h3 h4 h5 h6 i iframe ins kbd label legend map menu noframes noscript object ol optgroup pre q s samp script select small span strike strong style sub sup table textarea title tt u ul var ";
+
 HTMLArea.needsClosingTag = function(el) {
   return el && el.nodeType == 1 && (HTMLArea._closingTags.indexOf(" " + el.tagName.toLowerCase() + " ") != -1);
 };
@@ -4614,7 +4680,7 @@ HTMLArea.getHTML = function(root, outputRoot, editor){
         alert(HTMLArea._lc('Your Document is not well formed. Check JavaScript console for details.'));
         return editor._iframe.contentWindow.document.body.innerHTML;
     }
-}
+};
 
 HTMLArea.getHTMLWrapper = function(root, outputRoot, editor, indent) {
   var html = "";
@@ -4819,7 +4885,7 @@ HTMLArea._colorToRgb = function(v) {
   // returns the hex representation of one byte (2 digits)
   function hex(d) {
     return (d < 16) ? ("0" + d.toString(16)) : d.toString(16);
-  };
+  }
 
   if (typeof v == "number") {
     // we're talking to IE here
@@ -4937,7 +5003,7 @@ HTMLArea.prototype._toggleBorders = function()
    }
   }
   return true;
-}
+};
 
 
 HTMLArea.addClasses = function(el, classes)
@@ -4963,7 +5029,7 @@ HTMLArea.addClasses = function(el, classes)
       }
       el.className = thiers.join(' ').trim();
     }
-  }
+  };
 
 HTMLArea.removeClasses = function(el, classes)
 {
@@ -4987,7 +5053,7 @@ HTMLArea.removeClasses = function(el, classes)
     }
   }
   return new_classes.join(' ');
-}
+};
 
 /** Alias these for convenience */
 HTMLArea.addClass       = HTMLArea._addClass;
@@ -5042,7 +5108,7 @@ HTMLArea._postback = function(url, data, handler)
   );
   //alert(content);
   req.send(content);
-}
+};
 
 HTMLArea._getback = function(url, handler)
 {
@@ -5074,7 +5140,7 @@ HTMLArea._getback = function(url, handler)
   req.onreadystatechange = callBack;
   req.open('GET', url, true);
   req.send(null);
-}
+};
 
 HTMLArea._geturlcontent = function(url)
 {
@@ -5100,7 +5166,7 @@ HTMLArea._geturlcontent = function(url)
     return '';
   }
 
-}
+};
 
 /**
  * Unless somebody already has, make a little function to debug things
@@ -5140,7 +5206,7 @@ HTMLArea.arrayContainsArray = function(a1, a2)
     }
   }
   return all_found;
-}
+};
 
 HTMLArea.arrayFilter = function(a1, filterfn)
 {
@@ -5152,13 +5218,13 @@ HTMLArea.arrayFilter = function(a1, filterfn)
   }
 
   return new_a;
-}
+};
 
 HTMLArea.uniq_count = 0;
 HTMLArea.uniq = function(prefix)
 {
   return prefix + HTMLArea.uniq_count++;
-}
+};
 
 /** New language handling functions **/
 
@@ -5200,7 +5266,7 @@ HTMLArea._loadlang = function(context)
   }
 
   return lang;
-}
+};
 
 /** Return a localised string.
  * @param string    English language string
@@ -5239,6 +5305,10 @@ HTMLArea._lc = function(string, context, replace)
     if(typeof string == 'object' && string.key)
     {
       key = string.key;
+    }
+    else if(typeof string == 'object' && string.string)
+    {
+      key = string.string;
     }
     else
     {
@@ -5281,7 +5351,7 @@ HTMLArea._lc = function(string, context, replace)
   }
 
   return ret;
-}
+};
 
 HTMLArea.hasDisplayedChildren = function(el)
 {
@@ -5297,7 +5367,7 @@ HTMLArea.hasDisplayedChildren = function(el)
     }
   }
   return false;
-}
+};
 
 
 HTMLArea._loadback = function(src, callback)
@@ -5324,7 +5394,7 @@ HTMLArea.collectionToArray = function(collection)
     array.push(collection.item(i));
   }
   return array;
-}
+};
 
 if(!Array.prototype.append)
 {
@@ -5335,7 +5405,7 @@ if(!Array.prototype.append)
       this.push(a[i]);
     }
     return this;
-  }
+  };
 }
 
 HTMLArea.makeEditors = function(editor_names, default_config, plugin_names)
@@ -5353,7 +5423,7 @@ HTMLArea.makeEditors = function(editor_names, default_config, plugin_names)
     editors[editor_names[x]] = editor;
   }
   return editors;
-}
+};
 
 HTMLArea.startEditors = function(editors)
 {
@@ -5361,7 +5431,7 @@ HTMLArea.startEditors = function(editors)
   {
     if(editors[i].generate) editors[i].generate();
   }
-}
+};
 
 HTMLArea.prototype.registerPlugins = function(plugin_names) {
   if(plugin_names)
@@ -5371,7 +5441,7 @@ HTMLArea.prototype.registerPlugins = function(plugin_names) {
       this.registerPlugin(eval(plugin_names[i]));
     }
   }
-}
+};
 
 /** Utility function to base64_encode some arbitrary data, uses the builtin btoa() if it exists (Moz) */
 
@@ -5404,7 +5474,7 @@ HTMLArea.base64_encode =  function(input)
   } while (i < input.length);
 
   return output;
-}
+};
 
 /** Utility function to base64_decode some arbitrary data, uses the builtin atob() if it exists (Moz) */
 
@@ -5440,7 +5510,7 @@ HTMLArea.base64_decode =function(input)
   } while (i < input.length);
 
   return output;
-}
+};
 
 HTMLArea.removeFromParent = function(el)
 {
@@ -5448,7 +5518,7 @@ HTMLArea.removeFromParent = function(el)
   var pN = el.parentNode;
   pN.removeChild(el);
   return el;
-}
+};
 
 HTMLArea.hasParentNode = function(el)
 {
@@ -5464,7 +5534,7 @@ HTMLArea.hasParentNode = function(el)
   }
 
   return false;
-}
+};
 
 HTMLArea.getOuterHTML = function(element)
 {
@@ -5476,13 +5546,13 @@ HTMLArea.getOuterHTML = function(element)
   {
     return (new XMLSerializer()).serializeToString(element);
   }
-}
+};
 
 HTMLArea.toFree = [ ];
 HTMLArea.freeLater = function(obj,prop)
 {
   HTMLArea.toFree.push({o:obj,p:prop});
-}
+};
 
 HTMLArea.free = function(obj, prop)
 {
@@ -5495,9 +5565,9 @@ HTMLArea.free = function(obj, prop)
   }
   else if (obj)
   {
-    obj[prop] = null;
+    try{ obj[prop] = null; } catch(e){ }
   }
-}
+};
 
 /** IE's Garbage Collector is broken very badly.  We will do our best to 
  *   do it's job for it, but we can't be perfect.
@@ -5511,7 +5581,7 @@ HTMLArea.collectGarbageForIE = function()
     if(!HTMLArea.toFree[x].o) alert("What is " + x + ' ' + HTMLArea.toFree[x].o);
     HTMLArea.free(HTMLArea.toFree[x].o, HTMLArea.toFree[x].p);
   }
-}
+};
 
 HTMLArea.init();
 HTMLArea.addDom0Event(window,'unload',HTMLArea.collectGarbageForIE);

@@ -26,7 +26,7 @@ function SpellChecker(editor) {
              });
 
   cfg.addToolbarElement("SC-spell-check", "htmlmode", 1);
-};
+}
 
 SpellChecker._pluginInfo = {
   name          : "SpellChecker",
@@ -41,7 +41,7 @@ SpellChecker._pluginInfo = {
 
 SpellChecker.prototype._lc = function(string) {
     return HTMLArea._lc(string, 'SpellChecker');
-}
+};
 
 SpellChecker.btnList = [
   null, // separator
