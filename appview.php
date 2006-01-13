@@ -191,6 +191,13 @@ if($_REQUEST['appId'])
 {
     $oApp = new Application($_REQUEST['appId']);
 
+    /* is this user supposed to view this version? */
+    if(!$_SESSION['current']->canViewApplication($oApp))
+    {
+        errorpage("Something went wrong with the application or version id");
+        exit;
+    }
+
     // show Vote Menu
     if($_SESSION['current']->isLoggedIn())
         apidb_sidebar_add("vote_menu");
@@ -329,6 +336,14 @@ if($_REQUEST['appId'])
 else if($_REQUEST['versionId'])
 {
     $oVersion = new Version($_REQUEST['versionId']);
+
+    /* is this user supposed to view this version? */
+    if(!$_SESSION['current']->canViewVersion($oVersion))
+    {
+        errorpage("Something went wrong with the application or version id");
+        exit;
+    }
+
     $oApp = new Application($oVersion->iAppId);
     if(!$oApp->iAppId) 
     {
