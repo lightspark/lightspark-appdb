@@ -566,23 +566,29 @@ class testData{
         {
             $oTest = new testData($oRow->testingId);
             $oVersion = new version($oTest->iVersionId);
-            $oApp  = new application($oVersion->iAppId);
-            $oSubmitter = new User($oTest->iSubmitterId);
-            if ($c % 2 == 1) { $bgcolor = 'color0'; } else { $bgcolor = 'color1'; }
-            echo "<tr class=\"$bgcolor\">\n";
-            echo "    <td>".print_date(mysqltimestamp_to_unixtimestamp($oTest->sSubmitTime))."</td>\n";
-            echo "    <td>\n";
-            echo $oSubmitter->sEmail ? "<a href=\"mailto:".$oSubmitter->sEmail."\">":"";
-            echo $oSubmitter->sRealname;
-            echo $oSubmitter->sEmail ? "</a>":"";
-            echo "    </td>\n";
-            echo "    <td>".$oApp->sName."</td>\n";
-            echo "    <td>".$oVersion->sName."</td>\n";
-            echo "    <td>".$oTest->sTestedRelease."</td>\n";
-            echo "    <td align=\"center\">[<a href=".$_SERVER['PHP_SELF']."?sub=view&iTestingId=".$oTest->iTestingId.">process</a>]</td>\n";
-            echo "</tr>\n\n";
-            $c++;
+            // dont show testing results of versions that are still queued.
+            if ($oVersion->sQueued == 'false')
+            {
+                $oApp  = new application($oVersion->iAppId);
+                $oSubmitter = new User($oTest->iSubmitterId);
+                if ($c % 2 == 1) { $bgcolor = 'color0'; } else { $bgcolor = 'color1'; }
+                echo "<tr class=\"$bgcolor\">\n";
+                echo "    <td>".print_date(mysqltimestamp_to_unixtimestamp($oTest->sSubmitTime))."</td>\n";
+                echo "    <td>\n";
+                echo $oSubmitter->sEmail ? "<a href=\"mailto:".$oSubmitter->sEmail."\">":"";
+                echo $oSubmitter->sRealname;
+                echo $oSubmitter->sEmail ? "</a>":"";
+                echo "    </td>\n";
+                echo "    <td>".$oApp->sName."</td>\n";
+                echo "    <td>".$oVersion->sName."</td>\n";
+                echo "    <td>".$oTest->sTestedRelease."</td>\n";
+                echo "    <td align=\"center\">[<a href=".$_SERVER['PHP_SELF']."?sub=view&iTestingId=".$oTest->iTestingId.">process</a>]</td>\n";
+                echo "</tr>\n\n";
+                $c++;
+            }
         }
+        echo "</table>","\n";
+        
         echo html_frame_end();
 
     }
@@ -591,7 +597,13 @@ class testData{
 /* Get the number of TestResults in the database */
 function getNumberOfQueuedTests()
 {
-    $hResult = query_appdb("SELECT count(*) as num_tests FROM testResults WHERE queued='true';");
+    $sQuery = "SELECT count(*) as num_tests
+               FROM testResults, appVersion
+               WHERE appVersion.versionId=testResults.versionId
+               and appVersion.queued='false' 
+               and testResults.queued='true';";
+
+    $hResult = query_appdb($sQuery);
     if($hResult)
     {
       $row = mysql_fetch_object($hResult);
