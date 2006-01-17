@@ -181,14 +181,16 @@ if ($_REQUEST['sub'])
             {
                  $oVersion->create();
             }
-
-            $sDistribution = trim($_REQUEST['sDistribution']);
-            if(!empty($sDistribution))
+            if(!$_REQUEST['iDistributionId'])
             {
-                $oDistribution = new distribution();
-                $oDistribution->sName = $sDistribution;
-                $oDistribution->create();
-                $oTest->iDistributionId = $oDistribution->iDistributionId;
+                $sDistribution = trim($_REQUEST['sDistribution']);
+                if(!empty($sDistribution))
+                {
+                    $oDistribution = new distribution();
+                    $oDistribution->sName = $sDistribution;
+                    $oDistribution->create();
+                    $oTest->iDistributionId = $oDistribution->iDistributionId;
+                }
             }
             $oTest->iVersionId = $oVersion->iVersionId;
             if(is_numeric($oTest->iTestingId))

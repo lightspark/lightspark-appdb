@@ -27,22 +27,25 @@ if ($_REQUEST['sub'])
         $oTest->GetOutputEditorValues(); // retrieve the values from the current $_REQUEST 
         if(empty($errors))
         {
-            $sDistribution = trim($_REQUEST['sDistribution']);
-            if(!empty($sDistribution))
+            if(!$_REQUEST['iDistributionId'])
             {
-                $oDistribution = new distribution();
-                $oDistribution->sName = $sDistribution;
-                $oDistribution->create();
-                $oTest->iDistributionId = $oDistribution->iDistributionId;
+                $sDistribution = trim($_REQUEST['sDistribution']);
+                if(!empty($sDistribution))
+                {
+                    $oDistribution = new distribution();
+                    $oDistribution->sName = $sDistribution;
+                    $oDistribution->create();
+                    $oTest->iDistributionId = $oDistribution->iDistributionId;
+                }
             }
-		if($_REQUEST['sub'] == 'Submit')
-		{
-	            $oTest->create();
-		} else if($_REQUEST['sub'] == 'Resubmit')
-		{
-	            $oTest->update(true);
-	            $oTest->ReQueue();
-		}
+            if($_REQUEST['sub'] == 'Submit')
+            {
+	        $oTest->create();
+            } else if($_REQUEST['sub'] == 'Resubmit')
+            {
+                $oTest->update(true);
+	        $oTest->ReQueue();
+            }
             redirect($_SERVER['PHP_SELF']);
         } else 
         {
