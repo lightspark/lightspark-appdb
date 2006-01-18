@@ -303,9 +303,9 @@ if ($_REQUEST['sub'])
         { 
             if(is_numeric($oVersion->iVersionId))
             {
-                echo html_frame_start("Potential duplicate versions in the database","90%","",0);
                 $oAppForVersion = new Application($oVersion->iAppId);
-                display_versions($oAppForVersion->iAppId, $oAppForVersion->aVersionsIds);
+                echo html_frame_start("Potential duplicate versions in the database for application: ".$oAppForVersion->sName,"90%","",0);
+                display_approved_versions($oAppForVersion->aVersionsIds);
                 echo html_frame_end("&nbsp;");
 
                 //help
