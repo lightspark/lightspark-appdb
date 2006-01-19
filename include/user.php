@@ -863,6 +863,9 @@ class User {
       */
      function hasAppVersionModifyPermission($oVersion)
      {
+         if(!$this->isLoggedIn())
+             return false;
+
          if($this->hasPriv("admin"))
              return true;
 
