@@ -62,8 +62,9 @@ class testData{
     function create()
     {
         // Security, if we are not an administrator or an maintainer the test result must be queued.
+        $oVersion = new Version($oTest->iVersionId);
         if(!$_SESSION['current']->hasPriv("admin") && 
-           !$_SESSION['current']->hasAppVersionModifyPermission($oTest->iVersionId))
+           !$_SESSION['current']->hasAppVersionModifyPermission($oVersion))
             $this->sQueued = 'true';
         else
             $this->sQueued = 'false';
@@ -99,8 +100,9 @@ class testData{
     function update($bSilent=false)
     {
         // is the current user allowed to update this testing result? 
+        $oVersion = new Version($this->iVersionId);
         if(!$_SESSION['current']->hasPriv("admin") && 
-           !$_SESSION['current']->hasAppVersionModifyPermission($this->iVersionId) &&
+           !$_SESSION['current']->hasAppVersionModifyPermission($oVersion) &&
            !(($_SESSION['current']->iUserId == $this->iSubmitterId) && !($this->sQueued == 'false')))
         {
             return;
@@ -132,8 +134,9 @@ class testData{
     function delete($bSilent=false)
     {
         // is the current user allowed to delete this testing result? 
+        $oVersion = new Version($this->iVersionId);
         if(!$_SESSION['current']->hasPriv("admin") && 
-           !$_SESSION['current']->hasAppVersionModifyPermission($this->iVersionId) &&
+           !$_SESSION['current']->hasAppVersionModifyPermission($oVersion) &&
            !(($_SESSION['current']->iUserId == $this->iSubmitterId) && !($this->sQueued == 'false')))
         {
             return;
@@ -158,7 +161,9 @@ class testData{
     function unQueue()
     {
         // is the current user allowed to delete this testing data? 
-        if(!$_SESSION['current']->hasPriv("admin") && !$_SESSION['current']->hasAppVersionModifyPermission($this->iVersionId))
+        $oVersion = new Version($this->iVersionId);
+        if(!$_SESSION['current']->hasPriv("admin") &&
+           !$_SESSION['current']->hasAppVersionModifyPermission($oVersion))
         {
             return;
         }
@@ -180,7 +185,9 @@ class testData{
     function Reject()
     {
         // is the current user allowed to delete this testing data? 
-        if(!$_SESSION['current']->hasPriv("admin") && !$_SESSION['current']->hasAppVersionModifyPermission($this->iVersionId))
+        $oVersion = new Version($this->iVersionId);
+        if(!$_SESSION['current']->hasPriv("admin") &&
+           !$_SESSION['current']->hasAppVersionModifyPermission($oVersion))
         {
             return;
         }
@@ -202,8 +209,9 @@ class testData{
     function ReQueue()
     {
         // is the current user allowed to requeue this data 
+        $oVersion = new Version($this->iVersionId);
         if(!$_SESSION['current']->hasPriv("admin") &&
-           !$_SESSION['current']->hasAppVersionModifyPermission($this->iVersionId) &&
+           !$_SESSION['current']->hasAppVersionModifyPermission($oVersion) &&
            !$_SESSION['current']->iUserId == $this->iSubmitterId)
         {
             return;

@@ -104,13 +104,12 @@ if ($_REQUEST['sub'])
     else if($_REQUEST['apptype'] == 'version')
     {
         /* make sure the user has permission to view this version */
-        if(!$_SESSION['current']->hasAppVersionModifyPermission($_REQUEST['versionId']))
+        $oVersion = new Version($_REQUEST['versionId']);
+        if(!$_SESSION['current']->hasAppVersionModifyPermission($oVersion))
         {
             errorpage("Insufficient privileges.");
             exit;
         }
-
-        $oVersion = new Version($_REQUEST['versionId']);
     } else
     {
         //error no Id!

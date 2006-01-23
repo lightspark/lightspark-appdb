@@ -16,7 +16,8 @@ require_once(BASE."include/distributions.php");
 if ($_REQUEST['sub'])
 {
     $oTest = new testData($_REQUEST['iTestingId']);
-    if (!($_SESSION['current']->hasAppVersionModifyPermission($oTest->iVersionId)))
+    $oVersion = new Version($oTest->iVersionId);
+    if(!($_SESSION['current']->hasAppVersionModifyPermission($oVersion)))
     {
         errorpage("Insufficient privileges.");
         exit;

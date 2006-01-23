@@ -931,7 +931,7 @@ class User {
          if($this->hasPriv("admin"))
              return true;
          
-         if($this->hasAppVersionModifyPermission($oVersion->iVersionId))
+         if($this->hasAppVersionModifyPermission($oVersion))
              return true;
 
          return false;
@@ -945,7 +945,7 @@ class User {
          if($this->hasPriv("admin"))
              return true;
 
-         if($this->hasAppVersionModifyPermission($oVersion->iVersionId))
+         if($this->hasAppVersionModifyPermission($oVersion))
              return true;
 
          return false;
@@ -959,7 +959,7 @@ class User {
          if($this->hasPriv("admin"))
              return true;
 
-         if($this->hasAppVersionModifyPermission($oVersion->iVersionId))
+         if($this->hasAppVersionModifyPermission($oVersion))
              return true;
 
          if(($this->iUserId == $oVersion->iSubmitterId) &&

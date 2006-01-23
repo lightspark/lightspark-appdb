@@ -69,8 +69,9 @@ if ($_REQUEST['sub'])
     if(is_numeric($_REQUEST['iTestingId']))
     {
         // make sure the user has permission to view this testing result
+        $oVersion = new Version($oTest->iVersionId);
         if(!$_SESSION['current']->hasPriv("admin") && 
-           !$_SESSION['current']->hasAppVersionModifyPermission($oTest->iVersionId)&&
+           !$_SESSION['current']->hasAppVersionModifyPermission($oVersion)&&
            !(($_SESSION['current']->iUserId == $oTest->iSubmitterId) && !($oTest->sQueued == 'false')))
         {
             errorpage("Insufficient privileges.");

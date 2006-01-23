@@ -95,7 +95,7 @@ if ($_REQUEST['sub'])
         $oVersion = new Version($_REQUEST['versionId']);
 
         // make sure the user has permission to view this version 
-        if(!$_SESSION['current']->hasAppVersionModifyPermission($oVersion->versionId) && 
+        if(!$_SESSION['current']->hasAppVersionModifyPermission($oVersion) && 
            (($oVersion->queued=="false")?true:false) &&
            !$_SESSION['current']->isVersionSubmitter($oVersion->versionId))
         {
