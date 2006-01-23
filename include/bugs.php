@@ -216,7 +216,7 @@ class Bug {
         {
             if(!$this->bQueued)
             {
-                $sSubject = "Bug Link for ".lookup_app_name($this->iAppId)." ".lookup_version_name($this->iVersionId)." added by ".$_SESSION['current']->sRealname;
+                $sSubject = "Link between Bug ".$this->iBug_id." and ".lookup_app_name($this->iAppId)." ".lookup_version_name($this->iVersionId)." added by ".$_SESSION['current']->sRealname;
                 $sMsg  = APPDB_ROOT."appview.php?versionId=".$this->iVersionId."\n";
                 if($this->iSubmitterId)
                 {
@@ -227,7 +227,7 @@ class Bug {
                 addmsg("The Bug Link was successfully added into the database.", "green");
             } else // Bug Link queued.
             {
-                $sSubject = "Bug Link for ".lookup_app_name($this->iAppId)." ".lookup_version_name($this->iVersionId)." submitted by ".$_SESSION['current']->sRealname;
+                $sSubject = "Link between Bug ".$this->iBug_id." and ".lookup_app_name($this->iAppId)." ".lookup_version_name($this->iVersionId)." submitted by ".$_SESSION['current']->sRealname;
                 $sMsg  = APPDB_ROOT."appview.php?versionId=".$this->iVersionId."\n";
                 $sMsg .= "This Bug Link has been queued.";
                 $sMsg .= "\n";
@@ -235,7 +235,7 @@ class Bug {
             }
         } else // Bug Link deleted.
         {
-            $sSubject = "Bug Link for ".lookup_app_name($this->iAppId)." ".lookup_version_name($this->iVersionId)." deleted by ".$_SESSION['current']->sRealname;
+            $sSubject = "Link between Bug ".$this->iBug_id." and ".lookup_app_name($this->iAppId)." ".lookup_version_name($this->iVersionId)." deleted by ".$_SESSION['current']->sRealname;
             $sMsg  = APPDB_ROOT."appview.php?versionId=".$this->iVersionId."\n";
             addmsg("Bug Link deleted.", "green");
         }
