@@ -113,7 +113,7 @@ if ($_REQUEST['sub'])
             while(list($index, list($appIdOther, $versionIdOther, $superMaintainerOther)) = each($other_apps))
             {
                 $oApp = new Application($appIdOther);
-                $oVersion = new Application($versionIdOther);
+                $oVersion = new Version($versionIdOther);
                 if($firstDisplay)
                 {
                     $firstDisplay = false;
