@@ -135,7 +135,7 @@ if ($_REQUEST['sub'])
         }
 
         $oApp = new Application($ob->appId);
-        $oVersion = new Application($ob->versionId);
+        $oVersion = new Version($ob->versionId);
 
         //app name
         echo '<tr valign=top><td class=color0><b>App Name</b></td>',"\n";
