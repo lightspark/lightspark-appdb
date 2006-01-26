@@ -100,7 +100,7 @@ else
     echo html_frame_end();
     echo "</form>";
 
-    echo html_back_link(1,BASE."appview.php?appId=$ob->appId");
+    echo html_back_link(1,BASE."appview.php?appId=$oApp->iAppId");
 }
 
 apidb_footer();
