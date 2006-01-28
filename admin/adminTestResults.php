@@ -148,7 +148,7 @@ else // if ($_REQUEST['sub']) is not defined, display the Testing results queue 
     {
          //no apps in queue
         echo html_frame_start("Submitted Testing Results","90%");
-        echo '<p><b>The Submitted Testng Results Queue is empty.</b></p>',"\n";
+        echo '<p><b>The Submitted Testing Results Queue is empty.</b></p>',"\n";
         echo html_frame_end("&nbsp;");         
     }
     else
@@ -169,7 +169,7 @@ else // if ($_REQUEST['sub']) is not defined, display the Testing results queue 
     {
         //no rejected test results in queue
         echo html_frame_start("Rejected Testing Results","90%");
-        echo '<p><b>The Rejected Testng Results Queue is empty.</b></p>',"\n";
+        echo '<p><b>The Rejected Testing Results Queue is empty.</b></p>',"\n";
         echo html_frame_end("&nbsp;");         
     }
     else
