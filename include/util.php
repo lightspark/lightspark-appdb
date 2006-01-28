@@ -120,10 +120,16 @@ function make_bugzilla_version_list($varname, $cvalue)
     echo "<option value=\"\">Choose ...</option>\n";
     while(list($value) = mysql_fetch_row($result))
     {
-        if($value == $cvalue)
-            echo "<option value=$value selected>$value\n";
-        else
-            echo "<option value=$value>$value\n";
+        if($value == "unspecified")
+        {
+            // We do not unspecified versions!!!
+        } else
+        {
+            if($value == $cvalue)
+                echo "<option value=$value selected>$value\n";
+            else
+                echo "<option value=$value>$value\n";
+        }
     }
     echo "</select>\n";
 }
