@@ -524,7 +524,10 @@ else if($_REQUEST['versionId'])
     $oTest = new TestData($_REQUEST['iTestingId']);
     $iCurrentTest = $oTest->ShowTestResult($oTest->iTestingId,$oVersion->iVersionId);
     if($iCurrentTest)
-        $oTest->ShowVersionsTestingTable($oVersion->iVersionId,$iCurrentTest,$_SERVER['PHP_SELF']."?versionId=".$oVersion->iVersionId."&iTestingId=");
+        $oTest->ShowVersionsTestingTable($oVersion->iVersionId,
+                                         $iCurrentTest,
+                                         $_SERVER['PHP_SELF']."?versionId=".$oVersion->iVersionId."&iTestingId=",
+                                         5);
     echo '<form method=post name=message action=testResults.php?sub=view&iVersionId='.$oVersion->iVersionId.'>';
     echo '<input type=submit value="Add Testing Data" class="button" />';
     echo '</form>';

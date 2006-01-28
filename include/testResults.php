@@ -347,13 +347,25 @@ class testData{
     }
 
     // Show the Test results for a application version
-    function ShowVersionsTestingTable($iVersionId, $iCurrentTest, $link)
+    function ShowVersionsTestingTable($iVersionId, $iCurrentTest, $link, $iDisplayLimit)
     {
-        $hResult = query_appdb("SELECT * 
-                                FROM testResults
-                                WHERE versionId = '".$iVersionId."'
-                                ORDER BY testedDate DESC;");
-        if(!$hResult || mysql_num_rows($hResult) == 0)
+        $showAll = $_REQUEST['showAll'];
+
+        $sQuery = "SELECT * 
+                   FROM testResults
+                   WHERE versionId = '".$iVersionId."'
+                   ORDER BY testedDate DESC";
+	
+        if(!$showAll)
+            $sQuery.=" LIMIT 0,".$iDisplayLimit;
+
+        $hResult = query_appdb($sQuery);
+        if(!$hResult)
+            return;
+
+        $rowsUsed = mysql_num_rows($hResult);
+
+        if($rowsUsed == 0)
              return;
         echo '<p><span class="title">Testing Results</span><br />',"\n";
         echo '<table width="100%" border="1" class="historyTable">',"\n";
@@ -376,10 +388,20 @@ class testData{
             $oDistribution = new distribution($oTest->iDistributionId);
             $bgcolor = $oTest->sTestedRating;
             echo '<tr class='.$bgcolor.'>',"\n";
+
             if ($oTest->iTestingId == $iCurrentTest)
+            {
                 echo '    <td align="center" class="color2"><b>Current</b></td>',"\n";
-            else
-                echo '    <td align="center" class="color2">[<a href="'.$link.$oTest->iTestingId.'">Show</a>]</td>',"\n";
+            } else
+            {
+                echo '    <td align="center" class="color2">[<a href="'.$link.$oTest->iTestingId;
+
+                if(is_string($showAll))
+                    echo '&showAll='.$showAll.'">Show</a>]</td>',"\n";
+                else
+                    echo '">Show</a>]</td>',"\n";
+            }
+
             echo '    <td>',"\n";
             echo '<a href="'.BASE.'distributionView.php?iDistributionId='.$oTest->iDistributionId.'">',"\n";
             echo $oDistribution->sName.'</a>',"\n";
@@ -393,9 +415,19 @@ class testData{
         }
 
         echo '</table>',"\n";
-       
 
+        echo '<form method=get action="'.$PHP_SELF.'">';
+        echo '<input name="versionId" type=hidden value="',$iVersionId,'" />';
+        if($rowsUsed >= $iDisplayLimit && !is_string($showAll))
+            echo '<input class="button" name="showAll" type=submit value="Show All Tests" />';
+
+        if(is_string($showAll))
+        {
+            echo '<input class="button" name="hideAll" type=submit value="Limit to '.$iDisplayLimit.' Tests" />';
+        }
+        echo '</form>';
     }
+
     // show the fields for editing
     function OutputEditor($sDistribution, $bNewDist=false)
     {
