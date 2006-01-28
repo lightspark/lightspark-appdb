@@ -132,37 +132,29 @@ if ($_REQUEST['sub'])
 
     if($_REQUEST['sub'] == 'add')
     {
-        if (($_REQUEST['apptype'] == "application") && is_numeric($_REQUEST['appId'])) // application
+        $oVersion = new Version($_REQUEST['versionId']);
+        $oTest = new testData($_REQUEST['iTestingId']);
+        $oVersion->GetOutputEditorValues();
+        $oTest->GetOutputEditorValues();
+        if ($_REQUEST['apptype'] == "application") // application
         {
+            $oApp = new Application($_REQUEST['appId']);
+            $oApp->GetOutputEditorValues(); // load the values from $_REQUEST 
             // add new vendor
-            if($_REQUEST['appVendorName'])
+            if($_REQUEST['appVendorName'] and !$_REQUEST['appVendorId'])
             {
                 $oVendor = new Vendor();
                 $oVendor->create($_REQUEST['appVendorName'],$_REQUEST['appWebpage']);
+                $oApp->iVendorId = $oVendor->iVendorId;
             }
-            
-            $oApp = new Application($_REQUEST['appId']);
-            $oApp->GetOutputEditorValues();
-            $oApp->update();
+            $oApp->update(true);
             $oApp->unQueue();
-        } else if(($_REQUEST['apptype'] == "version") && is_numeric($_REQUEST['versionId']))  // version
-        {
-            $oVersion = new Version($_REQUEST['versionId']);
-            $oVersion->GetOutputEditorValues();
-            $oVersion->update();
-            $oVersion->unQueue();
-            foreach($oVersion->aVersionIds as $iTestingId)
-            {
-                $oTest = new Version($iTestingId);
-                $oTest->GetOutputEditorValues();
-                $oTest->iVersionId = $oVersion->iVersionId;
-                $oTest->iVersionId = $oVersion->iVersionId;
-                $oTest->Update();
-                $oTest->unQueue();
-            }
         }
-  
-        redirect(apidb_fullurl("admin/adminAppQueue.php"));
+        $oVersion->update(true);
+        $oVersion->unQueue();
+        $oTest->update(true);
+        $oTest->unQueue();
+        redirect($_SERVER['PHP_SELF']);
     }
     else if ($_REQUEST['sub'] == 'duplicate')
     {
@@ -347,7 +339,10 @@ if ($_REQUEST['sub'])
 
             //vendor field
             if($iVendorId)
+            {
                 $sVendor = "";
+                $oApp->iVendorId = $iVendorId;
+            }  
         }
 
         /* output the appropriate editors depending on whether we are processing an application */
