@@ -138,7 +138,7 @@ class Application {
      * Update application.
      * Returns true on success and false on failure.
      */
-    function update()
+    function update($bSilent=false)
     {
         $sWhatChanged = "";
 
@@ -200,7 +200,7 @@ class Application {
             $oCatAfter = new Category($this->iCatId);
             $sWhatChanged .= "Vendor was changed from ".$oCatBefore->sName." to ".$oCatAfter->sName.".\n\n";
         }
-        if($sWhatChanged)
+        if($sWhatChanged and !$bSilent)
             $this->SendNotificationMail("edit",$sWhatChanged);
         return true;
     }
@@ -265,9 +265,6 @@ class Application {
             // we send an e-mail to intersted people
             $this->mailSubmitter();
             $this->SendNotificationMail();
-
-            // the application has been unqueued
-            addmsg("The application has been unqueued.", "green");
         }
     }
 
@@ -355,7 +352,7 @@ class Application {
         switch($sAction)
         {
             case "add":
-                if(!$this->sQueued == 'true')
+                if($this->sQueued == 'false') // Has been accepted.
                 {
                     $sSubject = $this->sName." has been added by ".$_SESSION['current']->sRealname;
                     $sMsg  = APPDB_ROOT."appview.php?appId=".$this->iAppId."\n";
@@ -366,7 +363,7 @@ class Application {
                         $sMsg .= "\n";
                     }
                     addmsg("The application was successfully added into the database.", "green");
-                } else // Application queued.
+                } else
                 {
                     $sSubject = $this->sName." has been submitted by ".$_SESSION['current']->sRealname;
                     $sMsg .= "This application has been queued.";
