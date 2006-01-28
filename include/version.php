@@ -207,7 +207,7 @@ class Version {
     /**
      * Update version.
      */
-    function update()
+    function update($bSilent=false)
     {
         $sWhatChanged = "";
 
@@ -270,7 +270,7 @@ class Version {
             $sWhatChanged .= "Version was moved from application ".$oAppBefore->sName." to application ".$oAppAfter->sName.".\n\n";
         }
 
-        if($sWhatChanged)
+        if($sWhatChanged and !$bSilent)
             $this->SendNotificationMail("edit",$sWhatChanged);
         return true;
     }
@@ -367,9 +367,6 @@ class Version {
             // we send an e-mail to intersted people
             $this->mailSubmitter("unQueue");
             $this->SendNotificationMail();
-
-            // the version has been unqueued
-            addmsg("The version has been unqueued.", "green");
         }
     }
 
