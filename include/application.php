@@ -502,6 +502,144 @@ class Application {
             $this->sKeywords = $_REQUEST['appKeywords'];
         }
     }
+
+    /* display this application */
+    function display()
+    {
+        /* is this user supposed to view this version? */
+        if(!$_SESSION['current']->canViewApplication($this))
+        {
+            errorpage("Something went wrong with the application or version id");
+            exit;
+        }
+
+        // show Vote Menu
+        if($_SESSION['current']->isLoggedIn())
+            apidb_sidebar_add("vote_menu");
+
+        // header
+        apidb_header("Viewing App - ".$this->sName);
+
+        // cat display
+        display_catpath($this->iCatId, $this->iAppId);
+
+        // set Vendor
+        $oVendor = new Vendor($this->iVendorId);
+
+        // set URL
+        $appLinkURL = ($this->sWebpage) ? "<a href=\"".$this->sWebpage."\">".substr(stripslashes($this->sWebpage),0,30)."</a>": "&nbsp;";
+  
+        // start display application
+        echo html_frame_start("","98%","",0);
+        echo "<tr><td class=color4 valign=top>\n";
+        echo "  <table>\n";
+        echo "    <tr><td>\n";
+
+        echo '      <table width="250" border="0" cellpadding="3" cellspacing="1">',"\n";
+        echo "        <tr class=color0 valign=top><td width=\"100\"><b>Name</b></td><td width='100%'> ".$this->sName." </td>\n";
+        echo "        <tr class=\"color1\"><td><b>Vendor</b></td><td> ".
+            "        <a href='vendorview.php?vendorId=$oVendor->iVendorId'> ".$oVendor->sName." </a> &nbsp;\n";
+        echo "        <tr class=\"color0\"><td><b>Votes</b></td><td> ";
+        echo vote_count_app_total($this->iAppId);
+        echo "        </td></tr>\n";
+    
+        // main URL
+        echo "        <tr class=\"color1\"><td><b>URL</b></td><td>".$appLinkURL."</td></tr>\n";
+
+        // optional links
+        $result = query_appdb("SELECT * FROM appData WHERE appId = ".$_REQUEST['appId']." AND versionID = 0 AND type = 'url'");
+        if($result && mysql_num_rows($result) > 0)
+        {
+            echo "        <tr class=\"color1\"><td> <b>Links</b></td><td>\n";
+            while($ob = mysql_fetch_object($result))
+            {
+                echo "        <a href='$ob->url'>".substr(stripslashes($ob->description),0,30)."</a> <br />\n";
+            }
+            echo "        </td></tr>\n";
+        }
+
+        // image
+        $img = get_screenshot_img($this->iAppId);
+        echo "<tr><td align=\"center\" colspan=\"2\">$img</td></tr>\n";
+    
+        echo "      </table>\n"; /* close of name/vendor/bugs/url table */
+
+        echo "    </td></tr>\n";
+        echo "    <tr><td>\n";
+
+        // Display all supermaintainers maintainers of this application
+        echo "      <table class=\"color4\" width=\"250\" border=\"1\">\n";
+        echo "        <tr><td align=\"left\"><b>Super maintainers:</b></td></tr>\n";
+        $other_maintainers = getSuperMaintainersUserIdsFromAppId($this->iAppId);
+        if($other_maintainers)
+        {
+            echo "        <tr><td align=\"left\"><ul>\n";
+            while(list($index, $userIdValue) = each($other_maintainers))
+            {
+                $oUser = new User($userIdValue);
+                echo "        <li>".$oUser->sRealname."</li>\n";
+            }
+            echo "</ul></td></tr>\n";
+        } else
+        {
+            echo "        <tr><td align=right>No maintainers.Volunteer today!</td></tr>\n";
+        }
+
+        // Display the app maintainer button
+        echo '        <tr><td align="center">';
+        if($_SESSION['current']->isLoggedIn())
+        {
+            /* are we already a maintainer? */
+            if($_SESSION['current']->isSuperMaintainer($this->iAppId)) /* yep */
+            {
+                echo '        <form method="post" name="message" action="maintainerdelete.php"><input type=submit value="Remove yourself as a super maintainer" class="button">';
+            } else /* nope */
+            {
+                echo '        <form method="post" name="message" action="maintainersubmit.php"><input type="submit" value="Be a super maintainer of this app" class="button" title="Click here to know more about super maintainers.">';
+            }
+
+            echo "        <input type=\"hidden\" name=\"appId\" value=\"".$this->iAppId."\">";
+            echo "        <input type=\"hidden\" name=\"superMaintainer\" value=\"1\">"; /* set superMaintainer to 1 because we are at the appFamily level */
+            echo "        </form>";
+            
+            if($_SESSION['current']->isSuperMaintainer($this->iAppId) || $_SESSION['current']->hasPriv("admin"))
+            {
+                echo '        <form method="post" name="edit" action="admin/editAppFamily.php"><input type="hidden" name="appId" value="'.$_REQUEST['appId'].'"><input type="submit" value="Edit Application" class="button"></form>';
+            }
+            if($_SESSION['current']->isLoggedIn())
+            {
+                echo '<form method="post" name="message" action="appsubmit.php?appId='.$this->iAppId.'&amp;apptype=version&amp;sub=view">';
+                echo '<input type=submit value="Submit new version" class="button">';
+                echo '</form>';
+            }
+            if($_SESSION['current']->hasPriv("admin"))
+            {
+                $url = BASE."admin/deleteAny.php?what=appFamily&amp;appId=".$this->iAppId."&amp;confirmed=yes";
+                echo "        <form method=\"post\" name=\"edit\" action=\"javascript:deleteURL('Are you sure?', '".$url."')\"><input type=\"submit\" value=\"Delete App\" class=\"button\"></form>";
+                echo '        <form method="post" name="edit" action="admin/editBundle.php"><input type="hidden" name="bundleId" value="'.$this->iAppId.'"><input type="submit" value="Edit Bundle" class="button"></form>';
+            }
+        } else
+        {
+            echo '<form method="post" action="account.php?cmd=login"><input type="submit" value="Log in to become a super maintainer" class="button"></form>';
+        }
+        echo "        </td></tr>\n";
+        echo "      </table>\n"; /* close of super maintainers table */
+        echo "    </td></tr>\n";
+        echo "  </table>\n"; /* close the table that contains the whole left hand side of the upper table */
+
+        // description
+        echo "  <td class=color2 valign=top width='100%'>\n";
+        echo "    <table width='100%' border=0><tr><td width='100%' valign=top><span class=\"title\">Description</span>\n";
+        echo $this->sDescription;
+        echo "    </td></tr></table>\n";
+        echo html_frame_end("For more details and user comments, view the versions of this application.");
+
+        // display versions
+        display_approved_versions($this->aVersionsIds);
+
+        // display bundle
+        display_bundle($this->iAppId);
+    }
 }
 
 

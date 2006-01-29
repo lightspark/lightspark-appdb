@@ -617,6 +617,225 @@ class Version {
             $this->sTestedRelease = $_REQUEST['maintainer_release'];
         }
     }
+
+    function display()
+    {
+        /* is this user supposed to view this version? */
+        if(!$_SESSION['current']->canViewVersion($this))
+        {
+            errorpage("Something went wrong with the application or version id");
+            exit;
+        }
+
+        $oApp = new Application($this->iAppId);
+        if(!$oApp->iAppId) 
+        {
+            // Oops! application not found or other error. do something
+            errorpage('Internal Database Access Error. No App found.');
+            exit;
+        }
+
+        if(!$this->iVersionId) 
+        {
+            // Oops! Version not found or other error. do something
+            errorpage('Internal Database Access Error. No Version Found.');
+            exit;
+        }
+
+        // header
+        apidb_header("Viewing App- ".$oApp->sName." Version - ".$this->sName);
+
+        // cat
+        display_catpath($oApp->iCatId, $oApp->iAppId, $this->iVersionId);
+  
+        // set URL
+        $appLinkURL = ($oApp->sWebpage) ? "<a href=\"".$oApp->sWebpage."\">".substr(stripslashes($oApp->sWebpage),0,30)."</a>": "&nbsp;";
+
+        // start version display
+        echo html_frame_start("","98%","",0);
+        echo '<tr><td class="color4" valign="top">',"\n";
+        echo '<table width="250" border="0" cellpadding="3" cellspacing="1">',"\n";
+        echo "<tr class=\"color0\" valign=\"top\"><td width=\"100\"> <b>Name</b></td><td width=\"100%\">".$oApp->sName."</td>\n";
+        echo "<tr class=\"color1\" valign=\"top\"><td><b>Version</b></td><td>".$this->sName."</td></tr>\n";
+
+        // main URL
+        echo "        <tr class=\"color1\"><td><b>URL</b></td><td>".$appLinkURL."</td></tr>\n";
+
+        // links
+        $result = query_appdb("SELECT * FROM appData WHERE versionID = ".$this->iVersionId." AND type = 'url'");
+        if($result && mysql_num_rows($result) > 0)
+        {
+            echo "        <tr class=\"color1\"><td><b>Links</b></td><td>\n";
+            while($ob = mysql_fetch_object($result))
+            {
+                echo "        <a href=\"$ob->url\">".substr(stripslashes($ob->description),0,30)."</a> <br />\n";
+            }
+            echo "        </td></tr>\n";
+        }    
+
+        // rating Area
+        echo "<tr class=\"color1\" valign=\"top\"><td><b>Maintainer Rating</b></td><td>".$this->sTestedRating."</td></tr>\n";
+        echo "<tr class=\"color0\" valign=\"top\"><td><b>Maintainers Version</b></td><td>".$this->sTestedRelease."</td></tr>\n";
+
+        // image
+        $img = get_screenshot_img($oApp->iAppId, $this->iVersionId);
+        echo "<tr><td align=\"center\" colspan=\"2\">$img</td></tr>\n";
+
+        // display all maintainers of this application
+        echo "<tr class=\"color0\"><td align=\"left\" colspan=\"2\"><b>Maintainers of this version:</b>\n";
+        echo "<table width=\"250\" border=\"0\">";
+        $aMaintainers = getMaintainersUserIdsFromAppIdVersionId($this->iVersionId);
+        $aSupermaintainers = getSuperMaintainersUserIdsFromAppId($this->iAppId);
+        $aAllMaintainers = array_merge($aMaintainers,$aSupermaintainers);
+        $aAllMaintainers = array_unique($aAllMaintainers);
+        if(sizeof($aAllMaintainers)>0)
+        {
+            echo "<tr class=\"color0\"><td align=\"left\" colspan=\"2\"><ul>";
+            while(list($index, $userIdValue) = each($aAllMaintainers))
+            {
+                $oUser = new User($userIdValue);
+                echo "<li>".$oUser->sRealname."</li>";
+            }
+            echo "</ul></td></tr>\n";
+        } else
+        {
+            echo "<tr class=color0><td align=right colspan=2>";
+            echo "No maintainers. Volunteer today!</td></tr>\n";
+        }
+        echo "</table></td></tr>";
+
+        // display the app maintainer button
+        echo '<tr><td colspan="2" align="center">';
+        if($_SESSION['current']->isLoggedIn())
+        {
+            /* is this user a maintainer of this version by virtue of being a super maintainer */
+            /* of this app family? */
+            if($_SESSION['current']->isSuperMaintainer($oApp->iAppId))
+            {
+                echo '<form method="post" name="message" action="maintainerdelete.php">';
+                echo '<input type="submit" value="Remove yourself as a supermaintainer" class="button">';
+                echo '<input type="hidden" name="superMaintainer" value="1">';
+                echo "<input type=hidden name=\"appId\" value=\"".$oApp->iAppId."\">";
+                echo "<input type=hidden name=\"versionId\" value=\"".$this->iVersionId."\">";
+                echo "</form>";
+            } else
+            {
+                /* are we already a maintainer? */
+                if($_SESSION['current']->isMaintainer($this->iVersionId)) /* yep */
+                {
+                    echo '<form method="post" name="message" action="maintainerdelete.php">';
+                    echo '<input type="submit" value="Remove yourself as a maintainer" class=button>';
+                    echo '<input type="hidden" name="superMaintainer" value="0">';
+                    echo "<input type=hidden name=\"appId\" value=\"".$oApp->iAppId."\">";
+                    echo "<input type=hidden name=\"versionId\" value=\"".$this->iVersionId."\">";
+                    echo "</form>";
+                } else /* nope */
+                {
+                    echo '<form method="post" name="message" action="maintainersubmit.php">';
+                    echo '<input type="submit" value="Be a maintainer for this app" class="button" title="Click here to know more about maintainers.">';
+                    echo "<input type=hidden name=\"appId\" value=\"".$oApp->iAppId."\">";
+                    echo "<input type=hidden name=\"versionId\" value=\"".$this->iVersionId."\">";
+                    echo "</form>";
+                    $oMonitor = new Monitor();
+                    $oMonitor->find($_SESSION['current']->iUserId,
+                                    $oApp->iAppId,$this->iVersionId);
+                    if(!$oMonitor->iMonitorId)
+                    {
+                        echo '<form method=post name=message action=appview.php?versionId='.$this->iVersionId.'&appId='.$oApp->iAppId.'>';
+                        echo '<input type=hidden name="sub" value="StartMonitoring" />';
+                        echo '<input type=submit value="Monitor Version" class="button" />';
+                        echo "</form>";
+                    }
+                }
+            }
+            
+        } else
+        {
+            echo '<form method="post" name="message" action="account.php">';
+            echo '<input type="hidden" name="cmd" value="login">';
+            echo '<input type=submit value="Log in to become an app maintainer" class="button">';
+            echo '</form>';
+        }
+    
+        echo "</td></tr>";
+
+        if ($_SESSION['current']->hasPriv("admin") || $_SESSION['current']->isMaintainer($this->iVersionId) || $_SESSION['current']->isSuperMaintainer($this->iAppId))
+        {
+            echo '<tr><td colspan="2" align="center">';
+            echo '<form method="post" name="message" action="admin/editAppVersion.php">';
+            echo '<input type="hidden" name="appId" value="'.$oApp->iAppId.'" />';
+            echo '<input type="hidden" name="versionId" value="'.$this->iVersionId.'" />';
+            echo '<input type=submit value="Edit Version" class="button" />';
+            echo '</form>';
+            $url = BASE."admin/deleteAny.php?what=appVersion&amp;appId=".$oApp->iAppId."&amp;versionId=".$this->iVersionId."&amp;confirmed=yes";
+            echo "<form method=\"post\" name=\"delete\" action=\"javascript:deleteURL('Are you sure?', '".$url."')\">";
+            echo '<input type=submit value="Delete Version" class="button" />';
+            echo '</form>';
+            echo '<form method="post" name="message" action="admin/addAppNote.php">';
+            echo '<input type="hidden" name="versionId" value="'.$this->iVersionId.'" />';
+            echo '<input type="submit" value="Add Note" class="button" />';
+            echo '</form>';
+            echo '<form method=post name=message action=admin/addAppNote.php?versionId='.$this->iVersionId.'>';
+            echo '<input type=hidden name="noteTitle" value="HOWTO" />';
+            echo '<input type=submit value="Add How To" class="button" />';
+            echo '</form>';
+            echo '<form method=post name=message action=admin/addAppNote.php?versionId='.$this->iVersionId.'>';
+            echo '<input type=hidden name="noteTitle" value="WARNING" />';
+            echo '<input type=submit value="Add Warning" class="button" />';
+            echo '</form>';
+            echo "</td></tr>";
+        }
+        $oMonitor = new Monitor();
+        $oMonitor->find($_SESSION['current']->iUserId, $oApp->iAppId, $this->iVersionId);
+        if($oMonitor->iMonitorId)
+        {
+            echo '<tr><td colspan="2" align="center">';
+            echo '</form>';
+            echo '<form method=post name=message action=appview.php?versionId='.$this->iVersionId.'>';
+            echo '<input type=hidden name="sub" value="StopMonitoring" />';
+            echo '<input type=submit value="Stop Monitoring Version" class="button" />';
+            echo '</form>';
+            echo "</td></tr>";
+        } 
+        echo "</table><td class=color2 valign=top width='100%'>\n";
+
+        // description
+        echo "<table width='100%' border=0><tr><td width='100%' valign=top> <b>Description</b><br />\n";
+        echo $this->sDescription;
+
+        // Show testing data
+        $oTest = new TestData($_REQUEST['iTestingId']);
+        $iCurrentTest = $oTest->ShowTestResult($oTest->iTestingId, $this->iVersionId);
+        if($iCurrentTest)
+        {
+            $oTest->ShowVersionsTestingTable($this->iVersionId,
+                                             $iCurrentTest,
+                                             $_SERVER['PHP_SELF']."?versionId=".$this->iVersionId."&iTestingId=",
+                                             5);
+        }
+        echo '<form method=post name=message action=testResults.php?sub=view&iVersionId='.$this->iVersionId.'>';
+        echo '<input type=submit value="Add Testing Data" class="button" />';
+        echo '</form>';
+
+        echo "</td></tr>";
+    
+        /* close the table */
+        echo "</table>\n";
+
+        echo html_frame_end();
+
+        view_version_bugs($this->iVersionId, $this->aBuglinkIds);    
+
+        $rNotes = query_appdb("SELECT * FROM appNotes WHERE versionId = ".$this->iVersionId);
+    
+        while( $oNote = mysql_fetch_object($rNotes) )
+        {
+            echo show_note($oNote->noteTitle,$oNote);
+        }
+    
+        // Comments Section
+        view_app_comments($this->iVersionId);
+    }
 }
 
 function showVersionList($hResult)
