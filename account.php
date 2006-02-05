@@ -159,7 +159,7 @@ function cmd_send_passwd()
     }
     else
     {
-        addmsg("Sorry, that user (". urlencode($_POST['ext_email']) .") does not exist.<br><br>"
+        addmsg("Sorry, that user (".$_POST['ext_email'].") does not exist.<br><br>"
                .$note, "red");
     }
     
