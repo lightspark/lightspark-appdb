@@ -126,6 +126,9 @@ function cmd_do_new()
 function cmd_send_passwd()
 {
    
+    $note = '(<b>Note</b>: accounts for <b>appdb</b>.winehq.org and <b>bugs</b>.winehq.org '
+           .'are separated, so You might need to <b>create second</b> account for appdb.)';
+		
     $userid = user_exists($_POST['ext_email']);
     $passwd = generate_passwd();
     $user = new User($userid);
@@ -156,7 +159,8 @@ function cmd_send_passwd()
     }
     else
     {
-        addmsg("Sorry, that user (". urlencode($_POST['ext_email']) .") does not exist.", "red");
+        addmsg("Sorry, that user (". urlencode($_POST['ext_email']) .") does not exist.<br><br>"
+               .$note, "red");
     }
     
     redirect(apidb_fullurl("account.php?cmd=login"));
@@ -177,7 +181,7 @@ function cmd_do_login()
         redirect(apidb_fullurl("index.php"));    	    
     } else
     {
-        retry("login","Login failed");
+        retry("login","Login failed ".$note);
         $_SESSION['current'] = "";
     }
 }
