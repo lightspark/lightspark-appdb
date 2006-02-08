@@ -88,8 +88,20 @@ If you have screenshots or links to contribute, please browse the database and u
 
 <p>This is a list of applications that are known to be working well and for which many AppDB users voted.</p>
 
+<h3>The top-10 Platinum List</h3> 
+<p>Only Applications which install and run flawless on a out-of-the-box Wine installation make it to the Platinum list: </p>
+<table class="platinum">
+    <tr class="rowtitle">
+    <th>Application</th><th>Description</th><th>Screenshot</th>
+    </tr>
+<?php
+  outputTopXRowAppsFromRating('Platinum', 10);
+?>
+</table>
+<br />
+
 <h3>The top-10 Gold List</h3> 
-<p>Applications which install and run virtually flawless on a out-of-the-box Wine installation make it to the Gold list: </p>
+<p>Applications that work flawlessly with some DLL overrides or other settings, crack etc make it to the Gold list: </p>
 <table class="gold">
     <tr class="rowtitle">
     <th>Application</th><th>Description</th><th>Screenshot</th>
@@ -99,6 +111,7 @@ If you have screenshots or links to contribute, please browse the database and u
 ?>
 </table>
 <br />
+
 <h3>The top-10 Silver List</h3> 
 <p>The Silver list contains apps which we hope we can easily fix so they make it to Gold status:</p>
 <table class=silver>

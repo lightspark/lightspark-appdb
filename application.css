@@ -18,12 +18,14 @@ table.historyTable { border: 1px;
                      font-family: "bitstream vera sans", "verdana", "arial", "helvetica", sans-serif;
                      font-size: 12px; }
 
-td.gold { background-color: #fff600; }
-td.silver { background-color: silver; }
-td.bronze { background-color: #fcba0a; }
-td.garbage { background-color: #999966; }
+td.platinum         { background-color: #EFEFEF; }
+td.gold             { background-color: #fff600; }
+td.silver           { background-color: silver;  }
+td.bronze           { background-color: #fcba0a; }
+td.garbage          { background-color: #999966; }
 
-tr.gold { background-color: #fff600; }
-tr.silver { background-color: silver; }
-tr.bronze { background-color: #fcba0a; }
-tr.garbage { background-color: #999966; }
+td.platinum         { background-color: #EFEFEF; }
+tr.gold             { background-color: #fff600; }
+tr.silver           { background-color: silver;  }
+tr.bronze           { background-color: #fcba0a; }
+tr.garbage          { background-color: #999966; }

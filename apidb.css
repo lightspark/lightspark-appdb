@@ -133,6 +133,7 @@ p.indent            { padding-left: 1em; padding-right: 1em;}
 .committed          { font-style: italic; color: gray; }
 
 /* App Support status */
+.platinum           { background-color: #EFEFEF; }
 .gold               { background-color: #fff600; }
 .silver             { background-color: silver; }
 .bronze             { background-color: #fcba0a; }
