@@ -1,7 +1,6 @@
 use apidb;
 
 drop table if exists testResults;
-drop table if exists TestResults;
 
 /*
  * Version Testing results
@@ -15,8 +14,8 @@ create table testResults (
         testedDate      datetime not null,
         distributionId  int not null,
 	testedRelease 	tinytext,
-	installs	enum('Yes','No') NOT NULL default 'Yes',
-	runs		enum('Yes','No','???') NOT NULL default 'Yes',
+	installs	enum('Yes','No','N/A') NOT NULL default 'Yes',
+	runs		enum('Yes','No','Not Installable') NOT NULL default 'Yes',
 	testedRating  	tinytext,
         comments        text,
 	submitTime	timestamp(14) NOT NULL,

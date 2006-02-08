@@ -657,15 +657,15 @@ function make_Installs_list($varname, $cvalue)
     
     echo "<select name='$varname'>\n";
     echo "<option value=\"\">Choose ...</option>\n";
-    $aRating = array("Yes", "No");
+    $aRating = array("Yes", "No", "N/A");
     $iMax = count($aRating);
 
     for($i=0; $i < $iMax; $i++)
     {
         if($aRating[$i] == $cvalue)
-            echo "<option value=$aRating[$i] selected>$aRating[$i]\n";
+            echo "<option value='".$aRating[$i]."' selected>".$aRating[$i]."\n";
         else
-            echo "<option value=$aRating[$i]>$aRating[$i]\n";
+            echo "<option value='".$aRating[$i]."'>".$aRating[$i]."\n";
     }
     echo "</select>\n";
 }
@@ -675,15 +675,15 @@ function make_Runs_list($varname, $cvalue)
     
     echo "<select name='$varname'>\n";
     echo "<option value=\"\">Choose ...</option>\n";
-    $aRating = array("Yes", "No", "???");
+    $aRating = array("Yes", "No", "Not Installable");
     $iMax = count($aRating);
 
     for($i=0; $i < $iMax; $i++)
     {
         if($aRating[$i] == $cvalue)
-            echo "<option value=$aRating[$i] selected>$aRating[$i]\n";
+            echo "<option value='".$aRating[$i]."' selected>".$aRating[$i]."\n";
         else
-            echo "<option value=$aRating[$i]>$aRating[$i]\n";
+            echo "<option value='".$aRating[$i]."'>".$aRating[$i]."\n";
     }
     echo "</select>\n";
 }
