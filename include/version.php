@@ -148,10 +148,11 @@ class Version {
                     $this->aTestingIds[] = $oRow->testingId;
                 }
             }
+
             /*
              * We fetch monitor Ids. 
              */
-            $this->aTestingIds = array();
+            $this->aMonitorIds = array();
             $sQuery = "SELECT *
                        FROM appMonitors
                        WHERE versionId = ".$iVersionId."

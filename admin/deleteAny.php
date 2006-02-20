@@ -12,6 +12,7 @@ require_once(BASE."include/category.php");
 require_once(BASE."include/application.php");
 require_once(BASE."include/mail.php");
 require_once(BASE."include/monitor.php");
+require_once(BASE."include/testResults.php");
 
 
 if($_REQUEST['confirmed'] != "yes")
