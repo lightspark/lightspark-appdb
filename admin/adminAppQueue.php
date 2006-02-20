@@ -177,73 +177,38 @@ if ($_REQUEST['sub'])
 
         if (($_REQUEST['apptype'] == "application") && is_numeric($_REQUEST['appId'])) // application
         {
-            // get the queued versions that refers to the application entry we just removed
-            // and delete them as we implicitly added a version entry when adding a new application
-            $sQuery = "SELECT versionId FROM appVersion WHERE appVersion.appId = '".$_REQUEST['appId']."' AND appVersion.queued = 'true';";
-            $hResult = query_appdb($sQuery);
-            if($hResult)
-            {
-                while($oRow = mysql_fetch_object($hResult))
-                {
-                    $oVersion = new Version($oRow->versionId);
-                    $oVersion->delete();
-                }
-            }
-
             // delete the application entry
             $oApp = new Application($_REQUEST['appId']);
             $oApp->delete();
 
         } else if(($_REQUEST['apptype'] == "version") && is_numeric($_REQUEST['versionId']))  // version
+
         {
+            // delete the Version entry
             $oVersion = new Version($_REQUEST['versionId']);
             $oVersion->delete();
-        }
-        foreach($oVersion->aVersionIds as $iTestingId)
-        {
-            $oTest = new Version($iTestingId);
-            $oTest->delete();
         }
 
         redirect(apidb_fullurl("admin/adminAppQueue.php"));
     }
     else if ($_REQUEST['sub'] == 'Reject')
     {
-        if (($_REQUEST['apptype'] == "application") && is_numeric($_REQUEST['appId'])) // application
+        $oVersion = new Version($_REQUEST['versionId']);
+        $oTest = new testData($_REQUEST['iTestingId']);
+        $oVersion->GetOutputEditorValues();
+        $oTest->GetOutputEditorValues();
+        if ($_REQUEST['apptype'] == "application") // application
         {
-            // get the queued versions that refers to the application entry we just removed
-            // and delete them as we implicitly added a version entry when adding a new application
-            $sQuery = "SELECT versionId FROM appVersion WHERE appVersion.appId = '".$_REQUEST['appId']."' AND appVersion.queued = 'true';";
-            $hResult = query_appdb($sQuery);
-            if($hResult)
-            {
-                while($oRow = mysql_fetch_object($hResult))
-                {
-                    $oVersion = new Version($oRow->versionId);
-                    $oVersion->reject(true);
-                }
-            }
-
-            // delete the application entry
             $oApp = new Application($_REQUEST['appId']);
+            $oApp->GetOutputEditorValues(); // load the values from $_REQUEST 
+            $oApp->update(true);
             $oApp->reject();
-        } else if(($_REQUEST['apptype'] == "version") && is_numeric($_REQUEST['versionId']))  // version
-        {
-            $oVersion = new Version($_REQUEST['versionId']);
-            $oVersion->reject();
-
         }
-        foreach($oVersion->aVersionIds as $iTestingId)
-        {
-            $oTest = new Version($iTestingId);
-            $oTest->GetOutputEditorValues();
-            $oTest->iVersionId = $oVersion->iVersionId;
-            $oTest->Update();
-            $oTest->reject();
-        }
-
-        
-        redirect(apidb_fullurl("admin/adminAppQueue.php"));
+        $oVersion->update(true);
+        $oVersion->reject();
+        $oTest->update(true);
+        $oTest->reject();
+        redirect($_SERVER['PHP_SELF']);
     }
 
     //process according to sub flag
