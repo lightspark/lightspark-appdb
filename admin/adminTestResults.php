@@ -101,8 +101,10 @@ if ($_REQUEST['sub'])
         echo "</td></tr></table></div>\n\n";    
 
         $oTest->OutputEditor();
-
-        echo '<a href="'.$_SERVER['PHP_SELF'].'">Back</a>';
+        echo html_frame_start("Reply text", "90%", "", 0);
+        echo "<table width='100%' border=0 cellpadding=2 cellspacing=0>\n";
+        echo '<tr valign=top><td class="color0"><b>email Text</b></td>',"\n";
+        echo '<td><textarea name="replyText" style="width: 100%" cols="80" rows="10"></textarea></td></tr>',"\n";
 
         echo '<tr valign=top><td class=color3 align=center colspan=2>' ,"\n";
 
@@ -125,9 +127,12 @@ if ($_REQUEST['sub'])
             break;
         }
         echo '</td></tr>',"\n";
+        echo '</table>',"\n";
         echo '</form>',"\n";
+        echo html_frame_end();
 
-        echo html_frame_end("&nbsp;");
+        echo '<a href="'.$_SERVER['PHP_SELF'].'">Back</a>';
+
     }
     else 
     {
