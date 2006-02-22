@@ -314,29 +314,22 @@ class Application {
             switch($sAction)
             {
             case "add":
-               {
-                   $sSubject =  "Submitted application accepted";
-                   $sMsg  = "The application you submitted (".$oApp->sName." ".$this->sName.") has been accepted.";
-               }
+                $sSubject =  "Submitted application accepted";
+                $sMsg  = "The application you submitted (".$oApp->sName." ".$this->sName.") has been accepted.";
+                $sMsg .= "Administrators Responce:\n";
             break;
             case "reject":
-                {
-                    $sSubject =  "Submitted application rejected";
-                    $sMsg  = "The application you submitted (".$oApp->sName." ".$this->sName.") has been rejected.";
-                    $sMsg .= "Clicking on the link in this email will allow you to modify and resubmit the application. ";
-                    $sMsg .= "A link to your queue of applications and versions will also show up on the left hand side of the Appdb site once you have logged in. ";
-                    $sMsg .= APPDB_ROOT."appsubmit.php?sub=view&apptype=applicationappId=".$this->iAppId."\n";
-                    $sMsg .= "Reason given:\n";
-                    $sMsg .= $_REQUEST['replyText']."\n"; /* append the reply text, if there is any */
-                }
+                $sSubject =  "Submitted application rejected";
+                $sMsg  = "The application you submitted (".$oApp->sName." ".$this->sName.") has been rejected.";
+                $sMsg .= "Clicking on the link in this email will allow you to modify and resubmit the application. ";
+                $sMsg .= "A link to your queue of applications and versions will also show up on the left hand side of the Appdb site once you have logged in. ";
+                $sMsg .= APPDB_ROOT."appsubmit.php?sub=view&apptype=applicationappId=".$this->iAppId."\n";
+                $sMsg .= "Reason given:\n";
             break;
             case "delete":
-                {
-                    $sSubject =  "Submitted application deleted";
-                    $sMsg  = "The application you submitted (".$oApp->sName." ".$this->sName.") has been deleted.";
-                    $sMsg .= "Reason given:\n";
-                    $sMsg .= $_REQUEST['replyText']."\n"; /* append the reply text, if there is any */
-                }
+                $sSubject =  "Submitted application deleted";
+                $sMsg  = "The application you submitted (".$oApp->sName." ".$this->sName.") has been deleted.";
+                $sMsg .= "Reason given:\n";
             break;
 
             $sMsg .= $_REQUEST['replyText']."\n";
@@ -362,6 +355,12 @@ class Application {
                         $sMsg .= "This application has been submitted by ".$oSubmitter->sRealname.".";
                         $sMsg .= "\n";
                     }
+                    if($_REQUEST['replyText'])
+                    {
+                        $sMsg .= "Appdb admin reply text:\n";
+                        $sMsg .= $_REQUEST['replyText']."\n"; // append the reply text, if there is any 
+                    }
+
                     addmsg("The application was successfully added into the database.", "green");
                 } else
                 {
@@ -379,11 +378,11 @@ class Application {
             case "delete":
                 $sSubject = $this->sName." has been deleted by ".$_SESSION['current']->sRealname;
 
-                /* if replyText is set we should report the reason the application was deleted */
+                // if replyText is set we should report the reason the application was deleted 
                 if($_REQUEST['replyText'])
                 {
                     $sMsg .= "Reason given:\n";
-                    $sMsg .= $_REQUEST['replyText']."\n"; /* append the reply text, if there is any */
+                    $sMsg .= $_REQUEST['replyText']."\n"; // append the reply text, if there is any 
                 }
 
                 addmsg("Application deleted.", "green");
@@ -392,11 +391,11 @@ class Application {
                 $sSubject = $this->sName." has been rejected by ".$_SESSION['current']->sRealname;
                 $sMsg .= APPDB_ROOT."appsubmit.php?apptype=application&sub=view&appId=".$this->iAppId."\n";
 
-                /* if replyText is set we should report the reason the application was rejected */
+                // if replyText is set we should report the reason the application was rejected 
                 if($_REQUEST['replyText'])
                 {
                     $sMsg .= "Reason given:\n";
-                    $sMsg .= $_REQUEST['replyText']."\n"; /* append the reply text, if there is any */
+                    $sMsg .= $_REQUEST['replyText']."\n"; // append the reply text, if there is any 
                 }
 
                 addmsg("Application rejected.", "green");

@@ -237,19 +237,18 @@ class testData{
                 $sSubject =  "Submitted testing data accepted";
                 $sMsg  = "The testing data you submitted (".$oApp->sName." ".$this->sName.") has been accepted.";
                 $sMsg .= APPDB_ROOT."appview.php?versionId=".$this->iVersionId."&iTestingId=".$this->iTestingId."\n";
-                break;
+                $sMsg .= "Administrators Responce:\n";
+            break;
             case "reject":
                 $sSubject =  "Submitted testing data rejected";
                 $sMsg  = "The testing data you submitted (".$oApp->sName." ".$this->sName.") has been rejected.";
                 $sMsg .= APPDB_ROOT."testResults.php?sub=view&iTestingId=".$this->iTestingId."\n";
                 $sMsg .= "Reason given:\n";
-                $sMsg .= $_REQUEST['replyText']."\n"; // append the reply text, if there is any 
-                break;
+            break;
             case "delete":
                 $sSubject =  "Submitted testing data deleted";
                 $sMsg  = "The testing data you submitted (".$oApp->sName." ".$this->sName.") has been deleted.";
                 $sMsg .= "Reason given:\n";
-                $sMsg .= $_REQUEST['replyText']."\n"; // append the reply text, if there is any 
             break;
             }
             $sMsg .= $_REQUEST['replyText']."\n";
@@ -276,6 +275,9 @@ class testData{
                         $oSubmitter = new User($this->iSubmitterId);
                         $sMsg .= "This Testing data has been submitted by ".$oSubmitter->sRealname.".";
                         $sMsg .= "\n";
+                    }
+                    if($_REQUEST['replyText'])
+                    {
                         $sMsg .= "Appdb admin reply text:\n";
                         $sMsg .= $_REQUEST['replyText']."\n"; // append the reply text, if there is any 
                     }

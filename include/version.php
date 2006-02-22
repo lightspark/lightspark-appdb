@@ -421,30 +421,22 @@ class Version {
             switch($sAction)
             {
             case "add":
-               {
-                   $sSubject =  "Submitted version accepted";
-                   $sMsg  = "The version you submitted (".$oApp->sName." ".$this->sName.") has been accepted.";
-               }
+                $sSubject =  "Submitted version accepted";
+                $sMsg  = "The version you submitted (".$oApp->sName." ".$this->sName.") has been accepted.";
+                $sMsg .= "Administrators Responce:\n";
             break;
             case "reject":
-                {
-                    $sSubject =  "Submitted version rejected";
-                    $sMsg  = "The version you submitted (".$oApp->sName." ".$this->sName.") has been rejected. ";
-                    $sMsg .= "Clicking on the link in this email will allow you to modify and resubmit the version. ";
-                    $sMsg .= "A link to your queue of applications and versions will also show up on the left hand side of the Appdb site once you have logged in. ";
-                    $sMsg .= APPDB_ROOT."appsubmit.php?sub=view&apptype=version&versionId=".$this->iVersionId."\n";
-                    $sMsg .= "Reason given:\n";
-                    $sMsg .= $_REQUEST['replyText']."\n"; /* append the reply text, if there is any */
-                }
-
+                $sSubject =  "Submitted version rejected";
+                $sMsg  = "The version you submitted (".$oApp->sName." ".$this->sName.") has been rejected. ";
+                $sMsg .= "Clicking on the link in this email will allow you to modify and resubmit the version. ";
+                $sMsg .= "A link to your queue of applications and versions will also show up on the left hand side of the Appdb site once you have logged in. ";
+                $sMsg .= APPDB_ROOT."appsubmit.php?sub=view&apptype=version&versionId=".$this->iVersionId."\n";
+                $sMsg .= "Reason given:\n";
             break;
             case "delete":
-                {
-                    $sSubject =  "Submitted version deleted";
-                    $sMsg  = "The version you submitted (".$oApp->sName." ".$this->sName.") has been deleted.";
-                    $sMsg .= "Reason given:\n";
-                    $sMsg .= $_REQUEST['replyText']."\n"; /* append the reply text, if there is any */
-                }
+                $sSubject =  "Submitted version deleted";
+                $sMsg  = "The version you submitted (".$oApp->sName." ".$this->sName.") has been deleted.";
+                $sMsg .= "Reason given:\n";
             break;
             }
             $sMsg .= $_REQUEST['replyText']."\n";
@@ -470,9 +462,13 @@ class Version {
                         $oSubmitter = new User($this->iSubmitterId);
                         $sMsg .= "This version has been submitted by ".$oSubmitter->sRealname.".";
                         $sMsg .= "\n";
-                        $sMsg .= "Appdb admin reply text:\n";
-                        $sMsg .= $_REQUEST['replyText']."\n"; /* append the reply text, if there is any */
                     }
+                    if($_REQUEST['replyText'])
+                    {
+                        $sMsg .= "Appdb admin reply text:\n";
+                        $sMsg .= $_REQUEST['replyText']."\n"; // append the reply text, if there is any 
+                    }
+
                     addmsg("The version was successfully added into the database.", "green");
                 } else // Version queued.
                 {
@@ -490,11 +486,11 @@ class Version {
             case "delete":
                 $sSubject = "Version '".$this->sName."' of '".$oApp->sName."' has been deleted by ".$_SESSION['current']->sRealname;
 
-                /* if replyText is set we should report the reason the application was deleted */
+                // if replyText is set we should report the reason the application was deleted 
                 if($_REQUEST['replyText'])
                 {
                     $sMsg .= "Reason given:\n";
-                    $sMsg .= $_REQUEST['replyText']."\n"; /* append the reply text, if there is any */
+                    $sMsg .= $_REQUEST['replyText']."\n"; // append the reply text, if there is any 
                 }
 
                 addmsg("Version deleted.", "green");
@@ -503,11 +499,11 @@ class Version {
                 $sSubject = "Version '".$this->sName."' of '".$oApp->sName."' has been rejected by ".$_SESSION['current']->sRealname;
                 $sMsg .= APPDB_ROOT."appsubmit.php?apptype=application&sub=view&versionId=".$this->iVersionId."\n";
 
-                 /* if replyText is set we should report the reason the application was rejected */
+                // if replyText is set we should report the reason the version was rejected 
                 if($_REQUEST['replyText'])
                 {
                     $sMsg .= "Reason given:\n";
-                    $sMsg .= $_REQUEST['replyText']."\n"; /* append the reply text, if there is any */
+                    $sMsg .= $_REQUEST['replyText']."\n"; // append the reply text, if there is any 
                 }
 
                 addmsg("Version rejected.", "green");
