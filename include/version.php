@@ -416,7 +416,7 @@ class Version {
     {
         if($this->iSubmitterId)
         {
-            $oApp = new Application($this->appId);
+            $oApp = new Application($this->iAppId);
             $oSubmitter = new User($this->iSubmitterId);
             switch($sAction)
             {
