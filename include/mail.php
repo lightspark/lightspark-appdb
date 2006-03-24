@@ -10,7 +10,7 @@ function mail_appdb($sEmailList,$sSubject,$sMsg)
     $sMsg  = $sSubject."\n-------------------------------------------------------\n".$sMsg."\n\n";
     $sMsg .= "Best regards.\n";
     $sMsg .= "The AppDB team\n";
-    $sMsg .= APPDB_OWNER_URL."\n";
+    $sMsg .= APPDB_ROOT."\n";
     $sMsg .= "\n\nIf you don't want to receive any other e-mail, please change your preferences:\n";
     $sMsg .= APPDB_ROOT."preferences.php\n";
 
