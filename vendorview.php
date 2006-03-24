@@ -36,10 +36,15 @@ if($oVendor->iVendorId)
     apidb_header("View Vendor");
     echo html_frame_start("Vendor Information",500);
 
-    echo 'Vendor Name: '.$oVendor->sName.'<br />',"\n";
+    echo 'Vendor Name: '.$oVendor->sName,"\n";
+    if($_SESSION['current']->hasPriv("admin"))
+    {
+        echo ' [<a href="'.apidb_fullurl("admin/editVendor.php").'?iVendorId='.$oVendor->iVendorId.'">edit</a>]',"\n";
+    }
 
+    echo '<br />',"\n";
     if ($oVendor->sWebpage)
-        echo 'Vendor URL:  <a href="'.$oVendor->sWebpage.'">'.$oVendor->vendorURL.'</a> <br />',"\n";
+        echo 'Vendor URL:  <a href="'.$oVendor->sWebpage.'">'.$oVendor->sWebpage.'</a> <br />',"\n";
 
 
     if($oVendor->aApplicationsIds)
