@@ -88,7 +88,7 @@ class Comment {
                 }
 
                 $sSubject = "Comment for '".lookup_app_name($this->iAppId)." ".lookup_version_name($this->iVersionId)."' added by ".$_SESSION['current']->sRealname;
-                $sMsg  = APPDB_ROOT."appview.php?versionId=".$this->iVersionId."\n";
+                $sMsg  = APPDB_ROOT."appview.php?versionId=".$this->iVersionId."&mode=nested#Comment-".$this->iCommentId."\n";
                 $sMsg .= "\n";
                 $sMsg .= "Subject: ".$this->sSubject."\r\n";
                 $sMsg .= "\n";
@@ -214,7 +214,7 @@ function view_app_comment($ob)
     $ob->body = stripslashes($ob->body);
 
     // message header
-    echo "<tr bgcolor=\"#E0E0E0\"><td>\n";
+    echo "<tr bgcolor=\"#E0E0E0\"><td><a name=Comment-".$ob->commentId."></a>\n";
     echo " <b>".$ob->subject."</b><br />\n";
     echo " by  ".forum_lookup_user($ob->userId)." on ".$ob->time."<br />\n";
     echo "</td></tr><tr><td>\n";
@@ -416,6 +416,9 @@ function view_app_comments($versionId, $threadId = 0)
         $mode = $_SESSION['current']->getPref("comments:mode", "threaded");
     else
         $mode = "threaded"; /* default non-logged in users to threaded comment display mode */
+
+    if ($_REQUEST['mode']=="nested")
+        $mode = "nested";
 
     switch ($mode)
     {
