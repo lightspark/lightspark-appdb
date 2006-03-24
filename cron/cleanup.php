@@ -103,7 +103,7 @@ function deleteUser($iUserId)
 function warnUserDeleted($sEmail)
 {
     $sSubject  = "Warning: account removed";
-    $sMsg  = "You didn't log in in the past seven month to the AppDB.\r\n";
+    $sMsg  = "You didn't log in in the past seven months to the AppDB.\r\n";
     $sMsg .= "As you don't have any data associated to your account we have removed it.\r\n";
     $sMsg .= "Please feel free to recreate an account anytime.\r\n";
 
