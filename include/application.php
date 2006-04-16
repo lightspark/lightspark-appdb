@@ -188,7 +188,7 @@ class Application {
                 return false;
             $oVendorBefore = new Vendor($oApp->iVendorId);
             $oVendorAfter = new Vendor($this->iVendorId);
-            $sWhatChanged .= "Vendor was changed from ".$oVendorBefore->sName." to ".$oVendorBefore->sName.".\n\n";
+            $sWhatChanged .= "Vendor was changed from ".$oVendorBefore->sName." to ".$oVendorAfter->sName.".\n\n";
         }
 
         if ($this->iCatId && ($this->iCatId!=$oApp->iCatId))
