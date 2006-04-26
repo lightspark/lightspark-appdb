@@ -71,6 +71,49 @@ function outputSearchTableForDuplicateFlagging($currentAppId, $hResult)
     }
 }
 
+function display_move_test_to_versions_table($aVersionsIds,$icurrentVersionId)
+{
+    if ($aVersionsIds)
+    {
+        echo html_frame_start("","98%","",0);
+        echo "<table width=\"100%\" border=\"0\" cellpadding=\"3\" cellspacing=\"1\">\n\n";
+
+        echo "<tr class=color4>\n";
+        echo "    <td width=\"80\">Version</td>\n";
+        echo "    <td>Description</td>\n";
+        echo "    <td width=\"80\">Rating</td>\n";
+        echo "    <td width=\"80\">Wine version</td>\n";
+        echo "    <td width=\"40\">Comments</td>\n";
+        echo "</tr>\n\n";
+      
+        $c = 0;
+        foreach($aVersionsIds as $iVersionId)
+        {
+            $oVersion = new Version($iVersionId);
+            if ($oVersion->sQueued == 'false')
+            {
+                // set row color
+                $bgcolor = ($c % 2 == 0) ? "color0" : "color1";
+
+                //display row
+                echo "<tr class=$bgcolor>\n";
+                echo "    <td>".html_ahref($oVersion->sName,"adminAppQueue.php?sub=movetest&apptype=version&versionId=".$icurrentVersionId."&versionIdMergeTo=".$oVersion->iVersionId)."</td>\n";
+
+                echo "    <td>".trim_description($oVersion->sDescription)."</td>\n";
+                echo "    <td align=center>".$oVersion->sTestedRating."</td>\n";
+                echo "    <td align=center>".$oVersion->sTestedRelease."</td>\n";
+                echo "    <td align=center>".sizeof($oVersion->aCommentsIds)."</td>\n";
+                echo "</tr>\n\n";
+
+                $c++;   
+            }
+        }
+        echo "</table>\n";
+        echo html_frame_end("Click the Version Name to view the details of that Version");
+    }
+}
+
+
 //deny access if not logged in or not a super maintainer of any applications
 if(!$_SESSION['current']->hasPriv("admin") && !$_SESSION['current']->isSuperMaintainer())
 {
@@ -172,6 +215,22 @@ if ($_REQUEST['sub'])
         /* redirect back to the main page */
         redirect(apidb_fullurl("admin/adminAppQueue.php"));
     }
+    else if ($_REQUEST['sub'] == 'movetest')
+    {
+        if(is_numeric($_REQUEST['versionIdMergeTo']))
+        {
+            // move this Test submission under the existing version //
+            $oTest->iVersionId = $_REQUEST['versionIdMergeTo'];
+            $oTest->update();
+
+            // delete the Version entry
+            $oVersion = new Version($_REQUEST['versionId']);
+            $oVersion->delete();
+        }
+
+        // redirect back to the main page
+        redirect(apidb_fullurl("admin/adminAppQueue.php"));
+    }
     else if ($_REQUEST['sub'] == 'Delete')
     {
 
@@ -227,6 +286,10 @@ if ($_REQUEST['sub'])
             echo html_frame_start("Potential duplicate versions in the database","90%","",0);
             $oAppForVersion = new Application($oVersion->iAppId);
             display_approved_versions($oAppForVersion->aVersionsIds);
+            echo html_frame_end("&nbsp;");
+
+            echo html_frame_start("Move test to version","90%","",0);
+            display_move_test_to_versions_table($oAppForVersion->aVersionsIds,$oVersion->iVersionId);
             echo html_frame_end("&nbsp;");
 
             //help
