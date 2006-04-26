@@ -898,7 +898,7 @@ function display_approved_versions($aVersionsIds)
         foreach($aVersionsIds as $iVersionId)
         {
             $oVersion = new Version($iVersionId);
-            if ($oVersion->sQueued = 'false')
+            if ($oVersion->sQueued == 'false')
             {
                 // set row color
                 $bgcolor = ($c % 2 == 0) ? "color0" : "color1";
