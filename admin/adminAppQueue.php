@@ -208,6 +208,7 @@ if ($_REQUEST['sub'])
             $oVersion->update();
 
             /* delete the appId that is the duplicate */
+            $_REQUEST['replyText'] = "Your Vesion information was moved to an existing Application";
             $oAppDelete = new Application($oApp->iAppId);
             $oAppDelete->delete();
         }
@@ -224,6 +225,7 @@ if ($_REQUEST['sub'])
             $oTest->update();
 
             // delete the Version entry
+            $_REQUEST['replyText'] = "Your Test results were moved to existing version";
             $oVersion = new Version($_REQUEST['versionId']);
             $oVersion->delete();
         }
