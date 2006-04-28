@@ -88,7 +88,9 @@ class Comment {
                 }
 
                 $sSubject = "Comment for '".lookup_app_name($this->iAppId)." ".lookup_version_name($this->iVersionId)."' added by ".$_SESSION['current']->sRealname;
-                $sMsg  = APPDB_ROOT."appview.php?versionId=".$this->iVersionId."&mode=nested#Comment-".$this->iCommentId."\n";
+                $sMsg  = "To reply to this email please use the link provided below.\n";
+                $sMsg .= "DO NOT reply via your email client as it will not reach the person who wrote the comment\n";
+                $sMsg .= APPDB_ROOT."appview.php?versionId=".$this->iVersionId."&mode=nested#Comment-".$this->iCommentId."\n";
                 $sMsg .= "\n";
                 $sMsg .= "Subject: ".$this->sSubject."\r\n";
                 $sMsg .= "\n";
