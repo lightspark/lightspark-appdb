@@ -442,7 +442,7 @@ class Application {
         echo '<tr valign=top><td class="color0"><b>Keywords</b></td>',"\n";
         echo '<td><input size="90%" type="text" name="appKeywords" value="'.$this->sKeywords.'"></td></tr>',"\n";
 
-        echo '<tr valign=top><td class="color0"><b>Application Description</b></td>',"\n";
+        echo '<tr valign=top><td class="color0"><b>Application description</b></td>',"\n";
         echo '<td><p><textarea cols="80" rows="20" id="app_editor" name="appDescription">';
 
         if(get_magic_quotes_gpc())
