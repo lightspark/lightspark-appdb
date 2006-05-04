@@ -22,39 +22,38 @@ function newSubmition($errors)
 {
     // show add to queue form
     echo '<form name="newApp" action="appsubmit.php" method="post">'."\n";
-    echo "<p>This page is for submitting new applications to be added to this\n";
-    echo "database. The application will be reviewed by the AppDB Administrator\n";
-    echo "and you will be notified via email if this application will be added to\n";
-    echo "the database.</p>\n";
-    echo "<p><h2>Before continuing please check that you have:</h2>\n";
+    echo "<p>This page is for submitting new applications to be added to the\n";
+    echo "database. The application will be reviewed by an AppDB Administrator,\n";
+    echo "and you will be notified via e-mail if it is added to the database or rejected.</p>\n";
+    echo "<p><h2>Before continuing, please ensure that you have</h2>\n";
     echo "<ul>\n";
     if ($_REQUEST['apptype'] == 1)
     {
-        echo " <li>Searched for this application in the database.  Duplicate submissions will be rejected.</li>\n";
+        echo " <li>Searched for this application in the database.  Duplicate submissions will be rejected</li>\n";
         echo " <li>Really want to submit an application instead of a new version of an application\n";
-        echo "   that is already in the database. If this is the case browse to the application\n";
-        echo "   and click on 'Submit new version'</li>\n";
+        echo "   that is already in the database. If this is the case, browse to the application\n";
+        echo "   and click on &#8216;Submit new version&#8217;</li>\n";
     }
     echo " <li>Entered a valid version for this application.  This is the application\n";
-    echo "   version, NOT the wine version(which goes in the testing results section of the template)</li>\n";
+    echo "   version, NOT the Wine version (which goes in the testing results section of the template)</li>\n";
     echo " <li>Tested this application under Wine.  There are tens of thousands of applications\n";
-    echo "   for windows, we don't need placeholder entries in the database.  Please enter as complete \n";
+    echo "   for Windows, we do not need placeholder entries in the database.  Please enter as complete \n";
     echo "   as possible testing results in the version template provided below</li>\n";
     echo "</ul></p>";
-    echo "<p>Please don't forget to mention which Wine version you used, how well it worked\n";
-    echo "and if any workaround were needed. Having app descriptions just sponsoring the app\n";
-    echo "(Yes, some vendors want to use the appdb for this) or saying \"I haven't tried this app with Wine\" ";
-    echo "won't help Wine development or Wine users.</p>\n";
+    echo "<p>Please do not forget to mention which Wine version you used, how well it worked\n";
+    echo "and if any workarounds were needed.  Having app descriptions just sponsoring the app\n";
+    echo "(yes, some vendors want to use the appdb for this) or saying &#8216;I haven&#8217;t tried this app with Wine&#8217; ";
+    echo "will not help Wine development or Wine users.</p>\n";
     echo "<b><span style=\"color:red\">Please only submit applications/versions that you have tested.\n";
     echo "Submissions without testing information or not using the provided template will be rejected.\n";
-    echo "If you can't see the in-browser editors below please try Firefox, Mozilla or Opera browsers.\n</span></b>";
-    echo "<p>After your application has been added you'll be able to submit screenshots for it, post";
+    echo "If you are unable to see the in-browser editors below, please try Firefox, Mozilla or Opera browsers.\n</span></b>";
+    echo "<p>After your application has been added, you will be able to submit screenshots for it, post";
     echo " messages in its forums or become a maintainer to help others trying to run the application.</p>";
 }
 //deny access if not logged on
 if(!$_SESSION['current']->isLoggedIn())
 {
-    errorpage("Insufficient privilages to create application. Are you sure you are logged in");
+    errorpage("Insufficient privilages to create application.  Are you sure you are logged in?");
     exit;
 }
 
@@ -258,7 +257,7 @@ if ($_REQUEST['sub'])
             echo "<p>This is the full view of the rejected application. \n";
             echo "You need to pick a category before submitting \n";
             echo "it into the database.\n";
-            echo "<p>Click delete to remove the selected item from the queue. An email will automatically be sent to the\n";
+            echo "<p>Click delete to remove the selected item from the queue. An e-mail will automatically be sent to the\n";
             echo "submitter to let them know the item was deleted.</p>\n\n";        
             echo "</td></tr></table></div>\n\n";    
             } else
@@ -313,7 +312,7 @@ if ($_REQUEST['sub'])
                 echo "<p>This is the full view of the application version that has been Rejected. \n";
 
                 echo "<b>App Version</b> This type of application will be nested under the selected application parent.\n";
-                echo "<p>Click delete to remove the selected item from the queue an email will automatically be sent to the\n";
+                echo "<p>Click delete to remove the selected item from the queue.  An e-mail will automatically be sent to the\n";
                 echo "submitter to let him know the item was deleted.</p>\n\n";        
                 echo "</td></tr></table></div>\n\n";
             } else
@@ -403,7 +402,7 @@ else // if ($_REQUEST['sub']) is not defined, display the main app queue page
     {
         //help
         echo "<div align=center><table width='90%' border=0 cellpadding=3 cellspacing=0><tr><td>\n\n";
-        echo "<p>This is the list of applications waiting for re-submition, or to be deleted.</p>\n";
+        echo "<p>This is the list of applications waiting for re-submission, or to be deleted.</p>\n";
         echo "<p>To view a submission, click on its name. From that page you can delete or edit and\n";
         echo "re-submit it into the AppDB .<br>\n";
         echo "</td></tr></table></div>\n\n";
@@ -426,10 +425,10 @@ else // if ($_REQUEST['sub']) is not defined, display the main app queue page
      {
         //help
         echo "<div align=center><table width='90%' border=0 cellpadding=3 cellspacing=0><tr><td>\n\n";
-        echo "<p>This is the list of versions waiting for re-submition or deletion.</p>\n";
+        echo "<p>This is the list of versions waiting for re-submission or deletion.</p>\n";
         echo "<p>To view a submission, click on its name. From that page you can delete or edit and re-submit it into \n";
         echo "the AppDB .<br>\n";
-        echo "<p>Note that versions linked to application that have not been yet approved are not displayed in this list.</p>\n";
+        echo "<p>Note that versions linked to application that have not been approved yet are not displayed in this list.</p>\n";
         echo "the AppDB.<br>\n";
         echo "</td></tr></table></div>\n\n";
     
