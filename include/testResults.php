@@ -341,9 +341,9 @@ class testData{
         $oRow = mysql_fetch_object($hResult);
         echo '<p><b>What works</b><br />',"\n";
         echo $oRow->whatWorks;
-        echo '<p><b>What Doesn\'t</b><br />',"\n";
+        echo '<p><b>What does not</b><br />',"\n";
         echo $oRow->whatDoesnt;
-        echo '<p><b>What wasn\'t tested</b><br />',"\n";
+        echo '<p><b>What was not tested</b><br />',"\n";
         echo $oRow->whatNotTested;
         return $oRow->testingId;
     }
@@ -444,11 +444,11 @@ class testData{
         echo "<table width='100%' border=0 cellpadding=2 cellspacing=0>\n";
 
         // What works
-        echo '<tr valign=top><td class="color0"><b>What Works</b></td>',"\n";
+        echo '<tr valign=top><td class="color0"><b>What works</b></td>',"\n";
         echo '<td class="color0"><p><textarea cols="80" rows="20" id="Test1" name="sWhatWorks">';
         echo $this->sWhatWorks.'</textarea></p></td></tr>',"\n";
         // What Does not work
-        echo '<tr valign=top><td class=color1><b>What Does not work</b></td>',"\n";
+        echo '<tr valign=top><td class=color1><b>What does not work</b></td>',"\n";
         echo '<td class="color0"><p><textarea cols="80" rows="20" id="Test2" name="sWhatDoesnt">';
         echo $this->sWhatDoesnt.'</textarea></p></td></tr>',"\n";
         // What was not tested
@@ -456,7 +456,7 @@ class testData{
         echo '<td class="color0"><p><textarea cols="80" rows="20" id="Test3" name="sWhatNotTested">';
         echo $this->sWhatNotTested.'</textarea></p></td></tr>',"\n";
         // Date Tested
-        echo '<tr valign=top><td class="color1"><b>Date Tested </b></td>',"\n";
+        echo '<tr valign=top><td class="color1"><b>Date tested </b></td>',"\n";
         echo '<td class="color0"><input type=text name="sTestedDate" value="'.$this->sTestedDate.'" size="20"></td></tr>',"\n";
         echo '<tr valign=top><td class="color1"></td><td class="color0"><p/>YYYY-MM-DD HH:MM:SS</td></tr>',"\n";
         // Distribution
@@ -470,7 +470,7 @@ class testData{
         make_distribution_list("iDistributionId", $this->iDistributionId);
         echo '</td></tr>',"\n";
         // Version List
-        echo '<tr><td class=color1><b>Tested Release</b></td><td class=color0>',"\n";
+        echo '<tr><td class=color1><b>Tested release</b></td><td class=color0>',"\n";
         make_bugzilla_version_list("sTestedRelease", $this->sTestedRelease);
         echo '</td></tr>',"\n";
         // Installs
@@ -486,7 +486,7 @@ class testData{
         make_maintainer_rating_list("sTestedRating", $this->sTestedRating);
         echo '</td></tr>',"\n";
         // extra comments
-        echo '<tr valign=top><td class="color1"><b>Extra Comments</b></td>',"\n";
+        echo '<tr valign=top><td class="color1"><b>Extra comments</b></td>',"\n";
         echo '<td class="color0"><textarea name="sComments" rows=10 cols=35>';
         echo $this->sComments.'</textarea></td></tr>',"\n";
 
@@ -516,14 +516,14 @@ class testData{
             $errors .= "<li>Please enter what was not tested.</li>\n";
 
         if (empty($_REQUEST['sTestedDate']))
-            $errors .= "<li>Please enter the Date and Time that you tested.</li>\n";
+            $errors .= "<li>Please enter the date and time when you tested.</li>\n";
 
         if (empty($_REQUEST['sTestedRelease']))
             $errors .= "<li>Please enter the version of Wine that you tested with.</li>\n";
 
         // No Distribution entered, and nothing in the list is selected
         if (empty($sDistribution) && !$_REQUEST['iDistributionId'])
-            $errors .= "<li>Please enter a Distribution.</li>\n";
+            $errors .= "<li>Please enter a distribution.</li>\n";
 
         if (empty($_REQUEST['sInstalls']))
             $errors .= "<li>Please enter whether this application installs or not.</li>\n";
@@ -532,7 +532,7 @@ class testData{
             $errors .= "<li>Please enter whether this application runs or not.</li>\n";
 
         if (empty($_REQUEST['sTestedRating']))
-            $errors .= "<li>Please enter a Rating based on how well this application runs.</li>\n";
+            $errors .= "<li>Please enter a rating based on how well this application runs.</li>\n";
         
         return $errors;
 
