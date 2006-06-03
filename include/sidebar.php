@@ -8,7 +8,10 @@ require_once(BASE."include/vendor.php");
 function global_sidebar_menu() {
   
     $g = new htmlmenu(APPDB_OWNER." Menu");
-    $g->add("Back to ".APPDB_OWNER, APPDB_OWNER_URL);
+    $g->add(APPDB_OWNER, APPDB_OWNER_URL);
+    $g->add("AppDB", BASE);
+    $g->add("Bugzilla", BUGZILLA_ROOT);
+    $g->add("Wine Wiki", "http:\\wiki.winehq.org");
     $g->done();
 
     $g = new htmlmenu("AppDB");
