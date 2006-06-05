@@ -11,7 +11,7 @@ function global_sidebar_menu() {
     $g->add(APPDB_OWNER, APPDB_OWNER_URL);
     $g->add("AppDB", BASE);
     $g->add("Bugzilla", BUGZILLA_ROOT);
-    $g->add("Wine Wiki", "http:\\wiki.winehq.org");
+    $g->add("Wine Wiki", "http://wiki.winehq.org");
     $g->done();
 
     $g = new htmlmenu("AppDB");
