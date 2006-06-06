@@ -111,7 +111,7 @@ if ($_REQUEST['sub'])
 
 
         //help
-        echo "<p>This is the Screen for imputting testing information so that others looking at the database will know \n";
+        echo "<p>This is the Screen for inputting testing information so that others looking at the database will know \n";
         echo "what was working or a particular release of Wine.</p>\n";
         echo "<p>Please be as detailed as you can.</p>\n";
         echo "<p>If you can not find your distribution on the list of existing Distributions please add it add it in the \n";

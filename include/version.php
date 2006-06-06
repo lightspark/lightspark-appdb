@@ -710,7 +710,7 @@ class Version {
             if($_SESSION['current']->isSuperMaintainer($oApp->iAppId))
             {
                 echo '<form method="post" name="message" action="maintainerdelete.php">';
-                echo '<input type="submit" value="Remove yourself as a supermaintainer" class="button">';
+                echo '<input type="submit" value="Remove yourself as a super maintainer" class="button">';
                 echo '<input type="hidden" name="superMaintainer" value="1">';
                 echo "<input type=hidden name=\"appId\" value=\"".$oApp->iAppId."\">";
                 echo "<input type=hidden name=\"versionId\" value=\"".$this->iVersionId."\">";
