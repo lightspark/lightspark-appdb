@@ -95,7 +95,7 @@ if($hResult && mysql_num_rows($hResult))
 
     echo html_frame_end("Click thumbnail to view image in new window.");
 } else {
- echo "<p align=\"center\">There are currently no screenshot for the selected version of this application.";
+ echo "<p align=\"center\">There are currently no screenshots for the selected version of this application.";
  echo "<br />Please consider submitting a screenshot for the selected version yourself.</p>";
 }
 
