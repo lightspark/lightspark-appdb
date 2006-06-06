@@ -87,7 +87,7 @@ if($_REQUEST['maintainReason'])
 
     if (query_appdb($query))
     {
-        echo "<p>Your maintainer request has been submitted for Review. You should hear back\n";
+        echo "<p>Your maintainer request has been submitted for review. You should hear back\n";
         echo "soon about the status of your submission</p>\n";
     }
 } else
@@ -151,7 +151,7 @@ if($_REQUEST['maintainReason'])
     echo "<input type=hidden name='superMaintainer' value=$superMaintainer>";
 
     if($superMaintainer)
-        echo '<tr valign=top><td class=color0><b>Why you want to and should be an application supermaintainer</b></td><td><textarea name="maintainReason" rows=15 cols=70></textarea></td></tr>',"\n";
+        echo '<tr valign=top><td class=color0><b>Why you want to and should be an application super maintainer</b></td><td><textarea name="maintainReason" rows=15 cols=70></textarea></td></tr>',"\n";
     else
         echo '<tr valign=top><td class=color0><b>Why you want to and should be an application maintainer</b></td><td><textarea name="maintainReason" rows=15 cols=70></textarea></td></tr>',"\n";
 

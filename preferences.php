@@ -110,7 +110,7 @@ if($_POST)
     }
     else
     {
-        addmsg("There was a problem updating your userinfo", "red");
+        addmsg("There was a problem updating your user info", "red");
     }
 }
 

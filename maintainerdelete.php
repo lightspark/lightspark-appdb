@@ -27,7 +27,7 @@ if($confirmed)
     $oApp = new Application($appId);
     if($superMaintainer)
     {
-        apidb_header("You have resigned as supermaintainer of ".$oApp->sName);
+        apidb_header("You have resigned as super maintainer of ".$oApp->sName);
         $result = $_SESSION['current']->deleteMaintainer($oApp->iAppId, null); 
     } else
     {
@@ -40,14 +40,14 @@ if($confirmed)
     if($result)
     {
         if($superMaintainer)
-            echo "You were removed as a supermaintainer of ".$oApp->sName;
+            echo "You were removed as a super maintainer of ".$oApp->sName;
         else
             echo "You were removed as a maintainer of ".$oApp->sName." ".$oVersion->sName;
     }
 } else
 {
     if($superMaintainer)
-        apidb_header("Confirm supermaintainer resignation of ".$oApp->sName);
+        apidb_header("Confirm super maintainer resignation of ".$oApp->sName);
     else
         apidb_header("Confirm maintainer resignation of ".$oApp->sName." ".$oVersion->sName);
 
