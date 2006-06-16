@@ -194,7 +194,10 @@ function forum_lookup_user($iUserId)
     if ($iUserId > 0)
     {
         $oUser = new User($iUserId);
-        $sMailto = '<a href="mailto:' . $oUser->sEmail . '">' . $oUser->sRealname . '</a>';
+        if($_SESSION['current']->isLoggedIn())
+            $sMailto = '<a href="mailto:' . $oUser->sEmail . '">' . $oUser->sRealname . '</a>';
+        else
+            $sMailto = $oUser->sRealname;
     }
     if (!$iUserId || !$oUser->isLoggedIn())
     {
