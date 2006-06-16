@@ -131,9 +131,14 @@ else
             echo '<td><a href="'.BASE.'appview.php?versionId='.$oTest->iVersionId.'&iTestingId='.$oTest->iTestingId.'">',"\n";
             echo $oApp->sName.' '.$oVersion->sName.'</a></td>',"\n";
             echo '<td>',"\n";
-            echo $oSubmitter->sEmail ? "<a href=\"mailto:".$oSubmitter->sEmail."\">":"";
-            echo $oSubmitter->sRealname;
-            echo $oSubmitter->sEmail ? "</a>":"";
+            if($_SESSION['current']->isLoggedIn())
+            {
+                echo $oSubmitter->sEmail ? "<a href=\"mailto:".$oSubmitter->sEmail."\">":"";
+                echo $oSubmitter->sRealname;
+                echo $oSubmitter->sEmail ? "</a>":"";
+            }
+            else
+                echo $oSubmitter->sRealname;
             echo '</td>',"\n";
             echo '<td>'.date("M d Y", mysqltimestamp_to_unixtimestamp($oTest->sSubmitTime)).'</td>',"\n";
             echo '<td>'.$oTest->sTestedRelease.'&nbsp</td>',"\n";
