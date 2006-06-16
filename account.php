@@ -114,7 +114,6 @@ function cmd_do_new()
     }
     else
     {
-        $_SESSION['current'] = "";
         retry("new", "Failed to create account");
     }
 }
