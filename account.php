@@ -93,7 +93,8 @@ function cmd_do_new()
         retry("new", "Passwords don't match");
         return;
     }
-    if(!isset($_POST['ext_realname']))
+    $_POST['ext_realname']=trim($_POST['ext_realname']);
+    if(empty($_POST['ext_realname']))
     {
         retry("new", "You don't have a Real name?");
         return;
