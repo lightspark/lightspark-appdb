@@ -496,7 +496,7 @@ class testData{
         // Rating
         echo '<tr><td class="color0"><b>Rating</b></td><td class="color0">',"\n";
         make_maintainer_rating_list("sTestedRating", $this->sTestedRating);
-        echo '<a href="/help/?topic=maintainer_ratings">Rating definitions</a></td></tr>',"\n";
+        echo '<a href="'.BASE.'/help/?topic=maintainer_ratings" target="_blank">Rating definitions</a></td></tr>',"\n";
         // extra comments
         echo '<tr valign=top><td class="color1"><b>Extra comments</b></td>',"\n";
         echo '<td class="color0"><textarea name="sComments" rows=10 cols=35>';
