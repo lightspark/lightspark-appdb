@@ -5,28 +5,34 @@ require(BASE."include/tableve.php");
 require(BASE."include/application.php");
 require(BASE."include/mail.php");
 
-if(!is_numeric($_REQUEST['appId']) OR !is_numeric($_REQUEST['versionId']))
+$aClean = array(); //array of filtered user input
+
+$aClean['appId'] = makeSafe($_REQUEST['appId']);
+$aClean['versionId'] = makeSafe($_REQUEST['versionId']);
+$aClean['submit'] = makeSafe($_REQUEST['submit']);
+
+if(!is_numeric($aClean['appId']) OR !is_numeric($aClean['versionId']))
 {
     errorpage("Wrong ID");
     exit;
 }
 
 /* Check for admin privs */
-if(!$_SESSION['current']->hasPriv("admin") && !$_SESSION['current']->isMaintainer($_REQUEST['versionId']) && !$_SESSION['current']->isSuperMaintainer($_REQUEST['appId']))
+if(!$_SESSION['current']->hasPriv("admin") && !$_SESSION['current']->isMaintainer($aClean['versionId']) && !$_SESSION['current']->isSuperMaintainer($aClean['appId']))
 {
     errorpage("Insufficient Privileges!");
     exit;
 }
 
 /* process the changes the user entered into the web form */
-if(isset($_REQUEST['submit']))
+if(!empty($aClean['submit']))
 {
     process_app_version_changes(true);
-    redirect(apidb_fullurl("appview.php?versionId=".$_REQUEST['versionId']));
+    redirect(apidb_fullurl("appview.php?versionId=".$aClean['versionId']));
 } else /* or display the webform for making changes */
 {
 
-    $oVersion = new Version($_REQUEST['versionId']);
+    $oVersion = new Version($aClean['versionId']);
 
     apidb_header("Edit Application Version");
 

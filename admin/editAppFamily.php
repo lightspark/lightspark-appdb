@@ -10,22 +10,27 @@ require(BASE."include/application.php");
 require(BASE."include/category.php");
 require(BASE."include/mail.php");
 
-if(!is_numeric($_REQUEST['appId']))
+$aClean = array(); //array of filtered user input
+
+$aClean['appId'] = makeSafe($_REQUEST['appId']);
+$aClean['submit'] = makeSafe($_REQUEST['submit']);
+
+if(!is_numeric($aClean['appId']))
 {
     errorpage("Wrong ID");
     exit;
 }
 
-if(!($_SESSION['current']->hasPriv("admin") || $_SESSION['current']->isSuperMaintainer($_REQUEST['appId'])))
+if(!($_SESSION['current']->hasPriv("admin") || $_SESSION['current']->isSuperMaintainer($aClean['appId'])))
 {
     errorpage("Insufficient Privileges!");
     exit;
 }
 
-if(isset($_REQUEST['submit']))
+if(!empty($aClean['submit']))
 {
     process_app_version_changes(false);
-    redirect(apidb_fullurl("appview.php?appId={$_REQUEST['appId']}"));
+    redirect(apidb_fullurl("appview.php?appId={$aClean['appId']}"));
 }
 else
 // Show the form for editing the Application Family 
@@ -33,7 +38,7 @@ else
     $family = new TableVE("edit");
 
 
-    $oApp = new Application($_REQUEST['appId']);
+    $oApp = new Application($aClean['appId']);
     
     if(!$oApp)
     {

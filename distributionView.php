@@ -11,7 +11,13 @@ require(BASE."include/incl.php");
 require(BASE."include/distributions.php");
 require(BASE."include/testResults.php");
 
-if ($_REQUEST['sub'])
+$aClean = array(); //array of filtered user input
+
+$aClean['sub'] = makeSafe($_REQUEST['sub']);
+$aClean['iDistributionId'] = makeSafe( $_REQUEST['iDistributionId']);
+
+
+if ($aClean['sub'])
 {
     if(!$_SESSION['current']->hasPriv("admin"))
     {
@@ -19,14 +25,14 @@ if ($_REQUEST['sub'])
         exit;
     }
 
-    if($_REQUEST['sub'] == 'delete')
+    if($aClean['sub'] == 'delete')
     {
-        $oDistribution = new distribution($_REQUEST['iDistributionId']);
+        $oDistribution = new distribution($aClean['iDistributionId']);
         $oDistribution->delete();
         redirect($_SERVER['PHP_SELF']);
     }
 } 
-$oDistribution = new distribution($_REQUEST['iDistributionId']);
+$oDistribution = new distribution($aClean['iDistributionId']);
 
 //exit with error if no vendor
 if(!$oDistribution->iDistributionId) 

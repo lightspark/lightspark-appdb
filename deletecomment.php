@@ -11,7 +11,13 @@ require(BASE."include/incl.php");
 require(BASE."include/application.php");
 require(BASE."include/mail.php");
 
-$oComment = new Comment($_REQUEST['commentId']);
+$aClean = array(); //array of filtered user input
+
+$aClean['str_why'] = makeSafe($_REQUEST['str_why']);
+$aClean['commentId'] = makeSafe($_REQUEST['commentId']);
+$aClean['int_delete_it'] = makeSafe($_REQUEST['int_delete_it']);
+
+$oComment = new Comment($aClean['commentId']);
 
 /* if we aren't an admin or the maintainer of this app we shouldn't be */
 /* allowed to delete any comments */
@@ -23,7 +29,7 @@ if (!$_SESSION['current']->hasPriv("admin")
     exit;
 }
 
-if($_SESSION['current']->getPref("confirm_comment_deletion") != "no" && !isset($_REQUEST['int_delete_it']))
+if($_SESSION['current']->getPref("confirm_comment_deletion") != "no" && !isset($aClean['int_delete_it']))
 {
     apidb_header("Delete Comment");
     $mesTitle = "<b>Please state why you are deleting the following comment</b>";
@@ -47,7 +53,7 @@ if($_SESSION['current']->getPref("confirm_comment_deletion") != "no" && !isset($
     apidb_footer();
 } else
 {
-    $oComment->delete($_REQUEST['str_why']);
+    $oComment->delete($aClean['str_why']);
     redirect(apidb_fullurl("appview.php?versionId=".$oComment->iVersionId));
 }
 ?>

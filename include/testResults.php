@@ -3,7 +3,7 @@
 /* this class represents Testing results */
 /*****************************************/
 require_once(BASE."include/distributions.php");
-
+require_once(BASE."include/util.php");
 // Testing class for handling Testing History.
 
 class testData{
@@ -228,6 +228,11 @@ class testData{
 
     function mailSubmitter($sAction="add")
     {
+
+        $aClean = array(); //array of filtered user input
+
+        $aClean = makeSafe($_REQUEST['replyText']);
+
         if($this->iSubmitterId)
         {
             $oSubmitter = new User($this->iSubmitterId);
@@ -251,7 +256,7 @@ class testData{
                 $sMsg .= "Reason given:\n";
             break;
             }
-            $sMsg .= $_REQUEST['replyText']."\n";
+            $sMsg .= $aClean['replyText']."\n";
             $sMsg .= "We appreciate your help in making the Application Database better for all users.";
         
             mail_appdb($oSubmitter->sEmail, $sSubject ,$sMsg);
@@ -261,6 +266,10 @@ class testData{
  
     function SendNotificationMail($sAction="add",$sMsg=null)
     {
+        $aClean = array(); //array of filtered user input
+
+        $aClean['replyText'] = makeSafe($_REQUEST['replyText']);
+
         $oVersion = new Version($this->iVersionId);
         $oApp = new Application($oVersion->iAppId);
         switch($sAction)
@@ -276,10 +285,10 @@ class testData{
                         $sMsg .= "This Testing data has been submitted by ".$oSubmitter->sRealname.".";
                         $sMsg .= "\n";
                     }
-                    if($_REQUEST['replyText'])
+                    if($aClean['replyText'])
                     {
                         $sMsg .= "Appdb admin reply text:\n";
-                        $sMsg .= $_REQUEST['replyText']."\n"; // append the reply text, if there is any 
+                        $sMsg .= $aClean['replyText']."\n"; // append the reply text, if there is any 
                     }
                     addmsg("The testing data was successfully added into the database.", "green");
                 } else // testing data queued.
@@ -299,10 +308,10 @@ class testData{
             case "delete":
                 $sSubject = "Test Results deleted for version ".$oVersion->sName." of ".$oApp->sName." submitted by ".$_SESSION['current']->sRealname;
                 // if replyText is set we should report the reason the data was deleted 
-                if($_REQUEST['replyText'])
+                if($aClean['replyText'])
                 {
                     $sMsg .= "Reason given:\n";
-                    $sMsg .= $_REQUEST['replyText']."\n"; // append the reply text, if there is any 
+                    $sMsg .= $aClean['replyText']."\n"; // append the reply text, if there is any 
                 }
 
                 addmsg("testing data deleted.", "green");
@@ -311,10 +320,10 @@ class testData{
                 $sSubject = "Test Results rejected for version ".$oVersion->sName." of ".$oApp->sName." submitted by ".$_SESSION['current']->sRealname;
                 $sMsg .= APPDB_ROOT."admin/adminTestResults.php?sub=view&iTestingId=".$this->iTestingId."\n";
                  // if replyText is set we should report the reason the data was rejected 
-                if($_REQUEST['replyText'])
+                if($aClean['replyText'])
                 {
                     $sMsg .= "Reason given:\n";
-                    $sMsg .= $_REQUEST['replyText']."\n"; // append the reply text, if there is any 
+                    $sMsg .= $aClean['replyText']."\n"; // append the reply text, if there is any 
                 }
                 addmsg("testing data rejected.", "green");
             break;
@@ -351,7 +360,10 @@ class testData{
     // Show the Test results for a application version
     function ShowVersionsTestingTable($iVersionId, $iCurrentTest, $link, $iDisplayLimit)
     {
-        $showAll = $_REQUEST['showAll'];
+        $aClean = array(); //array of filtered user input
+        $aClean['showAll'] = makeSafe($_REQUEST['showAll']);
+
+        $showAll = $aClean['showAll'];
 
         $sQuery = "SELECT * 
                    FROM testResults
@@ -500,38 +512,46 @@ class testData{
     function CheckOutputEditorInput($sDistribution="")
     {
 
-        $errors = "";
-        $sWhatWorks = trim($_REQUEST['sWhatWorks']);
-        $sWhatDoesnt = trim($_REQUEST['sWhatDoesnt']);
-        $sWhatNotTested = trim($_REQUEST['sWhatNotTested']);
-        $sDistribution = trim($_REQUEST['sDistribution']);
+        $aClean = array(); //array of filtered user input
+        $aClean['sWhatWorks'] = makeSafe($_REQUEST['sWhatWorks']);
+        $aClean['sWhatDoesnt'] = makeSafe($_REQUEST['sWhatDoesnt']);
+        $aClean['sWhatNotTested'] = makeSafe($_REQUEST['sWhatNotTested']);
+        $aClean['sDistribution'] = makeSafe($_REQUEST['sDistribution']);
+        $aClean['sTestedDate'] = makeSafe($_REQUEST['sTestedDate']);
+        $aClean['sTestedRelease'] = makeSafe($_REQUEST['sTestedRelease']);
+        $aClean['iDistributionId'] = makeSafe($_REQUEST['iDistributionId']);
+        $aClean['sInstalls'] = makeSafe($_REQUEST['sInstalls']);
+        $aClean['sRuns'] = makeSafe($_REQUEST['sRuns']);
+        $aClean['sTestedRating'] = makeSafe($_REQUEST['sTestedRating']);
 
-        if (empty($sWhatWorks))
+	$errors = "";
+
+        if (empty($aClean['sWhatWorks']))
             $errors .= "<li>Please enter what worked.</li>\n";
 
-        if (empty($sWhatDoesnt))
+        if (empty($aClean['sWhatDoesnt']))
             $errors .= "<li>Please enter what did not work.</li>\n";
 
-        if (empty($sWhatNotTested))
+        if (empty($aClean['sWhatNotTested']))
             $errors .= "<li>Please enter what was not tested.</li>\n";
 
-        if (empty($_REQUEST['sTestedDate']))
+        if (empty($aClean['sTestedDate']))
             $errors .= "<li>Please enter the date and time when you tested.</li>\n";
 
-        if (empty($_REQUEST['sTestedRelease']))
+        if (empty($aClean['sTestedRelease']))
             $errors .= "<li>Please enter the version of Wine that you tested with.</li>\n";
 
         // No Distribution entered, and nothing in the list is selected
-        if (empty($sDistribution) && !$_REQUEST['iDistributionId'])
+        if (empty($sDistribution) && !$aClean['iDistributionId'])
             $errors .= "<li>Please enter a distribution.</li>\n";
 
-        if (empty($_REQUEST['sInstalls']))
+        if (empty($aClean['sInstalls']))
             $errors .= "<li>Please enter whether this application installs or not.</li>\n";
 
-        if (empty($_REQUEST['sRuns']))
+        if (empty($aClean['sRuns']))
             $errors .= "<li>Please enter whether this application runs or not.</li>\n";
 
-        if (empty($_REQUEST['sTestedRating']))
+        if (empty($aClean['sTestedRating']))
             $errors .= "<li>Please enter a rating based on how well this application runs.</li>\n";
         
         return $errors;
@@ -541,34 +561,49 @@ class testData{
     /* retrieves values from $_REQUEST that were output by OutputEditor() */
     function GetOutputEditorValues()
     {
+        $aClean = array(); //array of filtered user input
+
+        $aClean['iTestingId'] = makeSafe($_REQUEST['iTestingId']);
+        $aClean['iVersionId'] = makeSafe($_REQUEST['iVersionId']);
+        $aClean['sWhatWorks'] = makeSafe($_REQUEST['sWhatWorks']);
+        $aClean['sWhatDoesnt'] = makeSafe($_REQUEST['sWhatDoesnt']);
+        $aClean['sWhatNotTested'] = makeSafe($_REQUEST['sWhatNotTested']);
+        $aClean['sTestedDate'] = makeSafe($_REQUEST['sTestedDate']);
+        $aClean['iDistributionId'] = makeSafe($_REQUEST['iDistributionId']);
+        $aClean['sTestedRelease'] = makeSafe($_REQUEST['sTestedRelease']);
+        $aClean['sInstalls'] = makeSafe($_REQUEST['sInstalls']);
+        $aClean['sRuns'] = makeSafe($_REQUEST['sRuns']);
+        $aClean['sTestedRating'] = makeSafe($_REQUEST['sTestedRating']);
+        $aClean['sComments'] = makeSafe($_REQUEST['sComments']);
+
         if(get_magic_quotes_gpc())
         {
-            $this->iTestingId = stripslashes($_REQUEST['iTestingId']);
-            $this->iVersionId = stripslashes($_REQUEST['iVersionId']);
-            $this->sWhatWorks = stripslashes($_REQUEST['sWhatWorks']);
-            $this->sWhatDoesnt = stripslashes($_REQUEST['sWhatDoesnt']);
-            $this->sWhatNotTested = stripslashes($_REQUEST['sWhatNotTested']);
-            $this->sTestedDate = stripslashes($_REQUEST['sTestedDate']);
-            $this->iDistributionId = stripslashes($_REQUEST['iDistributionId']);
-            $this->sTestedRelease = stripslashes($_REQUEST['sTestedRelease']);
-            $this->sInstalls = stripslashes($_REQUEST['sInstalls']);
-            $this->sRuns = stripslashes($_REQUEST['sRuns']);
-            $this->sTestedRating = stripslashes($_REQUEST['sTestedRating']);
-            $this->sComments = stripslashes($_REQUEST['sComments']);
+            $this->iTestingId = stripslashes($aClean['iTestingId']);
+            $this->iVersionId = stripslashes($aClean['iVersionId']);
+            $this->sWhatWorks = stripslashes($aClean['sWhatWorks']);
+            $this->sWhatDoesnt = stripslashes($aClean['sWhatDoesnt']);
+            $this->sWhatNotTested = stripslashes($aClean['sWhatNotTested']);
+            $this->sTestedDate = stripslashes($aClean['sTestedDate']);
+            $this->iDistributionId = stripslashes($aClean['iDistributionId']);
+            $this->sTestedRelease = stripslashes($aClean['sTestedRelease']);
+            $this->sInstalls = stripslashes($aClean['sInstalls']);
+            $this->sRuns = stripslashes($aClean['sRuns']);
+            $this->sTestedRating = stripslashes($aClean['sTestedRating']);
+            $this->sComments = stripslashes($aClean['sComments']);
         } else
         {
-            $this->iTestingId = $_REQUEST['iTestingId'];
-            $this->iVersionId = $_REQUEST['iVersionId'];
-            $this->sWhatWorks = $_REQUEST['sWhatWorks'];
-            $this->sWhatDoesnt = $_REQUEST['sWhatDoesnt'];
-            $this->sWhatNotTested = $_REQUEST['sWhatNotTested'];
-            $this->sTestedDate = $_REQUEST['sTestedDate'];
-            $this->iDistributionId = $_REQUEST['iDistributionId'];
-            $this->sTestedRelease = $_REQUEST['sTestedRelease'];
-            $this->sInstalls = $_REQUEST['sInstalls'];
-            $this->sRuns = $_REQUEST['sRuns'];
-            $this->sTestedRating = $_REQUEST['sTestedRating'];
-            $this->sComments = $_REQUEST['sComments'];
+            $this->iTestingId = $aClean['iTestingId'];
+            $this->iVersionId = $aClean['iVersionId'];
+            $this->sWhatWorks = $aClean['sWhatWorks'];
+            $this->sWhatDoesnt = $aClean['sWhatDoesnt'];
+            $this->sWhatNotTested = $aClean['sWhatNotTested'];
+            $this->sTestedDate = $aClean['sTestedDate'];
+            $this->iDistributionId = $aClean['iDistributionId'];
+            $this->sTestedRelease = $aClean['sTestedRelease'];
+            $this->sInstalls = $aClean['sInstalls'];
+            $this->sRuns = $aClean['sRuns'];
+            $this->sTestedRating = $aClean['sTestedRating'];
+            $this->sComments = $aClean['sComments'];
         }
     }
 

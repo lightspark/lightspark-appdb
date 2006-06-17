@@ -11,37 +11,44 @@ require(BASE."include/mail.php");
 require_once(BASE."include/testResults.php");
 require_once(BASE."include/distributions.php");
 
+$aClean = array(); //array of filtered user input
+
+$aClean['sub'] = makeSafe($_REQUEST['sub']);
+$aClean['iTestingId'] = makeSafe($_REQUEST['iTestingId']);
+$aClean['iVersionId'] = makeSafe($_REQUEST['iVersionId']);
+$aClean['iDistributionId'] = makeSafe($_REQUEST['iDistributionId']);
+$aClean['sDistribution'] = makeSafe($_REQUEST['sDistribution']);
 
 
-if ($_REQUEST['sub'])
+
+if ($aClean['sub'])
 {
-    $oTest = new testData($_REQUEST['iTestingId']);
-    if($_REQUEST['iVersionId'])
-        $oTest->iVersionId = $_REQUEST['iVersionId'];
+    $oTest = new testData($aClean['iTestingId']);
+    if($aClean['iVersionId'])
+        $oTest->iVersionId = $aClean['iVersionId'];
     $errors = "";
 
     // Submit or Resubmit the new testing results
-    if (($_REQUEST['sub'] == 'Submit') || ($_REQUEST['sub'] == 'Resubmit'))
+    if (($aClean['sub'] == 'Submit') || ($aClean['sub'] == 'Resubmit'))
     {
         $errors = $oTest->CheckOutputEditorInput();
         $oTest->GetOutputEditorValues(); // retrieve the values from the current $_REQUEST 
         if(empty($errors))
         {
-            if(!$_REQUEST['iDistributionId'])
+            if(!$aClean['iDistributionId'])
             {
-                $sDistribution = trim($_REQUEST['sDistribution']);
-                if(!empty($sDistribution))
+                if(!empty($aClean['sDistribution']) )
                 {
                     $oDistribution = new distribution();
-                    $oDistribution->sName = $sDistribution;
+                    $oDistribution->sName = $aClean['sDistribution'];
                     $oDistribution->create();
                     $oTest->iDistributionId = $oDistribution->iDistributionId;
                 }
             }
-            if($_REQUEST['sub'] == 'Submit')
+            if($aClean['sub'] == 'Submit')
             {
 	        $oTest->create();
-            } else if($_REQUEST['sub'] == 'Resubmit')
+            } else if($aClean['sub'] == 'Resubmit')
             {
                 $oTest->update(true);
 	        $oTest->ReQueue();
@@ -49,16 +56,16 @@ if ($_REQUEST['sub'])
             redirect($_SERVER['PHP_SELF']);
         } else 
         {
-            $_REQUEST['sub'] = 'view';
+            $aClean['sub'] = 'view';
         }
     }
 
     // Delete testing results
-    if ($_REQUEST['sub'] == 'Delete')
+    if ($aClean['sub'] == 'Delete')
     {
-        if(is_numeric($_REQUEST['iTestingId']))
+        if(is_numeric($aClean['iTestingId']))
         {
-            $oTest = new testData($_REQUEST['iTestingId']);
+            $oTest = new testData($aClean['iTestingId']);
             $oTest->delete();
         }
         
@@ -66,7 +73,7 @@ if ($_REQUEST['sub'])
     }
 
     // is this an old test?
-    if(is_numeric($_REQUEST['iTestingId']))
+    if(is_numeric($aClean['iTestingId']))
     {
         // make sure the user has permission to view this testing result
         $oVersion = new Version($oTest->iVersionId);
@@ -80,11 +87,11 @@ if ($_REQUEST['sub'])
         $oVersion = new version($oTest->iVersionId);
     } else
     { 
-        $oTest->iVersionId = $_REQUEST['iVersionId'];
-        $oVersion = new version($_REQUEST['iVersionId']);       
+        $oTest->iVersionId = $aClean['iVersionId'];
+        $oVersion = new version($aClean['iVersionId']);       
         $oTest->sQueued = "new";
     }
-    if ($_REQUEST['sub'] == 'view')
+    if ($aClean['sub'] == 'view')
     {
         $oApp = new application($oVersion->iAppId);
         $sVersionInfo = $oApp->sName." ".$oVersion->sName;
@@ -126,7 +133,7 @@ if ($_REQUEST['sub'])
         }
    
         // View Testing Details
-        $oTest->OutputEditor($_REQUEST['sDistribution'],true);
+        $oTest->OutputEditor($aClean['sDistribution'],true);
 
         echo '<a href="'.BASE."appview.php?versionId=".$oTest->iVersionId.'">Back to Version</a>';
 
@@ -158,7 +165,7 @@ if ($_REQUEST['sub'])
         redirect($_SERVER['PHP_SELF']);
     } 
 } 
-else // if ($_REQUEST['sub']) is not defined, display the Testing results queue page 
+else // if ($aClean['sub']) is not defined, display the Testing results queue page 
 {
     apidb_header("Testing Results");
 

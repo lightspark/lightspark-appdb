@@ -7,22 +7,28 @@ include("path.php");
 require(BASE."include/"."incl.php");
 require_once(BASE."include/"."screenshot.php");
 
+$aClean = array(); //array of filtered user input
+
+$aClean['id'] = makeSafe($_REQUEST['id']);
+$aClean['REQUEST_METHOD'] = makeSafe($_REQUEST['REQUEST_METHOD']);
+$aClean['thumbnail'] = makeSafe($_REQUEST['thumbnail']);
+
 /* an image doesn't have a link, so a cookie makes no sense */
 header("Set-Cookie: ");
 header("Pragma: ");
 
 /* if the user isn't supposed to be viewing this image */
 /* display an error message and exit */
-if(!$_SESSION['current']->canViewImage($_REQUEST['id']))
+if(!$_SESSION['current']->canViewImage($aClean['id']))
 {
     errorpage("Insufficient privileges.");
     exit;
 }
 
-if ($_REQUEST['REQUEST_METHOD']='HEAD')
+if ($aClean['REQUEST_METHOD']='HEAD')
 {
    /* WARNING! optimization of logic in include/screenshots.php */
-   if (sscanf($_REQUEST['id'],"%d", &$iId) < 1)
+   if (sscanf($aClean['id'],"%d", &$iId) < 1)
    {
       errorpage("Bad parameter");
       exit;
@@ -67,12 +73,12 @@ if ($_REQUEST['REQUEST_METHOD']='HEAD')
    header("Expires: ");
    header("Last-Modified: ".fHttpDate($iModTime));
 }
-$oScreenshot = new Screenshot($_REQUEST['id']);
+$oScreenshot = new Screenshot($aClean['id']);
 
 /* at this point, we know that .../screenshots/$id and
  *  .../screenshots/thumbnails/$id both exist as normally 
  *  they would both be created at the same time. */
-$fstat_val = stat(appdb_fullpath("data/screenshots/".$_REQUEST['id']));
+$fstat_val = stat(appdb_fullpath("data/screenshots/".$aClean['id']));
 $iModTime = $fstat_val['mtime'];
 
 header("Cache-Control: public");
@@ -90,9 +96,8 @@ if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) &&
 
 header("Last-Modified: ".fHttpDate($iModTime));
 
-if(!$_REQUEST['thumbnail'])
+if(!$aClean['thumbnail'])
     $oScreenshot->oScreenshotImage->output_to_browser(1);
 else
     $oScreenshot->oThumbnailImage->output_to_browser(1);
-
 ?>

@@ -367,6 +367,12 @@ function display_comments_flat($versionId)
 
 function view_app_comments($versionId, $threadId = 0)
 {
+
+    $aClean = array(); //array of filtered user input
+
+    $aClean['cmode'] = makeSafe($_REQUEST['cmode']);
+    $aClean['mode'] = makeSafe($_REQUEST['mode']);
+
     // count posts
     $result = query_appdb("SELECT commentId FROM appComments WHERE versionId = $versionId");
     $messageCount = mysql_num_rows($result);
@@ -381,8 +387,8 @@ function view_app_comments($versionId, $threadId = 0)
     if ($_SESSION['current']->isLoggedIn())
     {
     // FIXME we need to change this so not logged in users can change current view as well
-        if (isset($_REQUEST['cmode']))
-            $_SESSION['current']->setPref("comments:mode", $_REQUEST['cmode']);
+        if (!empty($aClean['cmode']))
+            $_SESSION['current']->setPref("comments:mode", $aClean['cmode']);
 
         $sel[$_SESSION['current']->getPref("comments:mode", "threaded")] = 'selected';
         echo '<td><form method="post" name="smode" action="appview.php">',"\n";
@@ -422,7 +428,7 @@ function view_app_comments($versionId, $threadId = 0)
     else
         $mode = "threaded"; /* default non-logged in users to threaded comment display mode */
 
-    if ($_REQUEST['mode']=="nested")
+    if ($aClean['mode']=="nested")
         $mode = "nested";
 
     switch ($mode)

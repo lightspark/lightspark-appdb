@@ -10,15 +10,21 @@ include("path.php");
 include(BASE."include/incl.php");
 require(BASE."include/category.php");
 
+$aClean = array(); //array of filtered user input
+
+$aClean['topNumber'] = makeSafe($_REQUEST['topNumber']);
+$aClean['categoryId'] = makeSafe($_REQUEST['categoryId']);
+
+
 /* default to 25 apps, main categories */
 $topNumber = 25;
 $categoryId = "any"; /* default to all categories */
 
 /* process the post variables to override the default settings */
-if( isset($_REQUEST['topNumber']) AND is_numeric($_REQUEST['topNumber'])) 
-    $topNumber = $_REQUEST['topNumber'];
-if( isset($_REQUEST['categoryId']) AND is_numeric($_REQUEST['categoryId'])) 
-    $categoryId = $_REQUEST['categoryId'];
+if( !empty($aClean['topNumber']) AND is_numeric($aClean['topNumber'])) 
+    $topNumber = $aClean['topNumber'];
+if( !empty($aClean['categoryId']) AND is_numeric($aClean['categoryId'])) 
+    $categoryId = $aClean['categoryId'];
 
 /* Check if the value makes sense */
 if($topNumber > 200 || $topNumber < 1)

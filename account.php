@@ -11,11 +11,15 @@ require(BASE."include/mail.php");
 header("Pragma: no-cache");
 header("Cache-control: no-cache");
 
+$aClean = array(); //array of filtered user input
+
 // check command and process
-if(isset($_POST['cmd']))
-    do_account($_POST['cmd']);
+if(!empty($_POST['cmd']))
+    $aClean['cmd'] = makeSafe( $_POST['cmd'] );
 else
-    do_account($_GET['cmd']);
+    $aClean['cmd'] = makeSafe( $_GET['cmd'] );
+
+do_account($aClean['cmd']);
 
 
 /**
@@ -76,25 +80,31 @@ function retry($cmd, $msg)
  */
 function cmd_do_new()
 {
-    
-    if(!ereg("^.+@.+\\..+$", $_POST['ext_email']))
+    $aClean = array(); //array of filtered user input
+
+    $aClean['ext_email'] = makeSafe($_POST['ext_email']);
+    $aClean['ext_password'] = makeSafe($_POST['ext_password']);
+    $aClean['ext_password2'] = makeSafe($_POST['ext_password2']);
+    $aClean['CVSrelease'] = makeSafe($_POST['CVSrelease']);
+    $aClean['ext_realname']= makeSafe($_POST['ext_realname']);
+
+    if(!ereg("^.+@.+\\..+$", $aClean['ext_email']))
     {
-        $_POST['ext_email'] = "";
+        $aClean['ext_email'] = "";
         retry("new", "Invalid email address");
         return;
     }
-    if(strlen($_POST['ext_password']) < 5)
+    if(strlen($aClean['ext_password']) < 5)
     {
         retry("new", "Password must be at least 5 characters");
         return;
     }
-    if($_POST['ext_password'] != $_POST['ext_password2'])
+    if($aClean['ext_password'] != $aClean['ext_password2'])
     {
         retry("new", "Passwords don't match");
         return;
     }
-    $_POST['ext_realname']=trim($_POST['ext_realname']);
-    if(empty($_POST['ext_realname']))
+    if(empty($aClean['ext_realname']))
     {
         retry("new", "You don't have a Real name?");
         return;
@@ -102,15 +112,15 @@ function cmd_do_new()
    
     $user = new User();
 
-    $result = $user->create($_POST['ext_email'], $_POST['ext_password'], $_POST['ext_realname'], $_POST['CVSrelease'] );
+    $result = $user->create($aClean['ext_email'], $aClean['ext_password'], $aClean['ext_realname'], $aClean['CVSrelease'] );
 
     if($result == true)
     {
         /* if we can log the user in, log them in automatically */
-        if($user->login($_POST['ext_email'], $_POST['ext_password']))
+        if($user->login($aClean['ext_email'], $aClean['ext_password']))
             $_SESSION['current'] = $user;
 
-        addmsg("Account created! (".$_POST['ext_email'].")", "green");
+        addmsg("Account created! (".$aClean['ext_email'].")", "green");
         redirect(apidb_fullurl());
     }
     else
@@ -126,10 +136,14 @@ function cmd_do_new()
 function cmd_send_passwd()
 {
    
+    $aClean = array(); //array of filtered user input
+
+    $aClean['ext_email'] = makeSafe($_POST['ext_email']);
+
     $note = '(<b>Note</b>: accounts for <b>appdb</b>.winehq.org and <b>bugs</b>.winehq.org '
            .'are separated, so You might need to <b>create second</b> account for appdb.)';
 		
-    $userid = user_exists($_POST['ext_email']);
+    $userid = user_exists($aClean['ext_email']);
     $passwd = generate_passwd();
     $user = new User($userid);
     if ($userid)
@@ -159,7 +173,7 @@ function cmd_send_passwd()
     }
     else
     {
-        addmsg("Sorry, that user (".$_POST['ext_email'].") does not exist.<br><br>"
+        addmsg("Sorry, that user (".$aClean['ext_email'].") does not exist.<br><br>"
                .$note, "red");
     }
     
@@ -171,8 +185,13 @@ function cmd_send_passwd()
  */
 function cmd_do_login()
 {
+    $aClean = array(); //array of filtered user input
+
+    $aClean['ext_email'] = makeSafe($_POST['ext_email']);
+    $aClean['ext_password'] = makeSafe($_POST['ext_password']);
+
     $user = new User();
-    $result = $user->login($_POST['ext_email'], $_POST['ext_password']);
+    $result = $user->login($aClean['ext_email'], $aClean['ext_password']);
 
     if($result == true)
     {

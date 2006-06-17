@@ -11,11 +11,14 @@ require(BASE."include/mail.php");
 require_once(BASE."include/testResults.php");
 require_once(BASE."include/distributions.php");
 
+$aClean = array();
 
+$aClean['sub'] = makeSafe($_REQUEST['sub']);
+$aClean['iTestingId'] = makeSafe($_REQUEST['iTestingId']);
 
-if ($_REQUEST['sub'])
+if ($aClean['sub'])
 {
-    $oTest = new testData($_REQUEST['iTestingId']);
+    $oTest = new testData($aClean['iTestingId']);
     $oVersion = new Version($oTest->iVersionId);
     if(!($_SESSION['current']->hasAppVersionModifyPermission($oVersion)))
     {
@@ -23,26 +26,26 @@ if ($_REQUEST['sub'])
         exit;
     }
 
-    if(($_REQUEST['sub'] == 'Submit') || ($_REQUEST['sub'] == 'Save') ||
-       ($_REQUEST['sub'] == 'Reject') || ($_REQUEST['sub'] == 'Delete'))
+    if(($aClean['sub'] == 'Submit') || ($aClean['sub'] == 'Save') ||
+       ($aClean['sub'] == 'Reject') || ($aClean['sub'] == 'Delete'))
     {
-        if(is_numeric($_REQUEST['iTestingId']))
+        if(is_numeric($aClean['iTestingId']))
         {
-            $oTest = new testData($_REQUEST['iTestingId']);
+            $oTest = new testData($aClean['iTestingId']);
             $oTest->GetOutputEditorValues();
 
-            if($_REQUEST['sub'] == 'Submit')        // submit the testing results
+            if($aClean['sub'] == 'Submit')        // submit the testing results
             {
                 $oTest->update(true);
                 $oTest->unQueue();
-            } else if($_REQUEST['sub'] == 'Save')   // save the testing results
+            } else if($aClean['sub'] == 'Save')   // save the testing results
             {
                 $oTest->update();
-            } else if($_REQUEST['sub'] == 'Reject') // reject testing results
+            } else if($aClean['sub'] == 'Reject') // reject testing results
             {
                 $oTest->update(true);
                 $oTest->Reject();
-            } else if($_REQUEST['sub'] == 'Delete') // delete testing results
+            } else if($aClean['sub'] == 'Delete') // delete testing results
             {
                 $oTest->delete();
             }
@@ -51,15 +54,15 @@ if ($_REQUEST['sub'])
         }
     }
 
-    if(is_numeric($_REQUEST['iTestingId']))
+    if(is_numeric($aClean['iTestingId']))
     {
-        $oTest = new testData($_REQUEST['iTestingId']);
+        $oTest = new testData($aClean['iTestingId']);
     }
     $oVersion = new Version($oTest->iVersionId);
     $oApp = new application($oVersion->iAppId);
     $sVersionInfo = $oApp->sName." ".$oVersion->sName;
 
-    if ($_REQUEST['sub'] == 'view')
+    if ($aClean['sub'] == 'view')
     {
         switch($oTest->sQueued)
         {
@@ -141,7 +144,7 @@ if ($_REQUEST['sub'])
         redirect($_SERVER['PHP_SELF']);
     } 
 }
-else // if ($_REQUEST['sub']) is not defined, display the Testing results queue page 
+else // if ($aClean['sub']) is not defined, display the Testing results queue page 
 {
     $oTest = new TestData();
     apidb_header("Testing Results");

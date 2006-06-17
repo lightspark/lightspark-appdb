@@ -15,10 +15,15 @@ $pageRange = 10;
 $ItemsPerPage = 10;
 $currentPage = 1;
 
-if($_REQUEST['ItemsPerPage'])
-    $ItemsPerPage = $_REQUEST['ItemsPerPage'];
-if($_REQUEST['page'])
-    $currentPage = $_REQUEST['page'];
+$aClean = array(); //array of filtered user input
+
+$aClean['ItemsPerPage'] = makeSafe($_REQUEST['ItemsPerPage']);
+$aClean['page'] = makeSafe($_REQUEST['page']);
+
+if($aClean['ItemsPerPage'])
+    $ItemsPerPage = $aClean['ItemsPerPage'];
+if($aClean['page'])
+    $currentPage = $aClean['page'];
 
 $totalPages = ceil(getNumberOfComments()/$ItemsPerPage);
 

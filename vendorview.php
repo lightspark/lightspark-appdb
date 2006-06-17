@@ -11,9 +11,13 @@ require_once(BASE."include/incl.php");
 require_once(BASE."include/application.php");
 require_once(BASE."include/vendor.php");
 
-$oVendor = new Vendor($_REQUEST['vendorId']);
+$aClean = array(); //array of filtered user input
+$aClean['vendorId'] = makeSafe($_REQUEST['vendorId']);
+$aClean['sub'] = makeSafe($_REQUEST['sub']);
 
-if ($_REQUEST['sub'])
+$oVendor = new Vendor($aClean['vendorId']);
+
+if ($aClean['sub'])
 {
     if(!$_SESSION['current']->hasPriv("admin"))
     {
@@ -21,7 +25,7 @@ if ($_REQUEST['sub'])
         exit;
     }
 
-    if($_REQUEST['sub'] == 'delete')
+    if($aClean['sub'] == 'delete')
     {
         $oVendor->delete();
         redirect($_SERVER['PHP_SELF']);
@@ -55,7 +59,7 @@ if($oVendor->iVendorId)
             $oApp  = new application($iAppId);
             echo '<li> <a href="appview.php?appId='.$oApp->iAppId.'">'.$oApp->sName.'</a> </li>',"\n";
         }
-        echo '.</ol>',"\n";
+        echo '</ol>',"\n";
     }
 
 

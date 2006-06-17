@@ -4,6 +4,7 @@
 /************************************/
 
 require_once(BASE."include/version.php");
+require_once(BASE."include/util.php");
 
 /**
  * User class for handling users
@@ -267,6 +268,10 @@ class User {
       */
     function addAsMaintainer($iAppId, $iVersionId, $bSuperMaintainer, $iQueueId)
      {
+
+         $aClean = array();
+         $aClean['replyText'] = makeSafe($_REQUEST['replyText']);
+
          /* if the user isn't already a supermaintainer of the application and */
          /* if they are trying to become a maintainer and aren't already a maintainer of */
          /* the version, then continue processing the request */
@@ -295,7 +300,7 @@ class User {
                 {
                     $sSubject =  "Application Maintainer Request Report";
                     $sMsg  = "Your application to be the maintainer of ".$oApp->sName." ".$oVersion->sName." has been accepted. ";
-                    $sMsg .= $_REQUEST['replyText'];
+                    $sMsg .= $aClean['replyText'];
                     $sMsg .= "We appreciate your help in making the Application Database better for all users.\n\n";
 
                     mail_appdb($sEmail, $sSubject ,$sMsg);

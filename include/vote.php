@@ -1,5 +1,5 @@
 <?php
-
+require_once(BASE."include/util.php");
 /* max votes per user */
 define('MAX_VOTES',3);
 
@@ -111,6 +111,10 @@ function vote_get_user_votes($userId = null)
 
 function vote_menu()
 {
+
+    $aClean = array(); //array of filtered user input
+    $aClean['appid'] = makeSafe($_REQUEST['appId']);
+
     $m = new htmlmenu("Votes","updatevote.php");
     
     $votes = vote_get_user_votes();
@@ -132,7 +136,7 @@ function vote_menu()
     $m->add("<input type=submit name=clear value=' Clear Vote   ' class=votebutton>");
     $m->add("<input type=submit name=vote value='Vote for App' class=votebutton>");
     
-    $m->addmisc("<input type=hidden name=appId value={$_REQUEST['appId']}>");
+    $m->addmisc("<input type=hidden name=appId value={$aClean['appId']}>");
     
     $m->add("View Results", BASE."votestats.php");
     $m->add("Voting Help", BASE."help/?topic=voting");

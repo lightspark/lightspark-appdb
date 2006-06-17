@@ -1,4 +1,5 @@
 <?php
+require_once(BASE."include/util.php");
 /******************************************/
 /* bug class and related functions */
 /******************************************/
@@ -190,6 +191,10 @@ class Bug {
 
     function mailSubmitter($bRejected=false)
     {
+        $aClean = array(); //array of filtered user input
+
+        $aClean['replyText'] = makeSafe($_REQUEST['replyText']);
+	
         if($this->iSubmitterId)
         {
             $oSubmitter = new User($this->iSubmitterId);
@@ -202,7 +207,7 @@ class Bug {
                  $sSubject =  "Submitted Bug Link rejected";
                  $sMsg  = "The Bug Link you submitted for ".lookup_app_name($this->iAppId)." ".lookup_version_name($this->iVersionId)." has been rejected.";
             }
-            $sMsg .= $_REQUEST['replyText']."\n";
+            $sMsg .= $aClean['replyText']."\n";
             $sMsg .= "We appreciate your help in making the Application Database better for all users.";
                 
             mail_appdb($oSubmitter->sEmail, $sSubject ,$sMsg);
@@ -255,6 +260,10 @@ class Bug {
 
 function view_version_bugs($iVersionId = null, $aBuglinkIds)
 {
+    $aClean = array(); //array of filtered user input
+
+    $aClean['buglinkId'] = makeSafe($_REQUEST['buglinkId']);
+
     $bCanEdit = FALSE;
     $oVersion = new Version($iVersionId);
 
@@ -325,7 +334,7 @@ function view_version_bugs($iVersionId = null, $aBuglinkIds)
     {
         echo '<input type="hidden" name="versionId" value="'.$iVersionId.'">',"\n";
         echo '<tr class=color3><td align=center>',"\n";
-        echo '<input type="text" name="buglinkId" value="'.$_REQUEST['buglinkId'].'" size="8"></td>',"\n";
+        echo '<input type="text" name="buglinkId" value="'.$aClean['buglinkId'].'" size="8"></td>',"\n";
         echo '<td><input type="submit" name="sub" value="Submit a new bug link."></td>',"\n";
         echo '<td colspan=6></td></tr></form>',"\n";
     }

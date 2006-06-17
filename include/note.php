@@ -1,4 +1,9 @@
 <?php
+require_once(BASE."include/util.php");
+
+$aClean = array(); //array of filtered user input
+$aClean['replyText'] = makeSafe( $_REQUEST['replyText'] );
+
 /************************************/
 /* note class and related functions */
 /************************************/
@@ -140,8 +145,8 @@ class Note {
                 $sMsg .= $this->sBody."\n";
                 $sMsg .= "\n";
                 $sMsg .= "Because:\n";
-                if($_REQUEST['replyText'])
-                    $sMsg .= $_REQUEST['replyText']."\n";
+                if($aClean['replyText'])
+                    $sMsg .= $aClean['replyText']."\n";
                 else
                     $sMsg .= "No reason given.\n";
 

@@ -3,6 +3,11 @@ include("path.php");
 require(BASE."include/incl.php");
 require(BASE."include/distributions.php");
 
+$aClean = array(); //array of filtered user input
+
+$aClean['iDistributionId'] = makeSafe($_REQUEST['iDistributionId']);
+$aClean['submit'] = makeSafe($_REQUEST['submit']);
+
 if(!$_SESSION['current']->hasPriv("admin"))
 {
     errorpage("Insufficient privileges.");
@@ -10,8 +15,8 @@ if(!$_SESSION['current']->hasPriv("admin"))
 }
 
 
-$oDistribution = new distribution($_REQUEST['iDistributionId']);
-if($_REQUEST['Submit'])
+$oDistribution = new distribution($aClean['iDistributionId']);
+if($aClean['Submit'])
 {
     $oDistribution->GetOutputEditorValues();
 

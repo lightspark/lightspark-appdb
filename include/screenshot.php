@@ -3,7 +3,9 @@
 /* screenshot class and related functions */
 /******************************************/
 
+require_once(BASE."include/util.php");
 require_once(BASE."include/image.php");
+
 // load the watermark
 $watermark = new image("/images/watermark.png");
 
@@ -233,6 +235,10 @@ class Screenshot {
 
     function mailSubmitter($bRejected=false)
     {
+        $aClean = array(); //array of filtered user input
+
+        $aClean['replyText'] = makeSafe($_REQUEST['replyText']);
+
         if($this->iSubmitterId)
         {
             $oSubmitter = new User($this->iSubmitterId);
@@ -245,7 +251,7 @@ class Screenshot {
                  $sSubject =  "Submitted screenshot rejected";
                  $sMsg  = "The screenshot you submitted for ".lookup_app_name($this->iAppId)." ".lookup_version_name($this->iVersionId)." has been rejected.";
             }
-            $sMsg .= $_REQUEST['replyText']."\n";
+            $sMsg .= $aClean['replyText']."\n";
             $sMsg .= "We appreciate your help in making the Application Database better for all users.";
                 
             mail_appdb($oSubmitter->sEmail, $sSubject ,$sMsg);

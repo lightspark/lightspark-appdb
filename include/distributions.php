@@ -3,6 +3,7 @@
 /* this class represents Distributions */
 /***************************************/
 require_once(BASE."include/mail.php");
+require_once(BASE."include/util.php");
 
 // Testing class for handling Distributions.
 
@@ -231,6 +232,11 @@ class distribution{
 
     function mailSubmitter($sAction="add")
     {
+
+        $aClean = array(); //array of filtered user input
+
+        $aClean['replyText'] = makeSafe($_REQUEST['replyText']);
+
         if($this->iSubmitterId)
         {
             $oSubmitter = new User($this->iSubmitterId);
@@ -248,7 +254,7 @@ class distribution{
                     $sMsg  = "The Distribution you submitted (".$this->sName.") has been rejected.";
                     $sMsg .= APPDB_ROOT."testingData.php?sub=view&versionId=".$this->iVersionId."\n";
                     $sMsg .= "Reason given:\n";
-                    $sMsg .= $_REQUEST['replyText']."\n"; // append the reply text, if there is any 
+                    $sMsg .= $aClean['replyText']."\n"; // append the reply text, if there is any 
                 }
 
             break;
@@ -257,7 +263,7 @@ class distribution{
                     $sSubject =  "Submitted Distribution deleted";
                     $sMsg  = "The Distribution you submitted (".$this->sName.") has been deleted.";
                     $sMsg .= "Reason given:\n";
-                    $sMsg .= $_REQUEST['replyText']."\n"; // append the reply text, if there is any 
+                    $sMsg .= $aClean['replyText']."\n"; // append the reply text, if there is any 
                 }
             break;
             }
@@ -270,6 +276,9 @@ class distribution{
  
     function SendNotificationMail($sAction="add",$sMsg=null)
     {
+        $aClean = array(); //array of filtered user input
+
+        $aClean['replyText'] = makeSafe($_REQUEST['replyText']);
         switch($sAction)
         {
             case "add":
@@ -283,7 +292,7 @@ class distribution{
                         $sMsg .= "This Distribution has been submitted by ".$oSubmitter->sRealname.".";
                         $sMsg .= "\n";
                         $sMsg .= "Appdb admin reply text:\n";
-                        $sMsg .= $_REQUEST['replyText']."\n"; // append the reply text, if there is any 
+                        $sMsg .= $aClean['replyText']."\n"; // append the reply text, if there is any 
                     }
                     addmsg("The Distribution was successfully added into the database.", "green");
                 } else // testing data queued.
@@ -303,10 +312,10 @@ class distribution{
                 $sSubject = "Distribution ".$this->sName." has been deleted by ".$_SESSION['current']->sRealname;
 
                 // if replyText is set we should report the reason the data was deleted 
-                if($_REQUEST['replyText'])
+                if($aClean['replyText'])
                 {
                     $sMsg .= "Reason given:\n";
-                    $sMsg .= $_REQUEST['replyText']."\n"; // append the reply text, if there is any 
+                    $sMsg .= $aClean['replyText']."\n"; // append the reply text, if there is any 
                 }
 
                 addmsg("Distribution deleted.", "green");
@@ -316,10 +325,10 @@ class distribution{
                 $sMsg  = APPDB_ROOT."distributionView.php?iDistributionId=".$this->iDistributionId."\n";
 
                  // if replyText is set we should report the reason the data was rejected 
-                if($_REQUEST['replyText'])
+                if($aClean['replyText'])
                 {
                     $sMsg .= "Reason given:\n";
-                    $sMsg .= $_REQUEST['replyText']."\n"; // append the reply text, if there is any 
+                    $sMsg .= $aClean['replyText']."\n"; // append the reply text, if there is any 
                 }
 
                 addmsg("Distribution rejected.", "green");
@@ -351,16 +360,23 @@ class distribution{
     /* retrieves values from $_REQUEST that were output by OutputEditor() */
     function GetOutputEditorValues()
     {
+
+        $aClean = array(); //array of filtered user input
+
+        $aClean['iDistributionId'] = makeSafe($_REQUEST['iDistributionId']);
+        $aClean['sName'] = makeSafe($_REQUEST['sName']);
+        $aClean['sUrl'] = makeSafe($_REQUEST['sUrl']);
+
         if(get_magic_quotes_gpc())
         {
-            $this->iDistributionId = stripslashes($_REQUEST['iDistributionId']);
-            $this->sName = stripslashes($_REQUEST['sName']);
-            $this->sUrl = stripslashes($_REQUEST['sUrl']);
+            $this->iDistributionId = stripslashes($aClean['iDistributionId']);
+            $this->sName = stripslashes($aClean['sName']);
+            $this->sUrl = stripslashes($aClean['sUrl']);
         } else
         {
-            $this->iDistributionId = $_REQUEST['iDistributionId'];
-            $this->sName = $_REQUEST['sName'];
-            $this->sUrl = $_REQUEST['sUrl'];
+            $this->iDistributionId = $aClean['iDistributionId'];
+            $this->sName = $aClean['sName'];
+            $this->sUrl = $aClean['sUrl'];
         }
     }
 

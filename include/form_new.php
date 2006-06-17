@@ -1,4 +1,12 @@
 <?php
+require_once(BASE."include/util.php");
+
+$aClean = array(); //array of filtered user input
+
+$aClean['ext_email'] = makeSafe($_POST['ext_email']);
+$aClean['ext_realname'] = makeSafe($_POST['realname']);
+
+
 /********************/
 /* New Account Form */
 /********************/
@@ -11,7 +19,7 @@ echo html_frame_start("Create New Application DB Account","400","",0)
 <table border=0 width="100%" cellspacing=0 cellpadding=20>
     <tr>
         <td class=color1> E-mail </td>
-        <td class=color0> <input type="text" name="ext_email" value='<?php if(isset($_POST['ext_email'])) echo $_POST['ext_email']?>'> </td>
+        <td class=color0> <input type="text" name="ext_email" value='<?php if(!empty($aClean['ext_email'])) echo $aClean['ext_email']?>'> </td>
     </tr>
     <tr>
         <td class=color1> Password </td>
@@ -23,7 +31,7 @@ echo html_frame_start("Create New Application DB Account","400","",0)
     </tr>
     <tr>
         <td class=color1> Real Name </td>
-        <td class=color0> <input type="text" name="ext_realname" value='<?php if(isset($_POST['ext_realname'])) echo $_POST['ext_realname']?>'> </td>
+        <td class=color0> <input type="text" name="ext_realname" value='<?php if(!empty($aClean['ext_realname'])) echo $aClean['ext_realname']?>'> </td>
     </tr>
 <?php
 

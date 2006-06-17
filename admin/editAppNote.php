@@ -8,14 +8,24 @@ require(BASE."include/incl.php");
 require(BASE."include/application.php");
 require(BASE."include/mail.php");
 
-if(!is_numeric($_REQUEST['noteId']))
+$aClean = array(); //array of filtered user input
+
+$aClean['noteId'] = makeSafe($_REQUEST['noteId']);
+$aClean['sub'] = makeSafe($_REQUEST['sub']);
+$aClean['noteTitle'] = makeSafe($_REQUEST['noteTitle']);
+$aClean['noteDesc'] = makeSafe($_REQUEST['noteDesc']);
+$aClean['preview'] = makeSafe($_REQUEST['preview']);
+$aClean['appId'] = makeSafe($_REQUEST['appId']);
+$aClean['versionId'] = makeSafe($_REQUEST['versionId']);
+
+if(!is_numeric($aClean['noteId']))
 {
     errorpage('Wrong note ID');
     exit;
 }  
 
 /* Get note data */
-$oNote = new Note($_REQUEST['noteId']);
+$oNote = new Note($aClean['noteId']);
 
 /* Check for privs */
 if(!$_SESSION['current']->hasPriv("admin") && !$_SESSION['current']->isMaintainer($oNote->iVersionId) && !$_SESSION['current']->isSuperMaintainer($oNote->iAppId))
@@ -24,26 +34,26 @@ if(!$_SESSION['current']->hasPriv("admin") && !$_SESSION['current']->isMaintaine
     exit;
 }
 
-if(isset($_REQUEST['sub']))
+if(!empty($aClean['sub']))
 {
-    if ($_REQUEST['sub'] == 'Delete')
+    if ($aClean['sub'] == 'Delete')
     {
         $oNote->delete();
     } 
-    else if ($_REQUEST['sub'] == 'Update')
+    else if ($aClean['sub'] == 'Update')
     {
-        $oNote->update($_REQUEST['noteTitle'],$_REQUEST['noteDesc']);
+        $oNote->update($aClean['noteTitle'],$aClean['noteDesc']);
     }
     redirect(apidb_fullurl("appview.php?versionId={$oNote->iVersionId}"));
 }
 else
 {
-    if (!isset($_REQUEST['preview']))
+    if (empty($aClean['preview']))
     {
-        $_REQUEST['noteTitle'] = $oNote->sTitle;
-        $_REQUEST['noteDesc']  = $oNote->sDescription;
-        $_REQUEST['appId'] = $oNote->iAppId;
-        $_REQUEST['versionId'] = $oNote->iVersionId;
+        $aClean['noteTitle'] = $oNote->sTitle;
+        $aClean['noteDesc']  = $oNote->sDescription;
+        $aClean['appId'] = $oNote->iAppId;
+        $aClean['versionId'] = $oNote->iVersionId;
     }
 
     HtmlAreaLoaderScript(array("editor"));
@@ -52,24 +62,24 @@ else
     apidb_header("Edit Application Note");
 
     echo "<form method=post action='editAppNote.php'>\n";
-    echo html_frame_start("Edit Application Note {$_REQUEST['noteId']}", "90%","",0);
+    echo html_frame_start("Edit Application Note {$aClean['noteId']}", "90%","",0);
     echo html_table_begin("width='100%' border=0 align=left cellpadding=6 cellspacing=0 class='box-body'");
-    echo add_br($_REQUEST['noteDesc']);
+    echo add_br($aClean['noteDesc']);
     
-    echo '<input type="hidden" name="noteId" value='.$_REQUEST['noteId'].'>';
+    echo '<input type="hidden" name="noteId" value='.$aClean['noteId'].'>';
     
-    if ($_REQUEST['noteTitle'] == "HOWTO" || $_REQUEST['noteTitle'] == "WARNING")
+    if ($aClean['noteTitle'] == "HOWTO" || $aClean['noteTitle'] == "WARNING")
     {
         echo '<tr><td class=color1>Title (Do not change)</td>';
-        echo '<td class=color0><input size=80% type="text" name="noteTitle" type="text" value="'.$_REQUEST['noteTitle'].'"></td></tr>',"\n";
+        echo '<td class=color0><input size=80% type="text" name="noteTitle" type="text" value="'.$aClean['noteTitle'].'"></td></tr>',"\n";
     }
     else
     {
-        echo '<tr><td class=color1>Title</td><td class=color0><input size=80% type="text" name="noteTitle" type="text" value="'.$_REQUEST['noteTitle'].'"></td></tr>',"\n";
+        echo '<tr><td class=color1>Title</td><td class=color0><input size=80% type="text" name="noteTitle" type="text" value="'.$aClean['noteTitle'].'"></td></tr>',"\n";
     }
     echo '<tr><td class=color4>Description</td><td class=color0>', "\n";
     echo '<p style="width:700px">', "\n";
-    echo '<textarea cols="80" rows="20" id="editor" name="noteDesc">'.$_REQUEST['noteDesc'].'</textarea>',"\n";
+    echo '<textarea cols="80" rows="20" id="editor" name="noteDesc">'.$aClean['noteDesc'].'</textarea>',"\n";
     echo '</p>';
     echo '</td></tr><tr><td colspan="2" align="center" class="color3">',"\n";
     echo '<input type="submit" name=preview value="Preview">&nbsp',"\n";

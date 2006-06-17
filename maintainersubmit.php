@@ -11,15 +11,23 @@ require(BASE."include/incl.php");
 require(BASE."include/category.php");
 require(BASE."include/application.php");
 
+$aClean = array(); //array of filtered user input
+
+$aClean['maintainReason'] = makeSafe($_REQUEST['maintainReason']);
+$aClean['appId'] = makeSafe($_POST['appId']);
+$aClean['versionId'] = makeSafe(strip_tags($_POST['versionId']));
+$aClean['superMaintainer'] = makeSafe($_POST['superMaintainer']);
+
+
 /**
  * Check the input of a submitted form. And output with a list
  * of errors. (<ul></ul>)
  */
-function checkAppMaintainerInput( $fields )
+function checkAppMaintainerInput( $maintainReason )
 {
     $errors = "";
 
-    if ( empty( $fields['maintainReason']) )
+    if ( empty( $maintainReason ) )
     {
         $errors .= "<li>Please enter why you would like to be an application maintainer.</li>\n";
     }
@@ -41,29 +49,26 @@ if(!$_SESSION['current']->isLoggedIn())
     exit;
 }
 
-$appId = strip_tags($_POST['appId']);
-$versionId = strip_tags($_POST['versionId']);
-$superMaintainer = strip_tags($_POST['superMaintainer']);
 
 /* if we have a versionId to check against see if */
 /* the user is already a maintainer */
-if(!$superMaintainer && $_SESSION['current']->isMaintainer($versionId))
+if(!$aClean['superMaintainer'] && $_SESSION['current']->isMaintainer($aClean['versionId']))
 {
     echo "You are already a maintainer of this app!";
     exit;
 }
 
 /* if this user is a super maintainer they maintain all of the versionIds of this appId */
-if($_SESSION['current']->isSuperMaintainer($appId))
+if($_SESSION['current']->isSuperMaintainer($aClean['appId']))
 {
     echo "You are already a supermaintainer of the whole application family!";
     exit;
 }
 
-if($_REQUEST['maintainReason'])
+if( $aClean['maintainReason'] )
 {
     // check the input for empty/invalid fields
-    $errors = checkAppMaintainerInput($_REQUEST);
+    $errors = checkAppMaintainerInput($aClean['maintainReason']);
     if(!empty($errors))
     {
         errorpage("We found the following errors:","<ul>$errors</ul><br />Please go back and correct them.");
@@ -71,18 +76,18 @@ if($_REQUEST['maintainReason'])
     }
 
     // header
-    if($superMaintainer)
+    if($aClean['superMaintainer'])
         apidb_header("Submit SuperMaintainer Request");    
     else
         apidb_header("Submit Maintainer Request");    
 
     // add to queue
     $query = "INSERT INTO appMaintainerQueue VALUES (null, '".
-            addslashes($_REQUEST['appId'])."', '".
-            addslashes($_REQUEST['versionId'])."', '".
+            $aClean['appId']."', '".
+            $aClean['versionId']."', '".
             addslashes($_SESSION['current']->iUserId)."', '".
-            addslashes($_REQUEST['maintainReason'])."', '".
-            addslashes($_REQUEST['superMaintainer'])."',".
+            $aClean['maintainReason']."', '".
+            $aClean['superMaintainer']."',".
             "NOW()".");";
 
     if (query_appdb($query))
@@ -93,15 +98,15 @@ if($_REQUEST['maintainReason'])
 } else
 {
     // header
-    if($versionId)
+    if($aClean['versionId'])
     {
-        $oVersion = new Version($versionId);
+        $oVersion = new Version($aClean['versionId']);
         $oApp = new Application($oVersion->iAppId);
         apidb_header("Request to become an application maintainer of ".$oApp->sName." ".$oVersion->sName);
     }
     else
     {
-        $oApp = new Application($appId);
+        $oApp = new Application($aClean['appId']);
         apidb_header("Request to become an application super maintainer of ".$oApp->sName);
     }
 
@@ -123,7 +128,7 @@ if($_REQUEST['maintainReason'])
     echo "don't have the experience with Wine that is necessary to help other users out.</p>\n";
 
     /* Special message for super maintainer applications */
-    if($superMaintainer)
+    if($aClean['superMaintainer'])
     {
         echo "<p>Super maintainers are just like normal maintainers but they can modify EVERY version of\n";
         echo "this application (and the application itself).  We don't expect you to run every version but at least to help keep\n";
@@ -131,7 +136,7 @@ if($_REQUEST['maintainReason'])
     }
     echo "<br /><br />";
 
-    if($superMaintainer)
+    if($aClean['superMaintainer'])
         echo html_frame_start("New Super Maintainer Form",400,"",0);
     else
         echo html_frame_start("New Maintainer Form",400,"",0);
@@ -140,17 +145,17 @@ if($_REQUEST['maintainReason'])
     echo "<tr valign=top><td class=color0>";
     echo '<b>Application</b></td><td>'.$oApp->sName;
     echo '</td></tr>',"\n";
-    if($versionId)
+    if($aClean['versionId'])
     {
         echo "<tr valign=top><td class=color0>";
         echo '<b>Version</b></td><td>'.$oVersion->sName;
         echo '</td></tr>',"\n";
     }
-    echo "<input type=hidden name='appId' value=$appId>";
-    echo "<input type=hidden name='versionId' value=$versionId>";
-    echo "<input type=hidden name='superMaintainer' value=$superMaintainer>";
+    echo "<input type=hidden name='appId' value={$aClean['appId']}>";
+    echo "<input type=hidden name='versionId' value={$aClean['versionId']}>";
+    echo "<input type=hidden name='superMaintainer' value={$aClean['superMaintainer>']}";
 
-    if($superMaintainer)
+    if($aClean['superMaintainer'])
         echo '<tr valign=top><td class=color0><b>Why you want to and should be an application super maintainer</b></td><td><textarea name="maintainReason" rows=15 cols=70></textarea></td></tr>',"\n";
     else
         echo '<tr valign=top><td class=color0><b>Why you want to and should be an application maintainer</b></td><td><textarea name="maintainReason" rows=15 cols=70></textarea></td></tr>',"\n";

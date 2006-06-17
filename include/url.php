@@ -2,7 +2,7 @@
 /***************************************/
 /* url class and related functions */
 /***************************************/
-
+require_once(BASE."include/util.php");
 
 /**
  * Url class for handling urls
@@ -51,8 +51,13 @@ class Url {
      */
     function create($sDescription = null, $sUrl = null, $iVersionId = null, $iAppId = null)
     {
+        $aClean = array(); //array of filtered user input
+
+        $aClean['versionId'] = makeSafe($_REQUEST['versionId']);
+        $aClean['appId'] = makeSafe($_REQUEST['appId']);
+
         // Security, if we are not an administrator or a maintainer, the url must be queued.
-        if(!($_SESSION['current']->hasPriv("admin") || $_SESSION['current']->isMaintainer($_REQUEST['versionId']) || $_SESSION['current']->isSupermaintainer($_REQUEST['appId'])))
+        if(!($_SESSION['current']->hasPriv("admin") || $_SESSION['current']->isMaintainer($aClean['versionId']) || $_SESSION['current']->isSupermaintainer($aClean['appId'])))
         {
             $this->bQueued = true;
         }
@@ -177,6 +182,9 @@ class Url {
     
     function mailSubmitter($bRejected=false)
     {
+        $aClean = array(); //array of filtered user input
+
+        $aClean['replyText'] = makeSafe($_REQUEST['replyText']);
         if($this->iSubmitterId)
         {
             $oSubmitter = new User($this->iSubmitterId);
@@ -189,7 +197,7 @@ class Url {
                  $sSubject =  "Submitted url rejected";
                  $sMsg  = "The url you submitted for ".lookup_app_name($this->appId)." ".lookup_version_name($this->versionId)." has been rejected.";
             }
-            $sMsg .= $_REQUEST['replyText']."\n";
+            $sMsg .= $aClean['replyText']."\n";
             $sMsg .= "We appreciate your help in making the Application Database better for all users.";
                 
             mail_appdb($oSubmitter->sEmail, $sSubject ,$sMsg);

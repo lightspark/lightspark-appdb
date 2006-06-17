@@ -10,6 +10,15 @@ require_once(BASE."include/screenshot.php");
 require(BASE."include/application.php");
 require(BASE."include/mail.php");
 
+$aClean = array(); //array of filtered user input
+
+$aClean['cmd'] = makeSafe($_REQUEST['cmd']);
+$aClean['imageId'] = makeSafe($_REQUEST['imageId']);
+$aClean['ItemsPerPage'] = makeSafe($_REQUEST['ItemsPerPage']);
+$aClean['page'] = makeSafe($_REQUEST['page']);
+$aClean['regenerate'] = makeSafe($_REQUEST['regenerate']);
+$aClean['versionId'] = makeSafe($_REQUEST['versionId']);
+
 // deny access if not admin
 if(!$_SESSION['current']->hasPriv("admin"))
 {
@@ -19,18 +28,18 @@ if(!$_SESSION['current']->hasPriv("admin"))
 /*
  * We issued a delete command.
  */ 
-if($_REQUEST['cmd'])
+if($aClean['cmd'])
 {
     // process screenshot deletion
-    if($_REQUEST['cmd'] == "delete" && is_numeric($_REQUEST['imageId']))
+    if($aClean['cmd'] == "delete" && is_numeric($aClean['imageId']))
     {
-        $oScreenshot = new Screenshot($_REQUEST['imageId']);
+        $oScreenshot = new Screenshot($aClean['imageId']);
         $oScreenshot->delete();
         $oScreenshot->free();
     } 
     redirect($_SERVER['PHP_SELF'].
-             "?ItemsPerPage=".$_REQUEST['ItemsPerPage'].
-             "&page=".$_REQUEST['page']);
+             "?ItemsPerPage=".$aClean['ItemsPerPage'].
+             "&page=".$aClean['page']);
     exit;
 
 }
@@ -38,7 +47,7 @@ if($_REQUEST['cmd'])
 
 apidb_header("Screenshots");
 // regenerate all screenshots
-if($_REQUEST['regenerate'])
+if($aClean['regenerate'])
 {
     $sQuery = "SELECT id FROM appData WHERE type = 'image'";
     $hResult = query_appdb($sQuery);
@@ -63,10 +72,10 @@ $pageRange = 10;
 $ItemsPerPage = 6;
 $currentPage = 1;
 
-if($_REQUEST['ItemsPerPage'])
-    $ItemsPerPage = $_REQUEST['ItemsPerPage'];
-if($_REQUEST['page'])
-    $currentPage = $_REQUEST['page'];
+if($aClean['ItemsPerPage'])
+    $ItemsPerPage = $aClean['ItemsPerPage'];
+if($aClean['page'])
+    $currentPage = $aClean['page'];
 
 $ItemsPerPage = min($ItemsPerPage,100);
 $totalPages = ceil(getNumberOfImages()/$ItemsPerPage);
@@ -130,7 +139,7 @@ while ($oRow = mysql_fetch_object($Ids))
     //show admin delete link
     if($_SESSION['current']->isLoggedIn() && 
       ($_SESSION['current']->hasPriv("admin") || 
-       $_SESSION['current']->isMaintainer($_REQUEST['versionId'])))
+       $_SESSION['current']->isMaintainer($aClean['versionId'])))
     {
         echo "<br />[<a href='".$_SERVER['PHP_SELF'];
         echo "?cmd=delete&imageId=$oRow->id";

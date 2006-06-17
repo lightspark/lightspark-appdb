@@ -14,14 +14,21 @@ require_once(BASE."include/screenshot.php");
 require(BASE."include/application.php");
 require(BASE."include/mail.php");
 
+$aClean = array(); //array of filtered user input
+
+$aClean['cmd'] = makeSafe($_REQUEST['cmd']);
+$aClean['versionId'] = makeSafe($_REQUEST['versionId']);
+$aClean['screenshot_desc'] = makeSafe($_REQUEST['screenshot_desc']);
+$aClean['imageId'] = makeSafe($_REQUEST['imageId']);
+$aClean['appId'] = makeSafe($_REQUEST['appId']);
 
 /*
  * We issued a command.
  */ 
-if($_REQUEST['cmd'])
+if($aClean['cmd'])
 {
     // process screenshot upload
-    if($_REQUEST['cmd'] == "screenshot_upload")
+    if($aClean['cmd'] == "screenshot_upload")
     {   
         if($_FILES['imagefile']['size']>600000)
         {
@@ -29,26 +36,26 @@ if($_REQUEST['cmd'])
         } else
         {
             $oScreenshot = new Screenshot();
-            $oScreenshot->create($_REQUEST['versionId'], $_REQUEST['screenshot_desc'], $_FILES['imagefile']);
+            $oScreenshot->create($aClean['versionId'], $aClean['screenshot_desc'], $_FILES['imagefile']);
             $oScreenshot->free();
         }
-    } elseif($_REQUEST['cmd'] == "delete" && is_numeric($_REQUEST['imageId'])) // process screenshot deletion
+    } elseif($aClean['cmd'] == "delete" && is_numeric($aClean['imageId'])) // process screenshot deletion
     {
-        $oScreenshot = new Screenshot($_REQUEST['imageId']);
+        $oScreenshot = new Screenshot($aClean['imageId']);
         $oScreenshot->delete();
         $oScreenshot->free();
     } 
-    redirect(apidb_fullurl("screenshots.php?appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']));
+    redirect(apidb_fullurl("screenshots.php?appId=".$aClean['appId']."&versionId=".$aClean['versionId']));
 }
 
 
 /*
  * We didn't issued any command.
  */ 
-$hResult = get_screenshots($_REQUEST['appId'], $_REQUEST['versionId']);   
+$hResult = get_screenshots($aClean['appId'], $aClean['versionId']);   
 apidb_header("Screenshots");
-$oApp = new Application($_REQUEST['appId']);
-$oVersion = new Version($_REQUEST['versionId']);
+$oApp = new Application($aClean['appId']);
+$oVersion = new Version($aClean['versionId']);
 
 if($hResult && mysql_num_rows($hResult))
 {
@@ -59,7 +66,7 @@ if($hResult && mysql_num_rows($hResult))
     echo "<div align=center><table><tr>\n";
     while($oRow = mysql_fetch_object($hResult))
     {
-        if(!$_REQUEST['versionId'] && $oRow->versionId != $currentVersionId)
+        if(!$aClean['versionId'] && $oRow->versionId != $currentVersionId)
         {
             if($currentVersionId)
             {
@@ -79,9 +86,9 @@ if($hResult && mysql_num_rows($hResult))
         
         //show admin delete link
         if($_SESSION['current']->isLoggedIn() && ($_SESSION['current']->hasPriv("admin") || 
-               $_SESSION['current']->isMaintainer($_REQUEST['versionId'])))
+               $_SESSION['current']->isMaintainer($aClean['versionId'])))
         {
-            echo "<br />[<a href='screenshots.php?cmd=delete&imageId=$oRow->id&appId=".$_REQUEST['appId']."&versionId=".$_REQUEST['versionId']."'>Delete Image</a>]";
+            echo "<br />[<a href='screenshots.php?cmd=delete&imageId=$oRow->id&appId=".$aClean['appId']."&versionId=".$aClean['versionId']."'>Delete Image</a>]";
         }
 
         echo "</div></td>\n";
@@ -99,7 +106,7 @@ if($hResult && mysql_num_rows($hResult))
  echo "<br />Please consider submitting a screenshot for the selected version yourself.</p>";
 }
 
-if($_REQUEST['versionId'])
+if($aClean['versionId'])
 {
     //image upload box
     echo '<form enctype="multipart/form-data" action="screenshots.php" name="imageForm" method="post">',"\n";
@@ -114,7 +121,7 @@ if($_REQUEST['versionId'])
     echo html_frame_end();
     echo '<input type="hidden" name="MAX_FILE_SIZE" value="4000000" />',"\n";
     echo '<input type="hidden" name="cmd" value="screenshot_upload" />',"\n";
-    echo '<input type="hidden" name="versionId" value="'.$_REQUEST['versionId'].'"></form />',"\n";
+    echo '<input type="hidden" name="versionId" value="'.$aClean['versionId'].'"></form />',"\n";
 }
 echo html_back_link(1);
 apidb_footer();

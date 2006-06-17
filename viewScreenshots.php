@@ -10,6 +10,12 @@ require_once(BASE."include/screenshot.php");
 require(BASE."include/application.php");
 require(BASE."include/mail.php");
 
+$aClean = array(); //array of filtered user input
+
+$aClean['ItemsPerPage'] = makeSafe($_REQUEST['ItemsPerPage']);
+$aClean['page'] = makeSafe($_REQUEST['page']);
+
+
 apidb_header("View Screenshots");
 /* display a range of 10 pages */
 $pageRange = 10;
@@ -17,10 +23,10 @@ $pageRange = 10;
 $ItemsPerPage = 6;
 $currentPage = 1;
 
-if($_REQUEST['ItemsPerPage'])
-    $ItemsPerPage = $_REQUEST['ItemsPerPage'];
-if($_REQUEST['page'])
-    $currentPage = $_REQUEST['page'];
+if($aClean['ItemsPerPage'])
+    $ItemsPerPage = $aClean['ItemsPerPage'];
+if($aClean['page'])
+    $currentPage = $aClean['page'];
 
 $ItemsPerPage = min($ItemsPerPage,100);
 $totalPages = ceil(getNumberOfImages()/$ItemsPerPage);

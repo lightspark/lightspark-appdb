@@ -14,8 +14,15 @@ require_once(BASE."include/mail.php");
 require_once(BASE."include/monitor.php");
 require_once(BASE."include/testResults.php");
 
+$aClean = array(); //filtered user input
 
-if($_REQUEST['confirmed'] != "yes")
+$aClean['confirmed'] = makeSafe($_REQUEST['confirmed']);
+$aClean['what'] = makeSafe($_REQUEST['what']);
+$aClean['catId'] = makeSafe($_REQUEST['catId']);
+$aClean['appId'] = makeSafe($_REQUEST['appId']);
+$aClean['versionId'] = makeSafe($_REQUEST['versionId']);
+
+if($aClean['confirmed'] != "yes")
 {
     // ask for confirmation
     // could do some Real Damage if someone accidently hits the delete button on the main category :)
@@ -25,13 +32,13 @@ if($_REQUEST['confirmed'] != "yes")
     errorpage("Not confirmed");
 }
 
-if($_REQUEST['what'])
+if($aClean['what'])
 {
-    switch($_REQUEST['what'])
+    switch($aClean['what'])
     {
     case "category":
         // delete category and the apps in it
-        $oCategory = new Category($_REQUEST['catId']);
+        $oCategory = new Category($aClean['catId']);
         if(!$oCategory->delete())
             errorpage();
         else
@@ -39,18 +46,18 @@ if($_REQUEST['what'])
         break;
     case "appFamily":
         // delete app family & all its versions
-        $oApp = new Application($_REQUEST['appId']);
+        $oApp = new Application($aClean['appId']);
         if(!$oApp->delete())
             errorpage();
         else
             redirect(BASE."appbrowse.php");
         break;
     case "appVersion":
-        $oVersion = new Version($_REQUEST['versionId']);
+        $oVersion = new Version($aClean['versionId']);
         if(!$oVersion->delete())
             errorpage();
         else
-            redirect(BASE."appview.php?appId=".$_REQUEST['appId']);
+            redirect(BASE."appview.php?appId=".$aClean['appId']);
         break;
     }
 }

@@ -3,16 +3,22 @@ include("path.php");
 require_once(BASE."include/incl.php");
 require_once(BASE."include/vendor.php");
 
+$aClean = array(); //array of filtered user input
+$aClean['iVendorId'] = makeSafe($_REQUEST['iVendorId']);
+$aClean['Submit'] = makeSafe($_REQUEST['Submit']);
+$aClean['sName'] = makeSafe($_REQUEST['sName']);
+$aClean['sWebpage'] = makeSafe($_REQUEST['sWebpage']);
+
 if(!$_SESSION['current']->hasPriv("admin"))
 {
     errorpage();
     exit;
 }
 
-$oVendor = new Vendor($_REQUEST['iVendorId']);
-if($_REQUEST['Submit'])
+$oVendor = new Vendor($aClean['iVendorId']);
+if($aClean['Submit'])
 {
-    $oVendor->update($_REQUEST['sName'],$_REQUEST['sWebpage']);
+    $oVendor->update($aClean['sName'],$aClean['sWebpage']);
     redirect(apidb_fullurl("vendorview.php"));
 }
 else

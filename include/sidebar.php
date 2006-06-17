@@ -4,9 +4,14 @@
 /***********/
 require_once(BASE."include/distributions.php");
 require_once(BASE."include/vendor.php");
+require_once(BASE."include/util.php");
   
 function global_sidebar_menu() {
-  
+     
+    $aClean = array(); //array of filtered user input
+
+    $aClean['q'] = makeSafe($_REQUEST['q']);
+
     $g = new htmlmenu(APPDB_OWNER." Menu");
     $g->add(APPDB_OWNER, APPDB_OWNER_URL);
     $g->add("AppDB", BASE);
@@ -29,7 +34,7 @@ function global_sidebar_menu() {
     $g->done();    
 
     $g = new htmlmenu("Search");
-    $g->addmisc(app_search_box(isset($_REQUEST['q']) ? $_REQUEST['q'] : ''));
+    $g->addmisc(app_search_box(!empty($aClean['q']) ? $aClean['q'] : ''));
     $g->done();
 
 }

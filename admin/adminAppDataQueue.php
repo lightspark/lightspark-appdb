@@ -9,6 +9,15 @@ require(BASE."include/mail.php");
 require(BASE."include/tableve.php");
 require(BASE."include/application.php");
 
+$aClean = array(); //array of user input
+
+$aClean['id'] = makeSafe($_REQUEST['id']);
+$aClean['sub'] = makeSafe($_REQUEST['sub']);
+$aClean['add'] = makeSafe($_REQUEST['add']);
+$aClean['description'] = makeSafe($_REQUEST['description']);
+$aClean['replyText'] = makeSafe($_REQUEST['replyText']);
+$aClean['reject'] = makeSafe($_REQUEST['reject']);
+
 // deny access if not admin or at least some kind of maintainer
 if(!$_SESSION['current']->hasPriv("admin") && !$_SESSION['current']->isMaintainer())
 {
@@ -17,7 +26,7 @@ if(!$_SESSION['current']->hasPriv("admin") && !$_SESSION['current']->isMaintaine
 }
 
 // shows the list of appdata in queue
-if (!$_REQUEST['id'])
+if (!$aClean['id'])
 {
     apidb_header("Admin Application Data Queue");
 
@@ -76,10 +85,10 @@ if (!$_REQUEST['id'])
     }      
 } else // shows a particular appdata
 {
-    $hResult = $_SESSION['current']->getAppDataQuery($_REQUEST['id'], false, false);
+    $hResult = $_SESSION['current']->getAppDataQuery($aClean['id'], false, false);
     $obj_row = mysql_fetch_object($hResult);
     
-    if(!$_REQUEST['sub']=="inside_form")
+    if(!$aClean['sub']=="inside_form")
     {       
         apidb_header("Admin Application Data Queue");
 
@@ -146,9 +155,9 @@ if (!$_REQUEST['id'])
 
         echo '</table>',"\n";
         echo '<input type=hidden name="sub" value="inside_form" />',"\n"; 
-        echo '<input type=hidden name="id" value="'.$_REQUEST['id'].'" />',"\n";  
+        echo '<input type=hidden name="id" value="'.$aClean['id'].'" />',"\n";  
         echo '</form>';
-    } elseif ($_REQUEST['add']) // we accepted the request
+    } elseif ($aClean['add']) // we accepted the request
     { 
         $statusMessage = "";
          $goodtogo = 0;
@@ -161,7 +170,7 @@ if (!$_REQUEST['id'])
         elseif ($obj_row->type == "url")
         { // FIXME: use Link class
             $query = "INSERT INTO appData VALUES (null, ".$obj_row->versionId.", 'url', ".
-                     "'".addslashes($_REQUEST['description'])."', '".$obj_row->url."')";
+                     "'".$aClean['description']."', '".$obj_row->url."')";
             if (query_appdb($sQuery))
             {
                 $statusMessage = "<p>The application data was successfully added into the database</p>\n";
@@ -175,7 +184,7 @@ if (!$_REQUEST['id'])
                 {
                     $sSubject =  "Application Data Request Report";
                     $sMsg  = "Your submission of an application data for ".lookup_app_name($obj_row->appId).lookup_version_name($obj_row->versionId)." has been accepted. ";
-                    $sMsg .= $_REQUEST['replyText'];
+                    $sMsg .= $aClean['replyText'];
                     $sMsg .= "We appreciate your help in making the Application Database better for all users.\r\n";
                 
                     mail_appdb($oUser->sEmail, $sSubject ,$sMsg);
@@ -183,7 +192,7 @@ if (!$_REQUEST['id'])
             }
         }
         redirect(apidb_fullurl("admin/adminAppDataQueue.php"));
-    } elseif ($_REQUEST['reject'])
+    } elseif ($aClean['reject'])
     {
         if($obj_row->type == "image")
         { 
@@ -197,7 +206,7 @@ if (!$_REQUEST['id'])
             {
                 $sSubject =  "Application Data Request Report";
                 $sMsg  = "Your submission of an application data for ".lookup_app_name($obj_row->appId).lookup_version_name($obj_row->versionId)." was rejected. ";
-                $sMsg .= $_REQUEST['replyText'];
+                $sMsg .= $aClean['replyText'];
                 mail_appdb($oUser->sEmail, $sSubject ,$sMsg); 
             }
 

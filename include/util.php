@@ -1,4 +1,11 @@
 <?php
+
+function makeSafe($var)
+{
+    $var = trim(addslashes($var));
+    return $var;
+}
+
 function build_urlarg($vars)
 {
 	$arr = array();

@@ -8,36 +8,43 @@ require(BASE."include/"."incl.php");
 require(BASE."include/"."appdb.php");
 require(BASE."include/"."category.php");
 
+$aClean = array(); //array of filtered user input
+
+$aClean['catId'] = makeSafe($_REQUEST['catId']);
 
 function admin_menu()
 {
-    if(isset($_REQUEST['catId'])) $catId=$_REQUEST['catId'];
-    else $catId="";
+    if( empty( $aClean['catId'] ) )
+    {
+        $aClean['catId'] = "";
+    }
 
     $m = new htmlmenu("Admin");
-    $m->add("Edit this Category", BASE."admin/addCategory.php?catId=$catId");
-    $url = BASE."admin/deleteAny.php?what=category&catId=$catId&confirmed=yes";
+    $m->add("Edit this Category", BASE."admin/addCategory.php?catId']}");
+    $url = BASE."admin/deleteAny.php?what=category&catId={$aClean['catId']}&confirmed=yes";
     $m->add("Delete this Category", "javascript:deleteURL(\"Are you sure?\", \"".$url."\")");
 
     $m->done();
 }
 
-if(isset($_REQUEST['catId'])) $catId=$_REQUEST['catId'];
-else $catId=0; // ROOT
+if( empty( $aClean['catId'] ) )
+{
+    $aClean['catId'] = 0; // ROOT
+}
 
-if( !is_numeric($catId) )
+if( !is_numeric($aClean['catId']) )
 {
 	errorpage("Something went wrong with the category ID");
 	exit;
 }
 
 // list sub categories
-$cat = new Category($catId);
+$cat = new Category($aClean['catId']);
 $catFullPath = make_cat_path($cat->getCategoryPath());
 $subs = $cat->aSubcatsIds;
 
 //display admin box
-if($_SESSION['current']->hasPriv("admin") && $catId != 0)
+if($_SESSION['current']->hasPriv("admin") && $aClean['catId'] != 0)
     apidb_sidebar_add("admin_menu");
 
 //output header
@@ -125,7 +132,7 @@ if($apps)
 }
 
 // Disabled for now
-//if ($catId != 0)
+//if ($aClean['catId'] != 0)
 //{
 //	log_category_visit($cat->id);
 //}

@@ -8,6 +8,7 @@ require_once(BASE."include/comment.php");
 require_once(BASE."include/url.php");
 require_once(BASE."include/screenshot.php");
 require_once(BASE."include/bugs.php");
+require_once(BASE."include/util.php");
 
 /**
  * Version class for handling versions.
@@ -414,6 +415,9 @@ class Version {
 
     function mailSubmitter($sAction="add")
     {
+        $aClean = array(); //array of filtered user input
+        $aClean['replyText'] = makeSafe($_REQUEST['replyText']);
+
         if($this->iSubmitterId)
         {
             $oApp = new Application($this->iAppId);
@@ -439,7 +443,7 @@ class Version {
                 $sMsg .= "Reason given:\n";
             break;
             }
-            $sMsg .= $_REQUEST['replyText']."\n";
+            $sMsg .= $aClean['replyText']."\n";
             $sMsg .= "We appreciate your help in making the Version Database better for all users.";
         
             mail_appdb($oSubmitter->sEmail, $sSubject ,$sMsg);
@@ -449,6 +453,9 @@ class Version {
  
     function SendNotificationMail($sAction="add",$sMsg=null)
     {
+        $aClean = array(); //array of filtered user input
+        $aClean['replyText'] = makeSafe($_REQUEST['replyText']);
+
         $oApp = new Application($this->iAppId);
         switch($sAction)
         {
@@ -463,10 +470,10 @@ class Version {
                         $sMsg .= "This version has been submitted by ".$oSubmitter->sRealname.".";
                         $sMsg .= "\n";
                     }
-                    if($_REQUEST['replyText'])
+                    if($aClean['replyText'])
                     {
                         $sMsg .= "Appdb admin reply text:\n";
-                        $sMsg .= $_REQUEST['replyText']."\n"; // append the reply text, if there is any 
+                        $sMsg .= $aClean['replyText']."\n"; // append the reply text, if there is any 
                     }
 
                     addmsg("The version was successfully added into the database.", "green");
@@ -487,10 +494,10 @@ class Version {
                 $sSubject = "Version '".$this->sName."' of '".$oApp->sName."' has been deleted by ".$_SESSION['current']->sRealname;
 
                 // if replyText is set we should report the reason the application was deleted 
-                if($_REQUEST['replyText'])
+                if($aClean['replyText'])
                 {
                     $sMsg .= "Reason given:\n";
-                    $sMsg .= $_REQUEST['replyText']."\n"; // append the reply text, if there is any 
+                    $sMsg .= $aClean['replyText']."\n"; // append the reply text, if there is any 
                 }
 
                 addmsg("Version deleted.", "green");
@@ -500,10 +507,10 @@ class Version {
                 $sMsg .= APPDB_ROOT."appsubmit.php?apptype=application&sub=view&versionId=".$this->iVersionId."\n";
 
                 // if replyText is set we should report the reason the version was rejected 
-                if($_REQUEST['replyText'])
+                if($aClean['replyText'])
                 {
                     $sMsg .= "Reason given:\n";
-                    $sMsg .= $_REQUEST['replyText']."\n"; // append the reply text, if there is any 
+                    $sMsg .= $aClean['replyText']."\n"; // append the reply text, if there is any 
                 }
 
                 addmsg("Version rejected.", "green");
@@ -580,12 +587,17 @@ class Version {
 
     function CheckOutputEditorInput()
     {
+        $aClean = array(); //array of filtered user input
+
+        $aClean['versionName'] = makeSafe($_REQUEST['versionName']);
+        $aClean['versionDescription'] = makeSafe($_REQUEST['versionDescription']);
+
         $errors = "";
 
-        if (empty($_REQUEST['versionName']))
+        if (empty($aClean['versionName']))
             $errors .= "<li>Please enter an application version.</li>\n";
 
-        if (empty($_REQUEST['versionDescription']))
+        if (empty($aClean['versionDescription']))
             $errors .= "<li>Please enter a version description.</li>\n";
 
         return $errors;
@@ -594,29 +606,40 @@ class Version {
     /* retrieves values from $_REQUEST that were output by OutputEditor() */
     function GetOutputEditorValues()
     {
+        $aClean = array(); //array of filtered user input
+        $aClean['appid'] = makeSafe($_REQUEST['appId']);
+        $aClean['versionId'] = makeSafe($_REQUEST['versionId']);
+        $aClean['versionName'] = makeSafe($_REQUEST['versionName']);
+        $aClean['versionDescription'] = makeSafe($_REQUEST['versionDescription']);
+        $aClean['maintainer_rating'] = makeSafe($_REQUEST['maintainer_rating']);
+        $aClean['maintainer_release'] = makeSafe($_REQUEST['maintainer_release']);
+
         if(get_magic_quotes_gpc())
         {
-            $this->iAppId = stripslashes($_REQUEST['appId']);
-            $this->iVersionId = stripslashes($_REQUEST['versionId']);
-            $this->sName = stripslashes($_REQUEST['versionName']);
-            $this->sDescription = stripslashes($_REQUEST['versionDescription']);
-
-            $this->sTestedRating = stripslashes($_REQUEST['maintainer_rating']);
-            $this->sTestedRelease = stripslashes($_REQUEST['maintainer_release']);
+            $this->iAppId = stripslashes($aClean['appId']);
+            $this->iVersionId = stripslashes($aClean['versionId']);
+            $this->sName = stripslashes($aClean['versionName']);
+            $this->sDescription = stripslashes($aClean['versionDescription']);
+            $this->sTestedRating = stripslashes($aClean['maintainer_rating']);
+            $this->sTestedRelease = stripslashes($aClean['maintainer_release']);
         } else
         {
-            $this->iAppId = $_REQUEST['appId'];
-            $this->iVersionId = $_REQUEST['versionId'];
-            $this->sName = $_REQUEST['versionName'];
-            $this->sDescription = $_REQUEST['versionDescription'];
+            $this->iAppId = $aClean['appId'];
+            $this->iVersionId = $aClean['versionId'];
+            $this->sName = $aClean['versionName'];
+            $this->sDescription = $aClean['versionDescription'];
 
-            $this->sTestedRating = $_REQUEST['maintainer_rating'];
-            $this->sTestedRelease = $_REQUEST['maintainer_release'];
+            $this->sTestedRating = $aClean['maintainer_rating'];
+            $this->sTestedRelease = $aClean['maintainer_release'];
         }
     }
 
     function display()
     {
+        $aClean = array(); //array of filtered user input
+        $aClean['iTestingId'] = makeSafe($_REQUEST['iTestingId']);
+	
+
         /* is this user supposed to view this version? */
         if(!$_SESSION['current']->canViewVersion($this))
         {
@@ -801,7 +824,7 @@ class Version {
         echo $this->sDescription;
 
         // Show testing data
-        $oTest = new TestData($_REQUEST['iTestingId']);
+        $oTest = new TestData($aClean['iTestingId']);
         $iCurrentTest = $oTest->ShowTestResult($oTest->iTestingId, $this->iVersionId);
         if($iCurrentTest)
         {

@@ -3,21 +3,29 @@ include("path.php");
 require(BASE."include/incl.php");
 require(BASE."include/category.php");
 
+$aClean = array(); //array of filtered user input
+
+$aClean['catId'] = makeSafe($_REQUEST['catId']);
+$aClean['name'] = makeSafe($_REQUEST['name']);
+$aClean['description'] = makeSafe($_REQUEST['description']);
+$aClean['parentId'] = makeSafe($_REQUEST['parentId']);
+$aClean['submit'] = makeSafe($_REQUEST['submit']);
+
 if(!$_SESSION['current']->hasPriv("admin"))
 {
     errorpage();
     exit;
 }
-$oCat = new Category($_REQUEST['catId']);
-if($_REQUEST['submit'])
+$oCat = new Category($aClean['catId']);
+if($aClean['submit'])
 {
-    $oCat->update($_REQUEST['name'],$_REQUEST['description'],$_REQUEST['parentId']);
+    $oCat->update($aClean['name'],$aClean['description'],$aClean['parentId']);
     redirect(apidb_fullurl("appbrowse.php?catId=".$oCat->iCatId));
 }
 else
 {
 apidb_header("Add Category");
-$sQuery = "SELECT catId, catName FROM appCategory WHERE catId!='".$_REQUEST['catId']."'";
+$sQuery = "SELECT catId, catName FROM appCategory WHERE catId!='".$aClean['catId']."'";
 $hResult = query_appdb($sQuery);
 while($oRow = mysql_fetch_object($hResult))
 {

@@ -6,6 +6,15 @@
 include("path.php");
 include(BASE."include/incl.php");
 
+$aClean = array(); //filtered user input
+
+$aClean['action'] = makeSafe($_REQUEST['action']);
+$aClean['userId'] = makeSafe($_REQUEST['userId']);
+$aClean['sSearch'] = makeSafe($_REQUEST['sSearch']);
+$aClean['iLimit'] = makeSafe($_REQUEST['iLimit']);
+$aClean['sOrderBy'] = makeSafe($_REQUEST['sOrderBy']);
+$aClean['sSubmit'] = makeSafe($_REQUEST['sSubmit']);
+
 apidb_header("Admin Users Management");
 
 if(!$_SESSION['current']->hasPriv("admin"))
@@ -15,9 +24,9 @@ if(!$_SESSION['current']->hasPriv("admin"))
 }
 
 // we want to delete a user
-if($_REQUEST['action'] == "delete" && is_numeric($_REQUEST['userId']))
+if($aClean['action'] == "delete" && is_numeric($aClean['userId']))
 {
-    $oUser = new User($_REQUEST['userId']);
+    $oUser = new User($aClean['userId']);
     $oUser->delete();
 }
 
@@ -28,15 +37,15 @@ echo html_frame_start("Users Management","400","",0)
     <table width="100%" border=0 cellpadding=0 cellspacing=0>
         <tr>
             <td class="color1">Pattern</td>
-            <td><input type="text" name="sSearch" value="<?php echo$_REQUEST['sSearch'];?>"/><br /><small>(leave blank to match all)</small></td>
+            <td><input type="text" name="sSearch" value="<?php echo $aClean['sSearch'];?>"/><br /><small>(leave blank to match all)</small></td>
         </tr>
         <tr>
             <td class="color1">Show first</td>
             <td>
                 <select name="iLimit">
-                    <option value="100"<?php if($_REQUEST['iLimit']=="100")echo" SELECTED";?>>100 results</option>
-                    <option value="200"<?php if($_REQUEST['iLimit']=="200")echo" SELECTED";?>>200 results</option>
-                    <option value="500"<?php if($_REQUEST['iLimit']=="500")echo" SELECTED";?>>500 result</option>
+                    <option value="100"<?php if($aClean['iLimit']=="100")echo" SELECTED";?>>100 results</option>
+                    <option value="200"<?php if($aClean['iLimit']=="200")echo" SELECTED";?>>200 results</option>
+                    <option value="500"<?php if($aClean['iLimit']=="500")echo" SELECTED";?>>500 result</option>
                 </select>
             </td>
         </tr>
@@ -44,9 +53,9 @@ echo html_frame_start("Users Management","400","",0)
             <td class="color1">Order by</td>
             <td>
                 <select NAME="sOrderBy">
-                    <option value="email"<?php if($_REQUEST['sOrderBy']=="email")echo" SELECTED";?>>e-mail</option>
-                    <option value="realname"<?php if($_REQUEST['sOrderBy']=="realname")echo" SELECTED";?>>real name</option>
-                    <option value="created"<?php if($_REQUEST['sOrderBy']=="created")echo" SELECTED";?>>creation date</option>
+                    <option value="email"<?php if($aClean['sOrderBy']=="email")echo" SELECTED";?>>e-mail</option>
+                    <option value="realname"<?php if($aClean['sOrderBy']=="realname")echo" SELECTED";?>>real name</option>
+                    <option value="created"<?php if($aClean['sOrderBy']=="created")echo" SELECTED";?>>creation date</option>
                 </select>
             </td>
         </tr>
@@ -59,7 +68,7 @@ echo html_frame_start("Users Management","400","",0)
 echo html_frame_end();
 
 // if the search form was submitted
-if($_REQUEST['sSubmit'])
+if($aClean['sSubmit'])
 {
     echo html_frame_start("Query Results","90%","",0);
     echo "<table width='100%' border=0 cellpadding=3 cellspacing=0>\n\n";
@@ -71,13 +80,13 @@ if($_REQUEST['sSubmit'])
     echo "    <td>Roles</td>\n";
     echo "    <td align=\"center\">Action</td>\n";
     echo "</tr>\n\n";
-    if(is_numeric($_REQUEST['iLimit']) && in_array($_REQUEST['sOrderBy'],array("email","realname","created")))
+    if(is_numeric($aClean['iLimit']) && in_array($aClean['sOrderBy'],array("email","realname","created")))
     {
-        $sSearch = addslashes($_REQUEST['sSearch']);
+        $sSearch = $aClean['sSearch'];
         $sQuery = "SELECT * FROM user_list 
                    WHERE realname LIKE '%".$sSearch."%' OR email LIKE '%".$sSearch."%'
-                   ORDER BY ".$_REQUEST['sOrderBy']."
-                   LIMIT ".$_REQUEST['iLimit'];
+                   ORDER BY ".$aClean['sOrderBy']."
+                   LIMIT ".$aClean['iLimit'];
         $hResult = query_appdb($sQuery);
         $i=0;
         while($hResult && $oRow = mysql_fetch_object($hResult))
@@ -93,7 +102,7 @@ if($_REQUEST['sSubmit'])
             if($oUser->hasPriv("admin")) echo "A";
             if($oUser->isMaintainer()) echo "M";
             echo "    </td>\n";
-            echo "    <td align=\"center\">[<a href=\"../preferences.php?userId=".$oRow->userid."&sSearch=".$sSearch."&iLimit=".$_REQUEST['iLimit']."&sOrderBy=".$_REQUEST['sOrderBy']."\">edit</a>]&nbsp;[<a onclick=\"if(!confirm('".$sAreYouSure."'))return false;\" \"href=\"".$_SERVER['PHP_SELF']."?action=delete&userId=".$oRow->userid."&sSearch=".$sSearch."&iLimit=".$_REQUEST['iLimit']."&sOrderBy=".$_REQUEST['sOrderBy']."&sSubmit=true\">delete</a>]</td>\n";
+            echo "    <td align=\"center\">[<a href=\"../preferences.php?userId=".$oRow->userid."&sSearch=".$sSearch."&iLimit=".$aClean['iLimit']."&sOrderBy=".$aClean['sOrderBy']."\">edit</a>]&nbsp;[<a onclick=\"if(!confirm('".$sAreYouSure."'))return false;\" \"href=\"".$_SERVER['PHP_SELF']."?action=delete&userId=".$oRow->userid."&sSearch=".$sSearch."&iLimit=".$aClean['iLimit']."&sOrderBy=".$aClean['sOrderBy']."&sSubmit=true\">delete</a>]</td>\n";
             echo "</tr>\n\n";
         }
     }

@@ -11,6 +11,15 @@ require(BASE."include/incl.php");
 require(BASE."include/application.php");
 require(BASE."include/mail.php");
 
+$aClean = array(); //array of filtered user input
+
+$aClean['sub'] = makeSafe($_REQUEST['sub']);
+$aClean['buglinkId'] = makeSafe($_REQUEST['buglinkId']);
+$aClean['ItemsPerPage'] = makeSafe($_REQUEST['ItemsPerPage']);
+$aClean['QueuedOnly'] = makeSafe($_REQUEST['QueuedOnly']);
+$aClean['page'] = makeSafe($_REQUEST['page']);
+
+
 // deny access if not logged in
 if(!$_SESSION['current']->hasPriv("admin"))
 {
@@ -18,19 +27,19 @@ if(!$_SESSION['current']->hasPriv("admin"))
     exit;
 }
 
-if ($_REQUEST['sub'])
+if ($aClean['sub'])
 {
-    if(($_REQUEST['sub'] == 'delete' ) && ($_REQUEST['buglinkId']))
+    if(($aClean['sub'] == 'delete' ) && ($aClean['buglinkId']))
     {
-        $oBuglink = new bug($_REQUEST['buglinkId']);
+        $oBuglink = new bug($aClean['buglinkId']);
         $oBuglink->delete();
     }
-    if(($_REQUEST['sub'] == 'unqueue' ) && ($_REQUEST['buglinkId']))
+    if(($aClean['sub'] == 'unqueue' ) && ($aClean['buglinkId']))
     {
-        $oBuglink = new bug($_REQUEST['buglinkId']);
+        $oBuglink = new bug($aClean['buglinkId']);
         $oBuglink->unqueue();
     }
-    redirect($_SERVER['PHP_SELF']."?ItemsPerPage=".$_REQUEST['ItemsPerPage']."&QueuedOnly=".$_REQUEST['QueuedOnly']."&page=".$_REQUEST['page']);
+    redirect($_SERVER['PHP_SELF']."?ItemsPerPage=".$aClean['ItemsPerPage']."&QueuedOnly=".$aClean['QueuedOnly']."&page=".$aClean['page']);
     exit;
 }
 
@@ -40,13 +49,13 @@ if ($_REQUEST['sub'])
     $pageRange = 10;
     $ItemsPerPage = 10;
     $currentPage = 1;
-    $QueuedOnly = !isset($_REQUEST['QueuedOnly'])? NULL: $_REQUEST['QueuedOnly'];
+    $QueuedOnly = empty($aClean['QueuedOnly'])? NULL: $aClean['QueuedOnly'];
     $BugLinks = ($QueuedOnly == 'on')?getNumberOfQueuedBugLinks():getNumberOfBugLinks();
-    if($_REQUEST['ItemsPerPage'])
-        $ItemsPerPage = $_REQUEST['ItemsPerPage'];
+    if($aClean['ItemsPerPage'])
+        $ItemsPerPage = $aClean['ItemsPerPage'];
 
-    if($_REQUEST['page'])
-        $currentPage = $_REQUEST['page'];
+    if($aClean['page'])
+        $currentPage = $aClean['page'];
 
     $ItemsPerPage = min($ItemsPerPage,100);
     $totalPages = max(ceil($BugLinks/$ItemsPerPage),1);

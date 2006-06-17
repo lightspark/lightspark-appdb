@@ -11,21 +11,29 @@ require(BASE."include/maintainer.php");
 require(BASE."include/application.php");
 require(BASE."include/mail.php");
 
+$aClean = array(); //array of filtered user input
+
+$aClean['sub'] = makeSafe( $_REQUEST['sub'] );
+$aClean['queueId'] = makeSafe( $_REQUEST['queueId'] );
+$aClean['add'] = makeSafe( $_REQUEST['add'] );
+$aClean['reject'] = makeSafe( $_REQUEST'reject'] );
+$aClean['replyText'] = makeSafe( $_REQUEST['replyText'] );
+
 if(!$_SESSION['current']->hasPriv("admin"))
 {
     errorpage("Insufficient privileges.");
     exit;
 }
 
-if ($_REQUEST['sub'])
+if ($aClean['sub'])
 {
-    if ($_REQUEST['queueId'])
+    if ($aClean['queueId'])
     {
         //get data
         $query = "SELECT queueId, appId, versionId,".
                      "userId, maintainReason, superMaintainer,".
                      "UNIX_TIMESTAMP(submitTime) as submitTime ".
-                     "FROM appMaintainerQueue WHERE queueId = ".$_REQUEST['queueId'].";";
+                     "FROM appMaintainerQueue WHERE queueId = ".$aClean['queueId'].";";
         $result = query_appdb($query);
         $ob = mysql_fetch_object($result);
         $oUser = new User($ob->userId);
@@ -38,7 +46,7 @@ if ($_REQUEST['sub'])
     }
 
     //process according to which request was submitted and optionally the sub flag
-    if (!$_REQUEST['add'] && !$_REQUEST['reject'] && $_REQUEST['queueId'])
+    if (!$aClean['add'] && !$aClean['reject'] && $aClean['queueId'])
     {
         apidb_header("Admin Maintainer Queue");
         echo '<form name="qform" action="adminMaintainerQueue.php" method="post" enctype="multipart/form-data">',"\n";
@@ -163,7 +171,7 @@ if ($_REQUEST['sub'])
 
         echo '</table>',"\n";
         echo '<input type=hidden name="sub" value="inside_form" />',"\n"; 
-        echo '<input type=hidden name="queueId" value="'.$_REQUEST['queueId'].'" />',"\n";  
+        echo '<input type=hidden name="queueId" value="'.$aClean['queueId'].'" />',"\n";  
 
         echo html_frame_end("&nbsp;");
         echo html_back_link(1,'adminMaintainerQueue.php');
@@ -172,7 +180,7 @@ if ($_REQUEST['sub'])
         exit;
 
     }
-    else if ($_REQUEST['add'] && $_REQUEST['queueId'])
+    else if ($aClean['add'] && $aClean['queueId'])
     {
         /* create a new user object for the maintainer */
         $maintainerUser = new User($ob->userId);
@@ -180,11 +188,11 @@ if ($_REQUEST['sub'])
         /* add the user as a maintainer and return the statusMessage */
         $statusMessage = $maintainerUser->addAsMaintainer($ob->appId, $ob->versionId,
                                                           $ob->superMaintainer,
-                                                          $_REQUEST['queueId']);
+                                                          $aClean['queueId']);
         //done
         addmsg("<p><b>$statusMessage</b></p>", 'green');
     }
-    else if (($_REQUEST['reject'] || ($_REQUEST['sub'] == 'reject')) && $_REQUEST['queueId'])
+    else if (($aClean['reject'] || ($aClean['sub'] == 'reject')) && $aClean['queueId'])
     {
        $sEmail = $oUser->sEmail;
        if ($sEmail)
@@ -193,7 +201,7 @@ if ($_REQUEST['sub'])
            $oVersion = new Version($ob->versionId);
            $sSubject =  "Application Maintainer Request Report";
            $sMsg  = "Your application to be the maintainer of ".$oApp->sName." ".$oVersion->sName." was rejected. ";
-           $sMsg .= $_REQUEST['replyText'];
+           $sMsg .= $aClean['replyText'];
            $sMsg .= "";
            $sMsg .= "-The AppDB admins\n";
                 
@@ -201,7 +209,7 @@ if ($_REQUEST['sub'])
        }
 
        //delete main item
-       $query = "DELETE from appMaintainerQueue where queueId = ".$_REQUEST['queueId'].";";
+       $query = "DELETE from appMaintainerQueue where queueId = ".$aClean['queueId'].";";
        $result = query_appdb($query,"unable to delete selected maintainer application");
        echo html_frame_start("Delete maintainer application",400,"",0);
        if($result)

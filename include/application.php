@@ -6,6 +6,7 @@
 require_once(BASE."include/version.php");
 require_once(BASE."include/vendor.php");
 require_once(BASE."include/url.php");
+require_once(BASE."include/util.php");
 
 /**
  * Application class for handling applications.
@@ -308,6 +309,10 @@ class Application {
 
     function mailSubmitter($sAction="add")
     {
+        $aClean = array(); //array of filtered user input
+
+        $aClean['replyText'] = makeSafe($_REQUEST['replyText']);	
+
         if($this->iSubmitterId)
         {
             $oSubmitter = new User($this->iSubmitterId);
@@ -332,7 +337,7 @@ class Application {
                 $sMsg .= "Reason given:\n";
             break;
 
-            $sMsg .= $_REQUEST['replyText']."\n";
+            $sMsg .= $aClean['replyText']."\n";
             $sMsg .= "We appreciate your help in making the Application Database better for all users.";
             }
             mail_appdb($oSubmitter->sEmail, $sSubject ,$sMsg);
@@ -342,6 +347,10 @@ class Application {
  
     function SendNotificationMail($sAction="add",$sMsg=null)
     {
+        $aClean = array(); //array of filtered user input
+
+        $aClean['replyText'] = makeSafe($_REQUEST['replyText']);	
+
         switch($sAction)
         {
             case "add":
@@ -355,10 +364,10 @@ class Application {
                         $sMsg .= "This application has been submitted by ".$oSubmitter->sRealname.".";
                         $sMsg .= "\n";
                     }
-                    if($_REQUEST['replyText'])
+                    if($aClean['replyText'])
                     {
                         $sMsg .= "Appdb admin reply text:\n";
-                        $sMsg .= $_REQUEST['replyText']."\n"; // append the reply text, if there is any 
+                        $sMsg .= $aClean['replyText']."\n"; // append the reply text, if there is any 
                     }
 
                     addmsg("The application was successfully added into the database.", "green");
@@ -379,10 +388,10 @@ class Application {
                 $sSubject = $this->sName." has been deleted by ".$_SESSION['current']->sRealname;
 
                 // if replyText is set we should report the reason the application was deleted 
-                if($_REQUEST['replyText'])
+                if($aClean['replyText'])
                 {
                     $sMsg .= "Reason given:\n";
-                    $sMsg .= $_REQUEST['replyText']."\n"; // append the reply text, if there is any 
+                    $sMsg .= $aClean['replyText']."\n"; // append the reply text, if there is any 
                 }
 
                 addmsg("Application deleted.", "green");
@@ -392,10 +401,10 @@ class Application {
                 $sMsg .= APPDB_ROOT."appsubmit.php?apptype=application&sub=view&appId=".$this->iAppId."\n";
 
                 // if replyText is set we should report the reason the application was rejected 
-                if($_REQUEST['replyText'])
+                if($aClean['replyText'])
                 {
                     $sMsg .= "Reason given:\n";
-                    $sMsg .= $_REQUEST['replyText']."\n"; // append the reply text, if there is any 
+                    $sMsg .= $aClean['replyText']."\n"; // append the reply text, if there is any 
                 }
 
                 addmsg("Application rejected.", "green");
@@ -457,22 +466,31 @@ class Application {
 
     function CheckOutputEditorInput()
     {
+
+        $aClean = array(); //array of filtered user input
+
+        $aClean['appCatId'] = makeSafe($_REQUEST['appCatId']);
+        $aClean['appName'] = makeSafe($_REQUEST['appName']);
+        $aClean['appVendorName'] = makeSafe($_REQUEST['appVendorName']);
+        $aClean['appVendorId'] = makeSafe($_REQUEST['appVendorId']);
+        $aClean['appDescription'] = makeSafe($_REQUEST['appDescription']);
+
         $errors = "";
 
-        if (empty($_REQUEST['appCatId']))
+        if (empty($aClean['appCatId']))
             $errors .= "<li>Please enter a category for your application.</li>\n";
 
-        if (strlen($_REQUEST['appName']) > 200 )
+        if (strlen($aClean['appName']) > 200 )
             $errors .= "<li>Your application name is too long.</li>\n";
 
-        if (empty($_REQUEST['appName']))
+        if (empty($aClean['appName']))
             $errors .= "<li>Please enter an application name.</li>\n";
 
         // No vendor entered, and nothing in the list is selected
-        if (empty($_REQUEST['appVendorName']) && !$_REQUEST['appVendorId'])
+        if (empty($aClean['appVendorName']) && !$aClean['appVendorId'])
             $errors .= "<li>Please enter a vendor.</li>\n";
 
-        if (empty($_REQUEST['appDescription']))
+        if (empty($aClean['appDescription']))
             $errors .= "<li>Please enter a description of your application.</li>\n";
 
         return $errors;
@@ -481,30 +499,44 @@ class Application {
     /* retrieves values from $_REQUEST that were output by OutputEditor() */
     function GetOutputEditorValues()
     {
+        $aClean = array(); //array of filtered user input
+
+        $aClean['appId'] = makeSafe($_REQUEST['appId']);
+        $aClean['appVendorId'] = makeSafe($_REQUEST['appVendorId']);
+        $aClean['appName'] = makeSafe($_REQUEST['appName']);
+        $aClean['appDescription'] = makeSafe($_REQUEST['appDescription']);
+        $aClean['appCatId'] = makeSafe($_REQUEST['appCatId']);
+        $aClean['appWebpage'] = makeSafe($_REQUEST['appWebpage']);
+        $aClean['appKeywords'] = makeSafe($_REQUEST['appKeywords']);
+
         if(get_magic_quotes_gpc())
         {
-            $this->iAppId = stripslashes($_REQUEST['appId']);
-            $this->sName = stripslashes($_REQUEST['appName']);
-            $this->sDescription = stripslashes($_REQUEST['appDescription']);
-            $this->iCatId = stripslashes($_REQUEST['appCatId']);
-            $this->iVendorId = stripslashes($_REQUEST['appVendorId']);
-            $this->sWebpage = stripslashes($_REQUEST['appWebpage']);
-            $this->sKeywords = stripslashes($_REQUEST['appKeywords']);
+            $this->iAppId = stripslashes($aClean['appId']);
+            $this->sName = stripslashes($aClean['appName']);
+            $this->sDescription = stripslashes($aClean['appDescription']);
+            $this->iCatId = stripslashes($aClean['appCatId']);
+            $this->iVendorId = stripslashes($aClean['appVendorId']);
+            $this->sWebpage = stripslashes($aClean['appWebpage']);
+            $this->sKeywords = stripslashes($aClean['appKeywords']);
         } else
         {
-            $this->iAppId = $_REQUEST['appId'];
-            $this->sName = $_REQUEST['appName'];
-            $this->sDescription = $_REQUEST['appDescription'];
-            $this->iCatId = $_REQUEST['appCatId'];
-            $this->iVendorId = $_REQUEST['appVendorId'];
-            $this->sWebpage = $_REQUEST['appWebpage'];
-            $this->sKeywords = $_REQUEST['appKeywords'];
+            $this->iAppId = $aClean['appId'];
+            $this->sName = $aClean['appName'];
+            $this->sDescription = $aClean['appDescription'];
+            $this->iCatId = $aClean['appCatId'];
+            $this->iVendorId = $aClean['appVendorId'];
+            $this->sWebpage = $aClean['appWebpage'];
+            $this->sKeywords = $aClean['appKeywords'];
         }
     }
 
     /* display this application */
     function display()
     {
+        $aClean = array(); //array of filtered user input
+
+        $aClean['appId'] = makeSafe($_REQUEST['appId']);
+
         /* is this user supposed to view this version? */
         if(!$_SESSION['current']->canViewApplication($this))
         {
@@ -546,7 +578,7 @@ class Application {
         echo "        <tr class=\"color1\"><td><b>URL</b></td><td>".$appLinkURL."</td></tr>\n";
 
         // optional links
-        $result = query_appdb("SELECT * FROM appData WHERE appId = ".$_REQUEST['appId']." AND versionID = 0 AND type = 'url'");
+        $result = query_appdb("SELECT * FROM appData WHERE appId = ".$aClean['appId']." AND versionID = 0 AND type = 'url'");
         if($result && mysql_num_rows($result) > 0)
         {
             echo "        <tr class=\"color1\"><td> <b>Links</b></td><td>\n";
@@ -603,7 +635,7 @@ class Application {
             
             if($_SESSION['current']->isSuperMaintainer($this->iAppId) || $_SESSION['current']->hasPriv("admin"))
             {
-                echo '        <form method="post" name="edit" action="admin/editAppFamily.php"><input type="hidden" name="appId" value="'.$_REQUEST['appId'].'"><input type="submit" value="Edit Application" class="button"></form>';
+                echo '        <form method="post" name="edit" action="admin/editAppFamily.php"><input type="hidden" name="appId" value="'.$aClean['appId'].'"><input type="submit" value="Edit Application" class="button"></form>';
             }
             if($_SESSION['current']->isLoggedIn())
             {

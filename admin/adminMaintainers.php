@@ -9,6 +9,11 @@
 include("path.php");
 require(BASE."include/incl.php");
 
+$aClean = array(); //array of filtered user input
+
+$aClean['sub'] = makeSafe($_REQUEST['sub']);
+$aClean['maintainerId'] = makeSafe($_REQUEST['maintainerId']);
+
 // deny access if not logged in
 if(!$_SESSION['current']->hasPriv("admin"))
 {
@@ -19,13 +24,13 @@ if(!$_SESSION['current']->hasPriv("admin"))
 apidb_header("Admin Maintainers");
 echo '<form name="qform" action="adminMaintainers.php" method="post" enctype="multipart/form-data">',"\n";
 
-if ($_REQUEST['sub'])
+if ($aClean['sub'])
 {
-    if($_REQUEST['sub'] == 'delete')
+    if($aClean['sub'] == 'delete')
     {
-        $sQuery = "DELETE FROM appMaintainers WHERE maintainerId = ".$_REQUEST['maintainerId'].";";
+        $sQuery = "DELETE FROM appMaintainers WHERE maintainerId = ".$aClean['maintainerId'].";";
         $hResult = query_appdb($sQuery);
-        echo html_frame_start("Delete maintainer: ".$_REQUEST['maintainerId'],400,"",0);
+        echo html_frame_start("Delete maintainer: ".$aClean['maintainerId'],400,"",0);
         if($hResult)
         {
             // success

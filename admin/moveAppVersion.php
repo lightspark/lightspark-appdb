@@ -5,7 +5,13 @@ require(BASE."include/tableve.php");
 require(BASE."include/application.php");
 require(BASE."include/mail.php");
 
-if(!is_numeric($_REQUEST['appId']) OR !is_numeric($_REQUEST['versionId']))
+$aClean = array(); //array of filtered user input
+
+$aClean['appId'] = makeSafe($_REQUEST['appId']);
+$aClean['versionId'] = makeSafe($_REQUEST['versionId']);
+$aClean['action'] = makeSafe($_REQUEST['action']);
+
+if(!is_numeric($aClean['appId']) OR !is_numeric($aClean['versionId']))
 {
     errorpage("Wrong ID");
     exit;
@@ -18,20 +24,20 @@ if(!$_SESSION['current']->hasPriv("admin"))
     exit;
 }
 
-if(isset($_REQUEST['action']))
+if(!empty($aClean['action']))
 {
     /* move this version to the given application */
-    $oVersion = new Version($_REQUEST['versionId']);
-    $oVersion->update(null, null, null, null, $_REQUEST['appId']);
+    $oVersion = new Version($aClean['versionId']);
+    $oVersion->update(null, null, null, null, $aClean['appId']);
 
     /* redirect to the application we just moved this version to */
-    redirect(apidb_fullurl("appview.php?appId=".$_REQUEST['appId']));
+    redirect(apidb_fullurl("appview.php?appId=".$aClean['appId']));
 } else /* or display the webform for making changes */
 {
 ?>
 <link rel="stylesheet" href="./application.css" type="text/css">
 <?php
-    $oVersion = new Version($_REQUEST['versionId']);
+    $oVersion = new Version($aClean['versionId']);
     $oApp = new Application($oVersion->iAppId);
 
     apidb_header("Choose application to move this version under");

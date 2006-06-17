@@ -1,4 +1,16 @@
 <?php
+include("path.php");
+require(BASE."include/incl.php");
+require(BASE."include/application.php");
+require(BASE."include/mail.php");
+
+$aClean = array(); //array of filtered user input
+
+$aClean['versionId'] = makeSafe($_REQUEST['versionId']);
+$aClean['thread'] = makeSafe($_REQUEST['thread']);
+$aClean['body'] = makeSafe($_REQUEST['body']);
+$aClean['subject'] = makeSafe($_REQUEST['subject']);
+
 /********************************/
 /* code to submit a new comment */
 /********************************/
@@ -6,11 +18,6 @@
 /*
  * application environment
  */
-include("path.php");
-require(BASE."include/incl.php");
-require(BASE."include/application.php");
-require(BASE."include/mail.php");
-
 // you must be logged in to submit comments
 if(!$_SESSION['current']->isLoggedIn())
 {
@@ -19,24 +26,24 @@ if(!$_SESSION['current']->isLoggedIn())
   exit;
 }
 
-if(!is_numeric($_REQUEST['versionId']))
+if( !is_numeric($aClean['versionId']) )
 {
   errorpage('Internal Database Access Error');
   exit;
 }
 
-if(!is_numeric($_REQUEST['thread']))
+if(!is_numeric($aClean['thread']))
 {
-  $_REQUEST['thread'] = 0;
+  $aClean['thread'] = 0;
 }
 
 ############################
 # ADDS COMMENT TO DATABASE #
 ############################
-if(isset($_REQUEST['body']))
+if(!empty($aClean['body']))
 {
     $oComment = new Comment();
-    $oComment->create($_REQUEST['subject'], $_REQUEST['body'], $_REQUEST['thread'], $_REQUEST['versionId']);
+    $oComment->create($aClean['subject'], $aClean['body'], $aClean['thread'], $aClean['versionId']);
     redirect(apidb_fullurl("appview.php?versionId=".$oComment->iVersionId));
 }
 
@@ -49,9 +56,9 @@ else
 
   $mesTitle = "<b>Post New Comment</b>";
 
-  if($_REQUEST['thread'] > 0)
+  if($aClean['thread'] > 0)
   {
-    $result = query_appdb("SELECT * FROM appComments WHERE commentId = ".$_REQUEST['thread']);
+    $result = query_appdb("SELECT * FROM appComments WHERE commentId = ".$aClean['thread']);
     $ob = mysql_fetch_object($result);
     if($ob)
     {
@@ -71,8 +78,8 @@ else
   echo "<tr class=\"color0\"><td align=right><b>From:</b>&nbsp;</td>\n";
   echo "	<td>&nbsp;".$_SESSION['current']->sRealname."</td></tr>\n";
   echo "<tr class=\"color0\"><td align=right><b>Subject:</b>&nbsp;</td>\n";
-  echo "	<td>&nbsp;<input type=\"text\" size=\"35\" name=\"subject\" value=\"".$_REQUEST['subject']."\" /> </td></tr>\n";
-  echo "<tr class=\"color1\"><td colspan=2><textarea name=\"body\" cols=\"70\" rows=\"15\" wrap=\"virtual\">".$_REQUEST['body']."</textarea></td></tr>\n";
+  echo "	<td>&nbsp;<input type=\"text\" size=\"35\" name=\"subject\" value=\"".$aClean['subject']."\" /> </td></tr>\n";
+  echo "<tr class=\"color1\"><td colspan=2><textarea name=\"body\" cols=\"70\" rows=\"15\" wrap=\"virtual\">".$aClean['body']."</textarea></td></tr>\n";
   echo "<tr class=\"color1\"><td colspan=2 align=center>\n";
   echo "  <input type=\"SUBMIT\" value=\"Post Comment\" class=\"button\" />\n";
   echo "  <input type=\"RESET\" value=\"Reset\" class=\"button\" />\n";
@@ -81,10 +88,10 @@ else
 
   echo html_frame_end();
 
-  echo "<input type=\"HIDDEN\" name=\"thread\" value=\"".$_REQUEST['thread']."\" />\n";
-  echo "<input type=\"HIDDEN\" name=\"appId\" value=\"".$_REQUEST['appId']."\" />\n";
-  echo "<input type=\"HIDDEN\" name=\"versionId\" value=\"".$_REQUEST['versionId']."\" />\n";
-  if (isset($_REQUEST['thread']))
+  echo "<input type=\"HIDDEN\" name=\"thread\" value=\"".$aClean['thread']."\" />\n";
+  echo "<input type=\"HIDDEN\" name=\"appId\" value=\"".$aClean['appId']."\" />\n";
+  echo "<input type=\"HIDDEN\" name=\"versionId\" value=\"".$aClean['versionId']."\" />\n";
+  if (!empty($aClean['thread']))
   {
     echo "<input type=\"HIDDEN\" name=\"originator\" value=\"$originator\" />\n";
   }
