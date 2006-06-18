@@ -16,7 +16,7 @@ $aClean = array(); //array of filtered user input
 $aClean['sub'] = makeSafe( $_REQUEST['sub'] );
 $aClean['queueId'] = makeSafe( $_REQUEST['queueId'] );
 $aClean['add'] = makeSafe( $_REQUEST['add'] );
-$aClean['reject'] = makeSafe( $_REQUEST'reject'] );
+$aClean['reject'] = makeSafe( $_REQUEST['reject'] );
 $aClean['replyText'] = makeSafe( $_REQUEST['replyText'] );
 
 if(!$_SESSION['current']->hasPriv("admin"))
