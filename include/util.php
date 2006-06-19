@@ -2,7 +2,8 @@
 
 function makeSafe($var)
 {
-    $var = trim(addslashes($var));
+/* Disable addslashes() until we can use more finely grained filtering on user input */
+/*    $var = trim(addslashes($var)); */
     return $var;
 }
 
