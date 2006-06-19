@@ -21,6 +21,15 @@ $aClean['ext_realname'] = makeSafe($REQUEST['ext_realname']);
 $aClean['CVSrelease'] = makeSafe($REQUEST['CVSrelease']);
 $aClean['ext_hasadmin'] = makeSafe($POST['ext_hasadmin']); 
 
+/* filter all of the preferences */
+while(list($key, $value) = each($_REQUEST))
+{
+    if(ereg("^pref_(.+)$", $key, $arr))
+        $aClean[$key] = makeSafe($value);
+}
+
+
+
 
 if(!$_SESSION['current']->isLoggedIn())
 {
@@ -47,11 +56,11 @@ function build_prefs_list()
     global $oUser;
     $result = query_appdb("SELECT * FROM prefs_list ORDER BY id");
     while($result && $r = mysql_fetch_object($result))
-        {
+    {
             //skip admin options
             //TODO: add a field to prefs_list to flag the user level for the pref
             if(!$_SESSION['current']->hasPriv("admin"))
-                {
+            {
                     if($r->name == "query:mode")
                         continue;
                     if($r->name == "sidebar")
@@ -64,12 +73,12 @@ function build_prefs_list()
                         continue;
                     if($r->name == "debug")
                         continue;
-                }
+            }
                 
             $input = html_select("pref_$r->name", explode('|', $r->value_list), 
                                  $oUser->getpref($r->name, $r->def_value));
             echo html_tr(array("&nbsp; $r->description", $input));
-        }
+    }
 }
 
 function show_user_fields()
@@ -94,11 +103,13 @@ function show_user_fields()
 if($_POST)
 {   
     while(list($key, $value) = each($aClean))
-        {
-            if(!ereg("^pref_(.+)$", $key, $arr))
-                continue;
-            $oUser->setPref($arr[1], $value);
-        }
+    {
+        /* if a parameter lacks 'pref_' at its head it isn't a */
+        /* preference so skip over processing it */
+        if(!ereg("^pref_(.+)$", $key, $arr))
+            continue;
+        $oUser->setPref($arr[1], $value);
+    }
     
     if ($aClean['ext_password'] == $aClean['ext_password2'])
     {
