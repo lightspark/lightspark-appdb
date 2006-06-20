@@ -180,11 +180,11 @@ if ($aClean['sub'])
     if($hResult)
     {
         $oRow = mysql_fetch_object($hResult);
-        $oTest = new testdata($oRow->testingId);
+        $oTest = new testData($oRow->testingId);
     }
     else
     {
-        $oTest = new testResult();
+        $oTest = new testData();
     }
 
     if($aClean['sub'] == 'add')
