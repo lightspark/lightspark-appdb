@@ -607,7 +607,7 @@ class Version {
     function GetOutputEditorValues()
     {
         $aClean = array(); //array of filtered user input
-        $aClean['appid'] = makeSafe($_REQUEST['appId']);
+        $aClean['appId'] = makeSafe($_REQUEST['appId']);
         $aClean['versionId'] = makeSafe($_REQUEST['versionId']);
         $aClean['versionName'] = makeSafe($_REQUEST['versionName']);
         $aClean['versionDescription'] = makeSafe($_REQUEST['versionDescription']);
@@ -628,7 +628,6 @@ class Version {
             $this->iVersionId = $aClean['versionId'];
             $this->sName = $aClean['versionName'];
             $this->sDescription = $aClean['versionDescription'];
-
             $this->sTestedRating = $aClean['maintainer_rating'];
             $this->sTestedRelease = $aClean['maintainer_release'];
         }
