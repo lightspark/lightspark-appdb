@@ -54,8 +54,8 @@ if($_SESSION['current']->hasPriv("admin") &&
 function build_prefs_list()
 {
     global $oUser;
-    $result = query_appdb("SELECT * FROM prefs_list ORDER BY id");
-    while($result && $r = mysql_fetch_object($result))
+    $hResult = query_appdb("SELECT * FROM prefs_list ORDER BY id");
+    while($hResult && $r = mysql_fetch_object($hResult))
     {
             //skip admin options
             //TODO: add a field to prefs_list to flag the user level for the pref

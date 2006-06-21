@@ -142,8 +142,8 @@ function getNumberOfVendors()
     $hResult = query_appdb("SELECT count(*) as num_vendors FROM vendor");
     if($hResult)
     {
-      $row = mysql_fetch_object($hResult);
-      return $row->num_vendors;
+      $oRow = mysql_fetch_object($hResult);
+      return $oRow->num_vendors;
     }
     return 0;
 }

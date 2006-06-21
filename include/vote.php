@@ -17,8 +17,8 @@ function vote_count($appId, $userId = null)
         else
             return 0;
 }
-    $result = query_appdb("SELECT * FROM appVotes WHERE appId = $appId AND userId = $userId");
-    return mysql_num_rows($result);
+    $hResult = query_appdb("SELECT * FROM appVotes WHERE appId = $appId AND userId = $userId");
+    return mysql_num_rows($hResult);
 }
 
 
@@ -34,8 +34,8 @@ function vote_count_user_total($userId = null)
         else
             return 0;
     }
-    $result = query_appdb("SELECT * FROM appVotes WHERE userId = $userId");
-    return mysql_num_rows($result);
+    $hResult = query_appdb("SELECT * FROM appVotes WHERE userId = $userId");
+    return mysql_num_rows($hResult);
 }
 
 
@@ -44,8 +44,8 @@ function vote_count_user_total($userId = null)
  */
 function vote_count_app_total($appId)
 {
-    $result = query_appdb("SELECT * FROM appVotes WHERE appId = $appId");
-    return mysql_num_rows($result);
+    $hResult = query_appdb("SELECT * FROM appVotes WHERE appId = $appId");
+    return mysql_num_rows($hResult);
 }
 
 
@@ -98,13 +98,13 @@ function vote_get_user_votes($userId = null)
         if(!$userId)
             return array();
     }
-    $result = query_appdb("SELECT * FROM appVotes WHERE userId = $userId");
-    if(!$result)
+    $hResult = query_appdb("SELECT * FROM appVotes WHERE userId = $userId");
+    if(!$hResult)
         return array();
 
     $obs = array();
-    while($ob = mysql_fetch_object($result))
-        $obs[$ob->slot] = $ob;
+    while($oRow = mysql_fetch_object($hResult))
+        $obs[$oRow->slot] = $oRow;
     return $obs;
 }
 

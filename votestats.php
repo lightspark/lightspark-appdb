@@ -67,11 +67,11 @@ if($catId != 0)
     {
         $catQuery = "SELECT appCategory.catName, appCategory.catParent ".
             "FROM appCategory WHERE appCategory.catId = '$currentCatId';";
-        $result = query_appdb($catQuery);
+        $hResult = query_appdb($catQuery);
 
-        if($result)
+        if($hResult)
         {
-            $row = mysql_fetch_object($result);
+            $row = mysql_fetch_object($hResult);
             $catParent = $row->catParent;
 
             array_push($cat_array, "$currentCatId");
@@ -168,7 +168,7 @@ if(strcasecmp($categoryId, "any") == 0)
                   ORDER BY count DESC LIMIT $topNumber";
 }
 
-if($result = query_appdb($sVoteQuery))
+if($hResult = query_appdb($sVoteQuery))
 {
     echo html_frame_start("", "90%", '', 0);
     echo html_table_begin("width='100%' align=center");
@@ -176,11 +176,11 @@ if($result = query_appdb($sVoteQuery))
     echo "<td><font color=white>Votes</font></td></tr>\n";
     
     $c = 1;
-    while($row = mysql_fetch_object($result))
+    while($row = mysql_fetch_object($hResult))
     {
-	$bgcolor = ($c % 2) ? "color0" : "color1";
+        $bgcolor = ($c % 2) ? "color0" : "color1";
         $link = "<a href='appview.php?appId=$row->appId'>$row->appName</a>";
-	echo "<tr class=$bgcolor><td width='90%'>$c. $link </td> <td> $row->count </td></tr>\n";
+        echo "<tr class=$bgcolor><td width='90%'>$c. $link </td> <td> $row->count </td></tr>\n";
         $c++;
     }
 

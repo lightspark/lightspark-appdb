@@ -59,12 +59,12 @@ if(!empty($aClean['submit']))
     echo '<table border=0 cellpadding=6 cellspacing=0 width="100%">',"\n";
             
     $i = 0;
-    $result = query_appdb("SELECT * FROM appData WHERE versionId = ".$oVersion->iVersionId." AND type = 'url'");
-    if($result && mysql_num_rows($result) > 0)
+    $hResult = query_appdb("SELECT * FROM appData WHERE versionId = ".$oVersion->iVersionId." AND type = 'url'");
+    if($hResult && mysql_num_rows($hResult) > 0)
     {
         echo '<tr><td class=color1><b>Delete</b></td><td class=color1>',"\n";
         echo '<b>Description</b></td><td class=color1><b>URL</b></td></tr>',"\n";
-        while($ob = mysql_fetch_object($result))
+        while($oRow = mysql_fetch_object($hResult))
         {
             $temp0 = "adelete[".$i."]";
             $temp1 = "adescription[".$i."]";
@@ -73,11 +73,11 @@ if(!empty($aClean['submit']))
             $temp4 = "aOldDesc[".$i."]";
             $temp5 = "aOldURL[".$i."]";
             echo '<tr><td class=color3><input type="checkbox" name="'.$temp0.'"></td>',"\n";
-            echo '<td class=color3><input size="45" type="text" name="'.$temp1.'" value ="'.stripslashes($ob->description).'"</td>',"\n";
-            echo '<td class=color3><input size="45" type="text" name="'.$temp2.'" value="'.$ob->url.'"></td></tr>',"\n";
-            echo '<input type="hidden" name="'.$temp3.'" value="'.$ob->id.'" />';
-            echo '<input type="hidden" name="'.$temp4.'" value="'.stripslashes($ob->description).'" />';
-            echo '<input type="hidden" name="'.$temp5.'" value="'.$ob->url.'" />',"\n";
+            echo '<td class=color3><input size="45" type="text" name="'.$temp1.'" value ="'.stripslashes($oRow->description).'"</td>',"\n";
+            echo '<td class=color3><input size="45" type="text" name="'.$temp2.'" value="'.$oRow->url.'"></td></tr>',"\n";
+            echo '<input type="hidden" name="'.$temp3.'" value="'.$oRow->id.'" />';
+            echo '<input type="hidden" name="'.$temp4.'" value="'.stripslashes($oRow->description).'" />';
+            echo '<input type="hidden" name="'.$temp5.'" value="'.$oRow->url.'" />',"\n";
             $i++;
         }
     } else

@@ -226,14 +226,14 @@ function addmsg($text, $color = "black")
  */
 function dumpmsgbuffer()
 {
-    $result = query_appdb("SELECT * FROM sessionMessages WHERE sessionId = '".session_id()."'");
-    if(!$result)
+    $hResult = query_appdb("SELECT * FROM sessionMessages WHERE sessionId = '".session_id()."'");
+    if(!$hResult)
         return;
 
-    while($r = mysql_fetch_object($result))
+    while($oRow = mysql_fetch_object($hResult))
     {
         echo html_frame_start("","300","",5);
-        echo "<div align=center> $r->message </div>";
+        echo "<div align=center> $oRow->message </div>";
         echo html_frame_end("&nbsp;");
         echo "<br>\n";
     }

@@ -58,14 +58,14 @@ else
 
   if($aClean['thread'] > 0)
   {
-    $result = query_appdb("SELECT * FROM appComments WHERE commentId = ".$aClean['thread']);
-    $ob = mysql_fetch_object($result);
-    if($ob)
+    $hResult = query_appdb("SELECT * FROM appComments WHERE commentId = ".$aClean['thread']);
+    $oRow = mysql_fetch_object($hResult);
+    if($oRow)
     {
-      $mesTitle = "<b>Replying To ...</b> $ob->subject\n";
-      $originator = $ob->userId;
-      echo html_frame_start($ob->subject,500);
-      echo htmlify_urls($ob->body), "<br /><br />\n";
+      $mesTitle = "<b>Replying To ...</b> $oRow->subject\n";
+      $originator = $oRow->userId;
+      echo html_frame_start($oRow->subject,500);
+      echo htmlify_urls($oRow->body), "<br /><br />\n";
       echo html_frame_end();
     }
   }

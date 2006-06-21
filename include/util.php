@@ -71,9 +71,9 @@ function get_remote()
     global $REMOTE_HOST, $REMOTE_ADDR;
 
     if($REMOTE_HOST)
-	$ip = $REMOTE_HOST;
+        $ip = $REMOTE_HOST;
     else
-	$ip = $REMOTE_ADDR;
+        $ip = $REMOTE_ADDR;
 
     return $ip;
 }
@@ -101,12 +101,12 @@ function get_xml_tag ($file, $mode = null)
     if ($mode and file_exists($file))
     {
         $fp = @fopen($file, "r");
-	$data = fread($fp, filesize($file));
-	@fclose($fp);
-	if (eregi("<" . $mode . ">(.*)</" . $mode . ">", $data, $out))
-	{
-	    return $out[1];
-	}
+        $data = fread($fp, filesize($file));
+        @fclose($fp);
+        if (eregi("<" . $mode . ">(.*)</" . $mode . ">", $data, $out))
+        {
+            return $out[1];
+        }
     }
     else
     {
@@ -119,14 +119,14 @@ function make_bugzilla_version_list($varname, $cvalue)
 {
     $table = BUGZILLA_DB.".versions";
     $where = "WHERE product_id=".BUGZILLA_PRODUCT_ID;
-    $query = "SELECT value FROM $table $where ORDER BY value";
+    $sQuery = "SELECT value FROM $table $where ORDER BY value";
 
-    $result = query_bugzilladb($query);
-    if(!$result) return;
+    $hResult = query_bugzilladb($sQuery);
+    if(!$hResult) return;
 
     echo "<select name='$varname'>\n";
     echo "<option value=\"\">Choose ...</option>\n";
-    while(list($value) = mysql_fetch_row($result))
+    while(list($value) = mysql_fetch_row($hResult))
     {
         if($value == "unspecified")
         {
@@ -163,67 +163,67 @@ function make_maintainer_rating_list($varname, $cvalue)
 /* get the number of queued maintainers */
 function getQueuedMaintainerCount()
 {
-    $qstring = "SELECT count(*) as queued_maintainers FROM appMaintainerQueue";
-    $result = query_appdb($qstring);
-    $ob = mysql_fetch_object($result);
-    return $ob->queued_maintainers;
+    $sQuery = "SELECT count(*) as queued_maintainers FROM appMaintainerQueue";
+    $hResult = query_appdb($sQuery);
+    $oRow = mysql_fetch_object($hResult);
+    return $oRow->queued_maintainers;
 }
 
 /* get the total number of maintainers and applications in the appMaintainers table */
 function getMaintainerCount()
 {
-    $qstring = "SELECT count(*) as maintainers FROM appMaintainers";
-    $result = query_appdb($qstring);
-    $ob = mysql_fetch_object($result);
-    return $ob->maintainers;
+    $sQuery = "SELECT count(*) as maintainers FROM appMaintainers";
+    $hResult = query_appdb($sQuery);
+    $oRow = mysql_fetch_object($hResult);
+    return $oRow->maintainers;
 }
 
 /* get the total number of vendors from the vendor table */
 function getVendorCount()
 {
-    $qstring = "SELECT count(*) as vendors FROM vendor";
-    $result = query_appdb($qstring);
-    $ob = mysql_fetch_object($result);
-    return $ob->vendors;
+    $sQuery = "SELECT count(*) as vendors FROM vendor";
+    $hResult = query_appdb($sQuery);
+    $oRow = mysql_fetch_object($hResult);
+    return $oRow->vendors;
 }
 
 /* Get the number of users in the database */
 function getNumberOfComments()
 {
-    $result = query_appdb("SELECT count(*) as num_comments FROM appComments;");
-    $row = mysql_fetch_object($result);
-    return $row->num_comments;
+    $hResult = query_appdb("SELECT count(*) as num_comments FROM appComments;");
+    $oRow = mysql_fetch_object($hResult);
+    return $oRow->num_comments;
 }
 
 /* Get the number of versions in the database */
 function getNumberOfVersions()
 {
-    $result = query_appdb("SELECT count(versionId) as num_versions FROM appVersion WHERE versionName != 'NONAME';");
-    $row = mysql_fetch_object($result);
-    return $row->num_versions;
+    $hResult = query_appdb("SELECT count(versionId) as num_versions FROM appVersion WHERE versionName != 'NONAME';");
+    $oRow = mysql_fetch_object($hResult);
+    return $oRow->num_versions;
 }
 
 /* Get the number of maintainers in the database */
 function getNumberOfMaintainers()
 {
-    $result = query_appdb("SELECT DISTINCT userId FROM appMaintainers;");
-    return mysql_num_rows($result);
+    $hResult = query_appdb("SELECT DISTINCT userId FROM appMaintainers;");
+    return mysql_num_rows($hResult);
 }
 
 /* Get the number of app familes in the database */
 function getNumberOfAppFamilies()
 {
-    $result = query_appdb("SELECT count(*) as num_appfamilies FROM appFamily;");
-    $row = mysql_fetch_object($result);
-    return $row->num_appfamilies;
+    $hResult = query_appdb("SELECT count(*) as num_appfamilies FROM appFamily;");
+    $oRow = mysql_fetch_object($hResult);
+    return $oRow->num_appfamilies;
 }
 
 /* Get the number of images in the database */
 function getNumberOfImages()
 {
-    $result = query_appdb("SELECT count(*) as num_images FROM appData WHERE type='image';");
-    $row = mysql_fetch_object($result);
-    return $row->num_images;
+    $hResult = query_appdb("SELECT count(*) as num_images FROM appData WHERE type='image';");
+    $oRow = mysql_fetch_object($hResult);
+    return $oRow->num_images;
 }
 
 /* Get the number of queued bug links in the database */
@@ -232,8 +232,8 @@ function getNumberOfQueuedBugLinks()
     $hResult = query_appdb("SELECT count(*) as num_buglinks FROM buglinks WHERE queued='true';");
     if($hResult)
     {
-      $row = mysql_fetch_object($hResult);
-      return $row->num_buglinks;
+      $oRow = mysql_fetch_object($hResult);
+      return $oRow->num_buglinks;
     }
     return 0;
 }
@@ -244,8 +244,8 @@ function getNumberOfBugLinks()
     $hResult = query_appdb("SELECT count(*) as num_buglinks FROM buglinks;");
     if($hResult)
     {
-      $row = mysql_fetch_object($hResult);
-      return $row->num_buglinks;
+      $oRow = mysql_fetch_object($hResult);
+      return $oRow->num_buglinks;
     }
     return 0;
 }
@@ -521,22 +521,22 @@ function outputSearchTableForhResult($search_words, $hResult)
         echo "</tr>\n\n";
 
         $c = 0;
-        while($ob = mysql_fetch_object($hResult))
+        while($oRow = mysql_fetch_object($hResult))
         {
             //skip if a NONAME
-            if ($ob->appName == "NONAME") { continue; }
+            if ($oRow->appName == "NONAME") { continue; }
 		
             //set row color
             $bgcolor = ($c % 2) ? 'color0' : 'color1';
 		
             //count versions
-            $query = query_appdb("SELECT count(*) as versions FROM appVersion WHERE appId = $ob->appId AND versionName != 'NONAME' and queued = 'false'");
-            $y = mysql_fetch_object($query);
+            $hResult2 = query_appdb("SELECT count(*) as versions FROM appVersion WHERE appId = $oRow->appId AND versionName != 'NONAME' and queued = 'false'");
+            $y = mysql_fetch_object($hResult2);
 		
             //display row
             echo "<tr class=$bgcolor>\n";
-            echo "    <td>".html_ahref($ob->appName,BASE."appview.php?appId=$ob->appId")."</td>\n";
-            echo "    <td>".trim_description($ob->description)."</td>\n";
+            echo "    <td>".html_ahref($oRow->appName,BASE."appview.php?appId=$oRow->appId")."</td>\n";
+            echo "    <td>".trim_description($oRow->description)."</td>\n";
             echo "    <td>$y->versions &nbsp;</td>\n";
             echo "</tr>\n\n";
 		

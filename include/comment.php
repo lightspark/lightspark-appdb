@@ -207,47 +207,47 @@ function forum_lookup_user($iUserId)
 }
 
 /**
- * display a single comment (in $ob)
+ * display a single comment (in $oRow)
  */
-function view_app_comment($ob)
+function view_app_comment($oRow)
 {
 
     echo html_frame_start('','98%');
     echo '<table width="100%" border="0" cellpadding="2" cellspacing="1">',"\n";
 
-    $ob->subject = stripslashes($ob->subject);
-    $ob->body = stripslashes($ob->body);
+    $oRow->subject = stripslashes($oRow->subject);
+    $oRow->body = stripslashes($oRow->body);
 
     // message header
-    echo "<tr bgcolor=\"#E0E0E0\"><td><a name=Comment-".$ob->commentId."></a>\n";
-    echo " <b>".$ob->subject."</b><br />\n";
-    echo " by  ".forum_lookup_user($ob->userId)." on ".$ob->time."<br />\n";
+    echo "<tr bgcolor=\"#E0E0E0\"><td><a name=Comment-".$oRow->commentId."></a>\n";
+    echo " <b>".$oRow->subject."</b><br />\n";
+    echo " by  ".forum_lookup_user($oRow->userId)." on ".$oRow->time."<br />\n";
     echo "</td></tr><tr><td>\n";
     
     // body
-    echo htmlify_urls($ob->body), "<br /><br />\n";
+    echo htmlify_urls($oRow->body), "<br /><br />\n";
     
     // only add RE: once
-    if(eregi("RE:", $ob->subject))
-        $subject = $ob->subject;
+    if(eregi("RE:", $oRow->subject))
+        $subject = $oRow->subject;
     else
-        $subject = "RE: ".$ob->subject;
+        $subject = "RE: ".$oRow->subject;
 
     // reply post buttons
-    echo "	[<a href=\"addcomment.php?appId=$ob->appId&amp;versionId=$ob->versionId\"><small>post new</small></a>] \n";
-    echo "	[<a href=\"addcomment.php?appId=$ob->appId&amp;versionId=$ob->versionId&amp;subject=".
-	        urlencode("$subject")."&amp;thread=$ob->commentId\"><small>reply to this</small></a>] \n";
+    echo "	[<a href=\"addcomment.php?appId=$oRow->appId&amp;versionId=$oRow->versionId\"><small>post new</small></a>] \n";
+    echo "	[<a href=\"addcomment.php?appId=$oRow->appId&amp;versionId=$oRow->versionId&amp;subject=".
+	        urlencode("$subject")."&amp;thread=$oRow->commentId\"><small>reply to this</small></a>] \n";
 
     echo "</td></tr>\n";
 
     // delete message button, for admins
     if ($_SESSION['current']->hasPriv("admin")
-        || $_SESSION['current']->isMaintainer($ob->versionId) 
-        || $_SESSION['current']->isSuperMaintainer($ob->appId))
+        || $_SESSION['current']->isMaintainer($oRow->versionId) 
+        || $_SESSION['current']->isSuperMaintainer($oRow->appId))
     {
         echo "<tr>";
         echo "<td><form method=\"post\" name=\"message\" action=\"".BASE."deletecomment.php\"><input type=\"submit\" value=\"Delete\" class=\"button\">\n";
-        echo "<input type=\"hidden\" name=\"commentId\" value=\"$ob->commentId\" />";
+        echo "<input type=\"hidden\" name=\"commentId\" value=\"$oRow->commentId\" />";
         echo "</form>\n";
         echo "</td></tr>";
     }
@@ -273,9 +273,9 @@ function grab_comments($versionId, $parentId = -1)
                "FROM appComments, appVersion WHERE appComments.versionId = appVersion.versionId AND appComments.versionId = '$versionId' ".
                $extra.
                "ORDER BY appComments.time ASC";
-    $result = query_appdb($qstring);
+    $hResult = query_appdb($qstring);
 
-    return $result;
+    return $hResult;
 }
 
 
@@ -283,16 +283,16 @@ function grab_comments($versionId, $parentId = -1)
  * display nested comments
  * handle is a db result set
  */
-function do_display_comments_nested($handle)
+function do_display_comments_nested($hResult)
 {
-    while($ob = mysql_fetch_object($handle))
+    while($oRow = mysql_fetch_object($hResult))
     {
-        view_app_comment($ob);
-        $result = grab_comments($ob->versionId, $ob->commentId);
-        if($result && mysql_num_rows($result))
+        view_app_comment($oRow);
+        $hResult2 = grab_comments($oRow->versionId, $oRow->commentId);
+        if($hResult && mysql_num_rows($hResult2))
         {
             echo "<blockquote>\n";
-            do_display_comments_nested($result);
+            do_display_comments_nested($hResult2);
             echo "</blockquote>\n";
         }
         }
@@ -301,9 +301,9 @@ function do_display_comments_nested($handle)
 
 function display_comments_nested($versionId, $threadId)
 {
-    $result = grab_comments($versionId, $threadId);
+    $hResult = grab_comments($versionId, $threadId);
 
-    do_display_comments_nested($result);
+    do_display_comments_nested($hResult);
 }
 
 
@@ -311,27 +311,27 @@ function display_comments_nested($versionId, $threadId)
  * display threaded comments
  * handle is a db result set
  */
-function do_display_comments_threaded($handle, $is_main)
+function do_display_comments_threaded($hResult, $is_main)
 {
     if (!$is_main)
         echo "<ul>\n";
 
-    while ($ob = mysql_fetch_object($handle))
+    while ($oRow = mysql_fetch_object($hResult))
     {
         if ($is_main)
         {
-            view_app_comment($ob);
+            view_app_comment($oRow);
         } else
         {
-            echo '<li><a href="commentview.php?appId='.$ob->appId.'&amp;versionId='.$ob->versionId.'&threadId='.$ob->parentId.'"> '.
-            $ob->subject.' </a> by '.forum_lookup_user($ob->userId).' on '.$ob->time.' </li>'."\n";
+            echo '<li><a href="commentview.php?appId='.$oRow->appId.'&amp;versionId='.$oRow->versionId.'&threadId='.$oRow->parentId.'"> '.
+            $oRow->subject.' </a> by '.forum_lookup_user($oRow->userId).' on '.$oRow->time.' </li>'."\n";
         }
         
-        $result = grab_comments($ob->versionId, $ob->commentId);
-        if ($result && mysql_num_rows($result))
+        $hResult2 = grab_comments($oRow->versionId, $oRow->commentId);
+        if ($hResult2 && mysql_num_rows($hResult2))
         {
             echo "<blockquote>\n";
-            do_display_comments_threaded($result, 0);
+            do_display_comments_threaded($hResult2, 0);
             echo "</blockquote>\n";
         }
     }
@@ -343,9 +343,9 @@ function do_display_comments_threaded($handle, $is_main)
 
 function display_comments_threaded($versionId, $threadId = 0)
 {
-    $result = grab_comments($versionId, $threadId);
+    $hResult = grab_comments($versionId, $threadId);
 
-    do_display_comments_threaded($result, 1);
+    do_display_comments_threaded($hResult, 1);
 }
 
 
@@ -354,12 +354,12 @@ function display_comments_threaded($versionId, $threadId = 0)
  */
 function display_comments_flat($versionId)
 {
-    $result = grab_comments($versionId);
-    if ($result)
+    $hResult = grab_comments($versionId);
+    if ($hResult)
     {
-        while($ob = mysql_fetch_object($result))
+        while($oRow = mysql_fetch_object($hResult))
         {
-            view_app_comment($ob);
+            view_app_comment($oRow);
         }
     }
 }
@@ -374,8 +374,8 @@ function view_app_comments($versionId, $threadId = 0)
     $aClean['mode'] = makeSafe($_REQUEST['mode']);
 
     // count posts
-    $result = query_appdb("SELECT commentId FROM appComments WHERE versionId = $versionId");
-    $messageCount = mysql_num_rows($result);
+    $hResult = query_appdb("SELECT commentId FROM appComments WHERE versionId = $versionId");
+    $messageCount = mysql_num_rows($hResult);
     
     //start comment format table
     echo html_frame_start("","98%",'',0);

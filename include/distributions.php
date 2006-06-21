@@ -385,14 +385,14 @@ class distribution{
 /* Make a dropdown list of distributions */
 function make_distribution_list($varname, $cvalue)
 {
-    $query = "SELECT name, distributionId FROM distributions ORDER BY name";
+    $sQuery = "SELECT name, distributionId FROM distributions ORDER BY name";
 
-    $result = query_appdb($query);
-    if(!$result) return;
+    $hResult = query_appdb($sQuery);
+    if(!$hResult) return;
 
     echo "<select name='$varname'>\n";
     echo "<option value=\"\">Choose ...</option>\n";
-    while(list($name, $value) = mysql_fetch_row($result))
+    while(list($name, $value) = mysql_fetch_row($hResult))
     {
         if($value == $cvalue)
             echo "<option value=$value selected>$name\n";
@@ -407,8 +407,8 @@ function getNumberOfDistributions()
     $hResult = query_appdb("SELECT count(*) as num_dists FROM distributions");
     if($hResult)
     {
-      $row = mysql_fetch_object($hResult);
-      return $row->num_dists;
+      $oRow = mysql_fetch_object($hResult);
+      return $oRow->num_dists;
     }
     return 0;
 }
@@ -419,8 +419,8 @@ function getNumberOfQueuedDistributions()
     $hResult = query_appdb("SELECT count(*) as num_dists FROM distributions WHERE queued='true';");
     if($hResult)
     {
-      $row = mysql_fetch_object($hResult);
-      return $row->num_dists;
+      $oRow = mysql_fetch_object($hResult);
+      return $oRow->num_dists;
     }
     return 0;
 }

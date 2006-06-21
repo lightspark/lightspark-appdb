@@ -64,12 +64,12 @@ $commentIds = query_appdb("SELECT commentId from appComments ORDER BY ".
                           "appComments.time ASC LIMIT $offset, $ItemsPerPage;");
 while ($ob = mysql_fetch_object($commentIds))
 {
-    $qstring = "SELECT from_unixtime(unix_timestamp(time), \"%W %M %D %Y, %k:%i\") as time, ".
+    $sQuery = "SELECT from_unixtime(unix_timestamp(time), \"%W %M %D %Y, %k:%i\") as time, ".
         "commentId, parentId, versionId, userid, subject, body ".
         "FROM appComments WHERE commentId = $ob->commentId;";
-    $result = query_appdb($qstring);
+    $hResult = query_appdb($sQuery);
     /* call view_app_comment to display the comment */
-    $comment_ob = mysql_fetch_object($result);
+    $comment_ob = mysql_fetch_object($hResult);
     view_app_comment($comment_ob);
 }
 

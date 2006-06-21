@@ -47,9 +47,9 @@ function display_catpath($catId, $appId, $versionId = '')
 function display_bundle($appId)
 {
     $oApp = new Application($appId);
-    $result = query_appdb("SELECT appFamily.appId, appName, description FROM appBundle, appFamily ".
+    $hResult = query_appdb("SELECT appFamily.appId, appName, description FROM appBundle, appFamily ".
                         "WHERE appFamily.queued='false' AND bundleId = $appId AND appBundle.appId = appFamily.appId");
-    if(!$result || mysql_num_rows($result) == 0)
+    if(!$hResult || mysql_num_rows($hResult) == 0)
     {
          return; // do nothing
     }
@@ -63,7 +63,8 @@ function display_bundle($appId)
     echo "</tr>\n\n";
 
     $c = 0;
-    while($ob = mysql_fetch_object($result)) {
+    while($ob = mysql_fetch_object($hResult))
+    {
         //set row color
         $bgcolor = ($c % 2 == 0) ? "color0" : "color1";
 
@@ -81,7 +82,8 @@ function display_bundle($appId)
 }
 
 /* Show note */
-function show_note($sType,$oData){
+function show_note($sType,$oData)
+{
     global $oVersion;
 
     switch($sType)

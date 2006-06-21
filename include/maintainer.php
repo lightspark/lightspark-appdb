@@ -9,17 +9,17 @@
 function getAppsFromUserId($userId)
 {
     /* retrieve the list of application and order them by application name */
-    $result = query_appdb("SELECT appMaintainers.appId, versionId, superMaintainer, appName FROM ".
+    $hResult = query_appdb("SELECT appMaintainers.appId, versionId, superMaintainer, appName FROM ".
                           "appFamily, appMaintainers WHERE appFamily.appId = appMaintainers.appId ".
                           "AND userId = '$userId' ORDER BY appName");
-    if(!$result || mysql_num_rows($result) == 0)
+    if(!$hResult || mysql_num_rows($hResult) == 0)
         return;
 
     $retval = array();
     $c = 0;
-    while($row = mysql_fetch_object($result))
+    while($oRow = mysql_fetch_object($hResult))
     {
-        $retval[$c] = array($row->appId, $row->versionId, $row->superMaintainer);
+        $retval[$c] = array($oRow->appId, $oRow->versionId, $oRow->superMaintainer);
         $c++;
     }
 
@@ -37,13 +37,13 @@ function getMaintainersUserIdsFromAppIdVersionId($versionId)
     if($versionId == 0)
         return $retval;
     
-    $query = "SELECT userId FROM ".
+    $sQuery = "SELECT userId FROM ".
                           "appMaintainers WHERE versionId = '$versionId';";
-    $result = query_appdb($query);
+    $hResult = query_appdb($sQuery);
     $c = 0;
-    while($row = mysql_fetch_object($result))
+    while($oRow = mysql_fetch_object($hResult))
     {
-        $retval[$c] = $row->userId;
+        $retval[$c] = $oRow->userId;
         $c++;
     }
 
@@ -55,15 +55,15 @@ function getMaintainersUserIdsFromAppIdVersionId($versionId)
  */
 function getSuperMaintainersUserIdsFromAppId($appId)
 {
-    $query = "SELECT userId FROM ".
+    $sQuery = "SELECT userId FROM ".
                           "appMaintainers WHERE appId = '$appId' " .
                           "AND superMaintainer = '1';";
-    $result = query_appdb($query);
+    $hResult = query_appdb($sQuery);
     $retval = array();
     $c = 0;
-    while($row = mysql_fetch_object($result))
+    while($oRow = mysql_fetch_object($hResult))
     {
-        $retval[$c] = $row->userId;
+        $retval[$c] = $oRow->userId;
         $c++;
     }
 

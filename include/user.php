@@ -342,7 +342,7 @@ class User {
 
         if($sQuery)
         {
-            if($result = query_appdb($sQuery))
+            if($hResult = query_appdb($sQuery))
                 return true;
         }
         
@@ -356,31 +356,31 @@ class User {
         if(!$this->hasPriv("admin"))
             return 0;
 
-        $qstring = "SELECT count(*) as queued_apps FROM appFamily WHERE queued='true'";
-        $result = query_appdb($qstring);
-        $ob = mysql_fetch_object($result);
-        return $ob->queued_apps;
+        $sQuery = "SELECT count(*) as queued_apps FROM appFamily WHERE queued='true'";
+        $hResult = query_appdb($sQuery);
+        $oRow = mysql_fetch_object($hResult);
+        return $oRow->queued_apps;
     }
 
     function getQueuedVersionCount()
     {
         if($this->hasPriv("admin"))
         {
-            $qstring = "SELECT count(*) as queued_versions FROM appVersion WHERE queued='true'";
+            $sQuery = "SELECT count(*) as queued_versions FROM appVersion WHERE queued='true'";
         } else
         {
             /* find all queued versions of applications that the user is a super maintainer of */
-            $qstring = "SELECT count(*) as queued_versions FROM appVersion, appMaintainers
+            $sQuery = "SELECT count(*) as queued_versions FROM appVersion, appMaintainers
                         WHERE queued='true' AND appMaintainers.superMaintainer ='1'
                         AND appVersion.appId = appMaintainers.appId
                         AND appMaintainers.userId ='".$this->iUserId."';";
         }
-        $result = query_appdb($qstring);
-        $ob = mysql_fetch_object($result);
+        $hResult = query_appdb($sQuery);
+        $oRow = mysql_fetch_object($hResult);
 
         /* we don't want to count the versions that are implicit in the applications */
         /* that are in the queue */
-        return $ob->queued_versions - $this->getQueuedAppCount();
+        return $oRow->queued_versions - $this->getQueuedAppCount();
     }
 
 
@@ -388,8 +388,8 @@ class User {
     function getQueuedAppDataCount()
     {
         $hResult = $this->getAppDataQuery(0, true, false);
-        $ob = mysql_fetch_object($hResult);
-        return $ob->queued_appdata;
+        $oRow = mysql_fetch_object($hResult);
+        return $oRow->queued_appdata;
     }
 
     function addPriv($sPriv)
@@ -582,20 +582,20 @@ class User {
 
      function getAllRejectedApps()
      {
-         $result = query_appdb("SELECT appVersion.versionId, appFamily.appId 
+         $hResult = query_appdb("SELECT appVersion.versionId, appFamily.appId 
                                FROM appVersion, appFamily
                                WHERE appFamily.appId = appVersion.appId 
                                AND (appFamily.queued = 'rejected' OR appVersion.queued = 'rejected')
                                AND appVersion.submitterId = '".$this->iUserId."';");
 
-         if(!$result || mysql_num_rows($result) == 0)
+         if(!$hResult || mysql_num_rows($hResult) == 0)
              return;
 
          $retval = array();
          $c = 0;
-         while($row = mysql_fetch_object($result))
+         while($oRow = mysql_fetch_object($hResult))
          {
-             $retval[$c] = array($row->appId, $row->versionId);
+             $retval[$c] = array($oRow->appId, $oRow->versionId);
              $c++;
          }
 
@@ -1110,9 +1110,9 @@ function get_notify_email_address_list($iAppId = null, $iVersionId = null)
  */
 function get_number_of_users()
 {
-    $result = query_appdb("SELECT count(*) as num_users FROM user_list;");
-    $row = mysql_fetch_object($result);
-    return $row->num_users;
+    $hResult = query_appdb("SELECT count(*) as num_users FROM user_list;");
+    $oRow = mysql_fetch_object($hResult);
+    return $oRow->num_users;
 }
 
 
@@ -1121,9 +1121,9 @@ function get_number_of_users()
  */
 function get_active_users_within_days($days)
 {
-    $result = query_appdb("SELECT count(*) as num_users FROM user_list WHERE stamp >= DATE_SUB(CURDATE(), interval $days day);");
-    $row = mysql_fetch_object($result);
-    return $row->num_users;
+    $hResult = query_appdb("SELECT count(*) as num_users FROM user_list WHERE stamp >= DATE_SUB(CURDATE(), interval $days day);");
+    $oRow = mysql_fetch_object($hResult);
+    return $oRow->num_users;
 }
 
 
@@ -1146,12 +1146,12 @@ function get_inactive_users_pending_deletion()
  */
 function user_exists($sEmail)
 {
-    $result = query_appdb("SELECT userid FROM user_list WHERE email = '$sEmail'");
-    if(!$result || mysql_num_rows($result) != 1)
+    $hResult = query_appdb("SELECT userid FROM user_list WHERE email = '$sEmail'");
+    if(!$hResult || mysql_num_rows($hResult) != 1)
         return 0;
     else
     {
-        $oRow = mysql_fetch_object($result);
+        $oRow = mysql_fetch_object($hResult);
         return $oRow->userid;
     }
 }

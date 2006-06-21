@@ -11,13 +11,13 @@ if(!$_SESSION['current']->hasPriv("admin"))
 
 function build_app_list()
 {
-    $result = query_appdb("SELECT appId, appName FROM appFamily ORDER BY appName");
+    $hResult = query_appdb("SELECT appId, appName FROM appFamily ORDER BY appName");
     
     echo "<select name=appId size=5 onChange='this.form.submit()'>\n";
-    while($ob = mysql_fetch_object($result))
-	{
-	    echo "<option value=$ob->appId>$ob->appName</option>\n";
-	}
+    while($oRow = mysql_fetch_object($hResult))
+    {
+        echo "<option value=$oRow->appId>$oRow->appName</option>\n";
+    }
     echo "</select>\n";
 }
 
@@ -25,17 +25,17 @@ function build_app_list()
 if($cmd)
 {
     if($cmd == "delete")
-	{
-	    $result = query_appdb("DELETE FROM appBundle WHERE appId = $appId AND bundleId = $bundleId");
-	    if($result)
-		addmsg("App deleted from bundle", "green");
-	}
+    {
+        $hResult = query_appdb("DELETE FROM appBundle WHERE appId = $appId AND bundleId = $bundleId");
+        if($hResult)
+            addmsg("App deleted from bundle", "green");
+    }
     if($cmd == "add")
-	{
-	    $result = query_appdb("INSERT INTO appBundle VALUES ($bundleId, $appId)");
-	    if($result)
-		addmsg("App $appId added to Bundle $bundleId", "green");
-	}
+    {
+        $hResult = query_appdb("INSERT INTO appBundle VALUES ($bundleId, $appId)");
+        if($hResult)
+            addmsg("App $appId added to Bundle $bundleId", "green");
+    }
     redirectref();
     exit;
 }
@@ -43,39 +43,38 @@ else
 {
     apidb_header("Edit Application Bundle");
 
-    $result = query_appdb("SELECT bundleId, appBundle.appId, appName FROM appBundle, appFamily ".
-			  "WHERE bundleId = $bundleId AND appFamily.appId = appBundle.appId");
+    $hResult = query_appdb("SELECT bundleId, appBundle.appId, appName FROM appBundle, appFamily ".
+                           "WHERE bundleId = $bundleId AND appFamily.appId = appBundle.appId");
 
-    if($result && mysql_num_rows($result))
-	{
-	    echo html_frame_start("Apps in this Bundle","300",'',0);
-	    echo "<table width='100%' border=0 cellpadding=3 cellspacing=0>\n\n";
+    if($hResult && mysql_num_rows($hResult))
+    {
+        echo html_frame_start("Apps in this Bundle","300",'',0);
+        echo "<table width='100%' border=0 cellpadding=3 cellspacing=0>\n\n";
 	    
-	    echo "<tr class=color4>\n";
-	    echo "    <td><font color=white> Application Name </font></td>\n";
-	    echo "    <td><font color=white> Delete </font></td>\n";
-	    echo "</tr>\n\n";	    
+        echo "<tr class=color4>\n";
+        echo "    <td><font color=white> Application Name </font></td>\n";
+        echo "    <td><font color=white> Delete </font></td>\n";
+        echo "</tr>\n\n";	    
 	    
-	    $c = 1;
-	    while($ob = mysql_fetch_object($result))
-		{
-		    //set row color
-		    if ($c % 2 == 1) { $bgcolor = 'color0'; } else { $bgcolor = 'color1'; }
+        $c = 1;
+        while($oRow = mysql_fetch_object($hResult))
+        {
+            //set row color
+            if ($c % 2 == 1) { $bgcolor = 'color0'; } else { $bgcolor = 'color1'; }
 		    
-		    $delete_link = "[<a href='editBundle.php?cmd=delete&bundleId=$bundleId&appId=$ob->appId'>delete</a>]";
+            $delete_link = "[<a href='editBundle.php?cmd=delete&bundleId=$bundleId&appId=$oRow->appId'>delete</a>]";
 
-	            echo "<tr class=$bgcolor>\n";
-	            echo "    <td>$ob->appName &nbsp;</td>\n";
-	            echo "    <td>$delete_link &nbsp;</td>\n";
-	            echo "</tr>\n\n";
+            echo "<tr class=$bgcolor>\n";
+            echo "    <td>$oRow->appName &nbsp;</td>\n";
+            echo "    <td>$delete_link &nbsp;</td>\n";
+            echo "</tr>\n\n";
 		    
-		    $c++;
-		}
+            $c++;
+        }
 		
-	    echo "</table>\n\n";
-	    echo html_frame_end();
-	    
-	}
+        echo "</table>\n\n";
+        echo html_frame_end();
+    }
 
     echo "<form method=post action=editBundle.php>\n";
 

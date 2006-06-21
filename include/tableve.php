@@ -11,33 +11,32 @@ class TableVE {
      */
     function TableVE($mode)
     {
-	$this->mode = $mode;
-	$this->titleField = "";
-	$this->titleText = "";
-	$this->numberedTitles = 0;
+        $this->mode = $mode;
+        $this->titleField = "";
+        $this->titleText = "";
+        $this->numberedTitles = 0;
     }
 
     function test($query)
     {
-	$result  = query_appdb($query);
-	$nfields = mysql_num_fields($result);
-	$nrows   = mysql_num_rows($result);
-	$table   = mysql_field_table($result, 0);
+        $hResult  = query_appdb($query);
+        $nfields = mysql_num_fields($hResult);
+        $nrows   = mysql_num_rows($hResult);
+        $table   = mysql_field_table($hResult, 0);
 
-	echo "Table: $table <br> Fields: $nfields <br> Rows: $nrows <br> <br>\n";
+        echo "Table: $table <br> Fields: $nfields <br> Rows: $nrows <br> <br>\n";
 
-	$i = 0;
-	while($i < $nfields)
-	    {
-		$type = mysql_field_type($result, $i);
-		$name = mysql_field_name($result, $i);
-		$len  = mysql_field_len($result, $i);
-		$flags = mysql_field_flags($result, $i);
-		
-		echo "$type | $name | $len | $flags <br>\n";
-		$i++;
-	    }
-	
+        $i = 0;
+        while($i < $nfields)
+        {
+            $type = mysql_field_type($hResult, $i);
+            $name = mysql_field_name($hResult, $i);
+            $len  = mysql_field_len($hResult, $i);
+            $flags = mysql_field_flags($hResult, $i);
+
+            echo "$type | $name | $len | $flags <br>\n";
+            $i++;
+        }
     }
 
     /* this is a bit of a hack,
@@ -46,60 +45,60 @@ class TableVE {
      */
     function create($query, $table, $idcolumn)
     {
-	$result = query_appdb($query);
-	$id     = mysql_insert_id();
+        $hResult = query_appdb($query);
+        $id     = mysql_insert_id();
 	
-	$new_query = "SELECT * FROM $table WHERE $idcolumn = $id";
-	$this->edit($new_query);
+        $new_query = "SELECT * FROM $table WHERE $idcolumn = $id";
+        $this->edit($new_query);
     }
 
 
     function view($query)
     {
-	//$this->test($query);
+        //$this->test($query);
 
-	$nrows = 0;
+        $nrows = 0;
 
-	$result  = query_appdb($query);
-        $nrows   = mysql_num_rows($result);
+        $hResult  = query_appdb($query);
+        $nrows   = mysql_num_rows($hResult);
 
         if(debugging())
         {
-		echo "Query returns $nrows rows.";
+            echo "Query returns $nrows rows.";
         }
 
-	for($i = 0; $i < $nrows; $i++)
-	    {
-		$this->view_entry($result, $i);
-		echo "<br>\n";
-	    }
+        for($i = 0; $i < $nrows; $i++)
+        {
+            $this->view_entry($hResult, $i);
+            echo "<br>\n";
+        }
     }
     
-    function view_entry($result, $num)
+    function view_entry($hResult, $num)
     {
-        $nfields = mysql_num_fields($result);
-	$fields = mysql_fetch_array($result, MYSQL_BOTH);
+        $nfields = mysql_num_fields($hResult);
+        $fields = mysql_fetch_array($hResult, MYSQL_BOTH);
 
-	$titleValue = $fields[$this->titleField];
-	$titleText = $this->titleText;
-	if($this->numberedTitles)
-	{
-	    // don't want zero-based.
-	    $num++;
-	    $titleText .= "  # $num";
-	}
+        $titleValue = $fields[$this->titleField];
+        $titleText = $this->titleText;
+        if($this->numberedTitles)
+        {
+            // don't want zero-based.
+            $num++;
+            $titleText .= "  # $num";
+        }
 
         //echo "<table border=1 bordercolor=black width='80%' cellpadding=0 cellspacing=0>\n";
         //echo "<th class='box-title' colspan='2'></th></tr>\n";
 
         //echo "<tr><td>\n";
         
-	echo html_frame_start("Viewing $titleValue $titleText","80%","",0);
-	echo "<table border=0 width='100%' cellspacing=0 cellpadding=2>\n";
+        echo html_frame_start("Viewing $titleValue $titleText","80%","",0);
+        echo "<table border=0 width='100%' cellspacing=0 cellpadding=2>\n";
 
-	for($i = 0; $i < $nfields; $i++)
-	    {
-		$field = mysql_fetch_field($result, $i);
+        for($i = 0; $i < $nfields; $i++)
+        {
+            $field = mysql_fetch_field($hResult, $i);
 
                 if(ereg("^impl_(.+)$", $field->table, $arr))
                     {
@@ -108,214 +107,208 @@ class TableVE {
                         $cur_impl = $arr[1];
                     }
 		
-		echo "<tr><td width='15%' class='box-label'><b> $field->name </b></td>"; 
-		echo "<td class='box-body'>";
-		$this->view_entry_output_field($field, $fields[$i], 0);
-		echo "</td></tr>\n";
-	    }
+                echo "<tr><td width='15%' class='box-label'><b> $field->name </b></td>"; 
+                echo "<td class='box-body'>";
+                $this->view_entry_output_field($field, $fields[$i], 0);
+                echo "</td></tr>\n";
+        }
 
         echo "</table>\n";
         echo html_frame_end();
-
     }
 
 
     function edit($query)
     {
-        $result  = query_appdb($query);
-	$nrows   = mysql_num_rows($result);
+        $hResult  = query_appdb($query);
+        $nrows   = mysql_num_rows($hResult);
 
         echo "<form method=post action='".$_SERVER['PHP_SELF']."'>\n";
 
         for($i = 0; $i < $nrows; $i++)
-            {
-                $this->edit_entry($result);
-                echo "<br>\n";
-            }
+        {
+            $this->edit_entry($hResult);
+            echo "<br>\n";
+        }
 
         echo html_frame_start("Update Database",100);
         echo "<input type=submit value='Update Database'>\n";
-	echo html_frame_end();
+        echo html_frame_end();
 	
-	echo "</form>\n";
+        echo "</form>\n";
     }
 
     
-    function edit_entry($result)
+    function edit_entry($hResult)
     {
-	$nfields = mysql_num_fields($result);
-	$fields = mysql_fetch_array($result);
+        $nfields = mysql_num_fields($hResult);
+        $fields = mysql_fetch_array($hResult);
 	
-	echo html_frame_start(ucfirst($this->mode),"80%","",0);
-	echo "<table border=0 width='100%' cellspacing=0 cellpadding=2>\n";
+        echo html_frame_start(ucfirst($this->mode),"80%","",0);
+        echo "<table border=0 width='100%' cellspacing=0 cellpadding=2>\n";
 
-	$cur_impl = null;
+        $cur_impl = null;
         for($i = 0; $i < $nfields; $i++)
+        {
+            global $testvar;
+            $field = mysql_fetch_field($hResult, $i);
+            $len   = mysql_field_len($hResult, $i);
+
+            if(ereg("^impl_(.+)$", $field->table, $arr))
             {
-		global $testvar;
-                $field = mysql_fetch_field($result, $i);
-		$len   = mysql_field_len($result, $i);
-
-		if(ereg("^impl_(.+)$", $field->table, $arr))
-		    {
-			if($cur_impl != $arr[1])
-			    echo "<tr><th class='box-label' colspan=2> ".ucfirst($arr[1])." Implementation </th></tr>\n";
-			$cur_impl = $arr[1];
-		    }
-
-                echo "<tr><td width='15%' class='box-label'><b> $field->name &nbsp; </b></td>";
-                echo "<td class='box-body'>&nbsp;";
-		$this->edit_entry_output_field($field, $fields[$i], $len);
-		echo "</td></tr>\n";
+                if($cur_impl != $arr[1])
+                    echo "<tr><th class='box-label' colspan=2> ".ucfirst($arr[1])." Implementation </th></tr>\n";
+                $cur_impl = $arr[1];
             }
 
+            echo "<tr><td width='15%' class='box-label'><b> $field->name &nbsp; </b></td>";
+            echo "<td class='box-body'>&nbsp;";
+            $this->edit_entry_output_field($field, $fields[$i], $len);
+            echo "</td></tr>\n";
+        }
+
         echo "</table>\n";
-	echo html_frame_end();
+        echo html_frame_end();
     }
 
     function make_option_list($varname, $cvalue, $table, $idField, $nameField, $where = "")
     {
-    
-	$result = query_appdb("SELECT $idField, $nameField FROM $table $where ORDER BY $nameField");
-	if(!$result)
-	    return; // Oops
+        $hResult = query_appdb("SELECT $idField, $nameField FROM $table $where ORDER BY $nameField");
+        if(!$hResult)
+            return; // Oops
 
-	echo "<select name='$varname'>\n";
-	echo "<option value=0>Choose ...</option>\n";
-	while(list($id, $name) = mysql_fetch_row($result))
-	    {
-	        if ($name == "NONAME")
-		    continue;
-		if($id == $cvalue)
-		    echo "<option value=$id selected>$name\n";
-		else
-		    echo "<option value=$id>$name\n";
-
-	    }
-	echo "</select>\n";
+        echo "<select name='$varname'>\n";
+        echo "<option value=0>Choose ...</option>\n";
+        while(list($id, $name) = mysql_fetch_row($hResult))
+        {
+            if ($name == "NONAME")
+                continue;
+            if($id == $cvalue)
+                echo "<option value=$id selected>$name\n";
+            else
+                echo "<option value=$id>$name\n";
+        }
+        echo "</select>\n";
     }
 
 
     function edit_entry_output_field($field, $value, $len)
     {
-	static $idx = 0;
+        static $idx = 0;
 
-	$idx++;
-	if($len > 50)
-	    $len = 50;
+        $idx++;
+        if($len > 50)
+            $len = 50;
 
-	$varname = "FIELD_".$field->table."___".$field->name."[]";
-	echo "<input type=hidden name='TYPE_$varname' value='$field->type'>\n";
+        $varname = "FIELD_".$field->table."___".$field->name."[]";
+        echo "<input type=hidden name='TYPE_$varname' value='$field->type'>\n";
 
-	if($field->name == "appId" && $field->table != "appFamily")
-	    {
-		$this->make_option_list($varname, $value, "appFamily", "appId", "appName");
-		return;
-	    }
+        if($field->name == "appId" && $field->table != "appFamily")
+        {
+            $this->make_option_list($varname, $value, "appFamily", "appId", "appName");
+            return;
+        }
 
-	if($field->name == "vendorId" && $field->table != "vendor")
-	    {
-		$this->make_option_list($varname, $value, "vendor", "vendorId", "vendorName");
-		return;
-	    }
+        if($field->name == "vendorId" && $field->table != "vendor")
+        {
+            $this->make_option_list($varname, $value, "vendor", "vendorId", "vendorName");
+            return;
+        }
 
-	if($field->name == "catId" && $field->table != "appCategory")
-	    {
-		$this->make_option_list($varname, $value, "appCategory", "catId", "catName");
-		return;
-	    }
+        if($field->name == "catId" && $field->table != "appCategory")
+        {
+            $this->make_option_list($varname, $value, "appCategory", "catId", "catName");
+            return;
+        }
 
-	if($field->name == "catParent")
-	    {
-		$this->make_option_list($varname, $value, "appCategory", "catId", "catName");
-		return;
-	    }
+        if($field->name == "catParent")
+        {
+            $this->make_option_list($varname, $value, "appCategory", "catId", "catName");
+            return;
+        }
 	
-	if($field->name == "keywords")
-	    {
-		echo "<textarea cols=$len rows=3 name='$varname'>".stripslashes($value)."</textarea>\n";
-		return;
-	    }
+        if($field->name == "keywords")
+        {
+            echo "<textarea cols=$len rows=3 name='$varname'>".stripslashes($value)."</textarea>\n";
+            return;
+        }
 	    
-	switch($field->type)
-	    {
-	    case "string":
-	    case "enum":
-	    case "int":
-	    case "text":
-		echo "<input type=text size=$len name='$varname' value='".stripslashes($value)."'>\n";
-		break;
-	    case "blob":
-		echo "<textarea cols=$len rows=10 name='$varname'>".stripslashes($value)."</textarea>\n";
-		break;
-	    case "timestamp":
-		$time = mysqltimestamp_to_unixtimestamp($value);
-		echo print_date($time);
-		break;
-	    case "datetime":
-		$time = mysqldatetime_to_unixtimestamp($value);
-		echo print_date($time);
-		break;
-	    default:
-		echo "$value &nbsp;\n";
-		break;
-	    }
+        switch($field->type)
+        {
+        case "string":
+        case "enum":
+        case "int":
+        case "text":
+            echo "<input type=text size=$len name='$varname' value='".stripslashes($value)."'>\n";
+            break;
+        case "blob":
+            echo "<textarea cols=$len rows=10 name='$varname'>".stripslashes($value)."</textarea>\n";
+            break;
+        case "timestamp":
+            $time = mysqltimestamp_to_unixtimestamp($value);
+            echo print_date($time);
+            break;
+        case "datetime":
+            $time = mysqldatetime_to_unixtimestamp($value);
+            echo print_date($time);
+            break;
+        default:
+            echo "$value &nbsp;\n";
+            break;
+        }
 
-	$this->entry_add_extra($field, $value);
+        $this->entry_add_extra($field, $value);
     }
-
-
 
     function view_entry_output_field($field, $value, $len)
     {
         if($len > 50)
             $len = 50;
 
-	//FIXME: need a better way for special cases
-	if(!$value && $field->name == "comments")
-	    {
-		echo "none";
-		return;
-	    }
-	if(!$value && ($field->name == "location" || $field->name == "quality"))
-	    {
-		echo "unknown";
-		return;
-	    }
+        //FIXME: need a better way for special cases
+        if(!$value && $field->name == "comments")
+        {
+            echo "none";
+            return;
+        }
+        if(!$value && ($field->name == "location" || $field->name == "quality"))
+        {
+            echo "unknown";
+            return;
+        }
 
         if($field->name == "lastmodby")
-            {
-                $user = new user();
-                $name = $user->lookup_realname($value);
-                if(!$name)
-                    $name = "system";
-                echo "$name ($value)";
-                return;
-            }
+        {
+            $user = new user();
+            $name = $user->lookup_realname($value);
+            if(!$name)
+                $name = "system";
+            echo "$name ($value)";
+            return;
+        }
 
-	
         switch($field->type)
-            {
-            case "string":
-            case "enum":
-            case "int":
-            case "blob":
-                echo "$value &nbsp;\n";
-                break;
-            case "timestamp":
-                $time = mysqltimestamp_to_unixtimestamp($value);
-                echo print_date($time);
-                break;
-            case "datetime":
-                $time = mysqldatetime_to_unixtimestamp($value);
-                echo print_date($time);
-                break;
-            default:
-                echo "$value &nbsp;\n";
-                break;
-            }
+        {
+        case "string":
+        case "enum":
+        case "int":
+        case "blob":
+            echo "$value &nbsp;\n";
+            break;
+        case "timestamp":
+            $time = mysqltimestamp_to_unixtimestamp($value);
+            echo print_date($time);
+            break;
+        case "datetime":
+            $time = mysqldatetime_to_unixtimestamp($value);
+            echo print_date($time);
+            break;
+        default:
+            echo "$value &nbsp;\n";
+            break;
+        }
 
-	$this->entry_add_extra($field, $value);
+        $this->entry_add_extra($field, $value);
     }
 
 
@@ -324,22 +317,21 @@ class TableVE {
      */
     function entry_add_extra($field, $value)
     {
-	/*
+        /*
          * add extra stuff to certain fields
          */
 	
         if($field->name == "mslink" && $value)
-            {
-                echo html_imagebutton("Go!", $value);
-            }
-	
-        if($field->name == "apiname")
-            {
-                echo html_imagebutton("Wine LXR", "http://twine.codeweavers.com/lxr/ident?i=$value");
-                echo html_imagebutton("Wine API", "http://www.winehq.com/WineAPI/$value.html");
-            }
-    }
+        {
+            echo html_imagebutton("Go!", $value);
+        }
 
+        if($field->name == "apiname")
+        {
+            echo html_imagebutton("Wine LXR", "http://twine.codeweavers.com/lxr/ident?i=$value");
+            echo html_imagebutton("Wine API", "http://www.winehq.com/WineAPI/$value.html");
+        }
+    }
 
 
     /*
@@ -359,18 +351,18 @@ class TableVE {
 
     function get_id($name)
     {
-	reset($this->table_ids);
-	while(list($table, $id) = each($this->table_ids))
-	    {
-		$r = "^$table$";
-		//echo "Checking $r against $name <br>\n";
-		if(ereg($r, $name))
-		    {
-			//echo "ID for $name -> $id <br>\n";
-			return $id;
-		    }
-	    }
-	return null;
+        reset($this->table_ids);
+        while(list($table, $id) = each($this->table_ids))
+        {
+            $r = "^$table$";
+            //echo "Checking $r against $name <br>\n";
+            if(ereg($r, $name))
+            {
+                //echo "ID for $name -> $id <br>\n";
+                return $id;
+            }
+        }
+        return null;
     }
 
     /**
@@ -380,101 +372,96 @@ class TableVE {
      */
     function update($vars)
     {
-
-	$tables = array();
-	$fieldnames = array();
-	$num_entries = 0;
+        $tables = array();
+        $fieldnames = array();
+        $num_entries = 0;
 	
-	while(list($varname, $arr) = each($vars))
-	    {
-		if(!ereg("^FIELD_([a-zA-Z_]+)___(.+)$", $varname, $regs))
-		    continue;
+        while(list($varname, $arr) = each($vars))
+        {
+            if(!ereg("^FIELD_([a-zA-Z_]+)___(.+)$", $varname, $regs))
+                continue;
 				
-		$tables[$regs[1]][] = $regs[2];
-		$fieldnames[$regs[2]] = $arr;
-		$num_entries = sizeof($arr);
-	    }
+            $tables[$regs[1]][] = $regs[2];
+            $fieldnames[$regs[2]] = $arr;
+            $num_entries = sizeof($arr);
+        }
 	
-	while(list($table, $fields) = each($tables))
-	    {
-		echo "<b> $table (".$this->get_id($table).") </b>";
+        while(list($table, $fields) = each($tables))
+        {
+            echo "<b> $table (".$this->get_id($table).") </b>";
 		
-		if($fieldnames[$this->get_id($table)])
-		    echo "OK!";
+            if($fieldnames[$this->get_id($table)])
+                echo "OK!";
 		
-		echo "<br>\n";
+            echo "<br>\n";
 		
-		for($i = 0; $i < sizeof($fields); $i++)
-		    echo "- $fields[$i] <br>\n";
+            for($i = 0; $i < sizeof($fields); $i++)
+                echo "- $fields[$i] <br>\n";
 		
-		echo "<br>\n";
-	    }
+            echo "<br>\n";
+        }
 
-	for($i = 0; $i < $num_entries; $i++)
-	    {
-		reset($tables);
-		while(list($table, $fields) = each($tables))
-		    {
-			$update = "UPDATE $table SET ";
-			
-			$count = sizeof($fields);
-			reset($fields);
-			while(list($idx, $field) = each($fields))
-			    {
-				$count--;
+        for($i = 0; $i < $num_entries; $i++)
+        {
+            reset($tables);
+            while(list($table, $fields) = each($tables))
+            {
+                $update = "UPDATE $table SET ";
+                
+                $count = sizeof($fields);
+                reset($fields);
+                while(list($idx, $field) = each($fields))
+                {
+                    $count--;
 
-				if($this->table_ids[$table] == $field)
-				    {
-					continue;
-				    }
-				$key  = "FIELD_".$table."___".$field;
-				$type = $vars["TYPE_$key"][$i];
+                    if($this->table_ids[$table] == $field)
+                    {
+                        continue;
+                    }
+                    $key  = "FIELD_".$table."___".$field;
+                    $type = $vars["TYPE_$key"][$i];
 				
-				if($type == "int")
-				    $update .= "$field = ".$vars[$key][$i];
-				else
-				    $update .= "$field = '".addslashes($vars[$key][$i])."'";
+                    if($type == "int")
+                        $update .= "$field = ".$vars[$key][$i];
+                    else
+                        $update .= "$field = '".addslashes($vars[$key][$i])."'";
 
-				if($count)
-				    $update .= ", ";
-			    }
+                    if($count)
+                        $update .= ", ";
+                }
 			    
-			$value = $fieldnames[$this->get_id($table)][$i];
+                $value = $fieldnames[$this->get_id($table)][$i];
 			
-			$update .= " WHERE ".$this->get_id($table)." = $value";
+                $update .= " WHERE ".$this->get_id($table)." = $value";
 						
-			if(query_appdb($update))
-			{
-			    addmsg("Database Operation Complete!","green");
-			}
+                if(query_appdb($update))
+                {
+                    addmsg("Database Operation Complete!","green");
+                }
 
-			if(ereg("^impl_.+$", $table))
-			    {
-				$value = $fieldnames["apiid"][$i];
-				query_appdb("UPDATE $table SET lastmodby = ".$_SESSION['current']->userid." WHERE apiid = $value");
-			    }
-		    }
-	    }
-	    
-	    
-
+                if(ereg("^impl_.+$", $table))
+                {
+                    $value = $fieldnames["apiid"][$i];
+                    query_appdb("UPDATE $table SET lastmodby = ".$_SESSION['current']->userid." WHERE apiid = $value");
+                }
+            }
+        }
     }
 
     function set_title_field($newTitleField)
     {
-	$this->titleField = $newTitleField;
+        $this->titleField = $newTitleField;
     }
 
     function set_title_text($newTitleText)
     {
-	$this->titleText = $newTitleText;
+        $this->titleText = $newTitleText;
     }
 
     function set_numbered_titles()
     {
-	$this->numberedTitles = 1;
+        $this->numberedTitles = 1;
     }
-
 };
 
 ?>

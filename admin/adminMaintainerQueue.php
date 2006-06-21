@@ -30,14 +30,14 @@ if ($aClean['sub'])
     if ($aClean['queueId'])
     {
         //get data
-        $query = "SELECT queueId, appId, versionId,".
+        $sQuery = "SELECT queueId, appId, versionId,".
                      "userId, maintainReason, superMaintainer,".
                      "UNIX_TIMESTAMP(submitTime) as submitTime ".
                      "FROM appMaintainerQueue WHERE queueId = ".$aClean['queueId'].";";
-        $result = query_appdb($query);
-        $ob = mysql_fetch_object($result);
-        $oUser = new User($ob->userId);
-        mysql_free_result($result);
+        $hResult = query_appdb($sQuery);
+        $oRow = mysql_fetch_object($hResult);
+        $oUser = new User($oRow->userId);
+        mysql_free_result($hResult);
     }
     else
     {
@@ -70,7 +70,7 @@ if ($aClean['sub'])
 
         $firstDisplay = true; /* if false we need to fix up table rows appropriately */
 
-        $other_users = getMaintainersUserIdsFromAppIdVersionId($ob->versionId);
+        $other_users = getMaintainersUserIdsFromAppIdVersionId($oRow->versionId);
         if($other_users)
         {
             $foundMaintainers = true;
@@ -88,7 +88,7 @@ if ($aClean['sub'])
             }
         }
 
-        $other_users = getSuperMaintainersUserIdsFromAppId($ob->appId);
+        $other_users = getSuperMaintainersUserIdsFromAppId($oRow->appId);
         if($other_users)
         {
             $foundMaintainers = true;
@@ -115,7 +115,7 @@ if ($aClean['sub'])
         echo '<tr valign="top"><td class="color0"><b>This user also maintains these apps:</b></td>',"\n";
 
         $firstDisplay = true;
-        $other_apps = getAppsFromUserId($ob->userId);
+        $other_apps = getAppsFromUserId($oRow->userId);
         if($other_apps)
         {
             while(list($index, list($appIdOther, $versionIdOther, $superMaintainerOther)) = each($other_apps))
@@ -142,8 +142,8 @@ if ($aClean['sub'])
             echo "<td>User maintains no other applications</td></tr>\n";
         }
 
-        $oApp = new Application($ob->appId);
-        $oVersion = new Version($ob->versionId);
+        $oApp = new Application($oRow->appId);
+        $oVersion = new Version($oRow->versionId);
 
         //app name
         echo '<tr valign=top><td class=color0><b>App Name</b></td>',"\n";
@@ -155,7 +155,7 @@ if ($aClean['sub'])
          
         //maintainReason
         echo '<tr valign=top><td class=color0><b>Maintainer request reason</b></td>',"\n";
-        echo '<td><textarea name="maintainReason" rows=10 cols=35>'.$ob->maintainReason.'</textarea></td></tr>',"\n";
+        echo '<td><textarea name="maintainReason" rows=10 cols=35>'.$oRow->maintainReason.'</textarea></td></tr>',"\n";
 
         //email response
         echo '<tr valign=top><td class=color0><b>Email reply</b></td>',"\n";
@@ -183,11 +183,11 @@ if ($aClean['sub'])
     else if ($aClean['add'] && $aClean['queueId'])
     {
         /* create a new user object for the maintainer */
-        $maintainerUser = new User($ob->userId);
+        $maintainerUser = new User($oRow->userId);
 
         /* add the user as a maintainer and return the statusMessage */
-        $statusMessage = $maintainerUser->addAsMaintainer($ob->appId, $ob->versionId,
-                                                          $ob->superMaintainer,
+        $statusMessage = $maintainerUser->addAsMaintainer($oRow->appId, $oRow->versionId,
+                                                          $oRow->superMaintainer,
                                                           $aClean['queueId']);
         //done
         addmsg("<p><b>$statusMessage</b></p>", 'green');
@@ -197,8 +197,8 @@ if ($aClean['sub'])
        $sEmail = $oUser->sEmail;
        if ($sEmail)
        {
-           $oApp = new Application($ob->appId);
-           $oVersion = new Version($ob->versionId);
+           $oApp = new Application($oRow->appId);
+           $oVersion = new Version($oRow->versionId);
            $sSubject =  "Application Maintainer Request Report";
            $sMsg  = "Your application to be the maintainer of ".$oApp->sName." ".$oVersion->sName." was rejected. ";
            $sMsg .= $aClean['replyText'];
@@ -209,10 +209,10 @@ if ($aClean['sub'])
        }
 
        //delete main item
-       $query = "DELETE from appMaintainerQueue where queueId = ".$aClean['queueId'].";";
-       $result = query_appdb($query,"unable to delete selected maintainer application");
+       $sQuery = "DELETE from appMaintainerQueue where queueId = ".$aClean['queueId'].";";
+       $hResult = query_appdb($sQuery,"unable to delete selected maintainer application");
        echo html_frame_start("Delete maintainer application",400,"",0);
-       if($result)
+       if($hResult)
        {
            //success
            echo "<p>Maintainer application was successfully deleted from the Queue.</p>\n";
@@ -232,14 +232,14 @@ if ($aClean['sub'])
     echo '<form name="qform" action="adminMaintainerQueue.php" method="post" enctype="multipart/form-data">',"\n";
 
     //get available maintainers
-    $query = "SELECT queueId, appId, versionId,".
+    $sQuery = "SELECT queueId, appId, versionId,".
                      "userId, maintainReason,".
                      "superMaintainer,".
                      "submitTime as submitTime ".
                      "from appMaintainerQueue;";
-    $result = query_appdb($query);
+    $hResult = query_appdb($sQuery);
 
-    if(!$result || !mysql_num_rows($result))
+    if(!$hResult || !mysql_num_rows($hResult))
     {
          //no apps in queue
         echo html_frame_start("","90%");
@@ -269,17 +269,17 @@ if ($aClean['sub'])
         echo "</tr>\n\n";
         
         $c = 1;
-        while($ob = mysql_fetch_object($result))
+        while($oRow = mysql_fetch_object($hResult))
         {
-            $oUser = new User($ob->userId);
-            $oApp = new Application($ob->appId);
-            $oVersion = new Version($ob->versionId);
+            $oUser = new User($oRow->userId);
+            $oApp = new Application($oRow->appId);
+            $oVersion = new Version($oRow->versionId);
             if ($c % 2 == 1) { $bgcolor = 'color0'; } else { $bgcolor = 'color1'; }
             echo "<tr class=$bgcolor>\n";
-            echo "    <td>".print_date(mysqldatetime_to_unixtimestamp($ob->submitTime))." &nbsp;</td>\n";
+            echo "    <td>".print_date(mysqldatetime_to_unixtimestamp($oRow->submitTime))." &nbsp;</td>\n";
             echo "    <td>".$oApp->sName."</td>\n";
 
-            if($ob->superMaintainer)
+            if($oRow->superMaintainer)
             {
                 echo "<td>N/A</td>\n";
                 echo "<td>Yes</td>\n";
@@ -290,7 +290,7 @@ if ($aClean['sub'])
             }
 
             echo "    <td><a href=\"mailto:".$oUser->sEmail."\">".$oUser->sRealname."</a></td>\n";
-            echo "    <td>[<a href=\"adminMaintainerQueue.php?sub=view&queueId=$ob->queueId\">answer</a>]</td>\n";
+            echo "    <td>[<a href=\"adminMaintainerQueue.php?sub=view&queueId=$oRow->queueId\">answer</a>]</td>\n";
             echo "</tr>\n\n";
             $c++;
         }
