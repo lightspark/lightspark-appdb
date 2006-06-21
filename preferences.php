@@ -11,15 +11,15 @@ include(BASE."include/"."incl.php");
 
 $aClean = array(); //array of filtered user input
 
-$aClean['userId'] = makeSafe($REQUEST['userId']);
-$aClean['iLimit'] = makeSafe($REQUEST['iLimit']);
-$aClean['sOrderBy'] = makeSafe($REQUEST['sOrderBy']);
-$aClean['ext_password'] = makeSafe($REQUEST['ext_password']);
-$aClean['ext_password2'] = makeSafe($REQUEST['ext_password2']);
-$aClean['ext_email'] = makeSafe($REQUEST['ext_email']);
-$aClean['ext_realname'] = makeSafe($REQUEST['ext_realname']);
-$aClean['CVSrelease'] = makeSafe($REQUEST['CVSrelease']);
-$aClean['ext_hasadmin'] = makeSafe($POST['ext_hasadmin']); 
+$aClean['userId'] = makeSafe($_REQUEST['userId']);
+$aClean['iLimit'] = makeSafe($_REQUEST['iLimit']);
+$aClean['sOrderBy'] = makeSafe($_REQUEST['sOrderBy']);
+$aClean['ext_password'] = makeSafe($_REQUEST['ext_password']);
+$aClean['ext_password2'] = makeSafe($_REQUEST['ext_password2']);
+$aClean['ext_email'] = makeSafe($_REQUEST['ext_email']);
+$aClean['ext_realname'] = makeSafe($_REQUEST['ext_realname']);
+$aClean['CVSrelease'] = makeSafe($_REQUEST['CVSrelease']);
+$aClean['ext_hasadmin'] = makeSafe($_POST['ext_hasadmin']); 
 
 /* filter all of the preferences */
 while(list($key, $value) = each($_REQUEST))
