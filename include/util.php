@@ -9,21 +9,21 @@ function makeSafe($var)
 
 function build_urlarg($vars)
 {
-	$arr = array();
-	while(list($key, $val) = each($vars))
-	    {
-		if(is_array($val))
+    $arr = array();
+    while(list($key, $val) = each($vars))
+    {
+        if(is_array($val))
 		    {
-			while(list($idx, $value) = each($val))
-			    {
-				//echo "Encoding $key / $value<br>";
-				$arr[] = rawurlencode($key."[]")."=".rawurlencode($value);
-			    }
+            while(list($idx, $value) = each($val))
+            {
+                //echo "Encoding $key / $value<br>";
+                $arr[] = rawurlencode($key."[]")."=".rawurlencode($value);
+            }
 		    }
-		else
-		    $arr[] = $key."=".rawurlencode($val);
-	    }
-	return implode("&", $arr);
+        else
+            $arr[] = $key."=".rawurlencode($val);
+    }
+    return implode("&", $arr);
 }
 
 
@@ -735,8 +735,9 @@ function display_page_range($currentPage=1, $pageRange=1, $totalPages=1, $linkur
         echo "<a href='".$linkurl."&page=$nextPage'>&gt</a> ";
         echo "<a href='".$linkurl."&page=$totalPages'>&gt|</a> ";
     } else
+    {
         echo "&gt &gt|";
-    
+    }
 }
 
 // Expand a path like /something/somedirectory/../ to /something
@@ -744,13 +745,16 @@ function display_page_range($currentPage=1, $pageRange=1, $totalPages=1, $linkur
 function SimplifyPath($path) {
   $dirs = explode('/',$path);
 
-  for($i=0; $i<count($dirs);$i++) {
-   if($dirs[$i]=="." || $dirs[$i]=="") {
+  for($i=0; $i<count($dirs);$i++)
+  {
+   if($dirs[$i]=="." || $dirs[$i]=="")
+   {
      array_splice($dirs,$i,1);
      $i--;
    }
 
-   if($dirs[$i]=="..") {
+   if($dirs[$i]=="..")
+   {
      $cnt = count($dirs);
      $dirs=Simplify($dirs, $i);
      $i-= $cnt-count($dirs);
@@ -759,7 +763,8 @@ function SimplifyPath($path) {
   return implode('/',$dirs);
 }
 
-function Simplify($dirs, $idx) {
+function Simplify($dirs, $idx)
+{
   if($idx==0) return $dirs;
 
   if($dirs[$idx-1]=="..") Simplify($dirs, $idx-1);
