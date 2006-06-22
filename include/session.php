@@ -79,7 +79,7 @@ class session
         if(isset($GLOBALS['msg_buffer']))
             $messages = implode("|", $GLOBALS['msg_buffer']);
 
-        query_appdb("REPLACE session_list VALUES ('$key',  '".$_SESSION['current']->userid."', '".get_remote()."', '".addslashes($value)."', '$messages', NOW())");
+        query_appdb("REPLACE session_list VALUES ('$key',  '".$_SESSION['current']->iUserId."', '".get_remote()."', '".addslashes($value)."', '$messages', NOW())");
         return true;
     }
     
