@@ -266,12 +266,12 @@ function outputTopXRow($oRow)
 {
     $oVersion = new Version($oRow->versionId);
     $oApp = new Application($oVersion->iAppId);
-    $img = get_screenshot_img(null, $oRow->versionId); // image
+    $img = get_screenshot_img(null, $oRow->versionId, false); // image, disable extra formatting
     echo '
     <tr class="white">
       <td><a href="appview.php?versionId='.$oRow->versionId.'">'.$oApp->sName.' '.$oVersion->sName.'</a></td>
         <td>'.trim_description($oApp->sDescription).'</td>
-        <td>'.$img.'</td>
+        <td><center>'.$img.'</center></td>
     </tr>';
 }
 

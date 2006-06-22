@@ -303,8 +303,10 @@ class Screenshot {
 /**
  * Get a random image for a particular version of an app.
  * If the version is not set, get a random app image 
+ *
+ * $bFormatting == false turns off all extranious formatting applied to the returned image html
  */
-function get_screenshot_img($iAppId = null, $iVersionId = null) 
+function get_screenshot_img($iAppId = null, $iVersionId = null, $bFormatting = true) 
 {
     // we want a random screenshots for this app
     if($iAppId && !$iVersionId)
@@ -325,16 +327,24 @@ function get_screenshot_img($iAppId = null, $iVersionId = null)
                                 AND queued = 'false' 
                                 ORDER BY rand");
     }
+
+    if($bFormatting)
+        $sImgFile .= '<center>';
+
     if(!$hResult || !mysql_num_rows($hResult))
     {
-        $sImgFile = '<center><img src="images/no_screenshot.png" alt="No Screenshot" /></center>';
+        $sImgFile = '<img src="images/no_screenshot.png" alt="No Screenshot" />';
     } else
     {
         $oRow = mysql_fetch_object($hResult);
-        $sImgFile = '<center><img src="appimage.php?thumbnail=true&amp;id='.$oRow->id.'" alt="'.$oRow->description.'" /></center>';
+        $sImgFile = '<img src="appimage.php?thumbnail=true&amp;id='.$oRow->id.'" alt="'.$oRow->description.'" />';
     }
+
+    if($bFormatting)
+        $sImgFile .= '</center>';
     
-    $sImg = html_frame_start("",'128','',2);
+    if($bFormatting)
+        $sImg = html_frame_start("",'128','',2);
 
     /* we have screenshots */
     if(mysql_num_rows($hResult))
@@ -350,7 +360,9 @@ function get_screenshot_img($iAppId = null, $iVersionId = null)
     {
         $sImg .= $sImgFile; 
     }
-    $sImg .= html_frame_end()."<br />";
+
+    if($bFormatting)
+        $sImg .= html_frame_end()."<br />";
     
     return $sImg;
 }
