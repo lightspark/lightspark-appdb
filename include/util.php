@@ -269,9 +269,9 @@ function outputTopXRow($oRow)
     $img = get_screenshot_img(null, $oRow->versionId, false); // image, disable extra formatting
     echo '
     <tr class="white">
-      <td><a href="appview.php?versionId='.$oRow->versionId.'">'.$oApp->sName.' '.$oVersion->sName.'</a></td>
-        <td>'.trim_description($oApp->sDescription).'</td>
-        <td><center>'.$img.'</center></td>
+      <td class="app_name"><a href="appview.php?versionId='.$oRow->versionId.'">'.$oApp->sName.' '.$oVersion->sName.'</a></td>
+      <td>'.trim_description($oApp->sDescription).'</td>
+      <td><center>'.$img.'</center></td>
     </tr>';
 }
 

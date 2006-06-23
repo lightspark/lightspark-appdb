@@ -196,6 +196,8 @@ TD.yes { color: #00B100; font-style: italic; text-align: center }
 TD.no  { color: #B10000; font-style: italic; text-align: center }
 TD.stub { color: #0000B1; font-style: italic; text-align: center }
 
+/* width of the application column in the top 'X' lists on the main page */
+TD.app_name { width: 150px }
 
 /* Rating Number */
 .rating { font-family: Helvetica, Arial; font-size: 6pt; color: #333333; }		  
