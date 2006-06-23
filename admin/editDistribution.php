@@ -6,7 +6,7 @@ require(BASE."include/distributions.php");
 $aClean = array(); //array of filtered user input
 
 $aClean['iDistributionId'] = makeSafe($_REQUEST['iDistributionId']);
-$aClean['submit'] = makeSafe($_REQUEST['submit']);
+$aClean['Submit'] = makeSafe($_REQUEST['Submit']);
 
 if(!$_SESSION['current']->hasPriv("admin"))
 {
