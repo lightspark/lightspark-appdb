@@ -113,7 +113,7 @@ function vote_menu()
 {
 
     $aClean = array(); //array of filtered user input
-    $aClean['appid'] = makeSafe($_REQUEST['appId']);
+    $aClean['appId'] = makeSafe($_REQUEST['appId']);
 
     $m = new htmlmenu("Votes","updatevote.php");
     
