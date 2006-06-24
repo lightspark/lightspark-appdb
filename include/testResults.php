@@ -542,7 +542,7 @@ class testData{
             $errors .= "<li>Please enter the version of Wine that you tested with.</li>\n";
 
         // No Distribution entered, and nothing in the list is selected
-        if (empty($sDistribution) && !$aClean['iDistributionId'])
+        if (empty($aClean['sDistribution']) && !$aClean['iDistributionId'])
             $errors .= "<li>Please enter a distribution.</li>\n";
 
         if (empty($aClean['sInstalls']))
