@@ -14,14 +14,12 @@ $aClean['catId'] = makeSafe($_REQUEST['catId']);
 
 function admin_menu()
 {
-    if( empty( $aClean['catId'] ) )
-    {
-        $aClean['catId'] = "";
-    }
+    if(isset($_REQUEST['catId'])) $iCatId=$_REQUEST['catId'];
+    else $iCatId="";
 
     $m = new htmlmenu("Admin");
-    $m->add("Edit this Category", BASE."admin/addCategory.php?catId']}");
-    $url = BASE."admin/deleteAny.php?what=category&catId={$aClean['catId']}&confirmed=yes";
+    $m->add("Edit this Category", BASE."admin/addCategory.php?catId=$iCatId");
+    $url = BASE."admin/deleteAny.php?what=category&catId=$iCatId&confirmed=yes";
     $m->add("Delete this Category", "javascript:deleteURL(\"Are you sure?\", \"".$url."\")");
 
     $m->done();
