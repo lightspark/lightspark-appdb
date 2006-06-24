@@ -177,9 +177,9 @@ if ($aClean['sub'])
             }
         }
 
+        /* if we have errors go back to 'view' mode */
         if(!empty($errors))
         {
-            addmsg("we've got Errors???:".$errors.":");
             $aClean['sub'] = 'view';
         } 
         else
@@ -206,9 +206,9 @@ if ($aClean['sub'])
             }
             $oTest->iVersionId = $oVersion->iVersionId;
             if(is_numeric($oTest->iTestingId))
-	    {
-	        $oTest->update(true);
-	        $oTest->ReQueue();
+            {
+                $oTest->update(true);
+                $oTest->ReQueue();
             } else 
             {
                 $oTest->create();
