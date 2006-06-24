@@ -446,7 +446,7 @@ class testData{
     }
 
     // show the fields for editing
-    function OutputEditor($sDistribution, $bNewDist=false)
+    function OutputEditor($sDistribution="", $bNewDist=false)
     {
         HtmlAreaLoaderScript(array("Test1", "Test2", "Test3"));
 
