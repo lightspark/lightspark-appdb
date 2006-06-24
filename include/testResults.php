@@ -69,23 +69,18 @@ class testData{
         else
             $this->sQueued = 'false';
 
-        $aInsert = compile_insert_string(array( 'versionId'         => $this->iVersionId,
-                                                'whatWorks'         => $this->sWhatWorks,
-                                                'whatDoesnt'        => $this->sWhatDoesnt,
-                                                'whatNotTested'     => $this->sWhatNotTested,
-                                                'testedDate'        => $this->sTestedDate,
-                                                'distributionId'    => $this->iDistributionId,
-                                                'testedRelease'     => $this->sTestedRelease,
-                                                'installs'          => $this->sInstalls,
-                                                'runs'              => $this->sRuns,
-                                                'testedRating'      => $this->sTestedRating,
-                                                'comments'          => $this->sComments,
-                                                'submitterId'       => $_SESSION['current']->iUserId,
-                                                'queued'            => $this->sQueued ));
-        $sFields = "({$aInsert['FIELDS']})";
-        $sValues = "({$aInsert['VALUES']})";
 
-        if(query_appdb("INSERT INTO testResults $sFields VALUES $sValues", "Error while creating test results."))
+        $hResult = query_parameters("INSERT INTO testResults (versionId, whatWorks, whatDoesnt,".
+                                    "whatNotTested, testedDate, distributionId, testedRelease,".
+                                    "installs, runs, testedRating, comments, submitterId, queued)".
+                                    " VALUES('?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?',".
+                                    "'?', '?')",
+                                    $this->iVersionId, $this->sWhatWorks, $this->sWhatDoesnt,
+                                    $this->sWhatNotTested, $this->sTestedDate, $this->iDistributionId,
+                                    $this->sTestedRelease, $this->sInstalls, $this->sRuns,
+                                    $this->sTestedRating, $this->sComments, $_SESSION['current']->iUserId,
+                                    $this->sQueued);
+        if($hResult)
         {
             $this->iTestingId = mysql_insert_id();
             $this->testData($this->iTestingId);
@@ -93,7 +88,10 @@ class testData{
             return true;
         }
         else
+        {
+            addmsg("Error while creating test results.", "red");
             return false;
+        }
     }
 
     // Update Test Results.

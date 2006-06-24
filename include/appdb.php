@@ -11,7 +11,9 @@ function log_category_visit($catId)
         query_appdb("UPDATE catHitStats SET count = count + 1 WHERE catHitId = $stats->catHitId");
     } else
     {
-        query_appdb("INSERT INTO catHitStats VALUES(null, null, '$REMOTE_ADDR', $catId, 1)");
+        query_parameters("INSERT INTO catHitStats (appHitId, time, ip, catId, count) ".
+                         "VALUES (?, ?, '?', '?', '?')",
+                         "null", "null", $REMOTE_ADDR, $catId, "1");
     }
 }
 
@@ -26,7 +28,9 @@ function log_application_visit($appId)
         query_appdb("UPDATE appHitStats SET count = count + 1 WHERE appHitId = $stats->appHitId");
     } else
     {
-        query_appdb("INSERT INTO appHitStats VALUES(null, null, '$REMOTE_ADDR', $appId, 1)");
+        query_parameters("INSERT INTO appHitStats (appHitId, time, ip, appId, count) ".
+                         "VALUES (?, ?, '?', '?', '?')",
+                         "null", "null", $REMOTE_ADDR, $appId, "1");
     }
 }
 

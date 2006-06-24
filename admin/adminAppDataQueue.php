@@ -168,10 +168,12 @@ if (!$aClean['id'])
             $oScreenshot->unQueue();
         }
         elseif ($obj_row->type == "url")
-        { // FIXME: use Link class
-            $query = "INSERT INTO appData VALUES (null, ".$obj_row->versionId.", 'url', ".
-                     "'".$aClean['description']."', '".$obj_row->url."')";
-            if (query_appdb($sQuery))
+        {
+            $hResult = query_parameters("INSERT INTO appData (id, appId, versionId, type, ".
+                                        "description, url) VALUES (?, '?', '?', '?', '?', '?')",
+                                        "null", $obj_row->appId, $obj_row->versionId,
+                                        "url", $aClean['description'], $obj_row->url);
+            if($hResult)
             {
                 $statusMessage = "<p>The application data was successfully added into the database</p>\n";
 

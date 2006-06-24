@@ -83,14 +83,11 @@ class User {
             return false;
         } else
         {
-            $aInsert = compile_insert_string(array( 'realname' => $sRealname,
-                                                    'email' => $sEmail,
-                                                    'CVSrelease' => $sWineRelease ));
+            $hResult = query_parameters("INSERT INTO user_list (realname, email, CVSrelease, password, stamp,".
+                                        "created) VALUES ('?', '?', '?', password('?'), ?, ?)",
+                                        $sRealname, $sEmail, $sWineRelease, $sPassword, "NOW()", "NOW()");
 
-            $sFields = "({$aInsert['FIELDS']}, `password`, `stamp`, `created`)";
-            $sValues = "({$aInsert['VALUES']}, password('".$sPassword."'), NOW(), NOW() )";
-
-            query_appdb("INSERT INTO user_list $sFields VALUES $sValues", "Error while creating a new user.");
+            if(!$hResult) addMsg("Error while creating a new user.", "red");
 
             $retval = $this->login($sEmail, $sPassword);
             $this->setPref("comments:mode", "threaded"); /* set the users default comments:mode to threaded */
@@ -183,7 +180,8 @@ class User {
             return false;
 
         $hResult = query_appdb("DELETE FROM user_prefs WHERE userid = ".$this->iUserId." AND name = '$sKey'");
-        $hResult = query_appdb("INSERT INTO user_prefs VALUES(".$this->iUserId.", '$sKey', '$sValue')");
+        $hResult = query_parameters("INSERT INTO user_prefs (userid, name, value) VALUES".
+                                    "('?', '?', '?')", $this->iUserId, $sKey, $sValue);
         return $hResult;
     }
 
@@ -278,15 +276,13 @@ class User {
          if(!$this->isSuperMaintainer($iAppId) &&
             ((!$bSuperMaintainer && !$this->isMaintainer($iVersionId)) | $bSuperMaintainer))
          {
-            // insert the new entry into the maintainers list
-            $sQuery = "INSERT into appMaintainers VALUES(null,".
-                "$iAppId,".
-                "$iVersionId,".
-                "$this->iUserId,".
-                "$bSuperMaintainer,".
-                "NOW());";
-
-            if (query_appdb($sQuery))
+             // insert the new entry into the maintainers list
+             $hResult = query_parameters("INSERT INTO appMaintainers (maintainerId, appId,".
+                                         "versionId, userId, superMaintainer, submitTime) ".
+                                         "VALUES (?, '?', '?', '?', '?', ?)",
+                                         "null", $iAppId, $iVersionId, $this->iUserId,
+                                         $bSuperMaintainer, "NOW()");
+            if($hResult)
             {
                 $statusMessage = "<p>The maintainer was successfully added into the database</p>\n";
 
@@ -400,7 +396,8 @@ class User {
         if($this->hasPriv($sPriv))
             return true;
 
-        $hResult = query_appdb("INSERT INTO user_privs VALUES ($this->iUserId, '$sPriv')");
+        $hResult = query_parameters("INSERT INTO user_privs (userid, priv) VALUES".
+                                    " ('?', '?')", $this->iUserId, $sPriv);
         return $hResult;
     }
 

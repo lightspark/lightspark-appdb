@@ -66,7 +66,9 @@ function vote_add($appId, $slot, $userId = null)
         return;
     
     vote_remove($slot, $userId);
-    query_appdb("INSERT INTO appVotes VALUES (null, null, $appId, $userId, $slot)");
+
+    query_parameters("INSERT INTO appVotes (id, time, appId, userId, slot)
+                      VALUES (?, ?, '?', '?', '?')", "null", "null", $appId, $userId, $slot);
 }
 
 

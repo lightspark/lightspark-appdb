@@ -49,14 +49,11 @@ class Note {
      */
     function create($sTitle, $sDescription, $iVersionId)
     {
-        $aInsert = compile_insert_string(array( 'versionId' => $iVersionId,
-                                                'noteTitle' => $sTitle,
-                                                'noteDesc' => $sDescription ));
+        $hResult = query_parameters("INSERT INTO appNotes (versionId, noteTitle, noteDesc) ".
+                                    "VALUES('?', '?', '?')",
+                                    $iVersionId, $sTitle, $sDescription);
 
-        $sFields = "({$aInsert['FIELDS']})";
-        $sValues = "({$aInsert['VALUES']})";
-
-        if(query_appdb("INSERT INTO appNotes $sFields VALUES $sValues", "Error while creating a new note."))
+        if($hResult)
         {
             $this->note(mysql_insert_id());
             $sWhatChanged = "Description is:\n".$sDescription.".\n\n";
@@ -64,7 +61,10 @@ class Note {
             return true;
         }
         else
+        {
+            addmsg("Error while creating a new note.", "red");
             return false;
+        }
     }
 
 

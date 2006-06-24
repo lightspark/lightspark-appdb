@@ -182,17 +182,14 @@ class Version {
         else
             $this->sQueued = 'false';
 
-        $aInsert = compile_insert_string(array( 'versionName'       => $this->sName,
-                                                'description'       => $this->sDescription,
-                                                'maintainer_release'=> $this->sTestedRelease,
-                                                'maintainer_rating' => $this->sTestedRating,
-                                                'appId'             => $this->iAppId,
-                                                'submitterId'       => $_SESSION['current']->iUserId,
-                                                'queued'            => $this->sQueued ));
-        $sFields = "({$aInsert['FIELDS']})";
-        $sValues = "({$aInsert['VALUES']})";
+        $hResult = query_parameters("INSERT INTO appVersion (versionName, description, maintainer_release,".
+                                    "maintainer_rating, appId, submitterId, queued) VALUES ".
+                                    "('?', '?', '?', '?', '?', '?', '?')",
+                                    $this->sName, $this->sDescription, $this->sTestedRelease,
+                                    $this->sTestedRating, $this->iAppId, $_SESSION['current']->iUserId,
+                                    $this->sQueued);
 
-        if(query_appdb("INSERT INTO appVersion $sFields VALUES $sValues", "Error while creating a new version."))
+        if($hResult)
         {
             $this->iVersionId = mysql_insert_id();
             $this->Version($this->iVersionId);
@@ -201,6 +198,7 @@ class Version {
         }
         else
         {
+            addmsg("Error while creating a new version", "red");
             return false;
         }
     }

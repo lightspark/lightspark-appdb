@@ -70,15 +70,11 @@ class Screenshot {
             $this->bQueued = false;
         }
 
-        $aInsert = compile_insert_string(array( 'versionId'    => $iVersionId,
-                                                'type'         => "image",
-                                                'description'  => $sDescription,
-                                                'queued'       => $this->bQueued?"true":"false",
-                                                'submitterId'  => $_SESSION['current']->iUserId ));
-        $sFields = "({$aInsert['FIELDS']})";
-        $sValues = "({$aInsert['VALUES']})";
-
-        if(query_appdb("INSERT INTO appData $sFields VALUES $sValues", "Error while creating a new screenshot."))
+        $hResult = query_parameters("INSERT INTO appData (versionId, type, description, queued, submitterId) ".
+                                    "VALUES('?', '?', '?', '?', '?')",
+                                    $iVersionId, "image", $sDescription, $this->bQueued?"true":"false",
+                                    $_SESSION['current']->iUserId);
+        if($hResult)
         {
             $this->iScreenshotId = mysql_insert_id();
 
@@ -120,7 +116,10 @@ class Screenshot {
             return true;
         }
         else
+        {
+            addmsg("Error while creating a new screenshot.", "red");
             return false;
+        }
     }
 
 

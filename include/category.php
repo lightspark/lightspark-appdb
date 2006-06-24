@@ -76,20 +76,20 @@ class Category {
      */
     function create($sName=null, $sDescription=null, $iParentId=null)
     {
-        $aInsert = compile_insert_string(array( 'catName'=> $sName,
-                                                'catDescription' => $sDescription,
-                                                'catParent' => $iParentId  ));
-        $sFields = "({$aInsert['FIELDS']})";
-        $sValues = "({$aInsert['VALUES']})";
-
-        if(query_appdb("INSERT INTO appCategory $sFields VALUES $sValues", "Error while creating a new vendor."))
+        $hResult = query_parameters("INSERT INTO appCategory (catName, catDescription, catParent) ".
+                                    "VALUES('?', '?', '?')",
+                                    $sName, $sDescription, $iParentId);
+        if($hResult)
         {
             $this->iCatId = mysql_insert_id();
             $this->category($this->iCatId);
             return true;
         }
         else
+        {
+            addmsg("Error while creating a new vendor.", "red");
             return false;
+        }
     }
 
 

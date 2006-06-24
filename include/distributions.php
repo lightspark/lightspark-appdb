@@ -96,14 +96,11 @@ class distribution{
         else
             $this->sQueued = 'false';
 
-        $aInsert = compile_insert_string(array( 'name'              => $this->sName,
-                                                'url'               => $this->sUrl,
-                                                'submitterId'       => $_SESSION['current']->iUserId,
-                                                'queued'            => $this->sQueued ));
-        $sFields = "({$aInsert['FIELDS']})";
-        $sValues = "({$aInsert['VALUES']})";
-
-        if(query_appdb("INSERT INTO distributions $sFields VALUES $sValues", "Error while creating Distribution."))
+        $hResult = query_parameters("INSERT INTO distributions (name, url, submitterId, queued) ".
+                                    "VALUES ('?', '?', '?', '?')",
+                                    $this->sName, $this->sUrl, $_SESSION['current']->iUserId,
+                                    $this->sQueued);
+        if($hResult)
         {
             $this->iDistributionId = mysql_insert_id();
             $this->distribution($this->iDistributionId);
@@ -111,7 +108,10 @@ class distribution{
             return true;
         }
         else
+        {
+            addmsg("Error while creating Distribution.", "red");
             return false;
+        }
     }
 
     // Update Distribution.

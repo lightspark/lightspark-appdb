@@ -113,13 +113,11 @@ class Bug {
 
         /* passed the checks so lets insert the puppy! */
 
-        $aInsert = compile_insert_string(array( 'versionId'    => $iVersionId,
-                                                'bug_id'       => $iBug_id,
-                                                'queued'       => $this->bQueued?"true":"false",
-                                                'submitterId'  => $_SESSION['current']->iUserId ));
-        $sFields = "({$aInsert['FIELDS']})";
-        $sValues = "({$aInsert['VALUES']})";
-        if(query_appdb("INSERT INTO buglinks $sFields VALUES $sValues", "Error while creating a new Bug link."))
+        $hResult = query_parameters("INSERT INTO buglinks (versionId, bug_id, queued, submitterId) ".
+                                    "VALUES('?', '?', '?', '?')",
+                                    $iVersionId, $iBug_id, $this->bQueued?"true":"false",
+                                    $_SESSION['current']->iUserId);
+        if($hResult)
         {
             /* The following should work but it does not! */
             $this->iLinkId = mysql_insert_id();
@@ -141,6 +139,7 @@ class Bug {
             return true;
         }else
         {
+            addmsg("Error while creating a new Bug link.", "red");
             return false;
         }
     }

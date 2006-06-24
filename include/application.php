@@ -111,18 +111,13 @@ class Application {
         else
             $this->sQueued = 'false';
 
-        $aInsert = compile_insert_string(array( 'appName'    => $this->sName,
-                                                'description'=> $this->sDescription,
-                                                'keywords'   => $this->sKeywords,
-                                                'webPage'    => $this->sWebpage,
-                                                'vendorId'   => $this->iVendorId,
-                                                'catId'      => $this->iCatId,
-                                                'submitterId'=> $_SESSION['current']->iUserId,
-                                                'queued'     => $this->sQueued));
-        $sFields = "({$aInsert['FIELDS']})";
-        $sValues = "({$aInsert['VALUES']})";
-
-        if(query_appdb("INSERT INTO appFamily $sFields VALUES $sValues", "Error while creating a new application."))
+        $hResult = query_parameters("INSERT INTO appFamily (appName, description, keywords, ".
+                                    "webPage, vendorId, catId, submitterId, queued) VALUES (".
+                                    "'?', '?', '?', '?', '?', '?', '?', '?')",
+                                    $this->sName, $this->sDescription, $this->sKeywords,
+                                    $this->sWebpage, $this->iVendorId, $this->iCatId,
+                                    $_SESSION['current']->iUserId, $this->sQueued);
+        if($hResult)
         {
             $this->iAppId = mysql_insert_id();
             $this->application($this->iAppId);
@@ -130,6 +125,7 @@ class Application {
             return true;
         } else
         {
+            addmsg("Error while creating a new application.", "red");
             return false;
         }
     }

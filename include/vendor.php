@@ -56,19 +56,19 @@ class Vendor {
      */
     function create($sName=null, $sWebpage=null)
     {
-        $aInsert = compile_insert_string(array( 'vendorName'=> $sName,
-                                                'vendorURL' => $sWebpage ));
-        $sFields = "({$aInsert['FIELDS']})";
-        $sValues = "({$aInsert['VALUES']})";
-
-        if(query_appdb("INSERT INTO vendor $sFields VALUES $sValues", "Error while creating a new vendor."))
+        $hResult = query_parameters("INSERT INTO vendor (vendorName, vendorURL) ".
+                                    "VALUES ('?', '?')", $sName, $sWebpage);
+        if($hResult)
         {
             $this->iVendorId = mysql_insert_id();
             $this->vendor($this->iVendorId);
             return true;
         }
         else
+        {
+            addmsg("Error while creating a new vendor.", "red");
             return false;
+        }
     }
 
 

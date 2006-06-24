@@ -580,24 +580,20 @@ function process_app_version_changes($isVersion)
 
             if($isVersion)
             {
-                $aInsert = compile_insert_string( array('versionId' => $_REQUEST['versionId'],
-                                             'type' => 'url',
-                                             'description' => $_REQUEST['url_desc'],
-                                             'url' => $_REQUEST['url']));
+                $hResult = query_parameters("INSERT INTO appData (versionId, type, description, url) ".
+                                            "VALUES ('?', '?', '?', '?')",
+                                            $_REQUEST['versionId'], "url", $_REQUEST['url_desc'],
+                                            $_REQUEST['url']);
             } else
             {
-                $aInsert = compile_insert_string( array( 'appId' => $_REQUEST['appId'],
-                                             'type' => 'url',
-                                             'description' => $_REQUEST['url_desc'],
-                                             'url' => $_REQUEST['url']));
+                $hResult = query_parameters("INSERT INTO appData (appId, type, description, url) ".
+                                            "VALUES ('?', '?', '?', '?')",
+                                            $_REQUEST['appId'], "url", $_REQUEST['url_desc'],
+                                            $_REQUEST['url']);
             
             }
             
-            $sQuery = "INSERT INTO appData ({$aInsert['FIELDS']}) VALUES ({$aInsert['VALUES']})";
-	    
-            if($_SESSION['current']->showDebuggingInfos()) { echo "<p align=center><b>query:</b> $sQuery </p>"; }
-
-            if (query_appdb($sQuery))
+            if ($hResult)
             {
                 addmsg("The URL was successfully added into the database", "green");
                 $sWhatChanged .= "  Added Url:     Description: ".stripslashes($_REQUEST['url_desc'])."\n";

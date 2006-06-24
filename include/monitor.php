@@ -61,21 +61,21 @@ class Monitor {
      */
     function create($iUserId, $iAppId=0, $iVersionId=0)
     {
-        $aInsert = compile_insert_string(array( 'versionId' => $iVersionId,
-                                                'appId' => $iAppId,
-                                                'userId' => $iUserId ));
+        $hResult = query_parameters("INSERT INTO appMonitors (versionId, appId, userId) ".
+                                    "VALUES ('?', '?', '?')",
+                                    $iVersionId, $iAppId, $iUserId);
 
-        $sFields = "({$aInsert['FIELDS']})";
-        $sValues = "({$aInsert['VALUES']})";
-        if(query_appdb("INSERT INTO appMonitors $sFields VALUES $sValues", "Error while creating a new Monitor."))
+        if($hResult)
         {
             $this->Monitor(mysql_insert_id());
             $sWhatChanged = "New monitor\n\n";
             $this->SendNotificationMail("add", $sWhatChanged);
             return true;
-        }
-        else
+        } else
+        {
+            addmsg("Error while creating a new Monitor.", "red");
             return false;
+        }
     }
 
 

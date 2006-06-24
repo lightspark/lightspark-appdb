@@ -53,15 +53,12 @@ class Comment {
      */
     function create($sSubject, $sBody, $iParentId=null, $iVersionId)
     {
-        $aInsert = compile_insert_string(array( 'parentId' => $iParentId,
-                                                'versionId' => $iVersionId,
-                                                'subject' => $sSubject,
-                                                'body' => $sBody ));
+        $hResult = query_parameters("INSERT INTO appComments (parentId, versionId, subject, ".
+                                    "body, userId, time, hostname) VALUES ('?', '?', '?', '?', '?', ?, '?')",
+                                    $iParentId, $iVersionId, $sSubject, $sBody, $_SESSION['current']->iUserId,
+                                    "NOW()", get_remote());
 
-        $sFields = "({$aInsert['FIELDS']}, `userId`, `time`, `hostname`)";
-        $sValues = "({$aInsert['VALUES']}, ".$_SESSION['current']->iUserId.", NOW(), '".get_remote()."')";
-
-        if(query_appdb("INSERT INTO appComments $sFields VALUES $sValues", "Error while creating a new comment."))
+        if($hResult)
         {
             $this->comment(mysql_insert_id());
             $sEmail = get_notify_email_address_list($this->iAppId, $this->iVersionId);
@@ -101,7 +98,10 @@ class Comment {
             return true;
         }
         else
+        {
+            addmsg("Error while creating a new comment", "red");
             return false;
+        }
     }
 
 

@@ -82,15 +82,14 @@ if( $aClean['maintainReason'] )
         apidb_header("Submit Maintainer Request");    
 
     // add to queue
-    $query = "INSERT INTO appMaintainerQueue VALUES (null, '".
-            $aClean['appId']."', '".
-            $aClean['versionId']."', '".
-            addslashes($_SESSION['current']->iUserId)."', '".
-            $aClean['maintainReason']."', '".
-            $aClean['superMaintainer']."',".
-            "NOW()".");";
+    $hResult = query_parameters("INSERT INTO appMaintainerQueue (queueId, appId, versionId, ".
+                                "userId, maintainReason, superMaintainer, submitTime) ".
+                                "VALUES (?, '?', '?', '?', '?', '?', ?)",
+                                "null", $aClean['appId'], $aClean['versionId'],
+                                $_SESSION['current']->iUserId, $aClean['maintainReason'],
+                                $aClean['superMaintainer'], "NOW()");
 
-    if (query_appdb($query))
+    if ($hResult)
     {
         echo "<p>Your maintainer request has been submitted for review. You should hear back\n";
         echo "soon about the status of your submission</p>\n";

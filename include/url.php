@@ -62,16 +62,11 @@ class Url {
             $this->bQueued = true;
         }
 
-        $aInsert = compile_insert_string(array( 'appId'       => $iAppId,
-                                                'versionId'   => $iVersionId,
-                                                'type'        => "url",
-                                                'description' => $sDescription,
-                                                'queued'      => $this->bQueued,
-                                                'submitterId' => $_SESSION['current']->iUserId ));
-        $sFields = "({$aInsert['FIELDS']})";
-        $sValues = "({$aInsert['VALUES']})";
-
-        if(query_appdb("INSERT INTO appData $sFields VALUES $sValues", "Error while creating a new url."))
+        $hResult = query_parameters("INSERT INTO appData (appId, versionId, type, description,".
+                                    "queued, submitterId) VALUES ('?', '?', '?', '?', '?', '?')",
+                                    $iAppId, $iVersionId, "url", $sDescription, $this->bQueued,
+                                    $_SESSION['current']->iUserId);
+        if($hResult)
         {
             $this->iUrlId = mysql_insert_id();
             $this->url($this->iUrlId,$this->bQueued);
@@ -79,7 +74,10 @@ class Url {
             return true;
         }
         else
+        {
+            addmsg("Error while creating a new url.", "red");
             return false;
+        }
     }
 
 

@@ -33,7 +33,10 @@ if($_REQUEST['cmd'])
     }
     if($_REQUEST['cmd'] == "add")
     {
-        $hResult = query_appdb("INSERT INTO appBundle VALUES (".$_REQUEST['bundleId'].", ".$_REQUEST['appId'].")");
+        $hResult = query_parameters("INSERT INTO appBundle (bundleId, appId) VALUES".
+                                    "('?', '?')",
+                                    $_REQUEST['bundleId'],
+                                    $_REQUEST['appId']);
         if($hResult)
             addmsg("App $appId added to Bundle".$_REQUEST['bundleId'], "green");
     }
