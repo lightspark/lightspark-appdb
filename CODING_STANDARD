@@ -1,8 +1,8 @@
 WineHQ Application Database Coding Practice
 
-########
-# HTML #
-########
+/**
+ * HTML
+ */
 - Respect html coding standards. The current doctype is HTML 4.01 transitional (http://www.w3.org/TR/REC-html40/)
 Try to make your content validate nicely (http://validator.w3.org/)
 
@@ -10,13 +10,9 @@ Try to make your content validate nicely (http://validator.w3.org/)
 (i.e. <br /> instead of <br>, avoid using style tags and properties (bgcolor, borders & co) and use stylesheets instead)
 
 
-
-#######
-# PHP #
-#######
-/********************/
-/* variables naming */
-/********************/
+/**
+ * Variables naming
+ */
 variables that don't come from outside your script (i.e. that aren't fetched from superglobals) should be named this way 
 (a.k.a hungarian notation):
 prefix + var_name
@@ -42,22 +38,22 @@ $sQuery
 $hResult
 
 
-/********************/
-/* functions naming */
-/********************/
+/**
+ * Functions naming
+ */
 1)functions name should be declarative (i.e. put a declarative verb as the first word like in do_someting())
 2)methods (functions inside a class) are named like this: setMyName() (i.e. words separated with an upper case character)
 3)normal functions (outside a class) are named like this: query_appdb() (i.e. words separated with an underscore)
 
 
-/*****************************/
-/* general coding guidelines */
-/*****************************/
+/**
+ * general coding guidelines
+ */
 1) functions, loops and if's are written this way (look at the way {}'s are lined up):
 <?php
-function foo() 
+function do_foo($sVar) 
 {
-    if(isset($var))
+    if(isset($sVar))
     {
         echo "bar";
     } else
@@ -71,8 +67,20 @@ function foo()
 
 3) line length should be no more than 130 characters, preferably < 80
 
-4) comments: Muli line code should look like this.
+4) use long php tags (<?php ?>) instead of short ones (<? ?>) as :
+ a) it could be removed from future versions of php
+ b) if conflicts with tags like <?xml version=1.0 ?> that are used in xhtml
 
+5) do not use vars that require register_globals to be on as:
+ a) it is off by default in php 4.1+
+ b) it is more secure
+ c) it makes it easier to understand where your vars are comming from (forms, session, etc.)
+
+
+/**
+ * comments
+ */
+1) function, method, header and multiline comments:
 /**
  * This functions does nothing interesing.
  * More comments to come here...
@@ -82,34 +90,9 @@ function bar()
     foo();
 }
 
-/**
- * If you want to highlight some thing this is permissable. for a single line
- */
+2) one-line comments
+// This is a one line comment
 
-if(!isset($appId))
-{
-    /* a single comment should be like this */
-} else
-{
+3) always put a single space after the comment mark
 
-    /* Shows a particular version. */
-    if($versionId) 
-    {
-        /* Code comes here */
-    }
-    
-    /* Shows an apps summary */
-    else 
-    {
-       /* Another code comes here */
-    }
-}
-
-5) use long php tags (<?php ?>) instead of short ones (<? ?>) as :
- a) it could be removed from future versions of php
- b) if conflicts with tags like <?xml version=1.0 ?> that are used in xhtml
-
-6) do not use vars that require register_globals to be on as:
- a) it is off by default in php 4.1+
- b) it is more secure
- c) it makes it easier to understand where your vars are comming from (forms, session, etc.)
+4) never use # for commenting as it will become obsolete in the future
