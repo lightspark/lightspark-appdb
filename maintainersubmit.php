@@ -152,7 +152,7 @@ if( $aClean['maintainReason'] )
     }
     echo "<input type=hidden name='appId' value={$aClean['appId']}>";
     echo "<input type=hidden name='versionId' value={$aClean['versionId']}>";
-    echo "<input type=hidden name='superMaintainer' value={$aClean['superMaintainer>']}";
+    echo "<input type=hidden name='superMaintainer' value={$aClean['superMaintainer']}>";
 
     if($aClean['superMaintainer'])
         echo '<tr valign=top><td class=color0><b>Why you want to and should be an application super maintainer</b></td><td><textarea name="maintainReason" rows=15 cols=70></textarea></td></tr>',"\n";
