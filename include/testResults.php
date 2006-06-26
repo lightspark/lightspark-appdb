@@ -574,35 +574,18 @@ class testData{
         $aClean['sTestedRating'] = makeSafe($_REQUEST['sTestedRating']);
         $aClean['sComments'] = makeSafe($_REQUEST['sComments']);
 
-        if(get_magic_quotes_gpc())
-        {
-            $this->iTestingId = stripslashes($aClean['iTestingId']);
-            $this->iVersionId = stripslashes($aClean['iVersionId']);
-            $this->sWhatWorks = stripslashes($aClean['sWhatWorks']);
-            $this->sWhatDoesnt = stripslashes($aClean['sWhatDoesnt']);
-            $this->sWhatNotTested = stripslashes($aClean['sWhatNotTested']);
-            $this->sTestedDate = stripslashes($aClean['sTestedDate']);
-            $this->iDistributionId = stripslashes($aClean['iDistributionId']);
-            $this->sTestedRelease = stripslashes($aClean['sTestedRelease']);
-            $this->sInstalls = stripslashes($aClean['sInstalls']);
-            $this->sRuns = stripslashes($aClean['sRuns']);
-            $this->sTestedRating = stripslashes($aClean['sTestedRating']);
-            $this->sComments = stripslashes($aClean['sComments']);
-        } else
-        {
-            $this->iTestingId = $aClean['iTestingId'];
-            $this->iVersionId = $aClean['iVersionId'];
-            $this->sWhatWorks = $aClean['sWhatWorks'];
-            $this->sWhatDoesnt = $aClean['sWhatDoesnt'];
-            $this->sWhatNotTested = $aClean['sWhatNotTested'];
-            $this->sTestedDate = $aClean['sTestedDate'];
-            $this->iDistributionId = $aClean['iDistributionId'];
-            $this->sTestedRelease = $aClean['sTestedRelease'];
-            $this->sInstalls = $aClean['sInstalls'];
-            $this->sRuns = $aClean['sRuns'];
-            $this->sTestedRating = $aClean['sTestedRating'];
-            $this->sComments = $aClean['sComments'];
-        }
+        $this->iTestingId = $aClean['iTestingId'];
+        $this->iVersionId = $aClean['iVersionId'];
+        $this->sWhatWorks = $aClean['sWhatWorks'];
+        $this->sWhatDoesnt = $aClean['sWhatDoesnt'];
+        $this->sWhatNotTested = $aClean['sWhatNotTested'];
+        $this->sTestedDate = $aClean['sTestedDate'];
+        $this->iDistributionId = $aClean['iDistributionId'];
+        $this->sTestedRelease = $aClean['sTestedRelease'];
+        $this->sInstalls = $aClean['sInstalls'];
+        $this->sRuns = $aClean['sRuns'];
+        $this->sTestedRating = $aClean['sTestedRating'];
+        $this->sComments = $aClean['sComments'];
     }
 
 

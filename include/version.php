@@ -552,13 +552,7 @@ class Version {
         echo '<tr valign=top><td class=color0><b>Version description</b></td>',"\n";
         echo '<td><p><textarea cols="80" rows="20" id="version_editor" name="versionDescription">',"\n";
 
-        /* if magic quotes are enabled we need to strip them before we output the 'versionDescription' */
-        /* again.  Otherwise we will stack up magic quotes each time the user resubmits after having */
-        /* an error */
-        if(get_magic_quotes_gpc())
-            echo stripslashes($this->sDescription).'</textarea></p></td></tr>',"\n";
-        else
-            echo $this->sDescription.'</textarea></p></td></tr>',"\n";
+        echo $this->sDescription.'</textarea></p></td></tr>',"\n";
 
         echo '</table>',"\n";
 
@@ -612,23 +606,12 @@ class Version {
         $aClean['maintainer_rating'] = makeSafe($_REQUEST['maintainer_rating']);
         $aClean['maintainer_release'] = makeSafe($_REQUEST['maintainer_release']);
 
-        if(get_magic_quotes_gpc())
-        {
-            $this->iAppId = stripslashes($aClean['appId']);
-            $this->iVersionId = stripslashes($aClean['versionId']);
-            $this->sName = stripslashes($aClean['versionName']);
-            $this->sDescription = stripslashes($aClean['versionDescription']);
-            $this->sTestedRating = stripslashes($aClean['maintainer_rating']);
-            $this->sTestedRelease = stripslashes($aClean['maintainer_release']);
-        } else
-        {
-            $this->iAppId = $aClean['appId'];
-            $this->iVersionId = $aClean['versionId'];
-            $this->sName = $aClean['versionName'];
-            $this->sDescription = $aClean['versionDescription'];
-            $this->sTestedRating = $aClean['maintainer_rating'];
-            $this->sTestedRelease = $aClean['maintainer_release'];
-        }
+        $this->iAppId = $aClean['appId'];
+        $this->iVersionId = $aClean['versionId'];
+        $this->sName = $aClean['versionName'];
+        $this->sDescription = $aClean['versionDescription'];
+        $this->sTestedRating = $aClean['maintainer_rating'];
+        $this->sTestedRelease = $aClean['maintainer_release'];
     }
 
     function display()

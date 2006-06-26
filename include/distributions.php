@@ -367,17 +367,9 @@ class distribution{
         $aClean['sName'] = makeSafe($_REQUEST['sName']);
         $aClean['sUrl'] = makeSafe($_REQUEST['sUrl']);
 
-        if(get_magic_quotes_gpc())
-        {
-            $this->iDistributionId = stripslashes($aClean['iDistributionId']);
-            $this->sName = stripslashes($aClean['sName']);
-            $this->sUrl = stripslashes($aClean['sUrl']);
-        } else
-        {
-            $this->iDistributionId = $aClean['iDistributionId'];
-            $this->sName = $aClean['sName'];
-            $this->sUrl = $aClean['sUrl'];
-        }
+        $this->iDistributionId = $aClean['iDistributionId'];
+        $this->sName = $aClean['sName'];
+        $this->sUrl = $aClean['sUrl'];
     }
 
 }

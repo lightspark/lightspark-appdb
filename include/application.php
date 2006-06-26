@@ -450,10 +450,7 @@ class Application {
         echo '<tr valign=top><td class="color0"><b>Application description</b></td>',"\n";
         echo '<td><p><textarea cols="80" rows="20" id="app_editor" name="appDescription">';
 
-        if(get_magic_quotes_gpc())
-            echo stripslashes($this->sDescription).'</textarea></p></td></tr>',"\n";
-        else
-            echo $this->sDescription.'</textarea></p></td></tr>',"\n";
+        echo $this->sDescription.'</textarea></p></td></tr>',"\n";
 
         echo "</table>\n";
 
@@ -505,25 +502,13 @@ class Application {
         $aClean['appWebpage'] = makeSafe($_REQUEST['appWebpage']);
         $aClean['appKeywords'] = makeSafe($_REQUEST['appKeywords']);
 
-        if(get_magic_quotes_gpc())
-        {
-            $this->iAppId = stripslashes($aClean['appId']);
-            $this->sName = stripslashes($aClean['appName']);
-            $this->sDescription = stripslashes($aClean['appDescription']);
-            $this->iCatId = stripslashes($aClean['appCatId']);
-            $this->iVendorId = stripslashes($aClean['appVendorId']);
-            $this->sWebpage = stripslashes($aClean['appWebpage']);
-            $this->sKeywords = stripslashes($aClean['appKeywords']);
-        } else
-        {
-            $this->iAppId = $aClean['appId'];
-            $this->sName = $aClean['appName'];
-            $this->sDescription = $aClean['appDescription'];
-            $this->iCatId = $aClean['appCatId'];
-            $this->iVendorId = $aClean['appVendorId'];
-            $this->sWebpage = $aClean['appWebpage'];
-            $this->sKeywords = $aClean['appKeywords'];
-        }
+        $this->iAppId = $aClean['appId'];
+        $this->sName = $aClean['appName'];
+        $this->sDescription = $aClean['appDescription'];
+        $this->iCatId = $aClean['appCatId'];
+        $this->iVendorId = $aClean['appVendorId'];
+        $this->sWebpage = $aClean['appWebpage'];
+        $this->sKeywords = $aClean['appKeywords'];
     }
 
     /* display this application */
