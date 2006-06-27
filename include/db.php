@@ -50,9 +50,13 @@ function query_parameters()
 
     $data = func_get_args();
     $query = $data[0];
-    $tokens = split("[\&\?\~]", $query);
+    $tokens = split("[&?~]", $query); /* NOTE: no need to escape characters inside of [] in regex */
     $preparedquery = $tokens[0];
     $count = strlen($tokens[0]);
+
+    /* do we have the correct number of tokens to the number of parameters provided? */
+    if(count($tokens) != count($data))
+        return NULL; /* count mismatch, return NULL */
 
     for ($i=1; $i < count($tokens); $i++)
     {

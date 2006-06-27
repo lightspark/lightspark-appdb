@@ -6,6 +6,8 @@
 /* TODO: test the rest of the classes we have */
 
 include_once("test_user.php");
+echo "\n";
+include_once("test_db.php");
 
 
 ?>

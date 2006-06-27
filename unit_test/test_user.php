@@ -3,6 +3,7 @@
 /* unit tests for user class */
 
 require_once("path.php");
+require_once("test_common.php");
 require_once(BASE."include/incl.php");
 require_once(BASE."include/user.php");
 
@@ -10,11 +11,6 @@ require_once(BASE."include/user.php");
 
 $test_email = "testemail@somesite.com";
 $test_password = "password";
-
-function test_start($sFunctionName)
-{
-    echo $sFunctionName."() starting\n";
-}
 
 /* NOTE: test_user_login() relies on this function leaving the test user */
 /* in the database */
