@@ -85,7 +85,7 @@ class Monitor {
      */
     function delete($bSilent=false)
     {
-        $hResult = query_appdb("DELETE FROM appMonitors WHERE monitorId = '".$this->iMonitorId."'");
+        $hResult = query_parameters("DELETE FROM appMonitors WHERE monitorId = '?'", $this->iMonitorId);
         if(!$bSilent)
             $this->SendNotificationMail("delete");
     }

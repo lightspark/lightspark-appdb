@@ -37,8 +37,8 @@ class Application {
             /* fetch this applications information */
             $sQuery = "SELECT *
                        FROM appFamily 
-                       WHERE appId = ".$iAppId;
-            if($hResult = query_appdb($sQuery))
+                       WHERE appId = '?'";
+            if($hResult = query_parameters($sQuery, $iAppId))
             {
                 $oRow = mysql_fetch_object($hResult);
                 $this->iAppId = $iAppId;
@@ -62,14 +62,14 @@ class Application {
             if($_SESSION['current']->hasPriv("admin"))
             {
                 $sQuery = "SELECT versionId FROM appVersion WHERE
-                            appId =".$this->iAppId;
+                            appId = '?'";
             } else
             {
                 $sQuery = "SELECT versionId FROM appVersion WHERE
                             queued = 'false' AND
-                            appId =".$this->iAppId;
+                            appId = '?'";
             }
-            if($hResult = query_appdb($sQuery))
+            if($hResult = query_parameters($sQuery, $this->iAppId))
             {
                 while($oRow = mysql_fetch_object($hResult))
                 {
@@ -85,9 +85,9 @@ class Application {
             $sQuery = "SELECT id
                        FROM appData
                        WHERE type = 'url'
-                       AND appId = ".$iAppId;
+                       AND appId = '?'";
 
-            if($hResult = query_appdb($sQuery))
+            if($hResult = query_parameters($sQuery, $iAppId))
             {
                 while($oRow = mysql_fetch_object($hResult))
                 {
@@ -149,7 +149,8 @@ class Application {
         if ($this->sName && ($this->sName!=$oApp->sName))
         {
             $sUpdate = compile_update_string(array('appName'    => $this->sName));
-            if (!query_appdb("UPDATE appFamily SET ".$sUpdate." WHERE appId = ".$this->iAppId))
+            if (!query_parameters("UPDATE appFamily SET ".$sUpdate." WHERE appId = '?'",
+                                  $this->iAppId))
                 return false;
             $sWhatChanged .= "Name was changed from ".$oApp->sName." to ".$this->sName.".\n\n";
         }     
@@ -157,7 +158,8 @@ class Application {
         if ($this->sDescription && ($this->sDescription!=$oApp->sDescription))
         {
             $sUpdate = compile_update_string(array('description'    => $this->sDescription));
-            if (!query_appdb("UPDATE appFamily SET ".$sUpdate." WHERE appId = ".$this->iAppId))
+            if (!query_parameters("UPDATE appFamily SET ".$sUpdate." WHERE appId = '?'",
+                                  $this->iAppId))
                 return false;
             $sWhatChanged .= "Description was changed from\n ".$oApp->sDescription."\n to \n".$this->sDescription.".\n\n";
         }
@@ -165,7 +167,8 @@ class Application {
         if ($this->sKeywords && ($this->sKeywords!=$oApp->sKeywords))
         {
             $sUpdate = compile_update_string(array('keywords'    => $this->sKeywords));
-            if (!query_appdb("UPDATE appFamily SET ".$sUpdate." WHERE appId = ".$this->iAppId))
+            if (!query_parameters("UPDATE appFamily SET ".$sUpdate." WHERE appId = '?'",
+                                  $this->iAppId))
                 return false;
             $sWhatChanged .= "Keywords were changed from\n ".$oApp->sKeywords."\n to \n".$this->sKeywords.".\n\n";
         }
@@ -173,7 +176,8 @@ class Application {
         if ($this->sWebpage && ($this->sWebpage!=$oApp->sWebpage))
         {
             $sUpdate = compile_update_string(array('webPage'    => $this->sWebpage));
-            if (!query_appdb("UPDATE appFamily SET ".$sUpdate." WHERE appId = ".$this->iAppId))
+            if (!query_parameters("UPDATE appFamily SET ".$sUpdate." WHERE appId = '?'",
+                                  $this->iAppId))
                 return false;
             $sWhatChanged .= "Web page was changed from ".$oApp->sWebpage." to ".$this->sWebpage.".\n\n";
         }
@@ -181,7 +185,8 @@ class Application {
         if ($this->iVendorId && ($this->iVendorId!=$oApp->iVendorId))
         {
             $sUpdate = compile_update_string(array('vendorId'    => $this->iVendorId));
-            if (!query_appdb("UPDATE appFamily SET ".$sUpdate." WHERE appId = ".$this->iAppId))
+            if (!query_parameters("UPDATE appFamily SET ".$sUpdate." WHERE appId = '?'",
+                                  $this->iAppId))
                 return false;
             $oVendorBefore = new Vendor($oApp->iVendorId);
             $oVendorAfter = new Vendor($this->iVendorId);
@@ -191,7 +196,8 @@ class Application {
         if ($this->iCatId && ($this->iCatId!=$oApp->iCatId))
         {
             $sUpdate = compile_update_string(array('catId'    => $this->iCatId));
-            if (!query_appdb("UPDATE appFamily SET ".$sUpdate." WHERE appId = ".$this->iAppId))
+            if (!query_parameters("UPDATE appFamily SET ".$sUpdate." WHERE appId = '?'",
+                                  $this->iAppId))
                 return false;
             $oCatBefore = new Category($oApp->iCatId);
             $oCatAfter = new Category($this->iCatId);
@@ -225,16 +231,16 @@ class Application {
         }
 
         // remove any supermaintainers for this application so we don't orphan them
-        $sQuery = "DELETE from appMaintainers WHERE appId='".$this->iAppId."';";
-        if(!($hResult = query_appdb($sQuery)))
+        $sQuery = "DELETE from appMaintainers WHERE appId='?'";
+        if(!($hResult = query_parameters($sQuery, $this->iAppId)))
         {
             addmsg("Error removing app maintainers for the deleted application!", "red");
         }
 
         $sQuery = "DELETE FROM appFamily 
-                   WHERE appId = ".$this->iAppId." 
+                   WHERE appId = '?' 
                    LIMIT 1";
-        if(!($hResult = query_appdb($sQuery)))
+        if(!($hResult = query_parameters($sQuery, $this->iAppId)))
         {
             addmsg("Error deleting application!", "red");
         }
@@ -256,7 +262,8 @@ class Application {
 
         $sUpdate = compile_update_string(array('queued'  => "false",
                                                'keywords'=> str_replace(" *** ","",$this->sKeywords) ));
-        if(query_appdb("UPDATE appFamily SET ".$sUpdate." WHERE appId = ".$this->iAppId))
+        if(query_parameters("UPDATE appFamily SET ".$sUpdate." WHERE appId = '?'",
+                            $this->iAppId))
         {
             $this->sQueued = 'false';
             // we send an e-mail to intersted people
@@ -275,7 +282,8 @@ class Application {
             return false;
 
         $sUpdate = compile_update_string(array('queued'    => "rejected"));
-        if(query_appdb("UPDATE appFamily SET ".$sUpdate." WHERE appId = ".$this->iAppId))
+        if(query_parameters("UPDATE appFamily SET ".$sUpdate." WHERE appId = '?'",
+                            $this->iAppId))
         {
             $this->sQueued = 'rejected';
             // we send an e-mail to intersted people
@@ -292,7 +300,8 @@ class Application {
             return false;
 
         $sUpdate = compile_update_string(array('queued'    => "true"));
-        if(query_appdb("UPDATE appFamily SET ".$sUpdate." WHERE appId = ".$this->iAppId))
+        if(query_parameters("UPDATE appFamily SET ".$sUpdate." WHERE appId = '?'",
+                            $this->iAppId))
         {
             $this->sQueued = 'true';
             // we send an e-mail to intersted people
@@ -559,7 +568,8 @@ class Application {
         echo "        <tr class=\"color1\"><td><b>URL</b></td><td>".$appLinkURL."</td></tr>\n";
 
         // optional links
-        $result = query_appdb("SELECT * FROM appData WHERE appId = ".$aClean['appId']." AND versionID = 0 AND type = 'url'");
+        $result = query_parameters("SELECT * FROM appData WHERE appId = '?' AND versionID = 0 AND type = 'url'",
+                                   $aClean['appId']);
         if($result && mysql_num_rows($result) > 0)
         {
             echo "        <tr class=\"color1\"><td> <b>Links</b></td><td>\n";
@@ -662,7 +672,8 @@ class Application {
 function lookup_version_name($versionId)
 {
     if(!$versionId) return null;
-    $result = query_appdb("SELECT versionName FROM appVersion WHERE versionId = $versionId");
+    $result = query_parameters("SELECT versionName FROM appVersion WHERE versionId = '?'",
+                               $versionId);
     if(!$result || mysql_num_rows($result) != 1)
         return null;
     $ob = mysql_fetch_object($result);
@@ -673,7 +684,8 @@ function lookup_version_name($versionId)
 function lookup_app_name($appId)
 {
     if(!$appId) return null;
-    $result = query_appdb("SELECT appName FROM appFamily WHERE appId = $appId");
+    $result = query_parameters("SELECT appName FROM appFamily WHERE appId = '?'",
+                               $appId);
     if(!$result || mysql_num_rows($result) != 1)
         return null;
     $ob = mysql_fetch_object($result);

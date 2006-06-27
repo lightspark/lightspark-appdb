@@ -24,15 +24,15 @@ if($aClean['submit'])
 }
 else
 {
-apidb_header("Add Category");
-$sQuery = "SELECT catId, catName FROM appCategory WHERE catId!='".$aClean['catId']."'";
-$hResult = query_appdb($sQuery);
-while($oRow = mysql_fetch_object($hResult))
-{
-    $aCatsIds[]=$oRow->catId;
-    $aCatsNames[]=$oRow->catName;
-}
-echo "<form method=\"post\" action=\"addCategory.php\">
+    apidb_header("Add Category");
+    $sQuery = "SELECT catId, catName FROM appCategory WHERE catId!='?'";
+    $hResult = query_parameters($sQuery, $aClean['catId']);
+    while($oRow = mysql_fetch_object($hResult))
+    {
+        $aCatsIds[]=$oRow->catId;
+        $aCatsNames[]=$oRow->catName;
+    }
+    echo "<form method=\"post\" action=\"addCategory.php\">
       <input type=\"hidden\" name=\"catId\" value=\"".$oCat->iCatId."\" /> 
       <table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"2\">
         <tr>

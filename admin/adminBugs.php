@@ -126,22 +126,12 @@ if ($aClean['sub'])
                bugs.* 
                FROM appFamily, appVersion, buglinks, bugs.bugs
                ".$sWhere."
-               ORDER BY buglinks.bug_id, appName, versionName";
-    $sQuery = "SELECT appFamily.description as appDescription, 
-               appFamily.appName as appName, appVersion.*, 
-               buglinks.versionId as versionId, 
-               buglinks.bug_id as bug_id, 
-               buglinks.linkId as linkId, 
-               buglinks.queued as queued, 
-               bugs.* 
-               FROM appFamily, appVersion, buglinks, bugs.bugs
-               ".$sWhere."
                ORDER BY buglinks.bug_id, appName, versionName
-               LIMIT ".$offset.", ".$ItemsPerPage.";";
+               LIMIT ".mysql_real_escape_string($offset).", ".mysql_real_escape_string($ItemsPerPage).";";
 
     $c = 0;
 
-    if($hResult = query_appdb($sQuery))
+    if($hResult = query_parameters($sQuery))
     {
         while($oRow = mysql_fetch_object($hResult))
         {

@@ -33,10 +33,9 @@ if ($aClean['REQUEST_METHOD']='HEAD')
       errorpage("Bad parameter");
       exit;
    }
-   $sQuery = "SELECT id, url FROM appData 
-              WHERE id = ".$iId."
-              AND type = 'image' LIMIT 1";
-   $hResult = query_appdb($sQuery);
+   $hResult = query_parameters("SELECT id, url FROM appData 
+                            WHERE id = '?'
+                            AND type = 'image' LIMIT 1", $iId);
    $fImage = 0;
    if($hResult)
    {

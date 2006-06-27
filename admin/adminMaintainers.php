@@ -28,8 +28,8 @@ if ($aClean['sub'])
 {
     if($aClean['sub'] == 'delete')
     {
-        $sQuery = "DELETE FROM appMaintainers WHERE maintainerId = ".$aClean['maintainerId'].";";
-        $hResult = query_appdb($sQuery);
+        $sQuery = "DELETE FROM appMaintainers WHERE maintainerId = '?'";
+        $hResult = query_parameters($sQuery, $aClean['maintainerId']);
         echo html_frame_start("Delete maintainer: ".$aClean['maintainerId'],400,"",0);
         if($hResult)
         {
@@ -44,7 +44,7 @@ if ($aClean['sub'])
     // get available maintainers
     $sQuery = "SELECT * FROM appMaintainers, user_list where appMaintainers.userId = user_list.userid";
     $sQuery.= " ORDER BY realname;";
-    $hResult = query_appdb($sQuery);
+    $hResult = query_parameters($sQuery);
 
     if(!$hResult || !mysql_num_rows($hResult))
     {

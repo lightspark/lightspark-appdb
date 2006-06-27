@@ -164,7 +164,7 @@ function make_maintainer_rating_list($varname, $cvalue)
 function getQueuedMaintainerCount()
 {
     $sQuery = "SELECT count(*) as queued_maintainers FROM appMaintainerQueue";
-    $hResult = query_appdb($sQuery);
+    $hResult = query_parameters($sQuery);
     $oRow = mysql_fetch_object($hResult);
     return $oRow->queued_maintainers;
 }
@@ -173,7 +173,7 @@ function getQueuedMaintainerCount()
 function getMaintainerCount()
 {
     $sQuery = "SELECT count(*) as maintainers FROM appMaintainers";
-    $hResult = query_appdb($sQuery);
+    $hResult = query_parameters($sQuery);
     $oRow = mysql_fetch_object($hResult);
     return $oRow->maintainers;
 }
@@ -182,7 +182,7 @@ function getMaintainerCount()
 function getVendorCount()
 {
     $sQuery = "SELECT count(*) as vendors FROM vendor";
-    $hResult = query_appdb($sQuery);
+    $hResult = query_parameters($sQuery);
     $oRow = mysql_fetch_object($hResult);
     return $oRow->vendors;
 }
@@ -190,7 +190,7 @@ function getVendorCount()
 /* Get the number of users in the database */
 function getNumberOfComments()
 {
-    $hResult = query_appdb("SELECT count(*) as num_comments FROM appComments;");
+    $hResult = query_parameters("SELECT count(*) as num_comments FROM appComments;");
     $oRow = mysql_fetch_object($hResult);
     return $oRow->num_comments;
 }
@@ -198,7 +198,7 @@ function getNumberOfComments()
 /* Get the number of versions in the database */
 function getNumberOfVersions()
 {
-    $hResult = query_appdb("SELECT count(versionId) as num_versions FROM appVersion WHERE versionName != 'NONAME';");
+    $hResult = query_parameters("SELECT count(versionId) as num_versions FROM appVersion WHERE versionName != 'NONAME';");
     $oRow = mysql_fetch_object($hResult);
     return $oRow->num_versions;
 }
@@ -206,14 +206,14 @@ function getNumberOfVersions()
 /* Get the number of maintainers in the database */
 function getNumberOfMaintainers()
 {
-    $hResult = query_appdb("SELECT DISTINCT userId FROM appMaintainers;");
+    $hResult = query_parameters("SELECT DISTINCT userId FROM appMaintainers;");
     return mysql_num_rows($hResult);
 }
 
 /* Get the number of app familes in the database */
 function getNumberOfAppFamilies()
 {
-    $hResult = query_appdb("SELECT count(*) as num_appfamilies FROM appFamily;");
+    $hResult = query_parameters("SELECT count(*) as num_appfamilies FROM appFamily;");
     $oRow = mysql_fetch_object($hResult);
     return $oRow->num_appfamilies;
 }
@@ -221,7 +221,7 @@ function getNumberOfAppFamilies()
 /* Get the number of images in the database */
 function getNumberOfImages()
 {
-    $hResult = query_appdb("SELECT count(*) as num_images FROM appData WHERE type='image';");
+    $hResult = query_parameters("SELECT count(*) as num_images FROM appData WHERE type='image';");
     $oRow = mysql_fetch_object($hResult);
     return $oRow->num_images;
 }
@@ -229,7 +229,7 @@ function getNumberOfImages()
 /* Get the number of queued bug links in the database */
 function getNumberOfQueuedBugLinks()
 {
-    $hResult = query_appdb("SELECT count(*) as num_buglinks FROM buglinks WHERE queued='true';");
+    $hResult = query_parameters("SELECT count(*) as num_buglinks FROM buglinks WHERE queued='true';");
     if($hResult)
     {
       $oRow = mysql_fetch_object($hResult);
@@ -241,7 +241,7 @@ function getNumberOfQueuedBugLinks()
 /* Get the number of bug links in the database */
 function getNumberOfBugLinks()
 {
-    $hResult = query_appdb("SELECT count(*) as num_buglinks FROM buglinks;");
+    $hResult = query_parameters("SELECT count(*) as num_buglinks FROM buglinks;");
     if($hResult)
     {
       $oRow = mysql_fetch_object($hResult);
@@ -252,8 +252,9 @@ function getNumberOfBugLinks()
 
 function lookupVendorName($vendorId)
 {
-    $sResult = query_appdb("SELECT * FROM vendor ".
-               "WHERE vendorId = ".$vendorId);
+    $sResult = query_parameters("SELECT * FROM vendor ".
+                            "WHERE vendorId = '?'",
+                            $vendorId);
     if(!$sResult || mysql_num_rows($sResult) != 1)
         return "Unknown vendor";
 
@@ -278,18 +279,22 @@ function outputTopXRow($oRow)
 /* Output the rows for the Top-X tables on the main page */
 function outputTopXRowAppsFromRating($rating, $num_apps)
 {
+    /* clean the input values so we can continue to use query_appdb() */
+    $rating = mysql_real_escape_string($rating);
+    $num_apps = mysql_real_escape_string($num_apps);
+
     /* list of appIds we've already output, so we don't output */
     /* them again when filling in any empty spots in the list */
     $appIdArray = array();
 
     $sQuery = "SELECT appVotes.appId AS appId, appVersion.versionId, COUNT( appVotes.appId ) AS c
            FROM appVotes, appVersion
-           WHERE appVersion.maintainer_rating = '$rating'
+           WHERE appVersion.maintainer_rating = '?'
            AND appVersion.appId = appVotes.appId
            GROUP BY appVotes.appId
            ORDER BY c DESC
-           LIMIT $num_apps";
-    $hResult = query_appdb($sQuery);
+           LIMIT ?";
+    $hResult = query_parameters($sQuery, $rating, $num_apps);
     $num_apps-=mysql_num_rows($hResult); /* take away the rows we are outputting here */
     while($oRow = mysql_fetch_object($hResult))
     {
@@ -409,9 +414,9 @@ function searchForApplication($search_words)
     /* search parameters */
     foreach ($split_words as $key=>$value)
     {
-        $sQuery = "SELECT vendorId from vendor where vendorName LIKE '%".addslashes($value)."%'
-                                       OR vendorURL LIKE '%".addslashes($value)."%'";
-        $hResult = query_appdb($sQuery);
+        $sQuery = "SELECT vendorId from vendor where vendorName LIKE '%?%'
+                                       OR vendorURL LIKE '%?%'";
+        $hResult = query_parameters($sQuery, $value, $value);
         while($oRow = mysql_fetch_object($hResult))
         {
             array_push($vendorIdArray, $oRow->vendorId);
@@ -424,13 +429,13 @@ function searchForApplication($search_words)
            WHERE appName != 'NONAME'
            AND appFamily.vendorId = vendor.vendorId
            AND queued = 'false'
-           AND (appName LIKE '%".addslashes($search_words)."%'
-           OR keywords LIKE '%".addslashes($search_words)."%'";
+           AND (appName LIKE '%".mysql_real_escape_string($search_words)."%'
+           OR keywords LIKE '%".mysql_real_escape_string($search_words)."%'";
 
     /* append to the query any vendors that we matched with */
     foreach($vendorIdArray as $key=>$value)
     {
-        $sQuery.=" OR appFamily.vendorId=$value";
+        $sQuery.=" OR appFamily.vendorId=".mysql_real_escape_string($value);
     }
 
     $sQuery.=" ) ORDER BY appName";
@@ -459,7 +464,7 @@ function searchForApplicationFuzzy($search_words, $minMatchingPercent)
     $sQuery = "SELECT appName, appId FROM appFamily WHERE queued = 'false'";
     foreach ($excludeAppIdArray as $key=>$value)
     {
-        $sQuery.=" AND appId != '$value'";
+        $sQuery.=" AND appId != '".mysql_real_escape_string($value)."'";
     }
     $sQuery.=";";
 
@@ -488,11 +493,11 @@ function searchForApplicationFuzzy($search_words, $minMatchingPercent)
     {
         if($firstEntry == true)
         {
-            $sQuery.="appId='$value'";
+            $sQuery.="appId='".mysql_real_escape_string($value)."'";
             $firstEntry = false;
         } else
         {
-            $sQuery.=" OR appId='$value'";
+            $sQuery.=" OR appId='".mysql_real_escape_string($value)."'";
         }
     }
     $sQuery.=" ORDER BY appName;";
@@ -530,7 +535,8 @@ function outputSearchTableForhResult($search_words, $hResult)
             $bgcolor = ($c % 2) ? 'color0' : 'color1';
 		
             //count versions
-            $hResult2 = query_appdb("SELECT count(*) as versions FROM appVersion WHERE appId = $oRow->appId AND versionName != 'NONAME' and queued = 'false'");
+            $hResult2 = query_parameters("SELECT count(*) as versions FROM appVersion WHERE appId = '?' AND versionName != 'NONAME' and queued = 'false'",
+                                     $oRow->appId);
             $y = mysql_fetch_object($hResult2);
 		
             //display row
@@ -609,7 +615,7 @@ function process_app_version_changes($isVersion)
 
             if ($_REQUEST['adelete'][$i] == "on")
             {
-	            $hResult = query_appdb("DELETE FROM appData WHERE id = '{$_REQUEST['aId'][$i]}'");
+                $hResult = query_parameters("DELETE FROM appData WHERE id = '?'", $_REQUEST['aId'][$i]);
 
                 if($hResult)
                 {
@@ -627,9 +633,9 @@ function process_app_version_changes($isVersion)
                     addmsg("The URL or description was blank. URL not changed in the database", "red");
                 else
                 {
-                    $sUpdate = compile_update_string( array( 'description' => $_REQUEST['adescription'][$i],
-                                                     'url' => $_REQUEST['aURL'][$i]));
-                    if (query_appdb("UPDATE appData SET $sUpdate WHERE id = '{$_REQUEST['aId'][$i]}'"))
+                    if (query_parameters("UPDATE appData SET description = '?', url = '?' WHERE id = '?'",
+                                         $_REQUEST['adescription'][$i], $_REQUEST['aURL'][$i],
+                                         $_REQUEST['aId'][$i]))
                     {
                          addmsg("<p><b>Successfully updated ".$_REQUEST['aOldDesc'][$i]." (".$_REQUEST['aOldURL'][$i].")</b></p>\n",'green');
                          $sWhatChanged .= "Changed Url: Old Description: ".stripslashes($_REQUEST['aOldDesc'][$i])."\n";

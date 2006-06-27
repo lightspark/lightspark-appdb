@@ -84,10 +84,11 @@ if($aClean['sSubmit'])
     {
         $sSearch = $aClean['sSearch'];
         $sQuery = "SELECT * FROM user_list 
-                   WHERE realname LIKE '%".$sSearch."%' OR email LIKE '%".$sSearch."%'
-                   ORDER BY ".$aClean['sOrderBy']."
-                   LIMIT ".$aClean['iLimit'];
-        $hResult = query_appdb($sQuery);
+                   WHERE realname LIKE '%?%' OR email LIKE '%?%'
+                   ORDER BY ?
+                   LIMIT ?";
+        $hResult = query_parameters($sQuery, $sSearch, $sSearch, $aClean['sOrderBy'],
+                                $aClean['iLimit']);
         $i=0;
         while($hResult && $oRow = mysql_fetch_object($hResult))
         {

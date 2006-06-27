@@ -9,9 +9,9 @@
 function getAppsFromUserId($userId)
 {
     /* retrieve the list of application and order them by application name */
-    $hResult = query_appdb("SELECT appMaintainers.appId, versionId, superMaintainer, appName FROM ".
-                          "appFamily, appMaintainers WHERE appFamily.appId = appMaintainers.appId ".
-                          "AND userId = '$userId' ORDER BY appName");
+    $hResult = query_parameters("SELECT appMaintainers.appId, versionId, superMaintainer, appName FROM ".
+                            "appFamily, appMaintainers WHERE appFamily.appId = appMaintainers.appId ".
+                            "AND userId = '?' ORDER BY appName", $userId);
     if(!$hResult || mysql_num_rows($hResult) == 0)
         return;
 
@@ -38,8 +38,8 @@ function getMaintainersUserIdsFromAppIdVersionId($versionId)
         return $retval;
     
     $sQuery = "SELECT userId FROM ".
-                          "appMaintainers WHERE versionId = '$versionId';";
-    $hResult = query_appdb($sQuery);
+        "appMaintainers WHERE versionId = '?';";
+    $hResult = query_parameters($sQuery, $versionId);
     $c = 0;
     while($oRow = mysql_fetch_object($hResult))
     {
@@ -56,9 +56,9 @@ function getMaintainersUserIdsFromAppIdVersionId($versionId)
 function getSuperMaintainersUserIdsFromAppId($appId)
 {
     $sQuery = "SELECT userId FROM ".
-                          "appMaintainers WHERE appId = '$appId' " .
+                          "appMaintainers WHERE appId = '?' " .
                           "AND superMaintainer = '1';";
-    $hResult = query_appdb($sQuery);
+    $hResult = query_parameters($sQuery, $appId);
     $retval = array();
     $c = 0;
     while($oRow = mysql_fetch_object($hResult))

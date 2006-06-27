@@ -4,7 +4,7 @@
 /*****************************************/
 require_once(BASE."include/distributions.php");
 require_once(BASE."include/util.php");
-// Testing class for handling Testing History.
+// Class for handling Testing History.
 
 class testData{
     var $iTestingId;
@@ -34,8 +34,8 @@ class testData{
             {
                 $sQuery = "SELECT *
                            FROM testResults
-                           WHERE testingId = ".$iTestingId;
-                if($hResult = query_appdb($sQuery))
+                           WHERE testingId = '?'";
+                if($hResult = query_parameters($sQuery, $iTestingId))
                 {
                     $oRow = mysql_fetch_object($hResult);
                     $this->iTestingId = $iTestingId;
@@ -118,14 +118,18 @@ class testData{
                                                 'testedRating'      => $this->sTestedRating,
                                                 'comments'          => $this->sComments));
 
-        if(query_appdb("UPDATE testResults SET ".$sUpdate." WHERE testingId = ".$this->iTestingId, "Error while updating test results."))
+        if(query_parameters("UPDATE testResults SET ".$sUpdate." WHERE testingId = '?'",
+                            $this->iTestingId))
         {
             if(!$bSilent)
                 $this->SendNotificationMail();
             return true;
         }
         else
+        {
+            addmsg("Error while updating test results", "red");
             return false;
+        }
     }
     
     // Delete testing results.
@@ -141,9 +145,9 @@ class testData{
         }
         // now delete the testing data 
         $sQuery = "DELETE FROM testResults
-                   WHERE testingId = ".$this->iTestingId." 
+                   WHERE testingId = '?' 
                    LIMIT 1";
-        if(!($hResult = query_appdb($sQuery)))
+        if(!($hResult = query_parameters($sQuery, $this->iTestingId)))
         {
             addmsg("Error removing the deleted testing data!", "red");
         }
@@ -170,8 +174,8 @@ class testData{
         if(!$this->sQueued == 'true')
             return false;
 
-        $sUpdate = compile_update_string(array('queued'    => "false"));
-        if(query_appdb("UPDATE testResults SET ".$sUpdate." WHERE testingId = ".$this->iTestingId))
+        if(query_parameters("UPDATE testResults SET queued = '?' WHERE testingId = '?'",
+                            "false", $this->iTestingId))
         {
             $this->sQueued = 'false';
             // we send an e-mail to intersted people
@@ -194,8 +198,8 @@ class testData{
         if(!$this->sQueued == 'true')
             return false;
 
-        $sUpdate = compile_update_string(array('queued'    => "rejected"));
-        if(query_appdb("UPDATE testResults SET ".$sUpdate." WHERE testingId = ".$this->iTestingId))
+        if(query_parameters("UPDATE testResults SET queued = '?' WHERE testingId = '?'", 
+                            "rejected", $this->iTestingId))
         {
             $this->sQueued = 'rejected';
             // we send an e-mail to intersted people
@@ -215,8 +219,8 @@ class testData{
             return;
         }
 
-        $sUpdate = compile_update_string(array('queued'    => "true"));
-        if(query_appdb("UPDATE testResults SET ".$sUpdate." WHERE testingId = ".$this->iTestingId))
+        if(query_parameters("UPDATE testResults SET queued = '?' WHERE testingId = '?'",
+                            "true", $this->iTestingId))
         {
             $this->sQueued = 'true';
             // we send an e-mail to intersted people
@@ -333,15 +337,17 @@ class testData{
  
     function ShowTestResult($iCurrentTest,$iVersionId)
     {
-        $hResult = query_appdb("SELECT * 
+        $hResult = query_parameters("SELECT * 
                                 FROM testResults
-                                WHERE testingId = '".$iCurrentTest."';");
+                                WHERE testingId = '?'",
+                                $iCurrentTest);
         if(!$hResult || mysql_num_rows($hResult) == 0)
         {
-            $hResult = query_appdb("SELECT * 
+            $hResult = query_parameters("SELECT * 
                                     FROM testResults
-                                    WHERE versionId = '".$iVersionId."'
-                                    ORDER BY testedDate DESC ;");
+                                    WHERE versionId = '?'
+                                    ORDER BY testedDate DESC ;",
+                                    $iVersionId);
             if(!$hResult || mysql_num_rows($hResult) == 0)
                 return false;
         }
@@ -358,6 +364,12 @@ class testData{
     // Show the Test results for a application version
     function ShowVersionsTestingTable($iVersionId, $iCurrentTest, $link, $iDisplayLimit)
     {
+        /* escape input parameters */
+        $iVersionId = mysql_real_escape_string($iVersionId);
+        $iCurrentTest = mysql_real_escape_string($iCurrentTest);
+        $link = mysql_real_escape_string($link);
+        $iDisplayLimit = mysql_real_escape_string($iDisplayLimit);
+
         $aClean = array(); //array of filtered user input
         $aClean['showAll'] = makeSafe($_REQUEST['showAll']);
 
@@ -592,17 +604,18 @@ class testData{
     {
         if($_SESSION['current']->hasPriv("admin"))
         {
-            $hResult = query_appdb("SELECT * 
+            $hResult = query_parameters("SELECT * 
                                     FROM testResults
-                                    WHERE queued = '".$sQueued."';");
+                                    WHERE queued = '?'", $sQueued);
             if(!$hResult || mysql_num_rows($hResult) == 0)
                 return;
         } else
         {
-            $hResult = query_appdb("SELECT * 
+            $hResult = query_parameters("SELECT * 
                                     FROM testResults
-                                    WHERE queued = '".$sQueued."'
-                                    AND submitterId = ".$_SESSION['current']->iUserId.";");
+                                    WHERE queued = '?'
+                                    AND submitterId = '?'",
+                                    $sQueued, $_SESSION['current']->iUserId);
             if(!$hResult || mysql_num_rows($hResult) == 0)
                 return;
         }
@@ -665,7 +678,7 @@ function getNumberOfQueuedTests()
                and appVersion.queued='false' 
                and testResults.queued='true';";
 
-    $hResult = query_appdb($sQuery);
+    $hResult = query_parameters($sQuery);
     if($hResult)
     {
       $row = mysql_fetch_object($hResult);

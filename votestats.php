@@ -66,8 +66,8 @@ if($catId != 0)
     do
     {
         $catQuery = "SELECT appCategory.catName, appCategory.catParent ".
-            "FROM appCategory WHERE appCategory.catId = '$currentCatId';";
-        $hResult = query_appdb($catQuery);
+            "FROM appCategory WHERE appCategory.catId = '?'";
+        $hResult = query_parameters($catQuery, $currentCatId);
 
         if($hResult)
         {
@@ -142,10 +142,10 @@ echo '<br />';
 if(strcasecmp($categoryId, "any") == 0)
 {
     /* leave out the appFamily.catId = '$categoryId' */
-    $sVoteQuery = "SELECT appVotes.appId, appName, count(userId) as count ".
-        "FROM appVotes, appFamily ".
-        "WHERE appVotes.appId = appFamily.appId ".
-        "GROUP BY appId ORDER BY count DESC LIMIT $topNumber";
+    $hResult = query_parameters("SELECT appVotes.appId, appName, count(userId) as count ".
+                           "FROM appVotes, appFamily ".
+                           "WHERE appVotes.appId = appFamily.appId ".
+                           "GROUP BY appId ORDER BY count DESC LIMIT ?", $topNumber);
 } else
 {
     /* Display all application for a given category (including sub categories)
@@ -156,19 +156,19 @@ if(strcasecmp($categoryId, "any") == 0)
     c.catId =29
     OR c.catParent =29)*/
     
-    $sVoteQuery = "SELECT v.appId, f.appName, count( v.appId ) AS count
+    $hResult = query_parameters("SELECT v.appId, f.appName, count( v.appId ) AS count
                   FROM appFamily AS f, appCategory AS c, appVotes AS v
                   WHERE v.appId = f.appId
                   AND f.catId = c.catId
                   AND (
-                        c.catId = '$categoryId'
-                        OR c.catParent = '$categoryId'
+                        c.catId = '?'
+                        OR c.catParent = '?'
                       )
                   GROUP BY appId
-                  ORDER BY count DESC LIMIT $topNumber";
+                  ORDER BY count DESC LIMIT ?", $categoryId, $categoryId, $topNumber);
 }
 
-if($hResult = query_appdb($sVoteQuery))
+if($hResult)
 {
     echo html_frame_start("", "90%", '', 0);
     echo html_table_begin("width='100%' align=center");

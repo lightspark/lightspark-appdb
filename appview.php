@@ -44,11 +44,12 @@ function display_catpath($catId, $appId, $versionId = '')
 /**
  * display the SUB apps that belong to this app 
  */
-function display_bundle($appId)
+function display_bundle($iAppId)
 {
     $oApp = new Application($appId);
-    $hResult = query_appdb("SELECT appFamily.appId, appName, description FROM appBundle, appFamily ".
-                        "WHERE appFamily.queued='false' AND bundleId = $appId AND appBundle.appId = appFamily.appId");
+    $hResult = query_parameters("SELECT appFamily.appId, appName, description FROM appBundle, appFamily ".
+                            "WHERE appFamily.queued='false' AND bundleId = '?' AND appBundle.appId = appFamily.appId",
+                            $iAppId);
     if(!$hResult || mysql_num_rows($hResult) == 0)
     {
          return; // do nothing

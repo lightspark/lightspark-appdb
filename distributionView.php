@@ -40,8 +40,7 @@ if(!$oDistribution->iDistributionId)
     apidb_header("View Distributions");
 
     //get available Distributions
-    $sQuery = "SELECT distributionId FROM distributions ORDER BY name, distributionId;";
-    $hResult = query_appdb($sQuery);
+    $hResult = query_parameters("SELECT distributionId FROM distributions ORDER BY name, distributionId;");
 
     // show Distribution list
     echo html_frame_start("","90%","",0);

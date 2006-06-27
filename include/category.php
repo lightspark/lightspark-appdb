@@ -28,8 +28,8 @@ class Category {
              */
             $sQuery = "SELECT *
                        FROM appCategory
-                       WHERE catId = ".$iCatId." ORDER BY catName;";
-            if($hResult = query_appdb($sQuery))
+                       WHERE catId = '?' ORDER BY catName;";
+            if($hResult = query_parameters($sQuery, $iCatId))
             {
                 $oRow = mysql_fetch_object($hResult);
                 $this->iCatId = $iCatId;
@@ -44,9 +44,9 @@ class Category {
              */
             $sQuery = "SELECT appId
                        FROM appFamily
-                       WHERE catId = ".$iCatId."
+                       WHERE catId = '?'
                        AND queued = 'false' ORDER BY appName";
-            if($hResult = query_appdb($sQuery))
+            if($hResult = query_parameters($sQuery, $iCatId))
             {
                 while($oRow = mysql_fetch_object($hResult))
                 {
@@ -59,8 +59,8 @@ class Category {
              */
             $sQuery = "SELECT catId
                        FROM appCategory
-                       WHERE catParent = ".$iCatId." ORDER BY catName;";
-            if($hResult = query_appdb($sQuery))
+                       WHERE catParent = '?' ORDER BY catName;";
+            if($hResult = query_parameters($sQuery, $iCatId))
             {
                 while($oRow = mysql_fetch_object($hResult))
                 {
@@ -104,21 +104,24 @@ class Category {
 
         if($sName)
         {
-            if (!query_appdb("UPDATE appCategory SET catName = '".$sName."' WHERE catId = ".$this->iCatId))
+            if (!query_parameters("UPDATE appCategory SET catName = '?' WHERE catId = '?'",
+                                  $sName, $this->iCatId))
                 return false;
             $this->sName = $sName;
         }     
 
         if($sDescription)
         {
-            if (!query_appdb("UPDATE appCategory SET catDescription = '".$sDescription."' WHERE catId = ".$this->iCatId))
+            if (!query_parameters("UPDATE appCategory SET catDescription = '?' WHERE catId = '?'",
+                                  $sDescription, $this->iCatId))
                 return false;
             $this->sDescription = $sDescription;
         }
 
         if($iParentId)
         {
-            if (!query_appdb("UPDATE appCategory SET catParent = '".$iParentId."' WHERE catId = ".$this->iCatId))
+            if (!query_parameters("UPDATE appCategory SET catParent = '?' WHERE catId = '?'",
+                                  $iParentId, $this->iCatId))
                 return false;
             $this->iParentId = $iParentId;
         }
@@ -141,9 +144,9 @@ class Category {
         } else 
         {
             $sQuery = "DELETE FROM appCategory 
-                       WHERE catId = ".$this->iCatId." 
+                       WHERE catId = '?' 
                        LIMIT 1";
-            query_appdb($sQuery);
+            query_parameters($sQuery, $this->iCatId);
             addmsg("The category has been deleted.", "green");
         }
 
@@ -162,7 +165,8 @@ class Category {
         $iCatId  = $this->iCatId;
         while($iCatId != 0)
         {
-            $result = query_appdb("SELECT catName, catId, catParent FROM appCategory WHERE catId = $iCatId");
+            $result = query_parameters("SELECT catName, catId, catParent FROM appCategory WHERE catId = '?'",
+                                       $iCatId);
             if(!$result || mysql_num_rows($result) != 1)
                 break;
             $cat = mysql_fetch_object($result);

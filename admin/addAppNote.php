@@ -18,8 +18,8 @@ $aClean['noteTitle'] = makeSafe($_REQUEST['noteTitle']);
 $aClean['noteDesc'] = makeSafe($_REQUEST['noteDesc']);
 
 //FIXME: get rid of appId references everywhere, as version is enough.
-$sQuery = "SELECT appId FROM appVersion WHERE versionId = '".$aClean['versionId']."'";
-$hResult = query_appdb($sQuery);
+$sQuery = "SELECT appId FROM appVersion WHERE versionId = '?'";
+$hResult = query_parameters($sQuery, $aClean['versionId']);
 $oRow = mysql_fetch_object($hResult);
 $appId = $oRow->appId; 
 

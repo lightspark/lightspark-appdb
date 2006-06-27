@@ -82,8 +82,8 @@ if ($aClean['sub'])
             // version to go along with it.  Find this version so we can display its information 
             // during application processing so the admin can make a better choice about 
             // whether to accept or reject the overall application 
-            $sQuery = "Select versionId from appVersion where appId='".$aClean['appId']."';";
-            $hResult = query_appdb($sQuery);
+            $hResult = query_parameters("Select versionId from appVersion where appId='?'",
+                                    $aClean['appId']);
             $oRow = mysql_fetch_object($hResult);
 
             // make sure the user has permission to view this version 
@@ -123,8 +123,8 @@ if ($aClean['sub'])
     }
 
     // Get the Testing results if they exist
-    $sQuery = "Select testingId from testResults where versionId='".$oVersion->iVersionId."';";
-    $hResult = query_appdb($sQuery);
+    $hResult = query_parameters("Select testingId from testResults where versionId = '?'",
+                            $oVersion->iVersionId);
     if($hResult)
     {
         $oRow = mysql_fetch_object($hResult);
@@ -222,8 +222,8 @@ if ($aClean['sub'])
         {
             // get the queued versions that refers to the application entry we just removed
             // and delete them as we implicitly added a version entry when adding a new application
-            $sQuery = "SELECT versionId FROM appVersion WHERE appVersion.appId = '".$aClean['appId']."' AND appVersion.queued = 'rejected';";
-            $hResult = query_appdb($sQuery);
+            $hResult = query_parameters("SELECT versionId FROM appVersion WHERE appVersion.appId = '?'
+                                     AND appVersion.queued = 'rejected';", $aClean['appId']);
             if($hResult)
             {
                 while($oRow = mysql_fetch_object($hResult))
@@ -300,8 +300,8 @@ if ($aClean['sub'])
             // try for a partial match
             if(!$iVendorId)
             {
-                $sQuery = "select * from vendor where vendorname like '%".$aClean['appVendorName']."%';";
-                $hResult = query_appdb($sQuery);
+                $hResult = query_parameters("select * from vendor where vendorname like '%?%'",
+                                        $aClean['appVendorName']);
                 if($hResult)
                 {
                     $oRow = mysql_fetch_object($hResult);

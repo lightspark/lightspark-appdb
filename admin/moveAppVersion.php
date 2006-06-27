@@ -55,7 +55,7 @@ if(!empty($aClean['action']))
     //  although this cheaper select leaves out all applications that lack versions
     $sQuery = "select appName, appFamily.appId, versionName, versionId from appFamily left join appVersion ";
     $sQuery.= "on appVersion.appId = appFamily.appId ORDER BY appFamily.appName, appFamily.appId, appVersion.versionName;";
-    $hResult = query_appdb($sQuery);
+    $hResult = query_parameters($sQuery);
     $currentAppId = 0;
     while($oRow = mysql_fetch_object($hResult))
     {

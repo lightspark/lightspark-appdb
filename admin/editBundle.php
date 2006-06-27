@@ -11,7 +11,7 @@ if(!$_SESSION['current']->hasPriv("admin"))
 
 function build_app_list()
 {
-    $hResult = query_appdb("SELECT appId, appName FROM appFamily ORDER BY appName");
+    $hResult = query_parameters("SELECT appId, appName FROM appFamily ORDER BY appName");
     
     echo "<select name=appId size=5 onChange='this.form.submit()'>\n";
     while($oRow = mysql_fetch_object($hResult))
@@ -25,7 +25,8 @@ if($_REQUEST['cmd'])
 {
     if($_REQUEST['cmd'] == "delete")
     {
-        $hResult = query_appdb("DELETE FROM appBundle WHERE appId =".$_REQUEST['appId']." AND bundleId =".$_REQUEST['bundleId']);
+        $hResult = query_parameters("DELETE FROM appBundle WHERE appId ='?' AND bundleId = '?'",
+                                    $_REQUEST['appId'], $_REQUEST['bundleId']);
         if($hResult)
             addmsg("App deleted from bundle", "green");
         else
@@ -45,8 +46,9 @@ if($_REQUEST['cmd'])
 
 apidb_header("Edit Application Bundle");
 
-$hResult = query_appdb("SELECT bundleId, appBundle.appId, appName FROM appBundle, appFamily ".
-                       "WHERE bundleId = ".$_REQUEST['bundleId']." AND appFamily.appId = appBundle.appId");
+$hResult = query_parameters("SELECT bundleId, appBundle.appId, appName FROM appBundle, appFamily ".
+                            "WHERE bundleId = '?' AND appFamily.appId = appBundle.appId",
+                            $_REQUEST['bundleId']);
 
 echo html_frame_start("Apps in this Bundle","300",'',0);
 echo "<table width='100%' border=0 cellpadding=3 cellspacing=0>\n\n";

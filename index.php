@@ -63,7 +63,7 @@ If you have screenshots or links to contribute, please browse the database and u
         "FROM appVotes, appFamily ".
         "WHERE appVotes.appId = appFamily.appId ".
         "GROUP BY appId ORDER BY count DESC LIMIT 1";
-    $hResult = query_appdb($voteQuery);
+    $hResult = query_parameters($voteQuery);
     $oRow = mysql_fetch_object($hResult);
 
     $voteAppId = $oRow->appId;

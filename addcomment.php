@@ -58,7 +58,8 @@ else
 
   if($aClean['thread'] > 0)
   {
-    $hResult = query_appdb("SELECT * FROM appComments WHERE commentId = ".$aClean['thread']);
+    $hResult = query_parameters("SELECT * FROM appComments WHERE commentId = '?'",
+                            $aClean['thread']);
     $oRow = mysql_fetch_object($hResult);
     if($oRow)
     {

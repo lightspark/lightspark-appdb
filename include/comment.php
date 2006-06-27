@@ -30,8 +30,8 @@ class Comment {
             $sQuery = "SELECT appComments.*, appVersion.appId AS appId
                        FROM appComments, appVersion
                        WHERE appComments.versionId = appVersion.versionId 
-                       AND commentId = '".$iCommentId."'";
-            $hResult = query_appdb($sQuery);
+                       AND commentId = '?'";
+            $hResult = query_parameters($sQuery, $iCommentId);
             $oRow = mysql_fetch_object($hResult);
             $this->iCommentId = $oRow->commentId;
             $this->iParentId = $oRow->parentId;
@@ -114,14 +114,16 @@ class Comment {
     {
         if ($iParentId)
         {
-            if (!query_appdb("UPDATE appComments SET parentId = '".$iParentId."' WHERE commentId = ".$this->iCommentId))
+            if (!query_parameters("UPDATE appComments SET parentId = '?' WHERE commentId = '?'",
+                                  $iParentId, $this->iCommentId))
                 return false;
             $this->iParentId = $iParentId;
         }     
 
         if ($iVersionId)
         {
-            if (!query_appdb("UPDATE appComments SET versionId = '".$iVersionId."' WHERE commentId = ".$this->iCommentId))
+            if (!query_parameters("UPDATE appComments SET versionId = '?' WHERE commentId = '?'",
+                                  $iVersionId, $this->iCommentId))
                 return false;
             $this->iVersionId = $iVersionId;
             // FIXME: we need to refetch $this->iAppId.
@@ -129,14 +131,16 @@ class Comment {
 
         if ($sSubject)
         {
-            if (!query_appdb("UPDATE appComments SET subject = '".$sSubject."' WHERE commentId = ".$this->iCommentId))
+            if (!query_parameters("UPDATE appComments SET subject = '?' WHERE commentId = '?'",
+                                  $sSubject, $this->iCommentId))
                 return false;
             $this->sSubject = $sSubject;
         }
 
         if ($sBody)
         {
-            if (!query_appdb("UPDATE appComments SET body = '".$sBody."' WHERE commentId = ".$this->iCommentId))
+            if (!query_parameters("UPDATE appComments SET body = '?' WHERE commentId = '?'",
+                                  $sBody, $this->iCommentId))
                 return false;
             $this->sBody = $sBody;
         }
@@ -151,11 +155,12 @@ class Comment {
      */
     function delete($sReason=null)
     {
-        $hResult = query_appdb("DELETE FROM appComments WHERE commentId = '".$this->iCommentId."'");
+        $hResult = query_parameters("DELETE FROM appComments WHERE commentId = '?'", $this->iCommentId);
         if ($hResult)
         {
             /* fixup the child comments so the parentId points to a valid parent comment */
-            $hResult = query_appdb("UPDATE appComments set parentId = '".$this->iParentId."' WHERE parentId = '".$this->iCommentId."'");
+            $hResult = query_parameters("UPDATE appComments set parentId = '?' WHERE parentId = '?'",
+                                        $this->iParentId, $this->iCommentId);
             $sEmail = get_notify_email_address_list($this->iAppId, $this->iVersionId);
             $sEmail .= $this->oOwner->sEmail;
             if($sEmail)
@@ -264,6 +269,10 @@ function view_app_comment($oRow)
  */
 function grab_comments($versionId, $parentId = -1)
 {
+    /* escape input so we can use query_appdb() without concern */
+    $versionId = mysql_real_escape_string($versionId);
+    $parentId = mysql_real_escape_string($parentId);
+
     $extra = "";
     if($parentId != -1)
         $extra = "AND parentId = $parentId ";
@@ -374,7 +383,7 @@ function view_app_comments($versionId, $threadId = 0)
     $aClean['mode'] = makeSafe($_REQUEST['mode']);
 
     // count posts
-    $hResult = query_appdb("SELECT commentId FROM appComments WHERE versionId = $versionId");
+    $hResult = query_parameters("SELECT commentId FROM appComments WHERE versionId = '?'", $versionId);
     $messageCount = mysql_num_rows($hResult);
     
     //start comment format table

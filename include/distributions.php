@@ -28,8 +28,8 @@ class distribution{
             {
                 $sQuery = "SELECT *
                            FROM distributions
-                           WHERE distributionId = ".$iDistributionId;
-                if($hResult = query_appdb($sQuery))
+                           WHERE distributionId = '?'";
+                if($hResult = query_parameters($sQuery, $iDistributionId))
                 {
                     $oRow = mysql_fetch_object($hResult);
                     $this->iDistributionId = $iDistributionId;
@@ -50,7 +50,7 @@ class distribution{
             {
                 $sQuery = "SELECT testingId
                              FROM testResults
-                             WHERE distributionId = ".$iDistributionId;
+                             WHERE distributionId = '?'";
             } else /* only let users view test results that aren't queued and for apps that */
                    /* aren't queued or versions that aren't queued */
             {
@@ -61,10 +61,10 @@ class distribution{
                                     appFamily.appId = appVersion.appId AND
                                     appFamily.queued = 'false' AND
                                     appVersion.queued = 'false' AND
-                                    distributionId = ".$iDistributionId;
+                                    distributionId = '?'";
             }
 
-            if($hResult = query_appdb($sQuery))
+            if($hResult = query_parameters($sQuery, $iDistributionId))
             {
                 while($oRow = mysql_fetch_object($hResult))
                 {
@@ -80,8 +80,8 @@ class distribution{
         //Let's not create a duplicate 
         $sQuery = "SELECT *
                    FROM distributions
-                   WHERE name LIKE '".$this->sName."'";
-        $hDuplicate = query_appdb($sQuery, "checking distributions");
+                   WHERE name LIKE '?'";
+        $hDuplicate = query_parameters($sQuery, $this->sName);
         if(!mysql_num_rows($hDuplicate) == 0)
         {
             addmsg("There was an existing Distribution called ".$this->sName.".", "red");
@@ -125,13 +125,16 @@ class distribution{
         }
         $sUpdate = compile_update_string(array( 'name'              => $this->sName,
                                                 'url'               => $this->sUrl ));
-        if(query_appdb("UPDATE distributions SET ".$sUpdate." WHERE distributionId = ".$this->iDistributionId, "Error while updating Distribution."))
+        if(query_parameters("UPDATE distributions SET ".$sUpdate." WHERE distributionId = '?'",
+                            $this->iDistributionId))
         {
             $this->SendNotificationMail("edit");
             return true;
-        }
-        else
+        } else
+        {
+            addmsg("Error while updating Distribution", "red");
             return false;
+        }
     }
     
     // Delete Distributution.
@@ -145,9 +148,9 @@ class distribution{
         }
         // now delete the Distribution 
         $sQuery = "DELETE FROM distributions
-                   WHERE distributionId = ".$this->iDistributionId." 
+                   WHERE distributionId = '?' 
                    LIMIT 1";
-        if(!($hResult = query_appdb($sQuery)))
+        if(!($hResult = query_parameters($sQuery, $this->iDistributionId)))
         {
             addmsg("Error removing the Distribution!", "red");
         }
@@ -165,20 +168,25 @@ class distribution{
         // is the current user allowed to move this Distribution? 
         if(!$_SESSION['current']->hasPriv("admin"))
         {
-            return;
+            return false;
         }
 
         // If we are not in the queue, we can't move the Distribution out of the queue.
         if(!$this->sQueued == 'true')
             return false;
 
-        $sUpdate = compile_update_string(array('queued'    => "false"));
-        if(query_appdb("UPDATE distribution SET ".$sUpdate." WHERE distributionId = ".$this->iDistributionId, "Error while unqueuing Distribution."))
+        if(query_parameters("UPDATE distribution SET queued = '?' WHERE distributionId = '?'",
+                            "false", $this->iDistributionId))
         {
             $this->sQueued = 'false';
             // we send an e-mail to intersted people
             $this->mailSubmitter("unQueue");
             $this->SendNotificationMail();
+            return true;
+        } else
+        {
+            addmsg("Error while unqueueing Distribution", "red");
+            return false;
         }
     }
 
@@ -187,15 +195,15 @@ class distribution{
         // is the current user allowed to reject this Distribution? 
         if(!$_SESSION['current']->hasPriv("admin"))
         {
-            return;
+            return false;
         }
 
         // If we are not in the queue, we can't move the Distribution out of the queue.
         if(!$this->sQueued == 'true')
             return false;
 
-        $sUpdate = compile_update_string(array('queued'    => "rejected"));
-        if(query_appdb("UPDATE distribution SET ".$sUpdate." WHERE distributionId = ".$this->iDistributionId, "Error while rejecting Distribution."))
+        if(query_parameters("UPDATE distribution SET queued = '?' WHERE distributionId = '?'",
+                            "rejected", $this->iDistributionId))
         {
             $this->sQueued = 'rejected';
             // we send an e-mail to intersted people
@@ -205,6 +213,11 @@ class distribution{
                 $this->SendNotificationMail("reject");
             }
             // the Distribution data has been rejected
+            return true;
+        } else
+        {
+            addmsg("Error while rejecting Distribution", "red");
+            return false;
         }
     }
 
@@ -214,20 +227,29 @@ class distribution{
         if(!$_SESSION['current']->hasPriv("admin") &&
            !($_SESSION['current']->iUserId == $this->iSubmitterId))
         {
-            return;
+            return false;
         }
 
-        $sUpdate = compile_update_string(array('queued'    => "true"));
-        if(query_appdb("UPDATE testResults SET ".$sUpdate." WHERE testingId = ".$this->iTestingId))
-        if(query_appdb("UPDATE distribution SET ".$sUpdate." WHERE distributionId = ".$this->iDistributionId, "Error while requeueing Distribution."))
+        if(query_parameters("UPDATE testResults SET queued = '?' WHERE testingId = '?'",
+                            "true", $this->iTestingId))
         {
-            $this->sQueued = 'true';
-            // we send an e-mail to intersted people
-            $this->SendNotificationMail();
+            if(query_parameters("UPDATE distribution SET queued = '?' WHERE distributionId = '?'",
+                                "true", $this->iDistributionId))
+            {
+                $this->sQueued = 'true';
+                // we send an e-mail to intersted people
+                $this->SendNotificationMail();
 
-            // the testing data has been resubmitted
-            addmsg("The Distribution has been resubmitted", "green");
+                // the testing data has been resubmitted
+                addmsg("The Distribution has been resubmitted", "green");
+                return true;
+            }
         }
+
+        /* something has failed if we fell through to this point without */
+        /* returning */
+        addmsg("Error requeueing Distribution", "red");
+        return false;
     }
 
     function mailSubmitter($sAction="add")
@@ -378,8 +400,7 @@ class distribution{
 function make_distribution_list($varname, $cvalue)
 {
     $sQuery = "SELECT name, distributionId FROM distributions ORDER BY name";
-
-    $hResult = query_appdb($sQuery);
+    $hResult = query_parameters($sQuery);
     if(!$hResult) return;
 
     echo "<select name='$varname'>\n";
@@ -396,7 +417,7 @@ function make_distribution_list($varname, $cvalue)
 /* Get the total number of Distributions in the database */
 function getNumberOfDistributions()
 {
-    $hResult = query_appdb("SELECT count(*) as num_dists FROM distributions");
+    $hResult = query_parameters("SELECT count(*) as num_dists FROM distributions");
     if($hResult)
     {
       $oRow = mysql_fetch_object($hResult);
@@ -408,7 +429,7 @@ function getNumberOfDistributions()
 /* Get the number of Queued Distributions in the database */
 function getNumberOfQueuedDistributions()
 {
-    $hResult = query_appdb("SELECT count(*) as num_dists FROM distributions WHERE queued='true';");
+    $hResult = query_parameters("SELECT count(*) as num_dists FROM distributions WHERE queued='true';");
     if($hResult)
     {
       $oRow = mysql_fetch_object($hResult);

@@ -54,7 +54,7 @@ if($_SESSION['current']->hasPriv("admin") &&
 function build_prefs_list()
 {
     global $oUser;
-    $hResult = query_appdb("SELECT * FROM prefs_list ORDER BY id");
+    $hResult = query_parameters("SELECT * FROM prefs_list ORDER BY id");
     while($hResult && $r = mysql_fetch_object($hResult))
     {
             //skip admin options

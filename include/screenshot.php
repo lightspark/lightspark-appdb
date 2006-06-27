@@ -32,12 +32,12 @@ class Screenshot {
         // we are working on an existing screenshot
         if(is_numeric($iScreenshotId))
         {
-            $sQuery = "SELECT appData.*, appVersion.appId AS appId
+            $hResult = query_parameters("SELECT appData.*, appVersion.appId AS appId
                        FROM appData, appVersion 
                        WHERE appData.versionId = appVersion.versionId 
-                       AND id = ".$iScreenshotId." 
-                       AND type = 'image'";
-            if($hResult = query_appdb($sQuery))
+                       AND id = '?'
+                       AND type = 'image'", $iScreenshotId);
+            if($hResult)
             {
                 $oRow = mysql_fetch_object($hResult);
                 $this->iScreenshotId = $iScreenshotId;
@@ -86,8 +86,8 @@ class Screenshot {
                 addmsg("Unable to move screenshot from '".$hFile['tmp_name']."' to '".$moveToPath."'", "red");
                 $sQuery = "DELETE
                            FROM appData 
-                           WHERE id = '".$this->iScreenshotId."'";
-                query_appdb($sQuery);
+                           WHERE id = '?'";
+                query_parameters($sQuery, $this->iScreenshotId);
                 return false;
             } else // we managed to copy the file, now we have to process the image
             {
@@ -96,16 +96,16 @@ class Screenshot {
                 {
                     // we have to update the entry now that we know its name
                     $sQuery = "UPDATE appData 
-                               SET url = '".$this->iScreenshotId."' 
-                               WHERE id = '".$this->iScreenshotId."'";
-                    if (!query_appdb($sQuery)) return false;
+                               SET url = '?' 
+                               WHERE id = '?'";
+                    if (!query_parameters($sQuery, $this->iScreenshotId, $this->iScreenshotId)) return false;
                 } else
                 {
                     addmsg("Unable to generate image or thumbnail. The file format might not be recognized. Please use PNG or JPEG only.","red");
                     $sQuery = "DELETE
                                FROM appData 
-                               WHERE id = '".$this->iScreenshotId."'";
-                    query_appdb($sQuery);
+                               WHERE id = '?'";
+                    query_parameters($sQuery, $this->iScreenshotId);
                     return false;
                 }
                  
@@ -155,8 +155,8 @@ class Screenshot {
         if(!$this->bQueued)
             return false;
 
-        $sUpdate = compile_update_string(array('queued' => "false"));
-        if(query_appdb("UPDATE appData SET ".$sUpdate." WHERE id=".$this->iScreenshotId))
+        if(query_parameters("UPDATE appData SET queued = '?' WHERE id='?'",
+                            "false", $this->iScreenshotId))
         {
             $this->bQueued = false;
             // we send an e-mail to intersted people
@@ -185,8 +185,8 @@ class Screenshot {
      */
     function setDescription($sDescription)
     {
-        $sQuery = "UPDATE id SET description = '".$sDescription."' WHERE id = ".$this->iScreenshotId." AND type = 'image'";   
-        if($hResult = query_appdb($sQuery))
+        if($hResult = query_parameters("UPDATE id SET description = '?' WHERE id = '?' AND type = 'image'",
+                                       $sDescription, $this->iScreenshotId))
             $this->sDescription = $sDescription;
     }
 
@@ -310,21 +310,21 @@ function get_screenshot_img($iAppId = null, $iVersionId = null, $bFormatting = t
     // we want a random screenshots for this app
     if($iAppId && !$iVersionId)
     {
-       $hResult = query_appdb("SELECT appData.*, RAND() AS rand 
+       $hResult = query_parameters("SELECT appData.*, RAND() AS rand 
                                FROM appData, appVersion 
                                WHERE appData.versionId = appVersion.versionId
-                               AND appVersion.appId = $iAppId 
+                               AND appVersion.appId = '?' 
                                AND type = 'image' 
                                AND appData.queued = 'false' 
-                               ORDER BY rand");
+                               ORDER BY rand", $iAppId);
     } else if ($iVersionId) // we want a random screenshot for this version
     {
-        $hResult = query_appdb("SELECT *, RAND() AS rand 
+        $hResult = query_parameters("SELECT *, RAND() AS rand 
                                 FROM appData 
-                                WHERE versionId = $iVersionId 
+                                WHERE versionId = '?' 
                                 AND type = 'image' 
                                 AND queued = 'false' 
-                                ORDER BY rand");
+                                ORDER BY rand", $iVersionId);
     }
 
     if($bFormatting)
@@ -373,31 +373,30 @@ function get_screenshots($iAppId = null, $iVersionId = null, $bQueued = "false")
      */
     if($iAppId && !$iVersionId)
     {
-        $sQuery = "SELECT appData.*, appVersion.appId as appId
-                   FROM appData, appVersion
-                   WHERE appVersion.versionId = appData.versionId
-                   AND type = 'image'
-                   AND appVersion.appId = ".$iAppId."
-                   AND appData.queued = '".$bQueued."'";
+        $hResult = query_parameters("SELECT appData.*, appVersion.appId as appId
+                                 FROM appData, appVersion
+                                 WHERE appVersion.versionId = appData.versionId
+                                 AND type = 'image'
+                                 AND appVersion.appId = '?'
+                                 AND appData.queued = '?'", $iAppId, $bQueued);
     }
     /*
      * We want all screenshots for this version.
      */
     else if ($iVersionId) 
     {
-        $sQuery = "SELECT appData.*, appVersion.appId as appId
-                   FROM appData, appVersion
-                   WHERE appVersion.versionId = appData.versionId
-                   AND type = 'image'
-                   AND appData.versionId = ".$iVersionId."
-                   AND appData.queued = '".$bQueued."'";
-    }
-    if($sQuery)
+        $hResult = query_parameters("SELECT appData.*, appVersion.appId as appId
+                                 FROM appData, appVersion
+                                 WHERE appVersion.versionId = appData.versionId
+                                 AND type = 'image'
+                                 AND appData.versionId = '?'
+                                 AND appData.queued = '?'", $iVersionId, $bQueued);
+    } else
     {
-        $hResult = query_appdb($sQuery);
-        return $hResult;
+        return false;
     }
-    return false;
+
+    return $hResult;
 }
 
 function get_thumbnail($id)

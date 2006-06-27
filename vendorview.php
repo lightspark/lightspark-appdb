@@ -73,8 +73,7 @@ else
     apidb_header("View Vendors");
 
     //get available vendors
-    $sQuery = "SELECT vendorId FROM vendor ORDER BY vendorName, vendorId;";
-    $hResult = query_appdb($sQuery);
+    $hResult = query_parameters("SELECT vendorId FROM vendor ORDER BY vendorName, vendorId;");
 
     // show vendorlist
     echo "<table width='100%' border=0 cellpadding=3 cellspacing=0>\n\n";

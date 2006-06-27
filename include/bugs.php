@@ -31,8 +31,8 @@ class Bug {
             $sQuery = "SELECT buglinks.*, appVersion.appId AS appId
                        FROM buglinks, appVersion 
                        WHERE buglinks.versionId = appVersion.versionId 
-                       AND linkid = ".$iLinkId;
-            if($hResult = query_appdb($sQuery))
+                       AND linkid = '?'";
+            if($hResult = query_parameters($sQuery, $iLinkId))
             {
                 $oRow = mysql_fetch_object($hResult);
                 $this->iLinkId = $iLinkId;
@@ -98,8 +98,8 @@ class Bug {
 
         $sQuery = "SELECT *
                    FROM buglinks 
-                   WHERE versionId = ".$iVersionId;
-        if($hResult = query_appdb($sQuery,"looking for duplicates"))
+                   WHERE versionId = '?'";
+        if($hResult = query_parameters($sQuery, $iVersionId))
         {
             while($oRow = mysql_fetch_object($hResult))
             {
@@ -126,9 +126,9 @@ class Bug {
             $sQuery = "SELECT buglinks.*, appVersion.appId AS appId
                        FROM buglinks, appVersion 
                        WHERE buglinks.versionId = appVersion.versionId 
-                       AND buglinks.versionId = ".$iVersionId."
-                       AND buglinks.bug_id = ".$iBug_id;
-            if($hResult = query_appdb($sQuery))
+                       AND buglinks.versionId = '?'
+                       AND buglinks.bug_id = '?'";
+            if($hResult = query_parameters($sQuery, $iVersionId, $iBug_id))
             {
                 $oRow = mysql_fetch_object($hResult);
                 $this->bug($oRow->linkId);
@@ -152,8 +152,8 @@ class Bug {
     function delete($bSilent=false)
     {
         $sQuery = "DELETE FROM buglinks 
-                   WHERE linkId = ".$this->iLinkId;
-        if($hResult = query_appdb($sQuery))
+                   WHERE linkId = '?'";
+        if($hResult = query_parameters($sQuery, $this->iLinkId))
         {
             if(!$bSilent)
                 $this->SendNotificationMail(true);
@@ -176,7 +176,8 @@ class Bug {
             return false;
 
         $sUpdate = compile_update_string(array('queued' => "false"));
-        if(query_appdb("UPDATE buglinks SET ".$sUpdate." WHERE linkId=".$this->iLinkId))
+        if(query_parameters("UPDATE buglinks SET ".$sUpdate." WHERE linkId='?'",
+                            $this->iLinkId))
         {
             $this->bQueued = false;
             // we send an e-mail to intersted people

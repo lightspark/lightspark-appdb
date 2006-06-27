@@ -59,7 +59,8 @@ if(!empty($aClean['submit']))
     echo '<table border=0 cellpadding=6 cellspacing=0 width="100%">',"\n";
             
     $i = 0;
-    $hResult = query_appdb("SELECT * FROM appData WHERE versionId = ".$oVersion->iVersionId." AND type = 'url'");
+    $hResult = query_parameters("SELECT * FROM appData WHERE versionId = '?' AND type = 'url'",
+                            $oVersion->iVersionId);
     if($hResult && mysql_num_rows($hResult) > 0)
     {
         echo '<tr><td class=color1><b>Delete</b></td><td class=color1>',"\n";

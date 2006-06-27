@@ -173,7 +173,8 @@ class TableVE {
 
     function make_option_list($varname, $cvalue, $table, $idField, $nameField, $where = "")
     {
-        $hResult = query_appdb("SELECT $idField, $nameField FROM $table $where ORDER BY $nameField");
+        $hResult = query_parameters("SELECT ?, ? FROM ? ? ORDER BY '?'",
+                                $idField, $nameField, $table, $where, $nameField);
         if(!$hResult)
             return; // Oops
 
@@ -442,7 +443,8 @@ class TableVE {
                 if(ereg("^impl_.+$", $table))
                 {
                     $value = $fieldnames["apiid"][$i];
-                    query_appdb("UPDATE $table SET lastmodby = ".$_SESSION['current']->userid." WHERE apiid = $value");
+                    query_parameters("UPDATE ? SET lastmodby = '?' WHERE apiid = '?'",
+                                     $table, $_SESSION['current']->iUserId, $value);
                 }
             }
         }

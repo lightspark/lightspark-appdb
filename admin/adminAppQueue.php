@@ -54,7 +54,9 @@ function outputSearchTableForDuplicateFlagging($currentAppId, $hResult)
             $bgcolor = ($c % 2) ? 'color0' : 'color1';
 		
             //count versions
-            $query = query_appdb("SELECT count(*) as versions FROM appVersion WHERE appId = $ob->appId AND versionName != 'NONAME'");
+            $query = query_parameters("SELECT count(*) as versions FROM appVersion WHERE ".
+                                      "appId = '?' AND versionName != 'NONAME'",
+                                      $ob->appId);
             $y = mysql_fetch_object($query);
 
             //display row
@@ -151,8 +153,7 @@ if ($aClean['sub'])
 
         // if we are processing a queued application there MUST be an implicitly queued 
         // version to go along with it.  
-        $sQuery = "Select versionId from appVersion where appId='".$aClean['appId']."';";
-        $hResult = query_appdb($sQuery);
+        $hResult = query_parameters("SELECT versionId from appVersion where appId='?';", $aClean['appId']);
         $oRow = mysql_fetch_object($hResult);
 
         $oVersion = new Version($oRow->versionId);
@@ -175,8 +176,8 @@ if ($aClean['sub'])
     }
 
     // Get the Testing results if they exist
-    $sQuery = "Select testingId from testResults where versionId='".$oVersion->iVersionId."';";
-    $hResult = query_appdb($sQuery);
+
+    $hResult = query_parameters("SELECT testingId from testResults where versionId='?'", $oVersion->iVersionId);
     if($hResult)
     {
         $oRow = mysql_fetch_object($hResult);
@@ -234,7 +235,7 @@ if ($aClean['sub'])
     {
         if(is_numeric($aClean['versionIdMergeTo']))
         {
-            // move this Test submission under the existing version //
+            // move this Test submission under the existing version
             $oTest->iVersionId = $aClean['versionIdMergeTo'];
             $oTest->update();
 
@@ -358,8 +359,8 @@ if ($aClean['sub'])
             if(!$iVendorId)
             {
                 $sVendor = get_vendor_from_keywords($oApp->sKeywords);
-                $sQuery = "SELECT vendorId FROM vendor WHERE vendorname = '".$sVendor."';";
-                $hResult = query_appdb($sQuery);
+                $hResult = query_parameters("SELECT vendorId FROM vendor WHERE vendorname = '?'",
+                                            $sVendor);
                 if($hResult)
                 {
                     $oRow = mysql_fetch_object($hResult);
@@ -372,8 +373,7 @@ if ($aClean['sub'])
              */
             if(!$iVendorId)
             {
-                $sQuery = "select * from vendor where vendorname like '%".$sVendor."%';";
-                $hResult = query_appdb($sQuery);
+                $hResult = query_parameters("SELECT * from vendor where vendorname like '%?%'", $sVendor);
                 if($hResult)
                 {
                     $oRow = mysql_fetch_object($hResult);

@@ -37,8 +37,8 @@ class User {
         {
             $sQuery = "SELECT *
                        FROM user_list
-                       WHERE userId = '".$iUserId."'";
-            $hResult = query_appdb($sQuery);
+                       WHERE userId = '?'";
+            $hResult = query_parameters($sQuery, $iUserId);
             $oRow = mysql_fetch_object($hResult);
             $this->iUserId = $oRow->userid;
             $this->sEmail = $oRow->email;
@@ -59,9 +59,10 @@ class User {
     {
         $sQuery = "SELECT *
                    FROM user_list
-                   WHERE email = '".addslashes($sEmail)."'
-                   AND password = password('".addslashes($sPassword)."')";
-        $hResult = query_appdb($sQuery);
+                   WHERE email = '?'
+                   AND password = password('?')";
+        $hResult = query_parameters($sQuery, $sEmail, $sPassword);
+
         $oRow = mysql_fetch_object($hResult);
         $this->iUserId = $oRow->userid;
         $this->sEmail = $oRow->email;
@@ -72,7 +73,8 @@ class User {
         if($this->isLoggedIn())
         {
             // Update timestamp and clear the inactivity flag if it was set
-            query_appdb("UPDATE user_list SET stamp=NOW(), inactivity_warned='false' WHERE userid=".$this->iUserId);
+            query_parameters("UPDATE user_list SET stamp = ?, inactivity_warned = '?' WHERE userid='?'",
+                             "NOW()", "false", $this->iUserId);
             return SUCCESS;
         }
         return USER_LOGIN_FAILED;
@@ -123,21 +125,25 @@ class User {
                 addMsg("An account with this e-mail exists already.","red");
                 return USER_UPDATE_FAILED_EMAIL_EXISTS;
             }
-            if (!query_appdb("UPDATE user_list SET email = '".addslashes($this->sEmail)."' WHERE userid = ".$this->iUserId))
+            if (!query_parameters("UPDATE user_list SET email = '?' WHERE userid = '?'",
+                                  $this->sEmail, $this->iUserId))
                 return USER_UPDATE_FAILED;
         }
 
         if ($this->sRealname && ($this->sRealname != $oUser->sRealname))
         {
-            if (!query_appdb("UPDATE user_list SET realname = '".addslashes($this->sRealname)."' WHERE userid = ".$this->iUserId))
+            if (!query_parameters("UPDATE user_list SET realname = '?' WHERE userid = '?'",
+                             $this->sRealname, $this->iUserId))
                 return USER_UPDATE_FAILED;
         }
 
         if ($this->sWineRelease && ($this->sWineRelease != $oUser->sWineRelease))
         {
-            if (!query_appdb("UPDATE user_list SET CVSrelease = '".addslashes($this->sWineRelease)."' WHERE userid = ".$this->iUserId))
+            if (!query_parameters("UPDATE user_list SET CVSrelease = '?' WHERE userid = '?'",
+                                  $this->sWineRelease, $this->iUserId))
                 return USER_UPDATE_FAILED;
         }
+
         return SUCCESS;
     }
 
@@ -152,7 +158,8 @@ class User {
     {
         if($sPassword)
         {
-            if (query_appdb("UPDATE user_list SET password = password('$sPassword') WHERE userid = ".$this->iUserId))
+            if (query_parameters("UPDATE user_list SET password = password('?') WHERE userid = '?'",
+                                 $sPassword, $this->iUserId))
                 return true;
         }
 
@@ -167,12 +174,12 @@ class User {
     function delete()
     {
         if(!$this->isLoggedIn()) return false;
-        $hResult2 = query_appdb("DELETE FROM user_privs WHERE userid = '".$this->iUserId."'");
-        $hResult3 = query_appdb("DELETE FROM user_prefs WHERE userid = '".$this->iUserId."'");
-        $hResult4 = query_appdb("DELETE FROM appVotes WHERE userid = '".$this->iUserId."'");
-        $hResult5 = query_appdb("DELETE FROM appMaintainers WHERE userid = '".$this->iUserId."'");
-        $hResult6 = query_appdb("DELETE FROM appComments WHERE userId = '".$this->iUserId."'");
-        return($hResult = query_appdb("DELETE FROM user_list WHERE userid = '".$this->iUserId."'"));
+        $hResult2 = query_parameters("DELETE FROM user_privs WHERE userid = '?'", $this->iUserId);
+        $hResult3 = query_parameters("DELETE FROM user_prefs WHERE userid = '?'", $this->iUserId);
+        $hResult4 = query_parameters("DELETE FROM appVotes WHERE userid = '?'", $this->iUserId);
+        $hResult5 = query_parameters("DELETE FROM appMaintainers WHERE userid = '?'", $this->iUserId);
+        $hResult6 = query_parameters("DELETE FROM appComments WHERE userId = '?'", $this->iUserId);
+        return($hResult = query_parameters("DELETE FROM user_list WHERE userid = '?'", $this->iUserId));
     }
 
 
@@ -184,7 +191,8 @@ class User {
         if(!$this->isLoggedIn() || !$sKey)
             return $sDef;
 
-        $hResult = query_appdb("SELECT * FROM user_prefs WHERE userid = ".$this->iUserId." AND name = '$sKey'");
+        $hResult = query_parameters("SELECT * FROM user_prefs WHERE userid = '?' AND name = '?'",
+                                $this->iUserId, $sKey);
         if(!$hResult || mysql_num_rows($hResult) == 0)
             return $sDef;
         $ob = mysql_fetch_object($hResult);
@@ -200,7 +208,8 @@ class User {
         if(!$this->isLoggedIn() || !$sKey || !$sValue)
             return false;
 
-        $hResult = query_appdb("DELETE FROM user_prefs WHERE userid = ".$this->iUserId." AND name = '$sKey'");
+        $hResult = query_parameters("DELETE FROM user_prefs WHERE userid = '?' AND name = '?'",
+                                    $this->iUserId, $sKey);
         $hResult = query_parameters("INSERT INTO user_prefs (userid, name, value) VALUES".
                                     "('?', '?', '?')", $this->iUserId, $sKey, $sValue);
         return $hResult;
@@ -215,7 +224,8 @@ class User {
         if(!$this->isLoggedIn() || !$sPriv)
             return false;
 
-        $hResult = query_appdb("SELECT * FROM user_privs WHERE userid = ".$this->iUserId." AND priv  = '".$sPriv."'");
+        $hResult = query_parameters("SELECT * FROM user_privs WHERE userid = '?' AND priv  = '?'",
+                                $this->iUserId, $sPriv);
         if(!$hResult)
             return false;
         return mysql_num_rows($hResult);
@@ -237,14 +247,16 @@ class User {
         /* otherwise check if we maintain this specific version */
         if($iVersionId)
         {
-            $sQuery = "SELECT * FROM appMaintainers WHERE userid = '".$this->iUserId."' AND versionId = '$iVersionId'";
+            $sQuery = "SELECT * FROM appMaintainers WHERE userid = '?' AND versionId = '?'";
+            $hResult = query_parameters($sQuery, $this->iUserId, $iVersionId);
         } else // are we maintaining any version ?
         {
-            $sQuery = "SELECT * FROM appMaintainers WHERE userid = '".$this->iUserId."'";
+            $sQuery = "SELECT * FROM appMaintainers WHERE userid = '?'";
+            $hResult = query_parameters($sQuery, $this->iUserId);
         }
-        $hResult = query_appdb($sQuery);
         if(!$hResult)
             return false;
+
         return mysql_num_rows($hResult);
     }
 
@@ -258,12 +270,13 @@ class User {
 
         if($iAppId)
         {
-            $sQuery = "SELECT * FROM appMaintainers WHERE userid = '$this->iUserId' AND appId = '$iAppId' AND superMaintainer = '1'";
+            $sQuery = "SELECT * FROM appMaintainers WHERE userid = '?' AND appId = '?' AND superMaintainer = '1'";
+            $hResult = query_parameters($sQuery, $this->iUserId, $iAppId);
         } else /* are we super maintainer of any applications? */
         {
-            $sQuery = "SELECT * FROM appMaintainers WHERE userid = '$this->iUserId' AND superMaintainer = '1'";
+            $sQuery = "SELECT * FROM appMaintainers WHERE userid = '?' AND superMaintainer = '1'";
+            $hResult = query_parameters($sQuery, $this->iUserId);
         }
-        $hResult = query_appdb($sQuery);
         if(!$hResult)
             return false;
         return mysql_num_rows($hResult);
@@ -273,8 +286,8 @@ class User {
     {
         if(!$this->isLoggedIn()) return 0;
 
-        $sQuery = "SELECT count(*) as cnt from appMaintainers WHERE userid = '$this->iUserId' AND superMaintainer = '$bSuperMaintainer'";
-        $hResult = query_appdb($sQuery);
+        $sQuery = "SELECT count(*) as cnt from appMaintainers WHERE userid = '?' AND superMaintainer = '?'";
+        $hResult = query_parameters($sQuery, $this->iUserId, $bSuperMaintainer);
         if(!$hResult)
             return 0;
         $ob = mysql_fetch_object($hResult);
@@ -308,7 +321,7 @@ class User {
                 $statusMessage = "<p>The maintainer was successfully added into the database</p>\n";
 
                 //delete the item from the queue
-                query_appdb("DELETE from appMaintainerQueue where queueId = ".$iQueueId.";");
+                query_parameters("DELETE from appMaintainerQueue where queueId = '?'", $iQueueId);
                 $oApp = new Application($iAppId);
                 $oVersion = new Version($iVersionId);
                 //Send Status Email
@@ -326,7 +339,7 @@ class User {
         } else
         {
             //delete the item from the queue
-            query_appdb("DELETE from appMaintainerQueue where queueId = ".$iQueueId.";");
+            query_parameters("DELETE from appMaintainerQueue where queueId = '?'", $iQueueId);
 
             if($this->isSuperMaintainer($iAppId) && !$bSuperMaintainer)
                 $statusMessage = "<p>User is already a super maintainer of this application</p>\n";
@@ -345,23 +358,22 @@ class User {
         if($iAppId && ($iVersionId == null))
         {
             $superMaintainer = 1;
-            $sQuery = "DELETE FROM appMaintainers WHERE userId = ".$this->iUserId.
-                " AND appId = ".$iAppId." AND superMaintainer = ".$superMaintainer.";";
+            $hResult = query_parameters("DELETE FROM appMaintainers WHERE userId = '?'
+                                         AND appId = '?' AND superMaintainer = '?'",
+                                        $this->iUserId, $iAppId, $superMaintainer);
         } else if($iAppId && $iVersionId) /* remove a normal maintainer */
         {
             $superMaintainer = 0;
-            $sQuery = "DELETE FROM appMaintainers WHERE userId = ".$this->iUserId.
-                 " AND appId = ".$iAppId." AND versionId = ".$iVersionId." AND superMaintainer = ".$superMaintainer.";";
+            $hResult = query_parameters("DELETE FROM appMaintainers WHERE userId = '?'
+                                         AND appId = '?' AND versionId = '?' AND superMaintainer = '?'",
+                                        $this->iUserId, $iAppId, $iVersionId, $superMaintainer);
         } else if(($iAppId == null) && ($iVersionId == null)) /* remove all maintainership by this user */
         {
-            $sQuery = "DELETE FROM appMaintainers WHERE userId = ".$this->iUserId.";";
+            $hResult = query_parameters("DELETE FROM appMaintainers WHERE userId = '?'", $this->iUserId);
         }
 
-        if($sQuery)
-        {
-            if($hResult = query_appdb($sQuery))
-                return true;
-        }
+        if($hResult)
+            return true;
         
         return false;
     }
@@ -374,7 +386,7 @@ class User {
             return 0;
 
         $sQuery = "SELECT count(*) as queued_apps FROM appFamily WHERE queued='true'";
-        $hResult = query_appdb($sQuery);
+        $hResult = query_parameters($sQuery);
         $oRow = mysql_fetch_object($hResult);
         return $oRow->queued_apps;
     }
@@ -383,16 +395,16 @@ class User {
     {
         if($this->hasPriv("admin"))
         {
-            $sQuery = "SELECT count(*) as queued_versions FROM appVersion WHERE queued='true'";
+            $hResult = query_parameters("SELECT count(*) as queued_versions FROM appVersion WHERE queued='true'");
         } else
         {
             /* find all queued versions of applications that the user is a super maintainer of */
-            $sQuery = "SELECT count(*) as queued_versions FROM appVersion, appMaintainers
+            $hResult = query_parameters("SELECT count(*) as queued_versions FROM appVersion, appMaintainers
                         WHERE queued='true' AND appMaintainers.superMaintainer ='1'
                         AND appVersion.appId = appMaintainers.appId
-                        AND appMaintainers.userId ='".$this->iUserId."';";
+                        AND appMaintainers.userId ='?'", $this->iUserId);
         }
-        $hResult = query_appdb($sQuery);
+
         $oRow = mysql_fetch_object($hResult);
 
         /* we don't want to count the versions that are implicit in the applications */
@@ -428,8 +440,9 @@ class User {
         if(!$this->isLoggedIn() || !$sPriv)
             return false;
 
-        $hRresult = query_appdb("DELETE FROM user_privs WHERE userid = $this->iUserId AND priv = '$sPriv'");
-        return $hRresult;
+        $hResult = query_parameters("DELETE FROM user_privs WHERE userid = '?' AND priv = '?'",
+                                 $this->iUserId, $sPriv);
+        return $hResult;
     }
 
 
@@ -466,6 +479,12 @@ class User {
       */
      function getAppDataQuery($iAppDataId, $queryQueuedCount, $queryQueued)
      {
+         /* escape all of the input variables */
+         /* code is too complex to easily use query_parameters() */
+         $iAppDataId = mysql_real_escape_string($iAppDataId);
+         $queryQueuedCount = mysql_real_escape_string($queryQueuedCount);
+         $queryQueued = mysql_real_escape_string($queryQueued);
+
          /* either look for queued app data entries */
          /* or ones that match the given id */
          if($queryQueuedCount)
@@ -503,7 +522,7 @@ class User {
                            AND (appMaintainers.superMaintainer = '0'))
                         )
                         AND appData.versionId = appVersion.versionId
-                        AND appMaintainers.userId = '".$this->iUserId."'
+                        AND appMaintainers.userId = '".mysql_real_escape_string($this->iUserId)."'
                         ".$additionalTerms.";";
          }
 
@@ -518,9 +537,8 @@ class User {
          if(!$_SESSION['current']->canDeleteAppDataId($iAppDataId))
              return false;
 
-         $sQuery = "DELETE from appData where id = ".$iAppDataId."
-                        LIMIT 1;";
-         $hResult = query_appdb($sQuery);
+         $hResult = query_parameters("DELETE from appData where id = '?' LIMIT 1",
+                                 $iAppDataId);
          if($hResult)
              return true;
 
@@ -532,6 +550,9 @@ class User {
       */
      function getAppQueueQuery($queryAppFamily)
      {
+         /* escape input as we can't easily use query_parameters() */
+         $queryAppFamily = mysql_real_escape_string($queryAppFamily);
+
          if($this->hasPriv("admin"))
          {
              if($queryAppFamily)
@@ -551,7 +572,7 @@ class User {
                             WHERE queued = 'true'
                             AND appFamily.appId = appMaintainers.appId
                             AND appMaintainers.superMaintainer = '1'
-                            AND appMaintainers.userId = '".$this->iUserId."';";
+                            AND appMaintainers.userId = '".mysql_real_escape_string($this->iUserId)."';";
              } else
              {
                  $sQuery = "SELECT appVersion.versionId FROM appVersion, appFamily, appMaintainers
@@ -559,7 +580,7 @@ class User {
                             AND appFamily.queued = 'false' AND appVersion.queued = 'true'
                             AND appFamily.appId = appMaintainers.appId
                             AND appMaintainers.superMaintainer = '1'
-                            AND appMaintainers.userId = '".$this->iUserId."';";
+                            AND appMaintainers.userId = '".mysql_real_escape_string($this->iUserId)."';";
              }
          }
 
@@ -568,6 +589,9 @@ class User {
 
      function getAppRejectQueueQuery($queryAppFamily)
      {
+         /* escape input as we can't easily use query_parameters() */
+         $queryAppFamily = mysql_real_escape_string($queryAppFamily);
+
          if($this->hasPriv("admin"))
          {
              if($queryAppFamily)
@@ -585,13 +609,13 @@ class User {
              {
                  $sQuery = "SELECT appFamily.appId FROM appFamily
                             WHERE queued = 'rejected'
-                            AND appFamily.submitterId = '".$this->iUserId."';";
+                            AND appFamily.submitterId = '".mysql_real_escape_string($this->iUserId)."';";
              } else
              {
                  $sQuery = "SELECT appVersion.versionId FROM appVersion, appFamily
                             WHERE appFamily.appId = appVersion.appId 
                             AND appFamily.queued = 'false' AND appVersion.queued = 'rejected'
-                            AND appVersion.submitterId = '".$this->iUserId."';";
+                            AND appVersion.submitterId = '".mysql_real_escape_string($this->iUserId)."';";
              }
          }
 
@@ -600,11 +624,12 @@ class User {
 
      function getAllRejectedApps()
      {
-         $hResult = query_appdb("SELECT appVersion.versionId, appFamily.appId 
+         $hResult = query_parameters("SELECT appVersion.versionId, appFamily.appId 
                                FROM appVersion, appFamily
                                WHERE appFamily.appId = appVersion.appId 
                                AND (appFamily.queued = 'rejected' OR appVersion.queued = 'rejected')
-                               AND appVersion.submitterId = '".$this->iUserId."';");
+                               AND appVersion.submitterId = '?'",
+                                     $this->iUserId);
 
          if(!$hResult || mysql_num_rows($hResult) == 0)
              return;
@@ -622,10 +647,10 @@ class User {
 
      function isAppSubmitter($iAppId)
      {
-         $sQuery = "SELECT appId FROM appFamily
-                    WHERE submitterId = '".$this->iUserId."'
-                    AND appId = '".$iAppId."';";
-         $hResult = query_appdb($sQuery);
+         $hResult = query_parameters("SELECT appId FROM appFamily
+                                      WHERE submitterId = '?'
+                                      AND appId = '?'",
+                                     $this->iUserId, $iAppId);
          if(mysql_num_rows($hResult))
              return true;
          else
@@ -634,11 +659,11 @@ class User {
 
      function isVersionSubmitter($iVersionId)
      {
-         $sQuery = "SELECT appVersion.versionId FROM appVersion, appFamily
-                    WHERE appFamily.appId = appVersion.appId 
-                    AND appVersion.submitterId = '".$this->iUserId."'
-                    AND appVersion.versionId = '".$iVersionId."';";
-         $hResult = query_appdb($sQuery);
+         $hResult = query_parameters("SELECT appVersion.versionId FROM appVersion, appFamily
+                                  WHERE appFamily.appId = appVersion.appId 
+                                  AND appVersion.submitterId = '?'
+                                  AND appVersion.versionId = '?'",
+                                 $this->iUserId, $iVersionId);
          if(mysql_num_rows($hResult))
              return true;
          else
@@ -649,18 +674,18 @@ class User {
      /* otherwise we return false */
      function hasDataAssociated()
      {
-         $sQuery = "SELECT count(userId) as c FROM appComments WHERE userId = $this->iUserId";
-         $hResult = query_appdb($sQuery);
+         $hResult = query_parameters("SELECT count(userId) as c FROM appComments WHERE userId = '?'",
+                                 $this->iUserId);
          $ob = mysql_fetch_object($hResult);
          if($ob->c != 0) return true;
 
-         $sQuery = "SELECT count(userId) as c FROM appMaintainers WHERE userId = $this->iUserId";
-         $hResult = query_appdb($sQuery);
+         $hResult = query_parameters("SELECT count(userId) as c FROM appMaintainers WHERE userId = '?'",
+                                 $this->iUserId);
          $ob = mysql_fetch_object($hResult);
          if($ob->c != 0) return true;
 
-         $sQuery = "SELECT count(userId) as c FROM appVotes WHERE userId = $this->iUserId";
-         $hResult = query_appdb($sQuery);
+         $hResult = query_parameters("SELECT count(userId) as c FROM appVotes WHERE userId = '?'",
+                                 $this->iUserId);
          $ob = mysql_fetch_object($hResult);
          if($ob->c != 0) return true;
 
@@ -693,8 +718,8 @@ class User {
          mail_appdb($this->sEmail, $sSubject, $sMsg);
 
          /* mark this user as being inactive and set the appropriate timestamp */
-         $sQuery = "update user_list set inactivity_warned='true', inactivity_warn_stamp=NOW() where userid=".$this->iUserId;
-         query_appdb($sQuery);
+         $sQuery = "update user_list set inactivity_warned='true', inactivity_warn_stamp=NOW() where userid='?'";
+         query_parameters($sQuery, $this->iUserId);
 
          return true;
      }
@@ -1032,23 +1057,25 @@ function get_notify_email_address_list($iAppId = null, $iVersionId = null)
      */
     if($iVersionId)
     {
-        $sQuery = "SELECT appMaintainers.userId 
-                   FROM appMaintainers, appVersion
-                   WHERE appVersion.appId = appMaintainers.appId 
-                   AND appVersion.versionId = '".$iVersionId."'";
+        $hResult = query_parameters("SELECT appMaintainers.userId 
+                                 FROM appMaintainers, appVersion
+                                 WHERE appVersion.appId = appMaintainers.appId 
+                                 AND appVersion.versionId = '?'",
+                                $iVersionId);
     } 
     /*
      * If versionId was not supplied we fetch supermaintainers of application and maintainer of all versions.
      */
     elseif($iAppId)
     {
-        $sQuery = "SELECT userId 
-                   FROM appMaintainers
-                   WHERE appId = '".$iAppId."'";
+        $hResult = query_parameters("SELECT userId 
+                                 FROM appMaintainers
+                                 WHERE appId = '?'",
+                                $iAppId);
     }
-    if($sQuery)
+
+    if($hResult)
     {
-        $hResult = query_appdb($sQuery);
         if(mysql_num_rows($hResult) > 0)
         {
             while($oRow = mysql_fetch_object($hResult))
@@ -1067,23 +1094,24 @@ function get_notify_email_address_list($iAppId = null, $iVersionId = null)
      */
     if($iVersionId)
     {
-        $sQuery = "SELECT appMonitors.userId 
-                   FROM appMonitors, appVersion
-                   WHERE appVersion.appId = appMonitors.appId 
-                   AND appVersion.versionId = '".$iVersionId."'";
+        $hResult = query_parameters("SELECT appMonitors.userId 
+                                 FROM appMonitors, appVersion
+                                 WHERE appVersion.appId = appMonitors.appId 
+                                 AND appVersion.versionId = '?'",
+                                $iVersionId);
     } 
     /*
      * If versionId was not supplied we fetch superMonitors of application and Monitors of all versions.
      */
     elseif($iAppId)
     {
-        $sQuery = "SELECT userId 
-                   FROM appMonitors
-                   WHERE appId = '".$iAppId."'";
+        $hResult = query_parameters("SELECT userId 
+                                 FROM appMonitors
+                                 WHERE appId = '?'",
+                                $iAppId);
     }
-    if($sQuery)
+    if($hResult)
     {
-        $hResult = query_appdb($sQuery);
         if(mysql_num_rows($hResult) > 0)
         {
             while($oRow = mysql_fetch_object($hResult))
@@ -1097,7 +1125,7 @@ function get_notify_email_address_list($iAppId = null, $iVersionId = null)
     /*
      * Retrieve administrators.
      */
-    $hResult = query_appdb("SELECT * FROM user_privs WHERE priv  = 'admin'");
+    $hResult = query_parameters("SELECT * FROM user_privs WHERE priv  = 'admin'");
     if(mysql_num_rows($hResult) > 0)
     {
         while($oRow = mysql_fetch_object($hResult))
@@ -1128,7 +1156,7 @@ function get_notify_email_address_list($iAppId = null, $iVersionId = null)
  */
 function get_number_of_users()
 {
-    $hResult = query_appdb("SELECT count(*) as num_users FROM user_list;");
+    $hResult = query_parameters("SELECT count(*) as num_users FROM user_list;");
     $oRow = mysql_fetch_object($hResult);
     return $oRow->num_users;
 }
@@ -1139,7 +1167,8 @@ function get_number_of_users()
  */
 function get_active_users_within_days($days)
 {
-    $hResult = query_appdb("SELECT count(*) as num_users FROM user_list WHERE stamp >= DATE_SUB(CURDATE(), interval $days day);");
+    $hResult = query_parameters("SELECT count(*) as num_users FROM user_list WHERE stamp >= DATE_SUB(CURDATE(), interval '?' day);",
+                                $days);
     $oRow = mysql_fetch_object($hResult);
     return $oRow->num_users;
 }
@@ -1152,8 +1181,7 @@ function get_active_users_within_days($days)
 function get_inactive_users_pending_deletion()
 {
     /* retrieve the number of users that have been warned and are pending deletion */
-    $sQuery = "select count(*) as count from user_list where inactivity_warned = 'true'";
-    $hResult = query_appdb($sQuery);
+    $hResult = query_parameters("select count(*) as count from user_list where inactivity_warned = 'true'");
     $oRow = mysql_fetch_object($hResult);
     return $oRow->count;
 }
@@ -1164,10 +1192,12 @@ function get_inactive_users_pending_deletion()
  */
 function user_exists($sEmail)
 {
-    $hResult = query_appdb("SELECT userid FROM user_list WHERE email = '$sEmail'");
+    $hResult = query_parameters("SELECT userid FROM user_list WHERE email = '?'",
+                                $sEmail);
     if(!$hResult || mysql_num_rows($hResult) != 1)
+    {
         return 0;
-    else
+    } else
     {
         $oRow = mysql_fetch_object($hResult);
         return $oRow->userid;

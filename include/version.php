@@ -47,8 +47,8 @@ class Version {
             {
                 $sQuery = "SELECT *
                            FROM appVersion
-                           WHERE versionId = ".$iVersionId;
-                if($hResult = query_appdb($sQuery))
+                           WHERE versionId = '?'";
+                if($hResult = query_parameters($sQuery, $iVersionId))
                 {
                     $oRow = mysql_fetch_object($hResult);
                     $this->iVersionId = $iVersionId;
@@ -73,8 +73,8 @@ class Version {
             $this->aNotesIds = array();
             $sQuery = "SELECT noteId
                        FROM appNotes
-                       WHERE versionId = ".$iVersionId;
-            if($hResult = query_appdb($sQuery))
+                       WHERE versionId = '?'";
+            if($hResult = query_parameters($sQuery, $iVersionId))
             {
                 while($oRow = mysql_fetch_object($hResult))
                 {
@@ -88,8 +88,8 @@ class Version {
             $this->aCommentsIds = array();
             $sQuery = "SELECT commentId
                        FROM appComments
-                       WHERE versionId = ".$iVersionId;
-            if($hResult = query_appdb($sQuery))
+                       WHERE versionId = '?'";
+            if($hResult = query_parameters($sQuery, $iVersionId))
             {
                 while($oRow = mysql_fetch_object($hResult))
                 {
@@ -105,9 +105,9 @@ class Version {
             $this->aUrlsIds = array();
             $sQuery = "SELECT id, type
                        FROM appData
-                       WHERE versionId = ".$iVersionId;
+                       WHERE versionId = '?'";
 
-            if($hResult = query_appdb($sQuery))
+            if($hResult = query_parameters($sQuery, $iVersionId))
             {
                 while($oRow = mysql_fetch_object($hResult))
                 {
@@ -124,9 +124,9 @@ class Version {
             $this->aBuglinkIds = array();
             $sQuery = "SELECT *
                        FROM buglinks
-                       WHERE versionId = ".$iVersionId."
+                       WHERE versionId = '?'
                        ORDER BY bug_id";
-            if($hResult = query_appdb($sQuery))
+            if($hResult = query_parameters($sQuery, $iVersionId))
             {
                 while($oRow = mysql_fetch_object($hResult))
                 {
@@ -140,9 +140,9 @@ class Version {
             $this->aTestingIds = array();
             $sQuery = "SELECT *
                        FROM testResults
-                       WHERE versionId = ".$iVersionId."
+                       WHERE versionId = '?'
                        ORDER BY testingId";
-            if($hResult = query_appdb($sQuery))
+            if($hResult = query_parameters($sQuery, $iVersionId))
             {
                 while($oRow = mysql_fetch_object($hResult))
                 {
@@ -156,9 +156,9 @@ class Version {
             $this->aMonitorIds = array();
             $sQuery = "SELECT *
                        FROM appMonitors
-                       WHERE versionId = ".$iVersionId."
+                       WHERE versionId = '?'
                        ORDER BY monitorId";
-            if($hResult = query_appdb($sQuery))
+            if($hResult = query_parameters($sQuery, $iVersionId))
             {
                 while($oRow = mysql_fetch_object($hResult))
                 {
@@ -218,16 +218,16 @@ class Version {
 
         if ($this->sName && ($this->sName!=$oVersion->sName))
         {
-            $sUpdate = compile_update_string(array('versionName'    => $this->sName));
-            if (!query_appdb("UPDATE appVersion SET ".$sUpdate." WHERE versionId = ".$this->iVersionId))
+            if (!query_parameters("UPDATE appVersion SET versionName = '?' WHERE versionId = '?'",
+                                  $this->sName, $this->iVersionId))
                 return false;
             $sWhatChanged .= "Name was changed from:\n\t'".$oVersion->sName."'\nto:\n\t'".$this->sName."'\n\n";
         }     
 
         if ($this->sDescription && ($this->sDescription!=$oVersion->sDescription))
         {
-            $sUpdate = compile_update_string(array('description'    => $this->sDescription));
-            if (!query_appdb("UPDATE appVersion SET ".$sUpdate." WHERE versionId = ".$this->iVersionId))
+            if (!query_parameters("UPDATE appVersion SET description = '?' WHERE versionId = '?'",
+                                  $this->sDescription, $this->iVersionId))
                 return false;
 
             if($oVersion->sDescription != "")
@@ -238,8 +238,8 @@ class Version {
 
         if ($this->sTestedRelease && ($this->sTestedRelease!=$oVersion->sTestedRelease))
         {
-            $sUpdate = compile_update_string(array('maintainer_release'    => $this->sTestedRelease));
-            if (!query_appdb("UPDATE appVersion SET ".$sUpdate." WHERE versionId = ".$this->iVersionId))
+            if (!query_parameters("UPDATE appVersion SET maintainer_release = '?' WHERE versionId = '?'",
+                                  $this->sTestedRelease, $this->iVersionId))
                 return false;
 
             if($oVersion->sTestedRelease != "")
@@ -250,8 +250,8 @@ class Version {
 
         if ($this->sTestedRating && ($this->sTestedRating!=$oVersion->sTestedRating))
         {
-            $sUpdate = compile_update_string(array('maintainer_rating'    => $this->sTestedRating));
-            if (!query_appdb("UPDATE appVersion SET ".$sUpdate." WHERE versionId = ".$this->iVersionId))
+            if (!query_parameters("UPDATE appVersion SET maintainer_rating = '?' WHERE versionId = '?'",
+                                  $this->sTestedRating, $this->iVersionId))
                 return false;
 
             if($this->sTestedRating != "")
@@ -262,8 +262,8 @@ class Version {
      
         if ($this->iAppId && ($this->iAppId!=$oVersion->iAppId))
         {
-            $sUpdate = compile_update_string(array('appId'    => $this->iAppId));
-            if (!query_appdb("UPDATE appVersion SET ".$sUpdate." WHERE versionId = ".$this->iVersionId))
+            if (!query_parameters("UPDATE appVersion SET appId = '?' WHERE versionId = '?'",
+                                  $this->iAppId, $this->iVersionId))
                 return false;
             $oAppBefore = new Application($oVersion->iAppId);
             $oAppAfter = new Application($this->iAppId);
@@ -324,17 +324,17 @@ class Version {
         }
 
         // remove any maintainers for this version so we don't orphan them
-        $sQuery = "DELETE from appMaintainers WHERE versionId='".$this->iVersionId."';";
-        if(!($hResult = query_appdb($sQuery)))
+        $hResult = query_parameters("DELETE from appMaintainers WHERE versionId='?'", $this->iVersionId);
+        if(!$hResult)
         {
             addmsg("Error removing version maintainers for the deleted version!", "red");
         }
 
         /* now delete the version */
-        $sQuery = "DELETE FROM appVersion 
-                   WHERE versionId = ".$this->iVersionId." 
-                   LIMIT 1";
-        if(!($hResult = query_appdb($sQuery)))
+        $hResult = query_parameters("DELETE FROM appVersion 
+                                     WHERE versionId = '?' 
+                                     LIMIT 1", $this->iVersionId);
+        if(!$hResult)
         {
             addmsg("Error removing the deleted version!", "red");
         }
@@ -360,8 +360,8 @@ class Version {
         if(!$this->sQueued == 'true')
             return false;
 
-        $sUpdate = compile_update_string(array('queued'    => "false"));
-        if(query_appdb("UPDATE appVersion SET ".$sUpdate." WHERE versionId = ".$this->iVersionId))
+        if(query_parameters("UPDATE appVersion SET queued = '?' WHERE versionId = '?'",
+                            "false", $this->iVersionId))
         {
             $this->sQueued = 'false';
             // we send an e-mail to intersted people
@@ -379,8 +379,8 @@ class Version {
         if(!$this->sQueued == 'true')
             return false;
 
-        $sUpdate = compile_update_string(array('queued'    => "rejected"));
-        if(query_appdb("UPDATE appVersion SET ".$sUpdate." WHERE versionId = ".$this->iVersionId))
+        if(query_parameters("UPDATE appVersion SET queued = '?' WHERE versionId = '?'",
+                            "rejected", $this->iVersionId))
         {
             $this->sQueued = 'rejected';
             // we send an e-mail to intersted people
@@ -399,8 +399,8 @@ class Version {
         if(!$_SESSION['current']->canRequeueVersion($this))
             return;
 
-        $sUpdate = compile_update_string(array('queued'    => "true"));
-        if(query_appdb("UPDATE appVersion SET ".$sUpdate." WHERE versionId = ".$this->iVersionId))
+        if(query_parameters("UPDATE appVersion SET queued = '?' WHERE versionId = '?'",
+                            "true", $this->iVersionId))
         {
             $this->sQueued = 'true';
             // we send an e-mail to intersted people
@@ -662,7 +662,8 @@ class Version {
         echo "        <tr class=\"color1\"><td><b>URL</b></td><td>".$appLinkURL."</td></tr>\n";
 
         // links
-        $result = query_appdb("SELECT * FROM appData WHERE versionID = ".$this->iVersionId." AND type = 'url'");
+        $result = query_parameters("SELECT * FROM appData WHERE versionID = '?' AND type = 'url'",
+                                   $this->iVersionId);
         if($result && mysql_num_rows($result) > 0)
         {
             echo "        <tr class=\"color1\"><td><b>Links</b></td><td>\n";
@@ -826,7 +827,8 @@ class Version {
 
         view_version_bugs($this->iVersionId, $this->aBuglinkIds);    
 
-        $rNotes = query_appdb("SELECT * FROM appNotes WHERE versionId = ".$this->iVersionId);
+        $rNotes = query_parameters("SELECT * FROM appNotes WHERE versionId = '?'",
+                                   $this->iVersionId);
     
         while( $oNote = mysql_fetch_object($rNotes) )
         {

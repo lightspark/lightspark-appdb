@@ -29,17 +29,17 @@ if( !is_numeric($aClean['bug_id']))
     echo '</tr>',"\n";
 
 
-    $sQuery = "SELECT appFamily.description as appDescription,
-               appFamily.appName as appName,
-               appVersion.*, buglinks.versionId as versionId
-               FROM appFamily, appVersion, buglinks
-               WHERE appFamily.appId = appVersion.appId 
-               and buglinks.versionId = appVersion.versionId
-               AND buglinks.bug_id = ".$aClean['bug_id']."
-               ORDER BY versionName";
+    $hResult = query_parameters("SELECT appFamily.description as appDescription,
+                           appFamily.appName as appName,
+                           appVersion.*, buglinks.versionId as versionId
+                           FROM appFamily, appVersion, buglinks
+                           WHERE appFamily.appId = appVersion.appId 
+                           and buglinks.versionId = appVersion.versionId
+                           AND buglinks.bug_id = '?'
+                           ORDER BY versionName", $aClean['bug_id']);
     $c = 0;
 
-    if($hResult = query_appdb($sQuery))
+    if($hResult)
     {
         while($oRow = mysql_fetch_object($hResult))
         {

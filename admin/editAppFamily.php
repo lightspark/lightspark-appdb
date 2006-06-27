@@ -67,7 +67,8 @@ else
     echo '<table border=0 cellpadding=6 cellspacing=0 width="100%">',"\n";
 
     $i = 0;
-    $hResult = query_appdb("SELECT * FROM appData WHERE appId = $oApp->iAppId AND type = 'url' AND versionId = 0");
+    $hResult = query_parameters("SELECT * FROM appData WHERE appId = '?' AND type = 'url' AND versionId = 0",
+                            $oApp->iAppId);
     if($hResult && mysql_num_rows($hResult) > 0)
     {
         echo '<tr><td class=color1><b>Delete</b></td><td class=color1>',"\n";

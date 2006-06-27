@@ -25,8 +25,8 @@ class Vendor {
              */
             $sQuery = "SELECT *
                        FROM vendor
-                       WHERE vendorId = ".$iVendorId;
-            if($hResult = query_appdb($sQuery))
+                       WHERE vendorId = '?'";
+            if($hResult = query_parameters($sQuery, $iVendorId))
             {
                 $oRow = mysql_fetch_object($hResult);
                 $this->iVendorId = $iVendorId;
@@ -39,8 +39,8 @@ class Vendor {
              */
             $sQuery = "SELECT appId
                        FROM appFamily
-                       WHERE vendorId = ".$iVendorId;
-            if($hResult = query_appdb($sQuery))
+                       WHERE vendorId = '?'";
+            if($hResult = query_parameters($sQuery, $iVendorId))
             {
                 while($oRow = mysql_fetch_object($hResult))
                 {
@@ -83,14 +83,16 @@ class Vendor {
 
         if($sName)
         {
-            if (!query_appdb("UPDATE vendor SET vendorName = '".$sName."' WHERE vendorId = ".$this->iVendorId))
+            if (!query_parameters("UPDATE vendor SET vendorName = '?' WHERE vendorId = '?'",
+                                  $sName, $this->iVendorId))
                 return false;
             $this->sName = $sName;
         }     
 
         if($sWebpage)
         {
-            if (!query_appdb("UPDATE vendor SET vendorURL = '".$sWebpage."' WHERE vendorId = ".$this->iVendorId))
+            if (!query_parameters("UPDATE vendor SET vendorURL = '?' WHERE vendorId = '?'",
+                                  $sWebpage, $this->iVendorId))
                 return false;
             $this->sWebpage = $sWebpage;
         }
@@ -109,9 +111,9 @@ class Vendor {
         } else 
         {
             $sQuery = "DELETE FROM vendor 
-                       WHERE vendorId = ".$this->iVendorId." 
+                       WHERE vendorId = '?' 
                        LIMIT 1";
-            query_appdb($sQuery);
+            query_parameters($sQuery, $this->iVendorId);
             addmsg("The vendor has been deleted.", "green");
         }
     }
@@ -139,7 +141,7 @@ class Vendor {
 /* Get the total number of Vendors in the database */
 function getNumberOfVendors()
 {
-    $hResult = query_appdb("SELECT count(*) as num_vendors FROM vendor");
+    $hResult = query_parameters("SELECT count(*) as num_vendors FROM vendor");
     if($hResult)
     {
       $oRow = mysql_fetch_object($hResult);

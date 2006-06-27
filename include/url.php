@@ -29,8 +29,8 @@ class Url {
             $sQuery = "SELECT appData.*
                        FROM appData
                        WHERE type = 'url'
-                       AND id = ".$iUrlId;
-            if($hResult = query_appdb($sQuery))
+                       AND id = '?'";
+            if($hResult = query_parameters($sQuery, $iUrlId))
             {
                 $oRow = mysql_fetch_object($hResult);
                 $this->iUrlId = $iUrlId;
@@ -88,10 +88,10 @@ class Url {
     function delete($bSilent=false)
     {
         $sQuery = "DELETE FROM appData 
-                   WHERE id = ".$this->iUrlId." 
+                   WHERE id = '?' 
                    AND type = 'url' 
                    LIMIT 1";
-        if($hResult = query_appdb($sQuery))
+        if($hResult = query_parameters($sQuery, $this->iUrlId))
         {
             if(!$bSilent)
                 $this->SendNotificationMail(true);
@@ -112,8 +112,8 @@ class Url {
         if(!$this->bQueued)
             return false;
 
-        $sUpdate = compile_update_string(array('queued' => "false"));
-        if(query_appdb("UPDATE appData SET ".$sUpdate." WHERE id=".$this->iUrlId))
+        if(query_parameters("UPDATE appData SET queued = '?' WHERE id='?'",
+                       "false", $this->iUrlId))
         {
             // we send an e-mail to intersted people
             $this->mailSubmitter();
@@ -134,8 +134,8 @@ class Url {
 
         if ($sDescription && $sDescription!=$this->sDescription)
         {
-            $sUpdate = compile_update_string(array('description' => $sDescription));
-            if (!query_appdb("UPDATE appData SET ".$sUpdate." WHERE id = ".$this->iUrlId))
+            if (!query_parameters("UPDATE appData SET description = '?' WHERE id = '?'",
+                                  $sDescription, $this->iUrlId))
                 return false;
             $sWhatChanged .= "Description was changed from\n ".$this->sDescription."\n to \n".$sDescription.".\n\n";
             $this->sDescription = $sDescription;
@@ -143,8 +143,8 @@ class Url {
 
         if ($sUrl && $sUrl!=$this->sUrl)
         {
-            $sUpdate = compile_update_string(array('noteDesc' => $sDescription));
-            if (!query_appdb("UPDATE appData SET ".$sUpdate." WHERE id = ".$this->iUrlId))
+            if (!query_parameters("UPDATE appData SET noteDesc = '?' WHERE id = '?'",
+                                  $sDescription, $this->iUrlId))
                 return false;
             $sWhatChanged .= "Url was changed from ".$this->sUrl." to ".$sUrl.".\n\n";
             $this->sUrl = $sUrl;
@@ -152,8 +152,8 @@ class Url {
 
         if ($iVersionId && $iVersionId!=$this->iVersionId)
         {
-            $sUpdate = compile_update_string(array('versionId' => $iVersionId));
-            if (!query_appdb("UPDATE appData SET ".$sUpdate." WHERE id = ".$this->iUrlId))
+            if (!query_parameters("UPDATE appData SET versionId = '?' WHERE id = '?'",
+                                  $iVersionId, $this->iUrlId))
                 return false;
             $oVersionBefore = new Version($this->iVersionId);
             $oVersionAfter = new Version($iVersionId);
@@ -164,8 +164,8 @@ class Url {
 
         if ($iAppId && $iAppId!=$this->iAppId)
         {
-            $sUpdate = compile_update_string(array('appId'    => $iAppId));
-            if (!query_appdb("UPDATE appData SET ".$sUpdate." WHERE id = ".$this->iUrlId))
+            if (!query_parameters("UPDATE appData SET appId = '?' WHERE id = '?'",
+                                  $iAppId, $this->iUrlId))
                 return false;
             $oAppBefore = new Application($this->iAppId);
             $oAppAfter = new Application($iAppId);

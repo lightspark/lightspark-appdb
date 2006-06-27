@@ -17,7 +17,8 @@ function vote_count($appId, $userId = null)
         else
             return 0;
 }
-    $hResult = query_appdb("SELECT * FROM appVotes WHERE appId = $appId AND userId = $userId");
+    $hResult = query_parameters("SELECT * FROM appVotes WHERE appId = '?' AND userId = '?'",
+                            $appId, $userId);
     return mysql_num_rows($hResult);
 }
 
@@ -34,7 +35,7 @@ function vote_count_user_total($userId = null)
         else
             return 0;
     }
-    $hResult = query_appdb("SELECT * FROM appVotes WHERE userId = $userId");
+    $hResult = query_parameters("SELECT * FROM appVotes WHERE userId = '?'", $userId);
     return mysql_num_rows($hResult);
 }
 
@@ -44,7 +45,7 @@ function vote_count_user_total($userId = null)
  */
 function vote_count_app_total($appId)
 {
-    $hResult = query_appdb("SELECT * FROM appVotes WHERE appId = $appId");
+    $hResult = query_parameters("SELECT * FROM appVotes WHERE appId = '?'", $appId);
     return mysql_num_rows($hResult);
 }
 
@@ -86,8 +87,8 @@ function vote_remove($slot, $userId = null)
             return;
     }
 
-    $sQuery="DELETE FROM appVotes WHERE userId = $userId AND slot = $slot";
-    query_appdb($sQuery);
+    $sQuery = "DELETE FROM appVotes WHERE userId = '?' AND slot = '?'";
+    query_parameters($sQuery, $userId, $slot);
 }
 
 
@@ -100,7 +101,7 @@ function vote_get_user_votes($userId = null)
         if(!$userId)
             return array();
     }
-    $hResult = query_appdb("SELECT * FROM appVotes WHERE userId = $userId");
+    $hResult = query_parameters("SELECT * FROM appVotes WHERE userId = '?'", $userId);
     if(!$hResult)
         return array();
 
@@ -196,8 +197,8 @@ function is_vote_in_slot($slot, $userId = null)
             return;
     }
 
-    $sQuery="SELECT COUNT(*) as count from appVotes WHERE userId = '".$userId."' AND slot = '".$slot."';";
-    if($hResult = query_appdb($sQuery))
+    $sQuery = "SELECT COUNT(*) as count from appVotes WHERE userId = '?' AND slot = '?'";
+    if($hResult = query_parameters($sQuery, $userId, $slot))
     {
         $oRow = mysql_fetch_object($hResult);        
         if($oRow->count != 0)

@@ -30,8 +30,8 @@ class Note {
             $sQuery = "SELECT appNotes.*, appVersion.appId AS appId
                        FROM appNotes, appVersion
                        WHERE appNotes.versionId = appVersion.versionId 
-                       AND noteId = '".$iNoteId."'";
-            $hResult = query_appdb($sQuery);
+                       AND noteId = '?'";
+            $hResult = query_parameters($sQuery, $iNoteId);
             $oRow = mysql_fetch_object($hResult);
             $this->iNoteId = $oRow->noteId;
             $this->iAppId = $oRow->appId;
@@ -78,8 +78,8 @@ class Note {
 
         if ($sTitle && $sTitle!=$this->sTitle)
         {
-            $sUpdate = compile_update_string(array('noteTitle'    => $sTitle));
-            if (!query_appdb("UPDATE appNotes SET ".$sUpdate." WHERE noteId = ".$this->iNoteId))
+            if (!query_parameters("UPDATE appNotes SET noteTitle = '?' WHERE noteId = '?'",
+                                  $sTitle, $this->iNoteId))
                 return false;
             $sWhatChanged .= "Title was changed from ".$this->sTitle." to ".$sTitle.".\n\n";
             $this->sTitle = $sTitle;
@@ -87,8 +87,8 @@ class Note {
 
         if ($sDescription && $sDescription!=$this->sDescription)
         {
-            $sUpdate = compile_update_string(array('noteDesc' => $sDescription));
-            if (!query_appdb("UPDATE appNotes SET ".$sUpdate." WHERE noteId = ".$this->iNoteId))
+            if (!query_parameters("UPDATE appNotes SET noteDesc = '?' WHERE noteId = '?'",
+                                  $sDescription, $this->iNoteId))
                 return false;
             $sWhatChanged .= "Description was changed from\n ".$this->sDescription."\n to \n".$sDescription.".\n\n";
             $this->sDescription = $sDescription;
@@ -96,8 +96,8 @@ class Note {
 
         if ($iVersionId && $iVersionId!=$this->iVersionId)
         {
-            $sUpdate = compile_update_string(array('versionId' => $iVersionId));
-            if (!query_appdb("UPDATE appNotes SET ".$sUpdate." WHERE noteId = ".$this->iNoteId))
+            if (!query_parameters("UPDATE appNotes SET versionId = '?' WHERE noteId = '?'",
+                                  $iVersionId, $this->iNoteId))
                 return false;
             $oVersionBefore = new Version($this->iVersionId);
             $oVersionAfter = new Version($iVersionId);
@@ -117,7 +117,7 @@ class Note {
      */
     function delete($bSilent=false)
     {
-        $hResult = query_appdb("DELETE FROM appNotes WHERE noteId = '".$this->iNoteId."'");
+        $hResult = query_parameters("DELETE FROM appNotes WHERE noteId = '?'", $this->iNoteId);
         if(!$bSilent)
             $this->SendNotificationMail("delete");
     }

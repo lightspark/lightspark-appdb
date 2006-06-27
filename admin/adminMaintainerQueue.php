@@ -33,8 +33,8 @@ if ($aClean['sub'])
         $sQuery = "SELECT queueId, appId, versionId,".
                      "userId, maintainReason, superMaintainer,".
                      "UNIX_TIMESTAMP(submitTime) as submitTime ".
-                     "FROM appMaintainerQueue WHERE queueId = ".$aClean['queueId'].";";
-        $hResult = query_appdb($sQuery);
+                     "FROM appMaintainerQueue WHERE queueId = '?'";
+        $hResult = query_parameters($sQuery, $aClean['queueId']);
         $oRow = mysql_fetch_object($hResult);
         $oUser = new User($oRow->userId);
         mysql_free_result($hResult);
@@ -209,8 +209,9 @@ if ($aClean['sub'])
        }
 
        //delete main item
-       $sQuery = "DELETE from appMaintainerQueue where queueId = ".$aClean['queueId'].";";
-       $hResult = query_appdb($sQuery,"unable to delete selected maintainer application");
+       $sQuery = "DELETE from appMaintainerQueue where queueId = '?'";
+       $hResult = query_parameters($sQuery, $aClean['queueId']);
+       if(!$hResult) addmsg("unable to delete selected maintainer application", "red");
        echo html_frame_start("Delete maintainer application",400,"",0);
        if($hResult)
        {
@@ -237,7 +238,7 @@ if ($aClean['sub'])
                      "superMaintainer,".
                      "submitTime as submitTime ".
                      "from appMaintainerQueue;";
-    $hResult = query_appdb($sQuery);
+    $hResult = query_parameters($sQuery);
 
     if(!$hResult || !mysql_num_rows($hResult))
     {

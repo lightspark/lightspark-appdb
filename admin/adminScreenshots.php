@@ -50,7 +50,7 @@ apidb_header("Screenshots");
 if($aClean['regenerate'])
 {
     $sQuery = "SELECT id FROM appData WHERE type = 'image'";
-    $hResult = query_appdb($sQuery);
+    $hResult = query_parameters($sQuery);
     while($oRow = mysql_fetch_object($hResult))
     {
         echo "REGENERATING IMAGE ".$oRow->id."<br/>";
@@ -113,9 +113,9 @@ echo "</form>";
 echo "</center>";
 
 /* query for all of the Screenshots in assending order */
-$Ids = query_appdb("SELECT * from appData 
+$Ids = query_parameters("SELECT * from appData 
                     WHERE type = 'image' 
-                    ORDER BY id ASC LIMIT $offset, $ItemsPerPage;");
+                    ORDER BY id ASC LIMIT ?, ?", $offset, $ItemsPerPage);
 $c = 1;
 echo "<div align=center><table><tr>\n";
 while ($oRow = mysql_fetch_object($Ids))

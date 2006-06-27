@@ -228,14 +228,20 @@ function addmsg($text, $color = "black")
 {
     global $hAppdbLink;
 
+    if(!is_resource($hAppdbLink))
+    {
+        // The last argument makes sure we are really opening a new connection
+        $hAppdbLink = mysql_connect(APPS_DBHOST, APPS_DBUSER, APPS_DBPASS,true);
+        mysql_select_db(APPS_DB, $hAppdbLink);
+    }
+
     if($color)
         $text = "<font color='$color'> $text </font>\n";
 
-    $text = addslashes($text);
-    $sQuery = "INSERT INTO sessionMessages VALUES (null, null, '".session_id()."', '$text')";
-    if (!mysql_query($sQuery,$hAppdbLink))
+    $sQuery = "INSERT INTO sessionMessages VALUES (null, null, '?', '?')";
+    if (!query_parameters($sQuery, session_id(), $text))
     {
-        echo "An error has occurred in addmsg(): ".mysql_error($hAppdbLink);
+        echo "An error has occurred in addmsg()";
         echo $text;
     }
 }
@@ -247,7 +253,7 @@ function addmsg($text, $color = "black")
  */
 function dumpmsgbuffer()
 {
-    $hResult = query_appdb("SELECT * FROM sessionMessages WHERE sessionId = '".session_id()."'");
+    $hResult = query_parameters("SELECT * FROM sessionMessages WHERE sessionId = '?'", session_id());
     if(!$hResult)
         return;
 
@@ -259,7 +265,7 @@ function dumpmsgbuffer()
         echo "<br>\n";
     }
 
-    query_appdb("DELETE FROM sessionMessages WHERE sessionId = '".session_id()."'");
+    query_parameters("DELETE FROM sessionMessages WHERE sessionId = '?'", session_id());
 }
 
 /**

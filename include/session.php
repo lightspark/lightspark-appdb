@@ -15,8 +15,8 @@ class session
 
         // define options for sessions
         ini_set('session.name', $this->name);
-		ini_set('session.use_cookies', true);
-		ini_set('session.use_only_cookies', true);	
+        ini_set('session.use_cookies', true);
+        ini_set('session.use_only_cookies', true);	
 
         // setup session object
         session_set_save_handler(
@@ -66,7 +66,7 @@ class session
     // read session
     function _read ($key)
     {
-        $result = query_appdb("SELECT data FROM session_list WHERE session_id = '".$key."'");
+        $result = query_parameters("SELECT data FROM session_list WHERE session_id = '?'", $key);
         if (!$result) { return null; }
         $r = mysql_fetch_object($result);
         return $r->data; 
@@ -79,21 +79,22 @@ class session
         if(isset($GLOBALS['msg_buffer']))
             $messages = implode("|", $GLOBALS['msg_buffer']);
 
-        query_appdb("REPLACE session_list VALUES ('$key',  '".$_SESSION['current']->iUserId."', '".get_remote()."', '".addslashes($value)."', '$messages', NOW())");
+        query_parameters("REPLACE session_list VALUES ('?', '?', '?', '?', '?', ?)",
+                         $key, $_SESSION['current']->iUserId, get_remote(), $value, $messages, "NOW()");
         return true;
     }
     
     // delete current session
     function _destroy ($key)
     {
-        query_appdb("DELETE FROM session_list WHERE session_id = '$key'");
+        query_parameters("DELETE FROM session_list WHERE session_id = '?'", $key);
         return true;
     }
     
     // clear old sessions (moved into a separate cron process)
     function _gc ($maxlifetime)
     {
-        query_appdb("DELETE FROM session_list WHERE to_days(now()) - to_days(stamp) >= 7");
+        query_parameters("DELETE FROM session_list WHERE to_days(now()) - to_days(stamp) >= 7");
         return true;
     }
 

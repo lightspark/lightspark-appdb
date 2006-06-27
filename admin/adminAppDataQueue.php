@@ -178,7 +178,7 @@ if (!$aClean['id'])
                 $statusMessage = "<p>The application data was successfully added into the database</p>\n";
 
                 //delete the item from the queue
-                query_appdb("DELETE from appData where id = ".$obj_row->id.";");
+                query_parameters("DELETE from appData where id = '?'", $obj_row->id);
         
                 //Send Status Email
                 $oUser = new User($obj_row->userId);
