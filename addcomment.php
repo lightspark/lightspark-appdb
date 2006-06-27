@@ -70,7 +70,7 @@ else
     }
   }
 
-  echo "<form method=\"POST\" action=\"addcomment.php\">\n";
+  echo "<form method=\"post\" action=\"addcomment.php\">\n";
 
   echo html_frame_start($mesTitle,500,"",0);
     
@@ -81,19 +81,19 @@ else
   echo "	<td>&nbsp;<input type=\"text\" size=\"35\" name=\"subject\" value=\"".$aClean['subject']."\" /> </td></tr>\n";
   echo "<tr class=\"color1\"><td colspan=2><textarea name=\"body\" cols=\"70\" rows=\"15\" wrap=\"virtual\">".$aClean['body']."</textarea></td></tr>\n";
   echo "<tr class=\"color1\"><td colspan=2 align=center>\n";
-  echo "  <input type=\"SUBMIT\" value=\"Post Comment\" class=\"button\" />\n";
-  echo "  <input type=\"RESET\" value=\"Reset\" class=\"button\" />\n";
+  echo "  <input type=\"submit\" value=\"Post Comment\" class=\"button\" />\n";
+  echo "  <input type=\"reset\" value=\"Reset\" class=\"button\" />\n";
   echo "</td></tr>\n";
   echo "</table>\n";
 
   echo html_frame_end();
 
-  echo "<input type=\"HIDDEN\" name=\"thread\" value=\"".$aClean['thread']."\" />\n";
-  echo "<input type=\"HIDDEN\" name=\"appId\" value=\"".$aClean['appId']."\" />\n";
-  echo "<input type=\"HIDDEN\" name=\"versionId\" value=\"".$aClean['versionId']."\" />\n";
+  echo "<input type=\"hidden\" name=\"thread\" value=\"".$aClean['thread']."\" />\n";
+  echo "<input type=\"hidden\" name=\"appId\" value=\"".$aClean['appId']."\" />\n";
+  echo "<input type=\"hidden\" name=\"versionId\" value=\"".$aClean['versionId']."\" />\n";
   if (!empty($aClean['thread']))
   {
-    echo "<input type=\"HIDDEN\" name=\"originator\" value=\"$originator\" />\n";
+    echo "<input type=\"hidden\" name=\"originator\" value=\"$originator\" />\n";
   }
   echo "</form>";
 }

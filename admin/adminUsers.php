@@ -33,7 +33,7 @@ if($aClean['action'] == "delete" && is_numeric($aClean['userId']))
 // search form
 echo html_frame_start("Users Management","400","",0)
 ?>
-    <form action="<?php echo $_SERVER['PHP_SELF'];?>" METHOD="POST">
+    <form action="<?php echo $_SERVER['PHP_SELF'];?>" method="post">
     <table width="100%" border=0 cellpadding=0 cellspacing=0>
         <tr>
             <td class="color1">Pattern</td>
@@ -52,7 +52,7 @@ echo html_frame_start("Users Management","400","",0)
         <tr>
             <td class="color1">Order by</td>
             <td>
-                <select NAME="sOrderBy">
+                <select name="sOrderBy">
                     <option value="email"<?php if($aClean['sOrderBy']=="email")echo" SELECTED";?>>e-mail</option>
                     <option value="realname"<?php if($aClean['sOrderBy']=="realname")echo" SELECTED";?>>real name</option>
                     <option value="created"<?php if($aClean['sOrderBy']=="created")echo" SELECTED";?>>creation date</option>
@@ -60,7 +60,7 @@ echo html_frame_start("Users Management","400","",0)
             </td>
         </tr>
         <tr>
-            <td colspan=2 class=color3 align=center><input type="SUBMIT" name="sSubmit" value="List Users" class="button"></td>
+            <td colspan=2 class=color3 align=center><input type="submit" name="sSubmit" value="List Users" class="button"></td>
         </tr>
     </table>
   </form>
