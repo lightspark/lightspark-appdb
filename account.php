@@ -114,17 +114,26 @@ function cmd_do_new()
 
     $result = $user->create($aClean['ext_email'], $aClean['ext_password'], $aClean['ext_realname'], $aClean['CVSrelease'] );
 
-    if($result == true)
+    if($result == SUCCESS)
     {
         /* if we can log the user in, log them in automatically */
-        if($user->login($aClean['ext_email'], $aClean['ext_password']))
+        if($user->login($aClean['ext_email'], $aClean['ext_password']) == SUCCESS)
             $_SESSION['current'] = $user;
 
         addmsg("Account created! (".$aClean['ext_email'].")", "green");
         redirect(apidb_fullurl());
     }
-    else
+    else if($result == USER_CREATE_EXISTS)
     {
+        addmsg("An account with this e-mail exists already.", "red");
+        retry("new", "Failed to create account");
+    } else if($result = USER_CREATE_FAILED)
+    {
+        addmsg("Error while creating a new user.", "red");
+        retry("new", "Failed to create account");
+    } else
+    {
+        addmsg("Unknown failure while creating new user.  Please report this problem to appdb admins.", "red");
         retry("new", "Failed to create account");
     }
 }
@@ -193,7 +202,7 @@ function cmd_do_login()
     $user = new User();
     $result = $user->login($aClean['ext_email'], $aClean['ext_password']);
 
-    if($result == true)
+    if($result == SUCCESS)
     {
         $_SESSION['current'] = $user;
         addmsg("You are successfully logged in as '$user->sRealname'.", "green");

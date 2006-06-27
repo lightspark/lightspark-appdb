@@ -6,6 +6,14 @@
 require_once(BASE."include/version.php");
 require_once(BASE."include/util.php");
 
+define(SUCCESS, 0);
+define(USER_CREATE_EXISTS, 1);
+define(USER_CREATE_FAILED, 2);
+define(USER_LOGIN_FAILED, 3);
+define(USER_UPDATE_FAILED, 4);
+define(USER_UPDATE_FAILED_EMAIL_EXISTS, 5); /* user updating to an email address that is already in use */
+define(USER_UPDATE_FAILED_NOT_LOGGED_IN, 6); /* user::update() called but user not logged in */
+
 /**
  * User class for handling users
  */
@@ -65,32 +73,32 @@ class User {
         {
             // Update timestamp and clear the inactivity flag if it was set
             query_appdb("UPDATE user_list SET stamp=NOW(), inactivity_warned='false' WHERE userid=".$this->iUserId);
-            return true;
+            return SUCCESS;
         }
-        return false;
+        return USER_LOGIN_FAILED;
     }
 
 
     /*
      * Creates a new user.
-     * returns true on success, false on failure
+     * returns SUCCESS on success, USER_CREATE_EXISTS if the user already exists
      */
     function create($sEmail, $sPassword, $sRealname, $sWineRelease)
     {
         if(user_exists($sEmail))
         {
-            addMsg("An account with this e-mail exists already.","red");
-            return false;
+            return USER_CREATE_EXISTS;
         } else
         {
             $hResult = query_parameters("INSERT INTO user_list (realname, email, CVSrelease, password, stamp,".
                                         "created) VALUES ('?', '?', '?', password('?'), ?, ?)",
                                         $sRealname, $sEmail, $sWineRelease, $sPassword, "NOW()", "NOW()");
 
-            if(!$hResult) addMsg("Error while creating a new user.", "red");
+            if(!$hResult) return USER_CREATE_FAILED;
 
             $retval = $this->login($sEmail, $sPassword);
-            $this->setPref("comments:mode", "threaded"); /* set the users default comments:mode to threaded */
+            if($retval == SUCCESS)
+                $this->setPref("comments:mode", "threaded"); /* set the users default comments:mode to threaded */
 
             return $retval;
         }
@@ -100,42 +108,55 @@ class User {
     /**
      * Update User Account;
      */
-    function update($sEmail = null, $sPassword = null, $sRealname = null, $sWineRelease = null)
+    function update()
     {
-        if(!$this->isLoggedIn()) return false;
+        if(!$this->isLoggedIn()) return USER_UPDATE_FAILED_NOT_LOGGED_IN;
 
-        if ($sEmail)
+        /* create an instance of ourselves so we can see what has changed */
+        $oUser = new User($this->iUserId);
+
+        if($this->sEmail && ($this->sEmail != $oUser->sEmail))
         {
-            if(user_exists($sEmail) && $sEmail != $this->sEmail)
+            /* make sure this email isn't already in use */
+            if(user_exists($this->sEmail))
             {
                 addMsg("An account with this e-mail exists already.","red");
-                return false;
+                return USER_UPDATE_FAILED_EMAIL_EXISTS;
             }
-            if (!query_appdb("UPDATE user_list SET email = '".addslashes($sEmail)."' WHERE userid = ".$this->iUserId))
-                return false;
-            $this->sEmail = $sEmail;
+            if (!query_appdb("UPDATE user_list SET email = '".addslashes($this->sEmail)."' WHERE userid = ".$this->iUserId))
+                return USER_UPDATE_FAILED;
         }
 
-        if ($sPassword)
+        if ($this->sRealname && ($this->sRealname != $oUser->sRealname))
         {
-            if (!query_appdb("UPDATE user_list SET password = password('$sPassword') WHERE userid = ".$this->iUserId))
-                return false;
+            if (!query_appdb("UPDATE user_list SET realname = '".addslashes($this->sRealname)."' WHERE userid = ".$this->iUserId))
+                return USER_UPDATE_FAILED;
         }
 
-        if ($sRealname)
+        if ($this->sWineRelease && ($this->sWineRelease != $oUser->sWineRelease))
         {
-            if (!query_appdb("UPDATE user_list SET realname = '".addslashes($sRealname)."' WHERE userid = ".$this->iUserId))
-                return false;
-            $this->sRealname = $sRealname;
+            if (!query_appdb("UPDATE user_list SET CVSrelease = '".addslashes($this->sWineRelease)."' WHERE userid = ".$this->iUserId))
+                return USER_UPDATE_FAILED;
+        }
+        return SUCCESS;
+    }
+
+    /** 
+     * NOTE: we can't update the users password like we can update other
+     * fields such as their email or username because the password is hashed
+     * in the database so we can't keep the users password in a class member variable
+     * and use update() because we can't check if the password changed without hashing
+     * the newly supplied one
+     */
+    function update_password($sPassword)
+    {
+        if($sPassword)
+        {
+            if (query_appdb("UPDATE user_list SET password = password('$sPassword') WHERE userid = ".$this->iUserId))
+                return true;
         }
 
-        if ($sWineRelease)
-        {
-            if (!query_appdb("UPDATE user_list SET CVSrelease = '".addslashes($sWineRelease)."' WHERE userid = ".$this->iUserId))
-                return false;
-            $this->sWineRelease = $sWineRelease;
-        }
-        return true;
+        return false;
     }
 
 

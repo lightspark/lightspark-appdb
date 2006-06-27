@@ -111,6 +111,7 @@ if($_POST)
         $oUser->setPref($arr[1], $value);
     }
     
+    /* make sure the user enters the same password twice */
     if ($aClean['ext_password'] == $aClean['ext_password2'])
     {
         $str_passwd = $aClean['ext_password'];
@@ -119,7 +120,20 @@ if($_POST)
     {
         addmsg("The Passwords you entered did not match.", "red");
     }
-    if ($oUser->update($aClean['ext_email'], $str_passwd, $aClean['ext_realname'], $aClean['CVSrelease']))
+
+    /* update user data fields */
+    $oUser->sEmail = $aClean['ext_email'];
+    $oUser->sRealname = $aClean['ext_realname'];
+    $oUser->sWineRelease = $aClean['CVSrelease'];
+
+    /* if the password was empty in both cases then skip updating the users password */
+    if($str_passwd != "")
+    {
+        if(!$oUser->update_password($str_passwd))
+            addmsg("Failed to update password", "red");
+    }
+
+    if ($oUser->update() == SUCCESS)
     {
         addmsg("Preferences Updated", "green");
         // we were managing an user, let's go back to the admin after updating tha admin status
