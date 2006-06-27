@@ -511,9 +511,9 @@ class testData{
     {
 
         $aClean = array(); //array of filtered user input
-        $aClean['sWhatWorks'] = makeSafe($_REQUEST['sWhatWorks']);
-        $aClean['sWhatDoesnt'] = makeSafe($_REQUEST['sWhatDoesnt']);
-        $aClean['sWhatNotTested'] = makeSafe($_REQUEST['sWhatNotTested']);
+        $aClean['sWhatWorks'] = trim(makeSafe($_REQUEST['sWhatWorks']));
+        $aClean['sWhatDoesnt'] = trim(makeSafe($_REQUEST['sWhatDoesnt']));
+        $aClean['sWhatNotTested'] = trim(makeSafe($_REQUEST['sWhatNotTested']));
         $aClean['sDistribution'] = makeSafe($_REQUEST['sDistribution']);
         $aClean['sTestedDate'] = makeSafe($_REQUEST['sTestedDate']);
         $aClean['sTestedRelease'] = makeSafe($_REQUEST['sTestedRelease']);
@@ -523,7 +523,6 @@ class testData{
         $aClean['sTestedRating'] = makeSafe($_REQUEST['sTestedRating']);
 
 	$errors = "";
-
         if (empty($aClean['sWhatWorks']))
             $errors .= "<li>Please enter what worked.</li>\n";
 
