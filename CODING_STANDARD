@@ -22,6 +22,7 @@ Scalar types:
 i for integers
 f for floats
 s for strings
+sh for html strings
 b for booleans
 Compound types:
 a for arrays
@@ -41,7 +42,7 @@ $hResult
 /**
  * Functions naming
  */
-1)functions name should be declarative (i.e. put a declarative verb as the first word like in do_someting())
+1)functions name should be declarative and be prefixed with the name of the module (=file) where it is stored (for example image_show_thumbnail())
 2)methods (functions inside a class) are named like this: setMyName() (i.e. words separated with an upper case character)
 3)normal functions (outside a class) are named like this: query_appdb() (i.e. words separated with an underscore)
 
