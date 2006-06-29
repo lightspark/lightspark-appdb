@@ -37,8 +37,12 @@ function filter_gpc()
                      break;
                 }
             break;
+            case "a": // array
+                 if(!is_array($_REQUEST[$aKeys[$i]]))
+                    util_show_error_page("Fatal error: ".$aKeys[$i]." should be an array.");
+            break;
             default:
-                if($aKeys[$i]!="whq_appdb") // that's the name of the session cookie
+                if($aKeys[$i]!="whq_appdb" && $aKeys[$i]!="MAX_FILE_SIZE") // whq_appdb is the name of the session cookie
                     util_show_error_page("Fatal error: type of variable ".$aKeys[$i]." is not recognized.");
             break;
         }
