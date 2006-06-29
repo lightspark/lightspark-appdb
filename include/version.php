@@ -827,12 +827,14 @@ class Version {
 
         view_version_bugs($this->iVersionId, $this->aBuglinkIds);    
 
-        $rNotes = query_parameters("SELECT * FROM appNotes WHERE versionId = '?'",
+        /* display the notes for the application */
+        $hNotes = query_parameters("SELECT noteId FROM appNotes WHERE versionId = '?'",
                                    $this->iVersionId);
     
-        while( $oNote = mysql_fetch_object($rNotes) )
+        while( $oRow = mysql_fetch_object($hNotes) )
         {
-            echo show_note($oNote->noteTitle,$oNote);
+            $oNote = new Note($oRow->noteId);
+            $oNote->show();
         }
     
         // Comments Section

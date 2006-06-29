@@ -158,5 +158,53 @@ class Note {
         if($sEmail)
             mail_appdb($sEmail, $sSubject ,$sMsg);
     } 
+
+    /* Show note */
+    function show()
+    {
+        switch($this->sTitle)
+        {
+        case 'WARNING':
+            $sColor = 'red';
+            $sTitle = 'Warning';
+            break;
+
+        case 'HOWTO':
+            $sColor = 'green';
+            $sTitle = 'HOWTO';
+            break;
+
+        default:
+            if(!empty($this->sTitle))
+                $sTitle = $this->sTitle;
+            else 
+                $sTitle = 'Note';
+            
+            $sColor = 'blue';
+        }
+    
+        $shOutput = html_frame_start("","98%",'',0);
+
+        $shOutput .= "<table width=\"100%\" border=\"0\" cellspacing=\"0\">\n";
+        $shOutput .= "<tr bgcolor=\"".$sColor."\" align=\"center\" valign=\"top\"><td><b>".$sTitle."</b></td></tr>\n";
+        $shOutput .= "<tr><td class=\"note\">\n";
+        $shOutput .= $this->sDescription;
+        $shOutput .= "</td></tr>\n";
+
+        if ($_SESSION['current']->hasPriv("admin") ||
+            $_SESSION['current']->isMaintainer($this->iVersionId) ||
+            $_SESSION['current']->isSuperMaintainer($this->iAppId))
+        {
+            $shOutput .= "<tr class=\"color1\" align=\"center\" valign=\"top\"><td>";
+            $shOutput .= "<form method=\"post\" name=\"message\" action=\"admin/editAppNote.php?noteId={$this->iNoteId}\">";
+            $shOutput .= '<input type="submit" value="Edit Note" class="button">';
+            $shOutput .= '</form></td></tr>';
+        }
+
+        $shOutput .= "</table>\n";
+        $shOutput .= html_frame_end();
+
+        echo $shOutput;
+    }
 }
 ?>

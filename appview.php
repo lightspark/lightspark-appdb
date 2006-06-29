@@ -82,55 +82,6 @@ function display_bundle($iAppId)
     echo html_frame_end();
 }
 
-/* Show note */
-function show_note($sType,$oData)
-{
-    global $oVersion;
-
-    switch($sType)
-    {
-        case 'WARNING':
-        $color = 'red';
-        $title = 'Warning';
-        break;
-
-        case 'HOWTO';
-        $color = 'green';
-        $title = 'HOWTO';
-        break;
-
-        default:
-        
-        if(!empty($oData->noteTitle))
-            $title = $oData->noteTitle;
-        else 
-            $title = 'Note';
-            
-        $color = 'blue';
-    }
-    
-    $s = html_frame_start("","98%",'',0);
-
-    $s .= "<table width=\"100%\" border=\"0\" cellspacing=\"0\">\n";
-    $s .= "<tr bgcolor=\"".$color."\" align=\"center\" valign=\"top\"><td><b>".$title."</b></td></tr>\n";
-    $s .= "<tr><td class=\"note\">\n";
-    $s .= $oData->noteDesc;
-    $s .= "</td></tr>\n";
-
-    if ($_SESSION['current']->hasPriv("admin") || $_SESSION['current']->isMaintainer($oVersion->iVersionId) || $_SESSION['current']->isSuperMaintainer($oVersion->iAppId))
-    {
-        $s .= "<tr class=\"color1\" align=\"center\" valign=\"top\"><td>";
-        $s .= "<form method=\"post\" name=\"message\" action=\"admin/editAppNote.php?noteId={$oData->noteId}\">";
-        $s .= '<input type="submit" value="Edit Note" class="button">';
-        $s .= '</form></td></tr>';
-    }
-
-    $s .= "</table>\n";
-    $s .= html_frame_end();
-
-    return $s;
-}
-
 if(!is_numeric($aClean['appId']) && !is_numeric($aClean['versionId']))
 {
     util_show_error_page("Something went wrong with the application or version id");
