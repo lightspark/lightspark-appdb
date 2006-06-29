@@ -657,65 +657,25 @@ class Application {
         echo html_frame_end("For more details and user comments, view the versions of this application.");
 
         // display versions
-        display_approved_versions($this->aVersionsIds);
+        Version::display_approved($this->aVersionsIds);
 
         // display bundle
         display_bundle($this->iAppId);
     }
-}
 
+    function lookup_name($appId)
+    {
+        if(!$appId) return null;
+        $result = query_parameters("SELECT appName FROM appFamily WHERE appId = '?'",
+                                   $appId);
+        if(!$result || mysql_num_rows($result) != 1)
+            return null;
+        $ob = mysql_fetch_object($result);
+        return $ob->appName;
+    }
 
-/*
- * Application functions that are not part of the class
- */
-
-function lookup_version_name($versionId)
-{
-    if(!$versionId) return null;
-    $result = query_parameters("SELECT versionName FROM appVersion WHERE versionId = '?'",
-                               $versionId);
-    if(!$result || mysql_num_rows($result) != 1)
-        return null;
-    $ob = mysql_fetch_object($result);
-    return $ob->versionName;
-}
-
-
-function lookup_app_name($appId)
-{
-    if(!$appId) return null;
-    $result = query_parameters("SELECT appName FROM appFamily WHERE appId = '?'",
-                               $appId);
-    if(!$result || mysql_num_rows($result) != 1)
-        return null;
-    $ob = mysql_fetch_object($result);
-    return $ob->appName;
-}
-
-
-/**
- * Remove html formatting from description and extract the first part of the description only.
- * This is to be used for search results, application summary tables, etc.
- */ 
-function trim_description($sDescription)
-{
-    // 1) let's take the first line of the description:
-    $aDesc = explode("\n",trim($sDescription),2);
-    // 2) maybe it's an html description and lines are separated with <br> or </p><p>
-    $aDesc = explode("<br>",$aDesc[0],2);
-    $aDesc = explode("<br />",$aDesc[0],2);
-    $aDesc = explode("</p><p>",$aDesc[0],2);
-    $aDesc = explode("</p><p /><p>",$aDesc[0],2);
-    return trim(strip_tags($aDesc[0]));
-}
-
-function GetDefaultApplicationDescription()
-{
-    return "<p>Enter a description of the application here</p>";
-}
-
-function showAppList($hResult)
-{
+    function showList($hResult)
+    {
         //show applist
         echo html_frame_start("","90%","",0);
         echo "<table width=\"100%\" border=\"0\" cellpadding=\"3\" cellspacing=\"0\">
@@ -756,5 +716,7 @@ function showAppList($hResult)
         }
         echo "</table>\n\n";
         echo html_frame_end("&nbsp;");
+    }
 }
+
 ?>

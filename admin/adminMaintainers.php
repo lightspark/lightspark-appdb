@@ -115,12 +115,12 @@ if ($aClean['sub'])
             echo "    <td><a href=\"mailto:".$oUser->sEmail."\">".$oUser->sRealname."</a></td>\n";
             if($ob->superMaintainer)
             {
-                echo "    <td><a href='".BASE."appview.php?appId=$ob->appId'>".lookup_app_name($ob->appId)."</a></td>\n";
+                echo "    <td><a href='".BASE."appview.php?appId=$ob->appId'>".Application::lookup_name($ob->appId)."</a></td>\n";
                 echo "    <td>*</td>\n";
             } else
             {
-                echo "    <td><a href='".BASE."appview.php?appId=$ob->appId'>".lookup_app_name($ob->appId)."</a></td>\n";
-                echo "    <td><a href='".BASE."appview.php?versionId=$ob->versionId'>".lookup_version_name($ob->versionId)."</a>&nbsp;</td>\n";
+                echo "    <td><a href='".BASE."appview.php?appId=$ob->appId'>".Application::lookup_name($ob->appId)."</a></td>\n";
+                echo "    <td><a href='".BASE."appview.php?versionId=$ob->versionId'>".Version::lookup_name($ob->versionId)."</a>&nbsp;</td>\n";
             }
             echo "    <td align=\"center\">[<a href='adminMaintainers.php?sub=delete&maintainerId=$ob->maintainerId'>delete</a>]</td>\n";
             echo "</tr>\n\n";

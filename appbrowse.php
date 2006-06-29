@@ -115,7 +115,7 @@ if($apps)
         $bgcolor = ($i % 2) ? "color0" : "color1";
         
         //format desc
-        $desc = trim_description($oApp->sDescription);
+        $desc = util_trim_description($oApp->sDescription);
 	
         //display row
         echo "<tr class=$bgcolor>\n";

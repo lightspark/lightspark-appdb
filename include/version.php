@@ -838,10 +838,20 @@ class Version {
         // Comments Section
         view_app_comments($this->iVersionId);
     }
-}
 
-function showVersionList($hResult)
-{
+    function lookup_name($versionId)
+    {
+        if(!$versionId) return null;
+        $result = query_parameters("SELECT versionName FROM appVersion WHERE versionId = '?'",
+                                   $versionId);
+        if(!$result || mysql_num_rows($result) != 1)
+            return null;
+        $ob = mysql_fetch_object($result);
+        return $ob->versionName;
+    }
+
+    function showList($hResult)
+    {
         //show applist
         echo html_frame_start("","90%","",0);
         echo "<table width=\"100%\" border=\"0\" cellpadding=\"3\" cellspacing=\"0\">
@@ -879,49 +889,48 @@ function showVersionList($hResult)
         }
         echo "</table>\n\n";
         echo html_frame_end("&nbsp;");
+    }
 
-}
-
-// display the versions
-// Used in appview.php appsubmit.php and adminAppQueue.php
-function display_approved_versions($aVersionsIds)
-{
-    if ($aVersionsIds)
+    // display the versions
+    function display_approved($aVersionsIds)
     {
-        echo html_frame_start("","98%","",0);
-        echo "<table width=\"100%\" border=\"0\" cellpadding=\"3\" cellspacing=\"1\">\n\n";
-
-        echo "<tr class=color4>\n";
-        echo "    <td width=\"80\">Version</td>\n";
-        echo "    <td>Description</td>\n";
-        echo "    <td width=\"80\">Rating</td>\n";
-        echo "    <td width=\"80\">Wine version</td>\n";
-        echo "    <td width=\"40\">Comments</td>\n";
-        echo "</tr>\n\n";
-      
-        $c = 0;
-        foreach($aVersionsIds as $iVersionId)
+        if ($aVersionsIds)
         {
-            $oVersion = new Version($iVersionId);
-            if ($oVersion->sQueued == 'false')
+            echo html_frame_start("","98%","",0);
+            echo "<table width=\"100%\" border=\"0\" cellpadding=\"3\" cellspacing=\"1\">\n\n";
+
+            echo "<tr class=color4>\n";
+            echo "    <td width=\"80\">Version</td>\n";
+            echo "    <td>Description</td>\n";
+            echo "    <td width=\"80\">Rating</td>\n";
+            echo "    <td width=\"80\">Wine version</td>\n";
+            echo "    <td width=\"40\">Comments</td>\n";
+            echo "</tr>\n\n";
+      
+            $c = 0;
+            foreach($aVersionsIds as $iVersionId)
             {
-                // set row color
-                $bgcolor = ($c % 2 == 0) ? "color0" : "color1";
+                $oVersion = new Version($iVersionId);
+                if ($oVersion->sQueued == 'false')
+                {
+                    // set row color
+                    $bgcolor = ($c % 2 == 0) ? "color0" : "color1";
 
-                //display row
-                echo "<tr class=$bgcolor>\n";
-                echo "    <td><a href=\"".BASE."appview.php?versionId=".$iVersionId."\">".$oVersion->sName."</a></td>\n";
-                echo "    <td>".trim_description($oVersion->sDescription)."</td>\n";
-                echo "    <td align=center>".$oVersion->sTestedRating."</td>\n";
-                echo "    <td align=center>".$oVersion->sTestedRelease."</td>\n";
-                echo "    <td align=center>".sizeof($oVersion->aCommentsIds)."</td>\n";
-                echo "</tr>\n\n";
+                    //display row
+                    echo "<tr class=$bgcolor>\n";
+                    echo "    <td><a href=\"".BASE."appview.php?versionId=".$iVersionId."\">".$oVersion->sName."</a></td>\n";
+                    echo "    <td>".util_trim_description($oVersion->sDescription)."</td>\n";
+                    echo "    <td align=center>".$oVersion->sTestedRating."</td>\n";
+                    echo "    <td align=center>".$oVersion->sTestedRelease."</td>\n";
+                    echo "    <td align=center>".sizeof($oVersion->aCommentsIds)."</td>\n";
+                    echo "</tr>\n\n";
 
-                $c++;   
+                    $c++;   
+                }
             }
+            echo "</table>\n";
+            echo html_frame_end("Click the Version Name to view the details of that Version");
         }
-        echo "</table>\n";
-        echo html_frame_end("Click the Version Name to view the details of that Version");
     }
 }
 

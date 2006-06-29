@@ -73,8 +73,8 @@ if (!$aClean['id'])
             echo $oUser->sRealname;
             echo $oUser->sEmail ? "</a>":"";
             echo "</td>\n";
-            echo "<td>".lookup_app_name($ob->appId)."</td>\n";
-            echo "<td>".lookup_version_name($ob->versionId)."</td>\n";
+            echo "<td>".Application::lookup_name($ob->appId)."</td>\n";
+            echo "<td>".Version::lookup_name($ob->versionId)."</td>\n";
             echo "<td>".$ob->type."</td>\n";
             echo "<td align=\"center\">[<a href='adminAppDataQueue.php?id=$ob->id'>process</a>]</td>\n";
             echo "</tr>\n\n";
@@ -105,11 +105,11 @@ if (!$aClean['id'])
   
         // app name
         echo '<tr valign=top><td class=color0><b>App Name</b></td>',"\n";
-        echo "<td>".lookup_app_name($obj_row->appId)."</td></tr>\n";
+        echo "<td>".Application::lookup_name($obj_row->appId)."</td></tr>\n";
 
         // version
         echo '<tr valign=top><td class=color0><b>App Version</b></td>',"\n";
-        echo "<td>".lookup_version_name($obj_row->versionId)."</td></tr>\n";
+        echo "<td>".Version::lookup_name($obj_row->versionId)."</td></tr>\n";
          
         //dataDescription
         echo '<tr valign=top><td class=color0><b>Description</b></td>',"\n";
@@ -185,7 +185,7 @@ if (!$aClean['id'])
                 if ($oUser->sEmail)
                 {
                     $sSubject =  "Application Data Request Report";
-                    $sMsg  = "Your submission of an application data for ".lookup_app_name($obj_row->appId).lookup_version_name($obj_row->versionId)." has been accepted. ";
+                    $sMsg  = "Your submission of an application data for ".Application::lookup_name($obj_row->appId).Version::lookup_name($obj_row->versionId)." has been accepted. ";
                     $sMsg .= $aClean['replyText'];
                     $sMsg .= "We appreciate your help in making the Application Database better for all users.\r\n";
                 
@@ -207,7 +207,7 @@ if (!$aClean['id'])
             if ($oUser->sEmail)
             {
                 $sSubject =  "Application Data Request Report";
-                $sMsg  = "Your submission of an application data for ".lookup_app_name($obj_row->appId).lookup_version_name($obj_row->versionId)." was rejected. ";
+                $sMsg  = "Your submission of an application data for ".Application::lookup_name($obj_row->appId).Version::lookup_name($obj_row->versionId)." was rejected. ";
                 $sMsg .= $aClean['replyText'];
                 mail_appdb($oUser->sEmail, $sSubject ,$sMsg); 
             }

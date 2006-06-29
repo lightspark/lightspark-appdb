@@ -72,7 +72,7 @@ function display_bundle($iAppId)
         //display row
         echo "<tr class=\"$bgcolor\">\n";
         echo "    <td><a href=\"appview.php?appId=$ob->appId\">".stripslashes($ob->appName)."</a></td>\n";
-        echo "    <td>".trim_description($oApp->sDescription)."</td>\n";
+        echo "    <td>".util_trim_description($oApp->sDescription)."</td>\n";
         echo "</tr>\n\n";
 
         $c++;

@@ -84,7 +84,7 @@ class Comment {
                     $sEmail.="$value ";
                 }
 
-                $sSubject = "Comment for '".lookup_app_name($this->iAppId)." ".lookup_version_name($this->iVersionId)."' added by ".$_SESSION['current']->sRealname;
+                $sSubject = "Comment for '".Application::lookup_name($this->iAppId)." ".Version::lookup_name($this->iVersionId)."' added by ".$_SESSION['current']->sRealname;
                 $sMsg  = "To reply to this email please use the link provided below.\n";
                 $sMsg .= "DO NOT reply via your email client as it will not reach the person who wrote the comment\n";
                 $sMsg .= APPDB_ROOT."appview.php?versionId=".$this->iVersionId."&mode=nested#Comment-".$this->iCommentId."\n";
@@ -165,7 +165,7 @@ class Comment {
             $sEmail .= $this->oOwner->sEmail;
             if($sEmail)
             {
-                $sSubject = "Comment for '".lookup_app_name($this->iAppId)." ".lookup_version_name($this->iVersionId)."' deleted by ".$_SESSION['current']->sRealname;
+                $sSubject = "Comment for '".Application::lookup_name($this->iAppId)." ".Version::lookup_name($this->iVersionId)."' deleted by ".$_SESSION['current']->sRealname;
                 $sMsg  = APPDB_ROOT."appview.php?versionId=".$this->iVersionId."\n";
                 $sMsg .= "\n";
                 $sMsg .= "This comment was made on ".substr($this->sDateCreated,0,10)." by ".$this->oOwner->sRealname."\n";

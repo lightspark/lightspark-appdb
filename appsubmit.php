@@ -317,7 +317,7 @@ if ($aClean['sub'])
             {
                 $oAppForVersion = new Application($oVersion->iAppId);
                 echo html_frame_start("Potential duplicate versions in the database for application: ".$oAppForVersion->sName,"90%","",0);
-                display_approved_versions($oAppForVersion->aVersionsIds);
+                Version::display_approved($oAppForVersion->aVersionsIds);
                 echo html_frame_end("&nbsp;");
 
                 //help
@@ -421,7 +421,7 @@ else // if ($aClean['sub']) is not defined, display the main app queue page
         echo "</td></tr></table></div>\n\n";
     
         //show applist
-        showAppList($hResult);
+        Application::showList($hResult);
     }
 
      // get queued versions (only versions where application are not queued already)

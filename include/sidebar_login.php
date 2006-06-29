@@ -27,9 +27,9 @@ function global_sidebar_login() {
             while(list($index, list($appId, $versionId, $superMaintainer)) = each($apps_user_maintains))
             {
                 if($superMaintainer)
-                    $g->addmisc("<a href='".BASE."appview.php?appId=$appId'>".lookup_app_name($appId)."*</a>", "center");
+                    $g->addmisc("<a href='".BASE."appview.php?appId=$appId'>".Application::lookup_name($appId)."*</a>", "center");
                 else
-                    $g->addmisc("<a href='".BASE."appview.php?versionId=$versionId'>".lookup_app_name($appId)." ".lookup_version_name($versionId)."</a>", "center");
+                    $g->addmisc("<a href='".BASE."appview.php?versionId=$versionId'>".Application::lookup_name($appId)." ".Version::lookup_name($versionId)."</a>", "center");
             }
         }
         $appsRejected = $_SESSION['current']->getAllRejectedApps();

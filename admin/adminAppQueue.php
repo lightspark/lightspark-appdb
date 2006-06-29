@@ -115,7 +115,7 @@ function display_move_test_to_versions_table($aVersionsIds,$icurrentVersionId)
                 echo "<tr class=$bgcolor>\n";
                 echo "    <td>".html_ahref($oVersion->sName,"adminAppQueue.php?sub=movetest&apptype=version&versionId=".$icurrentVersionId."&versionIdMergeTo=".$oVersion->iVersionId)."</td>\n";
 
-                echo "    <td>".trim_description($oVersion->sDescription)."</td>\n";
+                echo "    <td>".util_trim_description($oVersion->sDescription)."</td>\n";
                 echo "    <td align=center>".$oVersion->sTestedRating."</td>\n";
                 echo "    <td align=center>".$oVersion->sTestedRelease."</td>\n";
                 echo "    <td align=center>".sizeof($oVersion->aCommentsIds)."</td>\n";
@@ -302,7 +302,7 @@ if ($aClean['sub'])
         { 
             echo html_frame_start("Potential duplicate versions in the database","90%","",0);
             $oAppForVersion = new Application($oVersion->iAppId);
-            display_approved_versions($oAppForVersion->aVersionsIds);
+            Version::display_approved($oAppForVersion->aVersionsIds);
             echo html_frame_end("&nbsp;");
 
             echo html_frame_start("Move test to version","90%","",0);
@@ -456,7 +456,7 @@ else /* if ($aClean['sub']) is not defined, display the main app queue page */
         echo "</td></tr></table></div>\n\n";
     
         //show applist
-        showAppList($hResult);
+        Application::showList($hResult);
 
     }
 
@@ -482,7 +482,7 @@ else /* if ($aClean['sub']) is not defined, display the main app queue page */
         echo "</td></tr></table></div>\n\n";
     
         //show version list
-        showVersionList($hResult);
+        Version::showList($hResult);
 
     }
 }

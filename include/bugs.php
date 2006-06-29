@@ -198,14 +198,15 @@ class Bug {
         if($this->iSubmitterId)
         {
             $oSubmitter = new User($this->iSubmitterId);
+            $sAppName = Application::lookup_name($this->iAppId)." ".Version::lookup_name($this->iVersionId);
             if(!$bRejected)
             {
                 $sSubject =  "Submitted Bug Link accepted";
-                $sMsg  = "The Bug Link you submitted for ".lookup_app_name($this->iAppId)." ".lookup_version_name($this->iVersionId)." has been accepted.";
+                $sMsg  = "The Bug Link you submitted for ".$sAppName." has been accepted.";
             } else
             {
                  $sSubject =  "Submitted Bug Link rejected";
-                 $sMsg  = "The Bug Link you submitted for ".lookup_app_name($this->iAppId)." ".lookup_version_name($this->iVersionId)." has been rejected.";
+                 $sMsg  = "The Bug Link you submitted for ".$sAppName." has been rejected.";
             }
             $sMsg .= $aClean['replyText']."\n";
             $sMsg .= "We appreciate your help in making the Application Database better for all users.";
@@ -217,11 +218,12 @@ class Bug {
  
     function SendNotificationMail($bDeleted=false)
     {
+        $sAppName = Application::lookup_name($this->iAppId)." ".Version::lookup_name($this->iVersionId);
         if(!$bDeleted)
         {
             if(!$this->bQueued)
             {
-                $sSubject = "Link between Bug ".$this->iBug_id." and ".lookup_app_name($this->iAppId)." ".lookup_version_name($this->iVersionId)." added by ".$_SESSION['current']->sRealname;
+                $sSubject = "Link between Bug ".$this->iBug_id." and ".$sAppName." added by ".$_SESSION['current']->sRealname;
                 $sMsg  = APPDB_ROOT."appview.php?versionId=".$this->iVersionId."\n";
                 if($this->iSubmitterId)
                 {
@@ -232,7 +234,7 @@ class Bug {
                 addmsg("The Bug Link was successfully added into the database.", "green");
             } else // Bug Link queued.
             {
-                $sSubject = "Link between Bug ".$this->iBug_id." and ".lookup_app_name($this->iAppId)." ".lookup_version_name($this->iVersionId)." submitted by ".$_SESSION['current']->sRealname;
+                $sSubject = "Link between Bug ".$this->iBug_id." and ".$sAppName." submitted by ".$_SESSION['current']->sRealname;
                 $sMsg  = APPDB_ROOT."appview.php?versionId=".$this->iVersionId."\n";
                 $sMsg .= "This Bug Link has been queued.";
                 $sMsg .= "\n";
@@ -240,7 +242,7 @@ class Bug {
             }
         } else // Bug Link deleted.
         {
-            $sSubject = "Link between Bug ".$this->iBug_id." and ".lookup_app_name($this->iAppId)." ".lookup_version_name($this->iVersionId)." deleted by ".$_SESSION['current']->sRealname;
+            $sSubject = "Link between Bug ".$this->iBug_id." and ".$sAppName." deleted by ".$_SESSION['current']->sRealname;
             $sMsg  = APPDB_ROOT."appview.php?versionId=".$this->iVersionId."\n";
             addmsg("Bug Link deleted.", "green");
         }

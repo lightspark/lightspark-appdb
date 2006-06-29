@@ -125,19 +125,20 @@ class Note {
 
     function SendNotificationMail($sAction="add",$sMsg=null)
     {
+        $sAppName = Application::lookup_name($this->iAppId)." ".Version::lookup_name($this->iVersionId);
         switch($sAction)
         {
             case "add":
-                $sSubject = "Note ".$this->sTitle." for ".lookup_app_name($this->iAppId)." ".lookup_version_name($this->iVersionId)." added by ".$_SESSION['current']->sRealname;
+                $sSubject = "Note ".$this->sTitle." for ".$sAppName." added by ".$_SESSION['current']->sRealname;
                 $sMsg .= APPDB_ROOT."appview.php?versionId=".$this->iVersionId."\n";
                 addmsg("The note was successfully added into the database.", "green");
             break;
             case "edit":
-                $sSubject =  "Note ".$this->sTitle." for ".lookup_app_name($this->iAppId)." ".lookup_version_name($this->iVersionId)." has been modified by ".$_SESSION['current']->sRealname;
+                $sSubject =  "Note ".$this->sTitle." for ".$sAppName." has been modified by ".$_SESSION['current']->sRealname;
                 addmsg("Note modified.", "green");
             break;
             case "delete":
-                $sSubject = "Note ".$this->sTitle." for ".lookup_app_name($this->iAppId)." ".lookup_version_name($this->iVersionId)." has been deleted by ".$_SESSION['current']->sRealname;
+                $sSubject = "Note ".$this->sTitle." for ".$sAppName." has been deleted by ".$_SESSION['current']->sRealname;
                 $sMsg .= "This note was made on ".substr($this->sDateCreated,0,10)." by ".$this->oOwner->sRealname."\n";
                 $sMsg .= "\n";
                 $sMsg .= "Subject: ".$this->sTitle."\n";

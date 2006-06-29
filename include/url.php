@@ -185,15 +185,16 @@ class Url {
         $aClean['replyText'] = makeSafe($_REQUEST['replyText']);
         if($this->iSubmitterId)
         {
+            $sAppName = Application::lookup_name($this->appId)." ".Version::lookup_name($this->versionId);
             $oSubmitter = new User($this->iSubmitterId);
             if(!$bRejected)
             {
                 $sSubject =  "Submitted url accepted";
-                $sMsg  = "The url you submitted for ".lookup_app_name($this->appId)." ".lookup_version_name($this->versionId)." has been accepted.";
+                $sMsg  = "The url you submitted for ".$sAppName." has been accepted.";
             } else
             {
                  $sSubject =  "Submitted url rejected";
-                 $sMsg  = "The url you submitted for ".lookup_app_name($this->appId)." ".lookup_version_name($this->versionId)." has been rejected.";
+                 $sMsg  = "The url you submitted for ".$sAppName." has been rejected.";
             }
             $sMsg .= $aClean['replyText']."\n";
             $sMsg .= "We appreciate your help in making the Application Database better for all users.";
@@ -205,11 +206,12 @@ class Url {
  
     function SendNotificationMail($bDeleted=false)
     {
+        $sAppName = Application::lookup_name($this->appId)." ".Version::lookup_name($this->versionId);
         if(!$bDeleted)
         {
             if(!$this->bQueued)
             {
-                $sSubject = "Url for ".lookup_app_name($this->iAppId)." ".lookup_version_name($this->iVersionId)." added by ".$_SESSION['current']->sRealname;
+                $sSubject = "Url for ".$sAppName." added by ".$_SESSION['current']->sRealname;
                 $sMsg  = APPDB_ROOT."appview.php?versionId=".$this->iVersionId."\n";
                 if($this->iSubmitterId)
                 {
@@ -220,7 +222,7 @@ class Url {
                 addmsg("The url was successfully added into the database.", "green");
             } else // Url queued.
             {
-                $sSubject = "Url for ".lookup_app_name($this->iAppId)." ".lookup_version_name($this->iVersionId)." submitted by ".$_SESSION['current']->sRealname;
+                $sSubject = "Url for ".$sAppName." submitted by ".$_SESSION['current']->sRealname;
                 $sMsg  = APPDB_ROOT."appview.php?versionId=".$this->iVersionId."\n";
                 $sMsg .= "This url has been queued.";
                 $sMsg .= "\n";
@@ -228,7 +230,7 @@ class Url {
             }
         } else // Url deleted.
         {
-            $sSubject = "Url for ".lookup_app_name($this->iAppId)." ".lookup_version_name($this->iVersionId)." deleted by ".$_SESSION['current']->sRealname;
+            $sSubject = "Url for ".$sAppName." deleted by ".$_SESSION['current']->sRealname;
             $sMsg  = APPDB_ROOT."appview.php?versionId=".$this->iVersionId."\n";
             addmsg("Url deleted.", "green");
         }

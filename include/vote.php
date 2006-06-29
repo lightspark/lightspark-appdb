@@ -126,8 +126,8 @@ function vote_menu()
     {
         if(isset($votes[$i]))
         {
-            $appName = lookup_app_name($votes[$i]->appId);
-            $str = "<a href='appview.php?appId=".$votes[$i]->appId."'> $appName</a>";
+            $sAppName = Application::lookup_name($votes[$i]->appId);
+            $str = "<a href='appview.php?appId=".$votes[$i]->appId."'> $sAppName</a>";
             $m->add("<input type=radio name=slot value='$i'> ".$str);
         }
         else
