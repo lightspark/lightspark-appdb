@@ -143,10 +143,18 @@ function cmd_do_new()
  */
 function cmd_send_passwd()
 {
-   
     $aClean = array(); //array of filtered user input
 
     $aClean['ext_email'] = makeSafe($_POST['ext_email']);
+
+    /* if the user didn't enter any email address we should */
+    /* ask them to */
+    if($aClean['ext_email'] == "")
+    {
+        addmsg("Please enter your email address in the 'E-mail' field and re-request a new password",
+               "green");
+        redirect(apidb_fullurl("account.php?cmd=login"));
+    }
 
     $note = '(<b>Note</b>: accounts for <b>appdb</b>.winehq.org and <b>bugs</b>.winehq.org '
            .'are separated, so You might need to <b>create second</b> account for appdb.)';
@@ -156,7 +164,7 @@ function cmd_send_passwd()
     $user = new User($userid);
     if ($userid)
     {
-        if ($user->update(null, $passwd))
+        if ($user->update_password($passwd))
         {
             $sSubject =  "Application DB Lost Password";
             $sMsg  = "We have received a request that you lost your password.\r\n";
