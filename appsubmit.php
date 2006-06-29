@@ -66,7 +66,7 @@ function newSubmition($errors)
 //deny access if not logged on
 if(!$_SESSION['current']->isLoggedIn())
 {
-    util_show_error_page("Insufficient privilages to create application.  Are you sure you are logged in?");
+    util_show_error_page("Insufficient privileges to create application.  Are you sure you are logged in?");
     exit;
 }
 
