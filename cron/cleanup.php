@@ -114,7 +114,7 @@ function notifyAdminsOfCleanupStart()
 {
     $sSubject  = "Cleanup script starting\r\n";
     $sMsg  = "Appdb cleanup cron script started.\r\n";
-    $sEmail = get_notify_email_address_list(null, null); /* get list admins */
+    $sEmail = User::get_notify_email_address_list(null, null); /* get list admins */
     if($sEmail)
         mail_appdb($sEmail, $sSubject, $sMsg);
 }
@@ -124,7 +124,7 @@ function notifyAdminsOfCleanupStart()
 /* events of the appdb */
 function notifyAdminsOfCleanupExecution($usersWarned, $usersUnwarnedWithData, $usersDeleted, $usersWithData)
 {
-    $warnedUsers = get_inactive_users_pending_deletion();
+    $warnedUsers = User::get_inactive_users_pending_deletion();
 
     $sSubject  = "Cleanup script summary\r\n";
     $sMsg  = "Appdb cleanup cron script executed.\r\n";
@@ -135,7 +135,7 @@ function notifyAdminsOfCleanupExecution($usersWarned, $usersUnwarnedWithData, $u
     $sMsg .= "Warned users pending deletion:".$warnedUsers."\r\n";
     $sMsg .= "Users deleted:".$usersDeleted."\r\n";
     $sMsg .= "Users pending deletion but have appdb data:".$usersWithData."\r\n";
-    $sEmail = get_notify_email_address_list(null, null); /* get list admins */
+    $sEmail = User::get_notify_email_address_list(null, null); /* get list admins */
     if($sEmail)
         mail_appdb($sEmail, $sSubject, $sMsg);
 }
@@ -163,7 +163,7 @@ function orphanVersionCheck()
 
     $sSubject = "Versions orphaned in the database\r\n";
 
-    $sEmail = get_notify_email_address_list(null, null); /* get list admins */
+    $sEmail = User::get_notify_email_address_list(null, null); /* get list admins */
     if($sEmail)
         mail_appdb($sEmail, $sSubject, $sMsg);
 }

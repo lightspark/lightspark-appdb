@@ -87,7 +87,7 @@ class User {
      */
     function create($sEmail, $sPassword, $sRealname, $sWineRelease)
     {
-        if(user_exists($sEmail))
+        if(User::exists($sEmail))
         {
             return USER_CREATE_EXISTS;
         } else
@@ -120,7 +120,7 @@ class User {
         if($this->sEmail && ($this->sEmail != $oUser->sEmail))
         {
             /* make sure this email isn't already in use */
-            if(user_exists($this->sEmail))
+            if(User::exists($this->sEmail))
             {
                 addMsg("An account with this e-mail exists already.","red");
                 return USER_UPDATE_FAILED_EMAIL_EXISTS;
@@ -725,8 +725,181 @@ class User {
      }
 
 
+     /**
+      * Creates a new random password.
+      */
+     function generate_passwd($pass_len = 10)
+     {
+         $nps = "";
+         mt_srand ((double) microtime() * 1000000);
+         while (strlen($nps)<$pass_len)
+         {
+             $c = chr(mt_rand (0,255));
+             if (eregi("^[a-z0-9]$", $c)) $nps = $nps.$c;
+         }
+         return ($nps);
+     }
 
+     /**
+      * Check if a user exists.
+      * returns the userid if the user exists
+      */
+     function exists($sEmail)
+     {
+         $hResult = query_parameters("SELECT userid FROM user_list WHERE email = '?'",
+                                     $sEmail);
+         if(!$hResult || mysql_num_rows($hResult) != 1)
+         {
+             return 0;
+         } else
+         {
+             $oRow = mysql_fetch_object($hResult);
+             return $oRow->userid;
+         }
+     }
 
+     /**
+      * Get the number of users in the database 
+      */
+     function count()
+     {
+         $hResult = query_parameters("SELECT count(*) as num_users FROM user_list;");
+         $oRow = mysql_fetch_object($hResult);
+         return $oRow->num_users;
+     }
+
+     /**
+      * Get the number of active users within $days of the current day
+      */
+     function active_users_within_days($days)
+     {
+         $hResult = query_parameters("SELECT count(*) as num_users FROM user_list WHERE stamp >= DATE_SUB(CURDATE(), interval '?' day);",
+                                     $days);
+         $oRow = mysql_fetch_object($hResult);
+         return $oRow->num_users;
+     }
+
+     /**
+      * Get the count of users who have been warned for inactivity and are
+      * pending deletion after the X month grace period
+      */
+     function get_inactive_users_pending_deletion()
+     {
+         /* retrieve the number of users that have been warned and are pending deletion */
+         $hResult = query_parameters("select count(*) as count from user_list where inactivity_warned = 'true'");
+         $oRow = mysql_fetch_object($hResult);
+         return $oRow->count;
+     }
+
+     /**
+      * Get the email address of people to notify for this appId and versionId.
+      */
+     function get_notify_email_address_list($iAppId = null, $iVersionId = null)
+     {
+         $aUserId = array();
+         $c = 0;
+         $retval = "";
+
+         /*
+          * Retrieve version maintainers.
+          */
+         /*
+          * If versionId was supplied we fetch supermaintainers of application and maintainer of version.
+          */
+         if($iVersionId)
+         {
+             $hResult = query_parameters("SELECT appMaintainers.userId 
+                                 FROM appMaintainers, appVersion
+                                 WHERE appVersion.appId = appMaintainers.appId 
+                                 AND appVersion.versionId = '?'",
+                                $iVersionId);
+         } 
+         /*
+          * If versionId was not supplied we fetch supermaintainers of application and maintainer of all versions.
+          */
+         elseif($iAppId)
+         {
+             $hResult = query_parameters("SELECT userId 
+                                 FROM appMaintainers
+                                 WHERE appId = '?'",
+                                $iAppId);
+         }
+
+         if($hResult)
+         {
+             if(mysql_num_rows($hResult) > 0)
+             {
+                 while($oRow = mysql_fetch_object($hResult))
+                 {
+                     $aUserId[$c] = array($oRow->userId);
+                     $c++;
+                 }
+             }
+         }
+
+         /*
+          * Retrieve version Monitors.
+          */
+         /*
+          * If versionId was supplied we fetch superMonitors of application and Monitors of version.
+          */
+         if($iVersionId)
+         {
+             $hResult = query_parameters("SELECT appMonitors.userId 
+                                 FROM appMonitors, appVersion
+                                 WHERE appVersion.appId = appMonitors.appId 
+                                 AND appVersion.versionId = '?'",
+                                         $iVersionId);
+         } 
+         /*
+          * If versionId was not supplied we fetch superMonitors of application and Monitors of all versions.
+          */
+         elseif($iAppId)
+         {
+             $hResult = query_parameters("SELECT userId 
+                                 FROM appMonitors
+                                 WHERE appId = '?'",
+                                         $iAppId);
+         }
+         if($hResult)
+         {
+             if(mysql_num_rows($hResult) > 0)
+             {
+                 while($oRow = mysql_fetch_object($hResult))
+                 {
+                     $aUserId[$c] = array($oRow->userId);
+                     $c++;
+                 }
+             }
+         }
+
+         /*
+          * Retrieve administrators.
+          */
+         $hResult = query_parameters("SELECT * FROM user_privs WHERE priv  = 'admin'");
+         if(mysql_num_rows($hResult) > 0)
+         {
+             while($oRow = mysql_fetch_object($hResult))
+             {
+                 $i = array_search($oRow->userid, $aUserId);
+                 if ($aUserId[$i] != array($oRow->userid))
+                 {
+                     $aUserId[$c] = array($oRow->userid);
+                     $c++;
+                 }
+             }
+         }
+         if ($c > 0)
+         {
+             while(list($index, list($userIdValue)) = each($aUserId))
+             {
+                 $oUser = new User($userIdValue);
+                 if ($oUser->wantsEmail())
+                     $retval .= $oUser->sEmail." ";
+             }
+         }
+         return $retval;
+     }
 
 
      /************************/
@@ -1019,188 +1192,4 @@ class User {
      }
 }
 
-
-/*
- * User functions that are not part of the class
- */
-
-/**
- * Creates a new random password.
- */
-function generate_passwd($pass_len = 10)
-{
-    $nps = "";
-    mt_srand ((double) microtime() * 1000000);
-    while (strlen($nps)<$pass_len)
-    {
-        $c = chr(mt_rand (0,255));
-        if (eregi("^[a-z0-9]$", $c)) $nps = $nps.$c;
-    }
-    return ($nps);
-}
-
-
-/**
- * Get the email address of people to notify for this appId and versionId.
- */
-function get_notify_email_address_list($iAppId = null, $iVersionId = null)
-{
-    $aUserId = array();
-    $c = 0;
-    $retval = "";
-
-    /*
-     * Retrieve version maintainers.
-     */
-    /*
-     * If versionId was supplied we fetch supermaintainers of application and maintainer of version.
-     */
-    if($iVersionId)
-    {
-        $hResult = query_parameters("SELECT appMaintainers.userId 
-                                 FROM appMaintainers, appVersion
-                                 WHERE appVersion.appId = appMaintainers.appId 
-                                 AND appVersion.versionId = '?'",
-                                $iVersionId);
-    } 
-    /*
-     * If versionId was not supplied we fetch supermaintainers of application and maintainer of all versions.
-     */
-    elseif($iAppId)
-    {
-        $hResult = query_parameters("SELECT userId 
-                                 FROM appMaintainers
-                                 WHERE appId = '?'",
-                                $iAppId);
-    }
-
-    if($hResult)
-    {
-        if(mysql_num_rows($hResult) > 0)
-        {
-            while($oRow = mysql_fetch_object($hResult))
-            {
-                $aUserId[$c] = array($oRow->userId);
-                $c++;
-            }
-        }
-    }
-
-    /*
-     * Retrieve version Monitors.
-     */
-    /*
-     * If versionId was supplied we fetch superMonitors of application and Monitors of version.
-     */
-    if($iVersionId)
-    {
-        $hResult = query_parameters("SELECT appMonitors.userId 
-                                 FROM appMonitors, appVersion
-                                 WHERE appVersion.appId = appMonitors.appId 
-                                 AND appVersion.versionId = '?'",
-                                $iVersionId);
-    } 
-    /*
-     * If versionId was not supplied we fetch superMonitors of application and Monitors of all versions.
-     */
-    elseif($iAppId)
-    {
-        $hResult = query_parameters("SELECT userId 
-                                 FROM appMonitors
-                                 WHERE appId = '?'",
-                                $iAppId);
-    }
-    if($hResult)
-    {
-        if(mysql_num_rows($hResult) > 0)
-        {
-            while($oRow = mysql_fetch_object($hResult))
-            {
-                $aUserId[$c] = array($oRow->userId);
-                $c++;
-            }
-        }
-    }
-
-    /*
-     * Retrieve administrators.
-     */
-    $hResult = query_parameters("SELECT * FROM user_privs WHERE priv  = 'admin'");
-    if(mysql_num_rows($hResult) > 0)
-    {
-        while($oRow = mysql_fetch_object($hResult))
-        {
-            $i = array_search($oRow->userid, $aUserId);
-            if ($aUserId[$i] != array($oRow->userid))
-            {
-                $aUserId[$c] = array($oRow->userid);
-                $c++;
-            }
-        }
-    }
-    if ($c > 0)
-    {
-        while(list($index, list($userIdValue)) = each($aUserId))
-        {
-            $oUser = new User($userIdValue);
-            if ($oUser->wantsEmail())
-                $retval .= $oUser->sEmail." ";
-        }
-    }
-    return $retval;
-}
-
-
-/**
- * Get the number of users in the database 
- */
-function get_number_of_users()
-{
-    $hResult = query_parameters("SELECT count(*) as num_users FROM user_list;");
-    $oRow = mysql_fetch_object($hResult);
-    return $oRow->num_users;
-}
-
-
-/**
- * Get the number of active users within $days of the current day
- */
-function get_active_users_within_days($days)
-{
-    $hResult = query_parameters("SELECT count(*) as num_users FROM user_list WHERE stamp >= DATE_SUB(CURDATE(), interval '?' day);",
-                                $days);
-    $oRow = mysql_fetch_object($hResult);
-    return $oRow->num_users;
-}
-
-
-/**
- * Get the count of users who have been warned for inactivity and are
- * pending deletion after the X month grace period
- */
-function get_inactive_users_pending_deletion()
-{
-    /* retrieve the number of users that have been warned and are pending deletion */
-    $hResult = query_parameters("select count(*) as count from user_list where inactivity_warned = 'true'");
-    $oRow = mysql_fetch_object($hResult);
-    return $oRow->count;
-}
-
-/**
- * Check if a user exists.
- * returns the userid if the user exists
- */
-function user_exists($sEmail)
-{
-    $hResult = query_parameters("SELECT userid FROM user_list WHERE email = '?'",
-                                $sEmail);
-    if(!$hResult || mysql_num_rows($hResult) != 1)
-    {
-        return 0;
-    } else
-    {
-        $oRow = mysql_fetch_object($hResult);
-        return $oRow->userid;
-    }
-}
 ?>

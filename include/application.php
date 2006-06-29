@@ -415,7 +415,7 @@ class Application {
                 addmsg("Application rejected.", "green");
             break;
         }
-        $sEmail = get_notify_email_address_list($this->iAppId);
+        $sEmail = User::get_notify_email_address_list($this->iAppId);
         if($sEmail)
             mail_appdb($sEmail, $sSubject ,$sMsg);
     } 

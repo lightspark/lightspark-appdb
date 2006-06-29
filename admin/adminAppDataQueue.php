@@ -123,7 +123,7 @@ if (!$aClean['id'])
            echo '<td>';
            $imgSRC = '<img width="'.$oScreenshot->oThumbnailImage->width.'" height="'.$oScreenshot->oThumbnailImage->height.'" src="../appimage.php?queued=true&id='.$obj_row->id.'" />';
            // generate random tag for popup window
-           $randName = generate_passwd(5);
+           $randName = User::generate_passwd(5);
            // set image link based on user pref
            $img = '<a href="javascript:openWin(\'../appimage.php?queued=true&id='.$obj_row->id.'\',\''.$randName.'\','.$oScreenshot->oScreenshotImage->width.','.($oScreenshot->oScreenshotImage->height+4).');">'.$imgSRC.'</a>';
            if ($_SESSION['current']->isLoggedIn())

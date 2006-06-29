@@ -233,7 +233,7 @@ class Url {
             addmsg("Url deleted.", "green");
         }
 
-        $sEmail = get_notify_email_address_list(null, $this->iVersionId);
+        $sEmail = User::get_notify_email_address_list(null, $this->iVersionId);
         if($sEmail)
             mail_appdb($sEmail, $sSubject ,$sMsg);
     } 

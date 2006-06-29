@@ -649,8 +649,8 @@ function process_app_version_changes($isVersion)
         }
         if ($bAppChanged)
         {
-            $sEmail = get_notify_email_address_list($_REQUEST['appId']);
-	    $oApp = new Application($_REQUEST['appId']);
+            $sEmail = User::get_notify_email_address_list($_REQUEST['appId']);
+            $oApp = new Application($_REQUEST['appId']);
             if($sEmail)
             {
                 if($isVersion)

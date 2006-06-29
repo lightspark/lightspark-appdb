@@ -61,7 +61,7 @@ class Comment {
         if($hResult)
         {
             $this->comment(mysql_insert_id());
-            $sEmail = get_notify_email_address_list($this->iAppId, $this->iVersionId);
+            $sEmail = User::get_notify_email_address_list($this->iAppId, $this->iVersionId);
             $sEmail .= $this->oOwner->sEmail." ";
 
             // fetches e-mails from parent comments, all parents are notified that a
@@ -161,7 +161,7 @@ class Comment {
             /* fixup the child comments so the parentId points to a valid parent comment */
             $hResult = query_parameters("UPDATE appComments set parentId = '?' WHERE parentId = '?'",
                                         $this->iParentId, $this->iCommentId);
-            $sEmail = get_notify_email_address_list($this->iAppId, $this->iVersionId);
+            $sEmail = User::get_notify_email_address_list($this->iAppId, $this->iVersionId);
             $sEmail .= $this->oOwner->sEmail;
             if($sEmail)
             {

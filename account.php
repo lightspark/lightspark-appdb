@@ -152,8 +152,8 @@ function cmd_send_passwd()
     $note = '(<b>Note</b>: accounts for <b>appdb</b>.winehq.org and <b>bugs</b>.winehq.org '
            .'are separated, so You might need to <b>create second</b> account for appdb.)';
 		
-    $userid = user_exists($aClean['ext_email']);
-    $passwd = generate_passwd();
+    $userid = User::exists($aClean['ext_email']);
+    $passwd = User::generate_passwd();
     $user = new User($userid);
     if ($userid)
     {

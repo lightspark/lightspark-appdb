@@ -288,7 +288,7 @@ class Screenshot {
             addmsg("Screenshot deleted.", "green");
         }
 
-        $sEmail = get_notify_email_address_list(null, $this->iVersionId);
+        $sEmail = User::get_notify_email_address_list(null, $this->iVersionId);
         if($sEmail)
             mail_appdb($sEmail, $sSubject ,$sMsg);
     } 
@@ -404,7 +404,7 @@ function get_thumbnail($id)
     $oScreenshot = new Screenshot($id);
 
     // generate random tag for popup window
-    $randName = generate_passwd(5);
+    $randName = User::generate_passwd(5);
     // set img tag        
     $imgSRC  = '<img src="'.apidb_fullurl("appimage.php").
                '?thumbnail=true&id='.$id.'" alt="'.$oScreenshot->sDescription.
