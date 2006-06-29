@@ -75,7 +75,7 @@ if($hResult && mysql_num_rows($hResult))
                 $c=1;
             }
             $currentVersionId=$oRow->versionId;
-            echo html_frame_start("Version ".lookup_version_name($currentVersionId));
+            echo html_frame_start("Version ".Version::lookup_name($currentVersionId));
             echo "<div align=center><table><tr>\n";
         }
         $img = get_thumbnail($oRow->id);
