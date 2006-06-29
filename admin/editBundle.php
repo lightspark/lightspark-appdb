@@ -5,7 +5,7 @@ include(BASE."include/"."incl.php");
 
 if(!$_SESSION['current']->hasPriv("admin"))
 {
-    errorpage();
+    util_show_error_page();
     exit;
 }
 

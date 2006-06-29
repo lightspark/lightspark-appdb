@@ -81,7 +81,7 @@ if ($aClean['sub'])
            !$_SESSION['current']->hasAppVersionModifyPermission($oVersion)&&
            !(($_SESSION['current']->iUserId == $oTest->iSubmitterId) && !($oTest->sQueued == 'false')))
         {
-            errorpage("Insufficient privileges.");
+            util_show_error_page("Insufficient privileges.");
             exit;
         } else
         $oVersion = new version($oTest->iVersionId);

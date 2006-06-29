@@ -152,7 +152,7 @@ function vote_update($vars)
 {
     if(!$_SESSION['current']->isLoggedIn())
     {
-        errorpage("You must be logged in to vote");
+        util_show_error_page("You must be logged in to vote");
         return;
     }
 

@@ -133,7 +133,7 @@ function show_note($sType,$oData)
 
 if(!is_numeric($aClean['appId']) && !is_numeric($aClean['versionId']))
 {
-    errorpage("Something went wrong with the application or version id");
+    util_show_error_page("Something went wrong with the application or version id");
     exit;
 }
 
@@ -207,7 +207,7 @@ if($aClean['appId'])
 } else
 {
     // Oops! Called with no params, bad llamah!
-    errorpage('Page Called with No Params!');
+    util_show_error_page('Page Called with No Params!');
     exit;
 }
 

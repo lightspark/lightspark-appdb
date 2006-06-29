@@ -133,7 +133,7 @@ function display_move_test_to_versions_table($aVersionsIds,$icurrentVersionId)
 //deny access if not logged in or not a super maintainer of any applications
 if(!$_SESSION['current']->hasPriv("admin") && !$_SESSION['current']->isSuperMaintainer())
 {
-    errorpage("Insufficient privileges.");
+    util_show_error_page("Insufficient privileges.");
     exit;
 }
 $oTest = new testData($aClean['iTestingId']);
@@ -145,7 +145,7 @@ if ($aClean['sub'])
         /* make sure the user is authorized to view this application request */
         if(!$_SESSION['current']->hasPriv("admin"))
         {
-            errorpage("Insufficient privileges.");
+            util_show_error_page("Insufficient privileges.");
             exit;
         }
 
@@ -165,7 +165,7 @@ if ($aClean['sub'])
         $oVersion = new Version($aClean['versionId']);
         if(!$_SESSION['current']->hasAppVersionModifyPermission($oVersion))
         {
-            errorpage("Insufficient privileges.");
+            util_show_error_page("Insufficient privileges.");
             exit;
         }
     } else

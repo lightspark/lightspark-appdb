@@ -33,7 +33,7 @@ while(list($key, $value) = each($_REQUEST))
 
 if(!$_SESSION['current']->isLoggedIn())
 {
-    errorpage("You must be logged in to edit preferences");
+    util_show_error_page("You must be logged in to edit preferences");
     exit;
 }
 

@@ -2,7 +2,6 @@
 /********************************************/
 /* Account Login / Logout Handler for AppDB */
 /********************************************/
-
 include("path.php");
 require(BASE."include/incl.php");
 require(BASE."include/mail.php");
@@ -61,7 +60,7 @@ function do_account($cmd = null)
             exit;
     }
     //not valid command, display error page
-    errorpage("Internal Error","This module was called with incorrect parameters");
+    util_show_error_page("Internal Error","This module was called with incorrect parameters");
     exit;
 }
 

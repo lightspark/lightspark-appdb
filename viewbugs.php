@@ -14,7 +14,7 @@ $aClean['bug_id'] = makeSafe($_REQUEST['bug_id']);
 
 if( !is_numeric($aClean['bug_id']))
 {
-    errorpage("Something went wrong with the bug ID");
+    util_show_error_page("Something went wrong with the bug ID");
     exit;
 }
 {

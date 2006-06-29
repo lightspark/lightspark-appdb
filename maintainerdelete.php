@@ -20,7 +20,7 @@ $aClean['superMaintainer'] = makeSafe($_POST['superMaintainer']);
 
 if(!$_SESSION['current']->isLoggedIn())
 {
-    errorpage("You need to be logged in to resign from being a maintainer.");
+    util_show_error_page("You need to be logged in to resign from being a maintainer.");
     exit;
 }
 

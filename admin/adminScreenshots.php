@@ -22,7 +22,7 @@ $aClean['versionId'] = makeSafe($_REQUEST['versionId']);
 // deny access if not admin
 if(!$_SESSION['current']->hasPriv("admin"))
 {
-    errorpage("Insufficient privileges.");
+    util_show_error_page("Insufficient privileges.");
     exit;
 }
 /*

@@ -623,7 +623,7 @@ class Version {
         /* is this user supposed to view this version? */
         if(!$_SESSION['current']->canViewVersion($this))
         {
-            errorpage("Something went wrong with the application or version id");
+            util_show_error_page("Something went wrong with the application or version id");
             exit;
         }
 
@@ -631,14 +631,14 @@ class Version {
         if(!$oApp->iAppId) 
         {
             // Oops! application not found or other error. do something
-            errorpage('Internal Database Access Error. No App found.');
+            util_show_error_page('Internal Database Access Error. No App found.');
             exit;
         }
 
         if(!$this->iVersionId) 
         {
             // Oops! Version not found or other error. do something
-            errorpage('Internal Database Access Error. No Version Found.');
+            util_show_error_page('Internal Database Access Error. No Version Found.');
             exit;
         }
 

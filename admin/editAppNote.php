@@ -20,7 +20,7 @@ $aClean['versionId'] = makeSafe($_REQUEST['versionId']);
 
 if(!is_numeric($aClean['noteId']))
 {
-    errorpage('Wrong note ID');
+    util_show_error_page('Wrong note ID');
     exit;
 }  
 
@@ -30,7 +30,7 @@ $oNote = new Note($aClean['noteId']);
 /* Check for privs */
 if(!$_SESSION['current']->hasPriv("admin") && !$_SESSION['current']->isMaintainer($oNote->iVersionId) && !$_SESSION['current']->isSuperMaintainer($oNote->iAppId))
 {
-    errorpage("Insufficient Privileges!");
+    util_show_error_page("Insufficient Privileges!");
     exit;
 }
 

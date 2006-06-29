@@ -1,4 +1,18 @@
 <?php
+/**
+ * display an error page
+ */
+function util_show_error_page($text = null, $message = null)
+{
+    if (!$text) {
+        $text = "You must be logged in to perform that operation.";
+    }
+    header("HTTP/1.0 404 Object not found or user is not logged in");
+    apidb_header("Oops");
+    echo "<div align=center><font color=red><b>$text</b></font></div>\n";
+    echo "<p>$message</p>\n";
+    apidb_footer();
+}
 
 function makeSafe($var)
 {

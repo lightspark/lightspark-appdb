@@ -28,7 +28,7 @@ if(!$_SESSION['current']->isLoggedIn())
 
 if( !is_numeric($aClean['versionId']) )
 {
-  errorpage('Internal Database Access Error');
+  util_show_error_page('Internal Database Access Error');
   exit;
 }
 

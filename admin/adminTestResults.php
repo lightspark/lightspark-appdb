@@ -22,7 +22,7 @@ if ($aClean['sub'])
     $oVersion = new Version($oTest->iVersionId);
     if(!($_SESSION['current']->hasAppVersionModifyPermission($oVersion)))
     {
-        errorpage("Insufficient privileges.");
+        util_show_error_page("Insufficient privileges.");
         exit;
     }
 

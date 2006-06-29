@@ -29,7 +29,7 @@ if($aClean['confirmed'] != "yes")
     //
     // perhaps we can do this with some javascript, popup
     
-    errorpage("Not confirmed");
+    util_show_error_page("Not confirmed");
 }
 
 if($aClean['what'])
@@ -40,7 +40,7 @@ if($aClean['what'])
         // delete category and the apps in it
         $oCategory = new Category($aClean['catId']);
         if(!$oCategory->delete())
-            errorpage();
+            util_show_error_page();
         else
             redirect(BASE."appbrowse.php");
         break;
@@ -48,14 +48,14 @@ if($aClean['what'])
         // delete app family & all its versions
         $oApp = new Application($aClean['appId']);
         if(!$oApp->delete())
-            errorpage();
+            util_show_error_page();
         else
             redirect(BASE."appbrowse.php");
         break;
     case "appVersion":
         $oVersion = new Version($aClean['versionId']);
         if(!$oVersion->delete())
-            errorpage();
+            util_show_error_page();
         else
             redirect(BASE."appview.php?appId=".$aClean['appId']);
         break;

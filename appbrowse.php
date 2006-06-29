@@ -32,7 +32,7 @@ if( empty( $aClean['catId'] ) )
 
 if( !is_numeric($aClean['catId']) )
 {
-	errorpage("Something went wrong with the category ID");
+	util_show_error_page("Something went wrong with the category ID");
 	exit;
 }
 

@@ -21,7 +21,7 @@ header("Pragma: ");
 /* display an error message and exit */
 if(!$_SESSION['current']->canViewImage($aClean['id']))
 {
-    errorpage("Insufficient privileges.");
+    util_show_error_page("Insufficient privileges.");
     exit;
 }
 
@@ -30,7 +30,7 @@ if ($aClean['REQUEST_METHOD']='HEAD')
    /* WARNING! optimization of logic in include/screenshots.php */
    if (sscanf($aClean['id'],"%d", &$iId) < 1)
    {
-      errorpage("Bad parameter");
+      util_show_error_page("Bad parameter");
       exit;
    }
    $hResult = query_parameters("SELECT id, url FROM appData 

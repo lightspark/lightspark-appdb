@@ -25,7 +25,7 @@ if (!$_SESSION['current']->hasPriv("admin")
  && !$_SESSION['current']->isMaintainer($oComment->iVersionId)
  && !$_SESSION['current']->isSuperMaintainer($oComment->iAppId))
 {
-    errorpage('You don\'t have sufficient privileges to delete this comment.');
+    util_show_error_page("You don't have sufficient privileges to delete this comment.");
     exit;
 }
 

@@ -21,7 +21,7 @@ $aClean['reject'] = makeSafe($_REQUEST['reject']);
 // deny access if not admin or at least some kind of maintainer
 if(!$_SESSION['current']->hasPriv("admin") && !$_SESSION['current']->isMaintainer())
 {
-    errorpage("Insufficient privileges.");
+    util_show_error_page("Insufficient privileges.");
     exit;
 }
 

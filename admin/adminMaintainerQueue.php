@@ -21,7 +21,7 @@ $aClean['replyText'] = makeSafe( $_REQUEST['replyText'] );
 
 if(!$_SESSION['current']->hasPriv("admin"))
 {
-    errorpage("Insufficient privileges.");
+    util_show_error_page("Insufficient privileges.");
     exit;
 }
 
@@ -42,7 +42,7 @@ if ($aClean['sub'])
     else
     {
         //error no Id!
-        errorpage("<p><b>QueueId Not Found!</b></p>");
+        util_show_error_page("<p><b>QueueId Not Found!</b></p>");
     }
 
     //process according to which request was submitted and optionally the sub flag

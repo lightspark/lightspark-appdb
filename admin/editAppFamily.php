@@ -17,13 +17,13 @@ $aClean['submit'] = makeSafe($_REQUEST['submit']);
 
 if(!is_numeric($aClean['appId']))
 {
-    errorpage("Wrong ID");
+    util_show_error_page("Wrong ID");
     exit;
 }
 
 if(!($_SESSION['current']->hasPriv("admin") || $_SESSION['current']->isSuperMaintainer($aClean['appId'])))
 {
-    errorpage("Insufficient Privileges!");
+    util_show_error_page("Insufficient Privileges!");
     exit;
 }
 
@@ -42,7 +42,7 @@ else
     
     if(!$oApp)
     {
-        errorpage('Application does not exist');
+        util_show_error_page('Application does not exist');
     }
     
     if($_SESSION['current']->showDebuggingInfos()) { echo "<p align=center><b>appName:</b> $oApp->sName </p>"; }

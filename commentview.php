@@ -23,7 +23,7 @@ apidb_header("Comments");
 
 if(!is_numeric($aClean['appId']) OR !is_numeric($aClean['versionId']) OR (!empty($aClean['threadId']) AND !is_numeric($aClean['threadId'])))
 {
-    errorpage("Wrong IDs");
+    util_show_error_page("Wrong IDs");
     exit;
 }
 

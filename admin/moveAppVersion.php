@@ -13,14 +13,14 @@ $aClean['action'] = makeSafe($_REQUEST['action']);
 
 if(!is_numeric($aClean['appId']) OR !is_numeric($aClean['versionId']))
 {
-    errorpage("Wrong ID");
+    util_show_error_page("Wrong ID");
     exit;
 }
 
 /* Check for admin privs */
 if(!$_SESSION['current']->hasPriv("admin"))
 {
-    errorpage("Insufficient Privileges!");
+    util_show_error_page("Insufficient Privileges!");
     exit;
 }
 

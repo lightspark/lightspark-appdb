@@ -45,7 +45,7 @@ function checkAppMaintainerInput( $maintainReason )
 
 if(!$_SESSION['current']->isLoggedIn())
 {
-    errorpage("You need to be logged in to apply to be a maintainer.");
+    util_show_error_page("You need to be logged in to apply to be a maintainer.");
     exit;
 }
 
@@ -71,7 +71,7 @@ if( $aClean['maintainReason'] )
     $errors = checkAppMaintainerInput($aClean['maintainReason']);
     if(!empty($errors))
     {
-        errorpage("We found the following errors:","<ul>$errors</ul><br />Please go back and correct them.");
+        util_show_error_page("We found the following errors:","<ul>$errors</ul><br />Please go back and correct them.");
         exit;
     }
 

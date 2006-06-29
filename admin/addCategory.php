@@ -13,7 +13,7 @@ $aClean['submit'] = makeSafe($_REQUEST['submit']);
 
 if(!$_SESSION['current']->hasPriv("admin"))
 {
-    errorpage();
+    util_show_error_page();
     exit;
 }
 $oCat = new Category($aClean['catId']);

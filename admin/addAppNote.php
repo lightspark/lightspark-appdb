@@ -26,7 +26,7 @@ $appId = $oRow->appId;
 //check for admin privs
 if(!$_SESSION['current']->hasPriv("admin") && !$_SESSION['current']->isMaintainer($aClean['versionId']) && !$_SESSION['current']->isSuperMaintainer($aClean['appId']))
 {
-    errorpage("Insufficient Privileges!");
+    util_show_error_page("Insufficient Privileges!");
     exit;
 }
 

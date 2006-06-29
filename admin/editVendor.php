@@ -11,7 +11,7 @@ $aClean['sWebpage'] = makeSafe($_REQUEST['sWebpage']);
 
 if(!$_SESSION['current']->hasPriv("admin"))
 {
-    errorpage();
+    util_show_error_page();
     exit;
 }
 
