@@ -95,16 +95,15 @@ class Monitor {
     {
         /* set $aAppName appropriately */
         if(isset($this->iVersionId))
-            $sAppName = Application::lookup_name($oVersion->iAppId)." ".Version::lookup_name($this->iVersionId);
+            $sAppName = Application::lookup_name($this->iAppId)." ".Version::lookup_name($this->iVersionId);
         else
-            $sAppName = Application::lookup_name($oVersion->iAppId);
+            $sAppName = Application::lookup_name($this->iAppId);
 
         switch($sAction)
         {
             case "add":
                 if (isset($this->iVersionId))
                 {
-                    $oVersion = new Version($this->iVersionId);
                     $sSubject = "Monitor for ".$sAppName;
                     $sSubject .= " added: ".$_SESSION['current']->sRealname;
                     $sMsg .= APPDB_ROOT."appview.php?versionId=".$this->iVersionId."\n";
@@ -119,7 +118,6 @@ class Monitor {
             case "delete":
                 if (isset($this->iVersionId))
                 {
-                    $oVersion = new Version($this->iVersionId);
                     $sSubject = "Monitor for ".$sAppName;
                     $sSubject .= " removed: ".$_SESSION['current']->sRealname;
                     $sMsg .= APPDB_ROOT."appview.php?versionId=".$this->iVersionId."\n";
