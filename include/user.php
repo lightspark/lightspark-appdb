@@ -195,8 +195,8 @@ class User {
                                 $this->iUserId, $sKey);
         if(!$hResult || mysql_num_rows($hResult) == 0)
             return $sDef;
-        $ob = mysql_fetch_object($hResult);
-        return $ob->value; 
+        $oRow = mysql_fetch_object($hResult);
+        return $oRow->value; 
     }
 
 
@@ -290,8 +290,8 @@ class User {
         $hResult = query_parameters($sQuery, $this->iUserId, $bSuperMaintainer);
         if(!$hResult)
             return 0;
-        $ob = mysql_fetch_object($hResult);
-        return $ob->cnt;
+        $oRow = mysql_fetch_object($hResult);
+        return $oRow->cnt;
     }
 
 
@@ -676,18 +676,18 @@ class User {
      {
          $hResult = query_parameters("SELECT count(userId) as c FROM appComments WHERE userId = '?'",
                                  $this->iUserId);
-         $ob = mysql_fetch_object($hResult);
-         if($ob->c != 0) return true;
+         $oRow = mysql_fetch_object($hResult);
+         if($oRow->c != 0) return true;
 
          $hResult = query_parameters("SELECT count(userId) as c FROM appMaintainers WHERE userId = '?'",
                                  $this->iUserId);
-         $ob = mysql_fetch_object($hResult);
-         if($ob->c != 0) return true;
+         $oRow = mysql_fetch_object($hResult);
+         if($oRow->c != 0) return true;
 
          $hResult = query_parameters("SELECT count(userId) as c FROM appVotes WHERE userId = '?'",
                                  $this->iUserId);
-         $ob = mysql_fetch_object($hResult);
-         if($ob->c != 0) return true;
+         $oRow = mysql_fetch_object($hResult);
+         if($oRow->c != 0) return true;
 
          return false;
      }

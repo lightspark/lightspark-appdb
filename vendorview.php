@@ -89,10 +89,10 @@ else
     echo '</tr>',"\n";
         
     $c = 1;
-    while($ob = mysql_fetch_object($hResult))
+    while($oRow = mysql_fetch_object($hResult))
     {
         if ($c % 2 == 1) { $bgcolor = 'color0'; } else { $bgcolor = 'color1'; }
-        $oVendor = new Vendor($ob->vendorId);
+        $oVendor = new Vendor($oRow->vendorId);
         echo '<tr class="'.$bgcolor.'">',"\n";
         echo '<td><a href="'.BASE.'vendorview.php?vendorId='.$oVendor->iVendorId.'">'.$oVendor->sName.'</a></td>',"\n";
         echo '<td><a href="'.$oVendor->sWebpage.'">'.substr($oVendor->sWebpage,0,30).'</a></td>',"\n";

@@ -62,21 +62,21 @@ if (!$aClean['id'])
         echo "</tr>\n\n";
         
         $c = 1;
-        while($ob = mysql_fetch_object($hResult))
+        while($oRow = mysql_fetch_object($hResult))
         {   
             if ($c % 2 == 1) { $bgcolor = 'color0'; } else { $bgcolor = 'color1'; }
             echo "<tr class=\"$bgcolor\">\n";
-            echo "<td>".print_date(mysqltimestamp_to_unixtimestamp($ob->submitTime))."</td>\n";
-            $oUser = new User($ob->submitterId);
+            echo "<td>".print_date(mysqltimestamp_to_unixtimestamp($oRow->submitTime))."</td>\n";
+            $oUser = new User($oRow->submitterId);
             echo "<td>";
             echo $oUser->sEmail ? "<a href=\"mailto:".$oUser->sEmail."\">":"";
             echo $oUser->sRealname;
             echo $oUser->sEmail ? "</a>":"";
             echo "</td>\n";
-            echo "<td>".Application::lookup_name($ob->appId)."</td>\n";
-            echo "<td>".Version::lookup_name($ob->versionId)."</td>\n";
-            echo "<td>".$ob->type."</td>\n";
-            echo "<td align=\"center\">[<a href='adminAppDataQueue.php?id=$ob->id'>process</a>]</td>\n";
+            echo "<td>".Application::lookup_name($oRow->appId)."</td>\n";
+            echo "<td>".Version::lookup_name($oRow->versionId)."</td>\n";
+            echo "<td>".$oRow->type."</td>\n";
+            echo "<td align=\"center\">[<a href='adminAppDataQueue.php?id=$oRow->id'>process</a>]</td>\n";
             echo "</tr>\n\n";
             $c++;
         }

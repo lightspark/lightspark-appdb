@@ -45,38 +45,38 @@ function outputSearchTableForDuplicateFlagging($currentAppId, $hResult)
         echo "<table width='100%' border=0 cellpadding=3 cellspacing=1>\n\n";
 
         $c = 0;
-        while($ob = mysql_fetch_object($hResult))
+        while($oRow = mysql_fetch_object($hResult))
         {
             //skip if a NONAME
-            if ($ob->appName == "NONAME") { continue; }
+            if ($oRow->appName == "NONAME") { continue; }
 		
             //set row color
-            $bgcolor = ($c % 2) ? 'color0' : 'color1';
+            $sBgColor = ($c % 2) ? 'color0' : 'color1';
 		
             //count versions
             $query = query_parameters("SELECT count(*) as versions FROM appVersion WHERE ".
                                       "appId = '?' AND versionName != 'NONAME'",
-                                      $ob->appId);
-            $y = mysql_fetch_object($query);
+                                      $oRow->appId);
+            $oVersionCount = mysql_fetch_object($query);
 
             //display row
-            echo "<tr class=$bgcolor>\n";
+            echo "<tr class=$sBgColor>\n";
             /* map the merging of the current app to the app we are displaying in the table */
-            echo "    <td>".html_ahref($ob->appName,"adminAppQueue.php?sub=duplicate&apptype=application&appId=".$currentAppId."&appIdMergeTo=".$ob->appId)."</td>\n";
-            echo "    <td>$y->versions versions &nbsp;</td>\n";
+            echo "    <td>".html_ahref($oRow->appName,"adminAppQueue.php?sub=duplicate&apptype=application&appId=".$currentAppId."&appIdMergeTo=".$oRow->appId)."</td>\n";
+            echo "    <td>$oVersionCount->versions versions &nbsp;</td>\n";
             echo "</tr>\n\n";
 
             $c++;    
 
             //set row color
-            $bgcolor = ($c % 2) ? 'color0' : 'color1';
+            $sBgColor = ($c % 2) ? 'color0' : 'color1';
 
             /* add the versions to the table */
-            $oApp = new Application($ob->appId);
+            $oApp = new Application($oRow->appId);
             foreach($oApp->aVersionsIds as $iVersionId)
             {
                 $oVersion = new Version($iVersionId);
-                echo "<tr class=$bgcolor><td></td><td>".$oVersion->sName."</td></tr>\n";
+                echo "<tr class=$sBgColor><td></td><td>".$oVersion->sName."</td></tr>\n";
             }
 
             $c++;    
@@ -109,10 +109,10 @@ function display_move_test_to_versions_table($aVersionsIds,$icurrentVersionId)
             if ($oVersion->sQueued == 'false')
             {
                 // set row color
-                $bgcolor = ($c % 2 == 0) ? "color0" : "color1";
+                $sBgColor = ($c % 2 == 0) ? "color0" : "color1";
 
                 //display row
-                echo "<tr class=$bgcolor>\n";
+                echo "<tr class=$sBgColor>\n";
                 echo "    <td>".html_ahref($oVersion->sName,"adminAppQueue.php?sub=movetest&apptype=version&versionId=".$icurrentVersionId."&versionIdMergeTo=".$oVersion->iVersionId)."</td>\n";
 
                 echo "    <td>".util_trim_description($oVersion->sDescription)."</td>\n";
@@ -154,9 +154,9 @@ if ($aClean['sub'])
         // if we are processing a queued application there MUST be an implicitly queued 
         // version to go along with it.  
         $hResult = query_parameters("SELECT versionId from appVersion where appId='?';", $aClean['appId']);
-        $oRow = mysql_fetch_object($hResult);
+        $oVersionRow = mysql_fetch_object($hResult);
 
-        $oVersion = new Version($oRow->versionId);
+        $oVersion = new Version($oVersionRow->versionId);
 
     } 
     else if($aClean['apptype'] == 'version')

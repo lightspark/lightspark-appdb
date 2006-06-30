@@ -573,9 +573,9 @@ class Application {
         if($result && mysql_num_rows($result) > 0)
         {
             echo "        <tr class=\"color1\"><td> <b>Links</b></td><td>\n";
-            while($ob = mysql_fetch_object($result))
+            while($oRow = mysql_fetch_object($result))
             {
-                echo "        <a href='$ob->url'>".substr(stripslashes($ob->description),0,30)."</a> <br />\n";
+                echo "        <a href='$oRow->url'>".substr(stripslashes($oRow->description),0,30)."</a> <br />\n";
             }
             echo "        </td></tr>\n";
         }

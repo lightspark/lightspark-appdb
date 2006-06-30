@@ -161,20 +161,20 @@ class Category {
      */
     function getCategoryPath()
     {
-        $path = array();
+        $aPath = array();
         $iCatId  = $this->iCatId;
         while($iCatId != 0)
         {
-            $result = query_parameters("SELECT catName, catId, catParent FROM appCategory WHERE catId = '?'",
+            $hResult = query_parameters("SELECT catName, catId, catParent FROM appCategory WHERE catId = '?'",
                                        $iCatId);
-            if(!$result || mysql_num_rows($result) != 1)
+            if(!$hResult || mysql_num_rows($hResult) != 1)
                 break;
-            $cat = mysql_fetch_object($result);
-            $path[] = array($cat->catId, $cat->catName);
-            $iCatId = $cat->catParent;
+            $oCatRow = mysql_fetch_object($hResult);
+            $aPath[] = array($oCatRow->catId, $oCatRow->catName);
+            $iCatId = $oCatRow->catParent;
         }
-        $path[] = array(0, "ROOT");
-        return array_reverse($path);
+        $aPath[] = array(0, "ROOT");
+        return array_reverse($aPath);
     }
 
     /* return the total number of applications in this category */

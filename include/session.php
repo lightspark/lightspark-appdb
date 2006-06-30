@@ -68,8 +68,8 @@ class session
     {
         $result = query_parameters("SELECT data FROM session_list WHERE session_id = '?'", $key);
         if (!$result) { return null; }
-        $r = mysql_fetch_object($result);
-        return $r->data; 
+        $oRow = mysql_fetch_object($result);
+        return $oRow->data; 
     }
     
     // write session to DB

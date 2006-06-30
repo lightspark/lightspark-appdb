@@ -681,8 +681,8 @@ function getNumberOfQueuedTests()
     $hResult = query_parameters($sQuery);
     if($hResult)
     {
-      $row = mysql_fetch_object($hResult);
-      return $row->num_tests;
+      $oRow = mysql_fetch_object($hResult);
+      return $oRow->num_tests;
     }
     return 0;
 }

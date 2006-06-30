@@ -65,17 +65,17 @@ if($catId != 0)
 
     do
     {
-        $catQuery = "SELECT appCategory.catName, appCategory.catParent ".
+        $sCatQuery = "SELECT appCategory.catName, appCategory.catParent ".
             "FROM appCategory WHERE appCategory.catId = '?'";
-        $hResult = query_parameters($catQuery, $currentCatId);
+        $hResult = query_parameters($sCatQuery, $currentCatId);
 
         if($hResult)
         {
-            $row = mysql_fetch_object($hResult);
-            $catParent = $row->catParent;
+            $oRow = mysql_fetch_object($hResult);
+            $catParent = $oRow->catParent;
 
             array_push($cat_array, "$currentCatId");
-            array_push($cat_name_array, "$row->catName");
+            array_push($cat_name_array, "$oRow->catName");
         }
 
         $currentCatId = $catParent;

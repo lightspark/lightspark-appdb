@@ -8,9 +8,9 @@ function log_category_visit($catId)
                                $REMOTE_ADDR, $catId);
     if($result && mysql_num_rows($result) == 1)
     {
-        $stats = mysql_fetch_object($result);
+        $oStatsRow = mysql_fetch_object($result);
         query_parameters("UPDATE catHitStats SET count = count + 1 WHERE catHitId = '?'",
-                         $stats->catHitId);
+                         $oStatsRow->catHitId);
     } else
     {
         query_parameters("INSERT INTO catHitStats (appHitId, time, ip, catId, count) ".

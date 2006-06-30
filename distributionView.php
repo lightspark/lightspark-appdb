@@ -55,10 +55,10 @@ if(!$oDistribution->iDistributionId)
     echo "</tr>\n\n";
        
     $c = 1;
-    while($ob = mysql_fetch_object($hResult))
+    while($oRow = mysql_fetch_object($hResult))
     {
         if ($c % 2 == 1) { $bgcolor = 'color0'; } else { $bgcolor = 'color1'; }
-        $oDistribution = new distribution($ob->distributionId);
+        $oDistribution = new distribution($oRow->distributionId);
         echo "<tr class=\"$bgcolor\">\n";
         echo "    <td><a href=\"".BASE."distributionView.php?iDistributionId=".$oDistribution->iDistributionId."\">","\n";
         echo $oDistribution->sName."</a></td>\n";
