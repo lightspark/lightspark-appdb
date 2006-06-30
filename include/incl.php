@@ -173,17 +173,6 @@ function redirect($url)
     exit;
 }
 
-/**
- * redirect back to referrer, or else to the main page
- */
-function redirectref($url = null)
-{
-    if(!$url)
-        $url = $_SERVER['HTTP_REFERER'];
-    if(!$url)
-        $url = apidb_fullurl();
-    redirect($url);
-}
 
 /**
  * format a date as required for HTTP by RFC 2068 sec 3.3.1 
