@@ -274,13 +274,15 @@ class testData{
 
         $oVersion = new Version($this->iVersionId);
         $oApp = new Application($oVersion->iAppId);
+        $sBacklink = APPDB_ROOT."appview.php?versionId=".$this->iVersionId."&iTestingId=".$this->iTestingId."\n";
+
         switch($sAction)
         {
             case "add":
                 if($this->sQueued == "false")
                 {
                     $sSubject = "Test Results added to version ".$oVersion->sName." of ".$oApp->sName." submitted by ".$_SESSION['current']->sRealname;
-                    $sMsg  = $sMsg .= APPDB_ROOT."appview.php?versionId=".$this->iVersionId."&iTestingId=".$this->iTestingId."\n";
+                    $sMsg  .= $sBacklink;
                     if($this->iSubmitterId)
                     {
                         $oSubmitter = new User($this->iSubmitterId);
@@ -296,7 +298,7 @@ class testData{
                 } else // testing data queued.
                 {
                     $sSubject = "Test Results submitted for version ".$oVersion->sName." of ".$oApp->sName." submitted by ".$_SESSION['current']->sRealname;
-                    $sMsg .= APPDB_ROOT."admin/adminTestResults.php?sub=view&iTestingId=".$this->iTestingId."\n";
+                    $sMsg  .= $sBacklink;
                     $sMsg .= "This testing data has been queued.";
                     $sMsg .= "\n";
                     addmsg("The testing data you submitted will be added to the database after being reviewed.", "green");
@@ -304,7 +306,7 @@ class testData{
             break;
             case "edit":
                 $sSubject = "Test Results modified for version ".$oVersion->sName." of ".$oApp->sName." submitted by ".$_SESSION['current']->sRealname;
-                $sMsg .= APPDB_ROOT."admin/adminTestResults.php?sub=view&iTestingId=".$this->iTestingId."\n";
+                $sMsg  .= $sBacklink;
                 addmsg("testing data modified.", "green");
             break;
             case "delete":
@@ -320,7 +322,7 @@ class testData{
             break;
             case "reject":
                 $sSubject = "Test Results rejected for version ".$oVersion->sName." of ".$oApp->sName." submitted by ".$_SESSION['current']->sRealname;
-                $sMsg .= APPDB_ROOT."admin/adminTestResults.php?sub=view&iTestingId=".$this->iTestingId."\n";
+                $sMsg  .= $sBacklink;
                  // if replyText is set we should report the reason the data was rejected 
                 if($aClean['replyText'])
                 {
@@ -402,6 +404,7 @@ class testData{
         echo '<td>Installs?</td>',"\n";
         echo '<td>Runs?</td>',"\n";
         echo '<td>Rating</td>',"\n";
+        echo '<td>Status</td>',"\n";
         echo '</tr></thead>',"\n";
         while($oRow = mysql_fetch_object($hResult))
         {
@@ -426,6 +429,19 @@ class testData{
                     echo '">Show</a>]</td>',"\n";
             }
 
+            switch($oTest->sQueued)
+            {
+                case "false":
+                   $sStatus = "Checked";
+                break;
+                case "true":
+                   $sStatus = "Queued";
+                break;
+                case "rejected":
+                   $sStatus = "Rejected";
+                break;
+            }
+
             echo '    <td>',"\n";
             echo '<a href="'.BASE.'distributionView.php?iDistributionId='.$oTest->iDistributionId.'">',"\n";
             echo $oDistribution->sName.'</a>',"\n";
@@ -435,6 +451,7 @@ class testData{
             echo '    <td>'.$oTest->sInstalls.'&nbsp</td>',"\n";
             echo '    <td>'.$oTest->sRuns.'&nbsp</td>',"\n";
             echo '    <td>'.$oTest->sTestedRating.'&nbsp</td>',"\n";
+            echo '    <td>'.$sStatus.'&nbsp</td>',"\n";
             if ($_SESSION['current']->hasAppVersionModifyPermission($oTest->iVersionId))
             {
                 echo '<td><a href="'.BASE.'admin/adminTestResults.php?sub=view&iTestingId='.$oTest->iTestingId.'">',"\n";
