@@ -10,76 +10,61 @@ require(BASE."include/mail.php");
 
 $aClean = array(); //array of filtered user input
 
-$aClean['versionId'] = makeSafe($_REQUEST['versionId']);
-$aClean['appId'] = makeSafe( $_REQUEST['appId']);
-$aClean['sub'] = makeSafe($_REQUEST['sub']);
-$aClean['submit'] = makeSafe($_REQUEST['submit']);
-$aClean['noteTitle'] = makeSafe($_REQUEST['noteTitle']);
-$aClean['noteDesc'] = makeSafe($_REQUEST['noteDesc']);
+$aClean['iVersionId'] = makeSafe($_REQUEST['iVersionId']);
+$aClean['iAppId'] = makeSafe( $_REQUEST['iAppId']);
+$aClean['sSub'] = makeSafe($_REQUEST['sSub']);
+$aClean['sSubmit'] = makeSafe($_REQUEST['sSubmit']);
 
 //FIXME: get rid of appId references everywhere, as version is enough.
 $sQuery = "SELECT appId FROM appVersion WHERE versionId = '?'";
-$hResult = query_parameters($sQuery, $aClean['versionId']);
+$hResult = query_parameters($sQuery, $aClean['iVersionId']);
 $oRow = mysql_fetch_object($hResult);
 $appId = $oRow->appId; 
 
 //check for admin privs
-if(!$_SESSION['current']->hasPriv("admin") && !$_SESSION['current']->isMaintainer($aClean['versionId']) && !$_SESSION['current']->isSuperMaintainer($aClean['appId']))
+if(!$_SESSION['current']->hasPriv("admin") &&
+   !$_SESSION['current']->isMaintainer($aClean['iVersionId']) &&
+   !$_SESSION['current']->isSuperMaintainer($aClean['iAppId']))
 {
     util_show_error_page("Insufficient Privileges!");
     exit;
 }
 
 //set link for version
-if(is_numeric($aClean['versionId']) and !empty($aClean['versionId']))
+if(is_numeric($aClean['iVersionId']) and !empty($aClean['iVersionId']))
 {
-    $versionLink = "versionId={$aClean['versionId']}";
+    $sVersionLink = "versionId={$aClean['iVersionId']}";
 }
 else 
     exit;
 
+$oNote = new Note();
+$oNote->GetOutputEditorValues();
 
-if($aClean['sub'] == "Submit")
+if($aClean['sSub'] == "Submit")
 {
-    $oNote = new Note();
-    $oNote->create($aClean['noteTitle'], $aClean['noteDesc'], $aClean['versionId']);
-    redirect(apidb_fullurl("appview.php?".$versionLink));
+    $oNote->create();
+    redirect(apidb_fullurl("appview.php?".$sVersionLink));
     exit;
 }
-else if($aClean['sub'] == 'Preview' OR empty($aClean['submit']))
+else if($aClean['sSub'] == 'Preview' OR empty($aClean['sSubmit']))
 {
-    HtmlAreaLoaderScript(array("editor"));
-    
-    apidb_header("Add Application Note");
+    // show form
+    apidb_header("Application Note");
+
+    if($aClean['sSub'] == 'Preview')
+        $oNote->show(true);
 
     echo "<form method=post action='addAppNote.php'>\n";
-    echo html_frame_start("Add Application Note", "90%","",0);
-    echo html_table_begin("width='100%' border=0 align=left cellpadding=6 cellspacing=0 class='box-body'");
 
-    echo "<input type=\"hidden\" name=\"versionId\" value=\"{$aClean['versionId']}\">";
-    echo add_br($aClean['noteDesc']);
+    $oNote->OutputEditor();
 
-    if ($aClean['noteTitle'] == "HOWTO" || $aClean['noteTitle'] == "WARNING")
-    {
-        echo "<input type=hidden name='noteTitle' value='{$aClean['noteTitle']}'>";
-        echo "<tr><td class=color1>Type</td><td class=color0>{$aClean['noteTitle']}</td></tr>\n";
-    }
-    else
-    {
-        echo "<tr><td class=color1>Title</td><td class=color0><input size='80%' type='text' name='noteTitle' type='text' value='{$aClean['noteTitle']}'></td></tr>\n";
-    }
-    echo '<tr><td class="color4">Description</td><td class="color0">', "\n";
-    if ( $aClean['noteDesc'] == "" ) $aClean['noteDesc']="<p>Enter note here</p>";
-    echo '<p style="width:700px">', "\n";
-    echo '<textarea cols="80" rows="20" id="editor" name="noteDesc">'.stripslashes($aClean['noteDesc']).'</textarea>',"\n";
-    echo '</p>';
-    echo '</td></tr><tr><td colspan="2" align="center" class="color3">',"\n";
-    echo '<input type="submit" name="sub" value="Preview">&nbsp',"\n";
-    echo '<input type="submit" name="sub" value="Submit"></td></tr>',"\n";
-    echo html_table_end();
-    echo html_frame_end();
+    echo '<center>';
+    echo '<input type="submit" name="sSub" value="Preview">&nbsp',"\n";
+    echo '<input type="submit" name="sSub" value="Submit"></td></tr>',"\n";
+    echo '</center>';
     
-    echo html_back_link(1,BASE."appview.php?".$versionLink);
+    echo html_back_link(1,BASE."appview.php?".$sVersionLink);
     apidb_footer();
 }
 ?>

@@ -47,16 +47,16 @@ class Note {
      * Informs interested people about the creation.
      * Returns true on success, false on failure
      */
-    function create($sTitle, $sDescription, $iVersionId)
+    function create()
     {
         $hResult = query_parameters("INSERT INTO appNotes (versionId, noteTitle, noteDesc) ".
                                     "VALUES('?', '?', '?')",
-                                    $iVersionId, $sTitle, $sDescription);
+                                    $this->iVersionId, $this->sTitle, $this->sDescription);
 
         if($hResult)
         {
             $this->note(mysql_insert_id());
-            $sWhatChanged = "Description is:\n".$sDescription.".\n\n";
+            $sWhatChanged = "Description is:\n".$this->sDescription.".\n\n";
             $this->SendNotificationMail("add", $sWhatChanged);
             return true;
         }
@@ -72,37 +72,44 @@ class Note {
      * Update note.
      * Returns true on success and false on failure.
      */
-    function update($sTitle=null, $sDescription=null, $iVersionId=null)
+    function update()
     {
         $sWhatChanged = "";
+        
+        /* create an instance of ourselves so we can see what has changed */
+        $oNote = new Note($this->iNoteId);
 
-        if ($sTitle && $sTitle!=$this->sTitle)
+        if ($this->sTitle && $this->sTitle!=$oNote->sTitle)
         {
             if (!query_parameters("UPDATE appNotes SET noteTitle = '?' WHERE noteId = '?'",
-                                  $sTitle, $this->iNoteId))
+                                  $this->sTitle, $this->iNoteId))
                 return false;
-            $sWhatChanged .= "Title was changed from ".$this->sTitle." to ".$sTitle.".\n\n";
-            $this->sTitle = $sTitle;
+            $sWhatChanged .= "Title was changed from ".$oNote->sTitle." to ".$this->sTitle.".\n\n";
         }
 
-        if ($sDescription && $sDescription!=$this->sDescription)
+        if ($this->sDescription && $this->sDescription!=$oNote->sDescription)
         {
             if (!query_parameters("UPDATE appNotes SET noteDesc = '?' WHERE noteId = '?'",
-                                  $sDescription, $this->iNoteId))
+                                  $this->sDescription, $this->iNoteId))
                 return false;
-            $sWhatChanged .= "Description was changed from\n ".$this->sDescription."\n to \n".$sDescription.".\n\n";
-            $this->sDescription = $sDescription;
+            $sWhatChanged .= "Description was changed from\n ".$oNote->sDescription."\n to \n".$this->sDescription.".\n\n";
         }
 
-        if ($iVersionId && $iVersionId!=$this->iVersionId)
+        if ($this->iVersionId && $this->iVersionId!=$oNote->iVersionId)
         {
             if (!query_parameters("UPDATE appNotes SET versionId = '?' WHERE noteId = '?'",
-                                  $iVersionId, $this->iNoteId))
+                                  $this->iVersionId, $this->iNoteId))
                 return false;
-            $oVersionBefore = new Version($this->iVersionId);
-            $oVersionAfter = new Version($iVersionId);
-            $sWhatChanged .= "Version was changed from ".$oVersionBefore->sName." to ".$oVersionAfter->sName.".\n\n";
+            $sVersionBefore = Version::lookup_name($oNote->iVersionId);
+            $sVersionAfter = Version::lookup_name($this->iVersionId);
+            $sWhatChanged .= "Version was changed from ".$sVersionBefore." to ".$sVersionAfter.".\n\n";
             $this->iVersionId = $iVersionId;
+
+            //TODO: iAppId isn't in the appNotes table
+            // and we only use it for permissions checking in showNote() and in SendNotificationEmail
+            // we may be able to look it up on the fly if we had a more efficient way of doing so
+            // instead of having to construct a version object each time
+            $oVersionAfter = new Version($this->iVersionId);
             $this->iAppId = $oVersionAfter->iAppId;
         }
         if($sWhatChanged)
@@ -160,7 +167,9 @@ class Note {
     } 
 
     /* Show note */
-    function show()
+    /* $bDisplayOnly means we should not display any editing controls, even if */
+    /*   the user has the ability to edit this note */
+    function show($bDisplayOnly = false)
     {
         switch($this->sTitle)
         {
@@ -191,20 +200,64 @@ class Note {
         $shOutput .= $this->sDescription;
         $shOutput .= "</td></tr>\n";
 
-        if ($_SESSION['current']->hasPriv("admin") ||
-            $_SESSION['current']->isMaintainer($this->iVersionId) ||
-            $_SESSION['current']->isSuperMaintainer($this->iAppId))
+        if(!$bDisplayOnly)
         {
-            $shOutput .= "<tr class=\"color1\" align=\"center\" valign=\"top\"><td>";
-            $shOutput .= "<form method=\"post\" name=\"message\" action=\"admin/editAppNote.php?noteId={$this->iNoteId}\">";
-            $shOutput .= '<input type="submit" value="Edit Note" class="button">';
-            $shOutput .= '</form></td></tr>';
+            if ($_SESSION['current']->hasPriv("admin") ||
+                $_SESSION['current']->isMaintainer($this->iVersionId) ||
+                $_SESSION['current']->isSuperMaintainer($this->iAppId))
+            {
+                $shOutput .= "<tr class=\"color1\" align=\"center\" valign=\"top\"><td>";
+                $shOutput .= "<form method=\"post\" name=\"message\" action=\"admin/editAppNote.php?iNoteId={$this->iNoteId}\">";
+                $shOutput .= '<input type="submit" value="Edit Note" class="button">';
+                $shOutput .= '</form></td></tr>';
+            }
         }
 
         $shOutput .= "</table>\n";
         $shOutput .= html_frame_end();
 
         echo $shOutput;
+    }
+
+
+    function OutputEditor()
+    {
+        HtmlAreaLoaderScript(array("editor"));
+    
+        echo html_frame_start("Edit Application Note {$aClean['noteId']}", "90%","",0);
+        echo html_table_begin("width='100%' border=0 align=left cellpadding=6 cellspacing=0 class='box-body'");
+
+        echo '<input type="hidden" name="iNoteId" value='.$this->iNoteId.'>';
+        echo '<input type="hidden" name="iAppId" value='.$this->iAppId.'>';
+        echo '<input type="hidden" name="iVersionId" value='.$this->iVersionId.'>';
+
+        echo '<tr><td class=color1>Title</td>'."\n";
+        echo '    <td class=color0><input size=80% type="text" name="sNoteTitle" type="text" value="'.$this->sTitle.'"></td></tr>',"\n";
+        echo '<tr><td class=color4>Description</td><td class=color0>', "\n";
+        echo '<p style="width:700px">', "\n";
+        echo '<textarea cols="80" rows="20" id="editor" name="sNoteDesc">'.$this->sDescription.'</textarea>',"\n";
+        echo '</p>';
+        echo '</td></tr>'."\n";
+        echo '<tr><td colspan="2" align="center" class="color3">',"\n";
+
+        echo html_table_end();
+        echo html_frame_end();
+    }
+
+    /* retrieves values from $_REQUEST that were output by OutputEditor() */
+    function GetOutputEditorValues()
+    {
+        $aClean = array(); //array of filtered user input
+
+        $aClean['iVersionId'] = makeSafe($_REQUEST['iVersionId']);
+        $aClean['iAppId'] = makeSafe( $_REQUEST['iAppId']);
+        $aClean['sNoteTitle'] = makeSafe($_REQUEST['sNoteTitle']);
+        $aClean['sNoteDesc'] = makeSafe($_REQUEST['sNoteDesc']);
+
+        $this->iVersionId = $aClean['iVersionId'];
+        $this->iAppId = $aClean['iAppId'];
+        $this->sTitle = $aClean['sNoteTitle'];
+        $this->sDescription = $aClean['sNoteDesc'];
     }
 }
 ?>
