@@ -5,9 +5,12 @@
 
 /* TODO: test the rest of the classes we have */
 
+error_reporting(E_ALL ^  E_NOTICE);
+
 include_once("test_user.php");
 echo "\n";
 include_once("test_db.php");
-
+echo "\n";
+include_once("test_image.php");
 
 ?>
