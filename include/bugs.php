@@ -175,9 +175,8 @@ class Bug {
         if(!$this->bQueued)
             return false;
 
-        $sUpdate = compile_update_string(array('queued' => "false"));
-        if(query_parameters("UPDATE buglinks SET ".$sUpdate." WHERE linkId='?'",
-                            $this->iLinkId))
+        if(query_parameters("UPDATE buglinks SET queued = '?' WHERE linkId='?'",
+                            "false", $this->iLinkId))
         {
             $this->bQueued = false;
             // we send an e-mail to intersted people

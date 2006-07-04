@@ -106,19 +106,30 @@ class testData{
             return;
         }
 
-        $sUpdate = compile_update_string(array( 'versionId'         => $this->iVersionId,
-                                                'whatWorks'         => $this->sWhatWorks,
-                                                'whatDoesnt'        => $this->sWhatDoesnt,
-                                                'whatNotTested'     => $this->sWhatNotTested,
-                                                'testedDate'        => $this->sTestedDate,
-                                                'distributionId'    => $this->iDistributionId,
-                                                'testedRelease'     => $this->sTestedRelease,
-                                                'installs'          => $this->sInstalls,
-                                                'runs'              => $this->sRuns,
-                                                'testedRating'      => $this->sTestedRating,
-                                                'comments'          => $this->sComments));
-
-        if(query_parameters("UPDATE testResults SET ".$sUpdate." WHERE testingId = '?'",
+        if(query_parameters("UPDATE testResults SET 
+                                        versionId       = '?',
+                                        whatWorks       = '?',
+                                        whatDoesnt      = '?',
+                                        whatNotTested   = '?',
+                                        testedDate      = '?',
+                                        distributionId  = '?',
+                                        testedRelease   = '?',
+                                        installs        = '?',
+                                        runs            = '?',
+                                        testedRating    = '?',
+                                        comments        = '?'
+                                    WHERE testingId = '?'",
+                            $this->iVersionId,
+                            $this->sWhatWorks,
+                            $this->sWhatDoesnt,
+                            $this->sWhatNotTested,
+                            $this->sTestedDate,
+                            $this->iDistributionId,
+                            $this->sTestedRelease,
+                            $this->sInstalls,
+                            $this->sRuns,
+                            $this->sTestedRating,
+                            $this->sComments,
                             $this->iTestingId))
         {
             if(!$bSilent)

@@ -112,33 +112,4 @@ function query_error($sQuery, $sComment="")
     addmsg($sStatusMessage, "red");
 }
 
-/**
-* Expects an array in this form:
-* $aFoo['field'] = 'value';
-* 
-* Returns a string ready to be put in a query like this
-* $sQuery = "UPDATE `foo` $sReturn";
-* 
-* Values are mysql_real_escape_string()'ed.
-*/
-function compile_update_string($aData)
-{
-    global $hAppdbLink;
-
-    if(!is_resource($hAppdbLink))
-    {
-        // The last argument makes sure we are really opening a new connection
-        $hAppdbLink = mysql_connect(APPS_DBHOST, APPS_DBUSER, APPS_DBPASS,true);
-        mysql_select_db(APPS_DB, $hAppdbLink);
-    }
-
-    foreach ($aData as $k => $v) 
-    {
-        $return .= "`$k`='".mysql_real_escape_string($v)."',";
-    }
-    
-    $return = preg_replace( "/,$/" , "" , $return );
-    
-    return $return;
-}
 ?>

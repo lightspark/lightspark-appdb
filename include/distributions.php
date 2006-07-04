@@ -123,10 +123,8 @@ class distribution{
         {
             return;
         }
-        $sUpdate = compile_update_string(array( 'name'              => $this->sName,
-                                                'url'               => $this->sUrl ));
-        if(query_parameters("UPDATE distributions SET ".$sUpdate." WHERE distributionId = '?'",
-                            $this->iDistributionId))
+        if(query_parameters("UPDATE distributions SET name = '?', url = '?' WHERE distributionId = '?'",
+                            $this->sName, $this->sUrl, $this->iDistributionId))
         {
             $this->SendNotificationMail("edit");
             return true;

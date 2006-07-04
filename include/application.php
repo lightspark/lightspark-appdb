@@ -148,45 +148,40 @@ class Application {
 
         if ($this->sName && ($this->sName!=$oApp->sName))
         {
-            $sUpdate = compile_update_string(array('appName'    => $this->sName));
-            if (!query_parameters("UPDATE appFamily SET ".$sUpdate." WHERE appId = '?'",
-                                  $this->iAppId))
+            if (!query_parameters("UPDATE appFamily SET appName = '?' WHERE appId = '?'",
+                                  $this->sName, $this->iAppId))
                 return false;
             $sWhatChanged .= "Name was changed from ".$oApp->sName." to ".$this->sName.".\n\n";
         }     
 
         if ($this->sDescription && ($this->sDescription!=$oApp->sDescription))
         {
-            $sUpdate = compile_update_string(array('description'    => $this->sDescription));
-            if (!query_parameters("UPDATE appFamily SET ".$sUpdate." WHERE appId = '?'",
-                                  $this->iAppId))
+            if (!query_parameters("UPDATE appFamily SET description = '?' WHERE appId = '?'",
+                                  $this->sDescription, $this->iAppId))
                 return false;
             $sWhatChanged .= "Description was changed from\n ".$oApp->sDescription."\n to \n".$this->sDescription.".\n\n";
         }
 
         if ($this->sKeywords && ($this->sKeywords!=$oApp->sKeywords))
         {
-            $sUpdate = compile_update_string(array('keywords'    => $this->sKeywords));
-            if (!query_parameters("UPDATE appFamily SET ".$sUpdate." WHERE appId = '?'",
-                                  $this->iAppId))
+            if (!query_parameters("UPDATE appFamily SET keywords = '?' WHERE appId = '?'",
+                                  $this->sKeywords, $this->iAppId))
                 return false;
             $sWhatChanged .= "Keywords were changed from\n ".$oApp->sKeywords."\n to \n".$this->sKeywords.".\n\n";
         }
 
         if ($this->sWebpage && ($this->sWebpage!=$oApp->sWebpage))
         {
-            $sUpdate = compile_update_string(array('webPage'    => $this->sWebpage));
-            if (!query_parameters("UPDATE appFamily SET ".$sUpdate." WHERE appId = '?'",
-                                  $this->iAppId))
+            if (!query_parameters("UPDATE appFamily SET webPage = '?' WHERE appId = '?'",
+                                  $this->sWebPage, $this->iAppId))
                 return false;
             $sWhatChanged .= "Web page was changed from ".$oApp->sWebpage." to ".$this->sWebpage.".\n\n";
         }
      
         if ($this->iVendorId && ($this->iVendorId!=$oApp->iVendorId))
         {
-            $sUpdate = compile_update_string(array('vendorId'    => $this->iVendorId));
-            if (!query_parameters("UPDATE appFamily SET ".$sUpdate." WHERE appId = '?'",
-                                  $this->iAppId))
+            if (!query_parameters("UPDATE appFamily SET vendorId = '?' WHERE appId = '?'",
+                                  $this->iVendorId, $this->iAppId))
                 return false;
             $oVendorBefore = new Vendor($oApp->iVendorId);
             $oVendorAfter = new Vendor($this->iVendorId);
@@ -195,9 +190,8 @@ class Application {
 
         if ($this->iCatId && ($this->iCatId!=$oApp->iCatId))
         {
-            $sUpdate = compile_update_string(array('catId'    => $this->iCatId));
-            if (!query_parameters("UPDATE appFamily SET ".$sUpdate." WHERE appId = '?'",
-                                  $this->iAppId))
+            if (!query_parameters("UPDATE appFamily SET catId = '?' WHERE appId = '?'",
+                                  $this->iCatId, $this->iAppId))
                 return false;
             $oCatBefore = new Category($oApp->iCatId);
             $oCatAfter = new Category($this->iCatId);
@@ -260,10 +254,8 @@ class Application {
         if(!$_SESSION['current']->canUnQueueApplication())
             return;
 
-        $sUpdate = compile_update_string(array('queued'  => "false",
-                                               'keywords'=> str_replace(" *** ","",$this->sKeywords) ));
-        if(query_parameters("UPDATE appFamily SET ".$sUpdate." WHERE appId = '?'",
-                            $this->iAppId))
+        if(query_parameters("UPDATE appFamily SET queued = '?', keywords = '?' WHERE appId = '?'",
+                            "false",  str_replace(" *** ","",$this->sKeywords), $this->iAppId))
         {
             $this->sQueued = 'false';
             // we send an e-mail to intersted people
@@ -281,9 +273,8 @@ class Application {
         if(!$this->sQueued == 'true')
             return false;
 
-        $sUpdate = compile_update_string(array('queued'    => "rejected"));
-        if(query_parameters("UPDATE appFamily SET ".$sUpdate." WHERE appId = '?'",
-                            $this->iAppId))
+        if(query_parameters("UPDATE appFamily SET queued = '?' WHERE appId = '?'",
+                            "rejected", $this->iAppId))
         {
             $this->sQueued = 'rejected';
             // we send an e-mail to intersted people
@@ -299,9 +290,8 @@ class Application {
         if(!$_SESSION['current']->canRequeueApplication($this))
             return false;
 
-        $sUpdate = compile_update_string(array('queued'    => "true"));
-        if(query_parameters("UPDATE appFamily SET ".$sUpdate." WHERE appId = '?'",
-                            $this->iAppId))
+        if(query_parameters("UPDATE appFamily SET queued = '?' WHERE appId = '?'",
+                            "true", $this->iAppId))
         {
             $this->sQueued = 'true';
             // we send an e-mail to intersted people
