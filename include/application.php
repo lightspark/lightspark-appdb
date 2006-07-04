@@ -333,7 +333,7 @@ class Application {
                 $sMsg  = "The application you submitted (".$oApp->sName." ".$this->sName.") has been rejected.";
                 $sMsg .= "Clicking on the link in this email will allow you to modify and resubmit the application. ";
                 $sMsg .= "A link to your queue of applications and versions will also show up on the left hand side of the Appdb site once you have logged in. ";
-                $sMsg .= APPDB_ROOT."appsubmit.php?sub=view&apptype=applicationappId=".$this->iAppId."\n";
+                $sMsg .= APPDB_ROOT."appsubmit.php?sub=view&apptype=application&appId=".$this->iAppId."\n";
                 $sMsg .= "Reason given:\n";
             break;
             case "delete":
