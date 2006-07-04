@@ -220,9 +220,6 @@ function view_app_comment($oRow)
     echo html_frame_start('','98%');
     echo '<table width="100%" border="0" cellpadding="2" cellspacing="1">',"\n";
 
-    $oRow->subject = stripslashes($oRow->subject);
-    $oRow->body = stripslashes($oRow->body);
-
     // message header
     echo "<tr bgcolor=\"#E0E0E0\"><td><a name=Comment-".$oRow->commentId."></a>\n";
     echo " <b>".$oRow->subject."</b><br />\n";
