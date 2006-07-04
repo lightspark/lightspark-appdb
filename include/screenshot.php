@@ -410,14 +410,14 @@ function get_thumbnail($id)
     // set img tag        
     $imgSRC  = '<img src="'.apidb_fullurl("appimage.php").
                '?thumbnail=true&id='.$id.'" alt="'.$oScreenshot->sDescription.
-               '" width="'.$oScreenshot->oThumbnailImage->width.
-               '" height="'.$oScreenshot->oThumbnailImage->height.'">';
+               '" width="'.$oScreenshot->oThumbnailImage->get_width().
+               '" height="'.$oScreenshot->oThumbnailImage->get_height().'">';
     $img = '<a href="'.apidb_fullurl("appimage.php").
            '?id='.$id.
            '" onclick="javascript:openWin(\''.apidb_fullurl("appimage.php").
            '?id='.$id.'\',\''.$randName.'\','.
-           $oScreenshot->oScreenshotImage->width.','.
-           ($oScreenshot->oScreenshotImage->height+4).
+           ($oScreenshot->oScreenshotImage->get_width() + 20).','.
+           ($oScreenshot->oScreenshotImage->get_height() + 6).
            ');return false;">'.$imgSRC.'</a>';
 
     // set image link based on user pref
