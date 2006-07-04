@@ -452,7 +452,7 @@ class testData{
             echo '    <td>'.$oTest->sRuns.'&nbsp</td>',"\n";
             echo '    <td>'.$oTest->sTestedRating.'&nbsp</td>',"\n";
             echo '    <td>'.$sStatus.'&nbsp</td>',"\n";
-            if ($_SESSION['current']->hasAppVersionModifyPermission($oTest->iVersionId))
+            if ($_SESSION['current']->hasAppVersionModifyPermission($oVersion))
             {
                 echo '<td><a href="'.BASE.'admin/adminTestResults.php?sub=view&iTestingId='.$oTest->iTestingId.'">',"\n";
                 echo 'Edit</a></td>',"\n";
