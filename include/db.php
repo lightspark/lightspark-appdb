@@ -36,6 +36,14 @@ function query_appdb($sQuery,$sComment="")
  * Values are mysql_real_escape_string()'d to prevent against injection attacks
  * See http://php.net/mysql_real_escape_string for more information about why this is the case
  *
+ * Usage:
+ *  $hResult = query_parameters("Select * from mytable where userid = '?'",
+ *                            $iUserId);
+ *
+ * Note:
+ *   Ensure that all variables are passed as parameters to query_parameters()
+ *   to ensure that sql injection attacks are prevented against
+ *
  */
 function query_parameters()
 {
