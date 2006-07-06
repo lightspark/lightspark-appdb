@@ -296,6 +296,29 @@ class User {
         return mysql_num_rows($hResult);
     }
 
+    /**
+     * get the applications and versions that this user maintains 
+     */
+    function getAppsMaintained()
+    {
+        /* retrieve the list of application and order them by application name */
+        $hResult = query_parameters("SELECT appMaintainers.appId, versionId, superMaintainer, appName FROM ".
+                                    "appFamily, appMaintainers WHERE appFamily.appId = appMaintainers.appId ".
+                                    "AND userId = '?' ORDER BY appName", $this->iUserId);
+        if(!$hResult || mysql_num_rows($hResult) == 0)
+            return NULL;
+
+        $aAppsMaintained = array();
+        $c = 0;
+        while($oRow = mysql_fetch_object($hResult))
+        {
+            $aAppsMaintained[$c] = array($oRow->appId, $oRow->versionId, $oRow->superMaintainer);
+            $c++;
+        }
+
+        return $aAppsMaintained;
+    }
+
     function getMaintainerCount($bSuperMaintainer)
     {
         if(!$this->isLoggedIn()) return 0;

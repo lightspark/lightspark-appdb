@@ -113,7 +113,8 @@ if ($aClean['sSub'])
         echo '<tr valign="top"><td class="color0"><b>This user also maintains these apps:</b></td>',"\n";
 
         $firstDisplay = true;
-        $other_apps = getAppsFromUserId($oRow->userId);
+        $oUser = new User($oRow->userId);
+        $other_apps = $oUser->getAppsMaintained();
         if($other_apps)
         {
             while(list($index, list($appIdOther, $versionIdOther, $superMaintainerOther)) = each($other_apps))

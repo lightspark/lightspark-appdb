@@ -353,6 +353,83 @@ function test_user_getMaintainerCount()
     return true;
 }
 
+function test_user_getAppsMaintained()
+{
+    test_start(__FUNCTION__);
+
+    global $test_email, $test_password;
+
+    /* login the user */
+    $oUser = new User();
+    $retval = $oUser->login($test_email, $test_password);
+    if($retval != SUCCESS)
+    {
+        echo "Got '".$retval."' instead of SUCCESS(".SUCCESS.")\n";
+        return false;
+    }
+
+    /* make this user an admin so we can create applications without having them queued */
+    $hResult = query_parameters("INSERT into user_privs values ('?', '?')",
+                                $oUser->iUserId, "admin");
+
+    /* create a application so we have a valid appFamily for the call to user::getAppsMaintained() */
+    $oApp = new Application();
+    $oApp->sName = "Some application";
+    $oApp->sDescription = "some description";
+    $oApp->submitterId = $oUser->iUserId;
+    if(!$oApp->create())
+    {
+        echo "Failed to create application!\n";
+        return false;
+    }
+
+    /**
+      * make the user a super maintatiner
+      */
+    $iAppId = $oApp->iAppId; /* use the iAppId of the application we just created */
+    $iVersionId = 655200;
+    $iQueueId = 655300;
+    $bSuperMaintainer = TRUE;
+    $statusMessage = $oUser->addAsMaintainer($iAppId, $iVersionId, $bSuperMaintainer, $iQueueId);
+
+    /* get an array of the apps maintained */
+    $aAppsMaintained = $oUser->getAppsMaintained();
+
+    if(!$aAppsMaintained)
+    {
+        echo "aAppsMaintained is null, we expected a non-null return value!\n";
+        return false;
+    }
+
+    /* get only the first entry from the array of applications maintained */
+    /* we only added the user as a maintainer of a single application */
+    list($iAppId1, $iVersionId1, $bSuperMaintainer1) = $aAppsMaintained[0];
+
+    /* make sure all parameters match what we added as maintainer information */
+    if($iAppId1 != $iAppId)
+    {
+        echo "Expected iAppid of ".$iAppId." but got ".$iAppId1."\n";
+        return false;
+    }
+
+    if($iVersionId1 != $iVersionId)
+    {
+        echo "Expected iVersionId of ".$iVersionId." but got ".$iVersionId1."\n";
+        return false;
+    }
+
+    if($bSuperMaintainer1 != $bSuperMaintainer)
+    {
+        echo "Expected bSuperMaintainer of ".$bSuperMaintainer." but got ".$bSuperMaintainer1."\n";
+        return false;
+    }
+
+    /* remove maintainership for this user */
+    $oUser->deleteMaintainer($iAppId);
+
+    return true;
+}
+
 
 /*************************/
 /* Main testing routines */
@@ -391,6 +468,11 @@ if(!test_user_getMaintainerCount())
     echo "test_user_getMaintainerCount() failed!\n";
 else
     echo "test_user_getMaintainerCount() passed\n";
+
+if(!test_user_getAppsMaintained())
+    echo "test_user_getAppsMaintained() failed!\n";
+else
+    echo "test_user_getAppsMaintained() passed\n";
 
 /* TODO: the rest of the user member functions we don't currently test */
 
