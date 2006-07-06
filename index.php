@@ -1,11 +1,13 @@
 <?php
-/***********************************/
-/* application database index page */
-/***********************************/
+/**
+ * Application database index page.
+ *
+ * TODO:
+ *  - rename outputTopXRowAppsFromRating according to our coding standards
+ *  - rename variables that don't follow our coding standards
+ */
 
-/*
- * application environment
- */ 
+// application environment
 include("path.php");
 require(BASE."include/incl.php");
 require(BASE."include/application.php");
@@ -69,7 +71,7 @@ If you have screenshots or links to contribute, please browse the database and u
     $voteAppId = $oRow->appId;
     $voteAppName = $oRow->appName;
 
-    /* don't mention the top application if there are no votes yet */
+    // don't mention the top application if there are no votes yet
     if($voteAppId != "")
     {
        echo "There are <b>$numApps</b> applications currently in the database with\n";

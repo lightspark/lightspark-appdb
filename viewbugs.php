@@ -1,8 +1,15 @@
 <?php
-/************************************************/
-/* Show all applications that have a bug link # */
-/************************************************/
+/**
+ * Shows all versions that have the same bug link.
+ *
+ * Mandatory parameters:
+ *  - iBugId, bug identifier
+ * 
+ * TODO:
+ *  - replace the check is_numeric($aClean['iBugId']) with an is_empty check when filtering is in place
+ */
 
+// application environment
 include("path.php");
 require(BASE."include/incl.php");
 
@@ -54,8 +61,7 @@ if(!is_numeric($aClean['iBugId']))
         }
     }
 
-    /* allow users to search for other apps */
-
+    // allow users to search for other apps
     echo '<tr class=color2>',"\n";
     echo '    <td align=center colspan=5>&nbsp</td>',"\n";
     echo '</tr>',"\n";

@@ -1,13 +1,29 @@
 <?php
-/*******************************/
-/* preferences and user editor */
-/*******************************/
+/**
+ * User's role and preferences editor.
+ *
+ * Optional parameters:
+ *  - iUserId, user identifier (when an administrator edits another user)
+ *  - iLimit
+ *  - sOrderBy
+ *  - sUserPassword, new password
+ *  - sUserPassword2, new password confirmation
+ *  - sUserEmail, e-mail address
+ *  - sUserRealname, user's real name
+ *  - sWineRelease, user's Wine release
+ *  - sHasAdmin, "on" if user is an administrator
+ * 
+ * TODO:
+ *  - rename sHasAdmin with bIsAdmin
+ *  - document iLimit and sOrderBy
+ *  - replace sOrderBy with iOrderBy and use constants for each accepted value
+ *  - add a field to prefs_list to flag the user level for the pref
+ *  - move and rename functions in their respective modules
+ */
 
-/*
- * application environment
- */     
+// application environment
 include("path.php");
-include(BASE."include/"."incl.php");
+include(BASE."include/incl.php");
 
 $aClean = array(); //array of filtered user input
 
@@ -54,8 +70,7 @@ function build_prefs_list()
     $hResult = query_parameters("SELECT * FROM prefs_list ORDER BY id");
     while($hResult && $r = mysql_fetch_object($hResult))
     {
-            //skip admin options
-            //TODO: add a field to prefs_list to flag the user level for the pref
+            // skip admin options
             if(!$_SESSION['current']->hasPriv("admin"))
             {
                     if($r->name == "query:mode")

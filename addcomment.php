@@ -1,4 +1,17 @@
 <?php
+/**
+ * Adds a new comment.
+ *
+ * Mandatory parameters:
+ *  - iVersionId, version identifier
+ *
+ * Optional parameters:
+ *  - iThread, parent comment identifier 
+ *  - sBody, body of the comment
+ *  - sSubject, title of the comment
+ */
+
+// application environment
 include("path.php");
 require(BASE."include/incl.php");
 require(BASE."include/application.php");
@@ -11,13 +24,6 @@ $aClean['iThread'] = makeSafe($_REQUEST['iThread']);
 $aClean['sBody'] = makeSafe($_REQUEST['sBody']);
 $aClean['sSubject'] = makeSafe($_REQUEST['sSubject']);
 
-/********************************/
-/* code to submit a new comment */
-/********************************/
-    
-/*
- * application environment
- */
 // you must be logged in to submit comments
 if(!$_SESSION['current']->isLoggedIn())
 {
@@ -34,20 +40,14 @@ if(!is_numeric($aClean['iThread']))
   $aClean['iThread'] = 0;
 }
 
-############################
-# ADDS COMMENT TO DATABASE #
-############################
+// the user submitted his comment
 if(!empty($aClean['sBody']))
 {
     $oComment = new Comment();
     $oComment->create($aClean['sSubject'], $aClean['sBody'], $aClean['iThread'], $aClean['iVersionId']);
     redirect(apidb_fullurl("appview.php?iVersionId=".$oComment->iVersionId));
-}
-
-################################
-# USER WANTS TO SUBMIT COMMENT #
-################################
-else
+// let's show the comment form
+} else
 {
   apidb_header("Add Comment");
 

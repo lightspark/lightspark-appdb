@@ -1,8 +1,12 @@
 <?php
-/**********************************/
-/* code to BROWSE categories/apps */
-/**********************************/
+/**
+ * Application browser.
+ *
+ * Optional parameters:
+ *  - iCatId, shows applications that belong to the category identified by iCatId
+ */
 
+// application environment
 include("path.php");
 require(BASE."include/"."incl.php");
 require(BASE."include/"."appdb.php");

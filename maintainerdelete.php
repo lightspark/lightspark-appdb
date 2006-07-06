@@ -1,11 +1,23 @@
 <?php
-/*******************************/
-/* code to delete a maintainer */
-/*******************************/
+/**
+ * Deletes a maintainer.
+ *
+ * Mandatory parameters:
+ *  - iAppId, application identifier
+ *            AND/OR
+ *  - iVersionId, version identifier
+ * 
+ * Optional parameters:
+ *  - iSuperMaintainer, 1 if we want to delete a supermaintainer instead of a normal maintainer
+ *  - iConfirmed, 1 if the deletion is confirmed
+ * 
+ * TODO:
+ *  - replace iSuperMaintainer with bIsSuperMaintainer
+ *  - replace iConfirmed with bHasConfirmed
+ *  - $oApp is not defined in the else part of this script
+ */
 
-/*
- * application environment
- */ 
+// application environment
 include("path.php");
 require(BASE."include/incl.php");
 require(BASE."include/category.php");

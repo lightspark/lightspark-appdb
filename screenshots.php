@@ -1,13 +1,24 @@
 <?php
-/*******************************************************************/
-/* this script expects appId and optionally versionId as arguments */
-/* OR                                                              */
-/* cmd and imageId                                                 */
-/*******************************************************************/
+/**
+ * Shows a page with several screenshot thumbnails.
+ *
+ * Mandatory parameters:
+ *  - iAppId, application identifier
+ *            AND/OR
+ *  - iVersionId, version identifier
+ * 
+ * Optional parameters:
+ *  - iImageId, image identifier (for deletion)
+ *  - sScreenshotDesc, screenshot description (for insertion)
+ *  - sCmd, action to perform ("screenshot_upload", "delete")
+ * 
+ * TODO:
+ *  - replace iImageId with iScreenshotId
+ *  - replace sCmd with iAction and replace "delete", "screenshot_upload", etc. with integer constants DELETE, UPLOAD, etc.
+ *  - replace require_once with require after checking that it won't break anything
+ */
 
-/*
- * application environment
- */ 
+// application environment
 include("path.php");
 require(BASE."include/incl.php");
 require_once(BASE."include/screenshot.php");
@@ -22,9 +33,7 @@ $aClean['sScreenshotDesc'] = makeSafe($_REQUEST['sScreenshotDesc']);
 $aClean['iImageId'] = makeSafe($_REQUEST['iImageId']);
 $aClean['iAppId'] = makeSafe($_REQUEST['iAppId']);
 
-/*
- * We issued a command.
- */ 
+// we issued a command
 if($aClean['sCmd'])
 {
     // process screenshot upload
@@ -49,9 +58,7 @@ if($aClean['sCmd'])
 }
 
 
-/*
- * We didn't issued any command.
- */ 
+// we didn't issued any command
 $hResult = get_screenshots($aClean['iAppId'], $aClean['iVersionId']);   
 apidb_header("Screenshots");
 $oApp = new Application($aClean['iAppId']);
@@ -106,9 +113,9 @@ if($hResult && mysql_num_rows($hResult))
  echo "<br />Please consider submitting a screenshot for the selected version yourself.</p>";
 }
 
+// let's show the screenshot uploading box
 if($aClean['iVersionId'])
 {
-    //image upload box
     echo '<form enctype="multipart/form-data" action="screenshots.php" name="sImageForm" method="post">',"\n";
     echo html_frame_start("Upload Screenshot","400","",0);
     echo '<table border=0 cellpadding=6 cellspacing=0 width="100%">',"\n";
@@ -124,5 +131,6 @@ if($aClean['iVersionId'])
     echo '<input type="hidden" name="iVersionId" value="'.$aClean['iVersionId'].'"></form />',"\n";
 }
 echo html_back_link(1);
+
 apidb_footer();
 ?>

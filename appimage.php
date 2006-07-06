@@ -1,11 +1,24 @@
 <?php
-/*************************/
-/* code to show an image */
-/*************************/
+/**
+ * Shows a thumbnail or a full size screenshot.
+ *
+ * Mandatory parameters:
+ *  - iId, image identifier
+ * 
+ * Optional parameters:
+ *  - bThumbnail, "true" if we want to see a thumbnail, "false" otherwise
+ *  - sREQUEST_METHOD
+ * 
+ * TODO:
+ *  - rename and document sREQUEST_METHOD
+ *  - replace iId with iScreenshotId
+ *  - replace require_once with require after checking that it doesn't break anything
+ */
 
+// application environment
 include("path.php");
-require(BASE."include/"."incl.php");
-require_once(BASE."include/"."screenshot.php");
+require(BASE."include/incl.php");
+require_once(BASE."include/screenshot.php");
 
 $aClean = array(); //array of filtered user input
 
@@ -13,12 +26,11 @@ $aClean['iId'] = makeSafe($_REQUEST['iId']);
 $aClean['sREQUEST_METHOD'] = makeSafe($_REQUEST['sREQUEST_METHOD']);
 $aClean['bThumbnail'] = makeSafe($_REQUEST['bThumbnail']);
 
-/* an image doesn't have a link, so a cookie makes no sense */
+// an image doesn't have a link, so a cookie makes no sense
 header("Set-Cookie: ");
 header("Pragma: ");
 
-/* if the user isn't supposed to be viewing this image */
-/* display an error message and exit */
+// is the user supposed to be viewing this image ?
 if(!$_SESSION['current']->canViewImage($aClean['iId']))
     util_show_error_page("Insufficient privileges.");
 

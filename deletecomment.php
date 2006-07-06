@@ -1,11 +1,16 @@
 <?php
-/*******************/
-/* delete comments */
-/*******************/
-
-/*
- * application environment
+/**
+ * Deletes a comment.
+ *
+ * Mandatory parameters:
+ *  - iCommentId, comment identifier
+ *
+ * Optional parameters:
+ *  - sWhy, reason for deleting the comment
+ *  - iDeleteIt, 1 if the deletion has been confirmed
  */
+
+// application environment
 include("path.php");
 require(BASE."include/incl.php");
 require(BASE."include/application.php");
@@ -19,8 +24,10 @@ $aClean['iDeleteIt'] = makeSafe($_REQUEST['iDeleteIt']);
 
 $oComment = new Comment($aClean['iCommentId']);
 
-/* if we aren't an admin or the maintainer of this app we shouldn't be */
-/* allowed to delete any comments */
+/**
+ * if we aren't an admin or the maintainer of this app we shouldn't be 
+ * allowed to delete any comments
+ */
 if (!$_SESSION['current']->hasPriv("admin") 
  && !$_SESSION['current']->isMaintainer($oComment->iVersionId)
  && !$_SESSION['current']->isSuperMaintainer($oComment->iAppId))
@@ -28,12 +35,13 @@ if (!$_SESSION['current']->hasPriv("admin")
     util_show_error_page("You don't have sufficient privileges to delete this comment.");
 }
 
+// let's show the deletion form if the user want's to explain why he deleted the comment
 if($_SESSION['current']->getPref("confirm_comment_deletion") != "no" && !isset($aClean['iDeleteIt']))
 {
     apidb_header("Delete Comment");
-    $mesTitle = "<b>Please state why you are deleting the following comment</b>";
+    $sMessageTitle = "<b>Please state why you are deleting the following comment</b>";
     echo "<form method=\"post\" action=\"".$_SERVER['PHP_SELF']."\">\n";
-    echo html_frame_start($mesTitle,500,"",0);
+    echo html_frame_start($sMessageTitle,500,"",0);
     echo "<br />";
     echo html_frame_start($oComment->sSubject,500);
     echo htmlify_urls($oComment->sBody), "<br /><br />\n";
@@ -50,6 +58,7 @@ if($_SESSION['current']->getPref("confirm_comment_deletion") != "no" && !isset($
     echo "</form>";
 
     apidb_footer();
+// otherwise, just delete the comment
 } else
 {
     $oComment->delete($aClean['sWhy']);

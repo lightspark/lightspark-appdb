@@ -1,7 +1,16 @@
 <?php
-/********************************************/
-/* Account Login / Logout Handler for AppDB */
-/********************************************/
+/**
+ * Account login/logout handler.
+ *
+ * Mandatory parameters:
+ *  - sCmd, action to perform ("new", "do_new", "login", "do_login", "send_passwd", "logout")
+ * 
+ * TODO:
+ *  - replace sCmd with iAction and replace "new", "login", etc. with integer constants NEW, LOGIN, etc.
+ *  - move functions into their respective modules (probably static methods of user class)
+ */
+
+// application environment
 include("path.php");
 require(BASE."include/incl.php");
 require(BASE."include/mail.php");
@@ -60,7 +69,7 @@ function do_account($sCmd = null)
 
             redirect(apidb_fullurl("index.php"));
     }
-    //not valid command, display error page
+    // not valid command, display error page
     util_show_error_page("Internal Error","This module was called with incorrect parameters");
 }
 

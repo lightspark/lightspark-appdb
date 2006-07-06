@@ -1,11 +1,23 @@
 <?php
-/**********************************/
-/* code to display an application */
-/**********************************/
-
-/*
- * application environment
+/**
+ * Displays an application or a version.
+ *
+ * Mandatory parameters:
+ *  - iAppId, application identifier
+ *               OR
+ *  - iVersionId, version identifier
+ *
+ * Optional parameters:
+ *  - sSub, action to perform ("delete", "unqueue", "Submit a new bug link.", "StartMonitoring", "StopMonitoring")
+ *  - iBuglinkId, bug identifier to link a bug with a version
+ *
+ * TODO:
+ *  - replace sSub with iAction and replace "delete", "unqueue", etc. with integer constants DELETE, UNQUEUE, etc.
+ *  - move and rename display_catpath and display_bundle in their respective modules
+ *  - replace require_once with require after checking that it won't break anything
  */
+
+// application environment
 include("path.php");
 require(BASE."include/incl.php");
 require(BASE."include/application.php");
@@ -42,7 +54,7 @@ function display_catpath($catId, $appId, $versionId = '')
 
 
 /**
- * display the SUB apps that belong to this app 
+ * Displays the SUB apps that belong to this application.
  */
 function display_bundle($iAppId)
 {

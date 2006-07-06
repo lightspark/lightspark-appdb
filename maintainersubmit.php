@@ -1,11 +1,21 @@
 <?php
-/*******************************/
-/* code to submit a maintainer */
-/*******************************/
+/**
+ * Adds a maintainer.
+ *
+ * Mandatory parameters:
+ *  - iAppId, application identifier
+ *            AND/OR
+ *  - iVersionId, version identifier
+ * 
+ * Optional parameters:
+ *  - iSuperMaintainer, 1 if we want to delete a supermaintainer instead of a normal maintainer
+ *  - sMaintainReason, why the users want to be a maintainer
+ * 
+ * TODO:
+ *  - replace iSuperMaintainer with bIsSuperMaintainer
+ */
 
-/*
- * application environment
- */ 
+// application environment
 include("path.php");
 require(BASE."include/incl.php");
 require(BASE."include/category.php");
