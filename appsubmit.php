@@ -66,11 +66,7 @@ function newSubmition($errors)
 }
 //deny access if not logged on
 if(!$_SESSION['current']->isLoggedIn())
-{
     util_show_error_page("Insufficient privileges to create application.  Are you sure you are logged in?");
-    exit;
-}
-
 
 if ($aClean['sSub'])
 {
@@ -93,9 +89,7 @@ if ($aClean['sSub'])
                !$_SESSION['current']->isVersionSubmitter($oApp->AppId))
             {
                 util_show_error_page("Insufficient privileges.");
-                exit;
             }
-
             $oVersion = new Version($oRow->versionId);
         } else
         {
@@ -113,7 +107,6 @@ if ($aClean['sSub'])
            !$_SESSION['current']->isVersionSubmitter($oVersion->versionId))
         {
             util_show_error_page("Insufficient privileges.");
-            exit;
         }
     }
     else

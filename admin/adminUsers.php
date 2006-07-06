@@ -18,10 +18,8 @@ $aClean['sSubmit'] = makeSafe($_REQUEST['sSubmit']);
 apidb_header("Admin Users Management");
 
 if(!$_SESSION['current']->hasPriv("admin"))
-{
     util_show_error_page("Insufficient privileges.");
-    exit;
-}
+
 
 // we want to delete a user
 if($aClean['sAction'] == "delete" && is_numeric($aClean['iUserId']))

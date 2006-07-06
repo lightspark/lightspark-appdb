@@ -20,10 +20,7 @@ $aClean['sReject'] = makeSafe($_REQUEST['sReject']);
 
 // deny access if not admin or at least some kind of maintainer
 if(!$_SESSION['current']->hasPriv("admin") && !$_SESSION['current']->isMaintainer())
-{
     util_show_error_page("Insufficient privileges.");
-    exit;
-}
 
 // shows the list of appdata in queue
 if (!$aClean['iId'])

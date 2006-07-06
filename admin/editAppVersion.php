@@ -12,17 +12,11 @@ $aClean['iVersionId'] = makeSafe($_REQUEST['iVersionId']);
 $aClean['sSubmit'] = makeSafe($_REQUEST['sSubmit']);
 
 if(!is_numeric($aClean['iAppId']) OR !is_numeric($aClean['iVersionId']))
-{
     util_show_error_page("Wrong ID");
-    exit;
-}
 
 /* Check for admin privs */
 if(!$_SESSION['current']->hasPriv("admin") && !$_SESSION['current']->isMaintainer($aClean['iVersionId']) && !$_SESSION['current']->isSuperMaintainer($aClean['iAppId']))
-{
     util_show_error_page("Insufficient Privileges!");
-    exit;
-}
 
 /* process the changes the user entered into the web form */
 if(!empty($aClean['sSubmit']))

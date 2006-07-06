@@ -59,11 +59,9 @@ function do_account($sCmd = null)
                 $_SESSION['current']->logout();
 
             redirect(apidb_fullurl("index.php"));
-            exit;
     }
     //not valid command, display error page
     util_show_error_page("Internal Error","This module was called with incorrect parameters");
-    exit;
 }
 
 /**

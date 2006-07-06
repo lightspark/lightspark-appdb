@@ -622,25 +622,17 @@ class Version {
 
         /* is this user supposed to view this version? */
         if(!$_SESSION['current']->canViewVersion($this))
-        {
             util_show_error_page("Something went wrong with the application or version id");
-            exit;
-        }
 
         $oApp = new Application($this->iAppId);
-        if(!$oApp->iAppId) 
-        {
-            // Oops! application not found or other error. do something
-            util_show_error_page('Internal Database Access Error. No App found.');
-            exit;
-        }
 
+        // Oops! application not found or other error. do something
+        if(!$oApp->iAppId) 
+            util_show_error_page('Internal Database Access Error. No App found.');
+
+        // Oops! Version not found or other error. do something
         if(!$this->iVersionId) 
-        {
-            // Oops! Version not found or other error. do something
             util_show_error_page('Internal Database Access Error. No Version Found.');
-            exit;
-        }
 
         // header
         apidb_header("Viewing App- ".$oApp->sName." Version - ".$this->sName);

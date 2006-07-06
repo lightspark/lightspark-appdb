@@ -26,7 +26,6 @@ if (!$_SESSION['current']->hasPriv("admin")
  && !$_SESSION['current']->isSuperMaintainer($oComment->iAppId))
 {
     util_show_error_page("You don't have sufficient privileges to delete this comment.");
-    exit;
 }
 
 if($_SESSION['current']->getPref("confirm_comment_deletion") != "no" && !isset($aClean['iDeleteIt']))

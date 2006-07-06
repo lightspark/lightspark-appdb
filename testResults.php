@@ -82,7 +82,6 @@ if ($aClean['sSub'])
            !(($_SESSION['current']->iUserId == $oTest->iSubmitterId) && !($oTest->sQueued == 'false')))
         {
             util_show_error_page("Insufficient privileges.");
-            exit;
         } else
         $oVersion = new version($oTest->iVersionId);
     } else

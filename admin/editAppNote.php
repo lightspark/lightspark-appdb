@@ -16,20 +16,14 @@ $aClean['sSubmit'] = makeSafe($_REQUEST['sSubmit']);
 $aClean['sPreview'] = makeSafe($_REQUEST['sPreview']);
 
 if(!is_numeric($aClean['iNoteId']))
-{
     util_show_error_page('Wrong note ID');
-    exit;
-}  
 
 /* Get note data */
 $oNote = new Note($aClean['iNoteId']);
 
 /* Check for privs */
 if(!$_SESSION['current']->hasPriv("admin") && !$_SESSION['current']->isMaintainer($oNote->iVersionId) && !$_SESSION['current']->isSuperMaintainer($oNote->iAppId))
-{
     util_show_error_page("Insufficient Privileges!");
-    exit;
-}
 
 if(!empty($aClean['sSub']))
 {

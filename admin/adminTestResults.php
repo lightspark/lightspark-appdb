@@ -21,10 +21,7 @@ if ($aClean['sSub'])
     $oTest = new testData($aClean['iTestingId']);
     $oVersion = new Version($oTest->iVersionId);
     if(!($_SESSION['current']->hasAppVersionModifyPermission($oVersion)))
-    {
         util_show_error_page("Insufficient privileges.");
-        exit;
-    }
 
     if(($aClean['sSub'] == 'Submit') || ($aClean['sSub'] == 'Save') ||
        ($aClean['sSub'] == 'Reject') || ($aClean['sSub'] == 'Delete'))

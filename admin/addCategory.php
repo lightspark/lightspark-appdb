@@ -12,10 +12,8 @@ $aClean['iParentId'] = makeSafe($_REQUEST['iParentId']);
 $aClean['sSubmit'] = makeSafe($_REQUEST['sSubmit']);
 
 if(!$_SESSION['current']->hasPriv("admin"))
-{
     util_show_error_page();
-    exit;
-}
+
 $oCat = new Category($aClean['iCatId']);
 if($aClean['sSubmit'])
 {

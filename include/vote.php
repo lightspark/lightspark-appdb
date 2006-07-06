@@ -151,10 +151,7 @@ function vote_menu()
 function vote_update($vars)
 {
     if(!$_SESSION['current']->isLoggedIn())
-    {
         util_show_error_page("You must be logged in to vote");
-        return;
-    }
 
     if( !is_numeric($vars['iAppId']) OR !is_numeric($vars['iSlot']))
     {

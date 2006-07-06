@@ -27,10 +27,7 @@ if(!$_SESSION['current']->isLoggedIn())
 }
 
 if( !is_numeric($aClean['iVersionId']) )
-{
-  util_show_error_page('Internal Database Access Error');
-  exit;
-}
+    util_show_error_page('Internal Database Access Error');
 
 if(!is_numeric($aClean['iThread']))
 {

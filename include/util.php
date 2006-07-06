@@ -12,6 +12,7 @@ function util_show_error_page($text = null, $message = null)
     echo "<div align=center><font color=red><b>$text</b></font></div>\n";
     echo "<p>$message</p>\n";
     apidb_footer();
+    exit;
 }
 
 function makeSafe($var)

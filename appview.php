@@ -83,10 +83,7 @@ function display_bundle($iAppId)
 }
 
 if(!is_numeric($aClean['iAppId']) && !is_numeric($aClean['iVersionId']))
-{
     util_show_error_page("Something went wrong with the application or version id");
-    exit;
-}
 
 if ($aClean['sSub'])
 {
@@ -99,7 +96,6 @@ if ($aClean['sSub'])
             $oBuglink = new bug($aClean['iBuglinkId']);
             $oBuglink->delete();
             redirect(apidb_fullurl("appview.php?iVersionId=".$aClean['iVersionId']));
-            exit;
         }
  
     }
@@ -112,7 +108,6 @@ if ($aClean['sSub'])
             $oBuglink = new bug($aClean['iBuglinkId']);
             $oBuglink->unqueue();
             redirect(apidb_fullurl("appview.php?iVersionId=".$aClean['iVersionId']));
-            exit;
         }
  
     }
@@ -121,14 +116,12 @@ if ($aClean['sSub'])
         $oBuglink = new bug();
         $oBuglink->create($aClean['iVersionId'],$aClean['iBuglinkId']);
         redirect(apidb_fullurl("appview.php?iVersionId=".$aClean['iVersionId']));
-        exit;
     }
     if($aClean['sSub'] == 'StartMonitoring')
     {
         $oMonitor = new Monitor();
         $oMonitor->create($_SESSION['current']->iUserId,$aClean['iAppId'],$aClean['iVersionId']);
         redirect(apidb_fullurl("appview.php?iVersionId=".$aClean['iVersionId']));
-        exit;
     }
     if($aClean['sSub'] == 'StopMonitoring')
     {
@@ -139,7 +132,6 @@ if ($aClean['sSub'])
             $oMonitor->delete();
         }
         redirect(apidb_fullurl("appview.php?iVersionId=".$aClean['iVersionId']));
-        exit;
     }
 
 }
@@ -159,7 +151,6 @@ if($aClean['iAppId'])
 {
     // Oops! Called with no params, bad llamah!
     util_show_error_page('Page Called with No Params!');
-    exit;
 }
 
 apidb_footer();

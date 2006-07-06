@@ -20,19 +20,14 @@ header("Pragma: ");
 /* if the user isn't supposed to be viewing this image */
 /* display an error message and exit */
 if(!$_SESSION['current']->canViewImage($aClean['iId']))
-{
     util_show_error_page("Insufficient privileges.");
-    exit;
-}
 
 if ($aClean['sREQUEST_METHOD']='HEAD')
 {
    /* WARNING! optimization of logic in include/screenshots.php */
    if (sscanf($aClean['iId'],"%d", &$iId) < 1)
-   {
       util_show_error_page("Bad parameter");
-      exit;
-   }
+
    $hResult = query_parameters("SELECT id, url FROM appData 
                             WHERE id = '?'
                             AND type = 'image' LIMIT 1", $iId);

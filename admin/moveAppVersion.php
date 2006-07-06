@@ -12,17 +12,11 @@ $aClean['iVersionId'] = makeSafe($_REQUEST['iVersionId']);
 $aClean['sAction'] = makeSafe($_REQUEST['sAction']);
 
 if(!is_numeric($aClean['iAppId']) OR !is_numeric($aClean['iVersionId']))
-{
     util_show_error_page("Wrong ID");
-    exit;
-}
 
 /* Check for admin privs */
 if(!$_SESSION['current']->hasPriv("admin"))
-{
     util_show_error_page("Insufficient Privileges!");
-    exit;
-}
 
 if(!empty($aClean['sAction']))
 {

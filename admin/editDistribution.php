@@ -9,10 +9,7 @@ $aClean['iDistributionId'] = makeSafe($_REQUEST['iDistributionId']);
 $aClean['sSubmit'] = makeSafe($_REQUEST['sSubmit']);
 
 if(!$_SESSION['current']->hasPriv("admin"))
-{
     util_show_error_page("Insufficient privileges.");
-    exit;
-}
 
 
 $oDistribution = new distribution($aClean['iDistributionId']);
@@ -28,7 +25,6 @@ if($aClean['sSubmit'])
     } 
   
     redirect(apidb_fullurl("distributionView.php"));
-    exit;
 }
 else
 {

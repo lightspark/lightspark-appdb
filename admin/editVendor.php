@@ -10,10 +10,7 @@ $aClean['sName'] = makeSafe($_REQUEST['sName']);
 $aClean['sWebpage'] = makeSafe($_REQUEST['sWebpage']);
 
 if(!$_SESSION['current']->hasPriv("admin"))
-{
     util_show_error_page();
-    exit;
-}
 
 $oVendor = new Vendor($aClean['iVendorId']);
 if($aClean['sSubmit'])

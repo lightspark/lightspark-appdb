@@ -4,10 +4,7 @@ include("path.php");
 include(BASE."include/"."incl.php");
 
 if(!$_SESSION['current']->hasPriv("admin"))
-{
     util_show_error_page();
-    exit;
-}
 
 function build_app_list()
 {

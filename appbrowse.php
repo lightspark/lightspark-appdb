@@ -30,11 +30,8 @@ if( empty( $aClean['iCatId'] ) )
     $aClean['iCatId'] = 0; // ROOT
 }
 
-if( !is_numeric($aClean['iCatId']) )
-{
+if(!is_numeric($aClean['iCatId']))
 	util_show_error_page("Something went wrong with the category ID");
-	exit;
-}
 
 // list sub categories
 $cat = new Category($aClean['iCatId']);

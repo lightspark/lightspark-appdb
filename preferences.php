@@ -32,10 +32,7 @@ while(list($key, $value) = each($_REQUEST))
 
 
 if(!$_SESSION['current']->isLoggedIn())
-{
     util_show_error_page("You must be logged in to edit preferences");
-    exit;
-}
 
 // we come from the administration to edit an user
 if($_SESSION['current']->hasPriv("admin") && 

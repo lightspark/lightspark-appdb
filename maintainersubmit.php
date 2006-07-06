@@ -44,11 +44,7 @@ function checkAppMaintainerInput( $maintainReason )
 
 
 if(!$_SESSION['current']->isLoggedIn())
-{
     util_show_error_page("You need to be logged in to apply to be a maintainer.");
-    exit;
-}
-
 
 /* if we have a versionId to check against see if */
 /* the user is already a maintainer */
@@ -70,10 +66,7 @@ if( $aClean['sMaintainReason'] )
     // check the input for empty/invalid fields
     $errors = checkAppMaintainerInput($aClean['sMaintainReason']);
     if(!empty($errors))
-    {
         util_show_error_page("We found the following errors:","<ul>$errors</ul><br />Please go back and correct them.");
-        exit;
-    }
 
     // header
     if($aClean['iSuperMaintainer'])

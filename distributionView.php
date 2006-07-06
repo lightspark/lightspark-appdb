@@ -20,10 +20,7 @@ $aClean['iDistributionId'] = makeSafe( $_REQUEST['iDistributionId']);
 if ($aClean['sSub'])
 {
     if(!$_SESSION['current']->hasPriv("admin"))
-    {
         util_show_error_page("Insufficient privileges.");
-        exit;
-    }
 
     if($aClean['sSub'] == 'delete')
     {

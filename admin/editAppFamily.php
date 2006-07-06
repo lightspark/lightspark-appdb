@@ -16,16 +16,10 @@ $aClean['iAppId'] = makeSafe($_REQUEST['iAppId']);
 $aClean['sSubmit'] = makeSafe($_REQUEST['sSubmit']);
 
 if(!is_numeric($aClean['iAppId']))
-{
     util_show_error_page("Wrong ID");
-    exit;
-}
 
 if(!($_SESSION['current']->hasPriv("admin") || $_SESSION['current']->isSuperMaintainer($aClean['iAppId'])))
-{
     util_show_error_page("Insufficient Privileges!");
-    exit;
-}
 
 if(!empty($aClean['sSubmit']))
 {

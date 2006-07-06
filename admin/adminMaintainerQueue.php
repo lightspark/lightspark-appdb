@@ -20,10 +20,8 @@ $aClean['sReject'] = makeSafe( $_REQUEST['sReject'] );
 $aClean['sReplyText'] = makeSafe( $_REQUEST['sReplyText'] );
 
 if(!$_SESSION['current']->hasPriv("admin"))
-{
     util_show_error_page("Insufficient privileges.");
-    exit;
-}
+
 
 if ($aClean['sSub'])
 {

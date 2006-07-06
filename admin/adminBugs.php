@@ -22,10 +22,7 @@ $aClean['iPage'] = makeSafe($_REQUEST['iPage']);
 
 // deny access if not logged in
 if(!$_SESSION['current']->hasPriv("admin"))
-{
     util_show_error_page("Insufficient privileges.");
-    exit;
-}
 
 if ($aClean['sSub'])
 {
@@ -40,7 +37,6 @@ if ($aClean['sSub'])
         $oBuglink->unqueue();
     }
     redirect($_SERVER['PHP_SELF']."?iItemsPerPage=".$aClean['iItemsPerPage']."&sQueuedOnly=".$aClean['sQueuedOnly']."&ipage=".$aClean['iPage']);
-    exit;
 }
 
 {

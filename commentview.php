@@ -22,10 +22,7 @@ apidb_header("Comments");
 
 
 if(!is_numeric($aClean['iAppId']) OR !is_numeric($aClean['iVersionId']) OR (!empty($aClean['iThreadId']) AND !is_numeric($aClean['iThreadId'])))
-{
     util_show_error_page("Wrong IDs");
-    exit;
-}
 
 view_app_comments($aClean['iVersionId'], $aClean['iThreadId']);
 
