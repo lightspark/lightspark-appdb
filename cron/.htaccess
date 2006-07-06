@@ -1,1 +1,8 @@
 Deny from all
+
+#Modify PHP configuration
+php_value register_globals 0
+php_value short_open_tag 0
+php_value register_long_arrays 0
+php_value magic_quotes_gpc 0
+
