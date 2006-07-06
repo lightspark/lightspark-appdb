@@ -13,16 +13,16 @@ require_once(BASE."include/testResults.php");
 $aClean = array(); //array of filtered user input
 
 $aClean['iTestingId'] = makeSafe($_REQUEST['iTestingId']);
-$aClean['sub'] = makeSafe($_REQUEST['sub'] );
-$aClean['apptype'] = makeSafe($_REQUEST['apptype']);
-$aClean['appId'] = makeSafe($_REQUEST['appId']);
-$aClean['versionId'] = makeSafe($_REQUEST['versionId']);
-$aClean['appVendorName'] = makeSafe($_REQUEST['appVendorName']);
-$aClean['appVendorId']  = makeSafe($_REQUEST['appVendorId']);
-$aClean['appWebpage'] = makeSafe($_REQUEST['appWebpage']);
-$aClean['appIdMergeTo'] = makeSafe($_REQUEST['appIdMergeTo']);
-$aClean['replyText'] = makeSafe($_REQUEST['replyText']);
-$aClean['versionIdMergeTo'] = makeSafe($_REQUEST['versionIdMergeTo']);
+$aClean['sSub'] = makeSafe($_REQUEST['sSub'] );
+$aClean['sAppType'] = makeSafe($_REQUEST['sAppType']);
+$aClean['iAppId'] = makeSafe($_REQUEST['iAppId']);
+$aClean['iVersionId'] = makeSafe($_REQUEST['iVersionId']);
+$aClean['sAppVendorName'] = makeSafe($_REQUEST['sAppVendorName']);
+$aClean['iAppVendorId']  = makeSafe($_REQUEST['iAppVendorId']);
+$aClean['sAppWebpage'] = makeSafe($_REQUEST['sAppWebpage']);
+$aClean['iAppIdMergeTo'] = makeSafe($_REQUEST['iAppIdMergeTo']);
+$aClean['sReplyText'] = makeSafe($_REQUEST['sReplyText']);
+$aClean['iVersionIdMergeTo'] = makeSafe($_REQUEST['iVersionIdMergeTo']);
 $aClean['sDistribution'] = makeSafe($_REQUEST['sDistribution']);
 
 function get_vendor_from_keywords($sKeywords)
@@ -62,7 +62,7 @@ function outputSearchTableForDuplicateFlagging($currentAppId, $hResult)
             //display row
             echo "<tr class=$sBgColor>\n";
             /* map the merging of the current app to the app we are displaying in the table */
-            echo "    <td>".html_ahref($oRow->appName,"adminAppQueue.php?sub=duplicate&apptype=application&appId=".$currentAppId."&appIdMergeTo=".$oRow->appId)."</td>\n";
+            echo "    <td>".html_ahref($oRow->appName,"adminAppQueue.php?sSub=duplicate&sAppType=application&iAppId=".$currentAppId."&appIdMergeTo=".$oRow->appId)."</td>\n";
             echo "    <td>$oVersionCount->versions versions &nbsp;</td>\n";
             echo "</tr>\n\n";
 
@@ -113,7 +113,7 @@ function display_move_test_to_versions_table($aVersionsIds,$icurrentVersionId)
 
                 //display row
                 echo "<tr class=$sBgColor>\n";
-                echo "    <td>".html_ahref($oVersion->sName,"adminAppQueue.php?sub=movetest&apptype=version&versionId=".$icurrentVersionId."&versionIdMergeTo=".$oVersion->iVersionId)."</td>\n";
+                echo "    <td>".html_ahref($oVersion->sName,"adminAppQueue.php?sSub=movetest&sAppType=version&iVersionId=".$icurrentVersionId."&iVersionIdMergeTo=".$oVersion->iVersionId)."</td>\n";
 
                 echo "    <td>".util_trim_description($oVersion->sDescription)."</td>\n";
                 echo "    <td align=center>".$oVersion->sTestedRating."</td>\n";
@@ -138,9 +138,9 @@ if(!$_SESSION['current']->hasPriv("admin") && !$_SESSION['current']->isSuperMain
 }
 $oTest = new testData($aClean['iTestingId']);
 
-if ($aClean['sub'])
+if ($aClean['sSub'])
 {
-    if($aClean['apptype'] == 'application')
+    if($aClean['sAppType'] == 'application')
     {
         /* make sure the user is authorized to view this application request */
         if(!$_SESSION['current']->hasPriv("admin"))
@@ -149,20 +149,20 @@ if ($aClean['sub'])
             exit;
         }
 
-        $oApp = new Application($aClean['appId']);
+        $oApp = new Application($aClean['iAppId']);
 
         // if we are processing a queued application there MUST be an implicitly queued 
         // version to go along with it.  
-        $hResult = query_parameters("SELECT versionId from appVersion where appId='?';", $aClean['appId']);
+        $hResult = query_parameters("SELECT versionId from appVersion where appId='?';", $aClean['iAppId']);
         $oVersionRow = mysql_fetch_object($hResult);
 
         $oVersion = new Version($oVersionRow->versionId);
 
     } 
-    else if($aClean['apptype'] == 'version')
+    else if($aClean['sAppType'] == 'version')
     {
         /* make sure the user has permission to view this version */
-        $oVersion = new Version($aClean['versionId']);
+        $oVersion = new Version($aClean['iVersionId']);
         if(!$_SESSION['current']->hasAppVersionModifyPermission($oVersion))
         {
             util_show_error_page("Insufficient privileges.");
@@ -188,21 +188,21 @@ if ($aClean['sub'])
         $oTest = new testData();
     }
 
-    if($aClean['sub'] == 'add')
+    if($aClean['sSub'] == 'add')
     {
-        $oVersion = new Version($aClean['versionId']);
+        $oVersion = new Version($aClean['iVersionId']);
         $oTest = new testData($aClean['iTestingId']);
         $oVersion->GetOutputEditorValues();
         $oTest->GetOutputEditorValues();
-        if ($aClean['apptype'] == "application") // application
+        if ($aClean['sAppType'] == "application") // application
         {
-            $oApp = new Application($aClean['appId']);
+            $oApp = new Application($aClean['iAppId']);
             $oApp->GetOutputEditorValues(); // load the values from $_REQUEST 
             // add new vendor
-            if($aClean['appVendorName'] and !$aClean['appVendorId'])
+            if($aClean['sAppVendorName'] and !$aClean['iAppVendorId'])
             {
                 $oVendor = new Vendor();
-                $oVendor->create($aClean['appVendorName'],$aClean['appWebpage']);
+                $oVendor->create($aClean['sAppVendorName'],$aClean['sAppWebpage']);
                 $oApp->iVendorId = $oVendor->iVendorId;
             }
             $oApp->update(true);
@@ -214,16 +214,16 @@ if ($aClean['sub'])
         $oTest->unQueue();
         redirect($_SERVER['PHP_SELF']);
     }
-    else if ($aClean['sub'] == 'duplicate')
+    else if ($aClean['sSub'] == 'duplicate')
     {
-        if(is_numeric($aClean['appIdMergeTo']))
+        if(is_numeric($aClean['iAppIdMergeTo']))
         {
             /* move this version submission under the existing app */
-            $oVersion->iAppId = $aClean['appIdMergeTo'];
+            $oVersion->iAppId = $aClean['iAppIdMergeTo'];
             $oVersion->update();
 
             /* delete the appId that is the duplicate */
-            $aClean['replyText'] = "Your Vesion information was moved to an existing Application";
+            $aClean['sReplyText'] = "Your Vesion information was moved to an existing Application";
             $oAppDelete = new Application($oApp->iAppId);
             $oAppDelete->delete();
         }
@@ -231,51 +231,51 @@ if ($aClean['sub'])
         /* redirect back to the main page */
         redirect(apidb_fullurl("admin/adminAppQueue.php"));
     }
-    else if ($aClean['sub'] == 'movetest')
+    else if ($aClean['sSub'] == 'movetest')
     {
-        if(is_numeric($aClean['versionIdMergeTo']))
+        if(is_numeric($aClean['iVersionIdMergeTo']))
         {
             // move this Test submission under the existing version
-            $oTest->iVersionId = $aClean['versionIdMergeTo'];
+            $oTest->iVersionId = $aClean['iVersionIdMergeTo'];
             $oTest->update();
 
             // delete the Version entry
-            $aClean['replyText'] = "Your Test results were moved to existing version";
-            $oVersion = new Version($aClean['versionId']);
+            $aClean['sReplyText'] = "Your Test results were moved to existing version";
+            $oVersion = new Version($aClean['iVersionId']);
             $oVersion->delete();
         }
 
         // redirect back to the main page
         redirect(apidb_fullurl("admin/adminAppQueue.php"));
     }
-    else if ($aClean['sub'] == 'Delete')
+    else if ($aClean['sSub'] == 'Delete')
     {
 
-        if (($aClean['apptype'] == "application") && is_numeric($aClean['appId'])) // application
+        if (($aClean['sAppType'] == "application") && is_numeric($aClean['iAppId'])) // application
         {
             // delete the application entry
-            $oApp = new Application($aClean['appId']);
+            $oApp = new Application($aClean['iAppId']);
             $oApp->delete();
 
-        } else if(($aClean['apptype'] == "version") && is_numeric($aClean['versionId']))  // version
+        } else if(($aClean['sAppType'] == "version") && is_numeric($aClean['iVersionId']))  // version
 
         {
             // delete the Version entry
-            $oVersion = new Version($aClean['versionId']);
+            $oVersion = new Version($aClean['iVersionId']);
             $oVersion->delete();
         }
 
         redirect(apidb_fullurl("admin/adminAppQueue.php"));
     }
-    else if ($aClean['sub'] == 'Reject')
+    else if ($aClean['sSub'] == 'Reject')
     {
-        $oVersion = new Version($aClean['versionId']);
+        $oVersion = new Version($aClean['iVersionId']);
         $oTest = new testData($aClean['iTestingId']);
         $oVersion->GetOutputEditorValues();
         $oTest->GetOutputEditorValues();
-        if ($aClean['apptype'] == "application") // application
+        if ($aClean['sAppType'] == "application") // application
         {
-            $oApp = new Application($aClean['appId']);
+            $oApp = new Application($aClean['iAppId']);
             $oApp->GetOutputEditorValues(); // load the values from $_REQUEST 
             $oApp->update(true);
             $oApp->reject();
@@ -288,13 +288,13 @@ if ($aClean['sub'])
     }
 
     //process according to sub flag
-    if ($aClean['sub'] == 'view')
+    if ($aClean['sSub'] == 'view')
     {
         $x = new TableVE("view");
         apidb_header("Admin App Queue");
 
-        echo '<form name="qform" action="adminAppQueue.php" method="post" enctype="multipart/form-data">',"\n";
-        echo '<input type="hidden" name="sub" value="add">',"\n"; 
+        echo '<form name="sQform" action="adminAppQueue.php" method="post" enctype="multipart/form-data">',"\n";
+        echo '<input type="hidden" name="sSub" value="add">',"\n"; 
 
         echo html_back_link(1,'adminAppQueue.php');
 
@@ -404,21 +404,21 @@ if ($aClean['sub'])
         echo html_frame_start("Reply text", "90%", "", 0);
         echo "<table width='100%' border=0 cellpadding=2 cellspacing=0>\n";
         echo '<tr valign=top><td class="color0"><b>email Text</b></td>',"\n";
-        echo '<td><textarea name="replyText" style="width: 100%" cols="80" rows="10"></textarea></td></tr>',"\n";
+        echo '<td><textarea name="sReplyText" style="width: 100%" cols="80" rows="10"></textarea></td></tr>',"\n";
 
         echo '<tr valign=top><td class=color3 align=center colspan=2>' ,"\n";
         if ($oApp) //application
         {
-            echo '<input type="hidden" name="apptype" value="application" />';
+            echo '<input type="hidden" name="sAppType" value="application" />';
             echo '<input type=submit value=" Submit App Into Database " class=button>&nbsp',"\n";
         } else // app version
         {
-            echo '<input type="hidden" name="apptype" value="version" />';
+            echo '<input type="hidden" name="sAppType" value="version" />';
             echo '<input type="submit" value=" Submit Version Into Database " class="button">&nbsp',"\n";
         }
 
-        echo '<input name="sub" type="submit" value="Delete" class="button" />',"\n";
-        echo '<input name="sub" type="submit" value="Reject" class="button" />',"\n";
+        echo '<input name="sSub" type="submit" value="Delete" class="button" />',"\n";
+        echo '<input name="sSub" type="submit" value="Reject" class="button" />',"\n";
         echo '</td></tr>',"\n";
         echo '</table>',"\n";
         echo '</form>',"\n";
@@ -432,7 +432,7 @@ if ($aClean['sub'])
         redirect(apidb_fullurl("admin/adminAppQueue.php"));
     }
 }
-else /* if ($aClean['sub']) is not defined, display the main app queue page */
+else /* if ($aClean['sSub']) is not defined, display the main app queue page */
 {
     apidb_header("Admin App Queue");
 

@@ -22,10 +22,10 @@ compatibility with Wine.</p>
 <?php
 $str_benefits="
     <ul>
-        <li>Ability to <a href=\"".BASE."help/?topic=voting\" title=\"help on voting\" style=\"cursor: help\">vote</a> on Favorite Applications</li>
+        <li>Ability to <a href=\"".BASE."help/?sTopic=voting\" title=\"help on voting\" style=\"cursor: help\">vote</a> on Favorite Applications</li>
         <li>Ability to customize the layout and behaviour of the AppDB and comments system</li>
         <li>Take credit for your witty posts</li>
-        <li>Ability to sign up to be an <a href=\"".BASE."help/?topic=maintainer_guidelines\" title=\"informations about application maintainers\"  style=\"cursor: help\">application maintainer</a>.</li>
+        <li>Ability to sign up to be an <a href=\"".BASE."help/?sTopic=maintainer_guidelines\" title=\"informations about application maintainers\"  style=\"cursor: help\">application maintainer</a>.</li>
         <li>Submit new applications and versions.</li>
         <li>Submit new screenshots.</li>
     </ul>
@@ -38,7 +38,7 @@ if(!$_SESSION['current']->isLoggedIn())
 
     $str_benefits
 
-    <p>So what are you waiting for, [<a href=\"account.php?cmd=login\">login now</a>]. Your help in
+    <p>So what are you waiting for, [<a href=\"account.php?sCmd=login\">login now</a>]. Your help in
     stomping out Wine issues will be greatly appreciated.</p>";
 } else 
 {
@@ -73,12 +73,12 @@ If you have screenshots or links to contribute, please browse the database and u
     if($voteAppId != "")
     {
        echo "There are <b>$numApps</b> applications currently in the database with\n";
-       echo "<a href='appview.php?appId=$voteAppId'>$voteAppName</a> being the\n";
+       echo "<a href='appview.php?iAppId=$voteAppId'>$voteAppName</a> being the\n";
        echo "top <a href='votestats.php'>voted</a> application.\n";
     } else
     {
        echo "There are <b>$numApps</b> applications currently in the database, please\n";
-       echo "<a href=\"".BASE."help/?topic=voting\" title=\"help on voting\" style=\"cursor: help\">vote</a> for your favorite application.\n";
+       echo "<a href=\"".BASE."help/?sTopic=voting\" title=\"help on voting\" style=\"cursor: help\">vote</a> for your favorite application.\n";
     }
 ?>
 
@@ -129,12 +129,6 @@ If you have screenshots or links to contribute, please browse the database and u
 <p>
 <a href="http://frankscorner.org"><b>Frank's Corner</b></a>:  Frank has a fantastic Wine
 application site. The site contains tips and howtos on getting listed apps to run.
-</p>
-<p>
-<a href="http://sidenet.ddo.jp/winetips/config.html"><b>Sidenet Wine configuration utility</b></a>:  Installs Internet Explorer 6 and Windows Media Player 7 automatically (works also with MSN Messenger and RealPlayer).
-</p>
-<p>
-<a href="http://www.von-thadden.de/Joachim/WineTools/"><b>WineTools</b></a>: WineTools is an menu driven installer for installing Windows programs under Wine (DCOM98, IE6, Windows Core Fonts, Windows System Software, Office & Office Viewer, Adobe Photoshop 7, Illustrator 9, Acrobat Reader 5.1, ...).
 </p>
 <?php
 apidb_footer();

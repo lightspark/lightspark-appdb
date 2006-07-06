@@ -12,8 +12,8 @@ require(BASE."include/mail.php");
 
 $aClean = array(); //array of filtered user input
 
-$aClean['ItemsPerPage'] = makeSafe($_REQUEST['ItemsPerPage']);
-$aClean['page'] = makeSafe($_REQUEST['page']);
+$aClean['iItemsPerPage'] = makeSafe($_REQUEST['iItemsPerPage']);
+$aClean['iPage'] = makeSafe($_REQUEST['iPage']);
 
 
 apidb_header("View Screenshots");
@@ -23,10 +23,10 @@ $pageRange = 10;
 $ItemsPerPage = 6;
 $currentPage = 1;
 
-if($aClean['ItemsPerPage'])
-    $ItemsPerPage = $aClean['ItemsPerPage'];
-if($aClean['page'])
-    $currentPage = $aClean['page'];
+if($aClean['iItemsPerPage'])
+    $ItemsPerPage = $aClean['iItemsPerPage'];
+if($aClean['iPage'])
+    $currentPage = $aClean['iPage'];
 
 $ItemsPerPage = min($ItemsPerPage,100);
 $totalPages = ceil(getNumberOfImages()/$ItemsPerPage);
@@ -38,14 +38,14 @@ $offset = (($currentPage-1) * $ItemsPerPage);
 echo "<center>";
 echo "<b>Page $currentPage of $totalPages</b><br />";
 display_page_range($currentPage, $pageRange, $totalPages,
-                  $_SERVER['PHP_SELF']."?ItemsPerPage=".$ItemsPerPage);
+                  $_SERVER['PHP_SELF']."?iItemsPerPage=".$ItemsPerPage);
 echo "<br />";
 echo "<br />";
 
 /* display the option to choose how many screenshots per-page to display */
 echo '<form method="get" name="message" action="'.$_SERVER['PHP_SELF'].'">';
 echo '<b>Number of Screenshots per page:</b>';
-echo "&nbsp<select name='ItemsPerPage'>";
+echo "&nbsp<select name='iItemsPerPage'>";
 
 $ItemsPerPageArray = array(6, 9, 12, 15, 18, 21, 24);
 foreach($ItemsPerPageArray as $i => $value)
@@ -57,7 +57,7 @@ foreach($ItemsPerPageArray as $i => $value)
 }
 echo "</select>";
 
-echo "<input type=hidden name=page value=$currentPage>";
+echo "<input type=hidden name=iPage value=$currentPage>";
 echo "&nbsp<input type=submit value='Refresh'>";
 echo "</form>";
 
@@ -81,11 +81,11 @@ while ($oRow = mysql_fetch_object($Ids))
     echo "<div align=center>". substr($oRow->description,0,20). "\n";
 
     echo "<br />[<a href='".apidb_fullurl("appview.php");
-    echo "?appId=".$oApp->iAppId."'>";
+    echo "?iAppId=".$oApp->iAppId."'>";
     echo $oApp->sName."</a>]";    
 
     echo "<br />[<a href='".apidb_fullurl("appview.php");
-    echo "?versionId=".$oVersion->iVersionId."'>";
+    echo "?iVersionId=".$oVersion->iVersionId."'>";
     echo "Version: ".$oVersion->sName."</a>]";
     
     echo "</div></td>\n";
@@ -99,7 +99,7 @@ echo "</tr></table></div><br />\n";
 /* display page selection links */
 echo "<center>";
 display_page_range($currentPage, $pageRange, $totalPages,
-                   $_SERVER['PHP_SELF']."?ItemsPerPage=".$ItemsPerPage);
+                   $_SERVER['PHP_SELF']."?iItemsPerPage=".$ItemsPerPage);
 echo "</center>";
 
 apidb_footer();

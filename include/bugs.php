@@ -223,7 +223,7 @@ class Bug {
             if(!$this->bQueued)
             {
                 $sSubject = "Link between Bug ".$this->iBug_id." and ".$sAppName." added by ".$_SESSION['current']->sRealname;
-                $sMsg  = APPDB_ROOT."appview.php?versionId=".$this->iVersionId."\n";
+                $sMsg  = APPDB_ROOT."appview.php?iVersionId=".$this->iVersionId."\n";
                 if($this->iSubmitterId)
                 {
                     $oSubmitter = new User($this->iSubmitterId);
@@ -234,7 +234,7 @@ class Bug {
             } else // Bug Link queued.
             {
                 $sSubject = "Link between Bug ".$this->iBug_id." and ".$sAppName." submitted by ".$_SESSION['current']->sRealname;
-                $sMsg  = APPDB_ROOT."appview.php?versionId=".$this->iVersionId."\n";
+                $sMsg  = APPDB_ROOT."appview.php?iVersionId=".$this->iVersionId."\n";
                 $sMsg .= "This Bug Link has been queued.";
                 $sMsg .= "\n";
                 addmsg("The Bug Link you submitted will be added to the database after being reviewed.", "green");
@@ -242,7 +242,7 @@ class Bug {
         } else // Bug Link deleted.
         {
             $sSubject = "Link between Bug ".$this->iBug_id." and ".$sAppName." deleted by ".$_SESSION['current']->sRealname;
-            $sMsg  = APPDB_ROOT."appview.php?versionId=".$this->iVersionId."\n";
+            $sMsg  = APPDB_ROOT."appview.php?iVersionId=".$this->iVersionId."\n";
             addmsg("Bug Link deleted.", "green");
         }
 
@@ -279,7 +279,7 @@ function view_version_bugs($iVersionId = null, $aBuglinkIds)
     //start format table
     if($_SESSION['current']->isLoggedIn())
     {
-        echo "<form method=post action='appview.php?versionId=".$iVersionId."'>\n";
+        echo "<form method=post action='appview.php?iVersionId=".$iVersionId."'>\n";
     }
     echo html_frame_start("Known bugs","98%",'',0);
     echo "<table width=\"100%\" border=\"0\" cellpadding=\"3\" cellspacing=\"1\">\n\n";
@@ -316,10 +316,10 @@ function view_version_bugs($iVersionId = null, $aBuglinkIds)
         
         if($bCanEdit == true)
         {
-            echo "<td align=center>[<a href='appview.php?sub=delete&buglinkId=".$oBuglink->iLinkId."&versionId=".$oBuglink->iVersionId."'>delete</a>]</td>\n";
+            echo "<td align=center>[<a href='appview.php?sSub=delete&iBuglinkId=".$oBuglink->iLinkId."&iVersionId=".$oBuglink->iVersionId."'>delete</a>]</td>\n";
             if ($oBuglink->bQueued)
             {
-                echo "<td align=center>[<a href='appview.php?sub=unqueue&buglinkId=".$oBuglink->iLinkId."&versionId=".$oBuglink->iVersionId."'>OK</a>]</td>\n";
+                echo "<td align=center>[<a href='appview.php?sSub=unqueue&iBuglinkId=".$oBuglink->iLinkId."&iVersionId=".$oBuglink->iVersionId."'>OK</a>]</td>\n";
             } else
             {
                 echo "<td align=center>Yes</td>\n";
@@ -333,10 +333,10 @@ function view_version_bugs($iVersionId = null, $aBuglinkIds)
     }
     if($_SESSION['current']->isLoggedIn())
     {
-        echo '<input type="hidden" name="versionId" value="'.$iVersionId.'">',"\n";
+        echo '<input type="hidden" name="iVersionId" value="'.$iVersionId.'">',"\n";
         echo '<tr class=color3><td align=center>',"\n";
-        echo '<input type="text" name="buglinkId" value="'.$aClean['buglinkId'].'" size="8"></td>',"\n";
-        echo '<td><input type="submit" name="sub" value="Submit a new bug link."></td>',"\n";
+        echo '<input type="text" name="iBuglinkId" value="'.$aClean['buglinkId'].'" size="8"></td>',"\n";
+        echo '<td><input type="submit" name="sSub" value="Submit a new bug link."></td>',"\n";
         echo '<td colspan=6></td></tr></form>',"\n";
     }
     echo '</table>',"\n";

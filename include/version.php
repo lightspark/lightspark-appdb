@@ -432,7 +432,7 @@ class Version {
                 $sMsg  = "The version you submitted (".$oApp->sName." ".$this->sName.") has been rejected. ";
                 $sMsg .= "Clicking on the link in this email will allow you to modify and resubmit the version. ";
                 $sMsg .= "A link to your queue of applications and versions will also show up on the left hand side of the Appdb site once you have logged in. ";
-                $sMsg .= APPDB_ROOT."appsubmit.php?sub=view&apptype=version&versionId=".$this->iVersionId."\n";
+                $sMsg .= APPDB_ROOT."appsubmit.php?sSub=view&sAppType=version&iVersionId=".$this->iVersionId."\n";
                 $sMsg .= "Reason given:\n";
             break;
             case "delete":
@@ -461,7 +461,7 @@ class Version {
                 if($this->sQueued == "false")
                 {
                     $sSubject = "Version ".$this->sName." of ".$oApp->sName." added by ".$_SESSION['current']->sRealname;
-                    $sMsg  = APPDB_ROOT."appview.php?versionId=".$this->iVersionId."\n";
+                    $sMsg  = APPDB_ROOT."appview.php?iVersionId=".$this->iVersionId."\n";
                     if($this->iSubmitterId)
                     {
                         $oSubmitter = new User($this->iSubmitterId);
@@ -485,7 +485,7 @@ class Version {
             break;
             case "edit":
                 $sSubject =  "'".$oApp->sName." ".$this->sName."' has been modified by ".$_SESSION['current']->sRealname;
-                $sMsg  .= APPDB_ROOT."appview.php?versionId=".$this->iVersionId."\n";
+                $sMsg  .= APPDB_ROOT."appview.php?iVersionId=".$this->iVersionId."\n";
                 addmsg("Version modified.", "green");
             break;
             case "delete":
@@ -502,7 +502,7 @@ class Version {
             break;
             case "reject":
                 $sSubject = "Version '".$this->sName."' of '".$oApp->sName."' has been rejected by ".$_SESSION['current']->sRealname;
-                $sMsg .= APPDB_ROOT."appsubmit.php?apptype=application&sub=view&versionId=".$this->iVersionId."\n";
+                $sMsg .= APPDB_ROOT."appsubmit.php?sAppType=application&sSub=view&iVersionId=".$this->iVersionId."\n";
 
                 // if replyText is set we should report the reason the version was rejected 
                 if($aClean['replyText'])
@@ -529,7 +529,7 @@ class Version {
         echo html_frame_start("Version Form", "90%", "", 0);
         echo "<table width='100%' border=0 cellpadding=2 cellspacing=0>\n";
 
-        echo '<input type="hidden" name="versionId" value='.$this->iVersionId.' />';
+        echo '<input type="hidden" name="iVersionId" value='.$this->iVersionId.' />';
 
         if($editParentApplication)
         {
@@ -537,20 +537,20 @@ class Version {
             $x = new TableVE("view");
             echo '<tr valign=top><td class=color0><b>Application</b></td>', "\n";
             echo '<td>',"\n";
-            $x->make_option_list("appId",$this->iAppId,"appFamily","appId","appName");
+            $x->make_option_list("iAppId",$this->iAppId,"appFamily","appId","appName");
             echo '</td></tr>',"\n";
         } else
         {
-            echo '<input type="hidden" name="appId" value='.$this->iAppId.' />';
+            echo '<input type="hidden" name="iAppId" value='.$this->iAppId.' />';
         }
 
         // version name
         echo '<tr valign=top><td class="color0"><b>Version name</b></td>',"\n";
-        echo '<td><input size="20" type="text" name="versionName" value="'.$this->sName.'"></td></tr>',"\n";
+        echo '<td><input size="20" type="text" name="sVersionName" value="'.$this->sName.'"></td></tr>',"\n";
 
         // version description
         echo '<tr valign=top><td class=color0><b>Version description</b></td>',"\n";
-        echo '<td><p><textarea cols="80" rows="20" id="version_editor" name="versionDescription">',"\n";
+        echo '<td><p><textarea cols="80" rows="20" id="version_editor" name="shVersionDescription">',"\n";
 
         echo $this->sDescription.'</textarea></p></td></tr>',"\n";
 
@@ -563,17 +563,17 @@ class Version {
             echo html_frame_start("Info", "90%", "", 0);
             echo "<table border=0 cellpadding=2 cellspacing=0>\n";
             echo '<tr><td class="color4">Rating</td><td class="color0">',"\n";
-            make_maintainer_rating_list("maintainer_rating", $this->sTestedRating);
+            make_maintainer_rating_list("sMaintainerRating", $this->sTestedRating);
             echo '</td></tr>',"\n";
             echo '<tr><td class=color1>Release</td><td class=color0>',"\n";
-            make_bugzilla_version_list("maintainer_release", $this->sTestedRelease);
+            make_bugzilla_version_list("sMaintainerRelease", $this->sTestedRelease);
             echo '</td></tr>',"\n";
             echo html_table_end();
             echo html_frame_end();
         } else
         {
-            echo '<input type="hidden" name="maintainer_rating" value='.$this->sTestedRating.' />';
-            echo '<input type="hidden" name="maintainer_release" value='.$this->sTestedRelease.' />';
+            echo '<input type="hidden" name="sMaintainerRating" value='.$this->sTestedRating.' />';
+            echo '<input type="hidden" name="sMaintainerRelease" value='.$this->sTestedRelease.' />';
         }
     }
 
@@ -581,15 +581,15 @@ class Version {
     {
         $aClean = array(); //array of filtered user input
 
-        $aClean['versionName'] = makeSafe($_REQUEST['versionName']);
-        $aClean['versionDescription'] = makeSafe($_REQUEST['versionDescription']);
+        $aClean['sVersionName'] = makeSafe($_REQUEST['sVersionName']);
+        $aClean['shVersionDescription'] = makeSafe($_REQUEST['shVersionDescription']);
 
         $errors = "";
 
-        if (empty($aClean['versionName']))
+        if (empty($aClean['sVersionName']))
             $errors .= "<li>Please enter an application version.</li>\n";
 
-        if (empty($aClean['versionDescription']))
+        if (empty($aClean['shVersionDescription']))
             $errors .= "<li>Please enter a version description.</li>\n";
 
         return $errors;
@@ -599,19 +599,19 @@ class Version {
     function GetOutputEditorValues()
     {
         $aClean = array(); //array of filtered user input
-        $aClean['appId'] = makeSafe($_REQUEST['appId']);
-        $aClean['versionId'] = makeSafe($_REQUEST['versionId']);
-        $aClean['versionName'] = makeSafe($_REQUEST['versionName']);
-        $aClean['versionDescription'] = makeSafe($_REQUEST['versionDescription']);
-        $aClean['maintainer_rating'] = makeSafe($_REQUEST['maintainer_rating']);
-        $aClean['maintainer_release'] = makeSafe($_REQUEST['maintainer_release']);
+        $aClean['iAppId'] = makeSafe($_REQUEST['iAppId']);
+        $aClean['iVersionId'] = makeSafe($_REQUEST['iVersionId']);
+        $aClean['sVersionName'] = makeSafe($_REQUEST['sVersionName']);
+        $aClean['shVersionDescription'] = makeSafe($_REQUEST['shVersionDescription']);
+        $aClean['sMaintainerRating'] = makeSafe($_REQUEST['sMaintainerRating']);
+        $aClean['sMaintainerRelease'] = makeSafe($_REQUEST['sMaintainerRelease']);
 
-        $this->iAppId = $aClean['appId'];
-        $this->iVersionId = $aClean['versionId'];
-        $this->sName = $aClean['versionName'];
-        $this->sDescription = $aClean['versionDescription'];
-        $this->sTestedRating = $aClean['maintainer_rating'];
-        $this->sTestedRelease = $aClean['maintainer_release'];
+        $this->iAppId = $aClean['iAppId'];
+        $this->iVersionId = $aClean['iVersionId'];
+        $this->sName = $aClean['sVersionName'];
+        $this->sDescription = $aClean['shVersionDescription'];
+        $this->sTestedRating = $aClean['sMaintainerRating'];
+        $this->sTestedRelease = $aClean['sMaintainerRelease'];
     }
 
     function display()
@@ -713,37 +713,37 @@ class Version {
             /* of this app family? */
             if($_SESSION['current']->isSuperMaintainer($oApp->iAppId))
             {
-                echo '<form method="post" name="message" action="maintainerdelete.php">';
+                echo '<form method="post" name="sMessage" action="maintainerdelete.php">';
                 echo '<input type="submit" value="Remove yourself as a super maintainer" class="button">';
-                echo '<input type="hidden" name="superMaintainer" value="1">';
-                echo "<input type=hidden name=\"appId\" value=\"".$oApp->iAppId."\">";
-                echo "<input type=hidden name=\"versionId\" value=\"".$this->iVersionId."\">";
+                echo '<input type="hidden" name="iSuperMaintainer" value="1">';
+                echo "<input type=hidden name=\"iAppId\" value=\"".$oApp->iAppId."\">";
+                echo "<input type=hidden name=\"iVersionId\" value=\"".$this->iVersionId."\">";
                 echo "</form>";
             } else
             {
                 /* are we already a maintainer? */
                 if($_SESSION['current']->isMaintainer($this->iVersionId)) /* yep */
                 {
-                    echo '<form method="post" name="message" action="maintainerdelete.php">';
+                    echo '<form method="post" name="sMessage" action="maintainerdelete.php">';
                     echo '<input type="submit" value="Remove yourself as a maintainer" class=button>';
-                    echo '<input type="hidden" name="superMaintainer" value="0">';
-                    echo "<input type=hidden name=\"appId\" value=\"".$oApp->iAppId."\">";
-                    echo "<input type=hidden name=\"versionId\" value=\"".$this->iVersionId."\">";
+                    echo '<input type="hidden" name="iSuperMaintainer" value="0">';
+                    echo "<input type=hidden name=\"iAppId\" value=\"".$oApp->iAppId."\">";
+                    echo "<input type=hidden name=\"iVersionId\" value=\"".$this->iVersionId."\">";
                     echo "</form>";
                 } else /* nope */
                 {
-                    echo '<form method="post" name="message" action="maintainersubmit.php">';
+                    echo '<form method="post" name="sMessage" action="maintainersubmit.php">';
                     echo '<input type="submit" value="Be a maintainer for this app" class="button" title="Click here to know more about maintainers.">';
-                    echo "<input type=hidden name=\"appId\" value=\"".$oApp->iAppId."\">";
-                    echo "<input type=hidden name=\"versionId\" value=\"".$this->iVersionId."\">";
+                    echo "<input type=hidden name=\"iAppId\" value=\"".$oApp->iAppId."\">";
+                    echo "<input type=hidden name=\"iVersionId\" value=\"".$this->iVersionId."\">";
                     echo "</form>";
                     $oMonitor = new Monitor();
                     $oMonitor->find($_SESSION['current']->iUserId,
                                     $oApp->iAppId,$this->iVersionId);
                     if(!$oMonitor->iMonitorId)
                     {
-                        echo '<form method=post name=message action=appview.php?versionId='.$this->iVersionId.'&appId='.$oApp->iAppId.'>';
-                        echo '<input type=hidden name="sub" value="StartMonitoring" />';
+                        echo '<form method=post name=sMessage action=appview.php?iVersionId='.$this->iVersionId.'&iAppId='.$oApp->iAppId.'>';
+                        echo '<input type=hidden name="sSub" value="StartMonitoring" />';
                         echo '<input type=submit value="Monitor Version" class="button" />';
                         echo "</form>";
                     }
@@ -752,8 +752,8 @@ class Version {
             
         } else
         {
-            echo '<form method="post" name="message" action="account.php">';
-            echo '<input type="hidden" name="cmd" value="login">';
+            echo '<form method="post" name="sMessage" action="account.php">';
+            echo '<input type="hidden" name="sCmd" value="login">';
             echo '<input type=submit value="Log in to become an app maintainer" class="button">';
             echo '</form>';
         }
@@ -763,13 +763,13 @@ class Version {
         if ($_SESSION['current']->hasPriv("admin") || $_SESSION['current']->isMaintainer($this->iVersionId) || $_SESSION['current']->isSuperMaintainer($this->iAppId))
         {
             echo '<tr><td colspan="2" align="center">';
-            echo '<form method="post" name="message" action="admin/editAppVersion.php">';
-            echo '<input type="hidden" name="appId" value="'.$oApp->iAppId.'" />';
-            echo '<input type="hidden" name="versionId" value="'.$this->iVersionId.'" />';
+            echo '<form method="post" name="sMessage" action="admin/editAppVersion.php">';
+            echo '<input type="hidden" name="iAppId" value="'.$oApp->iAppId.'" />';
+            echo '<input type="hidden" name="iVersionId" value="'.$this->iVersionId.'" />';
             echo '<input type=submit value="Edit Version" class="button" />';
             echo '</form>';
-            $url = BASE."admin/deleteAny.php?what=appVersion&amp;appId=".$oApp->iAppId."&amp;versionId=".$this->iVersionId."&amp;confirmed=yes";
-            echo "<form method=\"post\" name=\"delete\" action=\"javascript:deleteURL('Are you sure?', '".$url."')\">";
+            $url = BASE."admin/deleteAny.php?sWhat=appVersion&amp;iAppId=".$oApp->iAppId."&amp;iVersionId=".$this->iVersionId."&amp;sConfirmed=yes";
+            echo "<form method=\"post\" name=\"sDelete\" action=\"javascript:deleteURL('Are you sure?', '".$url."')\">";
             echo '<input type=submit value="Delete Version" class="button" />';
             echo '</form>';
             echo '<form method="post" name="message" action="admin/addAppNote.php">';
@@ -792,8 +792,8 @@ class Version {
         {
             echo '<tr><td colspan="2" align="center">';
             echo '</form>';
-            echo '<form method=post name=message action=appview.php?versionId='.$this->iVersionId.'>';
-            echo '<input type=hidden name="sub" value="StopMonitoring" />';
+            echo '<form method=post name=sMessage action=appview.php?iVersionId='.$this->iVersionId.'>';
+            echo '<input type=hidden name="sSub" value="StopMonitoring" />';
             echo '<input type=submit value="Stop Monitoring Version" class="button" />';
             echo '</form>';
             echo "</td></tr>";
@@ -811,10 +811,10 @@ class Version {
         {
             $oTest->ShowVersionsTestingTable($this->iVersionId,
                                              $iCurrentTest,
-                                             $_SERVER['PHP_SELF']."?versionId=".$this->iVersionId."&iTestingId=",
+                                             $_SERVER['PHP_SELF']."?iVersionId=".$this->iVersionId."&iTestingId=",
                                              5);
         }
-        echo '<form method=post name=message action=testResults.php?sub=view&iVersionId='.$this->iVersionId.'>';
+        echo '<form method=post name=sMessage action=testResults.php?sSub=view&iVersionId='.$this->iVersionId.'>';
         echo '<input type=submit value="Add Testing Data" class="button" />';
         echo '</form>';
 
@@ -885,7 +885,7 @@ class Version {
             echo "    <td>".$sVendor."</td>\n";
             echo "    <td>".$oApp->sName."</td>\n";
             echo "    <td>".$oVersion->sName."</td>\n";
-            echo "    <td align=\"center\">[<a href=".$_SERVER['PHP_SELF']."?apptype=version&sub=view&versionId=".$oVersion->iVersionId.">process</a>]</td>\n";
+            echo "    <td align=\"center\">[<a href=".$_SERVER['PHP_SELF']."?sAppType=version&sSub=view&iVersionId=".$oVersion->iVersionId.">process</a>]</td>\n";
             echo "</tr>\n\n";
             $c++;
         }
@@ -920,7 +920,7 @@ class Version {
 
                     //display row
                     echo "<tr class=$bgcolor>\n";
-                    echo "    <td><a href=\"".BASE."appview.php?versionId=".$iVersionId."\">".$oVersion->sName."</a></td>\n";
+                    echo "    <td><a href=\"".BASE."appview.php?iVersionId=".$iVersionId."\">".$oVersion->sName."</a></td>\n";
                     echo "    <td>".util_trim_description($oVersion->sDescription)."</td>\n";
                     echo "    <td align=center>".$oVersion->sTestedRating."</td>\n";
                     echo "    <td align=center>".$oVersion->sTestedRelease."</td>\n";

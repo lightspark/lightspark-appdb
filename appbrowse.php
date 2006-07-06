@@ -10,39 +10,39 @@ require(BASE."include/"."category.php");
 
 $aClean = array(); //array of filtered user input
 
-$aClean['catId'] = makeSafe($_REQUEST['catId']);
+$aClean['iCatId'] = makeSafe($_REQUEST['iCatId']);
 
 function admin_menu()
 {
-    if(isset($_REQUEST['catId'])) $iCatId=$_REQUEST['catId'];
+    if(isset($_REQUEST['iCatId'])) $iCatId=$_REQUEST['iCatId'];
     else $iCatId="";
 
     $m = new htmlmenu("Admin");
-    $m->add("Edit this Category", BASE."admin/addCategory.php?catId=$iCatId");
-    $url = BASE."admin/deleteAny.php?what=category&catId=$iCatId&confirmed=yes";
+    $m->add("Edit this Category", BASE."admin/addCategory.php?iCatId=$iCatId");
+    $url = BASE."admin/deleteAny.php?sWhat=category&iCatId=$iCatId&confirmed=yes";
     $m->add("Delete this Category", "javascript:deleteURL(\"Are you sure?\", \"".$url."\")");
 
     $m->done();
 }
 
-if( empty( $aClean['catId'] ) )
+if( empty( $aClean['iCatId'] ) )
 {
-    $aClean['catId'] = 0; // ROOT
+    $aClean['iCatId'] = 0; // ROOT
 }
 
-if( !is_numeric($aClean['catId']) )
+if( !is_numeric($aClean['iCatId']) )
 {
 	util_show_error_page("Something went wrong with the category ID");
 	exit;
 }
 
 // list sub categories
-$cat = new Category($aClean['catId']);
+$cat = new Category($aClean['iCatId']);
 $catFullPath = make_cat_path($cat->getCategoryPath());
 $subs = $cat->aSubcatsIds;
 
 //display admin box
-if($_SESSION['current']->hasPriv("admin") && $aClean['catId'] != 0)
+if($_SESSION['current']->hasPriv("admin") && $aClean['iCatId'] != 0)
     apidb_sidebar_add("admin_menu");
 
 //output header
@@ -78,7 +78,7 @@ if($subs)
 
         //display row
         echo "<tr class=$bgcolor>\n";
-        echo "    <td><a href='appbrowse.php?catId=$iSubcatId'>".$oSubCat->sName."</a></td>\n";
+        echo "    <td><a href='appbrowse.php?iCatId=$iSubcatId'>".$oSubCat->sName."</a></td>\n";
         echo "    <td>$desc &nbsp;</td>\n";
         echo "    <td>$appcount &nbsp;</td>\n";
         echo "</tr>\n\n";
@@ -119,7 +119,7 @@ if($apps)
 	
         //display row
         echo "<tr class=$bgcolor>\n";
-        echo "    <td><a href='appview.php?appId=$iAppId'>".$oApp->sName."</a></td>\n";
+        echo "    <td><a href='appview.php?iAppId=$iAppId'>".$oApp->sName."</a></td>\n";
         echo "    <td>$desc &nbsp;</td>\n";
         echo "    <td>".sizeof($oApp->aVersionsIds)."</td>\n";
         echo "</tr>\n\n";
@@ -130,7 +130,7 @@ if($apps)
 }
 
 // Disabled for now
-//if ($aClean['catId'] != 0)
+//if ($aClean['iCatId'] != 0)
 //{
 //	log_category_visit($cat->id);
 //}

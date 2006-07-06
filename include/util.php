@@ -284,7 +284,7 @@ function outputTopXRow($oRow)
     $img = get_screenshot_img(null, $oRow->versionId, false); // image, disable extra formatting
     echo '
     <tr class="white">
-      <td class="app_name"><a href="appview.php?versionId='.$oRow->versionId.'">'.$oApp->sName.' '.$oVersion->sName.'</a></td>
+      <td class="app_name"><a href="appview.php?iVersionId='.$oRow->versionId.'">'.$oApp->sName.' '.$oVersion->sName.'</a></td>
       <td>'.util_trim_description($oApp->sDescription).'</td>
       <td><center>'.$img.'</center></td>
     </tr>';
@@ -555,7 +555,7 @@ function outputSearchTableForhResult($search_words, $hResult)
 		
             //display row
             echo "<tr class=$bgcolor>\n";
-            echo "    <td>".html_ahref($oRow->appName,BASE."appview.php?appId=$oRow->appId")."</td>\n";
+            echo "    <td>".html_ahref($oRow->appName,BASE."appview.php?iAppId=$oRow->appId")."</td>\n";
             echo "    <td>".util_trim_description($oRow->description)."</td>\n";
             echo "    <td>$y->versions &nbsp;</td>\n";
             echo "</tr>\n\n";
@@ -575,55 +575,55 @@ function process_app_version_changes($isVersion)
 {
     /* load up the version or application depending on which values are set */
     if($isVersion)
-        $oVersion = new Version($_REQUEST['versionId']);
+        $oVersion = new Version($_REQUEST['iVersionId']);
     else
-        $oApp = new Application($_REQUEST['appId']);
+        $oApp = new Application($_REQUEST['iAppId']);
 
     // commit changes of form to database
-    if(($_REQUEST['submit'] == "Update Database") && $isVersion) /* is a version */
+    if(($_REQUEST['sSubmit'] == "Update Database") && $isVersion) /* is a version */
     {
         $oVersion->GetOutputEditorValues();
         $oVersion->update();
-    } else if(($_REQUEST['submit'] == "Update Database") && !$isVersion) /* is an application */
+    } else if(($_REQUEST['sSubmit'] == "Update Database") && !$isVersion) /* is an application */
     {
         $oApp->GetOutputEditorValues();
         $oApp->update();
-    } else if($_REQUEST['submit'] == "Update URL")
+    } else if($_REQUEST['sSubmit'] == "Update URL")
     {
         $sWhatChanged = "";
         $bAppChanged = false;
 
-        if (!empty($_REQUEST['url_desc']) && !empty($_REQUEST['url']) )
+        if (!empty($_REQUEST['sUrlDesc']) && !empty($_REQUEST['sUrl']) )
         {
             // process added URL
-            if($_SESSION['current']->showDebuggingInfos()) { echo "<p align=center><b>{$_REQUEST['url']}:</b> {$_REQUEST['url_desc']} </p>"; }
+            if($_SESSION['current']->showDebuggingInfos()) { echo "<p align=center><b>{$_REQUEST['sUrl']}:</b> {$_REQUEST['sUrlDesc']} </p>"; }
 
             if($isVersion)
             {
                 $hResult = query_parameters("INSERT INTO appData (versionId, type, description, url) ".
                                             "VALUES ('?', '?', '?', '?')",
-                                            $_REQUEST['versionId'], "url", $_REQUEST['url_desc'],
-                                            $_REQUEST['url']);
+                                            $_REQUEST['iVersionId'], "url", $_REQUEST['sUrlDesc'],
+                                            $_REQUEST['sUrl']);
             } else
             {
                 $hResult = query_parameters("INSERT INTO appData (appId, type, description, url) ".
                                             "VALUES ('?', '?', '?', '?')",
-                                            $_REQUEST['appId'], "url", $_REQUEST['url_desc'],
-                                            $_REQUEST['url']);
+                                            $_REQUEST['iAppId'], "url", $_REQUEST['sUrlDesc'],
+                                            $_REQUEST['sUrl']);
             
             }
             
             if ($hResult)
             {
                 addmsg("The URL was successfully added into the database", "green");
-                $sWhatChanged .= "  Added Url:     Description: ".stripslashes($_REQUEST['url_desc'])."\n";
-                $sWhatChanged .= "                         Url: ".stripslashes($_REQUEST['url'])."\n";
+                $sWhatChanged .= "  Added Url:     Description: ".stripslashes($_REQUEST['sUrlDesc'])."\n";
+                $sWhatChanged .= "                         Url: ".stripslashes($_REQUEST['sUrl'])."\n";
                 $bAppChanged = true;
             }
         }
         
         // Process changed URLs  
-        for($i = 0; $i < $_REQUEST['rows']; $i++)
+        for($i = 0; $i < $_REQUEST['iRows']; $i++)
         {
             if($_SESSION['current']->showDebuggingInfos()) { echo "<p align=center><b>{$_REQUEST['adescription'][$i]}:</b> {$_REQUEST['aURL'][$i]}: {$_REQUEST['adelete'][$i]} : {$_REQUEST['aId'][$i]} : .{$_REQUEST['aOldDesc'][$i]}. : {$_REQUEST['aOldURL'][$i]}</p>"; }
 
@@ -663,8 +663,8 @@ function process_app_version_changes($isVersion)
         }
         if ($bAppChanged)
         {
-            $sEmail = User::get_notify_email_address_list($_REQUEST['appId']);
-            $oApp = new Application($_REQUEST['appId']);
+            $sEmail = User::get_notify_email_address_list($_REQUEST['iAppId']);
+            $oApp = new Application($_REQUEST['iAppId']);
             if($sEmail)
             {
                 if($isVersion)
@@ -672,7 +672,7 @@ function process_app_version_changes($isVersion)
                 else
                     $sSubject = "Links for ".$oApp->sName." have been updated by ".$_SESSION['current']->sRealname;
                     
-                $sMsg  = APPDB_ROOT."appview.php?appId=".$_REQUEST['appId']."\n";
+                $sMsg  = APPDB_ROOT."appview.php?iAppId=".$_REQUEST['iAppId']."\n";
                 $sMsg .= "\n";
                 $sMsg .= "The following changes have been made:";
                 $sMsg .= "\n";

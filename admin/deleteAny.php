@@ -16,13 +16,13 @@ require_once(BASE."include/testResults.php");
 
 $aClean = array(); //filtered user input
 
-$aClean['confirmed'] = makeSafe($_REQUEST['confirmed']);
-$aClean['what'] = makeSafe($_REQUEST['what']);
-$aClean['catId'] = makeSafe($_REQUEST['catId']);
-$aClean['appId'] = makeSafe($_REQUEST['appId']);
-$aClean['versionId'] = makeSafe($_REQUEST['versionId']);
+$aClean['sConfirmed'] = makeSafe($_REQUEST['sConfirmed']);
+$aClean['sWhat'] = makeSafe($_REQUEST['sWhat']);
+$aClean['iCatId'] = makeSafe($_REQUEST['iCatId']);
+$aClean['iAppId'] = makeSafe($_REQUEST['iAppId']);
+$aClean['iVersionId'] = makeSafe($_REQUEST['iVersionId']);
 
-if($aClean['confirmed'] != "yes")
+if($aClean['sConfirmed'] != "yes")
 {
     // ask for confirmation
     // could do some Real Damage if someone accidently hits the delete button on the main category :)
@@ -32,13 +32,13 @@ if($aClean['confirmed'] != "yes")
     util_show_error_page("Not confirmed");
 }
 
-if($aClean['what'])
+if($aClean['sWhat'])
 {
-    switch($aClean['what'])
+    switch($aClean['sWhat'])
     {
     case "category":
         // delete category and the apps in it
-        $oCategory = new Category($aClean['catId']);
+        $oCategory = new Category($aClean['iCatId']);
         if(!$oCategory->delete())
             util_show_error_page();
         else
@@ -46,18 +46,18 @@ if($aClean['what'])
         break;
     case "appFamily":
         // delete app family & all its versions
-        $oApp = new Application($aClean['appId']);
+        $oApp = new Application($aClean['iAppId']);
         if(!$oApp->delete())
             util_show_error_page();
         else
             redirect(BASE."appbrowse.php");
         break;
     case "appVersion":
-        $oVersion = new Version($aClean['versionId']);
+        $oVersion = new Version($aClean['iVersionId']);
         if(!$oVersion->delete())
             util_show_error_page();
         else
-            redirect(BASE."appview.php?appId=".$aClean['appId']);
+            redirect(BASE."appview.php?iAppId=".$aClean['iAppId']);
         break;
     }
 }

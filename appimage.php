@@ -9,9 +9,9 @@ require_once(BASE."include/"."screenshot.php");
 
 $aClean = array(); //array of filtered user input
 
-$aClean['id'] = makeSafe($_REQUEST['id']);
-$aClean['REQUEST_METHOD'] = makeSafe($_REQUEST['REQUEST_METHOD']);
-$aClean['thumbnail'] = makeSafe($_REQUEST['thumbnail']);
+$aClean['iId'] = makeSafe($_REQUEST['iId']);
+$aClean['sREQUEST_METHOD'] = makeSafe($_REQUEST['sREQUEST_METHOD']);
+$aClean['bThumbnail'] = makeSafe($_REQUEST['bThumbnail']);
 
 /* an image doesn't have a link, so a cookie makes no sense */
 header("Set-Cookie: ");
@@ -19,16 +19,16 @@ header("Pragma: ");
 
 /* if the user isn't supposed to be viewing this image */
 /* display an error message and exit */
-if(!$_SESSION['current']->canViewImage($aClean['id']))
+if(!$_SESSION['current']->canViewImage($aClean['iId']))
 {
     util_show_error_page("Insufficient privileges.");
     exit;
 }
 
-if ($aClean['REQUEST_METHOD']='HEAD')
+if ($aClean['sREQUEST_METHOD']='HEAD')
 {
    /* WARNING! optimization of logic in include/screenshots.php */
-   if (sscanf($aClean['id'],"%d", &$iId) < 1)
+   if (sscanf($aClean['iId'],"%d", &$iId) < 1)
    {
       util_show_error_page("Bad parameter");
       exit;
@@ -72,12 +72,12 @@ if ($aClean['REQUEST_METHOD']='HEAD')
    header("Expires: ");
    header("Last-Modified: ".fHttpDate($iModTime));
 }
-$oScreenshot = new Screenshot($aClean['id']);
+$oScreenshot = new Screenshot($aClean['iId']);
 
 /* at this point, we know that .../screenshots/$id and
  *  .../screenshots/thumbnails/$id both exist as normally 
  *  they would both be created at the same time. */
-$fstat_val = stat(appdb_fullpath("data/screenshots/".$aClean['id']));
+$fstat_val = stat(appdb_fullpath("data/screenshots/".$aClean['iId']));
 $iModTime = $fstat_val['mtime'];
 
 header("Cache-Control: public");
@@ -95,7 +95,7 @@ if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) &&
 
 header("Last-Modified: ".fHttpDate($iModTime));
 
-if(!$aClean['thumbnail'])
+if(!$aClean['bThumbnail'])
     $oScreenshot->oScreenshotImage->output_to_browser(1);
 else
     $oScreenshot->oThumbnailImage->output_to_browser(1);

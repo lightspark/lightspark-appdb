@@ -106,12 +106,12 @@ class Monitor {
                 {
                     $sSubject = "Monitor for ".$sAppName;
                     $sSubject .= " added: ".$_SESSION['current']->sRealname;
-                    $sMsg .= APPDB_ROOT."appview.php?versionId=".$this->iVersionId."\n";
+                    $sMsg .= APPDB_ROOT."appview.php?iVersionId=".$this->iVersionId."\n";
                     addmsg("You will now recieve an email whenever changes are made to this Application version.", "green");
                 } else
                 {
                     $sSubject = "Monitor for ".$sAppName." added: ".$_SESSION['current']->sRealname;
-                    $sMsg .= APPDB_ROOT."appview.php?appId=".$this->iAppid."\n";
+                    $sMsg .= APPDB_ROOT."appview.php?iAppId=".$this->iAppid."\n";
                     addmsg("You will now recieve an email whenever changes are made to this Application.", "green");
                 } 
             break;
@@ -120,12 +120,12 @@ class Monitor {
                 {
                     $sSubject = "Monitor for ".$sAppName;
                     $sSubject .= " removed: ".$_SESSION['current']->sRealname;
-                    $sMsg .= APPDB_ROOT."appview.php?versionId=".$this->iVersionId."\n";
+                    $sMsg .= APPDB_ROOT."appview.php?iVersionId=".$this->iVersionId."\n";
                     addmsg("You will no longer recieve an email whenever changes are made to this Application version.", "green");
                 } else
                 {
                     $sSubject = "Monitor for ".$sAppName." removed: ".$_SESSION['current']->sRealname;
-                    $sMsg .= APPDB_ROOT."appview.php?appId=".$this->iAppid."\n";
+                    $sMsg .= APPDB_ROOT."appview.php?iAppId=".$this->iAppid."\n";
                     addmsg("You will no longer recieve an email whenever changes are made to this Application.", "green");
                 } 
             break;

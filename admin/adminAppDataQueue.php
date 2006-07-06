@@ -11,12 +11,12 @@ require(BASE."include/application.php");
 
 $aClean = array(); //array of user input
 
-$aClean['id'] = makeSafe($_REQUEST['id']);
-$aClean['sub'] = makeSafe($_REQUEST['sub']);
-$aClean['add'] = makeSafe($_REQUEST['add']);
-$aClean['description'] = makeSafe($_REQUEST['description']);
-$aClean['replyText'] = makeSafe($_REQUEST['replyText']);
-$aClean['reject'] = makeSafe($_REQUEST['reject']);
+$aClean['iId'] = makeSafe($_REQUEST['iId']);
+$aClean['sSub'] = makeSafe($_REQUEST['sSub']);
+$aClean['sAdd'] = makeSafe($_REQUEST['sAdd']);
+$aClean['sDescription'] = makeSafe($_REQUEST['sDescription']);
+$aClean['sReplyText'] = makeSafe($_REQUEST['sReplyText']);
+$aClean['sReject'] = makeSafe($_REQUEST['sReject']);
 
 // deny access if not admin or at least some kind of maintainer
 if(!$_SESSION['current']->hasPriv("admin") && !$_SESSION['current']->isMaintainer())
@@ -26,7 +26,7 @@ if(!$_SESSION['current']->hasPriv("admin") && !$_SESSION['current']->isMaintaine
 }
 
 // shows the list of appdata in queue
-if (!$aClean['id'])
+if (!$aClean['iId'])
 {
     apidb_header("Admin Application Data Queue");
 
@@ -76,7 +76,7 @@ if (!$aClean['id'])
             echo "<td>".Application::lookup_name($oRow->appId)."</td>\n";
             echo "<td>".Version::lookup_name($oRow->versionId)."</td>\n";
             echo "<td>".$oRow->type."</td>\n";
-            echo "<td align=\"center\">[<a href='adminAppDataQueue.php?id=$oRow->id'>process</a>]</td>\n";
+            echo "<td align=\"center\">[<a href='adminAppDataQueue.php?iId=$oRow->id'>process</a>]</td>\n";
             echo "</tr>\n\n";
             $c++;
         }
@@ -85,14 +85,14 @@ if (!$aClean['id'])
     }      
 } else // shows a particular appdata
 {
-    $hResult = $_SESSION['current']->getAppDataQuery($aClean['id'], false, false);
+    $hResult = $_SESSION['current']->getAppDataQuery($aClean['iId'], false, false);
     $obj_row = mysql_fetch_object($hResult);
     
-    if(!$aClean['sub']=="inside_form")
+    if(!$aClean['sSub']=="inside_form")
     {       
         apidb_header("Admin Application Data Queue");
 
-        echo '<form name="qform" action="adminAppDataQueue.php" method="post">',"\n";
+        echo '<form name="sQform" action="adminAppDataQueue.php" method="post">',"\n";
         // help
         echo "<div align=center><table width='90%' border=0 cellpadding=3 cellspacing=0><tr><td>\n\n";
         echo "Please enter an accurate and personalized reply anytime a submitted scrrenshot is rejected.\n";
@@ -113,7 +113,7 @@ if (!$aClean['id'])
          
         //dataDescription
         echo '<tr valign=top><td class=color0><b>Description</b></td>',"\n";
-        echo '<td><textarea name="description" rows=10 cols=35>'.stripslashes($obj_row->description).'</textarea></td></tr>',"\n";
+        echo '<td><textarea name="sDescription" rows=10 cols=35>'.stripslashes($obj_row->description).'</textarea></td></tr>',"\n";
         
         //data
         if($obj_row->type == "image") 
@@ -121,16 +121,16 @@ if (!$aClean['id'])
            $oScreenshot = new Screenshot($obj_row->id);
            echo '<tr valign=top><td class=color0><b>Submited image</b></td>',"\n";
            echo '<td>';
-           $imgSRC = '<img width="'.$oScreenshot->oThumbnailImage->width.'" height="'.$oScreenshot->oThumbnailImage->height.'" src="../appimage.php?queued=true&id='.$obj_row->id.'" />';
+           $imgSRC = '<img width="'.$oScreenshot->oThumbnailImage->width.'" height="'.$oScreenshot->oThumbnailImage->height.'" src="../appimage.php?bQueued=true&iId='.$obj_row->id.'" />';
            // generate random tag for popup window
            $randName = User::generate_passwd(5);
            // set image link based on user pref
-           $img = '<a href="javascript:openWin(\'../appimage.php?queued=true&id='.$obj_row->id.'\',\''.$randName.'\','.$oScreenshot->oScreenshotImage->width.','.($oScreenshot->oScreenshotImage->height+4).');">'.$imgSRC.'</a>';
+           $img = '<a href="javascript:openWin(\'../appimage.php?bQueued=true&iId='.$obj_row->id.'\',\''.$randName.'\','.$oScreenshot->oScreenshotImage->width.','.($oScreenshot->oScreenshotImage->height+4).');">'.$imgSRC.'</a>';
            if ($_SESSION['current']->isLoggedIn())
            {
                if ($_SESSION['current']->getpref("window:screenshot") == "no")
                { 
-                   $img = '<a href="../appimage.php?queued=true&id='.$obj_row->id.'">'.$imgSRC.'</a>';
+                   $img = '<a href="../appimage.php?bQueued=true&iId='.$obj_row->id.'">'.$imgSRC.'</a>';
                }
            }
            echo $img;
@@ -138,26 +138,26 @@ if (!$aClean['id'])
         } elseif($obj_row->type == "url")
         {
             echo '<tr valign=top><td class=color0><b>Submitted link</b></td>',"\n";
-            echo '<td><textarea name="content" rows=10 cols=35>'.stripslashes($obj_row->url).'</textarea></td></tr>',"\n";
+            echo '<td><textarea name="sContent" rows=10 cols=35>'.stripslashes($obj_row->url).'</textarea></td></tr>',"\n";
         }
 
         //email response
         echo '<tr valign=top><td class=color0><b>Email reply</b></td>',"\n";
-        echo "<td><textarea name='replyText' rows=10 cols=35>Enter a personalized reason for acceptance or rejection of the submitted application data here</textarea></td></tr>\n";
+        echo "<td><textarea name='sReplyText' rows=10 cols=35>Enter a personalized reason for acceptance or rejection of the submitted application data here</textarea></td></tr>\n";
 
         /* Add button */
         echo '<tr valign=top><td class=color3 align=center colspan=2>' ,"\n";
-        echo '<input type=submit name=add value=" Add data to this application " class=button /> </td></tr>',"\n";
+        echo '<input type=submit name=sAdd value=" Add data to this application " class=button /> </td></tr>',"\n";
 
         /* Reject button */
         echo '<tr valign=top><td class=color3 align=center colspan=2>' ,"\n";
-        echo '<input type=submit name=reject value=" Reject this request " class=button /></td></tr>',"\n";
+        echo '<input type=submit name=sReject value=" Reject this request " class=button /></td></tr>',"\n";
 
         echo '</table>',"\n";
-        echo '<input type=hidden name="sub" value="inside_form" />',"\n"; 
-        echo '<input type=hidden name="id" value="'.$aClean['id'].'" />',"\n";  
+        echo '<input type=hidden name="sSub" value="inside_form" />',"\n"; 
+        echo '<input type=hidden name="iId" value="'.$aClean['iId'].'" />',"\n";  
         echo '</form>';
-    } elseif ($aClean['add']) // we accepted the request
+    } elseif ($aClean['sAdd']) // we accepted the request
     { 
         $statusMessage = "";
          $goodtogo = 0;
@@ -172,7 +172,7 @@ if (!$aClean['id'])
             $hResult = query_parameters("INSERT INTO appData (id, appId, versionId, type, ".
                                         "description, url) VALUES (?, '?', '?', '?', '?', '?')",
                                         "null", $obj_row->appId, $obj_row->versionId,
-                                        "url", $aClean['description'], $obj_row->url);
+                                        "url", $aClean['sDescription'], $obj_row->url);
             if($hResult)
             {
                 $statusMessage = "<p>The application data was successfully added into the database</p>\n";
@@ -186,7 +186,7 @@ if (!$aClean['id'])
                 {
                     $sSubject =  "Application Data Request Report";
                     $sMsg  = "Your submission of an application data for ".Application::lookup_name($obj_row->appId).Version::lookup_name($obj_row->versionId)." has been accepted. ";
-                    $sMsg .= $aClean['replyText'];
+                    $sMsg .= $aClean['sReplyText'];
                     $sMsg .= "We appreciate your help in making the Application Database better for all users.\r\n";
                 
                     mail_appdb($oUser->sEmail, $sSubject ,$sMsg);
@@ -194,7 +194,7 @@ if (!$aClean['id'])
             }
         }
         redirect(apidb_fullurl("admin/adminAppDataQueue.php"));
-    } elseif ($aClean['reject'])
+    } elseif ($aClean['sReject'])
     {
         if($obj_row->type == "image")
         { 
@@ -208,7 +208,7 @@ if (!$aClean['id'])
             {
                 $sSubject =  "Application Data Request Report";
                 $sMsg  = "Your submission of an application data for ".Application::lookup_name($obj_row->appId).Version::lookup_name($obj_row->versionId)." was rejected. ";
-                $sMsg .= $aClean['replyText'];
+                $sMsg .= $aClean['sReplyText'];
                 mail_appdb($oUser->sEmail, $sSubject ,$sMsg); 
             }
 

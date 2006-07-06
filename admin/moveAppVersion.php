@@ -7,11 +7,11 @@ require(BASE."include/mail.php");
 
 $aClean = array(); //array of filtered user input
 
-$aClean['appId'] = makeSafe($_REQUEST['appId']);
-$aClean['versionId'] = makeSafe($_REQUEST['versionId']);
-$aClean['action'] = makeSafe($_REQUEST['action']);
+$aClean['iAppId'] = makeSafe($_REQUEST['iAppId']);
+$aClean['iVersionId'] = makeSafe($_REQUEST['iVersionId']);
+$aClean['sAction'] = makeSafe($_REQUEST['sAction']);
 
-if(!is_numeric($aClean['appId']) OR !is_numeric($aClean['versionId']))
+if(!is_numeric($aClean['iAppId']) OR !is_numeric($aClean['iVersionId']))
 {
     util_show_error_page("Wrong ID");
     exit;
@@ -24,28 +24,28 @@ if(!$_SESSION['current']->hasPriv("admin"))
     exit;
 }
 
-if(!empty($aClean['action']))
+if(!empty($aClean['sAction']))
 {
     /* move this version to the given application */
-    $oVersion = new Version($aClean['versionId']);
-    $oVersion->update(null, null, null, null, $aClean['appId']);
+    $oVersion = new Version($aClean['iVersionId']);
+    $oVersion->update(null, null, null, null, $aClean['iAppId']);
 
     /* redirect to the application we just moved this version to */
-    redirect(apidb_fullurl("appview.php?appId=".$aClean['appId']));
+    redirect(apidb_fullurl("appview.php?iAppId=".$aClean['iAppId']));
 } else /* or display the webform for making changes */
 {
 ?>
 <link rel="stylesheet" href="./application.css" type="text/css">
 <?php
-    $oVersion = new Version($aClean['versionId']);
+    $oVersion = new Version($aClean['iVersionId']);
     $oApp = new Application($oVersion->iAppId);
 
     apidb_header("Choose application to move this version under");
 
     echo "<form method=post action='moveAppVersion.php'>\n";
     echo html_frame_start("Move ".$oApp->sName." ".$oVersion->sName, "90%","",0);
-    echo '<input type="hidden" name="appId" value='.$oVersion->iAppId.' />';
-    echo '<input type="hidden" name="versionId" value='.$oVersion->iVersionId.' />';
+    echo '<input type="hidden" name="iAppId" value='.$oVersion->iAppId.' />';
+    echo '<input type="hidden" name="iVersionId" value='.$oVersion->iVersionId.' />';
 
 
     /* build a table of applications and their versions */
@@ -65,9 +65,9 @@ if(!empty($aClean['action']))
         {
             $currentAppId = $oRow->appId;
             echo '<tr style="background: #CCDDFF; border: thin solid; font-weight:bold;"><td align="left" style="padding-left:20px;">';
-            $url = BASE."appview.php?appId=".$oRow->appId;
+            $url = BASE."appview.php?iAppId=".$oRow->appId;
             echo '<a href="'.$url.'">'.substr($oRow->appName, 0, 30).'</a></td><td> - '.$oRow->appId.'</td>';
-            echo "<td style='padding-left:20px;'><a href='moveAppVersion.php?action=move&versionId=$oVersion->iVersionId&appId=$oRow->appId'>Move here</a></td></tr>";
+            echo "<td style='padding-left:20px;'><a href='moveAppVersion.php?sAction=move&iVersionId=$oVersion->iVersionId&iAppId=$oRow->appId'>Move here</a></td></tr>";
             echo '<tr style="border-left: thin solid; border-right:thin solid; background: #FAFBE2;"><td style="padding-left:40px;" colspan="3" align="left">'.$oRow->versionName.'</td></tr>';
         } else /* just add another version */
         {
@@ -79,7 +79,7 @@ if(!empty($aClean['action']))
     echo html_table_end();
     echo html_frame_end();
     echo "</form>";
-    echo html_back_link(1, BASE."appview.php?versionId=".$oVersion->iVersionId);
+    echo html_back_link(1, BASE."appview.php?iVersionId=".$oVersion->iVersionId);
     apidb_footer();
 }
 ?>

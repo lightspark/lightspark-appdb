@@ -13,10 +13,10 @@ require_once(BASE."include/distributions.php");
 
 $aClean = array();
 
-$aClean['sub'] = makeSafe($_REQUEST['sub']);
+$aClean['sSub'] = makeSafe($_REQUEST['sSub']);
 $aClean['iTestingId'] = makeSafe($_REQUEST['iTestingId']);
 
-if ($aClean['sub'])
+if ($aClean['sSub'])
 {
     $oTest = new testData($aClean['iTestingId']);
     $oVersion = new Version($oTest->iVersionId);
@@ -26,26 +26,26 @@ if ($aClean['sub'])
         exit;
     }
 
-    if(($aClean['sub'] == 'Submit') || ($aClean['sub'] == 'Save') ||
-       ($aClean['sub'] == 'Reject') || ($aClean['sub'] == 'Delete'))
+    if(($aClean['sSub'] == 'Submit') || ($aClean['sSub'] == 'Save') ||
+       ($aClean['sSub'] == 'Reject') || ($aClean['sSub'] == 'Delete'))
     {
         if(is_numeric($aClean['iTestingId']))
         {
             $oTest = new testData($aClean['iTestingId']);
             $oTest->GetOutputEditorValues();
 
-            if($aClean['sub'] == 'Submit')        // submit the testing results
+            if($aClean['sSub'] == 'Submit')        // submit the testing results
             {
                 $oTest->update(true);
                 $oTest->unQueue();
-            } else if($aClean['sub'] == 'Save')   // save the testing results
+            } else if($aClean['sSub'] == 'Save')   // save the testing results
             {
                 $oTest->update();
-            } else if($aClean['sub'] == 'Reject') // reject testing results
+            } else if($aClean['sSub'] == 'Reject') // reject testing results
             {
                 $oTest->update(true);
                 $oTest->Reject();
-            } else if($aClean['sub'] == 'Delete') // delete testing results
+            } else if($aClean['sSub'] == 'Delete') // delete testing results
             {
                 $oTest->delete();
             }
@@ -62,7 +62,7 @@ if ($aClean['sub'])
     $oApp = new application($oVersion->iAppId);
     $sVersionInfo = $oApp->sName." ".$oVersion->sName;
 
-    if ($aClean['sub'] == 'view')
+    if ($aClean['sSub'] == 'view')
     {
         switch($oTest->sQueued)
         {
@@ -76,7 +76,7 @@ if ($aClean['sub'])
             apidb_header("Edit testing results for ".$sVersionInfo);
             break;
         }
-        echo '<form name="qform" action="'.$_SERVER['PHP_SELF'].'" method="post" enctype="multipart/form-data">',"\n";
+        echo '<form name="sQform" action="'.$_SERVER['PHP_SELF'].'" method="post" enctype="multipart/form-data">',"\n";
         // View Testing Details
         echo "<table width='100%' border=0 cellpadding=2 cellspacing=0>\n";
 
@@ -107,7 +107,7 @@ if ($aClean['sub'])
         echo html_frame_start("Reply text", "90%", "", 0);
         echo "<table width='100%' border=0 cellpadding=2 cellspacing=0>\n";
         echo '<tr valign=top><td class="color0"><b>email Text</b></td>',"\n";
-        echo '<td><textarea name="replyText" style="width: 100%" cols="80" rows="10"></textarea></td></tr>',"\n";
+        echo '<td><textarea name="sReplyText" style="width: 100%" cols="80" rows="10"></textarea></td></tr>',"\n";
 
         echo '<tr valign=top><td class=color3 align=center colspan=2>' ,"\n";
 
@@ -115,18 +115,18 @@ if ($aClean['sub'])
         switch($oTest->sQueued)
         {
         case "false":
-            echo '<input name="sub" type="submit" value="Save" class="button" >&nbsp',"\n";
-            echo '<input name="sub" type="submit" value="Delete" class="button" >',"\n";
+            echo '<input name="sSub" type="submit" value="Save" class="button" >&nbsp',"\n";
+            echo '<input name="sSub" type="submit" value="Delete" class="button" >',"\n";
             break;
         case "true":
-            echo '<input name="sub" type="submit" value="Submit" class="button" >&nbsp',"\n";
-            echo '<input name="sub" type="submit" value="Reject" class="button" >&nbsp',"\n";
-            echo '<input name="sub" type="submit" value="Delete" class="button" >',"\n";
+            echo '<input name="sSub" type="submit" value="Submit" class="button" >&nbsp',"\n";
+            echo '<input name="sSub" type="submit" value="Reject" class="button" >&nbsp',"\n";
+            echo '<input name="sSub" type="submit" value="Delete" class="button" >',"\n";
             break;
         case "rejected":
-            echo '<input name="sub" type="submit" value="Submit" class="button" >&nbsp',"\n";
-            echo '<input name="sub" type="submit" value="Save" class="button" >&nbsp',"\n";
-            echo '<input name="sub" type="submit" value="Delete" class="button" >',"\n";
+            echo '<input name="sSub" type="submit" value="Submit" class="button" >&nbsp',"\n";
+            echo '<input name="sSub" type="submit" value="Save" class="button" >&nbsp',"\n";
+            echo '<input name="sSub" type="submit" value="Delete" class="button" >',"\n";
             break;
         }
         echo '</td></tr>',"\n";
@@ -144,7 +144,7 @@ if ($aClean['sub'])
         redirect($_SERVER['PHP_SELF']);
     } 
 }
-else // if ($aClean['sub']) is not defined, display the Testing results queue page 
+else // if ($aClean['sSub']) is not defined, display the Testing results queue page 
 {
     $oTest = new TestData();
     apidb_header("Testing Results");

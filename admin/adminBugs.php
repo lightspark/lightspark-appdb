@@ -13,11 +13,11 @@ require(BASE."include/mail.php");
 
 $aClean = array(); //array of filtered user input
 
-$aClean['sub'] = makeSafe($_REQUEST['sub']);
-$aClean['buglinkId'] = makeSafe($_REQUEST['buglinkId']);
-$aClean['ItemsPerPage'] = makeSafe($_REQUEST['ItemsPerPage']);
-$aClean['QueuedOnly'] = makeSafe($_REQUEST['QueuedOnly']);
-$aClean['page'] = makeSafe($_REQUEST['page']);
+$aClean['sSub'] = makeSafe($_REQUEST['sSub']);
+$aClean['iBuglinkId'] = makeSafe($_REQUEST['iBuglinkId']);
+$aClean['iItemsPerPage'] = makeSafe($_REQUEST['iItemsPerPage']);
+$aClean['sQueuedOnly'] = makeSafe($_REQUEST['sQueuedOnly']);
+$aClean['iPage'] = makeSafe($_REQUEST['iPage']);
 
 
 // deny access if not logged in
@@ -27,19 +27,19 @@ if(!$_SESSION['current']->hasPriv("admin"))
     exit;
 }
 
-if ($aClean['sub'])
+if ($aClean['sSub'])
 {
-    if(($aClean['sub'] == 'delete' ) && ($aClean['buglinkId']))
+    if(($aClean['sSub'] == 'delete' ) && ($aClean['iBuglinkId']))
     {
-        $oBuglink = new bug($aClean['buglinkId']);
+        $oBuglink = new bug($aClean['iBuglinkId']);
         $oBuglink->delete();
     }
-    if(($aClean['sub'] == 'unqueue' ) && ($aClean['buglinkId']))
+    if(($aClean['sSub'] == 'unqueue' ) && ($aClean['iBuglinkId']))
     {
-        $oBuglink = new bug($aClean['buglinkId']);
+        $oBuglink = new bug($aClean['iBuglinkId']);
         $oBuglink->unqueue();
     }
-    redirect($_SERVER['PHP_SELF']."?ItemsPerPage=".$aClean['ItemsPerPage']."&QueuedOnly=".$aClean['QueuedOnly']."&page=".$aClean['page']);
+    redirect($_SERVER['PHP_SELF']."?iItemsPerPage=".$aClean['iItemsPerPage']."&sQueuedOnly=".$aClean['sQueuedOnly']."&ipage=".$aClean['iPage']);
     exit;
 }
 
@@ -49,13 +49,13 @@ if ($aClean['sub'])
     $pageRange = 10;
     $ItemsPerPage = 10;
     $currentPage = 1;
-    $QueuedOnly = empty($aClean['QueuedOnly'])? NULL: $aClean['QueuedOnly'];
+    $QueuedOnly = empty($aClean['sQueuedOnly'])? NULL: $aClean['sQueuedOnly'];
     $BugLinks = ($QueuedOnly == 'on')?getNumberOfQueuedBugLinks():getNumberOfBugLinks();
-    if($aClean['ItemsPerPage'])
-        $ItemsPerPage = $aClean['ItemsPerPage'];
+    if($aClean['iItemsPerPage'])
+        $ItemsPerPage = $aClean['iItemsPerPage'];
 
-    if($aClean['page'])
-        $currentPage = $aClean['page'];
+    if($aClean['iPage'])
+        $currentPage = $aClean['iPage'];
 
     $ItemsPerPage = min($ItemsPerPage,100);
     $totalPages = max(ceil($BugLinks/$ItemsPerPage),1);
@@ -63,18 +63,18 @@ if ($aClean['sub'])
     $offset = (($currentPage-1) * $ItemsPerPage);
 
     /* display page selection links */
-    echo '<form method="get" name="message" action="'.$_SERVER['PHP_SELF'].'">',"\n";
+    echo '<form method="get" name="sMessage" action="'.$_SERVER['PHP_SELF'].'">',"\n";
     echo '<center>',"\n";
     echo '<b>Page '.$currentPage.' of '.$totalPages.'</b><br />',"\n";
-    display_page_range($currentPage, $pageRange, $totalPages, $_SERVER['PHP_SELF']."?ItemsPerPage=".$ItemsPerPage."&QueuedOnly=".$QueuedOnly);
+    display_page_range($currentPage, $pageRange, $totalPages, $_SERVER['PHP_SELF']."?iItemsPerPage=".$ItemsPerPage."&sQueuedOnly=".$QueuedOnly);
     echo '<br />',"\n";
     echo '<br />',"\n";
 
     /* display the option to choose how many comments per-page to display */
-    echo '<input type=hidden name=page value='.$currentPage.'>';
+    echo '<input type=hidden name=iPage value='.$currentPage.'>';
 
     echo '<b>Number of Bug Links per page: </b>';
-    echo '<select name="ItemsPerPage">';
+    echo '<select name="iItemsPerPage">';
 
     $ItemsPerPageArray = array(2 ,10, 20, 50, 100);
     foreach($ItemsPerPageArray as $i => $value)
@@ -87,7 +87,7 @@ if ($aClean['sub'])
     echo '</select>',"\n";
 
     echo '<br />',"\n";
-    echo '<b>View queued links only: </b><input type=checkbox name="QueuedOnly" '.($QueuedOnly == "on"?" CHECKED":"").'>',"\n";
+    echo '<b>View queued links only: </b><input type=checkbox name="sQueuedOnly" '.($QueuedOnly == "on"?" CHECKED":"").'>',"\n";
     echo '<br />',"\n";
     echo '<input type=submit value="Refresh">',"\n";
 
@@ -144,26 +144,26 @@ if ($aClean['sub'])
             echo '    <td align=center>'.$oRow->bug_status.'</td>',"\n";
             echo '    <td>'.$oRow->short_desc.'</td>',"\n";
             echo '    <td>',"\n";
-            echo '    <a href="'.apidb_fullurl('appview.php?appId='.$oRow->appId).'">'.$oRow->appName.'</a>',"\n";
+            echo '    <a href="'.apidb_fullurl('appview.php?iAppId='.$oRow->appId).'">'.$oRow->appName.'</a>',"\n";
             echo '    </td>',"\n";
             echo '    <td>'.$oRow->appDescription.'</td>',"\n";
             echo '    <td>',"\n";
-            echo '    <a href="'.apidb_fullurl('appview.php?versionId='.$oRow->versionId).'">'.$oRow->versionName.'</a>',"\n";
+            echo '    <a href="'.apidb_fullurl('appview.php?iVersionId='.$oRow->versionId).'">'.$oRow->versionName.'</a>',"\n";
             echo '    </td>',"\n";
-            echo '    <td align=center>[<a href="adminBugs.php?sub=delete',"\n";
-            echo          '&buglinkId='.$oRow->linkId,"\n";
-            echo          '&QueuedOnly='.$QueuedOnly,"\n";
-            echo          '&ItemsPerPage='.$ItemsPerPage,"\n";
-            echo          '&page='.$currentPage,"\n";
+            echo '    <td align=center>[<a href="adminBugs.php?sSub=delete',"\n";
+            echo          '&iBuglinkId='.$oRow->linkId,"\n";
+            echo          '&sQueuedOnly='.$QueuedOnly,"\n";
+            echo          '&iItemsPerPage='.$ItemsPerPage,"\n";
+            echo          '&iPage='.$currentPage,"\n";
             echo          '">delete</a>]</td>',"\n";
             $bQueued = ($oRow->queued=="true")?true:false;
             if ($bQueued)
             {
-                echo '<td align=center>[<a href="adminBugs.php?sub=unqueue',"\n";
-                echo      '&buglinkId='.$oRow->linkId,"\n";
-                echo      '&QueuedOnly='.$QueuedOnly,"\n";
-                echo      '&ItemsPerPage='.$ItemsPerPage,"\n";
-                echo      '&page='.$currentPage,"\n";
+                echo '<td align=center>[<a href="adminBugs.php?sSub=unqueue',"\n";
+                echo      '&iBuglinkId='.$oRow->linkId,"\n";
+                echo      '&sQueuedOnly='.$QueuedOnly,"\n";
+                echo      '&iItemsPerPage='.$ItemsPerPage,"\n";
+                echo      '&iPage='.$currentPage,"\n";
                 echo '">OK</a>]</td>',"\n";
             } else
             {
@@ -176,7 +176,7 @@ if ($aClean['sub'])
 
     echo "</table>","\n";
     echo "<center>","\n";
-    display_page_range($currentPage, $pageRange, $totalPages, $_SERVER['PHP_SELF']."?ItemsPerPage=".$ItemsPerPage."&QueuedOnly=".$QueuedOnly);
+    display_page_range($currentPage, $pageRange, $totalPages, $_SERVER['PHP_SELF']."?iItemsPerPage=".$ItemsPerPage."&sQueuedOnly=".$QueuedOnly);
     echo "</center>","\n";
 
     apidb_footer();

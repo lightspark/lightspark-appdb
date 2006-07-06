@@ -11,7 +11,7 @@ include(BASE."include/"."incl.php");
 
 $aClean = array(); //array of filtered user input
 
-$aClean['userId'] = makeSafe($_REQUEST['userId']);
+$aClean['iUserId'] = makeSafe($_REQUEST['iUserId']);
 $aClean['iLimit'] = makeSafe($_REQUEST['iLimit']);
 $aClean['sOrderBy'] = makeSafe($_REQUEST['sOrderBy']);
 $aClean['sUserPassword'] = makeSafe($_REQUEST['sUserPassword']);
@@ -39,12 +39,12 @@ if(!$_SESSION['current']->isLoggedIn())
 
 // we come from the administration to edit an user
 if($_SESSION['current']->hasPriv("admin") && 
-   is_numeric($aClean['userId']) &&
+   is_numeric($aClean['iUserId']) &&
    is_numeric($aClean['iLimit']) &&
    in_array($aClean['sOrderBy'],array("email","realname","created"))
 ) 
 {
-    $oUser = new User($aClean['userId']);
+    $oUser = new User($aClean['iUserId']);
 } else
 {
     $oUser = &$_SESSION['current'];
@@ -137,13 +137,13 @@ if($_POST)
     {
         addmsg("Preferences Updated", "green");
         // we were managing an user, let's go back to the admin after updating tha admin status
-        if($oUser->iUserId == $aClean['userId'] && $_SESSION['current']->hasPriv("admin"))
+        if($oUser->iUserId == $aClean['iUserId'] && $_SESSION['current']->hasPriv("admin"))
         {
             if($aClean['sHasAdmin']=="on") 
                 $oUser->addPriv("admin");
             else 
                 $oUser->delPriv("admin");
-            redirect(BASE."admin/adminUsers.php?userId=".$oUser->iUserId."&sSearch=".$aClean['sSearch']."&iLimit=".$aClean['iLimit']."&sOrderBy=".$aClean['sOrderBy']."&sSubmit=true");
+            redirect(BASE."admin/adminUsers.php?iUserId=".$oUser->iUserId."&sSearch=".$aClean['sSearch']."&iLimit=".$aClean['iLimit']."&sOrderBy=".$aClean['sOrderBy']."&sSubmit=true");
         }
     }
     else
@@ -157,12 +157,12 @@ apidb_header("User Preferences");
 echo "<form method=\"post\" action=\"preferences.php\">\n";
 
 // if we manage another user we give the parameters to go back to the admin
-if($oUser->iUserId == $aClean['userId'])
+if($oUser->iUserId == $aClean['iUserId'])
 {
     echo "<input type=\"hidden\" name=\"iLimit\" value=\"".$aClean['iLimit']."\">\n";
     echo "<input type=\"hidden\" name=\"sOrderBy\" value=\"".$aClean['sOrderBy']."\">\n";
     echo "<input type=\"hidden\" name=\"sSearch\" value=\"".$aClean['sSearch']."\">\n";
-    echo "<input type=\"hidden\" name=\"userId\" value=\"".$aClean['userId']."\">\n";
+    echo "<input type=\"hidden\" name=\"iUserId\" value=\"".$aClean['iUserId']."\">\n";
 }
 
 echo html_frame_start("Preferences for ".$oUser->sRealname, "80%");
@@ -171,7 +171,7 @@ echo html_table_begin("width='100%' border=0 align=left cellspacing=0 class='box
 show_user_fields();
 
 // if we don't manage another user
-if($oUser->iUserId != $aClean['userId']) build_prefs_list();
+if($oUser->iUserId != $aClean['iUserId']) build_prefs_list();
 
 echo html_table_end();
 echo html_frame_end();

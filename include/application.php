@@ -352,7 +352,7 @@ class Application {
                 if($this->sQueued == 'false') // Has been accepted.
                 {
                     $sSubject = $this->sName." has been added by ".$_SESSION['current']->sRealname;
-                    $sMsg  = APPDB_ROOT."appview.php?appId=".$this->iAppId."\n";
+                    $sMsg  = APPDB_ROOT."appview.php?iAppId=".$this->iAppId."\n";
                     if($this->iSubmitterId)
                     {
                         $oSubmitter = new User($this->iSubmitterId);
@@ -376,7 +376,7 @@ class Application {
             break;
             case "edit":
                 $sSubject =  $this->sName." has been modified by ".$_SESSION['current']->sRealname;
-                $sMsg  .= APPDB_ROOT."appview.php?appId=".$this->iAppId."\n";
+                $sMsg  .= APPDB_ROOT."appview.php?iAppId=".$this->iAppId."\n";
                 addmsg("Application modified.", "green");
             break;
             case "delete":
@@ -393,7 +393,7 @@ class Application {
             break;
             case "reject":
                 $sSubject = $this->sName." has been rejected by ".$_SESSION['current']->sRealname;
-                $sMsg .= APPDB_ROOT."appsubmit.php?apptype=application&sub=view&appId=".$this->iAppId."\n";
+                $sMsg .= APPDB_ROOT."appsubmit.php?sAppType=application&sSub=view&iAppId=".$this->iAppId."\n";
 
                 // if replyText is set we should report the reason the application was rejected 
                 if($aClean['replyText'])
@@ -416,38 +416,38 @@ class Application {
     {
         HtmlAreaLoaderScript(array("app_editor"));
 
-        echo '<input type="hidden" name="appId" value="'.$this->iAppId.'">';
+        echo '<input type="hidden" name="iAppId" value="'.$this->iAppId.'">';
 
         echo html_frame_start("Application Form", "90%", "", 0);
         echo "<table width='100%' border=0 cellpadding=2 cellspacing=0>\n";
         echo '<tr valign=top><td class="color0"><b>Application name</b></td>',"\n";
-        echo '<td><input size="20" type="text" name="appName" value="'.$this->sName.'"></td></tr>',"\n";
+        echo '<td><input size="20" type="text" name="sAppName" value="'.$this->sName.'"></td></tr>',"\n";
 
         // app Category
         $w = new TableVE("view");
         echo '<tr valign=top><td class="color0"><b>Category</b></td><td>',"\n";
-        $w->make_option_list("appCatId", $this->iCatId,"appCategory","catId","catName");
+        $w->make_option_list("iAppCatId", $this->iCatId,"appCategory","catId","catName");
         echo '</td></tr>',"\n";
 
         // vendor name
         echo '<tr valign=top><td class="color0"><b>Vendor</b></td>',"\n";
-        echo '<td><input size="20" type=text name="appVendorName" value="'.$sVendorName.'"></td></tr>',"\n";
+        echo '<td><input size="20" type=text name="sAppVendorName" value="'.$sVendorName.'"></td></tr>',"\n";
 
         // alt vendor
         $x = new TableVE("view");
         echo '<tr valign=top><td class="color0">&nbsp;</td><td>',"\n";
-        $x->make_option_list("appVendorId", $this->iVendorId,"vendor","vendorId","vendorName");
+        $x->make_option_list("iAppVendorId", $this->iVendorId,"vendor","vendorId","vendorName");
         echo '</td></tr>',"\n";
 
         // url
         echo '<tr valign=top><td class="color0"><b>URL</b></td>',"\n";
-        echo '<td><input size="20" type=text name="appWebpage" value="'.$this->sWebpage.'"></td></tr>',"\n";
+        echo '<td><input size="20" type=text name="sAppWebpage" value="'.$this->sWebpage.'"></td></tr>',"\n";
 
         echo '<tr valign=top><td class="color0"><b>Keywords</b></td>',"\n";
-        echo '<td><input size="90%" type="text" name="appKeywords" value="'.$this->sKeywords.'"></td></tr>',"\n";
+        echo '<td><input size="90%" type="text" name="sAppKeywords" value="'.$this->sKeywords.'"></td></tr>',"\n";
 
         echo '<tr valign=top><td class="color0"><b>Application description</b></td>',"\n";
-        echo '<td><p><textarea cols="80" rows="20" id="app_editor" name="appDescription">';
+        echo '<td><p><textarea cols="80" rows="20" id="app_editor" name="shAppDescription">';
 
         echo $this->sDescription.'</textarea></p></td></tr>',"\n";
 
@@ -461,28 +461,28 @@ class Application {
 
         $aClean = array(); //array of filtered user input
 
-        $aClean['appCatId'] = makeSafe($_REQUEST['appCatId']);
-        $aClean['appName'] = makeSafe($_REQUEST['appName']);
-        $aClean['appVendorName'] = makeSafe($_REQUEST['appVendorName']);
-        $aClean['appVendorId'] = makeSafe($_REQUEST['appVendorId']);
-        $aClean['appDescription'] = makeSafe($_REQUEST['appDescription']);
+        $aClean['iAppCatId'] = makeSafe($_REQUEST['iAppCatId']);
+        $aClean['sAppName'] = makeSafe($_REQUEST['sAppName']);
+        $aClean['sAppVendorName'] = makeSafe($_REQUEST['sAppVendorName']);
+        $aClean['iAppVendorId'] = makeSafe($_REQUEST['iAppVendorId']);
+        $aClean['shAppDescription'] = makeSafe($_REQUEST['shAppDescription']);
 
         $errors = "";
 
-        if (empty($aClean['appCatId']))
+        if (empty($aClean['iAppCatId']))
             $errors .= "<li>Please enter a category for your application.</li>\n";
 
-        if (strlen($aClean['appName']) > 200 )
+        if (strlen($aClean['sAppName']) > 200 )
             $errors .= "<li>Your application name is too long.</li>\n";
 
-        if (empty($aClean['appName']))
+        if (empty($aClean['sAppName']))
             $errors .= "<li>Please enter an application name.</li>\n";
 
         // No vendor entered, and nothing in the list is selected
-        if (empty($aClean['appVendorName']) && !$aClean['appVendorId'])
+        if (empty($aClean['sAppVendorName']) && !$aClean['iAppVendorId'])
             $errors .= "<li>Please enter a vendor.</li>\n";
 
-        if (empty($aClean['appDescription']))
+        if (empty($aClean['shAppDescription']))
             $errors .= "<li>Please enter a description of your application.</li>\n";
 
         return $errors;
@@ -493,21 +493,21 @@ class Application {
     {
         $aClean = array(); //array of filtered user input
 
-        $aClean['appId'] = makeSafe($_REQUEST['appId']);
-        $aClean['appVendorId'] = makeSafe($_REQUEST['appVendorId']);
-        $aClean['appName'] = makeSafe($_REQUEST['appName']);
-        $aClean['appDescription'] = makeSafe($_REQUEST['appDescription']);
-        $aClean['appCatId'] = makeSafe($_REQUEST['appCatId']);
-        $aClean['appWebpage'] = makeSafe($_REQUEST['appWebpage']);
-        $aClean['appKeywords'] = makeSafe($_REQUEST['appKeywords']);
+        $aClean['iAppId'] = makeSafe($_REQUEST['iAppId']);
+        $aClean['iAppVendorId'] = makeSafe($_REQUEST['iAppVendorId']);
+        $aClean['sAppName'] = makeSafe($_REQUEST['sAppName']);
+        $aClean['shAppDescription'] = makeSafe($_REQUEST['shAppDescription']);
+        $aClean['iAppCatId'] = makeSafe($_REQUEST['iAppCatId']);
+        $aClean['sAppWebpage'] = makeSafe($_REQUEST['sAppWebpage']);
+        $aClean['sAppKeywords'] = makeSafe($_REQUEST['sAppKeywords']);
 
-        $this->iAppId = $aClean['appId'];
-        $this->sName = $aClean['appName'];
-        $this->sDescription = $aClean['appDescription'];
-        $this->iCatId = $aClean['appCatId'];
-        $this->iVendorId = $aClean['appVendorId'];
-        $this->sWebpage = $aClean['appWebpage'];
-        $this->sKeywords = $aClean['appKeywords'];
+        $this->iAppId = $aClean['iAppId'];
+        $this->sName = $aClean['sAppName'];
+        $this->sDescription = $aClean['shAppDescription'];
+        $this->iCatId = $aClean['iAppCatId'];
+        $this->iVendorId = $aClean['iAppVendorId'];
+        $this->sWebpage = $aClean['sAppWebpage'];
+        $this->sKeywords = $aClean['sAppKeywords'];
     }
 
     /* display this application */
@@ -515,7 +515,7 @@ class Application {
     {
         $aClean = array(); //array of filtered user input
 
-        $aClean['appId'] = makeSafe($_REQUEST['appId']);
+        $aClean['iAppId'] = makeSafe($_REQUEST['iAppId']);
 
         /* is this user supposed to view this version? */
         if(!$_SESSION['current']->canViewApplication($this))
@@ -549,7 +549,7 @@ class Application {
         echo '      <table width="250" border="0" cellpadding="3" cellspacing="1">',"\n";
         echo "        <tr class=color0 valign=top><td width=\"100\"><b>Name</b></td><td width='100%'> ".$this->sName." </td>\n";
         echo "        <tr class=\"color1\"><td><b>Vendor</b></td><td> ".
-            "        <a href='vendorview.php?vendorId=$oVendor->iVendorId'> ".$oVendor->sName." </a> &nbsp;\n";
+            "        <a href='vendorview.php?iVendorId=$oVendor->iVendorId'> ".$oVendor->sName." </a> &nbsp;\n";
         echo "        <tr class=\"color0\"><td><b>Votes</b></td><td> ";
         echo vote_count_app_total($this->iAppId);
         echo "        </td></tr>\n";
@@ -559,7 +559,7 @@ class Application {
 
         // optional links
         $result = query_parameters("SELECT * FROM appData WHERE appId = '?' AND versionID = 0 AND type = 'url'",
-                                   $aClean['appId']);
+                                   $aClean['iAppId']);
         if($result && mysql_num_rows($result) > 0)
         {
             echo "        <tr class=\"color1\"><td> <b>Links</b></td><td>\n";
@@ -604,35 +604,35 @@ class Application {
             /* are we already a maintainer? */
             if($_SESSION['current']->isSuperMaintainer($this->iAppId)) /* yep */
             {
-                echo '        <form method="post" name="message" action="maintainerdelete.php"><input type=submit value="Remove yourself as a super maintainer" class="button">';
+                echo '        <form method="post" name="sMessage" action="maintainerdelete.php"><input type=submit value="Remove yourself as a super maintainer" class="button">';
             } else /* nope */
             {
-                echo '        <form method="post" name="message" action="maintainersubmit.php"><input type="submit" value="Be a super maintainer of this app" class="button" title="Click here to know more about super maintainers.">';
+                echo '        <form method="post" name="sMessage" action="maintainersubmit.php"><input type="submit" value="Be a super maintainer of this app" class="button" title="Click here to know more about super maintainers.">';
             }
 
-            echo "        <input type=\"hidden\" name=\"appId\" value=\"".$this->iAppId."\">";
-            echo "        <input type=\"hidden\" name=\"superMaintainer\" value=\"1\">"; /* set superMaintainer to 1 because we are at the appFamily level */
+            echo "        <input type=\"hidden\" name=\"iAppId\" value=\"".$this->iAppId."\">";
+            echo "        <input type=\"hidden\" name=\"iSuperMaintainer\" value=\"1\">"; /* set superMaintainer to 1 because we are at the appFamily level */
             echo "        </form>";
             
             if($_SESSION['current']->isSuperMaintainer($this->iAppId) || $_SESSION['current']->hasPriv("admin"))
             {
-                echo '        <form method="post" name="edit" action="admin/editAppFamily.php"><input type="hidden" name="appId" value="'.$aClean['appId'].'"><input type="submit" value="Edit Application" class="button"></form>';
+                echo '        <form method="post" name="sEdit" action="admin/editAppFamily.php"><input type="hidden" name="iAppId" value="'.$aClean['iAppId'].'"><input type="submit" value="Edit Application" class="button"></form>';
             }
             if($_SESSION['current']->isLoggedIn())
             {
-                echo '<form method="post" name="message" action="appsubmit.php?appId='.$this->iAppId.'&amp;apptype=version&amp;sub=view">';
+                echo '<form method="post" name="sMessage" action="appsubmit.php?iAppId='.$this->iAppId.'&amp;sAppType=version&amp;sub=view">';
                 echo '<input type=submit value="Submit new version" class="button">';
                 echo '</form>';
             }
             if($_SESSION['current']->hasPriv("admin"))
             {
-                $url = BASE."admin/deleteAny.php?what=appFamily&amp;appId=".$this->iAppId."&amp;confirmed=yes";
-                echo "        <form method=\"post\" name=\"edit\" action=\"javascript:deleteURL('Are you sure?', '".$url."')\"><input type=\"submit\" value=\"Delete App\" class=\"button\"></form>";
-                echo '        <form method="post" name="edit" action="admin/editBundle.php"><input type="hidden" name="bundleId" value="'.$this->iAppId.'"><input type="submit" value="Edit Bundle" class="button"></form>';
+                $url = BASE."admin/deleteAny.php?sWhat=appFamily&amp;iAppId=".$this->iAppId."&amp;sConfirmed=yes";
+                echo "        <form method=\"post\" name=\"sEdit\" action=\"javascript:deleteURL('Are you sure?', '".$url."')\"><input type=\"submit\" value=\"Delete App\" class=\"button\"></form>";
+                echo '        <form method="post" name="sEdit" action="admin/editBundle.php"><input type="hidden" name="iBundleId" value="'.$this->iAppId.'"><input type="submit" value="Edit Bundle" class="button"></form>';
             }
         } else
         {
-            echo '<form method="post" action="account.php?cmd=login"><input type="submit" value="Log in to become a super maintainer" class="button"></form>';
+            echo '<form method="post" action="account.php?sCmd=login"><input type="submit" value="Log in to become a super maintainer" class="button"></form>';
         }
         echo "        </td></tr>\n";
         echo "      </table>\n"; /* close of super maintainers table */
@@ -700,7 +700,7 @@ class Application {
             echo "    </td>\n";
             echo "    <td>".$sVendor."</td>\n";
             echo "    <td>".$oApp->sName."</td>\n";
-            echo "    <td align=\"center\">[<a href=".$_SERVER['PHP_SELF']."?apptype=application&sub=view&appId=".$oApp->iAppId.">process</a>]</td>\n";
+            echo "    <td align=\"center\">[<a href=".$_SERVER['PHP_SELF']."?sAppType=application&sSub=view&iAppId=".$oApp->iAppId.">process</a>]</td>\n";
             echo "</tr>\n\n";
             $c++;
         }

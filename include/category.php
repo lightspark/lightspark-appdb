@@ -239,7 +239,7 @@ function make_cat_path($path, $appId = '', $versionId = '')
         if(!empty($versionId))
         {
             $oVersion = new Version($versionId);
-            $str .= " &gt; ".html_ahref($oApp->sName,"appview.php?appId=$appId");
+            $str .= " &gt; ".html_ahref($oApp->sName,"appview.php?iAppId=$appId");
             $str .= " &gt; ".$oVersion->sName;
         } else
         {

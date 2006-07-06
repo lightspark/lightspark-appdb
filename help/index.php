@@ -8,9 +8,9 @@ include(BASE."include/"."incl.php");
 
 $help_path = BASE."/help";
 
-if($_GET['topic'])
+if($_GET['sTopic'])
 {
-    display_help($_GET['topic']);
+    display_help($_GET['sTopic']);
 } else {
     display_index();    
 }
@@ -46,7 +46,7 @@ function display_index ()
         $id    = $arr[1];
         $title = get_help_title("$help_path/$file");
 
-        echo "  <li> <a href=\"".BASE."help?topic=$id\"  style=\"cursor: help\"> $title </a><p /></li>\n";
+        echo "  <li> <a href=\"".BASE."help?sTopic=$id\"  style=\"cursor: help\"> $title </a><p /></li>\n";
     }
 
     echo "</ul><hr noshade>\n";

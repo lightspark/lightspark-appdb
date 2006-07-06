@@ -11,8 +11,8 @@ require(BASE."include/incl.php");
 
 $aClean = array(); //array of filtered user input
 
-$aClean['sub'] = makeSafe($_REQUEST['sub']);
-$aClean['maintainerId'] = makeSafe($_REQUEST['maintainerId']);
+$aClean['sSub'] = makeSafe($_REQUEST['sSub']);
+$aClean['iMaintainerId'] = makeSafe($_REQUEST['iMaintainerId']);
 
 // deny access if not logged in
 if(!$_SESSION['current']->hasPriv("admin"))
@@ -22,15 +22,15 @@ if(!$_SESSION['current']->hasPriv("admin"))
 }
 
 apidb_header("Admin Maintainers");
-echo '<form name="qform" action="adminMaintainers.php" method="post" enctype="multipart/form-data">',"\n";
+echo '<form name="sQform" action="adminMaintainers.php" method="post" enctype="multipart/form-data">',"\n";
 
-if ($aClean['sub'])
+if ($aClean['sSub'])
 {
-    if($aClean['sub'] == 'delete')
+    if($aClean['sSub'] == 'delete')
     {
         $sQuery = "DELETE FROM appMaintainers WHERE maintainerId = '?'";
-        $hResult = query_parameters($sQuery, $aClean['maintainerId']);
-        echo html_frame_start("Delete maintainer: ".$aClean['maintainerId'],400,"",0);
+        $hResult = query_parameters($sQuery, $aClean['iMaintainerId']);
+        echo html_frame_start("Delete maintainer: ".$aClean['iMaintainerId'],400,"",0);
         if($hResult)
         {
             // success
@@ -115,14 +115,14 @@ if ($aClean['sub'])
             echo "    <td><a href=\"mailto:".$oUser->sEmail."\">".$oUser->sRealname."</a></td>\n";
             if($oRow->superMaintainer)
             {
-                echo "    <td><a href='".BASE."appview.php?appId=$oRow->appId'>".Application::lookup_name($oRow->appId)."</a></td>\n";
+                echo "    <td><a href='".BASE."appview.php?iAppId=$oRow->appId'>".Application::lookup_name($oRow->appId)."</a></td>\n";
                 echo "    <td>*</td>\n";
             } else
             {
-                echo "    <td><a href='".BASE."appview.php?appId=$oRow->appId'>".Application::lookup_name($oRow->appId)."</a></td>\n";
-                echo "    <td><a href='".BASE."appview.php?versionId=$oRow->versionId'>".Version::lookup_name($oRow->versionId)."</a>&nbsp;</td>\n";
+                echo "    <td><a href='".BASE."appview.php?iAppId=$oRow->appId'>".Application::lookup_name($oRow->appId)."</a></td>\n";
+                echo "    <td><a href='".BASE."appview.php?iVersionId=$oRow->versionId'>".Version::lookup_name($oRow->versionId)."</a>&nbsp;</td>\n";
             }
-            echo "    <td align=\"center\">[<a href='adminMaintainers.php?sub=delete&maintainerId=$oRow->maintainerId'>delete</a>]</td>\n";
+            echo "    <td align=\"center\">[<a href='adminMaintainers.php?sSub=delete&iMaintainerId=$oRow->maintainerId'>delete</a>]</td>\n";
             echo "</tr>\n\n";
             $c++;
         }

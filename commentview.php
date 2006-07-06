@@ -14,20 +14,20 @@ require_once(BASE."include/comment.php");
 
 $aClean = array(); //array of filtered user input
 
-$aClean['appId'] = makeSafe($_REQUEST['appId']);
-$aClean['versionId'] = makeSafe($_REQUEST['versionId']);
-$aClean['threadId'] = makeSafe($_REQUEST['threadId']);
+$aClean['iAppId'] = makeSafe($_REQUEST['iAppId']);
+$aClean['iVersionId'] = makeSafe($_REQUEST['iVersionId']);
+$aClean['iThreadId'] = makeSafe($_REQUEST['iThreadId']);
 
 apidb_header("Comments");
 
 
-if(!is_numeric($aClean['appId']) OR !is_numeric($aClean['versionId']) OR (!empty($aClean['threadId']) AND !is_numeric($aClean['threadId'])))
+if(!is_numeric($aClean['iAppId']) OR !is_numeric($aClean['iVersionId']) OR (!empty($aClean['iThreadId']) AND !is_numeric($aClean['iThreadId'])))
 {
     util_show_error_page("Wrong IDs");
     exit;
 }
 
-view_app_comments($aClean['versionId'], $aClean['threadId']);
+view_app_comments($aClean['iVersionId'], $aClean['iThreadId']);
 
 apidb_footer();
 ?>

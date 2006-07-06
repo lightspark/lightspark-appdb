@@ -6,10 +6,10 @@ require(BASE."include/mail.php");
 
 $aClean = array(); //array of filtered user input
 
-$aClean['versionId'] = makeSafe($_REQUEST['versionId']);
-$aClean['thread'] = makeSafe($_REQUEST['thread']);
-$aClean['body'] = makeSafe($_REQUEST['body']);
-$aClean['subject'] = makeSafe($_REQUEST['subject']);
+$aClean['iVersionId'] = makeSafe($_REQUEST['iVersionId']);
+$aClean['iThread'] = makeSafe($_REQUEST['iThread']);
+$aClean['sBody'] = makeSafe($_REQUEST['sBody']);
+$aClean['sSubject'] = makeSafe($_REQUEST['sSubject']);
 
 /********************************/
 /* code to submit a new comment */
@@ -22,29 +22,29 @@ $aClean['subject'] = makeSafe($_REQUEST['subject']);
 if(!$_SESSION['current']->isLoggedIn())
 {
   apidb_header("Please login");
-  echo "To submit a comment for an application you must be logged in. Please <a href=\"account.php?cmd=login\">login now</a> or create a <a href=\"account.php?cmd=new\">new account</a>.","\n";
+  echo "To submit a comment for an application you must be logged in. Please <a href=\"account.php?sCmd=login\">login now</a> or create a <a href=\"account.php?sCmd=new\">new account</a>.","\n";
   exit;
 }
 
-if( !is_numeric($aClean['versionId']) )
+if( !is_numeric($aClean['iVersionId']) )
 {
   util_show_error_page('Internal Database Access Error');
   exit;
 }
 
-if(!is_numeric($aClean['thread']))
+if(!is_numeric($aClean['iThread']))
 {
-  $aClean['thread'] = 0;
+  $aClean['iThread'] = 0;
 }
 
 ############################
 # ADDS COMMENT TO DATABASE #
 ############################
-if(!empty($aClean['body']))
+if(!empty($aClean['sBody']))
 {
     $oComment = new Comment();
-    $oComment->create($aClean['subject'], $aClean['body'], $aClean['thread'], $aClean['versionId']);
-    redirect(apidb_fullurl("appview.php?versionId=".$oComment->iVersionId));
+    $oComment->create($aClean['sSubject'], $aClean['sBody'], $aClean['iThread'], $aClean['iVersionId']);
+    redirect(apidb_fullurl("appview.php?iVersionId=".$oComment->iVersionId));
 }
 
 ################################
@@ -56,10 +56,10 @@ else
 
   $mesTitle = "<b>Post New Comment</b>";
 
-  if($aClean['thread'] > 0)
+  if($aClean['iThread'] > 0)
   {
     $hResult = query_parameters("SELECT * FROM appComments WHERE commentId = '?'",
-                            $aClean['thread']);
+                            $aClean['iThread']);
     $oRow = mysql_fetch_object($hResult);
     if($oRow)
     {
@@ -79,8 +79,8 @@ else
   echo "<tr class=\"color0\"><td align=right><b>From:</b>&nbsp;</td>\n";
   echo "	<td>&nbsp;".$_SESSION['current']->sRealname."</td></tr>\n";
   echo "<tr class=\"color0\"><td align=right><b>Subject:</b>&nbsp;</td>\n";
-  echo "	<td>&nbsp;<input type=\"text\" size=\"35\" name=\"subject\" value=\"".$aClean['subject']."\" /> </td></tr>\n";
-  echo "<tr class=\"color1\"><td colspan=2><textarea name=\"body\" cols=\"70\" rows=\"15\" wrap=\"virtual\">".$aClean['body']."</textarea></td></tr>\n";
+  echo "	<td>&nbsp;<input type=\"text\" size=\"35\" name=\"sSubject\" value=\"".$aClean['sSubject']."\" /> </td></tr>\n";
+  echo "<tr class=\"color1\"><td colspan=2><textarea name=\"body\" cols=\"70\" rows=\"15\" wrap=\"virtual\">".$aClean['sBody']."</textarea></td></tr>\n";
   echo "<tr class=\"color1\"><td colspan=2 align=center>\n";
   echo "  <input type=\"submit\" value=\"Post Comment\" class=\"button\" />\n";
   echo "  <input type=\"reset\" value=\"Reset\" class=\"button\" />\n";
@@ -89,12 +89,12 @@ else
 
   echo html_frame_end();
 
-  echo "<input type=\"hidden\" name=\"thread\" value=\"".$aClean['thread']."\" />\n";
-  echo "<input type=\"hidden\" name=\"appId\" value=\"".$aClean['appId']."\" />\n";
-  echo "<input type=\"hidden\" name=\"versionId\" value=\"".$aClean['versionId']."\" />\n";
-  if (!empty($aClean['thread']))
+  echo "<input type=\"hidden\" name=\"iThread\" value=\"".$aClean['iThread']."\" />\n";
+  echo "<input type=\"hidden\" name=\"iAppId\" value=\"".$aClean['iAppId']."\" />\n";
+  echo "<input type=\"hidden\" name=\"iVersionId\" value=\"".$aClean['iVersionId']."\" />\n";
+  if (!empty($aClean['iThread']))
   {
-    echo "<input type=\"hidden\" name=\"originator\" value=\"$originator\" />\n";
+    echo "<input type=\"hidden\" name=\"iOriginator\" value=\"$originator\" />\n";
   }
   echo "</form>";
 }

@@ -12,8 +12,8 @@ require(BASE."include/category.php");
 
 $aClean = array(); //array of filtered user input
 
-$aClean['topNumber'] = makeSafe($_REQUEST['topNumber']);
-$aClean['categoryId'] = makeSafe($_REQUEST['categoryId']);
+$aClean['iTopNumber'] = makeSafe($_REQUEST['iTopNumber']);
+$aClean['iCategoryId'] = makeSafe($_REQUEST['iCategoryId']);
 
 
 /* default to 25 apps, main categories */
@@ -21,10 +21,10 @@ $topNumber = 25;
 $categoryId = "any"; /* default to all categories */
 
 /* process the post variables to override the default settings */
-if( !empty($aClean['topNumber']) AND is_numeric($aClean['topNumber'])) 
-    $topNumber = $aClean['topNumber'];
-if( !empty($aClean['categoryId']) AND is_numeric($aClean['categoryId'])) 
-    $categoryId = $aClean['categoryId'];
+if( !empty($aClean['iTopNumber']) AND is_numeric($aClean['iTopNumber'])) 
+    $topNumber = $aClean['iTopNumber'];
+if( !empty($aClean['iCategoryId']) AND is_numeric($aClean['iCategoryId'])) 
+    $categoryId = $aClean['iCategoryId'];
 
 /* Check if the value makes sense */
 if($topNumber > 200 || $topNumber < 1)
@@ -33,9 +33,9 @@ if($topNumber > 200 || $topNumber < 1)
 apidb_header("Vote Stats - Top $topNumber Applications");
 
 /* display the selection for the top number of apps to view */
-echo "<form method=\"post\" name=\"message\" action=\"".$_SERVER['PHP_SELF']."\">";
+echo "<form method=\"post\" name=\"sMessage\" action=\"".$_SERVER['PHP_SELF']."\">";
 echo "<b>Number of top apps to display:</b>";
-echo "<select name='topNumber'>";
+echo "<select name='iTopNumber'>";
 $topNumberArray = array(25, 50, 100, 200);
 
 foreach ($topNumberArray as $i => $value)
@@ -85,7 +85,7 @@ if($catId != 0)
 /*******************************************************************/
 /* add options for all of the categories that we are recursed into */
 echo "<b>Section:</b>";
-echo '<select name="categoryId">';
+echo '<select name="iCategoryId">';
 
 if($catId == 0)
     echo '<option value="any" SELECTED>Any</option>';
@@ -179,7 +179,7 @@ if($hResult)
     while($row = mysql_fetch_object($hResult))
     {
         $bgcolor = ($c % 2) ? "color0" : "color1";
-        $link = "<a href='appview.php?appId=$row->appId'>$row->appName</a>";
+        $link = "<a href='appview.php?iAppId=$row->appId'>$row->appName</a>";
         echo "<tr class=$bgcolor><td width='90%'>$c. $link </td> <td> $row->count </td></tr>\n";
         $c++;
     }
@@ -194,7 +194,7 @@ if($hResult)
         echo '<h2 align="center">No apps found in this category, please vote for your favorite apps!</h2>';
     }
  
-    echo '<p align="center"><a href="help/?topic=voting">What does this screen mean?</a></p>';
+    echo '<p align="center"><a href="help/?sTopic=voting">What does this screen mean?</a></p>';
 }
 
 apidb_footer();

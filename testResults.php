@@ -13,7 +13,7 @@ require_once(BASE."include/distributions.php");
 
 $aClean = array(); //array of filtered user input
 
-$aClean['sub'] = makeSafe($_REQUEST['sub']);
+$aClean['sSub'] = makeSafe($_REQUEST['sSub']);
 $aClean['iTestingId'] = makeSafe($_REQUEST['iTestingId']);
 $aClean['iVersionId'] = makeSafe($_REQUEST['iVersionId']);
 $aClean['iDistributionId'] = makeSafe($_REQUEST['iDistributionId']);
@@ -21,7 +21,7 @@ $aClean['sDistribution'] = makeSafe($_REQUEST['sDistribution']);
 
 
 
-if ($aClean['sub'])
+if ($aClean['sSub'])
 {
     $oTest = new testData($aClean['iTestingId']);
     if($aClean['iVersionId'])
@@ -29,7 +29,7 @@ if ($aClean['sub'])
     $errors = "";
 
     // Submit or Resubmit the new testing results
-    if (($aClean['sub'] == 'Submit') || ($aClean['sub'] == 'Resubmit'))
+    if (($aClean['sSub'] == 'Submit') || ($aClean['sSub'] == 'Resubmit'))
     {
         $errors = $oTest->CheckOutputEditorInput();
         $oTest->GetOutputEditorValues(); // retrieve the values from the current $_REQUEST 
@@ -45,10 +45,10 @@ if ($aClean['sub'])
                     $oTest->iDistributionId = $oDistribution->iDistributionId;
                 }
             }
-            if($aClean['sub'] == 'Submit')
+            if($aClean['sSub'] == 'Submit')
             {
 	        $oTest->create();
-            } else if($aClean['sub'] == 'Resubmit')
+            } else if($aClean['sSub'] == 'Resubmit')
             {
                 $oTest->update(true);
 	        $oTest->ReQueue();
@@ -56,12 +56,12 @@ if ($aClean['sub'])
             redirect($_SERVER['PHP_SELF']);
         } else 
         {
-            $aClean['sub'] = 'view';
+            $aClean['sSub'] = 'view';
         }
     }
 
     // Delete testing results
-    if ($aClean['sub'] == 'Delete')
+    if ($aClean['sSub'] == 'Delete')
     {
         if(is_numeric($aClean['iTestingId']))
         {
@@ -91,7 +91,7 @@ if ($aClean['sub'])
         $oVersion = new version($aClean['iVersionId']);       
         $oTest->sQueued = "new";
     }
-    if ($aClean['sub'] == 'view')
+    if ($aClean['sSub'] == 'view')
     {
         $oApp = new application($oVersion->iAppId);
         $sVersionInfo = $oApp->sName." ".$oVersion->sName;
@@ -114,7 +114,7 @@ if ($aClean['sub'])
         default:
             apidb_header("Edit testing results for ");
         }
-        echo '<form name="qform" action="'.$_SERVER['PHP_SELF'].'" method="post" enctype="multipart/form-data">',"\n";
+        echo '<form name="sQform" action="'.$_SERVER['PHP_SELF'].'" method="post" enctype="multipart/form-data">',"\n";
 
 
         //help
@@ -135,7 +135,7 @@ if ($aClean['sub'])
         // View Testing Details
         $oTest->OutputEditor($aClean['sDistribution'],true);
 
-        echo '<a href="'.BASE."appview.php?versionId=".$oTest->iVersionId.'">Back to Version</a>';
+        echo '<a href="'.BASE."appview.php?iVersionId=".$oTest->iVersionId.'">Back to Version</a>';
 
         echo '<tr valign=top><td class=color3 align=center colspan=2>',"\n";
 
@@ -144,13 +144,13 @@ if ($aClean['sub'])
         switch($oTest->sQueued)
         {
         case "new":
-            echo '<input name="sub" type="submit" value="Submit" class="button" >&nbsp',"\n";
+            echo '<input name="sSub" type="submit" value="Submit" class="button" >&nbsp',"\n";
             break;
         case "true":
         case "rejected":
         case "False":
-             echo '<input name="sub" type="submit" value="Resubmit" class="button" >&nbsp',"\n";
-             echo '<input name="sub" type="submit" value="Delete" class="button" >',"\n";
+             echo '<input name="sSub" type="submit" value="Resubmit" class="button" >&nbsp',"\n";
+             echo '<input name="sSub" type="submit" value="Delete" class="button" >',"\n";
              break;
         }
         echo '</td></tr>',"\n";    
@@ -165,7 +165,7 @@ if ($aClean['sub'])
         redirect($_SERVER['PHP_SELF']);
     } 
 } 
-else // if ($aClean['sub']) is not defined, display the Testing results queue page 
+else // if ($aClean['sSub']) is not defined, display the Testing results queue page 
 {
     apidb_header("Testing Results");
 

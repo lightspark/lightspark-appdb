@@ -727,7 +727,7 @@ class User {
              $sMsg  = "You didn't log in in the past six months to the AppDB.\r\n";
              $sMsg .= "Please log in or your account will automatically be deleted in one month.\r\n";
          }
-         $sMsg .= APPDB_ROOT."account.php?cmd=login\r\n";
+         $sMsg .= APPDB_ROOT."account.php?sCmd=login\r\n";
 
          mail_appdb($this->sEmail, $sSubject, $sMsg);
 

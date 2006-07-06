@@ -12,15 +12,15 @@ require_once(BASE."include/testResults.php");
 
 $aClean = array(); //array of filtered user input
 
-$aClean['apptype'] = makeSafe($_REQUEST['apptype']);
-$aClean['sub'] = makeSafe($_REQUEST['sub']);
-$aClean['appId'] = makeSafe($_REQUEST['appId']);
-$aClean['versionId'] = makeSafe($_REQUEST['versionId']);
+$aClean['sAppType'] = makeSafe($_REQUEST['sAppType']);
+$aClean['sSub'] = makeSafe($_REQUEST['sSub']);
+$aClean['iAppId'] = makeSafe($_REQUEST['iAppId']);
+$aClean['iVersionId'] = makeSafe($_REQUEST['iVersionId']);
 $aClean['iTestingId'] = makeSafe($_REQUEST['iTestingId']);
-$aClean['appVendorName'] = makeSafe($_REQUEST['appVendorName']);
-$aClean['vendorId'] = makeSafe($_REQUEST['vendorId']);
-$aClean['appWebpage'] = makeSafe($_REQUEST['appWebpage']);
-$aClean['appKeywords'] = makeSafe($_REQUEST['appKeywords']);
+$aClean['sAppVendorName'] = makeSafe($_REQUEST['sAppVendorName']);
+$aClean['iVendorId'] = makeSafe($_REQUEST['iVendorId']);
+$aClean['sAppWebpage'] = makeSafe($_REQUEST['sAppWebpage']);
+$aClean['sAppKeywords'] = makeSafe($_REQUEST['sAppKeywords']);
 $aClean['iDistributionId'] = makeSafe($_REQUEST['iDistributionId']);
 $aClean['sDistribution'] = makeSafe($_REQUEST['sDistribution']);
 
@@ -33,6 +33,7 @@ function get_vendor_from_keywords($sKeywords)
 
 function newSubmition($errors)
 {
+    global $aClean;
     // show add to queue form
     echo '<form name="newApp" action="appsubmit.php" method="post">'."\n";
     echo "<p>This page is for submitting new applications to be added to the\n";
@@ -40,7 +41,7 @@ function newSubmition($errors)
     echo "and you will be notified via e-mail if it is added to the database or rejected.</p>\n";
     echo "<p><h2>Before continuing, please ensure that you have</h2>\n";
     echo "<ul>\n";
-    if ($aClean['apptype'] == 1)
+    if ($aClean['sAppType'] == "application")
     {
         echo " <li>Searched for this application in the database.  Duplicate submissions will be rejected</li>\n";
         echo " <li>Really want to submit an application instead of a new version of an application\n";
@@ -71,11 +72,11 @@ if(!$_SESSION['current']->isLoggedIn())
 }
 
 
-if ($aClean['sub'])
+if ($aClean['sSub'])
 {
-    if($aClean['apptype'] == 'application')
+    if($aClean['sAppType'] == 'application')
     {
-        $oApp = new Application( $aClean['appId']);
+        $oApp = new Application( $aClean['iAppId']);
         if($oApp->iAppId)
         {
             // if we are processing a queued application there MUST be an implicitly queued 
@@ -83,7 +84,7 @@ if ($aClean['sub'])
             // during application processing so the admin can make a better choice about 
             // whether to accept or reject the overall application 
             $hResult = query_parameters("Select versionId from appVersion where appId='?'",
-                                    $aClean['appId']);
+                                    $aClean['iAppId']);
             $oRow = mysql_fetch_object($hResult);
 
             // make sure the user has permission to view this version 
@@ -102,9 +103,9 @@ if ($aClean['sub'])
         }
 
     } 
-    else if($aClean['apptype'] == 'version')
+    else if($aClean['sAppType'] == 'version')
     {
-        $oVersion = new Version($aClean['versionId']);
+        $oVersion = new Version($aClean['iVersionId']);
 
         // make sure the user has permission to view this version 
         if(!$_SESSION['current']->hasAppVersionModifyPermission($oVersion) && 
@@ -136,35 +137,35 @@ if ($aClean['sub'])
     }
 
     //process according to sub flag
-    if ($aClean['sub'] == 'Submit')
+    if ($aClean['sSub'] == 'Submit')
     {
         $errors = "";
-        $oVersion = new Version($aClean['versionId']);
+        $oVersion = new Version($aClean['iVersionId']);
         $oTest = new testData($aClean['iTestingId']);
         $errors .= $oVersion->CheckOutputEditorInput();
         $errors .= $oTest->CheckOutputEditorInput();
         $oVersion->GetOutputEditorValues();
         $oTest->GetOutputEditorValues();
-        if ($aClean['apptype'] == "application") // application
+        if ($aClean['sAppType'] == "application") // application
         {
-            $oApp = new Application($aClean['appId']);
+            $oApp = new Application($aClean['iAppId']);
             $errors .= $oApp->CheckOutputEditorInput();
             $oApp->GetOutputEditorValues(); // load the values from $_REQUEST 
 
             if(empty($errors))
             {
-                if($aClean['appVendorName'])
+                if($aClean['sAppVendorName'])
                 {
-                    $aClean['vendorId']="";
+                    $aClean['iVendorId']="";
                     //FIXME: fix this when we fix vendor submission
                     if($_SESSION['current']->hasPriv("admin"))
                     {
                         $oVendor = new Vendor();
-                        $oVendor->create($aClean['appVendorName'],$aClean['appWebpage']);
+                        $oVendor->create($aClean['sAppVendorName'],$aClean['sAppWebpage']);
                     }
                 }
                 //FIXME: remove this when we fix vendor submission
-                $oApp->sKeywords = $aClean['appKeywords']." *** ".$aClean['appVendorName'];
+                $oApp->sKeywords = $aClean['sAppKeywords']." *** ".$aClean['sAppVendorName'];
                 if(is_numeric($oApp->iAppId))
                 {
                     $oApp->update();
@@ -180,7 +181,7 @@ if ($aClean['sub'])
         /* if we have errors go back to 'view' mode */
         if(!empty($errors))
         {
-            $aClean['sub'] = 'view';
+            $aClean['sSub'] = 'view';
         } 
         else
         {
@@ -216,14 +217,14 @@ if ($aClean['sub'])
             redirect($_SERVER['PHP_SELF']);
         }
     }
-    if ($aClean['sub'] == 'Delete')
+    if ($aClean['sSub'] == 'Delete')
     {
-        if (($aClean['apptype'] == "application") && is_numeric($aClean['appId'])) // application
+        if (($aClean['sAppType'] == "application") && is_numeric($aClean['iAppId'])) // application
         {
             // get the queued versions that refers to the application entry we just removed
             // and delete them as we implicitly added a version entry when adding a new application
             $hResult = query_parameters("SELECT versionId FROM appVersion WHERE appVersion.appId = '?'
-                                     AND appVersion.queued = 'rejected';", $aClean['appId']);
+                                     AND appVersion.queued = 'rejected';", $aClean['iAppId']);
             if($hResult)
             {
                 while($oRow = mysql_fetch_object($hResult))
@@ -234,27 +235,27 @@ if ($aClean['sub'])
             }
 
             // delete the application entry
-            $oApp = new Application($aClean['appId']);
+            $oApp = new Application($aClean['iAppId']);
             $oApp->delete();
-        } else if(($aClean['apptype'] == "version") && is_numeric($aClean['versionId']))  // version
+        } else if(($aClean['sAppType'] == "version") && is_numeric($aClean['iVersionId']))  // version
         {
-            $oVersion = new Version($aClean['versionId']);
+            $oVersion = new Version($aClean['iVersionId']);
             $oVersion->delete();
         }
         
         redirect($_SERVER['PHP_SELF']);
     }
-    if ($aClean['sub'] == 'view')
+    if ($aClean['sSub'] == 'view')
     {
         $x = new TableVE("view");
         apidb_header("Application Queue");
 
         echo '<form name="qform" action="'.$_SERVER['PHP_SELF'].'" method="post" enctype="multipart/form-data">',"\n";
-        echo '<input type="hidden" name="sub" value="Submit">',"\n"; 
+        echo '<input type="hidden" name="sSub" value="Submit">',"\n"; 
 
         echo html_back_link(1,$_SERVER['PHP_SELF']);
 
-        if($aClean['apptype'] == 'application') // application
+        if($aClean['sAppType'] == 'application') // application
         {  
             if ($oApp->sName != "")
             {
@@ -288,7 +289,7 @@ if ($aClean['sub'])
             if(!$iVendorId)
             {
                 $sVendor = get_vendor_from_keywords($oApp->sKeywords);
-                $sQuery = "SELECT vendorId FROM vendor WHERE vendorname = '".$aClean['appVendorName']."';";
+                $sQuery = "SELECT vendorId FROM vendor WHERE vendorname = '".$aClean['sAppVendorName']."';";
                 $hResult = query_appdb($sQuery);
                 if($hResult)
                 {
@@ -301,7 +302,7 @@ if ($aClean['sub'])
             if(!$iVendorId)
             {
                 $hResult = query_parameters("select * from vendor where vendorname like '%?%'",
-                                        $aClean['appVendorName']);
+                                        $aClean['sAppVendorName']);
                 if($hResult)
                 {
                     $oRow = mysql_fetch_object($hResult);
@@ -310,7 +311,7 @@ if ($aClean['sub'])
             }
             //vendor field
             if($iVendorId)
-                $aClean['appVendorName'] = "";
+                $aClean['sAppVendorName'] = "";
         } else //app version
         { 
             if(is_numeric($oVersion->iVersionId))
@@ -343,9 +344,9 @@ if ($aClean['sub'])
         if(!($oTest->sTestedDate))
             $oTest->sTestedDate = date('Y-m-d H:i:s');
 
-        if($aClean['apptype'] == 'application')
+        if($aClean['sAppType'] == 'application')
         {
-            $oApp->OutputEditor($aClean['appVendorName']);
+            $oApp->OutputEditor($aClean['sAppVendorName']);
             $oVersion->OutputEditor(false, false);
         } else
         {
@@ -356,14 +357,14 @@ if ($aClean['sub'])
 
         echo "<table width='100%' border=0 cellpadding=2 cellspacing=2>\n";
 
-        if($aClean['apptype'] == 'application') // application
+        if($aClean['sAppType'] == 'application') // application
         {
-            echo '<input type="hidden" name="apptype" value="application" />';
+            echo '<input type="hidden" name="sAppType" value="application" />';
             if(is_numeric($oApp->iAppId))
             {
                 echo '<tr valign=top><td class=color3 align=center colspan=2>' ,"\n";
                 echo '<input type=submit value=" Re-Submit App Into Database " class=button>&nbsp',"\n";
-                echo '<input name="sub" type="submit" value="Delete" class="button" />',"\n";
+                echo '<input name="sSub" type="submit" value="Delete" class="button" />',"\n";
             } else
             {
                 echo '<tr valign=top><td class=color3 align=center colspan=2>',"\n";
@@ -371,13 +372,13 @@ if ($aClean['sub'])
             }
         } else // version
         {
-            echo '<input type="hidden" name="apptype" value="version" />';
-            echo '<input type="hidden" name="appId" value="'.$aClean['appId'].'" />';
+            echo '<input type="hidden" name="sAppType" value="version" />';
+            echo '<input type="hidden" name="iAppId" value="'.$aClean['iAppId'].'" />';
             if(is_numeric($oVersion->iVersionId))
             {
                 echo '<tr valign=top><td class=color3 align=center colspan=2>' ,"\n";
                 echo '<input type="submit" value="Re-Submit Version Into Database " class="button">&nbsp',"\n";
-                echo '<input name="sub" type=submit value="Delete" class="button"></td></tr>',"\n";
+                echo '<input name="sSub" type=submit value="Delete" class="button"></td></tr>',"\n";
             }
             else
             {
@@ -397,7 +398,7 @@ if ($aClean['sub'])
         redirect($_SERVER['PHP_SELF']);
     } 
 }
-else // if ($aClean['sub']) is not defined, display the main app queue page 
+else // if ($aClean['sSub']) is not defined, display the main app queue page 
 {
     apidb_header("Resubmit application");
 

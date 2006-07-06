@@ -53,11 +53,11 @@ class Url {
     {
         $aClean = array(); //array of filtered user input
 
-        $aClean['versionId'] = makeSafe($_REQUEST['versionId']);
-        $aClean['appId'] = makeSafe($_REQUEST['appId']);
+        $aClean['iVersionId'] = makeSafe($_REQUEST['iVersionId']);
+        $aClean['iAppId'] = makeSafe($_REQUEST['iAppId']);
 
         // Security, if we are not an administrator or a maintainer, the url must be queued.
-        if(!($_SESSION['current']->hasPriv("admin") || $_SESSION['current']->isMaintainer($aClean['versionId']) || $_SESSION['current']->isSupermaintainer($aClean['appId'])))
+        if(!($_SESSION['current']->hasPriv("admin") || $_SESSION['current']->isMaintainer($aClean['iVersionId']) || $_SESSION['current']->isSupermaintainer($aClean['iAppId'])))
         {
             $this->bQueued = true;
         }
@@ -212,7 +212,7 @@ class Url {
             if(!$this->bQueued)
             {
                 $sSubject = "Url for ".$sAppName." added by ".$_SESSION['current']->sRealname;
-                $sMsg  = APPDB_ROOT."appview.php?versionId=".$this->iVersionId."\n";
+                $sMsg  = APPDB_ROOT."appview.php?iVersionId=".$this->iVersionId."\n";
                 if($this->iSubmitterId)
                 {
                     $oSubmitter = new User($this->iSubmitterId);
@@ -223,7 +223,7 @@ class Url {
             } else // Url queued.
             {
                 $sSubject = "Url for ".$sAppName." submitted by ".$_SESSION['current']->sRealname;
-                $sMsg  = APPDB_ROOT."appview.php?versionId=".$this->iVersionId."\n";
+                $sMsg  = APPDB_ROOT."appview.php?iVersionId=".$this->iVersionId."\n";
                 $sMsg .= "This url has been queued.";
                 $sMsg .= "\n";
                 addmsg("The url you submitted will be added to the database database after being reviewed.", "green");
@@ -231,7 +231,7 @@ class Url {
         } else // Url deleted.
         {
             $sSubject = "Url for ".$sAppName." deleted by ".$_SESSION['current']->sRealname;
-            $sMsg  = APPDB_ROOT."appview.php?versionId=".$this->iVersionId."\n";
+            $sMsg  = APPDB_ROOT."appview.php?iVersionId=".$this->iVersionId."\n";
             addmsg("Url deleted.", "green");
         }
 

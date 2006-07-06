@@ -8,8 +8,8 @@ include(BASE."include/incl.php");
 
 $aClean = array(); //filtered user input
 
-$aClean['action'] = makeSafe($_REQUEST['action']);
-$aClean['userId'] = makeSafe($_REQUEST['userId']);
+$aClean['sAction'] = makeSafe($_REQUEST['sAction']);
+$aClean['iUserId'] = makeSafe($_REQUEST['iUserId']);
 $aClean['sSearch'] = makeSafe($_REQUEST['sSearch']);
 $aClean['iLimit'] = makeSafe($_REQUEST['iLimit']);
 $aClean['sOrderBy'] = makeSafe($_REQUEST['sOrderBy']);
@@ -24,9 +24,9 @@ if(!$_SESSION['current']->hasPriv("admin"))
 }
 
 // we want to delete a user
-if($aClean['action'] == "delete" && is_numeric($aClean['userId']))
+if($aClean['sAction'] == "delete" && is_numeric($aClean['iUserId']))
 {
-    $oUser = new User($aClean['userId']);
+    $oUser = new User($aClean['iUserId']);
     $oUser->delete();
 }
 
@@ -103,7 +103,7 @@ if($aClean['sSubmit'])
             if($oUser->hasPriv("admin")) echo "A";
             if($oUser->isMaintainer()) echo "M";
             echo "    </td>\n";
-            echo "    <td align=\"center\">[<a href=\"../preferences.php?userId=".$oRow->userid."&sSearch=".$sSearch."&iLimit=".$aClean['iLimit']."&sOrderBy=".$aClean['sOrderBy']."\">edit</a>]&nbsp;[<a onclick=\"if(!confirm('".$sAreYouSure."'))return false;\" \"href=\"".$_SERVER['PHP_SELF']."?action=delete&userId=".$oRow->userid."&sSearch=".$sSearch."&iLimit=".$aClean['iLimit']."&sOrderBy=".$aClean['sOrderBy']."&sSubmit=true\">delete</a>]</td>\n";
+            echo "    <td align=\"center\">[<a href=\"../preferences.php?iUserId=".$oRow->userid."&sSearch=".$sSearch."&iLimit=".$aClean['iLimit']."&sOrderBy=".$aClean['sOrderBy']."\">edit</a>]&nbsp;[<a onclick=\"if(!confirm('".$sAreYouSure."'))return false;\" \"href=\"".$_SERVER['PHP_SELF']."?sAction=delete&iUserId=".$oRow->userid."&sSearch=".$sSearch."&iLimit=".$aClean['iLimit']."&sOrderBy=".$aClean['sOrderBy']."&sSubmit=true\">delete</a>]</td>\n";
             echo "</tr>\n\n";
         }
     }

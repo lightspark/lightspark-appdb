@@ -43,7 +43,7 @@ if(!empty($aClean['sSub']))
     {
         $oNote->update();
     }
-    redirect(apidb_fullurl("appview.php?versionId={$oNote->iVersionId}"));
+    redirect(apidb_fullurl("appview.php?iVersionId={$oNote->iVersionId}"));
 } else /* display note */
 {
     // show form
@@ -67,7 +67,7 @@ if(!empty($aClean['sSub']))
     echo '<input type="submit" name=sSub value="Delete"></td></tr>',"\n";
     echo '</center>';
     
-    echo html_back_link(1,BASE."appview.php?versionId=".$oNote->iVersionId);
+    echo html_back_link(1,BASE."appview.php?iVersionId=".$oNote->iVersionId);
 }
 
 apidb_footer();

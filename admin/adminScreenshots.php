@@ -12,12 +12,12 @@ require(BASE."include/mail.php");
 
 $aClean = array(); //array of filtered user input
 
-$aClean['cmd'] = makeSafe($_REQUEST['cmd']);
-$aClean['imageId'] = makeSafe($_REQUEST['imageId']);
-$aClean['ItemsPerPage'] = makeSafe($_REQUEST['ItemsPerPage']);
-$aClean['page'] = makeSafe($_REQUEST['page']);
-$aClean['regenerate'] = makeSafe($_REQUEST['regenerate']);
-$aClean['versionId'] = makeSafe($_REQUEST['versionId']);
+$aClean['sCmd'] = makeSafe($_REQUEST['sCmd']);
+$aClean['iImageId'] = makeSafe($_REQUEST['iImageId']);
+$aClean['iItemsPerPage'] = makeSafe($_REQUEST['iItemsPerPage']);
+$aClean['iPage'] = makeSafe($_REQUEST['iPage']);
+$aClean['bRegenerate'] = makeSafe($_REQUEST['bRegenerate']);
+$aClean['iVersionId'] = makeSafe($_REQUEST['iVersionId']);
 
 // deny access if not admin
 if(!$_SESSION['current']->hasPriv("admin"))
@@ -28,18 +28,18 @@ if(!$_SESSION['current']->hasPriv("admin"))
 /*
  * We issued a delete command.
  */ 
-if($aClean['cmd'])
+if($aClean['sCmd'])
 {
     // process screenshot deletion
-    if($aClean['cmd'] == "delete" && is_numeric($aClean['imageId']))
+    if($aClean['sCmd'] == "delete" && is_numeric($aClean['iImageId']))
     {
-        $oScreenshot = new Screenshot($aClean['imageId']);
+        $oScreenshot = new Screenshot($aClean['iImageId']);
         $oScreenshot->delete();
         $oScreenshot->free();
     } 
     redirect($_SERVER['PHP_SELF'].
-             "?ItemsPerPage=".$aClean['ItemsPerPage'].
-             "&page=".$aClean['page']);
+             "?iItemsPerPage=".$aClean['iItemsPerPage'].
+             "&iPage=".$aClean['iPage']);
     exit;
 
 }
@@ -47,7 +47,7 @@ if($aClean['cmd'])
 
 apidb_header("Screenshots");
 // regenerate all screenshots
-if($aClean['regenerate'])
+if($aClean['sRegenerate'])
 {
     $sQuery = "SELECT id FROM appData WHERE type = 'image'";
     $hResult = query_parameters($sQuery);
@@ -62,7 +62,7 @@ if($aClean['regenerate'])
 }
 echo "<center>";
 echo "<a href=\"".$_SERVER['PHP_SELF'].
-     "?regenerate=true\">Regenerate all screenshots ! ".
+     "?bRegenerate=true\">Regenerate all screenshots ! ".
       "(use only if you know what you are doing)</a><br />";
 echo "</center>";
 
@@ -72,10 +72,10 @@ $pageRange = 10;
 $ItemsPerPage = 6;
 $currentPage = 1;
 
-if($aClean['ItemsPerPage'])
-    $ItemsPerPage = $aClean['ItemsPerPage'];
-if($aClean['page'])
-    $currentPage = $aClean['page'];
+if($aClean['iItemsPerPage'])
+    $ItemsPerPage = $aClean['iItemsPerPage'];
+if($aClean['iPage'])
+    $currentPage = $aClean['iPage'];
 
 $ItemsPerPage = min($ItemsPerPage,100);
 $totalPages = ceil(getNumberOfImages()/$ItemsPerPage);
@@ -87,14 +87,14 @@ $offset = (($currentPage-1) * $ItemsPerPage);
 echo "<center>";
 echo "<b>Page $currentPage of $totalPages</b><br />";
 display_page_range($currentPage, $pageRange, $totalPages,
-                  $_SERVER['PHP_SELF']."?ItemsPerPage=".$ItemsPerPage);
+                  $_SERVER['PHP_SELF']."?iItemsPerPage=".$ItemsPerPage);
 echo "<br />";
 echo "<br />";
 
 /* display the option to choose how many screenshots per-page to display */
 echo '<form method="get" name="message" action="'.$_SERVER['PHP_SELF'].'">';
 echo '<b>Number of Screenshots per page:</b>';
-echo "&nbsp<select name='ItemsPerPage'>";
+echo "&nbsp<select name='iItemsPerPage'>";
 
 $ItemsPerPageArray = array(6, 9, 12, 15, 18, 21, 24);
 foreach($ItemsPerPageArray as $i => $value)
@@ -129,21 +129,21 @@ while ($oRow = mysql_fetch_object($Ids))
     echo "<div align=center>". substr($oRow->description,0,20). "\n";
 
     echo "<br />[<a href='".apidb_fullurl("appview.php");
-    echo "?appId=".$oApp->iAppId."'>";
+    echo "?iAppId=".$oApp->iAppId."'>";
     echo $oApp->sName."</a>]";    
 
     echo "<br />[<a href='".apidb_fullurl("appview.php");
-    echo "?versionId=".$oVersion->iVersionId."'>";
+    echo "?iVersionId=".$oVersion->iVersionId."'>";
     echo "Version: ".$oVersion->sName."</a>]";
     
     //show admin delete link
     if($_SESSION['current']->isLoggedIn() && 
       ($_SESSION['current']->hasPriv("admin") || 
-       $_SESSION['current']->isMaintainer($aClean['versionId'])))
+       $_SESSION['current']->isMaintainer($aClean['iVersionId'])))
     {
         echo "<br />[<a href='".$_SERVER['PHP_SELF'];
-        echo "?cmd=delete&imageId=$oRow->id";
-        echo "&page=".$currentPage."&ItemsPerPage=".$ItemsPerPage."'>";
+        echo "?sCmd=delete&iImageId=$oRow->id";
+        echo "&iPage=".$currentPage."&iItemsPerPage=".$ItemsPerPage."'>";
         echo "Delete Image</a>]";
     }
     echo "</div></td>\n";
@@ -157,7 +157,7 @@ echo "</tr></table></div><br />\n";
 /* display page selection links */
 echo "<center>";
 display_page_range($currentPage, $pageRange, $totalPages,
-                   $_SERVER['PHP_SELF']."?ItemsPerPage=".$ItemsPerPage);
+                   $_SERVER['PHP_SELF']."?iItemsPerPage=".$ItemsPerPage);
 echo "</center>";
 
 apidb_footer();

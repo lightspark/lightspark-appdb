@@ -7,32 +7,32 @@ require(BASE."include/mail.php");
 
 $aClean = array(); //array of filtered user input
 
-$aClean['appId'] = makeSafe($_REQUEST['appId']);
-$aClean['versionId'] = makeSafe($_REQUEST['versionId']);
-$aClean['submit'] = makeSafe($_REQUEST['submit']);
+$aClean['iAppId'] = makeSafe($_REQUEST['iAppId']);
+$aClean['iVersionId'] = makeSafe($_REQUEST['iVersionId']);
+$aClean['sSubmit'] = makeSafe($_REQUEST['sSubmit']);
 
-if(!is_numeric($aClean['appId']) OR !is_numeric($aClean['versionId']))
+if(!is_numeric($aClean['iAppId']) OR !is_numeric($aClean['iVersionId']))
 {
     util_show_error_page("Wrong ID");
     exit;
 }
 
 /* Check for admin privs */
-if(!$_SESSION['current']->hasPriv("admin") && !$_SESSION['current']->isMaintainer($aClean['versionId']) && !$_SESSION['current']->isSuperMaintainer($aClean['appId']))
+if(!$_SESSION['current']->hasPriv("admin") && !$_SESSION['current']->isMaintainer($aClean['iVersionId']) && !$_SESSION['current']->isSuperMaintainer($aClean['iAppId']))
 {
     util_show_error_page("Insufficient Privileges!");
     exit;
 }
 
 /* process the changes the user entered into the web form */
-if(!empty($aClean['submit']))
+if(!empty($aClean['sSubmit']))
 {
     process_app_version_changes(true);
-    redirect(apidb_fullurl("appview.php?versionId=".$aClean['versionId']));
+    redirect(apidb_fullurl("appview.php?iVersionId=".$aClean['iVersionId']));
 } else /* or display the webform for making changes */
 {
 
-    $oVersion = new Version($aClean['versionId']);
+    $oVersion = new Version($aClean['iVersionId']);
 
     apidb_header("Edit Application Version");
 
@@ -44,7 +44,7 @@ if(!empty($aClean['submit']))
         $oVersion->OutputEditor(false, true); /* false = not allowing the user to modify the parent application */
         
     echo '<table border=0 cellpadding=2 cellspacing=0 width="100%">',"\n";
-    echo '<tr><td colspan=2 align=center class=color2><input type="submit" name="submit" value="Update Database" /></td></tr>',"\n";
+    echo '<tr><td colspan=2 align=center class=color2><input type="submit" name="sSubmit" value="Update Database" /></td></tr>',"\n";
     echo html_table_end();
 
     echo "</form>";
@@ -53,8 +53,8 @@ if(!empty($aClean['submit']))
 
     // url edit form
     echo '<form enctype="multipart/form-data" action="editAppVersion.php" method="post">',"\n";
-    echo '<input type=hidden name="appId" value='.$oVersion->iAppId.'>';
-    echo '<input type=hidden name="versionId" value='.$oVersion->iVersionId.'>';
+    echo '<input type=hidden name="iAppId" value='.$oVersion->iAppId.'>';
+    echo '<input type=hidden name="iVersionId" value='.$oVersion->iVersionId.'>';
     echo html_frame_start("Edit URL","90%","",0);
     echo '<table border=0 cellpadding=6 cellspacing=0 width="100%">',"\n";
             
@@ -87,11 +87,11 @@ if(!empty($aClean['submit']))
         echo '<td class=color1><b>URL</b></td></tr>',"\n";
     }
     echo "</td></tr>\n";
-    echo "<input type=hidden name='rows' value='$i'>";
-    echo '<tr><td class=color1>New</td><td class=color1><input size="45" type="text" name="url_desc"></td>',"\n";
-    echo '<td class=color1><input size=45% name="url" type="text"></td></tr>',"\n";
+    echo "<input type=hidden name='iRows' value='$i'>";
+    echo '<tr><td class=color1>New</td><td class=color1><input size="45" type="text" name="sUrlDesc"></td>',"\n";
+    echo '<td class=color1><input size=45% name="sUrl" type="text"></td></tr>',"\n";
      
-    echo '<tr><td colspan=3 align=center class="color3"><input type="submit" name="submit" value="Update URL"></td></tr>',"\n";
+    echo '<tr><td colspan=3 align=center class="color3"><input type="submit" name="sSubmit" value="Update URL"></td></tr>',"\n";
          
     echo '</table>',"\n";
     echo html_frame_end();
@@ -102,14 +102,14 @@ if(!empty($aClean['submit']))
     {
         // move version form
         echo '<form enctype="multipart/form-data" action="moveAppVersion.php" method="post">',"\n";
-        echo '<input type=hidden name="appId" value='.$oVersion->iAppId.'>';
-        echo '<input type=hidden name="versionId" value='.$oVersion->iVersionId.'>';
+        echo '<input type=hidden name="iAppId" value='.$oVersion->iAppId.'>';
+        echo '<input type=hidden name="iVersionId" value='.$oVersion->iVersionId.'>';
         echo html_frame_start("Move version to another application","90%","",0);
-        echo '<center><input type="submit" name="view" value="Move this version"></center>',"\n";
+        echo '<center><input type="submit" name="sView" value="Move this version"></center>',"\n";
         echo html_frame_end();
     }
 
-    echo html_back_link(1,BASE."appview.php?versionId=".$oVersion->iVersionId);
+    echo html_back_link(1,BASE."appview.php?iVersionId=".$oVersion->iVersionId);
     apidb_footer();
 }
 ?>

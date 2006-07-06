@@ -272,7 +272,7 @@ class distribution{
                 {
                     $sSubject =  "Distribution rejected";
                     $sMsg  = "The Distribution you submitted (".$this->sName.") has been rejected.";
-                    $sMsg .= APPDB_ROOT."testingData.php?sub=view&versionId=".$this->iVersionId."\n";
+                    $sMsg .= APPDB_ROOT."testingData.php?sSub=view&iVersionId=".$this->iVersionId."\n";
                     $sMsg .= "Reason given:\n";
                     $sMsg .= $aClean['replyText']."\n"; // append the reply text, if there is any 
                 }

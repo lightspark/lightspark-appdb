@@ -10,7 +10,7 @@ function global_sidebar_menu() {
      
     $aClean = array(); //array of filtered user input
 
-    $aClean['q'] = makeSafe($_REQUEST['q']);
+    $aClean['sSearchQuery'] = makeSafe($_REQUEST['sSearchQuery']);
 
     $g = new htmlmenu(APPDB_OWNER." Menu");
     $g->add(APPDB_OWNER, APPDB_OWNER_URL);
@@ -24,7 +24,7 @@ function global_sidebar_menu() {
     $g->add("Screenshots", BASE."viewScreenshots.php");
     $g->add("Browse Apps", BASE."appbrowse.php");
     $g->add("Top 25", BASE."votestats.php");
-    $g->add("Submit Application", BASE."appsubmit.php?sub=view&apptype=application");
+    $g->add("Submit Application", BASE."appsubmit.php?sSub=view&sAppType=application");
     $g->add("Help &amp; Documentation", BASE."help/");
     $g->add("AppDB Stats", BASE."appdbStats.php");
     $g->add("View Distributions (".getNumberOfDistributions().")", BASE."distributionView.php");
@@ -34,7 +34,7 @@ function global_sidebar_menu() {
     $g->done();    
 
     $g = new htmlmenu("Search");
-    $g->addmisc(app_search_box(!empty($aClean['q']) ? $aClean['q'] : ''));
+    $g->addmisc(app_search_box(!empty($aClean['sSearchQuery']) ? $aClean['sSearchQuery'] : ''));
     $g->done();
 
 }
@@ -43,7 +43,7 @@ function global_sidebar_menu() {
 function app_search_box($q = '')
 {
    $str =  "</span><form method=\"get\" action=\"".BASE."search.php\">\n";
-   $str .= "<input type=text name=q value='$q' size=11 class=searchfield>";
+   $str .= "<input type=text name=sSearchQuery value='$q' size=11 class=searchfield>";
    $str .= "<input type=submit value='Search' class=searchbutton>\n";
    $str .= "</form>\n<span>";
    return $str;

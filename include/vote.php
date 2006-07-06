@@ -116,7 +116,7 @@ function vote_menu()
 {
 
     $aClean = array(); //array of filtered user input
-    $aClean['appId'] = makeSafe($_REQUEST['appId']);
+    $aClean['iAppId'] = makeSafe($_REQUEST['iAppId']);
 
     $m = new htmlmenu("Votes","updatevote.php");
     
@@ -127,22 +127,22 @@ function vote_menu()
         if(isset($votes[$i]))
         {
             $sAppName = Application::lookup_name($votes[$i]->appId);
-            $str = "<a href='appview.php?appId=".$votes[$i]->appId."'> $sAppName</a>";
+            $str = "<a href='appview.php?iAppId=".$votes[$i]->appId."'> $sAppName</a>";
             $m->add("<input type=radio name=slot value='$i'> ".$str);
         }
         else
-            $m->add("<input type=radio name=slot value='$i'> No App Selected");
+            $m->add("<input type=radio name=iSlot value='$i'> No App Selected");
     }
     
     $m->addmisc("&nbsp;");
 
-    $m->add("<input type=submit name=clear value=' Clear Vote   ' class=votebutton>");
-    $m->add("<input type=submit name=vote value='Vote for App' class=votebutton>");
+    $m->add("<input type=submit name=sClear value=' Clear Vote   ' class=votebutton>");
+    $m->add("<input type=submit name=sVote value='Vote for App' class=votebutton>");
     
-    $m->addmisc("<input type=hidden name=appId value={$aClean['appId']}>");
+    $m->addmisc("<input type=hidden name=iAppId value={$aClean['iAppId']}>");
     
     $m->add("View Results", BASE."votestats.php");
-    $m->add("Voting Help", BASE."help/?topic=voting");
+    $m->add("Voting Help", BASE."help/?sTopic=voting");
     
     $m->done(1);    
 }
@@ -156,32 +156,32 @@ function vote_update($vars)
         return;
     }
 
-    if( !is_numeric($vars['appId']) OR !is_numeric($vars['slot']))
+    if( !is_numeric($vars['iAppId']) OR !is_numeric($vars['iSlot']))
     {
-        if(is_numeric($vars['appId']))
-           redirect(apidb_fullurl("appview.php?appId=".$vars["appId"]));
+        if(is_numeric($vars['iAppId']))
+           redirect(apidb_fullurl("appview.php?iAppId=".$vars["iAppId"]));
         else
             redirect(apidb_fullurl("index.php"));
 
         return;
     }
     
-    if($vars["vote"])
+    if($vars["sVote"])
     {
-        addmsg("Registered vote for App #".$vars["appId"], "green");
-        vote_add($vars["appId"], $vars["slot"]);
-    } else if($vars["clear"])
+        addmsg("Registered vote for App #".$vars["iAppId"], "green");
+        vote_add($vars["iAppId"], $vars["slot"]);
+    } else if($vars["sClear"])
     {
         /* see if we have a vote in this slot, if we don't there is */
         /* little reason to remove it or even mention that we did anything */
         if(is_vote_in_slot($vars["slot"]))
         {
             vote_remove($vars["slot"]);
-            addmsg("Removed vote for App #".$vars["appId"], "green");
+            addmsg("Removed vote for App #".$vars["iAppId"], "green");
         }
     }
 
-    redirect(apidb_fullurl("appview.php?appId=".$vars["appId"]));
+    redirect(apidb_fullurl("appview.php?iAppId=".$vars["iAppId"]));
 }
 
 // tell us if there is a vote in a given slot so we don't

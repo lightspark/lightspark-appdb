@@ -13,11 +13,11 @@ require(BASE."include/mail.php");
 
 $aClean = array(); //array of filtered user input
 
-$aClean['sub'] = makeSafe( $_REQUEST['sub'] );
-$aClean['queueId'] = makeSafe( $_REQUEST['queueId'] );
-$aClean['add'] = makeSafe( $_REQUEST['add'] );
-$aClean['reject'] = makeSafe( $_REQUEST['reject'] );
-$aClean['replyText'] = makeSafe( $_REQUEST['replyText'] );
+$aClean['sSub'] = makeSafe( $_REQUEST['sSub'] );
+$aClean['iQueueId'] = makeSafe( $_REQUEST['iQueueId'] );
+$aClean['sAdd'] = makeSafe( $_REQUEST['sAdd'] );
+$aClean['sReject'] = makeSafe( $_REQUEST['sReject'] );
+$aClean['sReplyText'] = makeSafe( $_REQUEST['sReplyText'] );
 
 if(!$_SESSION['current']->hasPriv("admin"))
 {
@@ -25,16 +25,16 @@ if(!$_SESSION['current']->hasPriv("admin"))
     exit;
 }
 
-if ($aClean['sub'])
+if ($aClean['sSub'])
 {
-    if ($aClean['queueId'])
+    if ($aClean['iQueueId'])
     {
         //get data
         $sQuery = "SELECT queueId, appId, versionId,".
                      "userId, maintainReason, superMaintainer,".
                      "UNIX_TIMESTAMP(submitTime) as submitTime ".
                      "FROM appMaintainerQueue WHERE queueId = '?'";
-        $hResult = query_parameters($sQuery, $aClean['queueId']);
+        $hResult = query_parameters($sQuery, $aClean['iQueueId']);
         $oRow = mysql_fetch_object($hResult);
         $oUser = new User($oRow->userId);
         mysql_free_result($hResult);
@@ -46,10 +46,10 @@ if ($aClean['sub'])
     }
 
     //process according to which request was submitted and optionally the sub flag
-    if (!$aClean['add'] && !$aClean['reject'] && $aClean['queueId'])
+    if (!$aClean['sAdd'] && !$aClean['sReject'] && $aClean['iQueueId'])
     {
         apidb_header("Admin Maintainer Queue");
-        echo '<form name="qform" action="adminMaintainerQueue.php" method="post" enctype="multipart/form-data">',"\n";
+        echo '<form name="sQform" action="adminMaintainerQueue.php" method="post" enctype="multipart/form-data">',"\n";
 
         $x = new TableVE("view");
 
@@ -155,23 +155,23 @@ if ($aClean['sub'])
          
         //maintainReason
         echo '<tr valign=top><td class=color0><b>Maintainer request reason</b></td>',"\n";
-        echo '<td><textarea name="maintainReason" rows=10 cols=35>'.$oRow->maintainReason.'</textarea></td></tr>',"\n";
+        echo '<td><textarea name="sMaintainReason" rows=10 cols=35>'.$oRow->maintainReason.'</textarea></td></tr>',"\n";
 
         //email response
         echo '<tr valign=top><td class=color0><b>Email reply</b></td>',"\n";
-        echo "<td><textarea name='replyText' rows=10 cols=35>Enter a personalized reason for acceptance or rejection of the users maintainer request here</textarea></td></tr>\n";
+        echo "<td><textarea name='sReplyText' rows=10 cols=35>Enter a personalized reason for acceptance or rejection of the users maintainer request here</textarea></td></tr>\n";
 
         /* Add button */
         echo '<tr valign=top><td class=color3 align=center colspan=2>' ,"\n";
-        echo '<input type=submit name=add value=" Add maintainer to this application " class=button /> </td></tr>',"\n";
+        echo '<input type=submit name=sAdd value=" Add maintainer to this application " class=button /> </td></tr>',"\n";
 
         /* Reject button */
         echo '<tr valign=top><td class=color3 align=center colspan=2>' ,"\n";
-        echo '<input type=submit name=reject value=" Reject this request " class=button /></td></tr>',"\n";
+        echo '<input type=submit name=sReject value=" Reject this request " class=button /></td></tr>',"\n";
 
         echo '</table>',"\n";
-        echo '<input type=hidden name="sub" value="inside_form" />',"\n"; 
-        echo '<input type=hidden name="queueId" value="'.$aClean['queueId'].'" />',"\n";  
+        echo '<input type=hidden name="sSub" value="inside_form" />',"\n"; 
+        echo '<input type=hidden name="iQueueId" value="'.$aClean['iQueueId'].'" />',"\n";  
 
         echo html_frame_end("&nbsp;");
         echo html_back_link(1,'adminMaintainerQueue.php');
@@ -180,7 +180,7 @@ if ($aClean['sub'])
         exit;
 
     }
-    else if ($aClean['add'] && $aClean['queueId'])
+    else if ($aClean['sAdd'] && $aClean['iQueueId'])
     {
         /* create a new user object for the maintainer */
         $maintainerUser = new User($oRow->userId);
@@ -188,11 +188,11 @@ if ($aClean['sub'])
         /* add the user as a maintainer and return the statusMessage */
         $statusMessage = $maintainerUser->addAsMaintainer($oRow->appId, $oRow->versionId,
                                                           $oRow->superMaintainer,
-                                                          $aClean['queueId']);
+                                                          $aClean['iQueueId']);
         //done
         addmsg("<p><b>$statusMessage</b></p>", 'green');
     }
-    else if (($aClean['reject'] || ($aClean['sub'] == 'reject')) && $aClean['queueId'])
+    else if (($aClean['sReject'] || ($aClean['sSub'] == 'sReject')) && $aClean['iQueueId'])
     {
        $sEmail = $oUser->sEmail;
        if ($sEmail)
@@ -201,7 +201,7 @@ if ($aClean['sub'])
            $oVersion = new Version($oRow->versionId);
            $sSubject =  "Application Maintainer Request Report";
            $sMsg  = "Your application to be the maintainer of ".$oApp->sName." ".$oVersion->sName." was rejected. ";
-           $sMsg .= $aClean['replyText'];
+           $sMsg .= $aClean['sReplyText'];
            $sMsg .= "";
            $sMsg .= "-The AppDB admins\n";
                 
@@ -210,7 +210,7 @@ if ($aClean['sub'])
 
        //delete main item
        $sQuery = "DELETE from appMaintainerQueue where queueId = '?'";
-       $hResult = query_parameters($sQuery, $aClean['queueId']);
+       $hResult = query_parameters($sQuery, $aClean['iQueueId']);
        if(!$hResult) addmsg("unable to delete selected maintainer application", "red");
        echo html_frame_start("Delete maintainer application",400,"",0);
        if($hResult)
@@ -230,7 +230,7 @@ if ($aClean['sub'])
 /* display the list of all outstanding maintainer requests */
 {
     apidb_header("Admin Maintainer Queue");
-    echo '<form name="qform" action="adminMaintainerQueue.php" method="post" enctype="multipart/form-data">',"\n";
+    echo '<form name="sQform" action="adminMaintainerQueue.php" method="post" enctype="multipart/form-data">',"\n";
 
     //get available maintainers
     $sQuery = "SELECT queueId, appId, versionId,".
@@ -291,7 +291,7 @@ if ($aClean['sub'])
             }
 
             echo "    <td><a href=\"mailto:".$oUser->sEmail."\">".$oUser->sRealname."</a></td>\n";
-            echo "    <td>[<a href=\"adminMaintainerQueue.php?sub=view&queueId=$oRow->queueId\">answer</a>]</td>\n";
+            echo "    <td>[<a href=\"adminMaintainerQueue.php?sSub=view&iQueueId=$oRow->queueId\">answer</a>]</td>\n";
             echo "</tr>\n\n";
             $c++;
         }

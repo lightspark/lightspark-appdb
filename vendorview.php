@@ -12,12 +12,12 @@ require_once(BASE."include/application.php");
 require_once(BASE."include/vendor.php");
 
 $aClean = array(); //array of filtered user input
-$aClean['vendorId'] = makeSafe($_REQUEST['vendorId']);
-$aClean['sub'] = makeSafe($_REQUEST['sub']);
+$aClean['iVendorId'] = makeSafe($_REQUEST['iVendorId']);
+$aClean['sSub'] = makeSafe($_REQUEST['sSub']);
 
-$oVendor = new Vendor($aClean['vendorId']);
+$oVendor = new Vendor($aClean['iVendorId']);
 
-if ($aClean['sub'])
+if ($aClean['sSub'])
 {
     if(!$_SESSION['current']->hasPriv("admin"))
     {
@@ -25,7 +25,7 @@ if ($aClean['sub'])
         exit;
     }
 
-    if($aClean['sub'] == 'delete')
+    if($aClean['sSub'] == 'delete')
     {
         $oVendor->delete();
         redirect($_SERVER['PHP_SELF']);
@@ -57,7 +57,7 @@ if($oVendor->iVendorId)
         foreach($oVendor->aApplicationsIds as $iAppId)
         {
             $oApp  = new application($iAppId);
-            echo '<li> <a href="appview.php?appId='.$oApp->iAppId.'">'.$oApp->sName.'</a> </li>',"\n";
+            echo '<li> <a href="appview.php?iAppId='.$oApp->iAppId.'">'.$oApp->sName.'</a> </li>',"\n";
         }
         echo '</ol>',"\n";
     }
@@ -94,7 +94,7 @@ else
         if ($c % 2 == 1) { $bgcolor = 'color0'; } else { $bgcolor = 'color1'; }
         $oVendor = new Vendor($oRow->vendorId);
         echo '<tr class="'.$bgcolor.'">',"\n";
-        echo '<td><a href="'.BASE.'vendorview.php?vendorId='.$oVendor->iVendorId.'">'.$oVendor->sName.'</a></td>',"\n";
+        echo '<td><a href="'.BASE.'vendorview.php?iVendorId='.$oVendor->iVendorId.'">'.$oVendor->sName.'</a></td>',"\n";
         echo '<td><a href="'.$oVendor->sWebpage.'">'.substr($oVendor->sWebpage,0,30).'</a></td>',"\n";
         echo '<td align="right">'.sizeof($oVendor->aApplicationsIds).'</td>',"\n";
         if ($_SESSION['current']->hasPriv("admin"))
@@ -102,7 +102,7 @@ else
             echo '<td align="center">',"\n";
             echo '[<a href="'.BASE.'admin/editVendor.php?iVendorId='.$oVendor->iVendorId.'">edit</a>]',"\n";
             if(!sizeof($oVendor->aApplicationsIds)) 
-                echo '&nbsp[<a href="'.$_SERVER['PHP_SELF'].'?sub=delete&vendorId='.$oVendor->iVendorId.'">delete</a>]',"\n";
+                echo '&nbsp[<a href="'.$_SERVER['PHP_SELF'].'?sSub=delete&iVendorId='.$oVendor->iVendorId.'">delete</a>]',"\n";
             echo '</td>',"\n";
         }
         echo '</tr>',"\n";

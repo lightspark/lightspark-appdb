@@ -5,46 +5,46 @@ require(BASE."include/category.php");
 
 $aClean = array(); //array of filtered user input
 
-$aClean['catId'] = makeSafe($_REQUEST['catId']);
-$aClean['name'] = makeSafe($_REQUEST['name']);
-$aClean['description'] = makeSafe($_REQUEST['description']);
-$aClean['parentId'] = makeSafe($_REQUEST['parentId']);
-$aClean['submit'] = makeSafe($_REQUEST['submit']);
+$aClean['iCatId'] = makeSafe($_REQUEST['iCatId']);
+$aClean['sName'] = makeSafe($_REQUEST['sName']);
+$aClean['sDescription'] = makeSafe($_REQUEST['sDescription']);
+$aClean['iParentId'] = makeSafe($_REQUEST['iParentId']);
+$aClean['sSubmit'] = makeSafe($_REQUEST['sSubmit']);
 
 if(!$_SESSION['current']->hasPriv("admin"))
 {
     util_show_error_page();
     exit;
 }
-$oCat = new Category($aClean['catId']);
-if($aClean['submit'])
+$oCat = new Category($aClean['iCatId']);
+if($aClean['sSubmit'])
 {
-    $oCat->update($aClean['name'],$aClean['description'],$aClean['parentId']);
-    redirect(apidb_fullurl("appbrowse.php?catId=".$oCat->iCatId));
+    $oCat->update($aClean['sName'],$aClean['sDescription'],$aClean['iParentId']);
+    redirect(apidb_fullurl("appbrowse.php?iCatId=".$oCat->iCatId));
 }
 else
 {
     apidb_header("Add Category");
     $sQuery = "SELECT catId, catName FROM appCategory WHERE catId!='?'";
-    $hResult = query_parameters($sQuery, $aClean['catId']);
+    $hResult = query_parameters($sQuery, $aClean['iCatId']);
     while($oRow = mysql_fetch_object($hResult))
     {
         $aCatsIds[]=$oRow->catId;
         $aCatsNames[]=$oRow->catName;
     }
     echo "<form method=\"post\" action=\"addCategory.php\">
-      <input type=\"hidden\" name=\"catId\" value=\"".$oCat->iCatId."\" /> 
+      <input type=\"hidden\" name=\"iCatId\" value=\"".$oCat->iCatId."\" /> 
       <table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"2\">
         <tr>
           <td width=\"15%\" class=\"box-label\"><b>Category name</b></td>
           <td class=\"box-body\">
-            <input type=\"text\" size=\"50\" name=\"name\" value=\"".$oCat->sName."\" /> 
+            <input type=\"text\" size=\"50\" name=\"sName\" value=\"".$oCat->sName."\" /> 
           </td>
         </tr>
         <tr>
           <td width=\"15%\" class=\"box-label\"><b>Description</b></td>
           <td class=\"box-body\">
-            <input type=\"text\" size=\"50\" name=\"description\" value=\"".$oCat->sDescription."\" /> 
+            <input type=\"text\" size=\"50\" name=\"sDescription\" value=\"".$oCat->sDescription."\" /> 
           </td>
         </tr>
         <tr>
@@ -55,7 +55,7 @@ else
         </tr>
         <tr>
           <td colspan=\"2\" class=\"box-body\">
-            <input type=\"submit\" name=\"submit\" value=\"Submit\" />
+            <input type=\"submit\" name=\"sSubmit\" value=\"Submit\" />
           </td>
         </tr>
       </table>

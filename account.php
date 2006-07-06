@@ -13,12 +13,12 @@ header("Cache-control: no-cache");
 $aClean = array(); //array of filtered user input
 
 // check command and process
-if(!empty($_POST['cmd']))
-    $aClean['cmd'] = makeSafe( $_POST['cmd'] );
+if(!empty($_POST['sCmd']))
+    $aClean['sCmd'] = makeSafe( $_POST['sCmd'] );
 else
-    $aClean['cmd'] = makeSafe( $_GET['cmd'] );
+    $aClean['sCmd'] = makeSafe( $_GET['sCmd'] );
 
-do_account($aClean['cmd']);
+do_account($aClean['sCmd']);
 
 
 /**
@@ -195,7 +195,7 @@ function cmd_send_passwd()
                .$shNote, "red");
     }
     
-    redirect(apidb_fullurl("account.php?cmd=login"));
+    redirect(apidb_fullurl("account.php?sCmd=login"));
 }
 
 /**

@@ -8,7 +8,7 @@ $aClean['sUserEmail'] = makeSafe($_POST['sUserEmail']);
 /**************/
 /* Login Form */
 /**************/
-echo '<form method="post" name="flogin" action="account.php">',"\n";
+echo '<form method="post" name="sFlogin" action="account.php">',"\n";
 echo html_frame_start("Login to Application DB","400","",0)
 ?>
 
@@ -16,8 +16,8 @@ echo html_frame_start("Login to Application DB","400","",0)
 <script type="text/javascript">
 <!--
 function cmd_send_passwd() {
-    document.flogin.cmd.value = "send_passwd";
-    document.flogin.submit();
+    document.sFlogin.sCmd.value = "send_passwd";
+    document.sFlogin.submit();
 }
 //-->
 </script>
@@ -43,14 +43,14 @@ function cmd_send_passwd() {
 <?php
 
 echo html_frame_end("&nbsp;");
-echo '<input type="hidden" name="cmd" value="do_login">',"\n";
-echo '<input type="hidden" name="ext_referer" value="'.$_SERVER['HTTP_REFERER'].'">',"\n";
+echo '<input type="hidden" name="sCmd" value="do_login">',"\n";
+echo '<input type="hidden" name="sExtReferer" value="'.$_SERVER['HTTP_REFERER'].'">',"\n";
 echo '</form>',"\n";
 
 ?>
    
   <p align=center>Don't have an account yet?<br>
-  [<a href="account.php?cmd=new" onMouseOver="document.status='';return true;">Create a New Account</a>]</p>
+  [<a href="account.php?sCmd=new" onMouseOver="document.status='';return true;">Create a New Account</a>]</p>
 
   <p align=center>Lost your password?<br>
   [<a href="javascript:cmd_send_passwd();" onMouseOver="document.status='';return true;">Email a New Password</a>]</p>

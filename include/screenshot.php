@@ -267,7 +267,7 @@ class Screenshot {
             if(!$this->bQueued)
             {
                 $sSubject = "Screenshot for ".$sAppName." added by ".$_SESSION['current']->sRealname;
-                $sMsg  = APPDB_ROOT."appview.php?versionId=".$this->iVersionId."\n";
+                $sMsg  = APPDB_ROOT."appview.php?iVersionId=".$this->iVersionId."\n";
                 if($this->iSubmitterId)
                 {
                     $oSubmitter = new User($this->iSubmitterId);
@@ -278,7 +278,7 @@ class Screenshot {
             } else // Screenshot queued.
             {
                 $sSubject = "Screenshot for ".$sAppName." submitted by ".$_SESSION['current']->sRealname;
-                $sMsg  = APPDB_ROOT."appview.php?versionId=".$this->iVersionId."\n";
+                $sMsg  = APPDB_ROOT."appview.php?iVersionId=".$this->iVersionId."\n";
                 $sMsg .= "This screenshot has been queued.";
                 $sMsg .= "\n";
                 addmsg("The screenshot you submitted will be added to the database database after being reviewed.", "green");
@@ -286,7 +286,7 @@ class Screenshot {
         } else // Screenshot deleted.
         {
             $sSubject = "Screenshot for ".$sAppName." deleted by ".$_SESSION['current']->sRealname;
-            $sMsg  = APPDB_ROOT."appview.php?versionId=".$this->iVersionId."\n";
+            $sMsg  = APPDB_ROOT."appview.php?iVersionId=".$this->iVersionId."\n";
             addmsg("Screenshot deleted.", "green");
         }
 
@@ -338,7 +338,7 @@ function get_screenshot_img($iAppId = null, $iVersionId = null, $bFormatting = t
     } else
     {
         $oRow = mysql_fetch_object($hResult);
-        $sImgFile = '<img src="appimage.php?thumbnail=true&amp;id='.$oRow->id.'" alt="'.$oRow->description.'" />';
+        $sImgFile = '<img src="appimage.php?bThumbnail=true&amp;iId='.$oRow->id.'" alt="'.$oRow->description.'" />';
     }
 
     if($bFormatting)
@@ -351,12 +351,12 @@ function get_screenshot_img($iAppId = null, $iVersionId = null, $bFormatting = t
     if(mysql_num_rows($hResult))
     {
         if($iVersionId)
-            $sImg .= "<a href='screenshots.php?appId=$iAppId&amp;versionId=$iVersionId'>$sImgFile<center>View/Submit&nbsp;Screenshot</center></a>";
+            $sImg .= "<a href='screenshots.php?iAppId=$iAppId&amp;iVersionId=$iVersionId'>$sImgFile<center>View/Submit&nbsp;Screenshot</center></a>";
         else
-            $sImg .= "<a href='screenshots.php?appId=$iAppId&amp;versionId=$iVersionId'>$sImgFile<center>View&nbsp;Screenshot</center></a>";
+            $sImg .= "<a href='screenshots.php?iAppId=$iAppId&amp;iVersionId=$iVersionId'>$sImgFile<center>View&nbsp;Screenshot</center></a>";
     } else if($iVersionId) /* we are asking for a specific app version but it has no screenshots */
     {
-        $sImg .= "<a href='screenshots.php?appId=$iAppId&amp;versionId=$iVersionId'>$sImgFile<center>Submit&nbsp;Screenshot</center></a>";
+        $sImg .= "<a href='screenshots.php?iAppId=$iAppId&amp;iVersionId=$iVersionId'>$sImgFile<center>Submit&nbsp;Screenshot</center></a>";
     } else /* we have no screenshots and we aren't a specific version, we don't allow adding screenshots for an app */
     {
         $sImg .= $sImgFile; 
@@ -409,11 +409,11 @@ function get_thumbnail($id)
     $randName = User::generate_passwd(5);
     // set img tag        
     $imgSRC  = '<img src="'.apidb_fullurl("appimage.php").
-               '?thumbnail=true&id='.$id.'" alt="'.$oScreenshot->sDescription.
+               '?bThumbnail=true&iId='.$id.'" alt="'.$oScreenshot->sDescription.
                '" width="'.$oScreenshot->oThumbnailImage->get_width().
                '" height="'.$oScreenshot->oThumbnailImage->get_height().'">';
     $img = '<a href="'.apidb_fullurl("appimage.php").
-           '?id='.$id.
+           '?iId='.$id.
            '" onclick="javascript:openWin(\''.apidb_fullurl("appimage.php").
            '?id='.$id.'\',\''.$randName.'\','.
            ($oScreenshot->oScreenshotImage->get_width() + 20).','.
@@ -426,7 +426,7 @@ function get_thumbnail($id)
         if ($_SESSION['current']->getpref("window:screenshot") == "no")
         {
             $img = '<a href="'.apidb_fullurl("appimage.php").
-                   '?imageId='.$id.'">'.$imgSRC.'</a>';
+                   '?iImageId='.$id.'">'.$imgSRC.'</a>';
         }
     }
     return $img;

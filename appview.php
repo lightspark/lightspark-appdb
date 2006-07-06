@@ -19,13 +19,13 @@ require_once(BASE."include/testResults.php");
 
 $aClean = array(); //array of filtered user input
 
-$aClean['appId'] = makeSafe($_REQUEST['appId']);
-$aClean['versionId'] = makeSafe($_REQUEST['versionId']);
-$aClean['sub'] = makeSafe($_REQUEST['sub']);
-$aClean['buglinkId'] = makeSafe($_REQUEST['buglinkId']);
+$aClean['iAppId'] = makeSafe($_REQUEST['iAppId']);
+$aClean['iVersionId'] = makeSafe($_REQUEST['iVersionId']);
+$aClean['sSub'] = makeSafe($_REQUEST['sSub']);
+$aClean['iBuglinkId'] = makeSafe($_REQUEST['iBuglinkId']);
 
-$oApp = new Application($aClean['appId']);
-$oVersion = new Version($aClean['versionId']);
+$oApp = new Application($aClean['iAppId']);
+$oVersion = new Version($aClean['iVersionId']);
 
 /**
  * display the full path of the Category we are looking at
@@ -71,7 +71,7 @@ function display_bundle($iAppId)
 
         //display row
         echo "<tr class=\"$bgcolor\">\n";
-        echo "    <td><a href=\"appview.php?appId=$ob->appId\">".stripslashes($ob->appName)."</a></td>\n";
+        echo "    <td><a href=\"appview.php?iAppId=$ob->appId\">".stripslashes($ob->appName)."</a></td>\n";
         echo "    <td>".util_trim_description($oApp->sDescription)."</td>\n";
         echo "</tr>\n\n";
 
@@ -82,63 +82,63 @@ function display_bundle($iAppId)
     echo html_frame_end();
 }
 
-if(!is_numeric($aClean['appId']) && !is_numeric($aClean['versionId']))
+if(!is_numeric($aClean['iAppId']) && !is_numeric($aClean['iVersionId']))
 {
     util_show_error_page("Something went wrong with the application or version id");
     exit;
 }
 
-if ($aClean['sub'])
+if ($aClean['sSub'])
 {
-    if(($aClean['sub'] == 'delete' ) && ($aClean['buglinkId']))
+    if(($aClean['sSub'] == 'delete' ) && ($aClean['iBuglinkId']))
     {
         if(($_SESSION['current']->hasPriv("admin") ||
             $_SESSION['current']->isMaintainer($oVersion->iVersionId) ||
             $_SESSION['current']->isSuperMaintainer($oVersion->iAppId)))
         {
-            $oBuglink = new bug($aClean['buglinkId']);
+            $oBuglink = new bug($aClean['iBuglinkId']);
             $oBuglink->delete();
-            redirect(apidb_fullurl("appview.php?versionId=".$aClean['versionId']));
+            redirect(apidb_fullurl("appview.php?iVersionId=".$aClean['iVersionId']));
             exit;
         }
  
     }
-    if(($aClean['sub'] == 'unqueue' ) && ($aClean['buglinkId']))
+    if(($aClean['sSub'] == 'unqueue' ) && ($aClean['iBuglinkId']))
     {
         if(($_SESSION['current']->hasPriv("admin") ||
             $_SESSION['current']->isMaintainer($oVersion->iVersionId) ||
             $_SESSION['current']->isSuperMaintainer($oVersion->iAppId)))
         {
-            $oBuglink = new bug($aClean['buglinkId']);
+            $oBuglink = new bug($aClean['iBuglinkId']);
             $oBuglink->unqueue();
-            redirect(apidb_fullurl("appview.php?versionId=".$aClean['versionId']));
+            redirect(apidb_fullurl("appview.php?iVersionId=".$aClean['iVersionId']));
             exit;
         }
  
     }
-    if(($aClean['sub'] == 'Submit a new bug link.' ) && ($aClean['buglinkId']))
+    if(($aClean['sSub'] == 'Submit a new bug link.' ) && ($aClean['iBuglinkId']))
     {
         $oBuglink = new bug();
-        $oBuglink->create($aClean['versionId'],$aClean['buglinkId']);
-        redirect(apidb_fullurl("appview.php?versionId=".$aClean['versionId']));
+        $oBuglink->create($aClean['iVersionId'],$aClean['iBuglinkId']);
+        redirect(apidb_fullurl("appview.php?iVersionId=".$aClean['iVersionId']));
         exit;
     }
-    if($aClean['sub'] == 'StartMonitoring')
+    if($aClean['sSub'] == 'StartMonitoring')
     {
         $oMonitor = new Monitor();
-        $oMonitor->create($_SESSION['current']->iUserId,$aClean['appId'],$aClean['versionId']);
-        redirect(apidb_fullurl("appview.php?versionId=".$aClean['versionId']));
+        $oMonitor->create($_SESSION['current']->iUserId,$aClean['iAppId'],$aClean['iVersionId']);
+        redirect(apidb_fullurl("appview.php?iVersionId=".$aClean['iVersionId']));
         exit;
     }
-    if($aClean['sub'] == 'StopMonitoring')
+    if($aClean['sSub'] == 'StopMonitoring')
     {
         $oMonitor = new Monitor();
-        $oMonitor->find($_SESSION['current']->iUserId,$aClean['appId'],$aClean['versionId']);
+        $oMonitor->find($_SESSION['current']->iUserId,$aClean['iAppId'],$aClean['iVersionId']);
         if($oMonitor->iMonitorId)
         {
             $oMonitor->delete();
         }
-        redirect(apidb_fullurl("appview.php?versionId=".$aClean['versionId']));
+        redirect(apidb_fullurl("appview.php?iVersionId=".$aClean['iVersionId']));
         exit;
     }
 
@@ -147,13 +147,13 @@ if ($aClean['sub'])
 /**
  * We want to see an application family (=no version).
  */
-if($aClean['appId'])
+if($aClean['iAppId'])
 {
-    $oApp = new Application($aClean['appId']);
+    $oApp = new Application($aClean['iAppId']);
     $oApp->display();
-} else if($aClean['versionId']) // We want to see a particular version.
+} else if($aClean['iVersionId']) // We want to see a particular version.
 {
-    $oVersion = new Version($aClean['versionId']);
+    $oVersion = new Version($aClean['iVersionId']);
     $oVersion->display();
 } else
 {

@@ -87,7 +87,7 @@ class Comment {
                 $sSubject = "Comment for '".Application::lookup_name($this->iAppId)." ".Version::lookup_name($this->iVersionId)."' added by ".$_SESSION['current']->sRealname;
                 $sMsg  = "To reply to this email please use the link provided below.\n";
                 $sMsg .= "DO NOT reply via your email client as it will not reach the person who wrote the comment\n";
-                $sMsg .= APPDB_ROOT."appview.php?versionId=".$this->iVersionId."&mode=nested#Comment-".$this->iCommentId."\n";
+                $sMsg .= APPDB_ROOT."appview.php?iVersionId=".$this->iVersionId."&mode=nested#Comment-".$this->iCommentId."\n";
                 $sMsg .= "\n";
                 $sMsg .= "Subject: ".$this->sSubject."\r\n";
                 $sMsg .= "\n";
@@ -166,7 +166,7 @@ class Comment {
             if($sEmail)
             {
                 $sSubject = "Comment for '".Application::lookup_name($this->iAppId)." ".Version::lookup_name($this->iVersionId)."' deleted by ".$_SESSION['current']->sRealname;
-                $sMsg  = APPDB_ROOT."appview.php?versionId=".$this->iVersionId."\n";
+                $sMsg  = APPDB_ROOT."appview.php?iVersionId=".$this->iVersionId."\n";
                 $sMsg .= "\n";
                 $sMsg .= "This comment was made on ".substr($this->sDateCreated,0,10)." by ".$this->oOwner->sRealname."\n";
                 $sMsg .= "\n";
@@ -236,8 +236,8 @@ function view_app_comment($oRow)
         $subject = "RE: ".$oRow->subject;
 
     // reply post buttons
-    echo "	[<a href=\"addcomment.php?appId=$oRow->appId&amp;versionId=$oRow->versionId\"><small>post new</small></a>] \n";
-    echo "	[<a href=\"addcomment.php?appId=$oRow->appId&amp;versionId=$oRow->versionId&amp;subject=".
+    echo "	[<a href=\"addcomment.php?iAppId=$oRow->appId&amp;iVersionId=$oRow->versionId\"><small>post new</small></a>] \n";
+    echo "	[<a href=\"addcomment.php?iAppId=$oRow->appId&amp;iVersionId=$oRow->versionId&amp;sSubject=".
 	        urlencode("$subject")."&amp;thread=$oRow->commentId\"><small>reply to this</small></a>] \n";
 
     echo "</td></tr>\n";
@@ -329,7 +329,7 @@ function do_display_comments_threaded($hResult, $is_main)
             view_app_comment($oRow);
         } else
         {
-            echo '<li><a href="commentview.php?appId='.$oRow->appId.'&amp;versionId='.$oRow->versionId.'&threadId='.$oRow->parentId.'"> '.
+            echo '<li><a href="commentview.php?iAppId='.$oRow->appId.'&amp;iVersionId='.$oRow->versionId.'&threadId='.$oRow->parentId.'"> '.
             $oRow->subject.' </a> by '.forum_lookup_user($oRow->userId).' on '.$oRow->time.' </li>'."\n";
         }
         
@@ -376,8 +376,8 @@ function view_app_comments($versionId, $threadId = 0)
 
     $aClean = array(); //array of filtered user input
 
-    $aClean['cmode'] = makeSafe($_REQUEST['cmode']);
-    $aClean['mode'] = makeSafe($_REQUEST['mode']);
+    $aClean['sCmode'] = makeSafe($_REQUEST['sCmode']);
+    $aClean['sMode'] = makeSafe($_REQUEST['sMode']);
 
     // count posts
     $hResult = query_parameters("SELECT commentId FROM appComments WHERE versionId = '?'", $versionId);
@@ -393,27 +393,27 @@ function view_app_comments($versionId, $threadId = 0)
     if ($_SESSION['current']->isLoggedIn())
     {
     // FIXME we need to change this so not logged in users can change current view as well
-        if (!empty($aClean['cmode']))
-            $_SESSION['current']->setPref("comments:mode", $aClean['cmode']);
+        if (!empty($aClean['sCmode']))
+            $_SESSION['current']->setPref("comments:mode", $aClean['sCmode']);
 
         $sel[$_SESSION['current']->getPref("comments:mode", "threaded")] = 'selected';
-        echo '<td><form method="post" name="smode" action="appview.php">',"\n";
+        echo '<td><form method="post" name="sMode" action="appview.php">',"\n";
         echo "<b>Application Comments</b> $messageCount total comments ";
-        echo '<b>Mode</b> <select name="cmode" onchange="document.smode.submit();">',"\n";
+        echo '<b>Mode</b> <select name="sCmode" onchange="document.smode.submit();">',"\n";
         echo '   <option value="flat" '.$sel['flat'].'>Flat</option>',"\n";
         echo '   <option value="threaded" '.$sel['threaded'].'>Threaded</option>',"\n";
         echo '   <option value="nested" '.$sel['nested'].'>Nested</option>',"\n";
         echo '   <option value="off" '.$sel['off'].'>No Comments</option>',"\n";
         echo '</select>',"\n";
-        echo '<input type="hidden" name="versionId" value="'.$versionId.'"></form></td>',"\n";
+        echo '<input type="hidden" name="iVersionId" value="'.$versionId.'"></form></td>',"\n";
     }
     
     // blank space
     echo '<td> &nbsp; </td>',"\n";
     
     // post new message button
-    echo '<td><form method="post" name="message" action="addcomment.php"><input type="submit" value="post new comment" class="button"> ',"\n";
-    echo '<input type="hidden" name="versionId" value="'.$versionId.'"></form></td>',"\n";
+    echo '<td><form method="post" name="sMessage" action="addcomment.php"><input type="submit" value="post new comment" class="button"> ',"\n";
+    echo '<input type="hidden" name="iVersionId" value="'.$versionId.'"></form></td>',"\n";
         
     //end comment format table
     echo '</tr></table></td></tr>',"\n";  
@@ -434,7 +434,7 @@ function view_app_comments($versionId, $threadId = 0)
     else
         $mode = "threaded"; /* default non-logged in users to threaded comment display mode */
 
-    if ($aClean['mode']=="nested")
+    if ($aClean['sMode']=="nested")
         $mode = "nested";
 
     switch ($mode)

@@ -3,7 +3,7 @@
 <h3>Maintainers Guidelines</h3>
 
 <p>
-This page gives informations on how to maintain an application once being an application maintainer. If you are looking on informations on how to become an application maintainer, this topic is covered in the <a href="./?topic=appdb_faq" style="cursor: help">FAQ</a>.
+This page gives informations on how to maintain an application once being an application maintainer. If you are looking on informations on how to become an application maintainer, this topic is covered in the <a href="./?sTopic=appdb_faq" style="cursor: help">FAQ</a>.
 </p>
 
 <p>
@@ -41,7 +41,7 @@ Application vendor should be set correctly. If the vendor is missing, please con
 Keywords are used by the search engine, you don't need to repeat the application's name but you are encouraged to provide some keywords in this field.
 </li>
 <li>
-Description should describe the application in a general manner (what it does). Wine and version specific considerations goes in version-specific pages (described below). If you want to add more than a short sentence, please add a cariage return after the first sentence as it will be used when showing application summary in the search engine, top-25 page and so on. <br />You are encouraged to make use of the template provided for application description; you can copy/paste this template from the "<a href="../appsubmit.php?apptype=1">Submit application page</a>".
+Description should describe the application in a general manner (what it does). Wine and version specific considerations goes in version-specific pages (described below). If you want to add more than a short sentence, please add a cariage return after the first sentence as it will be used when showing application summary in the search engine, top-25 page and so on. <br />You are encouraged to make use of the template provided for application description; you can copy/paste this template from the "<a href="../appsubmit.php?iAppType=application">Submit application page</a>".
 </li>
 <li>
 Webpage should contain the home page for this application. Please remember that an URL starts with http://.
@@ -57,11 +57,11 @@ You can edit a version page by clicking on the "Edit Version" button in any vers
 Version name should be checked against official version name. However if you feel that two minor revision of an application will share the same problems or success, you are encouraged to use wildcards in the version number to don't fill the database with hundreds of versions. For example if you know that Adobe Acrobat 6.0, 6.01 and 6.1 are about the same application, just choose 6.x as a version name. You can however use the full version name in an history table in the description field (see below).
 </li>
 <li>
-Description should describe the application version and not be a repetition of the application description. Please use a short sentence as the first line of your description to describe what this version is and then add a cariage return after this first sentence as it will be used when showing version summary in the application page for example. <br />You are encouraged to make use of the template provided for version description; you can copy/paste this template from the "<a href="../appsubmit.php?apptype=2">Submit version page</a>".<br />
-As you'll see in this template usefull informations to place in this field are the specification of what works and what doesn't in wine and you can also add what is called an history table to keep track of improvemetns and regression. Using the html editor described later in this document and the provided template it is easy to produce such a table which will contains columns like version number, wine version, installs, runs, rating. You can then use the styles drop down list of the editor to set the color of the row according to the rating (gold, silver, bronze or garbage). You can see an example <a href="../appview.php?versionId=2602">here</a>.
+Description should describe the application version and not be a repetition of the application description. Please use a short sentence as the first line of your description to describe what this version is and then add a cariage return after this first sentence as it will be used when showing version summary in the application page for example. <br />You are encouraged to make use of the template provided for version description; you can copy/paste this template from the "<a href="../appsubmit.php?sAppType=version">Submit version page</a>".<br />
+As you'll see in this template usefull informations to place in this field are the specification of what works and what doesn't in wine and you can also add what is called an history table to keep track of improvemetns and regression. Using the html editor described later in this document and the provided template it is easy to produce such a table which will contains columns like version number, wine version, installs, runs, rating. You can then use the styles drop down list of the editor to set the color of the row according to the rating (gold, silver, bronze or garbage). You can see an example <a href="../appview.php?iVersionId=2602">here</a>.
 </li>
 <li>
-Rating let's you rate how this version ran with the latest Wine version you tested it with. For rating definitions, please see this <a href="index.php?topic=maintainer_ratings">page</a>.
+Rating let's you rate how this version ran with the latest Wine version you tested it with. For rating definitions, please see this <a href="index.php?sTopic=maintainer_ratings">page</a>.
 </li>
 <li>
 Release is the latest release of Wine you tested this version with.

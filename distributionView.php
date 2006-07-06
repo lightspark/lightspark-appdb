@@ -13,11 +13,11 @@ require(BASE."include/testResults.php");
 
 $aClean = array(); //array of filtered user input
 
-$aClean['sub'] = makeSafe($_REQUEST['sub']);
+$aClean['sSub'] = makeSafe($_REQUEST['sSub']);
 $aClean['iDistributionId'] = makeSafe( $_REQUEST['iDistributionId']);
 
 
-if ($aClean['sub'])
+if ($aClean['sSub'])
 {
     if(!$_SESSION['current']->hasPriv("admin"))
     {
@@ -25,7 +25,7 @@ if ($aClean['sub'])
         exit;
     }
 
-    if($aClean['sub'] == 'delete')
+    if($aClean['sSub'] == 'delete')
     {
         $oDistribution = new distribution($aClean['iDistributionId']);
         $oDistribution->delete();
@@ -69,7 +69,7 @@ if(!$oDistribution->iDistributionId)
             echo "    <td align=\"center\">";
             echo "[<a href='".BASE."admin/editDistribution.php?iDistributionId=".$oDistribution->iDistributionId."'>edit</a>]";
             if(!sizeof($oDistribution->aTestingIds))
-                echo " &nbsp; [<a href='".$_SERVER['PHP_SELF']."?sub=delete&iDistributionId=".$oDistribution->iDistributionId."'>delete</a>]";
+                echo " &nbsp; [<a href='".$_SERVER['PHP_SELF']."?sSub=delete&iDistributionId=".$oDistribution->iDistributionId."'>delete</a>]";
             echo "        </td>\n";
         }
         echo "</tr>\n";
@@ -133,7 +133,7 @@ else
                 continue;
 
             echo '<tr class='.$bgcolor.'>',"\n";
-            echo '<td><a href="'.BASE.'appview.php?versionId='.$oTest->iVersionId.'&iTestingId='.$oTest->iTestingId.'">',"\n";
+            echo '<td><a href="'.BASE.'appview.php?iVersionId='.$oTest->iVersionId.'&iTestingId='.$oTest->iTestingId.'">',"\n";
             echo $oApp->sName.' '.$oVersion->sName.'</a></td>',"\n";
             echo '<td>',"\n";
             if($_SESSION['current']->isLoggedIn())
@@ -152,7 +152,7 @@ else
             echo '<td>'.$oTest->sTestedRating.'&nbsp</td>',"\n";
             if ($_SESSION['current']->hasAppVersionModifyPermission($oVersion))
             {
-                echo '<td><a href="'.BASE.'admin/adminTestResults.php?sub=view&iTestingId='.$oTest->iTestingId.'">',"\n";
+                echo '<td><a href="'.BASE.'admin/adminTestResults.php?sSub=view&iTestingId='.$oTest->iTestingId.'">',"\n";
                 echo 'Edit</a></td>',"\n";
             }
             echo '</tr>',"\n";

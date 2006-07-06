@@ -33,7 +33,7 @@ if(!$_SESSION['current']->hasPriv("admin") &&
 //set link for version
 if(is_numeric($aClean['iVersionId']) and !empty($aClean['iVersionId']))
 {
-    $sVersionLink = "versionId={$aClean['iVersionId']}";
+    $sVersionLink = "iVersionId={$aClean['iVersionId']}";
 }
 else 
     exit;

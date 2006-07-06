@@ -254,13 +254,13 @@ class testData{
             case "add":
                 $sSubject =  "Submitted testing data accepted";
                 $sMsg  = "The testing data you submitted (".$oApp->sName." ".$this->sName.") has been accepted.";
-                $sMsg .= APPDB_ROOT."appview.php?versionId=".$this->iVersionId."&iTestingId=".$this->iTestingId."\n";
+                $sMsg .= APPDB_ROOT."appview.php?iVersionId=".$this->iVersionId."&iTestingId=".$this->iTestingId."\n";
                 $sMsg .= "Administrators Responce:\n";
             break;
             case "reject":
                 $sSubject =  "Submitted testing data rejected";
                 $sMsg  = "The testing data you submitted (".$oApp->sName." ".$this->sName.") has been rejected.";
-                $sMsg .= APPDB_ROOT."testResults.php?sub=view&iTestingId=".$this->iTestingId."\n";
+                $sMsg .= APPDB_ROOT."testResults.php?sSub=view&iTestingId=".$this->iTestingId."\n";
                 $sMsg .= "Reason given:\n";
             break;
             case "delete":
@@ -285,7 +285,7 @@ class testData{
 
         $oVersion = new Version($this->iVersionId);
         $oApp = new Application($oVersion->iAppId);
-        $sBacklink = APPDB_ROOT."appview.php?versionId=".$this->iVersionId."&iTestingId=".$this->iTestingId."\n";
+        $sBacklink = APPDB_ROOT."appview.php?iVersionId=".$this->iVersionId."&iTestingId=".$this->iTestingId."\n";
 
         switch($sAction)
         {
@@ -465,7 +465,7 @@ class testData{
             echo '    <td>'.$sStatus.'&nbsp</td>',"\n";
             if ($_SESSION['current']->hasAppVersionModifyPermission($oVersion))
             {
-                echo '<td><a href="'.BASE.'admin/adminTestResults.php?sub=view&iTestingId='.$oTest->iTestingId.'">',"\n";
+                echo '<td><a href="'.BASE.'admin/adminTestResults.php?sSub=view&iTestingId='.$oTest->iTestingId.'">',"\n";
                 echo 'Edit</a></td>',"\n";
             }
             echo '</tr>',"\n";
@@ -474,7 +474,7 @@ class testData{
         echo '</table>',"\n";
 
         echo '<form method=get action="'.$PHP_SELF.'">';
-        echo '<input name="versionId" type=hidden value="',$iVersionId,'" />';
+        echo '<input name="iVersionId" type=hidden value="',$iVersionId,'" />';
         if($rowsUsed >= $iDisplayLimit && !is_string($showAll))
             echo '<input class="button" name="showAll" type=submit value="Show All Tests" />';
 
@@ -534,7 +534,7 @@ class testData{
         // Rating
         echo '<tr><td class="color0"><b>Rating</b></td><td class="color0">',"\n";
         make_maintainer_rating_list("sTestedRating", $this->sTestedRating);
-        echo '<a href="'.BASE.'/help/?topic=maintainer_ratings" target="_blank">Rating definitions</a></td></tr>',"\n";
+        echo '<a href="'.BASE.'/help/?sTopic=maintainer_ratings" target="_blank">Rating definitions</a></td></tr>',"\n";
         // extra comments
         echo '<tr valign=top><td class="color1"><b>Extra comments</b></td>',"\n";
         echo '<td class="color0"><textarea name="sComments" rows=10 cols=35>';
@@ -685,7 +685,7 @@ class testData{
                 echo "    <td>".$oApp->sName."</td>\n";
                 echo "    <td>".$oVersion->sName."</td>\n";
                 echo "    <td>".$oTest->sTestedRelease."</td>\n";
-                echo "    <td align=\"center\">[<a href=".$_SERVER['PHP_SELF']."?sub=view&iTestingId=".$oTest->iTestingId.">process</a>]</td>\n";
+                echo "    <td align=\"center\">[<a href=".$_SERVER['PHP_SELF']."?sSub=view&iTestingId=".$oTest->iTestingId.">process</a>]</td>\n";
                 echo "</tr>\n\n";
                 $c++;
             }

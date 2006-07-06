@@ -137,7 +137,7 @@ class Note {
         {
             case "add":
                 $sSubject = "Note ".$this->sTitle." for ".$sAppName." added by ".$_SESSION['current']->sRealname;
-                $sMsg .= APPDB_ROOT."appview.php?versionId=".$this->iVersionId."\n";
+                $sMsg .= APPDB_ROOT."appview.php?iVersionId=".$this->iVersionId."\n";
                 addmsg("The note was successfully added into the database.", "green");
             break;
             case "edit":
