@@ -75,9 +75,22 @@ class User {
             // Update timestamp and clear the inactivity flag if it was set
             query_parameters("UPDATE user_list SET stamp = ?, inactivity_warned = '?' WHERE userid='?'",
                              "NOW()", "false", $this->iUserId);
+
+            /* set the session variable for the current user to this user object */
+            $_SESSION['current'] = $this;
+
             return SUCCESS;
         }
+
+        /* null out the session variable for the current user since we failed to login */
+        $_SESSION['current'] = "";
         return USER_LOGIN_FAILED;
+    }
+
+    function logout()
+    {
+        /* null out the session current variable to log us out */
+        $_SESSION['current'] = "";
     }
 
 

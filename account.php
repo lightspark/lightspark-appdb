@@ -54,7 +54,13 @@ function do_account($cmd = null)
             exit;
 
         case "logout":
+            /* if we are logged in, log us out */
+            if($_SESSION['current'])
+                $_SESSION['current']->logout();
+
+            /* destroy all session variables */
             $GLOBALS['session']->destroy();
+
             addmsg("You are successfully logged out.", "green");
             redirect(apidb_fullurl("index.php"));
             exit;
@@ -116,8 +122,7 @@ function cmd_do_new()
     if($result == SUCCESS)
     {
         /* if we can log the user in, log them in automatically */
-        if($user->login($aClean['ext_email'], $aClean['ext_password']) == SUCCESS)
-            $_SESSION['current'] = $user;
+        $user->login($aClean['ext_email'], $aClean['ext_password']);
 
         addmsg("Account created! (".$aClean['ext_email'].")", "green");
         redirect(apidb_fullurl());
@@ -211,13 +216,11 @@ function cmd_do_login()
 
     if($result == SUCCESS)
     {
-        $_SESSION['current'] = $user;
         addmsg("You are successfully logged in as '$user->sRealname'.", "green");
         redirect(apidb_fullurl("index.php"));    	    
     } else
     {
         retry("login","Login failed ".$note);
-        $_SESSION['current'] = "";
     }
 }
 
