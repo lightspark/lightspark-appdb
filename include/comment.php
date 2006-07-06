@@ -238,7 +238,7 @@ function view_app_comment($oRow)
     // reply post buttons
     echo "	[<a href=\"addcomment.php?iAppId=$oRow->appId&amp;iVersionId=$oRow->versionId\"><small>post new</small></a>] \n";
     echo "	[<a href=\"addcomment.php?iAppId=$oRow->appId&amp;iVersionId=$oRow->versionId&amp;sSubject=".
-	        urlencode("$subject")."&amp;thread=$oRow->commentId\"><small>reply to this</small></a>] \n";
+	        urlencode("$subject")."&amp;iThread=$oRow->commentId\"><small>reply to this</small></a>] \n";
 
     echo "</td></tr>\n";
 
@@ -248,8 +248,8 @@ function view_app_comment($oRow)
         || $_SESSION['current']->isSuperMaintainer($oRow->appId))
     {
         echo "<tr>";
-        echo "<td><form method=\"post\" name=\"message\" action=\"".BASE."deletecomment.php\"><input type=\"submit\" value=\"Delete\" class=\"button\">\n";
-        echo "<input type=\"hidden\" name=\"commentId\" value=\"$oRow->commentId\" />";
+        echo "<td><form method=\"post\" name=\"sMessage\" action=\"".BASE."deletecomment.php\"><input type=\"submit\" value=\"Delete\" class=\"button\">\n";
+        echo "<input type=\"hidden\" name=\"iCommentId\" value=\"$oRow->commentId\" />";
         echo "</form>\n";
         echo "</td></tr>";
     }
@@ -329,7 +329,7 @@ function do_display_comments_threaded($hResult, $is_main)
             view_app_comment($oRow);
         } else
         {
-            echo '<li><a href="commentview.php?iAppId='.$oRow->appId.'&amp;iVersionId='.$oRow->versionId.'&threadId='.$oRow->parentId.'"> '.
+            echo '<li><a href="commentview.php?iAppId='.$oRow->appId.'&amp;iVersionId='.$oRow->versionId.'&iThreadId='.$oRow->parentId.'"> '.
             $oRow->subject.' </a> by '.forum_lookup_user($oRow->userId).' on '.$oRow->time.' </li>'."\n";
         }
         
