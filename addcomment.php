@@ -77,7 +77,7 @@ if(!empty($aClean['sBody']))
   echo "	<td>&nbsp;".$_SESSION['current']->sRealname."</td></tr>\n";
   echo "<tr class=\"color0\"><td align=right><b>Subject:</b>&nbsp;</td>\n";
   echo "	<td>&nbsp;<input type=\"text\" size=\"35\" name=\"sSubject\" value=\"".$aClean['sSubject']."\" /> </td></tr>\n";
-  echo "<tr class=\"color1\"><td colspan=2><textarea name=\"body\" cols=\"70\" rows=\"15\" wrap=\"virtual\">".$aClean['sBody']."</textarea></td></tr>\n";
+  echo "<tr class=\"color1\"><td colspan=2><textarea name=\"sBody\" cols=\"70\" rows=\"15\" wrap=\"virtual\">".$aClean['sBody']."</textarea></td></tr>\n";
   echo "<tr class=\"color1\"><td colspan=2 align=center>\n";
   echo "  <input type=\"submit\" value=\"Post Comment\" class=\"button\" />\n";
   echo "  <input type=\"reset\" value=\"Reset\" class=\"button\" />\n";
