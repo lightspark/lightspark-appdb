@@ -54,7 +54,8 @@ class session
     // destroy session
     function destroy ()
     {
-        session_destroy();
+        if(session_id() != "")
+            session_destroy();
     }
     
     // open session file (not needed for DB access)        
