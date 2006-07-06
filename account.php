@@ -22,12 +22,12 @@ do_account($aClean['cmd']);
 
 
 /**
- * process according to $cmd from URL
+ * process according to $sCmd from URL
  */
-function do_account($cmd = null)
+function do_account($sCmd = null)
 {
-    if (!$cmd) return 0;
-    switch($cmd)
+    if (!$sCmd) return 0;
+    switch($sCmd)
     {
         case "new":
             apidb_header("New Account");
@@ -73,10 +73,10 @@ function do_account($cmd = null)
 /**
  * retry
  */
-function retry($cmd, $msg)
+function retry($sCmd, $sMsg)
 {
-    addmsg($msg, "red");
-    do_account($cmd);
+    addmsg($sMsg, "red");
+    do_account($sCmd);
 }
 
 
@@ -115,23 +115,23 @@ function cmd_do_new()
         return;
     }
    
-    $user = new User();
+    $oUser = new User();
 
-    $result = $user->create($aClean['ext_email'], $aClean['ext_password'], $aClean['ext_realname'], $aClean['CVSrelease'] );
+    $iResult = $oUser->create($aClean['ext_email'], $aClean['ext_password'], $aClean['ext_realname'], $aClean['CVSrelease'] );
 
-    if($result == SUCCESS)
+    if($iResult == SUCCESS)
     {
         /* if we can log the user in, log them in automatically */
-        $user->login($aClean['ext_email'], $aClean['ext_password']);
+        $oUser->login($aClean['ext_email'], $aClean['ext_password']);
 
         addmsg("Account created! (".$aClean['ext_email'].")", "green");
         redirect(apidb_fullurl());
     }
-    else if($result == USER_CREATE_EXISTS)
+    else if($iResult == USER_CREATE_EXISTS)
     {
         addmsg("An account with this e-mail exists already.", "red");
         retry("new", "Failed to create account");
-    } else if($result = USER_CREATE_FAILED)
+    } else if($iResult = USER_CREATE_FAILED)
     {
         addmsg("Error while creating a new user.", "red");
         retry("new", "Failed to create account");
@@ -161,24 +161,24 @@ function cmd_send_passwd()
         redirect(apidb_fullurl("account.php?cmd=login"));
     }
 
-    $note = '(<b>Note</b>: accounts for <b>appdb</b>.winehq.org and <b>bugs</b>.winehq.org '
+    $shNote = '(<b>Note</b>: accounts for <b>appdb</b>.winehq.org and <b>bugs</b>.winehq.org '
            .'are separated, so You might need to <b>create second</b> account for appdb.)';
 		
-    $userid = User::exists($aClean['ext_email']);
-    $passwd = User::generate_passwd();
-    $user = new User($userid);
-    if ($userid)
+    $iUserId = User::exists($aClean['ext_email']);
+    $sPasswd = User::generate_passwd();
+    $oUser = new User($iUserId);
+    if ($iUserId)
     {
-        if ($user->update_password($passwd))
+        if ($oUser->update_password($sPasswd))
         {
             $sSubject =  "Application DB Lost Password";
             $sMsg  = "We have received a request that you lost your password.\r\n";
             $sMsg .= "We will create a new password for you. You can then change\r\n";
             $sMsg .= "your password at the Preferences screen.\r\n";
-            $sMsg .= "Your new password is: ".$passwd."\r\n";
+            $sMsg .= "Your new password is: ".$sPasswd."\r\n";
             
 
-            if (mail_appdb($user->sEmail, $sSubject ,$sMsg))
+            if (mail_appdb($oUser->sEmail, $sSubject ,$sMsg))
             {
                 addmsg("Your new password has been emailed to you.", "green");
             }
@@ -195,7 +195,7 @@ function cmd_send_passwd()
     else
     {
         addmsg("Sorry, that user (".$aClean['ext_email'].") does not exist.<br><br>"
-               .$note, "red");
+               .$shNote, "red");
     }
     
     redirect(apidb_fullurl("account.php?cmd=login"));
@@ -211,16 +211,16 @@ function cmd_do_login()
     $aClean['ext_email'] = makeSafe($_POST['ext_email']);
     $aClean['ext_password'] = makeSafe($_POST['ext_password']);
 
-    $user = new User();
-    $result = $user->login($aClean['ext_email'], $aClean['ext_password']);
+    $oUser = new User();
+    $iResult = $oUser->login($aClean['ext_email'], $aClean['ext_password']);
 
-    if($result == SUCCESS)
+    if($iResult == SUCCESS)
     {
-        addmsg("You are successfully logged in as '$user->sRealname'.", "green");
+        addmsg("You are successfully logged in as '$oUser->sRealname'.", "green");
         redirect(apidb_fullurl("index.php"));    	    
     } else
     {
-        retry("login","Login failed ".$note);
+        retry("login","Login failed ".$shNote);
     }
 }
 
