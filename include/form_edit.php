@@ -12,19 +12,19 @@ $aClean['userId'] = makeSafe($_REQUEST['userId']);
 <!-- start of edit account form -->
 <tr>
     <td> &nbsp; Email Address </td>
-    <td> <input type="text" name="ext_email" value="<?php echo $ext_email; ?>"> </td>
+    <td> <input type="text" name="sUserEmail" value="<?php echo $sUserEmail; ?>"> </td>
 </tr>
 <tr>
     <td> &nbsp; Password </td>
-    <td> <input type="password" name="ext_password"> </td>
+    <td> <input type="password" name="sUserPassword"> </td>
 </tr>
 <tr>
     <td> &nbsp; Password (again) </td>
-    <td> <input type="password" name="ext_password2"> </td>
+    <td> <input type="password" name="sUserPassword2"> </td>
 </tr>
 <tr>
     <td> &nbsp; Real Name </td>
-    <td> <input type="text" name="ext_realname" value="<?php echo $ext_realname; ?>"> </td>
+    <td> <input type="text" name="sUserRealname" value="<?php echo $sUserRealname; ?>"> </td>
 </tr>
 <?php
 // if we manage another user we can give him administrator rights
@@ -33,7 +33,7 @@ if($oUser->iUserId == $aClean['userId'])
 ?>
 <tr>
     <td> &nbsp; Administrator </td>
-    <td> <input type="checkbox" name="ext_hasadmin" "<?php echo $ext_hasadmin; ?>" value="on"> </td>
+    <td> <input type="checkbox" name="sHasAdmin" "<?php echo $sHasAdmin; ?>" value="on"> </td>
 </tr>
 <?php
 }

@@ -14,12 +14,12 @@ $aClean = array(); //array of filtered user input
 $aClean['userId'] = makeSafe($_REQUEST['userId']);
 $aClean['iLimit'] = makeSafe($_REQUEST['iLimit']);
 $aClean['sOrderBy'] = makeSafe($_REQUEST['sOrderBy']);
-$aClean['ext_password'] = makeSafe($_REQUEST['ext_password']);
-$aClean['ext_password2'] = makeSafe($_REQUEST['ext_password2']);
-$aClean['ext_email'] = makeSafe($_REQUEST['ext_email']);
-$aClean['ext_realname'] = makeSafe($_REQUEST['ext_realname']);
-$aClean['CVSrelease'] = makeSafe($_REQUEST['CVSrelease']);
-$aClean['ext_hasadmin'] = makeSafe($_POST['ext_hasadmin']); 
+$aClean['sUserPassword'] = makeSafe($_REQUEST['sUserPassword']);
+$aClean['sUserPassword2'] = makeSafe($_REQUEST['sUserPassword2']);
+$aClean['sUserEmail'] = makeSafe($_REQUEST['sUserEmail']);
+$aClean['sUserRealname'] = makeSafe($_REQUEST['sUserRealname']);
+$aClean['sWineRelease'] = makeSafe($_REQUEST['sWineRelease']);
+$aClean['sHasAdmin'] = makeSafe($_POST['sHasAdmin']); 
 
 /* filter all of the preferences */
 while(list($key, $value) = each($_REQUEST))
@@ -85,18 +85,18 @@ function show_user_fields()
 {
     global $oUser;
 
-    $ext_realname = $oUser->sRealname;
-    $ext_email = $oUser->sEmail;
-    $CVSrelease = $oUser->sWineRelease;
+    $sUserRealname = $oUser->sRealname;
+    $sUserEmail = $oUser->sEmail;
+    $sWineRelease = $oUser->sWineRelease;
     if($oUser->hasPriv("admin"))
-        $ext_hasadmin = 'checked="true"';
+        $sHasAdmin = 'checked="true"';
     else
-        $ext_hasadmin = "";
+        $sHasAdmin = "";
     
     include(BASE."include/form_edit.php");
 
     echo "<tr><td>&nbsp; Wine version </td><td>";
-    make_bugzilla_version_list("CVSrelease", $CVSrelease);
+    make_bugzilla_version_list("sWineRelease", $sWineRelease);
     echo "</td></tr>";
 }
 
@@ -112,19 +112,19 @@ if($_POST)
     }
     
     /* make sure the user enters the same password twice */
-    if ($aClean['ext_password'] == $aClean['ext_password2'])
+    if ($aClean['sUserPassword'] == $aClean['sUserPassword2'])
     {
-        $str_passwd = $aClean['ext_password'];
+        $str_passwd = $aClean['sUserPassword'];
     }
-    else if ($aClean['ext_password'])
+    else if ($aClean['sUserPassword'])
     {
         addmsg("The Passwords you entered did not match.", "red");
     }
 
     /* update user data fields */
-    $oUser->sEmail = $aClean['ext_email'];
-    $oUser->sRealname = $aClean['ext_realname'];
-    $oUser->sWineRelease = $aClean['CVSrelease'];
+    $oUser->sEmail = $aClean['sUserEmail'];
+    $oUser->sRealname = $aClean['sUserRealname'];
+    $oUser->sWineRelease = $aClean['sWineRelease'];
 
     /* if the password was empty in both cases then skip updating the users password */
     if($str_passwd != "")
@@ -139,7 +139,7 @@ if($_POST)
         // we were managing an user, let's go back to the admin after updating tha admin status
         if($oUser->iUserId == $aClean['userId'] && $_SESSION['current']->hasPriv("admin"))
         {
-            if($aClean['ext_hasadmin']=="on") 
+            if($aClean['sHasAdmin']=="on") 
                 $oUser->addPriv("admin");
             else 
                 $oUser->delPriv("admin");

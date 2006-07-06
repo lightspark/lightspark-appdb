@@ -3,8 +3,8 @@ require_once(BASE."include/util.php");
 
 $aClean = array(); //array of filtered user input
 
-$aClean['ext_email'] = makeSafe($_POST['ext_email']);
-$aClean['ext_realname'] = makeSafe($_POST['realname']);
+$aClean['sUserEmail'] = makeSafe($_POST['sUserEmail']);
+$aClean['sUserRealname'] = makeSafe($_POST['realname']);
 
 
 /********************/
@@ -19,24 +19,24 @@ echo html_frame_start("Create New Application DB Account","400","",0)
 <table border=0 width="100%" cellspacing=0 cellpadding=20>
     <tr>
         <td class=color1> E-mail </td>
-        <td class=color0> <input type="text" name="ext_email" value='<?php if(!empty($aClean['ext_email'])) echo $aClean['ext_email']?>'> </td>
+        <td class=color0> <input type="text" name="sUserEmail" value='<?php if(!empty($aClean['sUserEmail'])) echo $aClean['sUserEmail']?>'> </td>
     </tr>
     <tr>
         <td class=color1> Password </td>
-        <td class=color0> <input type="password" name="ext_password"> </td>
+        <td class=color0> <input type="password" name="sUserPassword"> </td>
     </tr>
     <tr>
         <td class=color1> Password (again) </td>
-        <td class=color0> <input type="password" name="ext_password2"> </td>
+        <td class=color0> <input type="password" name="sUserPassword2"> </td>
     </tr>
     <tr>
         <td class=color1> Real Name </td>
-        <td class=color0> <input type="text" name="ext_realname" value='<?php if(!empty($aClean['ext_realname'])) echo $aClean['ext_realname']?>'> </td>
+        <td class=color0> <input type="text" name="sUserRealname" value='<?php if(!empty($aClean['sUserRealname'])) echo $aClean['sUserRealname']?>'> </td>
     </tr>
 <?php
 
         echo "<tr><td class=color1>&nbsp; Wine version </td><td class=color0>";
-        make_bugzilla_version_list("CVSrelease", $CVSrelease);
+        make_bugzilla_version_list("sWineRelease", $aClean['sWineRelease']);
         echo "</td></tr>";
 
 ?>

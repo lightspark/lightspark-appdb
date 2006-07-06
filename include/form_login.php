@@ -3,7 +3,7 @@ require_once(BASE."include/util.php");
 
 $aClean = array(); //array of filtered user input
 
-$aClean['ext_email'] = makeSafe($_POST['ext_email']);
+$aClean['sUserEmail'] = makeSafe($_POST['sUserEmail']);
 
 /**************/
 /* Login Form */
@@ -25,11 +25,11 @@ function cmd_send_passwd() {
 <table border="0" width="100%" cellspacing=0 cellpadding="10">  
     <tr>
         <td class=color1> E-mail </td> 
-        <td class=color0> <input type="text" name="ext_email" value='<?php if(!empty($aClean['ext_email'])) echo $aClean['ext_email']?>'> </td>
+        <td class=color0> <input type="text" name="sUserEmail" value='<?php if(!empty($aClean['sUserEmail'])) echo $aClean['sUserEmail']?>'> </td>
     </tr>
     <tr>
         <td class=color1> Password </td> 
-        <td class=color0> <input type="password" name="ext_password"> </td>
+        <td class=color0> <input type="password" name="sUserPassword"> </td>
     </tr>
     <tr>
         <td colspan=2 align=center class=color3>

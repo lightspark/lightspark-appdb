@@ -83,29 +83,29 @@ function cmd_do_new()
 {
     $aClean = array(); //array of filtered user input
 
-    $aClean['ext_email'] = makeSafe($_POST['ext_email']);
-    $aClean['ext_password'] = makeSafe($_POST['ext_password']);
-    $aClean['ext_password2'] = makeSafe($_POST['ext_password2']);
-    $aClean['CVSrelease'] = makeSafe($_POST['CVSrelease']);
-    $aClean['ext_realname']= makeSafe($_POST['ext_realname']);
+    $aClean['sUserEmail'] = makeSafe($_POST['sUserEmail']);
+    $aClean['sUserPassword'] = makeSafe($_POST['sUserPassword']);
+    $aClean['sUserPassword2'] = makeSafe($_POST['sUserPassword2']);
+    $aClean['sWineRelease'] = makeSafe($_POST['sWineRelease']);
+    $aClean['sUserRealname']= makeSafe($_POST['sUserRealname']);
 
-    if(!ereg("^.+@.+\\..+$", $aClean['ext_email']))
+    if(!ereg("^.+@.+\\..+$", $aClean['sUserEmail']))
     {
-        $aClean['ext_email'] = "";
+        $aClean['sUserEmail'] = "";
         retry("new", "Invalid email address");
         return;
     }
-    if(strlen($aClean['ext_password']) < 5)
+    if(strlen($aClean['sUserPassword']) < 5)
     {
         retry("new", "Password must be at least 5 characters");
         return;
     }
-    if($aClean['ext_password'] != $aClean['ext_password2'])
+    if($aClean['sUserPassword'] != $aClean['sUserPassword2'])
     {
         retry("new", "Passwords don't match");
         return;
     }
-    if(empty($aClean['ext_realname']))
+    if(empty($aClean['sUserRealname']))
     {
         retry("new", "You don't have a Real name?");
         return;
@@ -113,14 +113,15 @@ function cmd_do_new()
    
     $oUser = new User();
 
-    $iResult = $oUser->create($aClean['ext_email'], $aClean['ext_password'], $aClean['ext_realname'], $aClean['CVSrelease'] );
+    $iResult = $oUser->create($aClean['sUserEmail'], $aClean['sUserPassword'],
+                              $aClean['sUserRealname'], $aClean['sWineRelease'] );
 
     if($iResult == SUCCESS)
     {
         /* if we can log the user in, log them in automatically */
-        $oUser->login($aClean['ext_email'], $aClean['ext_password']);
+        $oUser->login($aClean['sUserEmail'], $aClean['sUserPassword']);
 
-        addmsg("Account created! (".$aClean['ext_email'].")", "green");
+        addmsg("Account created! (".$aClean['sUserEmail'].")", "green");
         redirect(apidb_fullurl());
     }
     else if($iResult == USER_CREATE_EXISTS)
@@ -146,11 +147,11 @@ function cmd_send_passwd()
 {
     $aClean = array(); //array of filtered user input
 
-    $aClean['ext_email'] = makeSafe($_POST['ext_email']);
+    $aClean['sUserEmail'] = makeSafe($_POST['sUserEmail']);
 
     /* if the user didn't enter any email address we should */
     /* ask them to */
-    if($aClean['ext_email'] == "")
+    if($aClean['sUserEmail'] == "")
     {
         addmsg("Please enter your email address in the 'E-mail' field and re-request a new password",
                "green");
@@ -160,7 +161,7 @@ function cmd_send_passwd()
     $shNote = '(<b>Note</b>: accounts for <b>appdb</b>.winehq.org and <b>bugs</b>.winehq.org '
            .'are separated, so You might need to <b>create second</b> account for appdb.)';
 		
-    $iUserId = User::exists($aClean['ext_email']);
+    $iUserId = User::exists($aClean['sUserEmail']);
     $sPasswd = User::generate_passwd();
     $oUser = new User($iUserId);
     if ($iUserId)
@@ -190,7 +191,7 @@ function cmd_send_passwd()
     }
     else
     {
-        addmsg("Sorry, that user (".$aClean['ext_email'].") does not exist.<br><br>"
+        addmsg("Sorry, that user (".$aClean['sUserEmail'].") does not exist.<br><br>"
                .$shNote, "red");
     }
     
@@ -204,11 +205,11 @@ function cmd_do_login()
 {
     $aClean = array(); //array of filtered user input
 
-    $aClean['ext_email'] = makeSafe($_POST['ext_email']);
-    $aClean['ext_password'] = makeSafe($_POST['ext_password']);
+    $aClean['sUserEmail'] = makeSafe($_POST['sUserEmail']);
+    $aClean['sUserPassword'] = makeSafe($_POST['sUserPassword']);
 
     $oUser = new User();
-    $iResult = $oUser->login($aClean['ext_email'], $aClean['ext_password']);
+    $iResult = $oUser->login($aClean['sUserEmail'], $aClean['sUserPassword']);
 
     if($iResult == SUCCESS)
     {
