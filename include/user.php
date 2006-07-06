@@ -82,15 +82,16 @@ class User {
             return SUCCESS;
         }
 
-        /* null out the session variable for the current user since we failed to login */
-        $_SESSION['current'] = "";
+        /* destroy all session variables since we failed to login */
+        $GLOBALS['session']->destroy();
+
         return USER_LOGIN_FAILED;
     }
 
     function logout()
     {
-        /* null out the session current variable to log us out */
-        $_SESSION['current'] = "";
+        /* destroy all session variables since we are logging out */
+        $GLOBALS['session']->destroy();
     }
 
 

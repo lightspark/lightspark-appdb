@@ -58,10 +58,6 @@ function do_account($sCmd = null)
             if($_SESSION['current'])
                 $_SESSION['current']->logout();
 
-            /* destroy all session variables */
-            $GLOBALS['session']->destroy();
-
-            addmsg("You are successfully logged out.", "green");
             redirect(apidb_fullurl("index.php"));
             exit;
     }
