@@ -16,15 +16,15 @@ $aClean['iAppId'] = makeSafe($_REQUEST['iAppId']);
 $aClean['sSubmit'] = makeSafe($_REQUEST['sSubmit']);
 
 if(!is_numeric($aClean['iAppId']))
-    util_show_error_page("Wrong ID");
+    util_show_error_page_and_exit("Wrong ID");
 
 if(!($_SESSION['current']->hasPriv("admin") || $_SESSION['current']->isSuperMaintainer($aClean['iAppId'])))
-    util_show_error_page("Insufficient Privileges!");
+    util_show_error_page_and_exit("Insufficient Privileges!");
 
 if(!empty($aClean['sSubmit']))
 {
     process_app_version_changes(false);
-    redirect(apidb_fullurl("appview.php?iAppId={$aClean['iAppId']}"));
+    util_redirect_and_exit(apidb_fullurl("appview.php?iAppId={$aClean['iAppId']}"));
 }
 else
 // Show the form for editing the Application Family 
@@ -36,7 +36,7 @@ else
     
     if(!$oApp)
     {
-        util_show_error_page('Application does not exist');
+        util_show_error_page_and_exit('Application does not exist');
     }
     
     if($_SESSION['current']->showDebuggingInfos()) { echo "<p align=center><b>appName:</b> $oApp->sName </p>"; }

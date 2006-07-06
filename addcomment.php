@@ -33,7 +33,7 @@ if(!$_SESSION['current']->isLoggedIn())
 }
 
 if( !is_numeric($aClean['iVersionId']) )
-    util_show_error_page('Internal Database Access Error');
+    util_show_error_page_and_exit('Internal Database Access Error');
 
 if(!is_numeric($aClean['iThread']))
 {
@@ -45,7 +45,7 @@ if(!empty($aClean['sBody']))
 {
     $oComment = new Comment();
     $oComment->create($aClean['sSubject'], $aClean['sBody'], $aClean['iThread'], $aClean['iVersionId']);
-    redirect(apidb_fullurl("appview.php?iVersionId=".$oComment->iVersionId));
+    util_redirect_and_exit(apidb_fullurl("appview.php?iVersionId=".$oComment->iVersionId));
 // let's show the comment form
 } else
 {

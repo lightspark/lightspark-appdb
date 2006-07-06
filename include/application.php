@@ -519,7 +519,7 @@ class Application {
 
         /* is this user supposed to view this version? */
         if(!$_SESSION['current']->canViewApplication($this))
-            util_show_error_page("Something went wrong with the application or version id");
+            util_show_error_page_and_exit("Something went wrong with the application or version id");
 
         // show Vote Menu
         if($_SESSION['current']->isLoggedIn())

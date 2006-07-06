@@ -22,7 +22,7 @@ $aClean['iPage'] = makeSafe($_REQUEST['iPage']);
 
 // deny access if not logged in
 if(!$_SESSION['current']->hasPriv("admin"))
-    util_show_error_page("Insufficient privileges.");
+    util_show_error_page_and_exit("Insufficient privileges.");
 
 if ($aClean['sSub'])
 {
@@ -36,7 +36,7 @@ if ($aClean['sSub'])
         $oBuglink = new bug($aClean['iBuglinkId']);
         $oBuglink->unqueue();
     }
-    redirect($_SERVER['PHP_SELF']."?iItemsPerPage=".$aClean['iItemsPerPage']."&sQueuedOnly=".$aClean['sQueuedOnly']."&ipage=".$aClean['iPage']);
+    util_redirect_and_exit($_SERVER['PHP_SELF']."?iItemsPerPage=".$aClean['iItemsPerPage']."&sQueuedOnly=".$aClean['sQueuedOnly']."&ipage=".$aClean['iPage']);
 }
 
 {

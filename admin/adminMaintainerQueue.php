@@ -20,7 +20,7 @@ $aClean['sReject'] = makeSafe( $_REQUEST['sReject'] );
 $aClean['sReplyText'] = makeSafe( $_REQUEST['sReplyText'] );
 
 if(!$_SESSION['current']->hasPriv("admin"))
-    util_show_error_page("Insufficient privileges.");
+    util_show_error_page_and_exit("Insufficient privileges.");
 
 
 if ($aClean['sSub'])
@@ -40,7 +40,7 @@ if ($aClean['sSub'])
     else
     {
         //error no Id!
-        util_show_error_page("<p><b>QueueId Not Found!</b></p>");
+        util_show_error_page_and_exit("<p><b>QueueId Not Found!</b></p>");
     }
 
     //process according to which request was submitted and optionally the sub flag

@@ -151,14 +151,14 @@ function vote_menu()
 function vote_update($vars)
 {
     if(!$_SESSION['current']->isLoggedIn())
-        util_show_error_page("You must be logged in to vote");
+        util_show_error_page_and_exit("You must be logged in to vote");
 
     if( !is_numeric($vars['iAppId']) OR !is_numeric($vars['iSlot']))
     {
         if(is_numeric($vars['iAppId']))
-           redirect(apidb_fullurl("appview.php?iAppId=".$vars["iAppId"]));
+           util_redirect_and_exit(apidb_fullurl("appview.php?iAppId=".$vars["iAppId"]));
         else
-            redirect(apidb_fullurl("index.php"));
+            util_redirect_and_exit(apidb_fullurl("index.php"));
 
         return;
     }
@@ -178,7 +178,7 @@ function vote_update($vars)
         }
     }
 
-    redirect(apidb_fullurl("appview.php?iAppId=".$vars["iAppId"]));
+    util_redirect_and_exit(apidb_fullurl("appview.php?iAppId=".$vars["iAppId"]));
 }
 
 // tell us if there is a vote in a given slot so we don't

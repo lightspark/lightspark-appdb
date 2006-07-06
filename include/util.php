@@ -2,7 +2,7 @@
 /**
  * display an error page
  */
-function util_show_error_page($text = null, $message = null)
+function util_show_error_page_and_exit($text = null, $message = null)
 {
     if (!$text) {
         $text = "You must be logged in to perform that operation.";
@@ -12,6 +12,15 @@ function util_show_error_page($text = null, $message = null)
     echo "<div align=center><font color=red><b>$text</b></font></div>\n";
     echo "<p>$message</p>\n";
     apidb_footer();
+    exit;
+}
+
+/**
+ * redirect to $url
+ */
+function util_redirect_and_exit($url)
+{
+    header("Location: ".$url); 
     exit;
 }
 

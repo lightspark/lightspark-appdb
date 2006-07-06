@@ -132,7 +132,7 @@ function display_move_test_to_versions_table($aVersionsIds,$icurrentVersionId)
 
 //deny access if not logged in or not a super maintainer of any applications
 if(!$_SESSION['current']->hasPriv("admin") && !$_SESSION['current']->isSuperMaintainer())
-    util_show_error_page("Insufficient privileges.");
+    util_show_error_page_and_exit("Insufficient privileges.");
 
 $oTest = new testData($aClean['iTestingId']);
 
@@ -142,7 +142,7 @@ if ($aClean['sSub'])
     {
         /* make sure the user is authorized to view this application request */
         if(!$_SESSION['current']->hasPriv("admin"))
-            util_show_error_page("Insufficient privileges.");
+            util_show_error_page_and_exit("Insufficient privileges.");
 
         $oApp = new Application($aClean['iAppId']);
 
@@ -159,13 +159,13 @@ if ($aClean['sSub'])
         /* make sure the user has permission to view this version */
         $oVersion = new Version($aClean['iVersionId']);
         if(!$_SESSION['current']->hasAppVersionModifyPermission($oVersion))
-            util_show_error_page("Insufficient privileges.");
+            util_show_error_page_and_exit("Insufficient privileges.");
 
     } else
     {
         //error no Id!
         addmsg("Application Not Found!", "red");
-        redirect(apidb_fullurl("admin/adminAppQueue.php"));
+        util_redirect_and_exit(apidb_fullurl("admin/adminAppQueue.php"));
     }
 
     // Get the Testing results if they exist
@@ -205,7 +205,7 @@ if ($aClean['sSub'])
         $oVersion->unQueue();
         $oTest->update(true);
         $oTest->unQueue();
-        redirect($_SERVER['PHP_SELF']);
+        util_redirect_and_exit($_SERVER['PHP_SELF']);
     }
     else if ($aClean['sSub'] == 'duplicate')
     {
@@ -222,7 +222,7 @@ if ($aClean['sSub'])
         }
 
         /* redirect back to the main page */
-        redirect(apidb_fullurl("admin/adminAppQueue.php"));
+        util_redirect_and_exit(apidb_fullurl("admin/adminAppQueue.php"));
     }
     else if ($aClean['sSub'] == 'movetest')
     {
@@ -239,7 +239,7 @@ if ($aClean['sSub'])
         }
 
         // redirect back to the main page
-        redirect(apidb_fullurl("admin/adminAppQueue.php"));
+        util_redirect_and_exit(apidb_fullurl("admin/adminAppQueue.php"));
     }
     else if ($aClean['sSub'] == 'Delete')
     {
@@ -258,7 +258,7 @@ if ($aClean['sSub'])
             $oVersion->delete();
         }
 
-        redirect(apidb_fullurl("admin/adminAppQueue.php"));
+        util_redirect_and_exit(apidb_fullurl("admin/adminAppQueue.php"));
     }
     else if ($aClean['sSub'] == 'Reject')
     {
@@ -277,7 +277,7 @@ if ($aClean['sSub'])
         $oVersion->reject();
         $oTest->update(true);
         $oTest->reject();
-        redirect($_SERVER['PHP_SELF']);
+        util_redirect_and_exit($_SERVER['PHP_SELF']);
     }
 
     //process according to sub flag
@@ -422,7 +422,7 @@ if ($aClean['sSub'])
     {
         //error no sub!
         addmsg("Internal Routine Not Found!!", "red");
-        redirect(apidb_fullurl("admin/adminAppQueue.php"));
+        util_redirect_and_exit(apidb_fullurl("admin/adminAppQueue.php"));
     }
 }
 else /* if ($aClean['sSub']) is not defined, display the main app queue page */

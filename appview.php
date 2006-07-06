@@ -95,7 +95,7 @@ function display_bundle($iAppId)
 }
 
 if(!is_numeric($aClean['iAppId']) && !is_numeric($aClean['iVersionId']))
-    util_show_error_page("Something went wrong with the application or version id");
+    util_show_error_page_and_exit("Something went wrong with the application or version id");
 
 if ($aClean['sSub'])
 {
@@ -107,7 +107,7 @@ if ($aClean['sSub'])
         {
             $oBuglink = new bug($aClean['iBuglinkId']);
             $oBuglink->delete();
-            redirect(apidb_fullurl("appview.php?iVersionId=".$aClean['iVersionId']));
+            util_redirect_and_exit(apidb_fullurl("appview.php?iVersionId=".$aClean['iVersionId']));
         }
  
     }
@@ -119,7 +119,7 @@ if ($aClean['sSub'])
         {
             $oBuglink = new bug($aClean['iBuglinkId']);
             $oBuglink->unqueue();
-            redirect(apidb_fullurl("appview.php?iVersionId=".$aClean['iVersionId']));
+            util_redirect_and_exit(apidb_fullurl("appview.php?iVersionId=".$aClean['iVersionId']));
         }
  
     }
@@ -127,13 +127,13 @@ if ($aClean['sSub'])
     {
         $oBuglink = new bug();
         $oBuglink->create($aClean['iVersionId'],$aClean['iBuglinkId']);
-        redirect(apidb_fullurl("appview.php?iVersionId=".$aClean['iVersionId']));
+        util_redirect_and_exit(apidb_fullurl("appview.php?iVersionId=".$aClean['iVersionId']));
     }
     if($aClean['sSub'] == 'StartMonitoring')
     {
         $oMonitor = new Monitor();
         $oMonitor->create($_SESSION['current']->iUserId,$aClean['iAppId'],$aClean['iVersionId']);
-        redirect(apidb_fullurl("appview.php?iVersionId=".$aClean['iVersionId']));
+        util_redirect_and_exit(apidb_fullurl("appview.php?iVersionId=".$aClean['iVersionId']));
     }
     if($aClean['sSub'] == 'StopMonitoring')
     {
@@ -143,7 +143,7 @@ if ($aClean['sSub'])
         {
             $oMonitor->delete();
         }
-        redirect(apidb_fullurl("appview.php?iVersionId=".$aClean['iVersionId']));
+        util_redirect_and_exit(apidb_fullurl("appview.php?iVersionId=".$aClean['iVersionId']));
     }
 
 }
@@ -162,7 +162,7 @@ if($aClean['iAppId'])
 } else
 {
     // Oops! Called with no params, bad llamah!
-    util_show_error_page('Page Called with No Params!');
+    util_show_error_page_and_exit('Page Called with No Params!');
 }
 
 apidb_footer();

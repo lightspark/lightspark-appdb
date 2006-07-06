@@ -7,7 +7,7 @@ include("path.php");
 require_once(BASE."include/incl.php");
 
 
-        redirect(BASE."appsubmit.php");
+        util_redirect_and_exit(BASE."appsubmit.php");
 
 
 ?>

@@ -31,7 +31,7 @@ $aClean['iConfirmed'] = makeSafe($_POST['iConfirmed']);
 $aClean['iSuperMaintainer'] = makeSafe($_POST['iSuperMaintainer']);
 
 if(!$_SESSION['current']->isLoggedIn())
-    util_show_error_page("You need to be logged in to resign from being a maintainer.");
+    util_show_error_page_and_exit("You need to be logged in to resign from being a maintainer.");
 
 
 if($aClean['iConfirmed'])

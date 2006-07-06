@@ -35,7 +35,7 @@ if( empty( $aClean['iCatId'] ) )
 }
 
 if(!is_numeric($aClean['iCatId']))
-	util_show_error_page("Something went wrong with the category ID");
+	util_show_error_page_and_exit("Something went wrong with the category ID");
 
 // list sub categories
 $cat = new Category($aClean['iCatId']);

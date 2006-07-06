@@ -26,7 +26,7 @@ if(!$_SESSION['current']->hasPriv("admin") &&
    !$_SESSION['current']->isMaintainer($aClean['iVersionId']) &&
    !$_SESSION['current']->isSuperMaintainer($aClean['iAppId']))
 {
-    util_show_error_page("Insufficient Privileges!");
+    util_show_error_page_and_exit("Insufficient Privileges!");
 }
 
 //set link for version
@@ -43,7 +43,7 @@ $oNote->GetOutputEditorValues();
 if($aClean['sSub'] == "Submit")
 {
     $oNote->create();
-    redirect(apidb_fullurl("appview.php?".$sVersionLink));
+    util_redirect_and_exit(apidb_fullurl("appview.php?".$sVersionLink));
 }
 else if($aClean['sSub'] == 'Preview' OR empty($aClean['sSubmit']))
 {

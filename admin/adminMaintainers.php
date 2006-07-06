@@ -16,7 +16,7 @@ $aClean['iMaintainerId'] = makeSafe($_REQUEST['iMaintainerId']);
 
 // deny access if not logged in
 if(!$_SESSION['current']->hasPriv("admin"))
-    util_show_error_page("Insufficient privileges.");
+    util_show_error_page_and_exit("Insufficient privileges.");
 
 apidb_header("Admin Maintainers");
 echo '<form name="sQform" action="adminMaintainers.php" method="post" enctype="multipart/form-data">',"\n";

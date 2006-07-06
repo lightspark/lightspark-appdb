@@ -12,17 +12,17 @@ $aClean['iVersionId'] = makeSafe($_REQUEST['iVersionId']);
 $aClean['sSubmit'] = makeSafe($_REQUEST['sSubmit']);
 
 if(!is_numeric($aClean['iAppId']) OR !is_numeric($aClean['iVersionId']))
-    util_show_error_page("Wrong ID");
+    util_show_error_page_and_exit("Wrong ID");
 
 /* Check for admin privs */
 if(!$_SESSION['current']->hasPriv("admin") && !$_SESSION['current']->isMaintainer($aClean['iVersionId']) && !$_SESSION['current']->isSuperMaintainer($aClean['iAppId']))
-    util_show_error_page("Insufficient Privileges!");
+    util_show_error_page_and_exit("Insufficient Privileges!");
 
 /* process the changes the user entered into the web form */
 if(!empty($aClean['sSubmit']))
 {
     process_app_version_changes(true);
-    redirect(apidb_fullurl("appview.php?iVersionId=".$aClean['iVersionId']));
+    util_redirect_and_exit(apidb_fullurl("appview.php?iVersionId=".$aClean['iVersionId']));
 } else /* or display the webform for making changes */
 {
 

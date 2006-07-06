@@ -20,7 +20,7 @@ $aClean['iBugId'] = makeSafe($_REQUEST['iBugId']);
 /* code to View versions affected by a Bug */
 
 if(!is_numeric($aClean['iBugId']))
-    util_show_error_page("Something went wrong with the bug ID");
+    util_show_error_page_and_exit("Something went wrong with the bug ID");
 
     apidb_header("Applications affected by Bug #".$aClean['iBugId']);
     echo '<form method=post action="viewbugs.php?iBugId='.$aClean['iBugId'].'">',"\n";

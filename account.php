@@ -67,10 +67,10 @@ function do_account($sCmd = null)
             if($_SESSION['current'])
                 $_SESSION['current']->logout();
 
-            redirect(apidb_fullurl("index.php"));
+            util_redirect_and_exit(apidb_fullurl("index.php"));
     }
     // not valid command, display error page
-    util_show_error_page("Internal Error","This module was called with incorrect parameters");
+    util_show_error_page_and_exit("Internal Error","This module was called with incorrect parameters");
 }
 
 /**
@@ -129,7 +129,7 @@ function cmd_do_new()
         $oUser->login($aClean['sUserEmail'], $aClean['sUserPassword']);
 
         addmsg("Account created! (".$aClean['sUserEmail'].")", "green");
-        redirect(apidb_fullurl());
+        util_redirect_and_exit(apidb_fullurl());
     }
     else if($iResult == USER_CREATE_EXISTS)
     {
@@ -162,7 +162,7 @@ function cmd_send_passwd()
     {
         addmsg("Please enter your email address in the 'E-mail' field and re-request a new password",
                "green");
-        redirect(apidb_fullurl("account.php?cmd=login"));
+        util_redirect_and_exit(apidb_fullurl("account.php?cmd=login"));
     }
 
     $shNote = '(<b>Note</b>: accounts for <b>appdb</b>.winehq.org and <b>bugs</b>.winehq.org '
@@ -202,7 +202,7 @@ function cmd_send_passwd()
                .$shNote, "red");
     }
     
-    redirect(apidb_fullurl("account.php?sCmd=login"));
+    util_redirect_and_exit(apidb_fullurl("account.php?sCmd=login"));
 }
 
 /**
@@ -221,7 +221,7 @@ function cmd_do_login()
     if($iResult == SUCCESS)
     {
         addmsg("You are successfully logged in as '$oUser->sRealname'.", "green");
-        redirect(apidb_fullurl("index.php"));    	    
+        util_redirect_and_exit(apidb_fullurl("index.php"));    	    
     } else
     {
         retry("login","Login failed ".$shNote);

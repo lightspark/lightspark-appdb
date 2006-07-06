@@ -48,7 +48,7 @@ while(list($key, $value) = each($_REQUEST))
 
 
 if(!$_SESSION['current']->isLoggedIn())
-    util_show_error_page("You must be logged in to edit preferences");
+    util_show_error_page_and_exit("You must be logged in to edit preferences");
 
 // we come from the administration to edit an user
 if($_SESSION['current']->hasPriv("admin") && 
@@ -155,7 +155,7 @@ if($_POST)
                 $oUser->addPriv("admin");
             else 
                 $oUser->delPriv("admin");
-            redirect(BASE."admin/adminUsers.php?iUserId=".$oUser->iUserId."&sSearch=".$aClean['sSearch']."&iLimit=".$aClean['iLimit']."&sOrderBy=".$aClean['sOrderBy']."&sSubmit=true");
+            util_redirect_and_exit(BASE."admin/adminUsers.php?iUserId=".$oUser->iUserId."&sSearch=".$aClean['sSearch']."&iLimit=".$aClean['iLimit']."&sOrderBy=".$aClean['sOrderBy']."&sSubmit=true");
         }
     }
     else

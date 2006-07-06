@@ -21,7 +21,7 @@ $aClean['iVersionId'] = makeSafe($_REQUEST['iVersionId']);
 
 // deny access if not admin
 if(!$_SESSION['current']->hasPriv("admin"))
-    util_show_error_page("Insufficient privileges.");
+    util_show_error_page_and_exit("Insufficient privileges.");
 
 /*
  * We issued a delete command.
@@ -35,7 +35,7 @@ if($aClean['sCmd'])
         $oScreenshot->delete();
         $oScreenshot->free();
     } 
-    redirect($_SERVER['PHP_SELF'].
+    util_redirect_and_exit($_SERVER['PHP_SELF'].
              "?iItemsPerPage=".$aClean['iItemsPerPage'].
              "&iPage=".$aClean['iPage']);
 }

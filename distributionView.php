@@ -20,13 +20,13 @@ $aClean['iDistributionId'] = makeSafe( $_REQUEST['iDistributionId']);
 if ($aClean['sSub'])
 {
     if(!$_SESSION['current']->hasPriv("admin"))
-        util_show_error_page("Insufficient privileges.");
+        util_show_error_page_and_exit("Insufficient privileges.");
 
     if($aClean['sSub'] == 'delete')
     {
         $oDistribution = new distribution($aClean['iDistributionId']);
         $oDistribution->delete();
-        redirect($_SERVER['PHP_SELF']);
+        util_redirect_and_exit($_SERVER['PHP_SELF']);
     }
 } 
 $oDistribution = new distribution($aClean['iDistributionId']);

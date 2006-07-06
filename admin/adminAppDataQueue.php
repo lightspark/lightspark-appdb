@@ -20,7 +20,7 @@ $aClean['sReject'] = makeSafe($_REQUEST['sReject']);
 
 // deny access if not admin or at least some kind of maintainer
 if(!$_SESSION['current']->hasPriv("admin") && !$_SESSION['current']->isMaintainer())
-    util_show_error_page("Insufficient privileges.");
+    util_show_error_page_and_exit("Insufficient privileges.");
 
 // shows the list of appdata in queue
 if (!$aClean['iId'])
@@ -190,7 +190,7 @@ if (!$aClean['iId'])
                 }
             }
         }
-        redirect(apidb_fullurl("admin/adminAppDataQueue.php"));
+        util_redirect_and_exit(apidb_fullurl("admin/adminAppDataQueue.php"));
     } elseif ($aClean['sReject'])
     {
         if($obj_row->type == "image")
@@ -216,7 +216,7 @@ if (!$aClean['iId'])
                echo "<p>Application data  was successfully deleted from the Queue.</p>\n";
             }
         }
-        redirect(apidb_fullurl("admin/adminAppDataQueue.php"));
+        util_redirect_and_exit(apidb_fullurl("admin/adminAppDataQueue.php"));
     }
 }
 echo html_frame_end("&nbsp;");        

@@ -32,7 +32,7 @@ if (!$_SESSION['current']->hasPriv("admin")
  && !$_SESSION['current']->isMaintainer($oComment->iVersionId)
  && !$_SESSION['current']->isSuperMaintainer($oComment->iAppId))
 {
-    util_show_error_page("You don't have sufficient privileges to delete this comment.");
+    util_show_error_page_and_exit("You don't have sufficient privileges to delete this comment.");
 }
 
 // let's show the deletion form if the user want's to explain why he deleted the comment
@@ -62,6 +62,6 @@ if($_SESSION['current']->getPref("confirm_comment_deletion") != "no" && !isset($
 } else
 {
     $oComment->delete($aClean['sWhy']);
-    redirect(apidb_fullurl("appview.php?iVersionId=".$oComment->iVersionId));
+    util_redirect_and_exit(apidb_fullurl("appview.php?iVersionId=".$oComment->iVersionId));
 }
 ?>

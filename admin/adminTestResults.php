@@ -21,7 +21,7 @@ if ($aClean['sSub'])
     $oTest = new testData($aClean['iTestingId']);
     $oVersion = new Version($oTest->iVersionId);
     if(!($_SESSION['current']->hasAppVersionModifyPermission($oVersion)))
-        util_show_error_page("Insufficient privileges.");
+        util_show_error_page_and_exit("Insufficient privileges.");
 
     if(($aClean['sSub'] == 'Submit') || ($aClean['sSub'] == 'Save') ||
        ($aClean['sSub'] == 'Reject') || ($aClean['sSub'] == 'Delete'))
@@ -47,7 +47,7 @@ if ($aClean['sSub'])
                 $oTest->delete();
             }
 
-            redirect($_SERVER['PHP_SELF']);
+            util_redirect_and_exit($_SERVER['PHP_SELF']);
         }
     }
 
@@ -138,7 +138,7 @@ if ($aClean['sSub'])
     {
         // error no sub!
         addmsg("Internal Routine Not Found!!", "red");
-        redirect($_SERVER['PHP_SELF']);
+        util_redirect_and_exit($_SERVER['PHP_SELF']);
     } 
 }
 else // if ($aClean['sSub']) is not defined, display the Testing results queue page 

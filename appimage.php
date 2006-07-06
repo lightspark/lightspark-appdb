@@ -32,13 +32,13 @@ header("Pragma: ");
 
 // is the user supposed to be viewing this image ?
 if(!$_SESSION['current']->canViewImage($aClean['iId']))
-    util_show_error_page("Insufficient privileges.");
+    util_show_error_page_and_exit("Insufficient privileges.");
 
 if ($aClean['sREQUEST_METHOD']='HEAD')
 {
    /* WARNING! optimization of logic in include/screenshots.php */
    if (sscanf($aClean['iId'],"%d", &$iId) < 1)
-      util_show_error_page("Bad parameter");
+      util_show_error_page_and_exit("Bad parameter");
 
    $hResult = query_parameters("SELECT id, url FROM appData 
                             WHERE id = '?'

@@ -12,13 +12,13 @@ $aClean['iParentId'] = makeSafe($_REQUEST['iParentId']);
 $aClean['sSubmit'] = makeSafe($_REQUEST['sSubmit']);
 
 if(!$_SESSION['current']->hasPriv("admin"))
-    util_show_error_page();
+    util_show_error_page_and_exit();
 
 $oCat = new Category($aClean['iCatId']);
 if($aClean['sSubmit'])
 {
     $oCat->update($aClean['sName'],$aClean['sDescription'],$aClean['iParentId']);
-    redirect(apidb_fullurl("appbrowse.php?iCatId=".$oCat->iCatId));
+    util_redirect_and_exit(apidb_fullurl("appbrowse.php?iCatId=".$oCat->iCatId));
 }
 else
 {

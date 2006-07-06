@@ -16,14 +16,14 @@ $aClean['sSubmit'] = makeSafe($_REQUEST['sSubmit']);
 $aClean['sPreview'] = makeSafe($_REQUEST['sPreview']);
 
 if(!is_numeric($aClean['iNoteId']))
-    util_show_error_page('Wrong note ID');
+    util_show_error_page_and_exit('Wrong note ID');
 
 /* Get note data */
 $oNote = new Note($aClean['iNoteId']);
 
 /* Check for privs */
 if(!$_SESSION['current']->hasPriv("admin") && !$_SESSION['current']->isMaintainer($oNote->iVersionId) && !$_SESSION['current']->isSuperMaintainer($oNote->iAppId))
-    util_show_error_page("Insufficient Privileges!");
+    util_show_error_page_and_exit("Insufficient Privileges!");
 
 if(!empty($aClean['sSub']))
 {
@@ -37,7 +37,7 @@ if(!empty($aClean['sSub']))
     {
         $oNote->update();
     }
-    redirect(apidb_fullurl("appview.php?iVersionId={$oNote->iVersionId}"));
+    util_redirect_and_exit(apidb_fullurl("appview.php?iVersionId={$oNote->iVersionId}"));
 } else /* display note */
 {
     // show form

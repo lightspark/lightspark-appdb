@@ -10,13 +10,13 @@ $aClean['sName'] = makeSafe($_REQUEST['sName']);
 $aClean['sWebpage'] = makeSafe($_REQUEST['sWebpage']);
 
 if(!$_SESSION['current']->hasPriv("admin"))
-    util_show_error_page();
+    util_show_error_page_and_exit();
 
 $oVendor = new Vendor($aClean['iVendorId']);
 if($aClean['sSubmit'])
 {
     $oVendor->update($aClean['sName'],$aClean['sWebpage']);
-    redirect(apidb_fullurl("vendorview.php"));
+    util_redirect_and_exit(apidb_fullurl("vendorview.php"));
 }
 else
 {

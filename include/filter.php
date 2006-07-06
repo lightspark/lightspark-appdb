@@ -18,13 +18,13 @@ function filter_gpc()
                 if(is_numeric($_REQUEST[$aKeys[$i]]))
                     $aClean[$aKeys[$i]] = $_REQUEST[$aKeys[$i]];
                 else
-                    util_show_error_page("Fatal error: ".$aKeys[$i]." should be a numeric value.");
+                    util_show_error_page_and_exit("Fatal error: ".$aKeys[$i]." should be a numeric value.");
             break;
             case "b": // boolean
                 if($_REQUEST[$aKeys[$i]]=="true" || $_REQUEST[$aKeys[$i]]=="false")
                     $aClean[$aKeys[$i]] = $_REQUEST[$aKeys[$i]];
                 else
-                    util_show_error_page("Fatal error: ".$aKeys[$i]." should be a boolean value.");
+                    util_show_error_page_and_exit("Fatal error: ".$aKeys[$i]." should be a boolean value.");
             break;
             case "s": // string
                 switch($aKeys[$i][1])
@@ -39,11 +39,11 @@ function filter_gpc()
             break;
             case "a": // array
                  if(!is_array($_REQUEST[$aKeys[$i]]))
-                    util_show_error_page("Fatal error: ".$aKeys[$i]." should be an array.");
+                    util_show_error_page_and_exit("Fatal error: ".$aKeys[$i]." should be an array.");
             break;
             default:
                 if($aKeys[$i]!="whq_appdb" && $aKeys[$i]!="MAX_FILE_SIZE") // whq_appdb is the name of the session cookie
-                    util_show_error_page("Fatal error: type of variable ".$aKeys[$i]." is not recognized.");
+                    util_show_error_page_and_exit("Fatal error: type of variable ".$aKeys[$i]." is not recognized.");
             break;
         }
     }

@@ -66,7 +66,7 @@ function newSubmition($errors)
 }
 //deny access if not logged on
 if(!$_SESSION['current']->isLoggedIn())
-    util_show_error_page("Insufficient privileges to create application.  Are you sure you are logged in?");
+    util_show_error_page_and_exit("Insufficient privileges to create application.  Are you sure you are logged in?");
 
 if ($aClean['sSub'])
 {
@@ -88,7 +88,7 @@ if ($aClean['sSub'])
                (($oApp->queued=="false")?true:false) &&
                !$_SESSION['current']->isVersionSubmitter($oApp->AppId))
             {
-                util_show_error_page("Insufficient privileges.");
+                util_show_error_page_and_exit("Insufficient privileges.");
             }
             $oVersion = new Version($oRow->versionId);
         } else
@@ -106,14 +106,14 @@ if ($aClean['sSub'])
            (($oVersion->queued=="false")?true:false) &&
            !$_SESSION['current']->isVersionSubmitter($oVersion->versionId))
         {
-            util_show_error_page("Insufficient privileges.");
+            util_show_error_page_and_exit("Insufficient privileges.");
         }
     }
     else
     {
         //error no Id!
         addmsg("Application Not Found!", "red");
-        redirect($_SERVER['PHP_SELF']);
+        util_redirect_and_exit($_SERVER['PHP_SELF']);
     }
 
     // Get the Testing results if they exist
@@ -207,7 +207,7 @@ if ($aClean['sSub'])
             {
                 $oTest->create();
             }
-            redirect($_SERVER['PHP_SELF']);
+            util_redirect_and_exit($_SERVER['PHP_SELF']);
         }
     }
     if ($aClean['sSub'] == 'Delete')
@@ -236,7 +236,7 @@ if ($aClean['sSub'])
             $oVersion->delete();
         }
         
-        redirect($_SERVER['PHP_SELF']);
+        util_redirect_and_exit($_SERVER['PHP_SELF']);
     }
     if ($aClean['sSub'] == 'view')
     {
@@ -388,7 +388,7 @@ if ($aClean['sSub'])
     {
         // error no sub!
         addmsg("Internal Routine Not Found!!", "red");
-        redirect($_SERVER['PHP_SELF']);
+        util_redirect_and_exit($_SERVER['PHP_SELF']);
     } 
 }
 else // if ($aClean['sSub']) is not defined, display the main app queue page 

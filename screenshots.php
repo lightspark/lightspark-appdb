@@ -54,7 +54,7 @@ if($aClean['sCmd'])
         $oScreenshot->delete();
         $oScreenshot->free();
     } 
-    redirect(apidb_fullurl("screenshots.php?iAppId=".$aClean['iAppId']."&iVersionId=".$aClean['iVersionId']));
+    util_redirect_and_exit(apidb_fullurl("screenshots.php?iAppId=".$aClean['iAppId']."&iVersionId=".$aClean['iVersionId']));
 }
 
 

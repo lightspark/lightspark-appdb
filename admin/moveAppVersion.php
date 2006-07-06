@@ -12,11 +12,11 @@ $aClean['iVersionId'] = makeSafe($_REQUEST['iVersionId']);
 $aClean['sAction'] = makeSafe($_REQUEST['sAction']);
 
 if(!is_numeric($aClean['iAppId']) OR !is_numeric($aClean['iVersionId']))
-    util_show_error_page("Wrong ID");
+    util_show_error_page_and_exit("Wrong ID");
 
 /* Check for admin privs */
 if(!$_SESSION['current']->hasPriv("admin"))
-    util_show_error_page("Insufficient Privileges!");
+    util_show_error_page_and_exit("Insufficient Privileges!");
 
 if(!empty($aClean['sAction']))
 {
@@ -25,7 +25,7 @@ if(!empty($aClean['sAction']))
     $oVersion->update(null, null, null, null, $aClean['iAppId']);
 
     /* redirect to the application we just moved this version to */
-    redirect(apidb_fullurl("appview.php?iAppId=".$aClean['iAppId']));
+    util_redirect_and_exit(apidb_fullurl("appview.php?iAppId=".$aClean['iAppId']));
 } else /* or display the webform for making changes */
 {
 ?>

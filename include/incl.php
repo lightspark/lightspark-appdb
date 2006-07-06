@@ -165,16 +165,6 @@ function apidb_image($name)
 
 
 /**
- * redirect to $url
- */
-function redirect($url)
-{
-    header("Location: ".$url); 
-    exit;
-}
-
-
-/**
  * format a date as required for HTTP by RFC 2068 sec 3.3.1 
  */
 function fHttpDate($iDate) {

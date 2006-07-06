@@ -53,7 +53,7 @@ if ($aClean['sSub'])
                 $oTest->update(true);
 	        $oTest->ReQueue();
             }
-            redirect($_SERVER['PHP_SELF']);
+            util_redirect_and_exit($_SERVER['PHP_SELF']);
         } else 
         {
             $aClean['sSub'] = 'view';
@@ -69,7 +69,7 @@ if ($aClean['sSub'])
             $oTest->delete();
         }
         
-        redirect($_SERVER['PHP_SELF']);
+        util_redirect_and_exit($_SERVER['PHP_SELF']);
     }
 
     // is this an old test?
@@ -81,7 +81,7 @@ if ($aClean['sSub'])
            !$_SESSION['current']->hasAppVersionModifyPermission($oVersion)&&
            !(($_SESSION['current']->iUserId == $oTest->iSubmitterId) && !($oTest->sQueued == 'false')))
         {
-            util_show_error_page("Insufficient privileges.");
+            util_show_error_page_and_exit("Insufficient privileges.");
         } else
         $oVersion = new version($oTest->iVersionId);
     } else
@@ -161,7 +161,7 @@ if ($aClean['sSub'])
     {
         // error no sub!
         addmsg("Internal Routine Not Found!!", "red");
-        redirect($_SERVER['PHP_SELF']);
+        util_redirect_and_exit($_SERVER['PHP_SELF']);
     } 
 } 
 else // if ($aClean['sSub']) is not defined, display the Testing results queue page 
