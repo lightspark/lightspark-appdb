@@ -72,7 +72,8 @@ notifyAdminsOfCleanupExecution($usersWarned, $usersUnwarnedWithData, $usersDelet
 /* check to see if there are orphaned versions in the database */
 orphanVersionCheck();
 
-
+/* check to see if we have any orphaned messages stuck in sessionMessages table */
+orphanSessionMessagesCheck();
 
 
 /* Users that are unwarned and inactive since $iMonths */
@@ -149,7 +150,7 @@ function orphanVersionCheck()
     $found_orphans = false;
 
     $sMsg = "Found these orphaned versions in the database with\r\n";
-    $sMSg = "this sql command '".$sQuery."'\r\n";
+    $sMsg.= "this sql command '".$sQuery."'\r\n";
 
     /* don't report anything if no orphans are found */
     if(mysql_num_rows($hResult) == 0)
@@ -166,4 +167,33 @@ function orphanVersionCheck()
     $sEmail = User::get_notify_email_address_list(null, null); /* get list admins */
     if($sEmail)
         mail_appdb($sEmail, $sSubject, $sMsg);
+}
+
+/* this function checks to see if we have any orphaned session messages */
+/* These orphaned messages are an indication that we've put a message into */
+/* the system without displaying it and it becomes effectively lost forever */
+/* so we'll want to purge them here after reporting how many we have */
+function orphanSessionMessagesCheck()
+{
+    $iSessionMessageDayLimit = 1; /* the number of days a session message must be stuck before being purges */
+
+    /* get a count of the messages older than $iSessionMessageDayLimit */
+    $sQuery = "SELECT count(*) as cnt from sessionMessages where TO_DAYS(NOW()) - TO_DAYS(time) > ?";
+    $hResult = query_parameters($sQuery, $iSessionMessageDayLimit);
+
+    $oRow = mysql_fetch_object($hResult);
+    $iMessages = $oRow->cnt;
+
+    $sMsg = "Found ".$iMessages." that have been orphaned in the sessionMessages table for longer than ".$iSessionMessageDayLimit." days\r\n";
+    $sMsg.= " Purging these messages.\r\n";
+
+    $sSubject = "Messages orphaned in sessionMessages\r\n";
+
+    $sEmail = User::get_notify_email_address_list(null, null); /* get list admins */
+    if($sEmail)
+        mail_appdb($sEmail, $sSubject, $sMsg);
+
+    /* purge the messages older than $iSessionMessageDayLimit */
+    $sQuery = "DELETE from sessionMessages where TO_DAYS(NOW()) - TO_DAYS(time) > ?";
+    $hResult = query_parameters($sQuery, $iSessionMessageDayLimit);
 }
