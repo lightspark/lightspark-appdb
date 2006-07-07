@@ -8,12 +8,9 @@
  */ 
 include("path.php");
 require_once(BASE."include/incl.php");
+require_once(BASE."include/filter.php");
 require_once(BASE."include/application.php");
 require_once(BASE."include/vendor.php");
-
-$aClean = array(); //array of filtered user input
-$aClean['iVendorId'] = makeSafe($_REQUEST['iVendorId']);
-$aClean['sSub'] = makeSafe($_REQUEST['sSub']);
 
 $oVendor = new Vendor($aClean['iVendorId']);
 
