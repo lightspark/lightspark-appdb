@@ -20,6 +20,7 @@
 // application environment
 include("path.php");
 require(BASE."include/incl.php");
+require(BASE."include/filter.php");
 require(BASE."include/application.php");
 require(BASE."include/appdb.php");
 require(BASE."include/vote.php");
@@ -28,13 +29,6 @@ require(BASE."include/maintainer.php");
 require(BASE."include/mail.php");
 require(BASE."include/monitor.php");
 require_once(BASE."include/testResults.php");
-
-$aClean = array(); //array of filtered user input
-
-$aClean['iAppId'] = makeSafe($_REQUEST['iAppId']);
-$aClean['iVersionId'] = makeSafe($_REQUEST['iVersionId']);
-$aClean['sSub'] = makeSafe($_REQUEST['sSub']);
-$aClean['iBuglinkId'] = makeSafe($_REQUEST['iBuglinkId']);
 
 $oApp = new Application($aClean['iAppId']);
 $oVersion = new Version($aClean['iVersionId']);
@@ -94,7 +88,8 @@ function display_bundle($iAppId)
     echo html_frame_end();
 }
 
-if(!is_numeric($aClean['iAppId']) && !is_numeric($aClean['iVersionId']))
+// if both iAppId and iVersionId are empty we have a problem
+if(empty($aClean['iAppId']) && empty($aClean['iVersionId']))
     util_show_error_page_and_exit("Something went wrong with the application or version id");
 
 if ($aClean['sSub'])
