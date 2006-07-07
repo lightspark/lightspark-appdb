@@ -25,24 +25,11 @@
 // application environment
 include("path.php");
 require_once(BASE."include/incl.php");
+require_once(BASE."include/filter.php");
 require_once(BASE."include/tableve.php");
 require_once(BASE."include/application.php");
 require_once(BASE."include/mail.php");
 require_once(BASE."include/testResults.php");
-
-$aClean = array(); //array of filtered user input
-
-$aClean['sAppType'] = makeSafe($_REQUEST['sAppType']);
-$aClean['sSub'] = makeSafe($_REQUEST['sSub']);
-$aClean['iAppId'] = makeSafe($_REQUEST['iAppId']);
-$aClean['iVersionId'] = makeSafe($_REQUEST['iVersionId']);
-$aClean['iTestingId'] = makeSafe($_REQUEST['iTestingId']);
-$aClean['sAppVendorName'] = makeSafe($_REQUEST['sAppVendorName']);
-$aClean['iVendorId'] = makeSafe($_REQUEST['iVendorId']);
-$aClean['sAppWebpage'] = makeSafe($_REQUEST['sAppWebpage']);
-$aClean['sAppKeywords'] = makeSafe($_REQUEST['sAppKeywords']);
-$aClean['iDistributionId'] = makeSafe($_REQUEST['iDistributionId']);
-$aClean['sDistribution'] = makeSafe($_REQUEST['sDistribution']);
 
 function get_vendor_from_keywords($sKeywords)
 {
