@@ -20,13 +20,19 @@
 // application environment
 require("path.php");
 require(BASE."include/incl.php");
-require(BASE."include/filter.php");
 require_once(BASE."include/application.php");
 require_once(BASE."include/appdb.php");
 require_once(BASE."include/vote.php");
 require_once(BASE."include/category.php");
 require_once(BASE."include/maintainer.php");
 require_once(BASE."include/monitor.php");
+
+$aClean = array(); //array of filtered user input
+
+$aClean['iAppId'] = makeSafe($_REQUEST['iAppId']);
+$aClean['iVersionId'] = makeSafe($_REQUEST['iVersionId']);
+$aClean['sSub'] = makeSafe($_REQUEST['sSub']);
+$aClean['iBuglinkId'] = makeSafe($_REQUEST['iBuglinkId']);
 
 $oApp = new Application($aClean['iAppId']);
 $oVersion = new Version($aClean['iVersionId']);
