@@ -20,7 +20,7 @@ class Category {
      */
     function Category($iCatId = null)
     {
-        // we are working on an existing vendor
+        // we are working on an existing category
         if($iCatId=="0" || $iCatId)
         {
             /*
