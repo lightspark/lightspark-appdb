@@ -21,17 +21,10 @@
 // application environment
 include("path.php");
 require(BASE."include/incl.php");
+require(BASE."include/filter.php");
 require_once(BASE."include/screenshot.php");
 require(BASE."include/application.php");
 require(BASE."include/mail.php");
-
-$aClean = array(); //array of filtered user input
-
-$aClean['sCmd'] = makeSafe($_REQUEST['sCmd']);
-$aClean['iVersionId'] = makeSafe($_REQUEST['iVersionId']);
-$aClean['sScreenshotDesc'] = makeSafe($_REQUEST['sScreenshotDesc']);
-$aClean['iImageId'] = makeSafe($_REQUEST['iImageId']);
-$aClean['iAppId'] = makeSafe($_REQUEST['iAppId']);
 
 // we issued a command
 if($aClean['sCmd'])
