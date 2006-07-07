@@ -8,13 +8,8 @@
  */ 
 include("path.php");
 include(BASE."include/incl.php");
+require(BASE."include/filter.php");
 require(BASE."include/category.php");
-
-$aClean = array(); //array of filtered user input
-
-$aClean['iTopNumber'] = makeSafe($_REQUEST['iTopNumber']);
-$aClean['iCategoryId'] = makeSafe($_REQUEST['iCategoryId']);
-
 
 /* default to 25 apps, main categories */
 $topNumber = 25;
