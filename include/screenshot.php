@@ -415,7 +415,7 @@ function get_thumbnail($id)
     $img = '<a href="'.apidb_fullurl("appimage.php").
            '?iId='.$id.
            '" onclick="javascript:openWin(\''.apidb_fullurl("appimage.php").
-           '?id='.$id.'\',\''.$randName.'\','.
+           '?iId='.$id.'\',\''.$randName.'\','.
            ($oScreenshot->oScreenshotImage->get_width() + 20).','.
            ($oScreenshot->oScreenshotImage->get_height() + 6).
            ');return false;">'.$imgSRC.'</a>';
