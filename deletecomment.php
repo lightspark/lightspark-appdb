@@ -13,14 +13,9 @@
 // application environment
 include("path.php");
 require(BASE."include/incl.php");
+require(BASE."include/filter.php");
 require(BASE."include/application.php");
 require(BASE."include/mail.php");
-
-$aClean = array(); //array of filtered user input
-
-$aClean['sWhy'] = makeSafe($_REQUEST['sWhy']);
-$aClean['iCommentId'] = makeSafe($_REQUEST['iCommentId']);
-$aClean['iDeleteIt'] = makeSafe($_REQUEST['iDeleteIt']);
 
 $oComment = new Comment($aClean['iCommentId']);
 
