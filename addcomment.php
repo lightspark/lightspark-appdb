@@ -14,15 +14,9 @@
 // application environment
 include("path.php");
 require(BASE."include/incl.php");
+require(BASE."include/filter.php");
 require(BASE."include/application.php");
 require(BASE."include/mail.php");
-
-$aClean = array(); //array of filtered user input
-
-$aClean['iVersionId'] = makeSafe($_REQUEST['iVersionId']);
-$aClean['iThread'] = makeSafe($_REQUEST['iThread']);
-$aClean['sBody'] = makeSafe($_REQUEST['sBody']);
-$aClean['sSubject'] = makeSafe($_REQUEST['sSubject']);
 
 // you must be logged in to submit comments
 if(!$_SESSION['current']->isLoggedIn())
@@ -30,14 +24,6 @@ if(!$_SESSION['current']->isLoggedIn())
   apidb_header("Please login");
   echo "To submit a comment for an application you must be logged in. Please <a href=\"account.php?sCmd=login\">login now</a> or create a <a href=\"account.php?sCmd=new\">new account</a>.","\n";
   exit;
-}
-
-if( !is_numeric($aClean['iVersionId']) )
-    util_show_error_page_and_exit('Internal Database Access Error');
-
-if(!is_numeric($aClean['iThread']))
-{
-  $aClean['iThread'] = 0;
 }
 
 // the user submitted his comment
