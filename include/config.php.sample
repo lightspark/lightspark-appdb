@@ -8,6 +8,7 @@
  * global params
  */
 define("APPDB_DEBUG","0"); //turns debugging on/off
+define("APPDB_DONT_CLEAR_COOKIES_VAR","0"); // set to 1 if you have more than one Web application on the same virtual host
 define("APPDB_THUMBNAIL_WIDTH","128"); // width of the screenshot's thumbnails
 define("APPDB_THUMBNAIL_HEIGHT","128"); // height of the screenshot's thumbnails
 define("APPDB_SCREENSHOT_MAXWIDTH","1024"); // width of the screenshot's thumbnails

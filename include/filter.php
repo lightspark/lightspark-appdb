@@ -44,16 +44,8 @@ function filter_gpc()
                     util_show_error_page_and_exit("Fatal error: ".$aKeys[$i]." should be an array.");
             break;
             default:
-                if($aKeys[$i]!="whq_appdb" && // don't filter the appdb session cookie
-
-                   // or any bugzilla cookies
-                   $aKeys[$i]!="BUGLIST" &&
-                   $aKeys[$i]!="DEFAULTFORMAT" &&
-                   $aKeys[$i]!="Bugzilla_login" &&
-                   $aKeys[$i]!="LASTORDER" &&
-                   $aKeys[$i]!="Bugzilla_logincookie" &&
-                   $aKeys[$i]!="DEFAULTFORMAT" &&
-                   $aKeys[$i]!="MAX_FILE_SIZE")
+                // don't filter the AppDB session cookie and MAX_FILE_SIZE
+                if($aKeys[$i]!="whq_appdb" && $aKeys[$i]!="MAX_FILE_SIZE")
                 { 
                     util_show_error_page_and_exit("Fatal error: type of variable ".$aKeys[$i]." is not recognized.");
                 }
@@ -66,6 +58,7 @@ function filter_gpc()
     $_REQUEST = array();
     $_POST = array();
     $_GET = array();
-    $_COOKIES = array();
+    if(APPDB_DONT_CLEAR_COOKIES_VAR != "1")
+        $_COOKIES = array();
 }
 ?>
