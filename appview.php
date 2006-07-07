@@ -56,7 +56,7 @@ function display_catpath($catId, $appId, $versionId = '')
  */
 function display_bundle($iAppId)
 {
-    $oApp = new Application($appId);
+    $oApp = new Application($iAppId);
     $hResult = query_parameters("SELECT appFamily.appId, appName, description FROM appBundle, appFamily ".
                             "WHERE appFamily.queued='false' AND bundleId = '?' AND appBundle.appId = appFamily.appId",
                             $iAppId);
