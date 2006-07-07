@@ -460,7 +460,7 @@ else // if ($aClean['sSub']) is not defined, display the main app queue page
         echo "</td></tr></table></div>\n\n";
     
         //show Version list
-        showVersionList($hResult);
+        Version::showList($hResult);
          
 
     }
