@@ -61,7 +61,6 @@ if(!empty($aClean['sBody']))
     if($oRow)
     {
       $mesTitle = "<b>Replying To ...</b> $oRow->subject\n";
-      $originator = $oRow->userId;
       echo html_frame_start($oRow->subject,500);
       echo htmlify_urls($oRow->body), "<br /><br />\n";
       echo html_frame_end();
@@ -89,10 +88,6 @@ if(!empty($aClean['sBody']))
   echo "<input type=\"hidden\" name=\"iThread\" value=\"".$aClean['iThread']."\" />\n";
   echo "<input type=\"hidden\" name=\"iAppId\" value=\"".$aClean['iAppId']."\" />\n";
   echo "<input type=\"hidden\" name=\"iVersionId\" value=\"".$aClean['iVersionId']."\" />\n";
-  if (!empty($aClean['iThread']))
-  {
-    echo "<input type=\"hidden\" name=\"iOriginator\" value=\"$originator\" />\n";
-  }
   echo "</form>";
 }
 
