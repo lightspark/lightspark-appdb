@@ -709,57 +709,57 @@ function perform_search_and_output_results($search_words)
     outputSearchTableForhResult($search_words, $hResult);
 }
 
-function display_page_range($currentPage=1, $pageRange=1, $totalPages=1, $linkurl=NULL)
+function display_page_range($iCurrentPage=1, $iPageRange=1, $iTotalPages=1, $sLinkurl=NULL)
 {
-    if($linkurl==NULL)
+    if($sLinkurl==NULL)
     {
-        $linkurl = $_SERVER['PHP_SELF']."?";
+        $sLinkurl = $_SERVER['PHP_SELF']."?";
     }
     /* display the links to each of these pages */
-    $currentPage = max(1,(min($currentPage,$totalPages)));
-    $pageRange = min($pageRange,$totalPages);
+    $iCurrentPage = max(1,(min($iCurrentPage,$iTotalPages)));
+    $iPageRange = min($iPageRange,$iTotalPages);
 
-    if($currentPage <= ceil($pageRange/2))
+    if($iCurrentPage <= ceil($iPageRange/2))
     {
-        $startPage = 1;
-        $endPage = $pageRange;
+        $iStartPage = 1;
+        $iEndPage = $iPageRange;
     } else
     {
-        if($currentPage + ($pageRange/2) > $totalPages)
+        if($iCurrentPage + ($iPageRange/2) > $iTotalPages)
         {
-            $startPage = $totalPages - $pageRange;
-            $endPage = $totalPages;
+            $iStartPage = $iTotalPages - $iPageRange;
+            $iEndPage = $iTotalPages;
         } else
         {
-            $startPage = $currentPage - floor($pageRange/2);
-            $endPage = $currentPage + floor($pageRange/2);
+            $iStartPage = $iCurrentPage - floor($iPageRange/2);
+            $iEndPage = $iCurrentPage + floor($iPageRange/2);
         }
     }
-    $startPage = max(1,$startPage);
+    $iStartPage = max(1,$iStartPage);
 
-    if($currentPage != 1)
+    if($iCurrentPage != 1)
     {
-        echo "<a href='".$linkurl."&page=1'>|&lt</a>&nbsp";
-        $previousPage = $currentPage - 1;
-        echo "<a href='".$linkurl."&page=$previousPage'>&lt</a>&nbsp";
+        echo "<a href='".$sLinkurl."&iPage=1'>|&lt</a>&nbsp";
+        $iPreviousPage = $iCurrentPage - 1;
+        echo "<a href='".$sLinkurl."&iPage=$iPreviousPage'>&lt</a>&nbsp";
     } else
     {
         echo "|&lt &lt ";
     }
     /* display the desired range */
-    for($x = $startPage; $x <= $endPage; $x++)
+    for($iPg = $iStartPage; $iPg <= $iEndPage; $iPg++)
     {
-        if($x != $currentPage)
-            echo "<a href='".$linkurl."&page=".$x."'>$x</a> ";
+        if($iPg != $iCurrentPage)
+            echo "<a href='".$sLinkurl."&iPage=".$iPg."'>$iPg</a> ";
         else
-            echo "$x ";
+            echo "$iPg ";
     }
 
-    if($currentPage < $totalPages)
+    if($iCurrentPage < $iTotalPages)
     {
-        $nextPage = $currentPage + 1;
-        echo "<a href='".$linkurl."&page=$nextPage'>&gt</a> ";
-        echo "<a href='".$linkurl."&page=$totalPages'>&gt|</a> ";
+        $iNextPage = $iCurrentPage + 1;
+        echo "<a href='".$sLinkurl."&iPage=$iNextPage'>&gt</a> ";
+        echo "<a href='".$sLinkurl."&iPage=$iTotalPages'>&gt|</a> ";
     } else
     {
         echo "&gt &gt|";
