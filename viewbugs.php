@@ -12,10 +12,7 @@
 // application environment
 include("path.php");
 require(BASE."include/incl.php");
-
-$aClean = array(); //array of filtered user input
-
-$aClean['iBugId'] = makeSafe($_REQUEST['iBugId']);
+require(BASE."include/filter.php");
 
 /* code to View versions affected by a Bug */
 
