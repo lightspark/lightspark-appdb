@@ -9,36 +9,24 @@
 // application environment
 include("path.php");
 require(BASE."include/"."incl.php");
+require(BASE."include/filter.php");
 require(BASE."include/"."appdb.php");
 require(BASE."include/"."category.php");
 
-$aClean = array(); //array of filtered user input
-
-$aClean['iCatId'] = makeSafe($_REQUEST['iCatId']);
-
 function admin_menu()
 {
-    if(isset($_REQUEST['iCatId'])) $iCatId=$_REQUEST['iCatId'];
-    else $iCatId="";
+    global $aClean;
 
     $m = new htmlmenu("Admin");
-    $m->add("Edit this Category", BASE."admin/addCategory.php?iCatId=$iCatId");
-    $url = BASE."admin/deleteAny.php?sWhat=category&iCatId=$iCatId&confirmed=yes";
+    $m->add("Edit this Category", BASE."admin/addCategory.php?iCatId=".$aClean['iCatId']);
+    $url = BASE."admin/deleteAny.php?sWhat=category&iCatId=".$aClean['iCatId']."&sConfirmed=yes";
     $m->add("Delete this Category", "javascript:deleteURL(\"Are you sure?\", \"".$url."\")");
 
     $m->done();
 }
 
-if( empty( $aClean['iCatId'] ) )
-{
-    $aClean['iCatId'] = 0; // ROOT
-}
-
-if(!is_numeric($aClean['iCatId']))
-	util_show_error_page_and_exit("Something went wrong with the category ID");
-
 // list sub categories
-$cat = new Category($aClean['iCatId']);
+$cat = new Category($aClean['iCatId']?$aClean['iCatId']:"0");
 $catFullPath = make_cat_path($cat->getCategoryPath());
 $subs = $cat->aSubcatsIds;
 
