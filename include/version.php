@@ -32,7 +32,7 @@ class Version {
     var $aTestingIds;         // an array that contains the testingId of every test result linked to this version
     var $aMonitorIds;         // an array that contains the monitorId of every monitor linked to this version
 
-    /**    
+    /**
      * constructor, fetches the data.
      */
     function Version($iVersionId = null)
@@ -677,7 +677,7 @@ class Version {
         // display all maintainers of this application
         echo "<tr class=\"color0\"><td align=\"left\" colspan=\"2\"><b>Maintainers of this version:</b>\n";
         echo "<table width=\"250\" border=\"0\">";
-        $aMaintainers = getMaintainersUserIdsFromAppIdVersionId($this->iVersionId);
+        $aMaintainers = $this->getMaintainersUserIds();
         $aSupermaintainers = getSuperMaintainersUserIdsFromAppId($this->iAppId);
         $aAllMaintainers = array_merge($aMaintainers,$aSupermaintainers);
         $aAllMaintainers = array_unique($aAllMaintainers);
@@ -925,6 +925,28 @@ class Version {
             echo "</table>\n";
             echo html_frame_end("Click the Version Name to view the details of that Version");
         }
+    }
+
+    /* returns the maintainers of this version in an array */
+    function getMaintainersUserIds()
+    {
+        $aMaintainers = array();
+
+        /* early out if the versionId isn't valid */
+        if($this->iVersionId == 0)
+            return $aMaintainers;
+    
+        $sQuery = "SELECT userId FROM ".
+            "appMaintainers WHERE versionId = '?';";
+        $hResult = query_parameters($sQuery, $this->iVersionId);
+        $iCount = 0;
+        while($oRow = mysql_fetch_object($hResult))
+        {
+            $aMaintainers[$iCount] = $oRow->userId;
+            $iCount++;
+        }
+
+        return $aMaintainers;
     }
 }
 

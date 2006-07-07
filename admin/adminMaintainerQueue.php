@@ -68,7 +68,8 @@ if ($aClean['sSub'])
 
         $firstDisplay = true; /* if false we need to fix up table rows appropriately */
 
-        $other_users = getMaintainersUserIdsFromAppIdVersionId($oRow->versionId);
+        $oVersion = new Version($oRow->versionId);
+        $other_users = $oVersion->getMaintainersUserIds();
         if($other_users)
         {
             $foundMaintainers = true;
