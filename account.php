@@ -20,20 +20,14 @@
 // application environment
 include("path.php");
 require(BASE."include/incl.php");
+require(BASE."include/filter.php");
 require(BASE."include/mail.php");
 
 // set http header to not cache
 header("Pragma: no-cache");
 header("Cache-control: no-cache");
 
-$aClean = array(); //array of filtered user input
-
-// check command and process
-if(!empty($_POST['sCmd']))
-    $aClean['sCmd'] = makeSafe( $_POST['sCmd'] );
-else
-    $aClean['sCmd'] = makeSafe( $_GET['sCmd'] );
-
+// process command
 do_account($aClean['sCmd']);
 
 
@@ -95,13 +89,7 @@ function retry($sCmd, $sMsg)
  */
 function cmd_do_new()
 {
-    $aClean = array(); //array of filtered user input
-
-    $aClean['sUserEmail'] = makeSafe($_POST['sUserEmail']);
-    $aClean['sUserPassword'] = makeSafe($_POST['sUserPassword']);
-    $aClean['sUserPassword2'] = makeSafe($_POST['sUserPassword2']);
-    $aClean['sWineRelease'] = makeSafe($_POST['sWineRelease']);
-    $aClean['sUserRealname']= makeSafe($_POST['sUserRealname']);
+    global $aClean;
 
     if(!ereg("^.+@.+\\..+$", $aClean['sUserEmail']))
     {
@@ -159,10 +147,8 @@ function cmd_do_new()
  */
 function cmd_send_passwd()
 {
-    $aClean = array(); //array of filtered user input
-
-    $aClean['sUserEmail'] = makeSafe($_POST['sUserEmail']);
-
+    global $aClean;
+ 
     /* if the user didn't enter any email address we should */
     /* ask them to */
     if($aClean['sUserEmail'] == "")
@@ -217,10 +203,7 @@ function cmd_send_passwd()
  */
 function cmd_do_login()
 {
-    $aClean = array(); //array of filtered user input
-
-    $aClean['sUserEmail'] = makeSafe($_POST['sUserEmail']);
-    $aClean['sUserPassword'] = makeSafe($_POST['sUserPassword']);
+    global $aClean;
 
     $oUser = new User();
     $iResult = $oUser->login($aClean['sUserEmail'], $aClean['sUserPassword']);
