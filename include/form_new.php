@@ -52,7 +52,7 @@ echo html_frame_start("Create New Application DB Account","400","",0)
 <?php
 
 echo html_frame_end("&nbsp;");
-echo '<input type="hidden" name="cmd" value="do_new">',"\n";
+echo '<input type="hidden" name="sCmd" value="do_new">',"\n";
 echo '</form>',"\n";
 
 echo p(),p(),p();

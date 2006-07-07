@@ -162,7 +162,7 @@ function cmd_send_passwd()
     {
         addmsg("Please enter your email address in the 'E-mail' field and re-request a new password",
                "green");
-        util_redirect_and_exit(apidb_fullurl("account.php?cmd=login"));
+        util_redirect_and_exit(apidb_fullurl("account.php?sCmd=login"));
     }
 
     $shNote = '(<b>Note</b>: accounts for <b>appdb</b>.winehq.org and <b>bugs</b>.winehq.org '
