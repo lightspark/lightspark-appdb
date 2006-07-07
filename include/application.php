@@ -514,10 +514,6 @@ class Application {
     /* display this application */
     function display()
     {
-        $aClean = array(); //array of filtered user input
-
-        $aClean['iAppId'] = makeSafe($_REQUEST['iAppId']);
-
         /* is this user supposed to view this version? */
         if(!$_SESSION['current']->canViewApplication($this))
             util_show_error_page_and_exit("Something went wrong with the application or version id");
@@ -557,7 +553,7 @@ class Application {
 
         // optional links
         $result = query_parameters("SELECT * FROM appData WHERE appId = '?' AND versionID = 0 AND type = 'url'",
-                                   $aClean['iAppId']);
+                                   $this->iAppId);
         if($result && mysql_num_rows($result) > 0)
         {
             echo "        <tr class=\"color1\"><td> <b>Links</b></td><td>\n";
@@ -614,7 +610,7 @@ class Application {
             
             if($_SESSION['current']->isSuperMaintainer($this->iAppId) || $_SESSION['current']->hasPriv("admin"))
             {
-                echo '        <form method="post" name="sEdit" action="admin/editAppFamily.php"><input type="hidden" name="iAppId" value="'.$aClean['iAppId'].'"><input type="submit" value="Edit Application" class="button"></form>';
+                echo '        <form method="post" name="sEdit" action="admin/editAppFamily.php"><input type="hidden" name="iAppId" value="'.$this->iAppId.'"><input type="submit" value="Edit Application" class="button"></form>';
             }
             if($_SESSION['current']->isLoggedIn())
             {
