@@ -6,15 +6,10 @@
 
 include("path.php");
 include(BASE."include/incl.php");
+include(BASE."include/filter.php");
 require_once(BASE."include/screenshot.php");
 require(BASE."include/application.php");
 require(BASE."include/mail.php");
-
-$aClean = array(); //array of filtered user input
-
-$aClean['iItemsPerPage'] = makeSafe($_REQUEST['iItemsPerPage']);
-$aClean['iPage'] = makeSafe($_REQUEST['iPage']);
-
 
 apidb_header("View Screenshots");
 /* display a range of 10 pages */
