@@ -7,8 +7,7 @@
 include("path.php");
 include(BASE."include/incl.php");
 require_once(BASE."include/screenshot.php");
-require(BASE."include/application.php");
-require(BASE."include/mail.php");
+require_once(BASE."include/application.php");
 
 $aClean = array(); //array of filtered user input
 

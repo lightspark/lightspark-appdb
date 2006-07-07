@@ -6,7 +6,7 @@
 /*
  * application environment
  */ 
-include("path.php");
+require("path.php");
 require(BASE."include/incl.php");
 
 $aClean = array(); //array of filtered user input

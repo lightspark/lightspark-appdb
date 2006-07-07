@@ -12,11 +12,10 @@
  * TODO:
  *  - rename and document sREQUEST_METHOD
  *  - replace iId with iScreenshotId
- *  - replace require_once with require after checking that it doesn't break anything
  */
 
 // application environment
-include("path.php");
+require("path.php");
 require(BASE."include/incl.php");
 require(BASE."include/filter.php");
 require_once(BASE."include/screenshot.php");

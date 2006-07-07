@@ -1,6 +1,6 @@
 <?php
-include("path.php");
-require_once(BASE."include/incl.php");
+require("path.php");
+require(BASE."include/incl.php");
 require_once(BASE."include/vendor.php");
 
 $aClean = array(); //array of filtered user input

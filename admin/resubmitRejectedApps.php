@@ -3,11 +3,9 @@
 /* code to View and resubmit Apps    */
 /*************************************/
  
-include("path.php");
-require_once(BASE."include/incl.php");
+require("path.php");
+require(BASE."include/incl.php");
 
-
-        util_redirect_and_exit(BASE."appsubmit.php");
-
+util_redirect_and_exit(BASE."appsubmit.php");
 
 ?>

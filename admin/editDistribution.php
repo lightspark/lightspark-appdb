@@ -1,7 +1,7 @@
 <?php
-include("path.php");
+require("path.php");
 require(BASE."include/incl.php");
-require(BASE."include/distributions.php");
+require_once(BASE."include/distributions.php");
 
 $aClean = array(); //array of filtered user input
 

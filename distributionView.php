@@ -6,11 +6,11 @@
 /*
  * application environment
  */ 
-include("path.php");
+require("path.php");
 require(BASE."include/incl.php");
 require(BASE."include/filter.php");
-require(BASE."include/distributions.php");
-require(BASE."include/testResults.php");
+require_once(BASE."include/distributions.php");
+require_once(BASE."include/testResults.php");
 
 if ($aClean['sSub'])
 {

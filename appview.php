@@ -18,17 +18,15 @@
  */
 
 // application environment
-include("path.php");
+require("path.php");
 require(BASE."include/incl.php");
 require(BASE."include/filter.php");
-require(BASE."include/application.php");
-require(BASE."include/appdb.php");
-require(BASE."include/vote.php");
-require(BASE."include/category.php");
-require(BASE."include/maintainer.php");
-require(BASE."include/mail.php");
-require(BASE."include/monitor.php");
-require_once(BASE."include/testResults.php");
+require_once(BASE."include/application.php");
+require_once(BASE."include/appdb.php");
+require_once(BASE."include/vote.php");
+require_once(BASE."include/category.php");
+require_once(BASE."include/maintainer.php");
+require_once(BASE."include/monitor.php");
 
 $oApp = new Application($aClean['iAppId']);
 $oVersion = new Version($aClean['iVersionId']);

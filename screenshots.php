@@ -19,12 +19,12 @@
  */
 
 // application environment
-include("path.php");
+require("path.php");
 require(BASE."include/incl.php");
 require(BASE."include/filter.php");
 require_once(BASE."include/screenshot.php");
-require(BASE."include/application.php");
-require(BASE."include/mail.php");
+require_once(BASE."include/application.php");
+require_once(BASE."include/version.php");
 
 // we issued a command
 if($aClean['sCmd'])

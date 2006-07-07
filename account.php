@@ -18,10 +18,10 @@
  */
 
 // application environment
-include("path.php");
+require("path.php");
 require(BASE."include/incl.php");
 require(BASE."include/filter.php");
-require(BASE."include/mail.php");
+require_once(BASE."include/mail.php");
 
 // set http header to not cache
 header("Pragma: no-cache");

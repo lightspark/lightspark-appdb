@@ -4,12 +4,11 @@
 /* Without having go into each application version to do so */
 /************************************************************/
 
-include("path.php");
-include(BASE."include/incl.php");
-include(BASE."include/filter.php");
+require("path.php");
+require(BASE."include/incl.php");
+require(BASE."include/filter.php");
 require_once(BASE."include/screenshot.php");
-require(BASE."include/application.php");
-require(BASE."include/mail.php");
+require_once(BASE."include/application.php");
 
 apidb_header("View Screenshots");
 /* display a range of 10 pages */

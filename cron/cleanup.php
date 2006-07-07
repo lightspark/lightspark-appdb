@@ -5,9 +5,9 @@
 # it's purpose is to clean the user's table.     #
 ##################################################
 
-include("path.php");
-include(BASE."include/incl.php");
-include(BASE."include/mail.php");
+require("path.php");
+require(BASE."include/incl.php");
+require_once(BASE."include/mail.php");
 
 /*
  * Warn users that have been inactive for some number of months

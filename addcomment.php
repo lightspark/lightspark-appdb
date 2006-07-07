@@ -12,11 +12,10 @@
  */
 
 // application environment
-include("path.php");
+require("path.php");
 require(BASE."include/incl.php");
 require(BASE."include/filter.php");
-require(BASE."include/application.php");
-require(BASE."include/mail.php");
+require_once(BASE."include/comment.php");
 
 // you must be logged in to submit comments
 if(!$_SESSION['current']->isLoggedIn())

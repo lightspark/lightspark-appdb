@@ -1,9 +1,9 @@
 <?php
-include("path.php");
+require("path.php");
 require(BASE."include/incl.php");
-require(BASE."include/tableve.php");
-require(BASE."include/application.php");
-require(BASE."include/mail.php");
+require_once(BASE."include/tableve.php");
+require_once(BASE."include/application.php");
+require_once(BASE."include/version.php");
 
 $aClean = array(); //array of filtered user input
 

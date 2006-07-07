@@ -7,9 +7,9 @@
  * application environment
  */ 
 include("path.php");
-include(BASE."include/incl.php");
+require(BASE."include/incl.php");
 require(BASE."include/filter.php");
-require(BASE."include/category.php");
+require_once(BASE."include/category.php");
 
 /* default to 25 apps, main categories */
 $topNumber = 25;

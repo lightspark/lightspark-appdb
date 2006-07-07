@@ -1,4 +1,8 @@
 <?php
+/************************************/
+/* code to Submit and Resubmit Apps */
+/************************************/
+ 
 /**
  * Submit new applications or versions.
  *
@@ -23,11 +27,10 @@
  */
 
 // application environment
-include("path.php");
-require_once(BASE."include/incl.php");
+require("path.php");
+require(BASE."include/incl.php");
 require_once(BASE."include/tableve.php");
 require_once(BASE."include/application.php");
-require_once(BASE."include/mail.php");
 require_once(BASE."include/testResults.php");
 
 $aClean = array(); //array of filtered user input

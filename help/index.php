@@ -3,8 +3,8 @@
 /* Application Database Documentation Center */
 /*********************************************/
 
-include("path.php");
-include(BASE."include/"."incl.php");
+require("path.php");
+require(BASE."include/"."incl.php");
 
 $help_path = BASE."/help";
 
