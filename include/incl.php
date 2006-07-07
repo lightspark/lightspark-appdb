@@ -34,6 +34,49 @@ if(get_magic_quotes_gpc())
     exit;
 }
 
+/**
+ * rename $_REQUEST variables to preserve backwards compatibility
+ * with bugzilla links and urls in emails and on google from before our
+ * mass rename of GPC variables to use our coding standard prefixing
+ *
+ * NOTE: we may be able to remove these backwareds compatibility changes
+ *       in a few years, check in mid 2007 to see how many old
+ *       links are still poping up in google then
+ */
+if(isset($_REQUEST['versionId']))
+{
+   $_REQUEST['iVersionId'] = $_REQUEST['versionId'];
+   unset($_REQUEST['versionId']);
+}
+if(isset($_REQUEST['appId']))
+{
+   $_REQUEST['iAppId'] = $_REQUEST['appId'];
+   unset($_REQUEST['appId']);
+}
+if(isset($_REQUEST['buglinkId']))
+{
+    $_REQUEST['iBuglinkId'] = $_REQUEST['buglinkId'];
+    unset($_REQUEST['buglinkId']);
+}
+if(isset($_REQUEST['catId']))
+{
+    $_REQUEST['iCatId'] = $_REQUEST['catId'];
+    unset($_REQUEST['catId']);
+}
+if(isset($_REQUEST['sub']))
+{
+    $_REQUEST['sSub'] = $_REQUEST['sub'];
+    unset($_REQUEST['sub']);
+}
+if(isset($_REQUEST['topic']))
+{
+    $_REQUEST['sTopic'] = $_REQUEST['topic'];
+    unset($_REQUEST['topic']);
+}
+/* End backwards compatibility code */
+
+
+
 // create arrays
 $sidebar_func_list = array();
 $help_list = array();
