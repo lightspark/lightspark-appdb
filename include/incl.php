@@ -73,6 +73,11 @@ if(isset($_REQUEST['topic']))
     $_REQUEST['sTopic'] = $_REQUEST['topic'];
     unset($_REQUEST['topic']);
 }
+if(isset($_REQUEST['mode']))
+{
+    $_REQUEST['sMode'] = $_REQUEST['mode'];
+    unset($_REQUEST['mode']);
+}
 /* End backwards compatibility code */
 
 
