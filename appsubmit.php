@@ -1,8 +1,28 @@
 <?php
-/************************************/
-/* code to Submit and Resubmit Apps */
-/************************************/
- 
+/**
+ * Submit new applications or versions.
+ *
+ * Optional parameters:
+ *  - sAppType,
+ *  - sSub,
+ *  - iAppId, application identifier
+ *  - iVersionId, version identifier
+ *  - iTestingId,
+ *  - sAppVendorName,
+ *  - iVendorId,
+ *  - sAppWebpage,
+ *  - sAppKeywords,
+ *  - iDistributionId,
+ *         OR
+ *  - sDistribution,
+ * 
+ * TODO:
+ *  - move and rename functions in their respective modules
+ *  - rename sAppType by bIsApplication
+ *  - rename sSub by iAction and use integer constants to replace "Submit", "view", "delete"
+ */
+
+// application environment
 include("path.php");
 require_once(BASE."include/incl.php");
 require_once(BASE."include/tableve.php");
