@@ -5,21 +5,12 @@
  
 include("path.php");
 require(BASE."include/incl.php");
+require(BASE."include/filter.php");
 require(BASE."include/tableve.php");
 require(BASE."include/application.php");
 require(BASE."include/mail.php");
 require_once(BASE."include/testResults.php");
 require_once(BASE."include/distributions.php");
-
-$aClean = array(); //array of filtered user input
-
-$aClean['sSub'] = makeSafe($_REQUEST['sSub']);
-$aClean['iTestingId'] = makeSafe($_REQUEST['iTestingId']);
-$aClean['iVersionId'] = makeSafe($_REQUEST['iVersionId']);
-$aClean['iDistributionId'] = makeSafe($_REQUEST['iDistributionId']);
-$aClean['sDistribution'] = makeSafe($_REQUEST['sDistribution']);
-
-
 
 if ($aClean['sSub'])
 {
