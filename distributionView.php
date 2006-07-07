@@ -8,14 +8,9 @@
  */ 
 include("path.php");
 require(BASE."include/incl.php");
+require(BASE."include/filter.php");
 require(BASE."include/distributions.php");
 require(BASE."include/testResults.php");
-
-$aClean = array(); //array of filtered user input
-
-$aClean['sSub'] = makeSafe($_REQUEST['sSub']);
-$aClean['iDistributionId'] = makeSafe( $_REQUEST['iDistributionId']);
-
 
 if ($aClean['sSub'])
 {
