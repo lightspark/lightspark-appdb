@@ -1,0 +1,3 @@
+# default permissions
+# prevent web access to this directory
+deny from all
