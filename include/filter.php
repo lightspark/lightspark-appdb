@@ -17,6 +17,8 @@ function filter_gpc()
             case "f": // float
                 if(is_numeric($_REQUEST[$aKeys[$i]]))
                     $aClean[$aKeys[$i]] = $_REQUEST[$aKeys[$i]];
+                elseif(empty($_REQUEST[$aKeys[$i]]))
+                    $aClean[$aKeys[$i]] = 0;
                 else
                     util_show_error_page_and_exit("Fatal error: ".$aKeys[$i]." should be a numeric value.");
             break;
