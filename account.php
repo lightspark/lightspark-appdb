@@ -5,6 +5,13 @@
  * Mandatory parameters:
  *  - sCmd, action to perform ("new", "do_new", "login", "do_login", "send_passwd", "logout")
  * 
+ * Optional parameters:
+ *  - sUserPassword, new password
+ *  - sUserPassword2, new password confirmation
+ *  - sUserEmail, e-mail address
+ *  - sUserRealname, user's real name
+ *  - sWineRelease, user's Wine release
+ *
  * TODO:
  *  - replace sCmd with iAction and replace "new", "login", etc. with integer constants NEW, LOGIN, etc.
  *  - move functions into their respective modules (probably static methods of user class)
