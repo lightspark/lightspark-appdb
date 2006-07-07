@@ -43,7 +43,7 @@ echo html_frame_start("Create New Application DB Account","400","",0)
       
     <tr>
         <td colspan=2 align=center class=color3>
-        <input type="submit" name="create" value=" Create Account " class=button>
+        <input type="submit" name="sCreate" value=" Create Account " class=button>
         </td>
     </tr>    
 </table>
