@@ -25,48 +25,8 @@
 include("path.php");
 include(BASE."include/incl.php");
 
-$aClean = array(); //array of filtered user input
-
-$aClean['iUserId'] = makeSafe($_REQUEST['iUserId']);
-$aClean['iLimit'] = makeSafe($_REQUEST['iLimit']);
-$aClean['sOrderBy'] = makeSafe($_REQUEST['sOrderBy']);
-$aClean['sUserPassword'] = makeSafe($_REQUEST['sUserPassword']);
-$aClean['sUserPassword2'] = makeSafe($_REQUEST['sUserPassword2']);
-$aClean['sUserEmail'] = makeSafe($_REQUEST['sUserEmail']);
-$aClean['sUserRealname'] = makeSafe($_REQUEST['sUserRealname']);
-$aClean['sWineRelease'] = makeSafe($_REQUEST['sWineRelease']);
-$aClean['sHasAdmin'] = makeSafe($_POST['sHasAdmin']); 
-
-/* filter all of the preferences */
-while(list($key, $value) = each($_REQUEST))
+function build_prefs_list($oUser)
 {
-    if(ereg("^pref_(.+)$", $key, $arr))
-        $aClean[$key] = makeSafe($value);
-}
-
-
-
-
-if(!$_SESSION['current']->isLoggedIn())
-    util_show_error_page_and_exit("You must be logged in to edit preferences");
-
-// we come from the administration to edit an user
-if($_SESSION['current']->hasPriv("admin") && 
-   is_numeric($aClean['iUserId']) &&
-   is_numeric($aClean['iLimit']) &&
-   in_array($aClean['sOrderBy'],array("email","realname","created"))
-) 
-{
-    $oUser = new User($aClean['iUserId']);
-} else
-{
-    $oUser = &$_SESSION['current'];
-}
-
-
-function build_prefs_list()
-{
-    global $oUser;
     $hResult = query_parameters("SELECT * FROM prefs_list ORDER BY id");
     while($hResult && $r = mysql_fetch_object($hResult))
     {
@@ -93,10 +53,8 @@ function build_prefs_list()
     }
 }
 
-function show_user_fields()
+function show_user_fields($oUser)
 {
-    global $oUser;
-
     $sUserRealname = $oUser->sRealname;
     $sUserEmail = $oUser->sEmail;
     $sWineRelease = $oUser->sWineRelease;
@@ -112,15 +70,54 @@ function show_user_fields()
     echo "</td></tr>";
 }
 
+
+$aClean = array(); //array of filtered user input
+
+$aClean['iUserId'] = makeSafe($_REQUEST['iUserId']);
+$aClean['iLimit'] = makeSafe($_REQUEST['iLimit']);
+$aClean['sOrderBy'] = makeSafe($_REQUEST['sOrderBy']);
+$aClean['sUserPassword'] = makeSafe($_REQUEST['sUserPassword']);
+$aClean['sUserPassword2'] = makeSafe($_REQUEST['sUserPassword2']);
+$aClean['sUserEmail'] = makeSafe($_REQUEST['sUserEmail']);
+$aClean['sUserRealname'] = makeSafe($_REQUEST['sUserRealname']);
+$aClean['sWineRelease'] = makeSafe($_REQUEST['sWineRelease']);
+$aClean['sHasAdmin'] = makeSafe($_POST['sHasAdmin']); 
+
+/* filter all of the preferences */
+while(list($sKey, $sValue) = each($_REQUEST))
+{
+    if(ereg("^pref_(.+)$", $sKey, $arr))
+        $aClean[$sKey] = makeSafe($sValue);
+}
+
+
+
+
+if(!$_SESSION['current']->isLoggedIn())
+    util_show_error_page_and_exit("You must be logged in to edit preferences");
+
+// we come from the administration to edit an user
+if($_SESSION['current']->hasPriv("admin") && 
+   is_numeric($aClean['iUserId']) &&
+   is_numeric($aClean['iLimit']) &&
+   in_array($aClean['sOrderBy'],array("email","realname","created"))
+) 
+{
+    $oUser = new User($aClean['iUserId']);
+} else
+{
+    $oUser = &$_SESSION['current'];
+}
+
 if($_POST)
 {   
-    while(list($key, $value) = each($aClean))
+    while(list($sKey, $sValue) = each($aClean))
     {
         /* if a parameter lacks 'pref_' at its head it isn't a */
         /* preference so skip over processing it */
-        if(!ereg("^pref_(.+)$", $key, $arr))
+        if(!ereg("^pref_(.+)$", $sKey, $arr))
             continue;
-        $oUser->setPref($arr[1], $value);
+        $oUser->setPref($arr[1], $sValue);
     }
     
     /* make sure the user enters the same password twice */
@@ -180,10 +177,10 @@ if($oUser->iUserId == $aClean['iUserId'])
 echo html_frame_start("Preferences for ".$oUser->sRealname, "80%");
 echo html_table_begin("width='100%' border=0 align=left cellspacing=0 class='box-body'");
 
-show_user_fields();
+show_user_fields($oUser);
 
 // if we don't manage another user
-if($oUser->iUserId != $aClean['iUserId']) build_prefs_list();
+if($oUser->iUserId != $aClean['iUserId']) build_prefs_list($oUser);
 
 echo html_table_end();
 echo html_frame_end();
