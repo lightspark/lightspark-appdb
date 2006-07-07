@@ -18,13 +18,8 @@
 // application environment
 include("path.php");
 require(BASE."include/incl.php");
+require(BASE."include/filter.php");
 require_once(BASE."include/screenshot.php");
-
-$aClean = array(); //array of filtered user input
-
-$aClean['iId'] = makeSafe($_REQUEST['iId']);
-$aClean['sREQUEST_METHOD'] = makeSafe($_REQUEST['sREQUEST_METHOD']);
-$aClean['bThumbnail'] = makeSafe($_REQUEST['bThumbnail']);
 
 // an image doesn't have a link, so a cookie makes no sense
 header("Set-Cookie: ");
