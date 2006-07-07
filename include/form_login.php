@@ -33,7 +33,7 @@ function cmd_send_passwd() {
     </tr>
     <tr>
         <td colspan=2 align=center class=color3>
-            <input type="submit" name="login" value="  Login  " class=button>
+            <input type="submit" name="sLogin" value="   Login   " class=button>
         </td>
       </tr>
   </table>
