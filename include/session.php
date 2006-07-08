@@ -5,6 +5,9 @@
  * sessions are stored in a mysql table
  */
 
+/* the number of days a session cookie is flaged to last */
+define(SESSION_DAYS_TO_EXPIRE, 2);
+
 class session
 {
     // create session object
@@ -28,9 +31,9 @@ class session
                                  array(&$this, "_gc")
                                 );
         
-        // default lifetime on session cookie (90 days)
+        // default lifetime on session cookie (SESSION_DAYS_TO_EXPIRE days)
         session_set_cookie_params(
-                                  (60*60*24*90),
+                                  (60*60*24*SESSION_DAYS_TO_EXPIRE),
                                   '/'
                                  );
         
@@ -95,7 +98,8 @@ class session
     // clear old sessions (moved into a separate cron process)
     function _gc ($maxlifetime)
     {
-        query_parameters("DELETE FROM session_list WHERE to_days(now()) - to_days(stamp) >= 7");
+        query_parameters("DELETE FROM session_list WHERE to_days(now()) - to_days(stamp) >= '?'",
+                         SESSION_DAYS_TO_EXPIRE);
         return true;
     }
 

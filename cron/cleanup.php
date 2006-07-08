@@ -72,8 +72,13 @@ notifyAdminsOfCleanupExecution($usersWarned, $usersUnwarnedWithData, $usersDelet
 /* check to see if there are orphaned versions in the database */
 orphanVersionCheck();
 
-/* check to see if we have any orphaned messages stuck in sessionMessages table */
+/* check and purge any orphaned messages stuck in sessionMessages table */
 orphanSessionMessagesCheck();
+
+/* check and purge any expired sessions from the session_list table */
+orphanSessionListCheck();
+
+
 
 
 /* Users that are unwarned and inactive since $iMonths */
@@ -196,4 +201,30 @@ function orphanSessionMessagesCheck()
     /* purge the messages older than $iSessionMessageDayLimit */
     $sQuery = "DELETE from sessionMessages where TO_DAYS(NOW()) - TO_DAYS(time) > ?";
     $hResult = query_parameters($sQuery, $iSessionMessageDayLimit);
+}
+
+/* this function checks to see if we have any orphaned sessions */
+/* sessions need to be expired or the session_list table will grow */
+/* by one row each time a user logs */
+function orphanSessionListCheck()
+{
+    /* get a count of the messages older than $iSessionListDayLimit */
+    $sQuery = "SELECT count(*) as cnt from session_list where TO_DAYS(NOW()) - TO_DAYS(stamp) > ?";
+    $hResult = query_parameters($sQuery, SESSION_DAYS_TO_EXPIRE + 2);
+
+    $oRow = mysql_fetch_object($hResult);
+    $iMessages = $oRow->cnt;
+
+    $sMsg = "Found ".$iMessages." sessions that have expired after ".(SESSION_DAYS_TO_EXPIRE + 2)." days\r\n";
+    $sMsg.= " Purging these sessions.\r\n";
+
+    $sSubject = "Sessions expired\r\n";
+
+    $sEmail = User::get_notify_email_address_list(null, null); /* get list admins */
+    if($sEmail)
+        mail_appdb($sEmail, $sSubject, $sMsg);
+
+    /* purge the messages older than $iSessionMessageDayLimit */
+    $sQuery = "DELETE from session_list where TO_DAYS(NOW()) - TO_DAYS(stamp) > ?";
+    $hResult = query_parameters($sQuery, SESSION_DAYS_TO_EXPIRE + 2);
 }
