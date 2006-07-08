@@ -64,22 +64,22 @@ if ($aClean['sSub'])
         // Show the other maintainers of this application, if there are any
         echo '<tr valign=top><td class=color0><b>Other maintainers of this app:</b></td>',"\n";
 
-        $foundMaintainers = false;
+        $bFoundMaintainers = false;
 
-        $firstDisplay = true; /* if false we need to fix up table rows appropriately */
+        $bFirstDisplay = true; /* if false we need to fix up table rows appropriately */
 
         $oVersion = new Version($oRow->versionId);
-        $other_users = $oVersion->getMaintainersUserIds();
-        if($other_users)
+        $aOtherUsers = $oVersion->getMaintainersUserIds();
+        if($aOtherUsers)
         {
-            $foundMaintainers = true;
-            while(list($index, $userIdValue) = each($other_users))
+            $bFoundMaintainers = true;
+            while(list($index, $iUserId) = each($aOtherUsers))
             {
-                $oUser = new User($userIdValue);
-                if($firstDisplay)
+                $oUser = new User($iUserId);
+                if($bFirstDisplay)
                 {
                     echo "<td>".$oUser->sRealname."</td></tr>\n";
-                    $firstDisplay = false;
+                    $bFirstDisplay = false;
                 } else
                 {
                     echo "<tr><td class=\"color0\"></td><td>".$oUser->sRealname."</td></tr>\n";
@@ -87,17 +87,17 @@ if ($aClean['sSub'])
             }
         }
 
-        $other_users = getSuperMaintainersUserIdsFromAppId($oRow->appId);
-        if($other_users)
+        $aOtherUsers = getSuperMaintainersUserIdsFromAppId($oRow->appId);
+        if($aOtherUsers)
         {
-            $foundMaintainers = true;
-            while(list($index, $userIdValue) = each($other_users))
+            $bFoundMaintainers = true;
+            while(list($index, $iUserId) = each($aOtherUsers))
             {
-                $oUser = new User($userIdValue);
-                if($firstDisplay)
+                $oUser = new User($iUserId);
+                if($bFirstDisplay)
                 {
                     echo "<td>".$oUser->sRealname."*</td></tr>\n";
-                    $firstDisplay = false;
+                    $bFirstDisplay = false;
                 } else
                 {
                     echo "<tr><td class=\"color0\"></td><td>".$oUser->sRealname."*</td></tr>\n";
@@ -105,7 +105,7 @@ if ($aClean['sSub'])
             }
         }
 
-        if(!$foundMaintainers)
+        if(!$bFoundMaintainers)
         {
             echo "<td>No other maintainers</td></tr>\n";
         }
@@ -113,25 +113,25 @@ if ($aClean['sSub'])
         // Show which other apps the user maintains
         echo '<tr valign="top"><td class="color0"><b>This user also maintains these apps:</b></td>',"\n";
 
-        $firstDisplay = true;
+        $bFirstDisplay = true;
         $oUser = new User($oRow->userId);
-        $other_apps = $oUser->getAppsMaintained();
-        if($other_apps)
+        $aOtherApps = $oUser->getAppsMaintained();
+        if($aOtherApps)
         {
-            while(list($index, list($appIdOther, $versionIdOther, $superMaintainerOther)) = each($other_apps))
+            while(list($index, list($iAppIdOther, $iVersionIdOther, $bSuperMaintainerOther)) = each($aOtherApps))
             {
-                $oApp = new Application($appIdOther);
-                $oVersion = new Version($versionIdOther);
-                if($firstDisplay)
+                $oApp = new Application($iAppIdOther);
+                $oVersion = new Version($iVersionIdOther);
+                if($bFirstDisplay)
                 {
-                    $firstDisplay = false;
-                    if($superMaintainerOther)
+                    $bFirstDisplay = false;
+                    if($bSuperMaintainerOther)
                         echo "<td>".$oApp->sName."*</td></tr>\n";
                     else
                         echo "<td>".$oApp->sName." ".$oVersion->sName."</td></tr>\n";
                 } else
                 {
-                    if($superMaintainerOther)
+                    if($bSuperMaintainerOther)
                         echo "<td class=color0></td><td>".$oApp->sName."*</td></tr>\n";
                     else
                         echo "<td class=color0></td><td>".$oApp->sName." ".$oVersion->sName."</td></tr>\n";
@@ -183,14 +183,14 @@ if ($aClean['sSub'])
     else if ($aClean['sAdd'] && $aClean['iQueueId'])
     {
         /* create a new user object for the maintainer */
-        $maintainerUser = new User($oRow->userId);
+        $oMaintainerUser = new User($oRow->userId);
 
         /* add the user as a maintainer and return the statusMessage */
-        $statusMessage = $maintainerUser->addAsMaintainer($oRow->appId, $oRow->versionId,
+        $sStatusMessage = $oMaintainerUser->addAsMaintainer($oRow->appId, $oRow->versionId,
                                                           $oRow->superMaintainer,
                                                           $aClean['iQueueId']);
         //done
-        addmsg("<p><b>$statusMessage</b></p>", 'green');
+        addmsg("<p><b>$sStatusMessage</b></p>", 'green');
     }
     else if (($aClean['sReject'] || ($aClean['sSub'] == 'sReject')) && $aClean['iQueueId'])
     {
@@ -269,14 +269,14 @@ if ($aClean['sSub'])
         echo "    <td>Action</td>\n";
         echo "</tr>\n\n";
         
-        $c = 1;
+        $iRowCount = 1;
         while($oRow = mysql_fetch_object($hResult))
         {
             $oUser = new User($oRow->userId);
             $oApp = new Application($oRow->appId);
             $oVersion = new Version($oRow->versionId);
-            if ($c % 2 == 1) { $bgcolor = 'color0'; } else { $bgcolor = 'color1'; }
-            echo "<tr class=$bgcolor>\n";
+            if ($iRowCount % 2 == 1) { $sBGColor = 'color0'; } else { $sBGColor = 'color1'; }
+            echo "<tr class=$sBGColor>\n";
             echo "    <td>".print_date(mysqldatetime_to_unixtimestamp($oRow->submitTime))." &nbsp;</td>\n";
             echo "    <td>".$oApp->sName."</td>\n";
 
@@ -293,7 +293,7 @@ if ($aClean['sSub'])
             echo "    <td><a href=\"mailto:".$oUser->sEmail."\">".$oUser->sRealname."</a></td>\n";
             echo "    <td>[<a href=\"adminMaintainerQueue.php?sSub=view&iQueueId=$oRow->queueId\">answer</a>]</td>\n";
             echo "</tr>\n\n";
-            $c++;
+            $iRowCount++;
         }
         echo "</table>\n\n";
         echo html_frame_end("&nbsp;");
