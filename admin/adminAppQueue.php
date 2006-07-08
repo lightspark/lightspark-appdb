@@ -61,7 +61,7 @@ function outputSearchTableForDuplicateFlagging($currentAppId, $hResult)
             //display row
             echo "<tr class=$sBgColor>\n";
             /* map the merging of the current app to the app we are displaying in the table */
-            echo "    <td>".html_ahref($oRow->appName,"adminAppQueue.php?sSub=duplicate&sAppType=application&iAppId=".$currentAppId."&appIdMergeTo=".$oRow->appId)."</td>\n";
+            echo "    <td>".html_ahref($oRow->appName,"adminAppQueue.php?sSub=duplicate&sAppType=application&iAppId=".$currentAppId."&iAppIdMergeTo=".$oRow->appId)."</td>\n";
             echo "    <td>$oVersionCount->versions versions &nbsp;</td>\n";
             echo "</tr>\n\n";
 
