@@ -33,6 +33,7 @@ $aClean['iAppId'] = makeSafe($_REQUEST['iAppId']);
 $aClean['iVersionId'] = makeSafe($_REQUEST['iVersionId']);
 $aClean['sSub'] = makeSafe($_REQUEST['sSub']);
 $aClean['iBuglinkId'] = makeSafe($_REQUEST['iBuglinkId']);
+$aClean['iTestingId'] = makeSafe($_REQUEST['iTestingId']);
 
 $oApp = new Application($aClean['iAppId']);
 $oVersion = new Version($aClean['iVersionId']);
@@ -157,7 +158,7 @@ if($aClean['iAppId'])
 } else if($aClean['iVersionId']) // We want to see a particular version.
 {
     $oVersion = new Version($aClean['iVersionId']);
-    $oVersion->display();
+    $oVersion->display($aClean['iTestingId']);
 } else
 {
     // Oops! Called with no params, bad llamah!

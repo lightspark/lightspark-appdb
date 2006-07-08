@@ -603,12 +603,8 @@ class Version {
         $this->sTestedRelease = $aValues['sMaintainerRelease'];
     }
 
-    function display()
+    function display($iTestingId)
     {
-        $aClean = array(); //array of filtered user input
-        $aClean['iTestingId'] = makeSafe($_REQUEST['iTestingId']);
-	
-
         /* is this user supposed to view this version? */
         if(!$_SESSION['current']->canViewVersion($this))
             util_show_error_page_and_exit("Something went wrong with the application or version id");
@@ -786,7 +782,7 @@ class Version {
         echo $this->sDescription;
 
         // Show testing data
-        $oTest = new TestData($aClean['iTestingId']);
+        $oTest = new TestData($iTestingId);
         $iCurrentTest = $oTest->ShowTestResult($oTest->iTestingId, $this->iVersionId);
         if($iCurrentTest)
         {
