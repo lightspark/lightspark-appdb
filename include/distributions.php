@@ -378,20 +378,13 @@ class distribution{
     }
 
     /* retrieves values from $_REQUEST that were output by OutputEditor() */
-    function GetOutputEditorValues()
+    /* $aValues can be $_REQUEST or any array with the values from OutputEditor() */
+    function GetOutputEditorValues($aValues)
     {
-
-        $aClean = array(); //array of filtered user input
-
-        $aClean['iDistributionId'] = makeSafe($_REQUEST['iDistributionId']);
-        $aClean['sName'] = makeSafe($_REQUEST['sName']);
-        $aClean['sUrl'] = makeSafe($_REQUEST['sUrl']);
-
-        $this->iDistributionId = $aClean['iDistributionId'];
-        $this->sName = $aClean['sName'];
-        $this->sUrl = $aClean['sUrl'];
+        $this->iDistributionId = $aValues['iDistributionId'];
+        $this->sName = $aValues['sName'];
+        $this->sUrl = $aValues['sUrl'];
     }
-
 }
 
 /* Make a dropdown list of distributions */

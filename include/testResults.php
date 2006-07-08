@@ -547,48 +547,37 @@ class testData{
 
         echo html_frame_end();
     }
-    function CheckOutputEditorInput($sDistribution="")
+
+    /* $aValues can be $_REQUEST or any array with the values from OutputEditor() */
+    function CheckOutputEditorInput($aValues, $sDistribution="")
     {
-
-        $aClean = array(); //array of filtered user input
-        $aClean['sWhatWorks'] = trim(makeSafe($_REQUEST['sWhatWorks']));
-        $aClean['sWhatDoesnt'] = trim(makeSafe($_REQUEST['sWhatDoesnt']));
-        $aClean['sWhatNotTested'] = trim(makeSafe($_REQUEST['sWhatNotTested']));
-        $aClean['sDistribution'] = makeSafe($_REQUEST['sDistribution']);
-        $aClean['sTestedDate'] = makeSafe($_REQUEST['sTestedDate']);
-        $aClean['sTestedRelease'] = makeSafe($_REQUEST['sTestedRelease']);
-        $aClean['iDistributionId'] = makeSafe($_REQUEST['iDistributionId']);
-        $aClean['sInstalls'] = makeSafe($_REQUEST['sInstalls']);
-        $aClean['sRuns'] = makeSafe($_REQUEST['sRuns']);
-        $aClean['sTestedRating'] = makeSafe($_REQUEST['sTestedRating']);
-
-	$errors = "";
-        if (empty($aClean['sWhatWorks']))
+        $errors = "";
+        if (empty($aValues['sWhatWorks']))
             $errors .= "<li>Please enter what worked.</li>\n";
 
-        if (empty($aClean['sWhatDoesnt']))
+        if (empty($aValues['sWhatDoesnt']))
             $errors .= "<li>Please enter what did not work.</li>\n";
 
-        if (empty($aClean['sWhatNotTested']))
+        if (empty($aValues['sWhatNotTested']))
             $errors .= "<li>Please enter what was not tested.</li>\n";
 
-        if (empty($aClean['sTestedDate']))
+        if (empty($aValues['sTestedDate']))
             $errors .= "<li>Please enter the date and time when you tested.</li>\n";
 
-        if (empty($aClean['sTestedRelease']))
+        if (empty($aValues['sTestedRelease']))
             $errors .= "<li>Please enter the version of Wine that you tested with.</li>\n";
 
         // No Distribution entered, and nothing in the list is selected
-        if (empty($aClean['sDistribution']) && !$aClean['iDistributionId'])
+        if (empty($aValues['sDistribution']) && !$aValues['iDistributionId'])
             $errors .= "<li>Please enter a distribution.</li>\n";
 
-        if (empty($aClean['sInstalls']))
+        if (empty($aValues['sInstalls']))
             $errors .= "<li>Please enter whether this application installs or not.</li>\n";
 
-        if (empty($aClean['sRuns']))
+        if (empty($aValues['sRuns']))
             $errors .= "<li>Please enter whether this application runs or not.</li>\n";
 
-        if (empty($aClean['sTestedRating']))
+        if (empty($aValues['sTestedRating']))
             $errors .= "<li>Please enter a rating based on how well this application runs.</li>\n";
         
         return $errors;
@@ -596,35 +585,21 @@ class testData{
     }
 
     /* retrieves values from $_REQUEST that were output by OutputEditor() */
-    function GetOutputEditorValues()
+    /* $aValues can be $_REQUEST or any array with the values from OutputEditor() */
+    function GetOutputEditorValues($aValues)
     {
-        $aClean = array(); //array of filtered user input
-
-        $aClean['iTestingId'] = makeSafe($_REQUEST['iTestingId']);
-        $aClean['iVersionId'] = makeSafe($_REQUEST['iVersionId']);
-        $aClean['sWhatWorks'] = makeSafe($_REQUEST['sWhatWorks']);
-        $aClean['sWhatDoesnt'] = makeSafe($_REQUEST['sWhatDoesnt']);
-        $aClean['sWhatNotTested'] = makeSafe($_REQUEST['sWhatNotTested']);
-        $aClean['sTestedDate'] = makeSafe($_REQUEST['sTestedDate']);
-        $aClean['iDistributionId'] = makeSafe($_REQUEST['iDistributionId']);
-        $aClean['sTestedRelease'] = makeSafe($_REQUEST['sTestedRelease']);
-        $aClean['sInstalls'] = makeSafe($_REQUEST['sInstalls']);
-        $aClean['sRuns'] = makeSafe($_REQUEST['sRuns']);
-        $aClean['sTestedRating'] = makeSafe($_REQUEST['sTestedRating']);
-        $aClean['sComments'] = makeSafe($_REQUEST['sComments']);
-
-        $this->iTestingId = $aClean['iTestingId'];
-        $this->iVersionId = $aClean['iVersionId'];
-        $this->sWhatWorks = $aClean['sWhatWorks'];
-        $this->sWhatDoesnt = $aClean['sWhatDoesnt'];
-        $this->sWhatNotTested = $aClean['sWhatNotTested'];
-        $this->sTestedDate = $aClean['sTestedDate'];
-        $this->iDistributionId = $aClean['iDistributionId'];
-        $this->sTestedRelease = $aClean['sTestedRelease'];
-        $this->sInstalls = $aClean['sInstalls'];
-        $this->sRuns = $aClean['sRuns'];
-        $this->sTestedRating = $aClean['sTestedRating'];
-        $this->sComments = $aClean['sComments'];
+        $this->iTestingId = $aValues['iTestingId'];
+        $this->iVersionId = $aValues['iVersionId'];
+        $this->sWhatWorks = $aValues['sWhatWorks'];
+        $this->sWhatDoesnt = $aValues['sWhatDoesnt'];
+        $this->sWhatNotTested = $aValues['sWhatNotTested'];
+        $this->sTestedDate = $aValues['sTestedDate'];
+        $this->iDistributionId = $aValues['iDistributionId'];
+        $this->sTestedRelease = $aValues['sTestedRelease'];
+        $this->sInstalls = $aValues['sInstalls'];
+        $this->sRuns = $aValues['sRuns'];
+        $this->sTestedRating = $aValues['sTestedRating'];
+        $this->sComments = $aValues['sComments'];
     }
 
 

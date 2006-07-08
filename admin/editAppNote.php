@@ -26,7 +26,7 @@ if(!$_SESSION['current']->hasPriv("admin") && !$_SESSION['current']->isMaintaine
 
 if(!empty($aClean['sSub']))
 {
-    $oNote->GetOutputEditorValues(); /* retrieve the updated values */
+    $oNote->GetOutputEditorValues($_REQUEST); /* retrieve the updated values */
 
     if ($aClean['sSub'] == 'Delete')
     {
@@ -45,7 +45,7 @@ if(!empty($aClean['sSub']))
     /* if preview is set display the note for review */
     if($aClean['sPreview'])
     {
-        $oNote->GetOutputEditorValues(); /* retrieve the updated values */
+        $oNote->GetOutputEditorValues($_REQUEST); /* retrieve the updated values */
         $oNote->show(true);
     }
 

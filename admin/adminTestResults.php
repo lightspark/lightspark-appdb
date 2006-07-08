@@ -29,7 +29,7 @@ if ($aClean['sSub'])
         if(is_numeric($aClean['iTestingId']))
         {
             $oTest = new testData($aClean['iTestingId']);
-            $oTest->GetOutputEditorValues();
+            $oTest->GetOutputEditorValues($_REQUEST);
 
             if($aClean['sSub'] == 'Submit')        // submit the testing results
             {

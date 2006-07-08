@@ -578,41 +578,29 @@ class Version {
         }
     }
 
-    function CheckOutputEditorInput()
+    function CheckOutputEditorInput($aValues)
     {
-        $aClean = array(); //array of filtered user input
-
-        $aClean['sVersionName'] = makeSafe($_REQUEST['sVersionName']);
-        $aClean['shVersionDescription'] = makeSafe($_REQUEST['shVersionDescription']);
-
         $errors = "";
 
-        if (empty($aClean['sVersionName']))
+        if (empty($aValues['sVersionName']))
             $errors .= "<li>Please enter an application version.</li>\n";
 
-        if (empty($aClean['shVersionDescription']))
+        if (empty($aValues['shVersionDescription']))
             $errors .= "<li>Please enter a version description.</li>\n";
 
         return $errors;
     }
 
     /* retrieves values from $_REQUEST that were output by OutputEditor() */
-    function GetOutputEditorValues()
+    /* $aValues can be $_REQUEST or any array with the values from OutputEditor() */
+    function GetOutputEditorValues($aValues)
     {
-        $aClean = array(); //array of filtered user input
-        $aClean['iAppId'] = makeSafe($_REQUEST['iAppId']);
-        $aClean['iVersionId'] = makeSafe($_REQUEST['iVersionId']);
-        $aClean['sVersionName'] = makeSafe($_REQUEST['sVersionName']);
-        $aClean['shVersionDescription'] = makeSafe($_REQUEST['shVersionDescription']);
-        $aClean['sMaintainerRating'] = makeSafe($_REQUEST['sMaintainerRating']);
-        $aClean['sMaintainerRelease'] = makeSafe($_REQUEST['sMaintainerRelease']);
-
-        $this->iAppId = $aClean['iAppId'];
-        $this->iVersionId = $aClean['iVersionId'];
-        $this->sName = $aClean['sVersionName'];
-        $this->sDescription = $aClean['shVersionDescription'];
-        $this->sTestedRating = $aClean['sMaintainerRating'];
-        $this->sTestedRelease = $aClean['sMaintainerRelease'];
+        $this->iAppId = $aValues['iAppId'];
+        $this->iVersionId = $aValues['iVersionId'];
+        $this->sName = $aValues['sVersionName'];
+        $this->sDescription = $aValues['shVersionDescription'];
+        $this->sTestedRating = $aValues['sMaintainerRating'];
+        $this->sTestedRelease = $aValues['sMaintainerRelease'];
     }
 
     function display()

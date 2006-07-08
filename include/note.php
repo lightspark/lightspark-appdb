@@ -245,19 +245,13 @@ class Note {
     }
 
     /* retrieves values from $_REQUEST that were output by OutputEditor() */
-    function GetOutputEditorValues()
+    /* $aValues can be $_REQUEST or any array with the values from OutputEditor() */
+    function GetOutputEditorValues($aValues)
     {
-        $aClean = array(); //array of filtered user input
-
-        $aClean['iVersionId'] = makeSafe($_REQUEST['iVersionId']);
-        $aClean['iAppId'] = makeSafe( $_REQUEST['iAppId']);
-        $aClean['sNoteTitle'] = makeSafe($_REQUEST['sNoteTitle']);
-        $aClean['sNoteDesc'] = makeSafe($_REQUEST['sNoteDesc']);
-
-        $this->iVersionId = $aClean['iVersionId'];
-        $this->iAppId = $aClean['iAppId'];
-        $this->sTitle = $aClean['sNoteTitle'];
-        $this->sDescription = $aClean['sNoteDesc'];
+        $this->iVersionId = $aValues['iVersionId'];
+        $this->iAppId = $aValues['iAppId'];
+        $this->sTitle = $aValues['sNoteTitle'];
+        $this->sDescription = $aValues['sNoteDesc'];
     }
 }
 ?>

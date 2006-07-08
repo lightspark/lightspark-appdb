@@ -184,12 +184,12 @@ if ($aClean['sSub'])
     {
         $oVersion = new Version($aClean['iVersionId']);
         $oTest = new testData($aClean['iTestingId']);
-        $oVersion->GetOutputEditorValues();
-        $oTest->GetOutputEditorValues();
+        $oVersion->GetOutputEditorValues($_REQUEST);
+        $oTest->GetOutputEditorValues($_REQUEST);
         if ($aClean['sAppType'] == "application") // application
         {
             $oApp = new Application($aClean['iAppId']);
-            $oApp->GetOutputEditorValues(); // load the values from $_REQUEST 
+            $oApp->GetOutputEditorValues($_REQUEST); // load the values from $_REQUEST 
             // add new vendor
             if($aClean['sAppVendorName'] and !$aClean['iAppVendorId'])
             {
@@ -263,12 +263,12 @@ if ($aClean['sSub'])
     {
         $oVersion = new Version($aClean['iVersionId']);
         $oTest = new testData($aClean['iTestingId']);
-        $oVersion->GetOutputEditorValues();
-        $oTest->GetOutputEditorValues();
+        $oVersion->GetOutputEditorValues($_REQUEST);
+        $oTest->GetOutputEditorValues($_REQUEST);
         if ($aClean['sAppType'] == "application") // application
         {
             $oApp = new Application($aClean['iAppId']);
-            $oApp->GetOutputEditorValues(); // load the values from $_REQUEST 
+            $oApp->GetOutputEditorValues($_REQUEST); // load the values from $_REQUEST 
             $oApp->update(true);
             $oApp->reject();
         }

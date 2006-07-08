@@ -15,7 +15,7 @@ if(!$_SESSION['current']->hasPriv("admin"))
 $oDistribution = new distribution($aClean['iDistributionId']);
 if($aClean['sSubmit'])
 {
-    $oDistribution->GetOutputEditorValues();
+    $oDistribution->GetOutputEditorValues($_REQUEST);
 
     if($oDistribution->iDistributionId)
         $oDistribution->update();

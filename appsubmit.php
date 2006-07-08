@@ -158,15 +158,15 @@ if ($aClean['sSub'])
         $errors = "";
         $oVersion = new Version($aClean['iVersionId']);
         $oTest = new testData($aClean['iTestingId']);
-        $errors .= $oVersion->CheckOutputEditorInput();
-        $errors .= $oTest->CheckOutputEditorInput();
-        $oVersion->GetOutputEditorValues();
-        $oTest->GetOutputEditorValues();
+        $errors .= $oVersion->CheckOutputEditorInput($_REQUEST);
+        $errors .= $oTest->CheckOutputEditorInput($_REQUEST);
+        $oVersion->GetOutputEditorValues($_REQUEST);
+        $oTest->GetOutputEditorValues($_REQUEST);
         if ($aClean['sAppType'] == "application") // application
         {
             $oApp = new Application($aClean['iAppId']);
-            $errors .= $oApp->CheckOutputEditorInput();
-            $oApp->GetOutputEditorValues(); // load the values from $_REQUEST 
+            $errors .= $oApp->CheckOutputEditorInput($_REQUEST);
+            $oApp->GetOutputEditorValues($_REQUEST); // load the values from $_REQUEST 
 
             if(empty($errors))
             {

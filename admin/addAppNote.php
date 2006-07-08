@@ -37,7 +37,7 @@ else
     exit;
 
 $oNote = new Note();
-$oNote->GetOutputEditorValues();
+$oNote->GetOutputEditorValues($_REQUEST);
 
 if($aClean['sSub'] == "Submit")
 {

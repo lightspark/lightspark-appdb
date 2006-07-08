@@ -29,8 +29,8 @@ if ($aClean['sSub'])
     // Submit or Resubmit the new testing results
     if (($aClean['sSub'] == 'Submit') || ($aClean['sSub'] == 'Resubmit'))
     {
-        $errors = $oTest->CheckOutputEditorInput();
-        $oTest->GetOutputEditorValues(); // retrieve the values from the current $_REQUEST 
+        $errors = $oTest->CheckOutputEditorInput($_REQUEST);
+        $oTest->GetOutputEditorValues($_REQUEST); // retrieve the values from the current $_REQUEST 
         if(empty($errors))
         {
             if(!$aClean['iDistributionId'])

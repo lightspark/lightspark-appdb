@@ -457,58 +457,40 @@ class Application {
         echo html_frame_end();
     }
 
-    function CheckOutputEditorInput()
+    function CheckOutputEditorInput($aValues)
     {
-
-        $aClean = array(); //array of filtered user input
-
-        $aClean['iAppCatId'] = makeSafe($_REQUEST['iAppCatId']);
-        $aClean['sAppName'] = makeSafe($_REQUEST['sAppName']);
-        $aClean['sAppVendorName'] = makeSafe($_REQUEST['sAppVendorName']);
-        $aClean['iAppVendorId'] = makeSafe($_REQUEST['iAppVendorId']);
-        $aClean['shAppDescription'] = makeSafe($_REQUEST['shAppDescription']);
-
         $errors = "";
 
-        if (empty($aClean['iAppCatId']))
+        if (empty($aValues['iAppCatId']))
             $errors .= "<li>Please enter a category for your application.</li>\n";
 
-        if (strlen($aClean['sAppName']) > 200 )
+        if (strlen($aValues['sAppName']) > 200 )
             $errors .= "<li>Your application name is too long.</li>\n";
 
-        if (empty($aClean['sAppName']))
+        if (empty($aValues['sAppName']))
             $errors .= "<li>Please enter an application name.</li>\n";
 
         // No vendor entered, and nothing in the list is selected
-        if (empty($aClean['sAppVendorName']) && !$aClean['iAppVendorId'])
+        if (empty($aValues['sAppVendorName']) && !$aValues['iAppVendorId'])
             $errors .= "<li>Please enter a vendor.</li>\n";
 
-        if (empty($aClean['shAppDescription']))
+        if (empty($aValues['shAppDescription']))
             $errors .= "<li>Please enter a description of your application.</li>\n";
 
         return $errors;
     }
 
     /* retrieves values from $_REQUEST that were output by OutputEditor() */
-    function GetOutputEditorValues()
+    /* $aValues can be $_REQUEST or any array with the values from OutputEditor() */
+    function GetOutputEditorValues($aValues)
     {
-        $aClean = array(); //array of filtered user input
-
-        $aClean['iAppId'] = makeSafe($_REQUEST['iAppId']);
-        $aClean['iAppVendorId'] = makeSafe($_REQUEST['iAppVendorId']);
-        $aClean['sAppName'] = makeSafe($_REQUEST['sAppName']);
-        $aClean['shAppDescription'] = makeSafe($_REQUEST['shAppDescription']);
-        $aClean['iAppCatId'] = makeSafe($_REQUEST['iAppCatId']);
-        $aClean['sAppWebpage'] = makeSafe($_REQUEST['sAppWebpage']);
-        $aClean['sAppKeywords'] = makeSafe($_REQUEST['sAppKeywords']);
-
-        $this->iAppId = $aClean['iAppId'];
-        $this->sName = $aClean['sAppName'];
-        $this->sDescription = $aClean['shAppDescription'];
-        $this->iCatId = $aClean['iAppCatId'];
-        $this->iVendorId = $aClean['iAppVendorId'];
-        $this->sWebpage = $aClean['sAppWebpage'];
-        $this->sKeywords = $aClean['sAppKeywords'];
+        $this->iAppId = $aValues['iAppId'];
+        $this->sName = $aValues['sAppName'];
+        $this->sDescription = $aValues['shAppDescription'];
+        $this->iCatId = $aValues['iAppCatId'];
+        $this->iVendorId = $aValues['iAppVendorId'];
+        $this->sWebpage = $aValues['sAppWebpage'];
+        $this->sKeywords = $aValues['sAppKeywords'];
     }
 
     /* display this application */

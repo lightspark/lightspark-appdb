@@ -592,11 +592,11 @@ function process_app_version_changes($isVersion)
     // commit changes of form to database
     if(($_REQUEST['sSubmit'] == "Update Database") && $isVersion) /* is a version */
     {
-        $oVersion->GetOutputEditorValues();
+        $oVersion->GetOutputEditorValues($_REQUEST);
         $oVersion->update();
     } else if(($_REQUEST['sSubmit'] == "Update Database") && !$isVersion) /* is an application */
     {
-        $oApp->GetOutputEditorValues();
+        $oApp->GetOutputEditorValues($_REQUEST);
         $oApp->update();
     } else if($_REQUEST['sSubmit'] == "Update URL")
     {
