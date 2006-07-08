@@ -53,10 +53,10 @@ if(isset($_REQUEST['appId']))
    $_REQUEST['iAppId'] = $_REQUEST['appId'];
    unset($_REQUEST['appId']);
 }
-if(isset($_REQUEST['buglinkId']))
+if(isset($_REQUEST['bug_id']))
 {
-    $_REQUEST['iBuglinkId'] = $_REQUEST['buglinkId'];
-    unset($_REQUEST['buglinkId']);
+    $_REQUEST['iBugId'] = $_REQUEST['bug_id'];
+    unset($_REQUEST['bug_id']);
 }
 if(isset($_REQUEST['catId']))
 {
