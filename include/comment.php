@@ -186,8 +186,243 @@ class Comment {
         }
         return false;
     }
-}
 
+    /**
+     * class static functions
+     */
+
+    /**
+     * display a single comment (in $oRow)
+     */
+    function view_app_comment($oRow)
+    {
+        echo html_frame_start('','98%');
+        echo '<table width="100%" border="0" cellpadding="2" cellspacing="1">',"\n";
+
+        // message header
+        echo "<tr bgcolor=\"#E0E0E0\"><td><a name=Comment-".$oRow->commentId."></a>\n";
+        echo " <b>".$oRow->subject."</b><br />\n";
+        echo " by  ".forum_lookup_user($oRow->userId)." on ".$oRow->time."<br />\n";
+        echo "</td></tr><tr><td>\n";
+    
+        // body
+        echo htmlify_urls($oRow->body), "<br /><br />\n";
+    
+        // only add RE: once
+        if(eregi("RE:", $oRow->subject))
+            $subject = $oRow->subject;
+        else
+            $subject = "RE: ".$oRow->subject;
+
+        // reply post buttons
+        echo "	[<a href=\"addcomment.php?iAppId=$oRow->appId&amp;iVersionId=$oRow->versionId\"><small>post new</small></a>] \n";
+        echo "	[<a href=\"addcomment.php?iAppId=$oRow->appId&amp;iVersionId=$oRow->versionId&amp;sSubject=".
+            urlencode("$subject")."&amp;iThread=$oRow->commentId\"><small>reply to this</small></a>] \n";
+
+        echo "</td></tr>\n";
+
+        // delete message button, for admins
+        if ($_SESSION['current']->hasPriv("admin")
+            || $_SESSION['current']->isMaintainer($oRow->versionId) 
+            || $_SESSION['current']->isSuperMaintainer($oRow->appId))
+        {
+            echo "<tr>";
+            echo "<td><form method=\"post\" name=\"sMessage\" action=\"".BASE."deletecomment.php\"><input type=\"submit\" value=\"Delete\" class=\"button\">\n";
+            echo "<input type=\"hidden\" name=\"iCommentId\" value=\"$oRow->commentId\" />";
+            echo "</form>\n";
+            echo "</td></tr>";
+        }
+
+        echo "</table>\n";
+
+        echo html_frame_end();   
+    }
+
+    /**
+     * grab comments for appId / versionId
+     * if parentId is not -1 only comments for that thread are returned
+     */
+    function grab_comments($versionId, $parentId = -1)
+    {
+        /* escape input so we can use query_appdb() without concern */
+        $versionId = mysql_real_escape_string($versionId);
+        $parentId = mysql_real_escape_string($parentId);
+
+        $extra = "";
+        if($parentId != -1)
+        $extra = "AND parentId = $parentId ";
+
+        $qstring = "SELECT from_unixtime(unix_timestamp(appComments.time), \"%W %M %D %Y, %k:%i\") as time, ".
+            "appComments.commentId, appComments.parentId, appComments.versionId, appComments.userId, appComments.subject, appComments.body, appVersion.appId ".
+            "FROM appComments, appVersion WHERE appComments.versionId = appVersion.versionId AND appComments.versionId = '$versionId' ".
+            $extra.
+            "ORDER BY appComments.time ASC";
+        $hResult = query_appdb($qstring);
+
+        return $hResult;
+    }
+
+    /**
+     * display nested comments
+     * handle is a db result set
+     */
+    function do_display_comments_nested($hResult)
+    {
+        while($oRow = mysql_fetch_object($hResult))
+        {
+            Comment::view_app_comment($oRow);
+            $hResult2 = Comment::grab_comments($oRow->versionId, $oRow->commentId);
+            if($hResult && mysql_num_rows($hResult2))
+            {
+                echo "<blockquote>\n";
+                Comment::do_display_comments_nested($hResult2);
+                echo "</blockquote>\n";
+            }
+        }
+    }
+
+    function display_comments_nested($versionId, $threadId)
+    {
+        $hResult = Comment::grab_comments($versionId, $threadId);
+        Comment::do_display_comments_nested($hResult);
+    }
+
+    /**
+     * display threaded comments
+     * handle is a db result set
+     */
+    function do_display_comments_threaded($hResult, $is_main)
+    {
+        if (!$is_main)
+            echo "<ul>\n";
+        
+        while ($oRow = mysql_fetch_object($hResult))
+        {
+            if ($is_main)
+            {
+                Comment::view_app_comment($oRow);
+            } else
+            {
+                echo '<li><a href="commentview.php?iAppId='.$oRow->appId.'&amp;iVersionId='.$oRow->versionId.'&iThreadId='.$oRow->parentId.'"> '.
+                    $oRow->subject.' </a> by '.forum_lookup_user($oRow->userId).' on '.$oRow->time.' </li>'."\n";
+            }
+        
+            $hResult2 = Comment::grab_comments($oRow->versionId, $oRow->commentId);
+            if ($hResult2 && mysql_num_rows($hResult2))
+            {
+                echo "<blockquote>\n";
+                Comment::do_display_comments_threaded($hResult2, 0);
+                echo "</blockquote>\n";
+            }
+        }
+    
+        if (!$is_main)
+            echo "</ul>\n";
+    }
+
+    function display_comments_threaded($versionId, $threadId = 0)
+    {
+        $hResult = Comment::grab_comments($versionId, $threadId);
+
+        Comment::do_display_comments_threaded($hResult, 1);
+    }
+
+    /**
+     * display flat comments
+     */
+    function display_comments_flat($versionId)
+    {
+        $hResult = Comment::grab_comments($versionId);
+        if ($hResult)
+        {
+            while($oRow = mysql_fetch_object($hResult))
+            {
+                Comment::view_app_comment($oRow);
+            }
+        }
+    }
+
+    function view_app_comments($versionId, $threadId = 0)
+    {
+        $aClean = array(); //array of filtered user input
+
+        $aClean['sCmode'] = makeSafe($_REQUEST['sCmode']);
+        $aClean['sMode'] = makeSafe($_REQUEST['sMode']);
+
+        // count posts
+        $hResult = query_parameters("SELECT commentId FROM appComments WHERE versionId = '?'", $versionId);
+        $messageCount = mysql_num_rows($hResult);
+    
+        //start comment format table
+        echo html_frame_start("","98%",'',0);
+        echo '<table width="100%" border="0" cellpadding="1" cellspacing="0">',"\n";
+    
+        echo '<tr><td bgcolor="#C0C0C0" align="center"><table border="0" cellpadding="0" cellspacing="0"><tr bgcolor="#C0C0C0">',"\n";
+    
+        // message display mode changer
+        if ($_SESSION['current']->isLoggedIn())
+        {
+            // FIXME we need to change this so not logged in users can change current view as well
+            if (!empty($aClean['sCmode']))
+                $_SESSION['current']->setPref("comments:mode", $aClean['sCmode']);
+
+            $sel[$_SESSION['current']->getPref("comments:mode", "threaded")] = 'selected';
+            echo '<td><form method="post" name="sMode" action="appview.php">',"\n";
+            echo "<b>Application Comments</b> $messageCount total comments ";
+            echo '<b>Mode</b> <select name="sCmode" onchange="document.sMode.submit();">',"\n";
+            echo '   <option value="flat" '.$sel['flat'].'>Flat</option>',"\n";
+            echo '   <option value="threaded" '.$sel['threaded'].'>Threaded</option>',"\n";
+            echo '   <option value="nested" '.$sel['nested'].'>Nested</option>',"\n";
+            echo '   <option value="off" '.$sel['off'].'>No Comments</option>',"\n";
+            echo '</select>',"\n";
+            echo '<input type="hidden" name="iVersionId" value="'.$versionId.'"></form></td>',"\n";
+        }
+    
+        // blank space
+        echo '<td> &nbsp; </td>',"\n";
+    
+        // post new message button
+        echo '<td><form method="post" name="sMessage" action="addcomment.php"><input type="submit" value="post new comment" class="button"> ',"\n";
+        echo '<input type="hidden" name="iVersionId" value="'.$versionId.'"></form></td>',"\n";
+        
+        //end comment format table
+        echo '</tr></table></td></tr>',"\n";  
+        echo '</table>',"\n";
+        echo html_frame_end();
+
+        if( $messageCount > 0 )
+        {
+            echo '<p align="center">The following comments are owned by whoever posted them. WineHQ is not responsible for what they say.</p>'."\n";
+        }
+
+        //start comments
+        echo '<table width="100%" border="0" cellpadding="2" cellspacing="1"><tr><td>',"\n";
+    
+        //hide or display depending on pref
+        if ($_SESSION['current']->isLoggedIn())
+            $mode = $_SESSION['current']->getPref("comments:mode", "threaded");
+        else
+            $mode = "threaded"; /* default non-logged in users to threaded comment display mode */
+
+        if ($aClean['sMode']=="nested")
+            $mode = "nested";
+
+        switch ($mode)
+        {
+        case "flat":
+            Comment::display_comments_flat($versionId);
+            break;
+        case "nested":
+            Comment::display_comments_nested($versionId, $threadId);
+            break;
+        case "threaded":
+            Comment::display_comments_threaded($versionId, $threadId);
+            break;
+        }
+
+        echo '</td></tr></table>',"\n";
+    }    
+}
 
 
 /*
@@ -211,245 +446,4 @@ function forum_lookup_user($iUserId)
     return $sMailto;
 }
 
-/**
- * display a single comment (in $oRow)
- */
-function view_app_comment($oRow)
-{
-
-    echo html_frame_start('','98%');
-    echo '<table width="100%" border="0" cellpadding="2" cellspacing="1">',"\n";
-
-    // message header
-    echo "<tr bgcolor=\"#E0E0E0\"><td><a name=Comment-".$oRow->commentId."></a>\n";
-    echo " <b>".$oRow->subject."</b><br />\n";
-    echo " by  ".forum_lookup_user($oRow->userId)." on ".$oRow->time."<br />\n";
-    echo "</td></tr><tr><td>\n";
-    
-    // body
-    echo htmlify_urls($oRow->body), "<br /><br />\n";
-    
-    // only add RE: once
-    if(eregi("RE:", $oRow->subject))
-        $subject = $oRow->subject;
-    else
-        $subject = "RE: ".$oRow->subject;
-
-    // reply post buttons
-    echo "	[<a href=\"addcomment.php?iAppId=$oRow->appId&amp;iVersionId=$oRow->versionId\"><small>post new</small></a>] \n";
-    echo "	[<a href=\"addcomment.php?iAppId=$oRow->appId&amp;iVersionId=$oRow->versionId&amp;sSubject=".
-	        urlencode("$subject")."&amp;iThread=$oRow->commentId\"><small>reply to this</small></a>] \n";
-
-    echo "</td></tr>\n";
-
-    // delete message button, for admins
-    if ($_SESSION['current']->hasPriv("admin")
-        || $_SESSION['current']->isMaintainer($oRow->versionId) 
-        || $_SESSION['current']->isSuperMaintainer($oRow->appId))
-    {
-        echo "<tr>";
-        echo "<td><form method=\"post\" name=\"sMessage\" action=\"".BASE."deletecomment.php\"><input type=\"submit\" value=\"Delete\" class=\"button\">\n";
-        echo "<input type=\"hidden\" name=\"iCommentId\" value=\"$oRow->commentId\" />";
-        echo "</form>\n";
-        echo "</td></tr>";
-    }
-
-    echo "</table>\n";
-
-    echo html_frame_end();   
-}
-
-
-/**
- * grab comments for appId / versionId
- * if parentId is not -1 only comments for that thread are returned
- */
-function grab_comments($versionId, $parentId = -1)
-{
-    /* escape input so we can use query_appdb() without concern */
-    $versionId = mysql_real_escape_string($versionId);
-    $parentId = mysql_real_escape_string($parentId);
-
-    $extra = "";
-    if($parentId != -1)
-        $extra = "AND parentId = $parentId ";
-
-    $qstring = "SELECT from_unixtime(unix_timestamp(appComments.time), \"%W %M %D %Y, %k:%i\") as time, ".
-               "appComments.commentId, appComments.parentId, appComments.versionId, appComments.userId, appComments.subject, appComments.body, appVersion.appId ".
-               "FROM appComments, appVersion WHERE appComments.versionId = appVersion.versionId AND appComments.versionId = '$versionId' ".
-               $extra.
-               "ORDER BY appComments.time ASC";
-    $hResult = query_appdb($qstring);
-
-    return $hResult;
-}
-
-
-/**
- * display nested comments
- * handle is a db result set
- */
-function do_display_comments_nested($hResult)
-{
-    while($oRow = mysql_fetch_object($hResult))
-    {
-        view_app_comment($oRow);
-        $hResult2 = grab_comments($oRow->versionId, $oRow->commentId);
-        if($hResult && mysql_num_rows($hResult2))
-        {
-            echo "<blockquote>\n";
-            do_display_comments_nested($hResult2);
-            echo "</blockquote>\n";
-        }
-        }
-}
-
-
-function display_comments_nested($versionId, $threadId)
-{
-    $hResult = grab_comments($versionId, $threadId);
-
-    do_display_comments_nested($hResult);
-}
-
-
-/**
- * display threaded comments
- * handle is a db result set
- */
-function do_display_comments_threaded($hResult, $is_main)
-{
-    if (!$is_main)
-        echo "<ul>\n";
-
-    while ($oRow = mysql_fetch_object($hResult))
-    {
-        if ($is_main)
-        {
-            view_app_comment($oRow);
-        } else
-        {
-            echo '<li><a href="commentview.php?iAppId='.$oRow->appId.'&amp;iVersionId='.$oRow->versionId.'&iThreadId='.$oRow->parentId.'"> '.
-            $oRow->subject.' </a> by '.forum_lookup_user($oRow->userId).' on '.$oRow->time.' </li>'."\n";
-        }
-        
-        $hResult2 = grab_comments($oRow->versionId, $oRow->commentId);
-        if ($hResult2 && mysql_num_rows($hResult2))
-        {
-            echo "<blockquote>\n";
-            do_display_comments_threaded($hResult2, 0);
-            echo "</blockquote>\n";
-        }
-    }
-    
-    if (!$is_main)
-        echo "</ul>\n";
-}
-
-
-function display_comments_threaded($versionId, $threadId = 0)
-{
-    $hResult = grab_comments($versionId, $threadId);
-
-    do_display_comments_threaded($hResult, 1);
-}
-
-
-/**
- * display flat comments
- */
-function display_comments_flat($versionId)
-{
-    $hResult = grab_comments($versionId);
-    if ($hResult)
-    {
-        while($oRow = mysql_fetch_object($hResult))
-        {
-            view_app_comment($oRow);
-        }
-    }
-}
-
-
-function view_app_comments($versionId, $threadId = 0)
-{
-
-    $aClean = array(); //array of filtered user input
-
-    $aClean['sCmode'] = makeSafe($_REQUEST['sCmode']);
-    $aClean['sMode'] = makeSafe($_REQUEST['sMode']);
-
-    // count posts
-    $hResult = query_parameters("SELECT commentId FROM appComments WHERE versionId = '?'", $versionId);
-    $messageCount = mysql_num_rows($hResult);
-    
-    //start comment format table
-    echo html_frame_start("","98%",'',0);
-    echo '<table width="100%" border="0" cellpadding="1" cellspacing="0">',"\n";
-    
-    echo '<tr><td bgcolor="#C0C0C0" align="center"><table border="0" cellpadding="0" cellspacing="0"><tr bgcolor="#C0C0C0">',"\n";
-    
-    // message display mode changer
-    if ($_SESSION['current']->isLoggedIn())
-    {
-    // FIXME we need to change this so not logged in users can change current view as well
-        if (!empty($aClean['sCmode']))
-            $_SESSION['current']->setPref("comments:mode", $aClean['sCmode']);
-
-        $sel[$_SESSION['current']->getPref("comments:mode", "threaded")] = 'selected';
-        echo '<td><form method="post" name="sMode" action="appview.php">',"\n";
-        echo "<b>Application Comments</b> $messageCount total comments ";
-        echo '<b>Mode</b> <select name="sCmode" onchange="document.smode.submit();">',"\n";
-        echo '   <option value="flat" '.$sel['flat'].'>Flat</option>',"\n";
-        echo '   <option value="threaded" '.$sel['threaded'].'>Threaded</option>',"\n";
-        echo '   <option value="nested" '.$sel['nested'].'>Nested</option>',"\n";
-        echo '   <option value="off" '.$sel['off'].'>No Comments</option>',"\n";
-        echo '</select>',"\n";
-        echo '<input type="hidden" name="iVersionId" value="'.$versionId.'"></form></td>',"\n";
-    }
-    
-    // blank space
-    echo '<td> &nbsp; </td>',"\n";
-    
-    // post new message button
-    echo '<td><form method="post" name="sMessage" action="addcomment.php"><input type="submit" value="post new comment" class="button"> ',"\n";
-    echo '<input type="hidden" name="iVersionId" value="'.$versionId.'"></form></td>',"\n";
-        
-    //end comment format table
-    echo '</tr></table></td></tr>',"\n";  
-    echo '</table>',"\n";
-    echo html_frame_end();
-    
-    if( $messageCount > 0 )
-    {
-        echo '<p align="center">The following comments are owned by whoever posted them. WineHQ is not responsible for what they say.</p>'."\n";
-    }
-
-    //start comments
-    echo '<table width="100%" border="0" cellpadding="2" cellspacing="1"><tr><td>',"\n";
-    
-    //hide or display depending on pref
-    if ($_SESSION['current']->isLoggedIn())
-        $mode = $_SESSION['current']->getPref("comments:mode", "threaded");
-    else
-        $mode = "threaded"; /* default non-logged in users to threaded comment display mode */
-
-    if ($aClean['sMode']=="nested")
-        $mode = "nested";
-
-    switch ($mode)
-    {
-        case "flat":
-            display_comments_flat($versionId);
-        break;
-        case "nested":
-            display_comments_nested($versionId, $threadId);
-        break;
-        case "threaded":
-            display_comments_threaded($versionId, $threadId);
-        break;
-    }
-
-    echo '</td></tr></table>',"\n";
-}    
 ?>

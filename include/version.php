@@ -819,7 +819,7 @@ class Version {
         }
     
         // Comments Section
-        view_app_comments($this->iVersionId);
+        Comment::view_app_comments($this->iVersionId);
     }
 
     function lookup_name($versionId)

@@ -70,7 +70,7 @@ while ($oRow = mysql_fetch_object($commentIds))
     $hResult = query_parameters($sQuery, $oRow->commentId);
     /* call view_app_comment to display the comment */
     $oComment_row = mysql_fetch_object($hResult);
-    view_app_comment($oComment_row);
+    Comment::view_app_comment($oComment_row);
 }
 
 /* display page selection links */
