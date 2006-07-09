@@ -73,12 +73,13 @@ if ($aClean['sREQUEST_METHOD']='HEAD')
    header("Expires: ");
    header("Last-Modified: ".fHttpDate($iModTime));
 }
+
 $oScreenshot = new Screenshot($aClean['iId']);
 
-/* at this point, we know that .../screenshots/$id and
- *  .../screenshots/thumbnails/$id both exist as normally 
+/* at this point, we know that .../screenshots/$oScreenshot->sUrl and
+ *  .../screenshots/thumbnails/$oScreenshot->sUrl both exist as normally 
  *  they would both be created at the same time. */
-$fstat_val = stat(appdb_fullpath("data/screenshots/".$aClean['iId']));
+$fstat_val = stat(appdb_fullpath("data/screenshots/".$oScreenshot->sUrl));
 $iModTime = $fstat_val['mtime'];
 
 header("Cache-Control: public");
