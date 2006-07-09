@@ -50,7 +50,8 @@ class distribution{
             {
                 $sQuery = "SELECT testingId
                              FROM testResults
-                             WHERE distributionId = '?'";
+                             WHERE distributionId = '?' 
+                             ORDER BY testedRating;" ;
             } else /* only let users view test results that aren't queued and for apps that */
                    /* aren't queued or versions that aren't queued */
             {
@@ -61,7 +62,8 @@ class distribution{
                                     appFamily.appId = appVersion.appId AND
                                     appFamily.queued = 'false' AND
                                     appVersion.queued = 'false' AND
-                                    distributionId = '?'";
+                                    distributionId = '?'
+                             ORDER BY testedRating;";
             }
 
             if($hResult = query_parameters($sQuery, $iDistributionId))
