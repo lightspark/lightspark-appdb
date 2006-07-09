@@ -35,7 +35,8 @@ if ($aClean['sSub'])
         $oBuglink = new bug($aClean['iBuglinkId']);
         $oBuglink->unqueue();
     }
-    util_redirect_and_exit($_SERVER['PHP_SELF']."?iItemsPerPage=".$aClean['iItemsPerPage']."&sQueuedOnly=".$aClean['sQueuedOnly']."&ipage=".$aClean['iPage']);
+    util_redirect_and_exit($_SERVER['PHP_SELF']."?iItemsPerPage=".$aClean['iItemsPerPage']."&sQueuedOnly=".$aClean['sQueuedOnly']."&iPage=".$aClean['iPage']);
+
 }
 
 {
