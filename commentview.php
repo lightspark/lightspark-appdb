@@ -15,7 +15,7 @@ require_once(BASE."include/comment.php");
 
 apidb_header("Comments");
 
-view_app_comments($aClean['iVersionId'], $aClean['iThreadId']);
+Comment::view_app_comments($aClean['iVersionId'], $aClean['iThreadId']);
 
 apidb_footer();
 ?>
