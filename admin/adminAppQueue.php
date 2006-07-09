@@ -117,7 +117,7 @@ function display_move_test_to_versions_table($aVersionsIds,$icurrentVersionId)
                 echo "    <td>".util_trim_description($oVersion->sDescription)."</td>\n";
                 echo "    <td align=center>".$oVersion->sTestedRating."</td>\n";
                 echo "    <td align=center>".$oVersion->sTestedRelease."</td>\n";
-                echo "    <td align=center>".sizeof($oVersion->aCommentsIds)."</td>\n";
+                echo "    <td align=center>".Comment::get_comment_count_for_versionid($oVersion->iVersionId)."</td>\n";
                 echo "</tr>\n\n";
 
                 $c++;   

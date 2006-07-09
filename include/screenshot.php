@@ -307,12 +307,13 @@ class Screenshot {
  *
  * $bFormatting == false turns off all extranious formatting applied to the returned image html
  */
-function get_screenshot_img($iAppId = null, $iVersionId = null, $bFormatting = true) 
+function get_screenshot_img($iAppId = null, $iVersionId = null,
+                            $bFormatting = true) 
 {
     // we want a random screenshots for this app
     if($iAppId && !$iVersionId)
     {
-       $hResult = query_parameters("SELECT appData.*, RAND() AS rand 
+       $hResult = query_parameters("SELECT appData.id, appData.description, RAND() AS rand 
                                FROM appData, appVersion 
                                WHERE appData.versionId = appVersion.versionId
                                AND appVersion.appId = '?' 
@@ -321,7 +322,7 @@ function get_screenshot_img($iAppId = null, $iVersionId = null, $bFormatting = t
                                ORDER BY rand", $iAppId);
     } else if ($iVersionId) // we want a random screenshot for this version
     {
-        $hResult = query_parameters("SELECT *, RAND() AS rand 
+        $hResult = query_parameters("SELECT id, description, RAND() AS rand 
                                 FROM appData 
                                 WHERE versionId = '?' 
                                 AND type = 'image' 

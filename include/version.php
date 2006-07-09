@@ -25,13 +25,6 @@ class Version {
     var $iSubmitterId;
     var $sDate;
     var $sQueued;
-    var $aNotesIds;           // an array that contains the noteId of every note linked to this version
-    var $aCommentsIds;        // an array that contains the commentId of every comment linked to this version
-    var $aScreenshotsIds;     // an array that contains the screenshotId of every screenshot linked to this version
-    var $aUrlsIds;            // an array that contains the screenshotId of every url linked to this version
-    var $aBuglinkIds;         // an array that contains the buglinkId of every bug linked to this version
-    var $aTestingIds;         // an array that contains the testingId of every test result linked to this version
-    var $aMonitorIds;         // an array that contains the monitorId of every monitor linked to this version
 
     /**
      * constructor, fetches the data.
@@ -65,105 +58,6 @@ class Version {
                     $this->sTestedRating = $oRow->maintainer_rating;
                     $this->sWebpage = $oRow->webPage;
                     $this->sQueued = $oRow->queued;
-                }
-            }
-
-            /*
-             * We fetch notesIds. 
-             */
-            $this->aNotesIds = array();
-            $sQuery = "SELECT noteId
-                       FROM appNotes
-                       WHERE versionId = '?'";
-            if($hResult = query_parameters($sQuery, $iVersionId))
-            {
-                while($oRow = mysql_fetch_object($hResult))
-                {
-                    $this->aNotesIds[] = $oRow->noteId;
-                }
-            }
-
-            /*
-             * We fetch commentsIds. 
-             */
-            $this->aCommentsIds = array();
-            $sQuery = "SELECT commentId
-                       FROM appComments
-                       WHERE versionId = '?'";
-            if($hResult = query_parameters($sQuery, $iVersionId))
-            {
-                while($oRow = mysql_fetch_object($hResult))
-                {
-                    $this->aCommentsIds[] = $oRow->commentId;
-                }
-            }
-
-
-            /*
-             * We fetch screenshotsIds and urlsIds. 
-             */
-            $this->aScreenshotsIds = array();
-            $this->aUrlsIds = array();
-            $sQuery = "SELECT id, type
-                       FROM appData
-                       WHERE versionId = '?'";
-
-            if($hResult = query_parameters($sQuery, $iVersionId))
-            {
-                while($oRow = mysql_fetch_object($hResult))
-                {
-                    if($oRow->type="image")
-                        $this->aScreenshotsIds[] = $oRow->id;
-                    else
-                        $this->aUrlsIds[] = $oRow->id;
-                }
-            }
-
-            /*
-             * We fetch Bug linkIds. 
-             */
-            $this->aBuglinkIds = array();
-            $sQuery = "SELECT *
-                       FROM buglinks
-                       WHERE versionId = '?'
-                       ORDER BY bug_id";
-            if($hResult = query_parameters($sQuery, $iVersionId))
-            {
-                while($oRow = mysql_fetch_object($hResult))
-                {
-                    $this->aBuglinkIds[] = $oRow->linkId;
-                }
-            }
-
-            /*
-             * We fetch Test Results Ids. 
-             */
-            $this->aTestingIds = array();
-            $sQuery = "SELECT *
-                       FROM testResults
-                       WHERE versionId = '?'
-                       ORDER BY testingId";
-            if($hResult = query_parameters($sQuery, $iVersionId))
-            {
-                while($oRow = mysql_fetch_object($hResult))
-                {
-                    $this->aTestingIds[] = $oRow->testingId;
-                }
-            }
-
-            /*
-             * We fetch monitor Ids. 
-             */
-            $this->aMonitorIds = array();
-            $sQuery = "SELECT *
-                       FROM appMonitors
-                       WHERE versionId = '?'
-                       ORDER BY monitorId";
-            if($hResult = query_parameters($sQuery, $iVersionId))
-            {
-                while($oRow = mysql_fetch_object($hResult))
-                {
-                    $this->aMonitorIds[] = $oRow->monitorId;
                 }
             }
         }
@@ -287,42 +181,128 @@ class Version {
         if(!$_SESSION['current']->canDeleteVersion($this))
             return false;
 
+        /* fetch notesIds */
+        $aNotesIds = array();
+        $sQuery = "SELECT noteId
+                       FROM appNotes
+                       WHERE versionId = '?'";
+        if($hResult = query_parameters($sQuery, $this->iVersionId))
+        {
+            while($oRow = mysql_fetch_object($hResult))
+            {
+                $aNotesIds[] = $oRow->noteId;
+            }
+        }
+
         /* remove all of the items this version contains */
-        foreach($this->aNotesIds as $iNoteId)
+        foreach($aNotesIds as $iNoteId)
         {
             $oNote = new Note($iNoteId);
             $oNote->delete($bSilent);
         }
-        foreach($this->aCommentsIds as $iCommentId)
+
+
+        /* We fetch commentsIds. */
+        $aCommentsIds = array();
+        $sQuery = "SELECT commentId
+                       FROM appComments
+                       WHERE versionId = '?'";
+        if($hResult = query_parameters($sQuery, $this->iVersionId))
+        {
+            while($oRow = mysql_fetch_object($hResult))
+            {
+                $aCommentsIds[] = $oRow->commentId;
+            }
+        }
+
+        foreach($aCommentsIds as $iCommentId)
         {
             $oComment = new Comment($iCommentId);
             $oComment->delete($bSilent);
         }
-        foreach($this->aScreenshotsIds as $iScreenshotId)
+
+
+        /* fetch screenshotsIds and urlsIds  */
+        $aScreenshotsIds = array();
+        $aUrlsIds = array();
+        $sQuery = "SELECT id, type
+                       FROM appData
+                       WHERE versionId = '?'";
+        
+        if($hResult = query_parameters($sQuery, $this->iVersionId))
+        {
+            while($oRow = mysql_fetch_object($hResult))
+            {
+                if($oRow->type="image")
+                    $aScreenshotsIds[] = $oRow->id;
+                else
+                    $aUrlsIds[] = $oRow->id;
+            }
+        }
+
+        foreach($aScreenshotsIds as $iScreenshotId)
         {
             $oScreenshot = new Screenshot($iScreenshotId);
             $oScreenshot->delete($bSilent);
         }
-        foreach($this->aUrlsIds as $iUrlId)
+        foreach($aUrlsIds as $iUrlId)
         {
             $oUrl = new Url($iUrlId);
             $oUrl->delete($bSilent);
         }
+
+
+
         foreach($this->aBuglinkIds as $iBug_id)
         {
             $oBug = new bug($iBug_id);
             $oBug->delete($bSilent);
         }
-        foreach($this->aTestingIds as $iTestId)
+
+
+
+
+        /* fetch Test Results Ids */
+        $aTestingIds = array();
+        $sQuery = "SELECT *
+                       FROM testResults
+                       WHERE versionId = '?'
+                       ORDER BY testingId";
+        if($hResult = query_parameters($sQuery, $this->iVersionId))
+        {
+            while($oRow = mysql_fetch_object($hResult))
+            {
+                $aTestingIds[] = $oRow->testingId;
+            }
+        }
+
+        foreach($aTestingIds as $iTestId)
         {
             $oTest = new testData($iTestId);
             $oTest->delete($bSilent);
         }
-        foreach($this->aMonitorIds as $iMonitorId)
+
+
+        /* fetch monitor Ids */
+        $aMonitorIds = array();
+        $sQuery = "SELECT *
+                       FROM appMonitors
+                       WHERE versionId = '?'
+                       ORDER BY monitorId";
+        if($hResult = query_parameters($sQuery, $this->iVersionId))
+        {
+            while($oRow = mysql_fetch_object($hResult))
+            {
+                $aMonitorIds[] = $oRow->monitorId;
+            }
+        }
+
+        foreach($aMonitorIds as $iMonitorId)
         {
             $oMonitor = new Monitor($iMonitorId);
             $oMonitor->delete($bSilent);
         }
+
 
         // remove any maintainers for this version so we don't orphan them
         $hResult = query_parameters("DELETE from appMaintainers WHERE versionId='?'", $this->iVersionId);
@@ -519,6 +499,27 @@ class Version {
         if($sEmail)
             mail_appdb($sEmail, $sSubject ,$sMsg);
     } 
+
+    function get_buglink_ids()
+    {
+        /*
+         * We fetch Bug linkIds. 
+         */
+        $aBuglinkIds = array();
+        $sQuery = "SELECT *
+                       FROM buglinks
+                       WHERE versionId = '?'
+                       ORDER BY bug_id";
+        if($hResult = query_parameters($sQuery, $this->iVersionId))
+        {
+            while($oRow = mysql_fetch_object($hResult))
+            {
+                $aBuglinkIds[] = $oRow->linkId;
+            }
+        }
+
+        return $aBuglinkIds;
+    }
 
     /* output html and the current versions information for editing */
     /* if $editParentApplication is true that means we need to display fields */
@@ -802,7 +803,7 @@ class Version {
 
         echo html_frame_end();
 
-        view_version_bugs($this->iVersionId, $this->aBuglinkIds);    
+        view_version_bugs($this->iVersionId, $this->get_buglink_ids());    
 
         /* display the notes for the application */
         $hNotes = query_parameters("SELECT noteId FROM appNotes WHERE versionId = '?'",
@@ -901,7 +902,7 @@ class Version {
                     echo "    <td>".util_trim_description($oVersion->sDescription)."</td>\n";
                     echo "    <td align=center>".$oVersion->sTestedRating."</td>\n";
                     echo "    <td align=center>".$oVersion->sTestedRelease."</td>\n";
-                    echo "    <td align=center>".sizeof($oVersion->aCommentsIds)."</td>\n";
+                    echo "    <td align=center>".Comment::get_comment_count_for_versionid($oVersion->iVersionId)."</td>\n";
                     echo "</tr>\n\n";
 
                     $c++;   

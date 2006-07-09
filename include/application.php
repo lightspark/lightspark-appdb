@@ -25,7 +25,6 @@ class Application {
     var $sSubmitTime;
     var $iSubmitterId;
     var $aVersionsIds;  // an array that contains the versionId of every version linked to this app.
-    var $aUrlsIds;            // an array that contains the screenshotId of every url linked to this version
 
     /**    
      * constructor, fetches the data.
@@ -75,24 +74,6 @@ class Application {
                 while($oRow = mysql_fetch_object($hResult))
                 {
                     $this->aVersionsIds[] = $oRow->versionId;
-                }
-            }
-
-
-            /*
-             * We fetch urlsIds. 
-             */
-            $this->aUrlsIds = array();
-            $sQuery = "SELECT id
-                       FROM appData
-                       WHERE type = 'url'
-                       AND appId = '?'";
-
-            if($hResult = query_parameters($sQuery, $iAppId))
-            {
-                while($oRow = mysql_fetch_object($hResult))
-                {
-                    $this->aUrlsIds[] = $oRow->id;
                 }
             }
         }
@@ -219,7 +200,24 @@ class Application {
             $oVersion = new Version($iVersionId);
             $oVersion->delete($bSilent);
         }
-        foreach($this->aUrlsIds as $iUrlId)
+
+
+        /* fetch urlsIds */
+        $aUrlsIds = array();
+        $sQuery = "SELECT id
+                       FROM appData
+                       WHERE type = 'url'
+                       AND appId = '?'";
+
+        if($hResult = query_parameters($sQuery, $this->iAppId))
+        {
+            while($oRow = mysql_fetch_object($hResult))
+            {
+                $aUrlsIds[] = $oRow->id;
+            }
+        }
+
+        foreach($aUrlsIds as $iUrlId)
         {
             $oUrl = new Url($iUrlId);
             $oUrl->delete($bSilent);

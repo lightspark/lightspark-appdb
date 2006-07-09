@@ -187,6 +187,16 @@ class Comment {
         return false;
     }
 
+    function get_comment_count_for_versionid($iVersionId)
+    {
+        $sQuery = "SELECT count(*) as cnt from appComments where versionId = '?'";
+        $hResult = query_parameters($sQuery, $iVersionId);
+        if(!$hResult) return 0;
+        
+        $oRow = mysql_fetch_object($hResult);
+        return $oRow->cnt;
+    }
+
     /**
      * class static functions
      */
