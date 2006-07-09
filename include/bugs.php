@@ -1,5 +1,6 @@
 <?php
 require_once(BASE."include/util.php");
+require_once(BASE."include/application.php");
 /******************************************/
 /* bug class and related functions */
 /******************************************/
