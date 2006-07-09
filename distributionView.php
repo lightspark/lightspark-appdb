@@ -26,7 +26,7 @@ if ($aClean['sSub'])
 } 
 $oDistribution = new distribution($aClean['iDistributionId']);
 
-//exit with error if no vendor
+//exit with error if no distribution
 if(!$oDistribution->iDistributionId) 
 {
     apidb_header("View Distributions");
