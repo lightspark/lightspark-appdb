@@ -525,11 +525,11 @@ class testData{
         echo '</td></tr>',"\n";
         // Installs
         echo '<tr><td class=color0><b>Installs?</b></td><td class=color0>',"\n";
-        make_Installs_list("sInstalls", $this->sInstalls);
+        testData::make_Installs_list("sInstalls", $this->sInstalls);
         echo '</td></tr>',"\n";
         // Runs
         echo '<tr><td class=color1><b>Runs?</b></td><td class=color0>',"\n";
-        make_Runs_list("sRuns", $this->sRuns);
+        testData::make_Runs_list("sRuns", $this->sRuns);
         echo '</td></tr>',"\n";
         // Rating
         echo '<tr><td class="color0"><b>Rating</b></td><td class="color0">',"\n";
@@ -668,63 +668,59 @@ class testData{
         echo "</table>","\n";
         
         echo html_frame_end();
-
     }
-}
 
-/* Get the number of TestResults in the database */
-function getNumberOfQueuedTests()
-{
-    $sQuery = "SELECT count(*) as num_tests
+    /* Get the number of TestResults in the database */
+    function getNumberOfQueuedTests()
+    {
+        $sQuery = "SELECT count(*) as num_tests
                FROM testResults, appVersion
                WHERE appVersion.versionId=testResults.versionId
                and appVersion.queued='false' 
                and testResults.queued='true';";
 
-    $hResult = query_parameters($sQuery);
-    if($hResult)
-    {
-      $oRow = mysql_fetch_object($hResult);
-      return $oRow->num_tests;
+        $hResult = query_parameters($sQuery);
+        if($hResult)
+        {
+            $oRow = mysql_fetch_object($hResult);
+            return $oRow->num_tests;
+        }
+        return 0;
     }
-    return 0;
-}
 
-function make_Installs_list($varname, $cvalue)
-{
-    
-    echo "<select name='$varname'>\n";
-    echo "<option value=\"\">Choose ...</option>\n";
-    $aRating = array("Yes", "No", "N/A");
-    $iMax = count($aRating);
-
-    for($i=0; $i < $iMax; $i++)
+    function make_Installs_list($sVarname, $sSelectedValue)
     {
-        if($aRating[$i] == $cvalue)
-            echo "<option value='".$aRating[$i]."' selected>".$aRating[$i]."\n";
-        else
-            echo "<option value='".$aRating[$i]."'>".$aRating[$i]."\n";
+        echo "<select name='$sVarname'>\n";
+        echo "<option value=\"\">Choose ...</option>\n";
+        $aRating = array("Yes", "No", "N/A");
+        $iMax = count($aRating);
+
+        for($i=0; $i < $iMax; $i++)
+        {
+            if($aRating[$i] == $sSelectedValue)
+                echo "<option value='".$aRating[$i]."' selected>".$aRating[$i]."\n";
+            else
+                echo "<option value='".$aRating[$i]."'>".$aRating[$i]."\n";
+        }
+        echo "</select>\n";
     }
-    echo "</select>\n";
-}
 
-function make_Runs_list($varname, $cvalue)
-{
-    
-    echo "<select name='$varname'>\n";
-    echo "<option value=\"\">Choose ...</option>\n";
-    $aRating = array("Yes", "No", "Not Installable");
-    $iMax = count($aRating);
-
-    for($i=0; $i < $iMax; $i++)
+    function make_Runs_list($sVarname, $sSelectedValue)
     {
-        if($aRating[$i] == $cvalue)
-            echo "<option value='".$aRating[$i]."' selected>".$aRating[$i]."\n";
-        else
-            echo "<option value='".$aRating[$i]."'>".$aRating[$i]."\n";
-    }
-    echo "</select>\n";
-}
+        echo "<select name='$sVarname'>\n";
+        echo "<option value=\"\">Choose ...</option>\n";
+        $aRating = array("Yes", "No", "Not Installable");
+        $iMax = count($aRating);
 
+        for($i=0; $i < $iMax; $i++)
+        {
+            if($aRating[$i] == $sSelectedValue)
+                echo "<option value='".$aRating[$i]."' selected>".$aRating[$i]."\n";
+            else
+                echo "<option value='".$aRating[$i]."'>".$aRating[$i]."\n";
+        }
+        echo "</select>\n";
+    }
+}
 
 ?>

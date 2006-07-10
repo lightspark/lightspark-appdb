@@ -18,7 +18,7 @@ function global_admin_menu() {
     $g->add("View Maintainer Queue (".getQueuedMaintainerCount().")", BASE."admin/adminMaintainerQueue.php");
     $g->add("View Maintainer Entries (".getMaintainerCount().")", BASE."admin/adminMaintainers.php");
     $g->add("View Bug Links (".getNumberOfQueuedBugLinks()."/".getNumberOfBugLinks().")", BASE."admin/adminBugs.php");
-    $g->add("View Test Results Queue (".getNumberOfQueuedTests().")", BASE."admin/adminTestResults.php");
+    $g->add("View Test Results Queue (".testData::getNumberOfQueuedTests().")", BASE."admin/adminTestResults.php");
 
     $g->addmisc("&nbsp;");
     $g->add("Users Management", BASE."admin/adminUsers.php");
