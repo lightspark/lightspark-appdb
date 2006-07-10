@@ -3,7 +3,7 @@ require_once(BASE."include/util.php");
 
 $aClean = array(); //array of filtered user input
 
-$aClean['userId'] = makeSafe($_REQUEST['userId']);
+$aClean['iUserId'] = makeSafe($_REQUEST['iUserId']);
 /*********************/
 /* Edit Account Form */
 /*********************/
@@ -28,7 +28,7 @@ $aClean['userId'] = makeSafe($_REQUEST['userId']);
 </tr>
 <?php
 // if we manage another user we can give him administrator rights
-if($oUser->iUserId == $aClean['userId'])
+if($oUser->iUserId == $aClean['iUserId'])
 {
 ?>
 <tr>
