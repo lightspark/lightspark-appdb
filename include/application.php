@@ -155,7 +155,7 @@ class Application {
         if ($this->sWebpage && ($this->sWebpage!=$oApp->sWebpage))
         {
             if (!query_parameters("UPDATE appFamily SET webPage = '?' WHERE appId = '?'",
-                                  $this->sWebPage, $this->iAppId))
+                                  $this->sWebpage, $this->iAppId))
                 return false;
             $sWhatChanged .= "Web page was changed from ".$oApp->sWebpage." to ".$this->sWebpage.".\n\n";
         }
