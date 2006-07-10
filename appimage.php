@@ -98,7 +98,7 @@ if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) &&
 header("Last-Modified: ".fHttpDate($iModTime));
 
 if(!$aClean['bThumbnail'])
-    $oScreenshot->oScreenshotImage->output_to_browser(1);
+    $oScreenshot->output_screenshot(false);
 else
-    $oScreenshot->oThumbnailImage->output_to_browser(1);
+    $oScreenshot->output_screenshot(true);
 ?>

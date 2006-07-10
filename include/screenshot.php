@@ -42,8 +42,6 @@ class Screenshot {
                 $oRow = mysql_fetch_object($hResult);
                 $this->iScreenshotId = $iScreenshotId;
                 $this->sDescription = $oRow->description;
-                $this->oScreenshotImage = new Image("/data/screenshots/".$oRow->url);
-                $this->oThumbnailImage = new Image("/data/screenshots/thumbnails/".$oRow->url);
                 $this->iAppId = $oRow->appId;
                 $this->iVersionId = $oRow->versionId;
                 $this->sUrl = $oRow->url;
@@ -108,7 +106,6 @@ class Screenshot {
                     query_parameters($sQuery, $this->iScreenshotId);
                     return false;
                 }
-                 
             }
 
             $this->screenshot($this->iScreenshotId,$this->bQueued);
@@ -133,6 +130,11 @@ class Screenshot {
         /* we can perform better permissions checking there */
         if($_SESSION['current']->deleteAppData($this->iScreenshotId))
         {
+            /* make sure the screenshot and thumbnail is loaded */
+            /* up before we try to delete them */
+            $this->load_image(true);
+            $this->load_image(false);
+
             $this->oScreenshotImage->delete();
             $this->oThumbnailImage->delete();
             unlink(appdb_fullpath("/data/screenshots/originals/".$this->iScreenshotId));
@@ -229,6 +231,69 @@ class Screenshot {
         $this->oScreenshotImage->output_to_file(appdb_fullpath("/data/screenshots/".$this->sUrl));
          
         return true;
+    }
+
+    /* ensure that either the thumbnail or screenshot */
+    /* has been loaded into memory */
+    function load_image($bThumbnail)
+    {
+        if($bThumbnail)
+        {
+            /* if we haven't loaded the thumbnail up yet, do so */
+            if(!$this->oThumbnailImage)
+                $this->oThumbnailImage = new Image("/data/screenshots/thumbnails/".$this->sUrl);
+        } else
+        {
+            /* if we haven't loaded the screenshot up yet, do so */
+            if(!$this->oScreenshotImage)
+                $this->oScreenshotImage = new Image("/data/screenshots/".$this->sUrl);
+        }
+    }
+
+    /* output the thumbnail if $bThumbnail or the full screenshot if !$bThumbnail */
+    /* NOTE: use this instead of calling through to this classes oScreenshot or */
+    /*       oThumbnail objects directly to their output_*() functions */
+    function output_screenshot($bThumbnail)
+    {
+        $this->load_image($bThumbnail);
+
+        if($bThumbnail)
+        {
+            if($this->oThumbnailImage)
+                $this->oThumbnailImage->output_to_browser(1);
+        } else
+        {
+            if($this->oScreenshotImage)
+                $this->oScreenshotImage->output_to_browser(1);
+        }
+    }
+
+    /* Accessor functions for the screenshot and thumbnail images that this */
+    /* screenshot object encapsulates */
+    /* NOTE: DO NOT call like $oScreenshot->oScreenshotImage->get_width(), there is NO */
+    /*       guarantee that oScreenshotImage will be valid */
+    function get_screenshot_width()
+    {
+        $this->load_image(false);
+        return $this->oScreenshotImage->get_width();
+    }
+
+    function get_screenshot_height()
+    {
+        $this->load_image(false);
+        return $this->oScreenshotImage->get_height();
+    }
+
+    function get_thumbnail_width()
+    {
+        $this->load_image(true);
+        return $this->oThumbnailImage->get_width();
+    }
+
+    function get_thumbnail_height()
+    {
+        $this->load_image(true);
+        return $this->oThumbnailImage->get_height();
     }
 
 
@@ -411,14 +476,14 @@ function get_thumbnail($id)
     // set img tag        
     $imgSRC  = '<img src="'.apidb_fullurl("appimage.php").
                '?bThumbnail=true&iId='.$id.'" alt="'.$oScreenshot->sDescription.
-               '" width="'.$oScreenshot->oThumbnailImage->get_width().
-               '" height="'.$oScreenshot->oThumbnailImage->get_height().'">';
+               '" width="'.$oScreenshot->get_thumbnail_width().
+               '" height="'.$oScreenshot->get_thumbnail_height().'">';
     $img = '<a href="'.apidb_fullurl("appimage.php").
            '?iId='.$id.
            '" onclick="javascript:openWin(\''.apidb_fullurl("appimage.php").
            '?iId='.$id.'\',\''.$randName.'\','.
-           ($oScreenshot->oScreenshotImage->get_width() + 20).','.
-           ($oScreenshot->oScreenshotImage->get_height() + 6).
+           ($oScreenshot->get_screenshot_width() + 20).','.
+           ($oScreenshot->get_screenshot_height() + 6).
            ');return false;">'.$imgSRC.'</a>';
 
     // set image link based on user pref

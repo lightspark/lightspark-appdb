@@ -120,11 +120,11 @@ if (!$aClean['iId'])
            $oScreenshot = new Screenshot($obj_row->id);
            echo '<tr valign=top><td class=color0><b>Submited image</b></td>',"\n";
            echo '<td>';
-           $imgSRC = '<img width="'.$oScreenshot->oThumbnailImage->width.'" height="'.$oScreenshot->oThumbnailImage->height.'" src="../appimage.php?bQueued=true&iId='.$obj_row->id.'" />';
+           $imgSRC = '<img width="'.$oScreenshot->get_thumbnail_width().'" height="'.$oScreenshot->get_thumbnail_height().'" src="../appimage.php?bQueued=true&iId='.$obj_row->id.'" />';
            // generate random tag for popup window
            $randName = User::generate_passwd(5);
            // set image link based on user pref
-           $img = '<a href="javascript:openWin(\'../appimage.php?bQueued=true&iId='.$obj_row->id.'\',\''.$randName.'\','.$oScreenshot->oScreenshotImage->width.','.($oScreenshot->oScreenshotImage->height+4).');">'.$imgSRC.'</a>';
+           $img = '<a href="javascript:openWin(\'../appimage.php?bQueued=true&iId='.$obj_row->id.'\',\''.$randName.'\','.$oScreenshot->get_screenshot_width().','.($oScreenshot->get_screenshot_height()+4).');">'.$imgSRC.'</a>';
            if ($_SESSION['current']->isLoggedIn())
            {
                if ($_SESSION['current']->getpref("window:screenshot") == "no")
