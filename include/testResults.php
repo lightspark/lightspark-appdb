@@ -38,7 +38,7 @@ class testData{
                 if($hResult = query_parameters($sQuery, $iTestingId))
                 {
                     $oRow = mysql_fetch_object($hResult);
-                    $this->iTestingId = $iTestingId;
+                    $this->iTestingId = $oRow->testingId;
                     $this->iVersionId = $oRow->versionId;
                     $this->sWhatWorks = $oRow->whatWorks;
                     $this->sWhatDoesnt = $oRow->whatDoesnt;
@@ -348,38 +348,20 @@ class testData{
             mail_appdb($sEmail, $sSubject ,$sMsg);
     }
  
-    function ShowTestResult($iCurrentTest,$iVersionId)
+    function ShowTestResult()
     {
-        $hResult = query_parameters("SELECT * 
-                                FROM testResults
-                                WHERE testingId = '?'",
-                                $iCurrentTest);
-        if(!$hResult || mysql_num_rows($hResult) == 0)
-        {
-            $hResult = query_parameters("SELECT * 
-                                    FROM testResults
-                                    WHERE versionId = '?'
-                                    ORDER BY testedDate DESC ;",
-                                    $iVersionId);
-            if(!$hResult || mysql_num_rows($hResult) == 0)
-                return false;
-        }
-        $oRow = mysql_fetch_object($hResult);
         echo '<p><b>What works</b><br />',"\n";
-        echo $oRow->whatWorks;
+        echo $this->sWhatWorks;
         echo '<p><b>What does not</b><br />',"\n";
-        echo $oRow->whatDoesnt;
+        echo $this->sWhatDoesnt;
         echo '<p><b>What was not tested</b><br />',"\n";
-        echo $oRow->whatNotTested;
-        return $oRow->testingId;
+        echo $this->sWhatNotTested;
     }
 
     // Show the Test results for a application version
-    function ShowVersionsTestingTable($iVersionId, $iCurrentTest, $link, $iDisplayLimit)
+    function ShowVersionsTestingTable($link, $iDisplayLimit)
     {
         /* escape input parameters */
-        $iVersionId = mysql_real_escape_string($iVersionId);
-        $iCurrentTest = mysql_real_escape_string($iCurrentTest);
         $link = mysql_real_escape_string($link);
         $iDisplayLimit = mysql_real_escape_string($iDisplayLimit);
 
@@ -390,7 +372,7 @@ class testData{
 
         $sQuery = "SELECT * 
                    FROM testResults
-                   WHERE versionId = '".$iVersionId."'
+                   WHERE versionId = '".$this->iVersionId."'
                    ORDER BY testedDate DESC";
 	
         if(!$showAll)
@@ -427,7 +409,9 @@ class testData{
             $bgcolor = $oTest->sTestedRating;
             echo '<tr class='.$bgcolor.'>',"\n";
 
-            if ($oTest->iTestingId == $iCurrentTest)
+            /* if the test we are displaying is this test then */
+            /* mark it as the current test */
+            if ($oTest->iTestingId == $this->iTestingId)
             {
                 echo '    <td align="center" class="color2"><b>Current</b></td>',"\n";
             } else
@@ -474,7 +458,7 @@ class testData{
         echo '</table>',"\n";
 
         echo '<form method=get action="'.$PHP_SELF.'">';
-        echo '<input name="iVersionId" type=hidden value="',$iVersionId,'" />';
+        echo '<input name="iVersionId" type=hidden value="',$this->iVersionId,'" />';
         if($rowsUsed >= $iDisplayLimit && !is_string($showAll))
             echo '<input class="button" name="showAll" type=submit value="Show All Tests" />';
 
@@ -483,6 +467,19 @@ class testData{
             echo '<input class="button" name="hideAll" type=submit value="Limit to '.$iDisplayLimit.' Tests" />';
         }
         echo '</form>';
+    }
+
+    /* retrieve the latest test result for a given version id */
+    function get_test_for_versionid($iVersionId)
+    {
+        $sQuery = "SELECT testingId from testResults where versionId = '?' 
+                     ORDER BY testedDate DESC limit 1";
+        $hResult = query_parameters($sQuery, $iVersionId);
+        if(!$hResult)
+            return 0;
+
+        $oRow = mysql_fetch_object($hResult);
+        return $oRow->testingId;
     }
 
     // show the fields for editing

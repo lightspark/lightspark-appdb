@@ -782,14 +782,23 @@ class Version {
         echo "<table width='100%' border=0><tr><td width='100%' valign=top> <b>Description</b><br />\n";
         echo $this->sDescription;
 
+
         // Show testing data
-        $oTest = new TestData($iTestingId);
-        $iCurrentTest = $oTest->ShowTestResult($oTest->iTestingId, $this->iVersionId);
-        if($iCurrentTest)
+
+        $oTest = new testData($iTestingId);
+
+        /* if $iTestingId wasn't valid then it won't be valid in $oTest */
+        if(!$oTest->iTestingId)
         {
-            $oTest->ShowVersionsTestingTable($this->iVersionId,
-                                             $iCurrentTest,
-                                             $_SERVER['PHP_SELF']."?iVersionId=".$this->iVersionId."&iTestingId=",
+            /* fetch a new testing id for this version */
+            $iTestingId = testData::get_test_for_versionid($this->iVersionId);
+            $oTest = new testData($iTestingId);
+        }
+
+        $oTest->ShowTestResult();
+        if($oTest->iTestingId)
+        {
+            $oTest->ShowVersionsTestingTable($_SERVER['PHP_SELF']."?iVersionId=".$this->iVersionId."&iTestingId=",
                                              5);
         }
         echo '<form method=post name=sMessage action=testResults.php?sSub=view&iVersionId='.$this->iVersionId.'>';
