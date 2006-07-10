@@ -636,10 +636,10 @@ class testData{
                   <td>Application</td>
                   <td>Version</td>
                   <td>Release</td>
+                  <td>Rating</td>
                   <td align=\"center\">Action</td>
                </tr>";
-        
-        $c = 1;
+
         while($oRow = mysql_fetch_object($hResult))
         {
             $oTest = new testData($oRow->testingId);
@@ -649,8 +649,8 @@ class testData{
             {
                 $oApp  = new application($oVersion->iAppId);
                 $oSubmitter = new User($oTest->iSubmitterId);
-                if ($c % 2 == 1) { $bgcolor = 'color0'; } else { $bgcolor = 'color1'; }
-                echo "<tr class=\"$bgcolor\">\n";
+                $bgcolor = $oTest->sTestedRating;
+                echo '<tr class='.$bgcolor.'>',"\n";
                 echo "    <td>".print_date(mysqltimestamp_to_unixtimestamp($oTest->sSubmitTime))."</td>\n";
                 echo "    <td>\n";
                 echo $oSubmitter->sEmail ? "<a href=\"mailto:".$oSubmitter->sEmail."\">":"";
@@ -660,9 +660,9 @@ class testData{
                 echo "    <td>".$oApp->sName."</td>\n";
                 echo "    <td>".$oVersion->sName."</td>\n";
                 echo "    <td>".$oTest->sTestedRelease."</td>\n";
+                echo "    <td>".$oTest->sTestedRating."</td>\n";
                 echo "    <td align=\"center\">[<a href=".$_SERVER['PHP_SELF']."?sSub=view&iTestingId=".$oTest->iTestingId.">process</a>]</td>\n";
                 echo "</tr>\n\n";
-                $c++;
             }
         }
         echo "</table>","\n";
