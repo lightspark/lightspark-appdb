@@ -56,41 +56,41 @@ function query_parameters()
         mysql_select_db(APPS_DB, $hAppdbLink);
     }
 
-    $data = func_get_args();
-    $query = $data[0];
-    $tokens = split("[&?~]", $query); /* NOTE: no need to escape characters inside of [] in regex */
-    $preparedquery = $tokens[0];
-    $count = strlen($tokens[0]);
+    $aData = func_get_args();
+    $sQuery = $aData[0];
+    $aTokens = split("[&?~]", $sQuery); /* NOTE: no need to escape characters inside of [] in regex */
+    $sPreparedquery = $aTokens[0];
+    $iCount = strlen($aTokens[0]);
 
     /* do we have the correct number of tokens to the number of parameters provided? */
-    if(count($tokens) != count($data))
+    if(count($aTokens) != count($aData))
         return NULL; /* count mismatch, return NULL */
 
-    for ($i=1; $i < count($tokens); $i++)
+    for ($i=1; $i < count($aTokens); $i++)
     {
-        $char = substr($query, $count, 1);
-        $count += (strlen($tokens[$i])+1);
+        $char = substr($sQuery, $iCount, 1);
+        $iCount += (strlen($aTokens[$i])+1);
         if ($char == "&")
         {
-            $fp = @fopen($data[$i], 'r');
+            $fp = @fopen($aData[$i], 'r');
             $pdata = "";
             if ($fp)
             {
-                while (($buf = fread($fp, 4096)) != false)
+                while (($sBuf = fread($fp, 4096)) != false)
                 {
-                    $pdata .= $buf;
+                    $pdata .= $sBuf;
                 }
                 fclose($fp);
             }
         } else
         {
-            $pdata = &$data[$i];
+            $pdata = &$aData[$i];
         }
-        $preparedquery .= ($char != "~" ? mysql_real_escape_string($pdata) : $pdata);
-        $preparedquery .= $tokens[$i];
+        $sPreparedquery .= ($char != "~" ? mysql_real_escape_string($pdata) : $pdata);
+        $sPreparedquery .= $aTokens[$i];
     }
 
-    return query_appdb($preparedquery);
+    return query_appdb($sPreparedquery);
 }
 
 function query_bugzilladb($sQuery,$sComment="")
