@@ -1,31 +1,25 @@
 <?php
-/*********************/
-/* voting statistics */
-/*********************/
+/**
+ * Voting statistics.
+ *
+ * Optional parameters:
+ *  - iTopNumber, the number of applications to be displayed
+ *  - iCategoryId, the category identifier of the category whose stats we want to see
+ */
 
-/*
- * application environment
- */ 
+// application environment
 include("path.php");
 require(BASE."include/incl.php");
 require(BASE."include/filter.php");
 require_once(BASE."include/category.php");
 
-/* default to 25 apps, main categories */
-$topNumber = 25;
-$categoryId = "any"; /* default to all categories */
+// set default values and check if the value makes sense
+if(empty($aClean['iTopNumber']) || $aClean['iTopNumber'] > 200 || $aClean['iTopNumber'] < 0)
+    $aClean['iTopNumber'] = 25;
+if(empty($aClean['iCategoryId']))
+    $aClean['iCategoryId'] = 0;
 
-/* process the post variables to override the default settings */
-if( !empty($aClean['iTopNumber']) AND is_numeric($aClean['iTopNumber'])) 
-    $topNumber = $aClean['iTopNumber'];
-if( !empty($aClean['iCategoryId']) AND is_numeric($aClean['iCategoryId'])) 
-    $categoryId = $aClean['iCategoryId'];
-
-/* Check if the value makes sense */
-if($topNumber > 200 || $topNumber < 1)
-    $topNumber = 25;
-
-apidb_header("Vote Stats - Top $topNumber Applications");
+apidb_header("Vote Stats - Top ".$aClean['iTopNumber']." Applications");
 
 /* display the selection for the top number of apps to view */
 echo "<form method=\"post\" name=\"sMessage\" action=\"".$_SERVER['PHP_SELF']."\">";
@@ -35,28 +29,23 @@ $topNumberArray = array(25, 50, 100, 200);
 
 foreach ($topNumberArray as $i => $value)
 {
-    if($topNumberArray[$i] == $topNumber)
+    if($topNumberArray[$i] == $aClean['iTopNumber'])
         echo "<option value='$topNumberArray[$i]' SELECTED>$topNumberArray[$i]";
     else
         echo "<option value='$topNumberArray[$i]'>$topNumberArray[$i]";
 }
 echo "</select>";
 
-/* list sub categories */
-if($categoryId == "any")
-    $catId = 0;
-else
-    $catId = $categoryId;
-
-/******************************************************************/
-/* build an array of categories from the current category back up */
-/* the tree to the main category */
+/**
+ * build an array of categories from the current category back up 
+ * the tree to the main category 
+ */
 $cat_array = Array();
 $cat_name_array = Array();
 
-if($catId != 0)
+if(!empty($aClean['iCategoryId']))
 {
-    $currentCatId = $catId;
+    $currentCatId = $aClean['iCategoryId'];
 
     do
     {
@@ -82,10 +71,10 @@ if($catId != 0)
 echo "<b>Section:</b>";
 echo '<select name="iCategoryId">';
 
-if($catId == 0)
-    echo '<option value="any" SELECTED>Any</option>';
+if(empty($aClean['iCategoryId']))
+    echo '<option value="0" SELECTED>Any</option>';
 else
-    echo '<option value="any">Any</option>';
+    echo '<option value="0">Any</option>';
 
 $indent = 1;
 
@@ -95,7 +84,7 @@ $cat_name_array_reversed = array_reverse($cat_name_array);
 foreach ($cat_array_reversed as $i => $value)
 {
     /* if this is the current category, select this option */
-    if($categoryId == $cat_array_reversed[$i])
+    if($aClean['iCategoryId'] == $cat_array_reversed[$i])
         echo "<option value='$cat_array_reversed[$i]' SELECTED>";
     else
         echo "<option value='$cat_array_reversed[$i]'>";
@@ -106,9 +95,9 @@ foreach ($cat_array_reversed as $i => $value)
     $indent++;
 }
 
-/******************************************************************/
-/* add to the list all of the sub sections of the current section */
-$cat = new Category($catId);
+
+// add to the list all of the sub sections of the current section
+$cat = new Category($aClean['iCategoryId']);
 $subs = $cat->aSubcatsIds;
 
 if($subs)
@@ -117,7 +106,7 @@ if($subs)
     {
         $oSubcat = new Category($id);
         /* if this is the current category, select this option */
-        if($id == $catId)
+        if($id == $aClean['iCategoryId'])
             echo "<option value=$id SELECTED>";
         else
             echo "<option value=$id>";
@@ -134,13 +123,13 @@ echo '<br />';
 
 /***************************************************/
 /* build a list of the apps in the chosen category */
-if(strcasecmp($categoryId, "any") == 0)
+if(empty($aClean['iCategoryId']))
 {
-    /* leave out the appFamily.catId = '$categoryId' */
+    /* leave out the appFamily.catId = '$aClean['iCategoryId']' */
     $hResult = query_parameters("SELECT appVotes.appId, appName, count(userId) as count ".
                            "FROM appVotes, appFamily ".
                            "WHERE appVotes.appId = appFamily.appId ".
-                           "GROUP BY appId ORDER BY count DESC LIMIT ?", $topNumber);
+                           "GROUP BY appId ORDER BY count DESC LIMIT ?", $aClean['iTopNumber']);
 } else
 {
     /* Display all application for a given category (including sub categories)
@@ -160,7 +149,7 @@ if(strcasecmp($categoryId, "any") == 0)
                         OR c.catParent = '?'
                       )
                   GROUP BY appId
-                  ORDER BY count DESC LIMIT ?", $categoryId, $categoryId, $topNumber);
+                  ORDER BY count DESC LIMIT ?", $aClean['iCategoryId'], $aClean['iCategoryId'], $aClean['iTopNumber']);
 }
 
 if($hResult)
