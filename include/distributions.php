@@ -387,48 +387,42 @@ class distribution{
         $this->sName = $aValues['sName'];
         $this->sUrl = $aValues['sUrl'];
     }
-}
 
-/* Make a dropdown list of distributions */
-function make_distribution_list($varname, $cvalue)
-{
-    $sQuery = "SELECT name, distributionId FROM distributions ORDER BY name";
-    $hResult = query_parameters($sQuery);
-    if(!$hResult) return;
-
-    echo "<select name='$varname'>\n";
-    echo "<option value=\"\">Choose ...</option>\n";
-    while(list($name, $value) = mysql_fetch_row($hResult))
+    /* Get the total number of Distributions in the database */
+    function getNumberOfDistributions($bQueued)
     {
-        if($value == $cvalue)
-            echo "<option value=$value selected>$name\n";
+        if($bQueued)
+            $hResult = query_parameters("SELECT count(*) as num_dists FROM
+                                        distributions WHERE queued='true';");
         else
-            echo "<option value=$value>$name\n";
+            $hResult = query_parameters("SELECT count(*) as num_dists FROM
+                                        distributions");
+        if($hResult)
+        {
+            $oRow = mysql_fetch_object($hResult);
+            return $oRow->num_dists;
+        }
+        return 0;
     }
-    echo "</select>\n";
-}
-/* Get the total number of Distributions in the database */
-function getNumberOfDistributions()
-{
-    $hResult = query_parameters("SELECT count(*) as num_dists FROM distributions");
-    if($hResult)
-    {
-      $oRow = mysql_fetch_object($hResult);
-      return $oRow->num_dists;
-    }
-    return 0;
-}
 
-/* Get the number of Queued Distributions in the database */
-function getNumberOfQueuedDistributions()
-{
-    $hResult = query_parameters("SELECT count(*) as num_dists FROM distributions WHERE queued='true';");
-    if($hResult)
+    /* Make a dropdown list of distributions */
+    function make_distribution_list($varname, $cvalue)
     {
-      $oRow = mysql_fetch_object($hResult);
-      return $oRow->num_dists;
+        $sQuery = "SELECT name, distributionId FROM distributions ORDER BY name";
+        $hResult = query_parameters($sQuery);
+        if(!$hResult) return;
+
+        echo "<select name='$varname'>\n";
+        echo "<option value=\"\">Choose ...</option>\n";
+        while(list($name, $value) = mysql_fetch_row($hResult))
+        {
+            if($value == $cvalue)
+                echo "<option value=$value selected>$name\n";
+            else
+                echo "<option value=$value>$name\n";
+        }
+        echo "</select>\n";
     }
-    return 0;
 }
 
 ?>

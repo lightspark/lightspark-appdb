@@ -514,7 +514,7 @@ class testData{
             echo '<tr><td class=color0><b></b></td>',"\n";
         }
         echo '<td class=color0>',"\n";
-        make_distribution_list("iDistributionId", $this->iDistributionId);
+        distribution::make_distribution_list("iDistributionId", $this->iDistributionId);
         echo '</td></tr>',"\n";
         // Version List
         echo '<tr><td class=color1><b>Tested release</b></td><td class=color0>',"\n";
