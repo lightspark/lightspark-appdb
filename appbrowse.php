@@ -26,9 +26,9 @@ function admin_menu()
 }
 
 // list sub categories
-$cat = new Category($aClean['iCatId']?$aClean['iCatId']:"0");
-$catFullPath = make_cat_path($cat->getCategoryPath());
-$subs = $cat->aSubcatsIds;
+$oCat = new Category($aClean['iCatId']?$aClean['iCatId']:"0");
+$sCatFullPath = Category::make_cat_path($oCat->getCategoryPath());
+$subs = $oCat->aSubcatsIds;
 
 //display admin box
 if($_SESSION['current']->hasPriv("admin") && $aClean['iCatId'] != 0)
@@ -40,7 +40,7 @@ apidb_header("Browse Applications");
 if($subs)
 {
     echo html_frame_start("",'98%','',2);
-    echo "<p><b>Category: ". $catFullPath ."</b><br />\n";
+    echo "<p><b>Category: ". $sCatFullPath ."</b><br />\n";
     echo html_frame_end();
     
     echo html_frame_start("","98%","",0);
@@ -80,11 +80,11 @@ if($subs)
 
 
 // list applications in this category
-$apps = $cat->aApplicationsIds;
+$apps = $oCat->aApplicationsIds;
 if($apps)
 {
     echo html_frame_start("",'98%','',2);
-    echo "<p><b>Category: ". $catFullPath ."</b><br />\n";
+    echo "<p><b>Category: ". $sCatFullPath ."</b><br />\n";
     echo html_frame_end();
     
     echo html_frame_start("","98%","",0);

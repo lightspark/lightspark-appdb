@@ -13,7 +13,7 @@
  *
  * TODO:
  *  - replace sSub with iAction and replace "delete", "unqueue", etc. with integer constants DELETE, UNQUEUE, etc.
- *  - move and rename display_catpath and display_bundle in their respective modules
+ *  - move and rename display_bundle into its respective modules
  *  - replace require_once with require after checking that it won't break anything
  */
 
@@ -37,20 +37,6 @@ $aClean['iTestingId'] = makeSafe($_REQUEST['iTestingId']);
 
 $oApp = new Application($aClean['iAppId']);
 $oVersion = new Version($aClean['iVersionId']);
-
-/**
- * display the full path of the Category we are looking at
- */
-function display_catpath($catId, $appId, $versionId = '')
-{
-    $cat = new Category($catId);
-
-    $catFullPath = make_cat_path($cat->getCategoryPath(), $appId, $versionId);
-    echo html_frame_start("",'98%','',2);
-    echo "<p><b>Category: ". $catFullPath ."</b><br />\n";
-    echo html_frame_end();
-}
-
 
 /**
  * Displays the SUB apps that belong to this application.

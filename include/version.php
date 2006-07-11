@@ -624,7 +624,8 @@ class Version {
         apidb_header("Viewing App- ".$oApp->sName." Version - ".$this->sName);
 
         // cat
-        display_catpath($oApp->iCatId, $oApp->iAppId, $this->iVersionId);
+        $oCategory = new Category($oApp->iCatId);
+        $oCategory->display($oApp->iAppId, $this->iVersionId);
   
         // set URL
         $appLinkURL = ($oApp->sWebpage) ? "<a href=\"".$oApp->sWebpage."\">".substr(stripslashes($oApp->sWebpage),0,30)."</a>": "&nbsp;";

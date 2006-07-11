@@ -506,7 +506,8 @@ class Application {
         apidb_header("Viewing App - ".$this->sName);
 
         // cat display
-        display_catpath($this->iCatId, $this->iAppId);
+        $oCategory = new Category($this->iCatId);
+        $oCategory->display($this->iAppId);
 
         // set Vendor
         $oVendor = new Vendor($this->iVendorId);

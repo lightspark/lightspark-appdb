@@ -163,6 +163,8 @@ class Category {
     {
         $aPath = array();
         $iCatId  = $this->iCatId;
+
+        /* loop, working up through categories until we have no parent */
         while($iCatId != 0)
         {
             $hResult = query_parameters("SELECT catName, catId, catParent FROM appCategory WHERE catId = '?'",
@@ -207,46 +209,53 @@ class Category {
         
         return $totalApps;
     }
-}
 
-
-/*
- * Application functions that are not part of the class
- */
-
-/**
- * create the Category: line at the top of appdb pages$
- */
-function make_cat_path($path, $appId = '', $versionId = '')
-{
-    $str = "";
-    $catCount = 0;
-    while(list($iCatIdx, list($iCatId, $name)) = each($path))
+    /**
+     * create the Category: line at the top of appdb pages$
+     */
+    function make_cat_path($path, $appId = '', $versionId = '')
     {
-        if($name == "ROOT")
-            $catname = "Main";
-        else
-            $catname = $name;
-
-        if ($catCount > 0) $str .= " &gt; ";
-        $str .= html_ahref($catname,"appbrowse.php?catId=$iCatId");
-        $catCount++;
-    }
-
-    if(!empty($appId))
-    {
-        $oApp = new Application($appId);
-        if(!empty($versionId))
+        $str = "";
+        $catCount = 0;
+        while(list($iCatIdx, list($iCatId, $name)) = each($path))
         {
-            $oVersion = new Version($versionId);
-            $str .= " &gt; ".html_ahref($oApp->sName,"appview.php?iAppId=$appId");
-            $str .= " &gt; ".$oVersion->sName;
-        } else
-        {
-            $str .= " &gt; ".$oApp->sName;
+            if($name == "ROOT")
+                $catname = "Main";
+            else
+                $catname = $name;
+
+            if ($catCount > 0) $str .= " &gt; ";
+            $str .= html_ahref($catname,"appbrowse.php?catId=$iCatId");
+            $catCount++;
         }
+
+        if(!empty($appId))
+        {
+            $oApp = new Application($appId);
+            if(!empty($versionId))
+            {
+                $oVersion = new Version($versionId);
+                $str .= " &gt; ".html_ahref($oApp->sName,"appview.php?iAppId=$appId");
+                $str .= " &gt; ".$oVersion->sName;
+            } else
+            {
+                $str .= " &gt; ".$oApp->sName;
+            }
+        }
+
+        return $str;
     }
 
-    return $str;
+    /**
+     * display the full path of the Category we are looking at
+     */
+    function display($appId, $versionId = '')
+    {
+        $sCatFullPath = Category::make_cat_path($this->getCategoryPath(), $appId, $versionId);
+        echo html_frame_start("",'98%','',2);
+        echo "<p><b>Category: ". $sCatFullPath ."</b><br />\n";
+        echo html_frame_end();
+    }
 }
+
 ?>
