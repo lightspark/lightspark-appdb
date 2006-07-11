@@ -274,18 +274,6 @@ function getNumberOfBugLinks()
     return 0;
 }
 
-function lookupVendorName($vendorId)
-{
-    $sResult = query_parameters("SELECT * FROM vendor ".
-                            "WHERE vendorId = '?'",
-                            $vendorId);
-    if(!$sResult || mysql_num_rows($sResult) != 1)
-        return "Unknown vendor";
-
-    $vendor = mysql_fetch_object($sResult);
-    return $vendor->vendorName;
-}
-
 /* used by outputTopXRowAppsFromRating() to reduce duplicated code */
 function outputTopXRow($oRow)
 {
