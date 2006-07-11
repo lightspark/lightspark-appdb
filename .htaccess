@@ -13,3 +13,11 @@ php_value short_open_tag 0
 php_value register_long_arrays 0
 php_value magic_quotes_gpc 0
 php_flag zlib.output_compression on
+
+# make sure gc_probability is non-zero, we want php to take care of
+# session cleanup for us
+php_value session.gc_probability 1
+
+# lower the probability of calling garbage collection
+# the appdb gets so many hits we want to increase the divisor above 100
+php_value session.gc_divisor 2000
