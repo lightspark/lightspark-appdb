@@ -301,11 +301,11 @@ function outputTopXRow($oRow)
 }
 
 /* Output the rows for the Top-X tables on the main page */
-function outputTopXRowAppsFromRating($rating, $num_apps)
+function outputTopXRowAppsFromRating($rating, $iNum_apps)
 {
     /* clean the input values so we can continue to use query_appdb() */
     $rating = mysql_real_escape_string($rating);
-    $num_apps = mysql_real_escape_string($num_apps);
+    $iNum_apps = mysql_real_escape_string($iNum_apps);
 
     /* list of appIds we've already output, so we don't output */
     /* them again when filling in any empty spots in the list */
@@ -318,13 +318,16 @@ function outputTopXRowAppsFromRating($rating, $num_apps)
            GROUP BY appVotes.appId
            ORDER BY c DESC
            LIMIT ?";
-    $hResult = query_parameters($sQuery, $rating, $num_apps);
-    $num_apps-=mysql_num_rows($hResult); /* take away the rows we are outputting here */
+    $hResult = query_parameters($sQuery, $rating, $iNum_apps);
+    $iNum_apps-=mysql_num_rows($hResult); /* take away the rows we are outputting here */
     while($oRow = mysql_fetch_object($hResult))
     {
         array_push($appIdArray, $oRow->appId); /* keep track of the apps we've already output */
         outputTopXRow($oRow);
     }
+
+    /* if we have no more app entries we should stop now and save ourselves a query */
+    if(!$iNum_apps) return;
 
     /* if we have any empty spots in the list, get these from applications with images */
     $sQuery = "SELECT DISTINCT appVersion.appId as appId, appVersion.versionId
@@ -338,7 +341,7 @@ function outputTopXRowAppsFromRating($rating, $num_apps)
     foreach($appIdArray as $key=>$value)
         $sQuery.="AND appVersion.appId != '".$value."' ";
 
-    $sQuery.=" LIMIT $num_apps";
+    $sQuery.=" LIMIT $iNum_apps";
 
     /* get the list that will fill the empty spots */
     $hResult = query_appdb($sQuery);
