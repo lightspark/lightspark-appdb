@@ -359,142 +359,136 @@ class Screenshot {
         if($sEmail)
             mail_appdb($sEmail, $sSubject ,$sMsg);
     } 
-}
 
-
-/*
- * Screenshot functions that are not part of the class
- */
-
-/**
- * Get a random image for a particular version of an app.
- * If the version is not set, get a random app image 
- *
- * $bFormatting == false turns off all extranious formatting applied to the returned image html
- */
-function get_screenshot_img($iAppId = null, $iVersionId = null,
-                            $bFormatting = true) 
-{
-    // we want a random screenshots for this app
-    if($iAppId && !$iVersionId)
+    /**
+     * Get a random image for a particular version of an app.
+     * If the version is not set, get a random app image 
+     *
+     * $bFormatting == false turns off all extranious formatting applied to the returned image html
+     */
+    function get_random_screenshot_img($iAppId = null, $iVersionId = null,
+                                       $bFormatting = true) 
     {
-       $hResult = query_parameters("SELECT appData.id, appData.description, RAND() AS rand 
+        // we want a random screenshots for this app
+        if($iAppId && !$iVersionId)
+        {
+            $hResult = query_parameters("SELECT appData.id, appData.description, RAND() AS rand 
                                FROM appData, appVersion 
                                WHERE appData.versionId = appVersion.versionId
                                AND appVersion.appId = '?' 
                                AND type = 'image' 
                                AND appData.queued = 'false' 
                                ORDER BY rand", $iAppId);
-    } else if ($iVersionId) // we want a random screenshot for this version
-    {
-        $hResult = query_parameters("SELECT id, description, RAND() AS rand 
+        } else if ($iVersionId) // we want a random screenshot for this version
+        {
+            $hResult = query_parameters("SELECT id, description, RAND() AS rand 
                                 FROM appData 
                                 WHERE versionId = '?' 
                                 AND type = 'image' 
                                 AND queued = 'false' 
                                 ORDER BY rand", $iVersionId);
+        }
+
+        if($bFormatting)
+            $sImgFile .= '<center>';
+
+        if(!$hResult || !mysql_num_rows($hResult))
+        {
+            $sImgFile = '<img src="images/no_screenshot.png" alt="No Screenshot" />';
+        } else
+        {
+            $oRow = mysql_fetch_object($hResult);
+            $sImgFile = '<img src="appimage.php?bThumbnail=true&amp;iId='.$oRow->id.'" alt="'.$oRow->description.'" />';
+        }
+
+        if($bFormatting)
+            $sImgFile .= '</center>';
+
+        if($bFormatting)
+            $sImg = html_frame_start("",'128','',2);
+
+        /* we have screenshots */
+        if(mysql_num_rows($hResult))
+        {
+            if($iVersionId)
+                $sImg .= "<a href='screenshots.php?iAppId=$iAppId&amp;iVersionId=$iVersionId'>$sImgFile<center>View/Submit&nbsp;Screenshot</center></a>";
+            else
+                $sImg .= "<a href='screenshots.php?iAppId=$iAppId&amp;iVersionId=$iVersionId'>$sImgFile<center>View&nbsp;Screenshot</center></a>";
+        } else if($iVersionId) /* we are asking for a specific app version but it has no screenshots */
+        {
+            $sImg .= "<a href='screenshots.php?iAppId=$iAppId&amp;iVersionId=$iVersionId'>$sImgFile<center>Submit&nbsp;Screenshot</center></a>";
+        } else /* we have no screenshots and we aren't a specific version, we don't allow adding screenshots for an app */
+        {
+            $sImg .= $sImgFile; 
+        }
+
+        if($bFormatting)
+            $sImg .= html_frame_end()."<br />";
+
+        return $sImg;
     }
 
-    if($bFormatting)
-        $sImgFile .= '<center>';
-
-    if(!$hResult || !mysql_num_rows($hResult))
+    function get_screenshots($iAppId = null, $iVersionId = null, $bQueued = "false")
     {
-        $sImgFile = '<img src="images/no_screenshot.png" alt="No Screenshot" />';
-    } else
-    {
-        $oRow = mysql_fetch_object($hResult);
-        $sImgFile = '<img src="appimage.php?bThumbnail=true&amp;iId='.$oRow->id.'" alt="'.$oRow->description.'" />';
-    }
-
-    if($bFormatting)
-        $sImgFile .= '</center>';
-    
-    if($bFormatting)
-        $sImg = html_frame_start("",'128','',2);
-
-    /* we have screenshots */
-    if(mysql_num_rows($hResult))
-    {
-        if($iVersionId)
-            $sImg .= "<a href='screenshots.php?iAppId=$iAppId&amp;iVersionId=$iVersionId'>$sImgFile<center>View/Submit&nbsp;Screenshot</center></a>";
-        else
-            $sImg .= "<a href='screenshots.php?iAppId=$iAppId&amp;iVersionId=$iVersionId'>$sImgFile<center>View&nbsp;Screenshot</center></a>";
-    } else if($iVersionId) /* we are asking for a specific app version but it has no screenshots */
-    {
-        $sImg .= "<a href='screenshots.php?iAppId=$iAppId&amp;iVersionId=$iVersionId'>$sImgFile<center>Submit&nbsp;Screenshot</center></a>";
-    } else /* we have no screenshots and we aren't a specific version, we don't allow adding screenshots for an app */
-    {
-        $sImg .= $sImgFile; 
-    }
-
-    if($bFormatting)
-        $sImg .= html_frame_end()."<br />";
-    
-    return $sImg;
-}
-
-function get_screenshots($iAppId = null, $iVersionId = null, $bQueued = "false")
-{
-    /*
-     * We want all screenshots for this app.
-     */
-    if($iAppId && !$iVersionId)
-    {
-        $hResult = query_parameters("SELECT appData.*, appVersion.appId as appId
+        /*
+         * We want all screenshots for this app.
+         */
+        if($iAppId && !$iVersionId)
+        {
+            $hResult = query_parameters("SELECT appData.*, appVersion.appId as appId
                                  FROM appData, appVersion
                                  WHERE appVersion.versionId = appData.versionId
                                  AND type = 'image'
                                  AND appVersion.appId = '?'
                                  AND appData.queued = '?'", $iAppId, $bQueued);
-    }
-    /*
-     * We want all screenshots for this version.
-     */
-    else if ($iVersionId) 
-    {
-        $hResult = query_parameters("SELECT appData.*, appVersion.appId as appId
+        }
+        /*
+         * We want all screenshots for this version.
+         */
+        else if ($iVersionId) 
+        {
+            $hResult = query_parameters("SELECT appData.*, appVersion.appId as appId
                                  FROM appData, appVersion
                                  WHERE appVersion.versionId = appData.versionId
                                  AND type = 'image'
                                  AND appData.versionId = '?'
                                  AND appData.queued = '?'", $iVersionId, $bQueued);
-    } else
-    {
-        return false;
-    }
-
-    return $hResult;
-}
-
-function get_thumbnail($id)
-{
-    $oScreenshot = new Screenshot($id);
-
-    // generate random tag for popup window
-    $randName = User::generate_passwd(5);
-    // set img tag        
-    $imgSRC  = '<img src="'.apidb_fullurl("appimage.php").
-               '?bThumbnail=true&iId='.$id.'" alt="'.$oScreenshot->sDescription.
-               '" width="'.$oScreenshot->get_thumbnail_width().
-               '" height="'.$oScreenshot->get_thumbnail_height().'">';
-    $img = '<a href="'.apidb_fullurl("appimage.php").
-           '?iId='.$id.
-           '" onclick="javascript:openWin(\''.apidb_fullurl("appimage.php").
-           '?iId='.$id.'\',\''.$randName.'\','.
-           ($oScreenshot->get_screenshot_width() + 20).','.
-           ($oScreenshot->get_screenshot_height() + 6).
-           ');return false;">'.$imgSRC.'</a>';
-
-    // set image link based on user pref
-    if ($_SESSION['current']->isLoggedIn())
-    {
-        if ($_SESSION['current']->getpref("window:screenshot") == "no")
+        } else
         {
-            $img = '<a href="'.apidb_fullurl("appimage.php").
-                   '?iImageId='.$id.'">'.$imgSRC.'</a>';
+            return false;
         }
+
+        return $hResult;
     }
-    return $img;
+
+    function get_thumbnail_img()
+    {
+        // generate random tag for popup window
+        $sRandName = User::generate_passwd(5);
+        // set img tag        
+        $shImgSRC  = '<img src="'.apidb_fullurl("appimage.php").
+            '?bThumbnail=true&iId='.$this->iScreenshotId.'" alt="'.$this->sDescription.
+            '" width="'.$this->get_thumbnail_width().
+            '" height="'.$this->get_thumbnail_height().'">';
+        $shImg = '<a href="'.apidb_fullurl("appimage.php").
+            '?iId='.$this->iScreenshotId.
+            '" onclick="javascript:openWin(\''.apidb_fullurl("appimage.php").
+            '?iId='.$this->iScreenshotId.'\',\''.$sRandName.'\','.
+            ($this->get_screenshot_width() + 20).','.
+            ($this->get_screenshot_height() + 6).
+            ');return false;">'.$shImgSRC.'</a>';
+
+        // set image link based on user pref
+        if ($_SESSION['current']->isLoggedIn())
+        {
+            if ($_SESSION['current']->getpref("window:screenshot") == "no")
+            {
+                $shImg = '<a href="'.apidb_fullurl("appimage.php").
+                    '?iImageId='.$this->iScreenshotId.'">'.$shImgSRC.'</a>';
+            }
+        }
+        return $shImg;
+    }
 }
+
 ?>

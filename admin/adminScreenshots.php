@@ -118,7 +118,8 @@ while ($oRow = mysql_fetch_object($Ids))
     // display thumbnail
     $oVersion = new version($oRow->versionId);
     $oApp = new Application($oVersion->iAppId);
-    $img = get_thumbnail($oRow->id);
+    $oScreenshot = new Screenshot($oRow->id);
+    $img = $oScreenshot->get_thumbnail_img();
     echo "<td align=center>\n";
     echo $img;
     echo "<div align=center>". substr($oRow->description,0,20). "\n";

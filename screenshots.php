@@ -52,7 +52,7 @@ if($aClean['sCmd'])
 
 
 // we didn't issued any command
-$hResult = get_screenshots($aClean['iAppId'], $aClean['iVersionId']);   
+$hResult = Screenshot::get_screenshots($aClean['iAppId'], $aClean['iVersionId']);   
 apidb_header("Screenshots");
 $oApp = new Application($aClean['iAppId']);
 $oVersion = new Version($aClean['iVersionId']);
@@ -78,7 +78,8 @@ if($hResult && mysql_num_rows($hResult))
             echo html_frame_start("Version ".Version::lookup_name($currentVersionId));
             echo "<div align=center><table><tr>\n";
         }
-        $img = get_thumbnail($oRow->id);
+        $oScreenshot = new Screenshot($oRow->id);
+        $img = $oScreenshot->get_thumbnail_img();
         // display image
         echo "<td>\n";
         echo $img;
