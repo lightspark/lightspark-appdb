@@ -73,6 +73,7 @@ if ($aClean['sSub'])
             apidb_header("Edit testing results for ".$sVersionInfo);
             break;
         }
+
         echo '<form name="sQform" action="'.$_SERVER['PHP_SELF'].'" method="post" enctype="multipart/form-data">',"\n";
         // View Testing Details
         echo "<table width='100%' border=0 cellpadding=2 cellspacing=0>\n";
@@ -99,6 +100,8 @@ if ($aClean['sSub'])
         echo "<p>Click delete to remove it entirly from the database. An email will automatically be sent to the\n";
         echo "submitter to let them know the item was deleted.</p>\n\n";        
         echo "</td></tr></table></div>\n\n";    
+
+        echo html_back_link(1, $_SERVER['PHP_SELF']);
 
         $oTest->OutputEditor();
         echo html_frame_start("Reply text", "90%", "", 0);
@@ -131,8 +134,7 @@ if ($aClean['sSub'])
         echo '</form>',"\n";
         echo html_frame_end();
 
-        echo '<a href="'.$_SERVER['PHP_SELF'].'">Back</a>';
-
+        echo html_back_link(1, $_SERVER['PHP_SELF']);
     }
     else 
     {
