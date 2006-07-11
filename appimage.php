@@ -28,59 +28,31 @@ header("Pragma: ");
 if(!$_SESSION['current']->canViewImage($aClean['iId']))
     util_show_error_page_and_exit("Insufficient privileges.");
 
-if ($aClean['sREQUEST_METHOD']='HEAD')
+$oScreenshot = new Screenshot($aClean['iId']);
+$fImage = fopen(appdb_fullpath("data/screenshots/".$oScreenshot->sUrl), "rb");
+
+/* if we can open the image we should get its last modified time and read */
+/* a few bytes from its header information and close it */
+if($fImage)
 {
-   /* WARNING! optimization of logic in include/screenshots.php */
-   if (sscanf($aClean['iId'],"%d", &$iId) < 1)
-      util_show_error_page_and_exit("Bad parameter");
-
-   $hResult = query_parameters("SELECT id, url FROM appData 
-                            WHERE id = '?'
-                            AND type = 'image' LIMIT 1", $iId);
-   $fImage = 0;
-   if($hResult)
-   {
-     $oRow = mysql_fetch_object($hResult);
-     
-     /* we need to use the url field from appData, this is the name of the file */
-     /* in the filesystem */
-     $fImage = fopen(appdb_fullpath("data/screenshots/".$oRow->url), "rb");
-   }
-
-   /* if the query failed or if we didn't find the image, we should */
-   /* report a 404 to the browser */
-   if(!$hResult || !$fImage)
-   {
-      header("404 No such image");
-      exit;
-   }
    $fstat_val = fstat($fImage);
    $iModTime = $fstat_val['mtime'];
-   $sMagic = fread($fImage,8);
+   $sMagic = fread($fImage, 8); /* read 8 bytes from the header, that lets us idenfity the type of
+                                 image without loading it */
    fclose($fImage); /* don't leave the fopened image open */
-   /* identify what kind of image this is, if we can't identify it */
-   /* we should report that its a bad image */
-   if (strcmp("\x89PNG\r\n\x1A\n",$sMagic)==0) 
-   {
-      header("Content-Type: image/png");
-   } else if (preg_match("^\xD8\xFF^",$sMagic)) {
-      header("Content-Type: image/jpeg");
-   } else {
-      header("500 Bad image format");
-      exit;
-   }
-   header("Cache-Control: public");
-   header("Expires: ");
-   header("Last-Modified: ".fHttpDate($iModTime));
 }
 
-$oScreenshot = new Screenshot($aClean['iId']);
-
-/* at this point, we know that .../screenshots/$oScreenshot->sUrl and
- *  .../screenshots/thumbnails/$oScreenshot->sUrl both exist as normally 
- *  they would both be created at the same time. */
-$fstat_val = stat(appdb_fullpath("data/screenshots/".$oScreenshot->sUrl));
-$iModTime = $fstat_val['mtime'];
+/* identify what kind of image this is, if we can't identify it */
+/* we should report that its a bad image */
+if (strcmp("\x89PNG\r\n\x1A\n", $sMagic)==0) 
+{
+    header("Content-Type: image/png");
+} else if (preg_match("^\xD8\xFF^", $sMagic)) {
+    header("Content-Type: image/jpeg");
+} else {
+    header("500 Bad image format");
+    exit;
+}
 
 header("Cache-Control: public");
 header("Expires: ");
