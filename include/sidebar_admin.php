@@ -2,7 +2,7 @@
 /*****************/
 /* sidebar_admin */
 /*****************/
-require_once(BASE."include/testResults.php");
+require_once(BASE."include/testData.php");
 require_once(BASE."include/distributions.php");
 
 function global_admin_menu() {

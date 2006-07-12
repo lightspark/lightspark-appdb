@@ -9,7 +9,7 @@ require_once(BASE."include/url.php");
 require_once(BASE."include/screenshot.php");
 require_once(BASE."include/bugs.php");
 require_once(BASE."include/util.php");
-require_once(BASE."include/testResults.php");
+require_once(BASE."include/testData.php");
 
 /**
  * Version class for handling versions.

@@ -11,7 +11,7 @@ require(BASE."include/incl.php");
 require_once(BASE."include/category.php");
 require_once(BASE."include/application.php");
 require_once(BASE."include/monitor.php");
-require_once(BASE."include/testResults.php");
+require_once(BASE."include/testData.php");
 
 $aClean = array(); //filtered user input
 

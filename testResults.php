@@ -7,7 +7,7 @@ require("path.php");
 require(BASE."include/incl.php");
 require_once(BASE."include/tableve.php");
 require_once(BASE."include/application.php");
-require_once(BASE."include/testResults.php");
+require_once(BASE."include/testData.php");
 require_once(BASE."include/distributions.php");
 
 $aClean = array(); //array of filtered user input
