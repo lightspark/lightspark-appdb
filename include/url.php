@@ -182,7 +182,7 @@ class Url {
     {
         $aClean = array(); //array of filtered user input
 
-        $aClean['replyText'] = makeSafe($_REQUEST['replyText']);
+        $aClean['sReplyText'] = makeSafe($_REQUEST['sReplyText']);
         if($this->iSubmitterId)
         {
             $sAppName = Application::lookup_name($this->appId)." ".Version::lookup_name($this->versionId);
@@ -196,7 +196,7 @@ class Url {
                  $sSubject =  "Submitted url rejected";
                  $sMsg  = "The url you submitted for ".$sAppName." has been rejected.";
             }
-            $sMsg .= $aClean['replyText']."\n";
+            $sMsg .= $aClean['sReplyText']."\n";
             $sMsg .= "We appreciate your help in making the Application Database better for all users.";
                 
             mail_appdb($oSubmitter->sEmail, $sSubject ,$sMsg);

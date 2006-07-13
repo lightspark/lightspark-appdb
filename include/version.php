@@ -395,7 +395,7 @@ class Version {
     function mailSubmitter($sAction="add")
     {
         $aClean = array(); //array of filtered user input
-        $aClean['replyText'] = makeSafe($_REQUEST['replyText']);
+        $aClean['sReplyText'] = makeSafe($_REQUEST['sReplyText']);
 
         if($this->iSubmitterId)
         {
@@ -422,7 +422,7 @@ class Version {
                 $sMsg .= "Reason given:\n";
             break;
             }
-            $sMsg .= $aClean['replyText']."\n";
+            $sMsg .= $aClean['sReplyText']."\n";
             $sMsg .= "We appreciate your help in making the Version Database better for all users.";
         
             mail_appdb($oSubmitter->sEmail, $sSubject ,$sMsg);
@@ -433,7 +433,7 @@ class Version {
     function SendNotificationMail($sAction="add",$sMsg=null)
     {
         $aClean = array(); //array of filtered user input
-        $aClean['replyText'] = makeSafe($_REQUEST['replyText']);
+        $aClean['sReplyText'] = makeSafe($_REQUEST['sReplyText']);
 
         $oApp = new Application($this->iAppId);
         switch($sAction)
@@ -449,10 +449,10 @@ class Version {
                         $sMsg .= "This version has been submitted by ".$oSubmitter->sRealname.".";
                         $sMsg .= "\n";
                     }
-                    if($aClean['replyText'])
+                    if($aClean['sReplyText'])
                     {
                         $sMsg .= "Appdb admin reply text:\n";
-                        $sMsg .= $aClean['replyText']."\n"; // append the reply text, if there is any 
+                        $sMsg .= $aClean['sReplyText']."\n"; // append the reply text, if there is any 
                     }
 
                     addmsg("The version was successfully added into the database.", "green");
@@ -472,11 +472,11 @@ class Version {
             case "delete":
                 $sSubject = "Version '".$this->sName."' of '".$oApp->sName."' has been deleted by ".$_SESSION['current']->sRealname;
 
-                // if replyText is set we should report the reason the application was deleted 
-                if($aClean['replyText'])
+                // if sReplyText is set we should report the reason the application was deleted 
+                if($aClean['sReplyText'])
                 {
                     $sMsg .= "Reason given:\n";
-                    $sMsg .= $aClean['replyText']."\n"; // append the reply text, if there is any 
+                    $sMsg .= $aClean['sReplyText']."\n"; // append the reply text, if there is any 
                 }
 
                 addmsg("Version deleted.", "green");
@@ -485,11 +485,11 @@ class Version {
                 $sSubject = "Version '".$this->sName."' of '".$oApp->sName."' has been rejected by ".$_SESSION['current']->sRealname;
                 $sMsg .= APPDB_ROOT."appsubmit.php?sAppType=application&sSub=view&iVersionId=".$this->iVersionId."\n";
 
-                // if replyText is set we should report the reason the version was rejected 
-                if($aClean['replyText'])
+                // if sReplyText is set we should report the reason the version was rejected 
+                if($aClean['sReplyText'])
                 {
                     $sMsg .= "Reason given:\n";
-                    $sMsg .= $aClean['replyText']."\n"; // append the reply text, if there is any 
+                    $sMsg .= $aClean['sReplyText']."\n"; // append the reply text, if there is any 
                 }
 
                 addmsg("Version rejected.", "green");

@@ -257,7 +257,7 @@ class distribution{
 
         $aClean = array(); //array of filtered user input
 
-        $aClean['replyText'] = makeSafe($_REQUEST['replyText']);
+        $aClean['sReplyText'] = makeSafe($_REQUEST['sReplyText']);
 
         if($this->iSubmitterId)
         {
@@ -276,7 +276,7 @@ class distribution{
                     $sMsg  = "The Distribution you submitted (".$this->sName.") has been rejected.";
                     $sMsg .= APPDB_ROOT."testingData.php?sSub=view&iVersionId=".$this->iVersionId."\n";
                     $sMsg .= "Reason given:\n";
-                    $sMsg .= $aClean['replyText']."\n"; // append the reply text, if there is any 
+                    $sMsg .= $aClean['sReplyText']."\n"; // append the reply text, if there is any 
                 }
 
             break;
@@ -285,7 +285,7 @@ class distribution{
                     $sSubject =  "Submitted Distribution deleted";
                     $sMsg  = "The Distribution you submitted (".$this->sName.") has been deleted.";
                     $sMsg .= "Reason given:\n";
-                    $sMsg .= $aClean['replyText']."\n"; // append the reply text, if there is any 
+                    $sMsg .= $aClean['sReplyText']."\n"; // append the reply text, if there is any 
                 }
             break;
             }
@@ -300,7 +300,7 @@ class distribution{
     {
         $aClean = array(); //array of filtered user input
 
-        $aClean['replyText'] = makeSafe($_REQUEST['replyText']);
+        $aClean['sReplyText'] = makeSafe($_REQUEST['sReplyText']);
         switch($sAction)
         {
             case "add":
@@ -314,7 +314,7 @@ class distribution{
                         $sMsg .= "This Distribution has been submitted by ".$oSubmitter->sRealname.".";
                         $sMsg .= "\n";
                         $sMsg .= "Appdb admin reply text:\n";
-                        $sMsg .= $aClean['replyText']."\n"; // append the reply text, if there is any 
+                        $sMsg .= $aClean['sReplyText']."\n"; // append the reply text, if there is any 
                     }
                     addmsg("The Distribution was successfully added into the database.", "green");
                 } else // testing data queued.
@@ -333,11 +333,11 @@ class distribution{
             case "delete":
                 $sSubject = "Distribution ".$this->sName." has been deleted by ".$_SESSION['current']->sRealname;
 
-                // if replyText is set we should report the reason the data was deleted 
-                if($aClean['replyText'])
+                // if sReplyText is set we should report the reason the data was deleted 
+                if($aClean['sReplyText'])
                 {
                     $sMsg .= "Reason given:\n";
-                    $sMsg .= $aClean['replyText']."\n"; // append the reply text, if there is any 
+                    $sMsg .= $aClean['sReplyText']."\n"; // append the reply text, if there is any 
                 }
 
                 addmsg("Distribution deleted.", "green");
@@ -346,11 +346,11 @@ class distribution{
                 $sSubject = "Distribution '".$this->sName." has been rejected by ".$_SESSION['current']->sRealname;
                 $sMsg  = APPDB_ROOT."distributionView.php?iDistributionId=".$this->iDistributionId."\n";
 
-                 // if replyText is set we should report the reason the data was rejected 
-                if($aClean['replyText'])
+                 // if sReplyText is set we should report the reason the data was rejected 
+                if($aClean['sReplyText'])
                 {
                     $sMsg .= "Reason given:\n";
-                    $sMsg .= $aClean['replyText']."\n"; // append the reply text, if there is any 
+                    $sMsg .= $aClean['sReplyText']."\n"; // append the reply text, if there is any 
                 }
 
                 addmsg("Distribution rejected.", "green");

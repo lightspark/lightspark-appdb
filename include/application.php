@@ -305,7 +305,7 @@ class Application {
     {
         $aClean = array(); //array of filtered user input
 
-        $aClean['replyText'] = makeSafe($_REQUEST['replyText']);	
+        $aClean['sReplyText'] = makeSafe($_REQUEST['sReplyText']);	
 
         if($this->iSubmitterId)
         {
@@ -331,7 +331,7 @@ class Application {
                 $sMsg .= "Reason given:\n";
             break;
 
-            $sMsg .= $aClean['replyText']."\n";
+            $sMsg .= $aClean['sReplyText']."\n";
             $sMsg .= "We appreciate your help in making the Application Database better for all users.";
             }
             mail_appdb($oSubmitter->sEmail, $sSubject ,$sMsg);
@@ -343,7 +343,7 @@ class Application {
     {
         $aClean = array(); //array of filtered user input
 
-        $aClean['replyText'] = makeSafe($_REQUEST['replyText']);	
+        $aClean['sReplyText'] = makeSafe($_REQUEST['sReplyText']);	
 
         switch($sAction)
         {
@@ -358,10 +358,10 @@ class Application {
                         $sMsg .= "This application has been submitted by ".$oSubmitter->sRealname.".";
                         $sMsg .= "\n";
                     }
-                    if($aClean['replyText'])
+                    if($aClean['sReplyText'])
                     {
                         $sMsg .= "Appdb admin reply text:\n";
-                        $sMsg .= $aClean['replyText']."\n"; // append the reply text, if there is any 
+                        $sMsg .= $aClean['sReplyText']."\n"; // append the reply text, if there is any 
                     }
 
                     addmsg("The application was successfully added into the database.", "green");
@@ -381,11 +381,11 @@ class Application {
             case "delete":
                 $sSubject = $this->sName." has been deleted by ".$_SESSION['current']->sRealname;
 
-                // if replyText is set we should report the reason the application was deleted 
-                if($aClean['replyText'])
+                // if sReplyText is set we should report the reason the application was deleted 
+                if($aClean['sReplyText'])
                 {
                     $sMsg .= "Reason given:\n";
-                    $sMsg .= $aClean['replyText']."\n"; // append the reply text, if there is any 
+                    $sMsg .= $aClean['sReplyText']."\n"; // append the reply text, if there is any 
                 }
 
                 addmsg("Application deleted.", "green");
@@ -394,11 +394,11 @@ class Application {
                 $sSubject = $this->sName." has been rejected by ".$_SESSION['current']->sRealname;
                 $sMsg .= APPDB_ROOT."appsubmit.php?sAppType=application&sSub=view&iAppId=".$this->iAppId."\n";
 
-                // if replyText is set we should report the reason the application was rejected 
-                if($aClean['replyText'])
+                // if sReplyText is set we should report the reason the application was rejected 
+                if($aClean['sReplyText'])
                 {
                     $sMsg .= "Reason given:\n";
-                    $sMsg .= $aClean['replyText']."\n"; // append the reply text, if there is any 
+                    $sMsg .= $aClean['sReplyText']."\n"; // append the reply text, if there is any 
                 }
 
                 addmsg("Application rejected.", "green");

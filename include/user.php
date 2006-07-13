@@ -339,7 +339,7 @@ class User {
      {
 
          $aClean = array();
-         $aClean['replyText'] = makeSafe($_REQUEST['replyText']);
+         $aClean['sReplyText'] = makeSafe($_REQUEST['sReplyText']);
 
          /* if the user isn't already a supermaintainer of the application and */
          /* if they are trying to become a maintainer and aren't already a maintainer of */
@@ -367,7 +367,7 @@ class User {
                 {
                     $sSubject =  "Application Maintainer Request Report";
                     $sMsg  = "Your application to be the maintainer of ".$oApp->sName." ".$oVersion->sName." has been accepted. ";
-                    $sMsg .= $aClean['replyText'];
+                    $sMsg .= $aClean['sReplyText'];
                     $sMsg .= "We appreciate your help in making the Application Database better for all users.\n\n";
 
                     mail_appdb($sEmail, $sSubject ,$sMsg);

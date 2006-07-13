@@ -244,7 +244,7 @@ class testData{
 
         $aClean = array(); //array of filtered user input
 
-        $aClean = makeSafe($_REQUEST['replyText']);
+        $aClean = makeSafe($_REQUEST['sReplyText']);
 
         if($this->iSubmitterId)
         {
@@ -269,7 +269,7 @@ class testData{
                 $sMsg .= "Reason given:\n";
             break;
             }
-            $sMsg .= $aClean['replyText']."\n";
+            $sMsg .= $aClean['sReplyText']."\n";
             $sMsg .= "We appreciate your help in making the Application Database better for all users.";
         
             mail_appdb($oSubmitter->sEmail, $sSubject ,$sMsg);
@@ -281,7 +281,7 @@ class testData{
     {
         $aClean = array(); //array of filtered user input
 
-        $aClean['replyText'] = makeSafe($_REQUEST['replyText']);
+        $aClean['sReplyText'] = makeSafe($_REQUEST['sReplyText']);
 
         $oVersion = new Version($this->iVersionId);
         $oApp = new Application($oVersion->iAppId);
@@ -300,10 +300,10 @@ class testData{
                         $sMsg .= "This Testing data has been submitted by ".$oSubmitter->sRealname.".";
                         $sMsg .= "\n";
                     }
-                    if($aClean['replyText'])
+                    if($aClean['sReplyText'])
                     {
                         $sMsg .= "Appdb admin reply text:\n";
-                        $sMsg .= $aClean['replyText']."\n"; // append the reply text, if there is any 
+                        $sMsg .= $aClean['sReplyText']."\n"; // append the reply text, if there is any 
                     }
                     addmsg("The testing data was successfully added into the database.", "green");
                 } else // testing data queued.
@@ -323,10 +323,10 @@ class testData{
             case "delete":
                 $sSubject = "Test Results deleted for version ".$oVersion->sName." of ".$oApp->sName." submitted by ".$_SESSION['current']->sRealname;
                 // if replyText is set we should report the reason the data was deleted 
-                if($aClean['replyText'])
+                if($aClean['sReplyText'])
                 {
                     $sMsg .= "Reason given:\n";
-                    $sMsg .= $aClean['replyText']."\n"; // append the reply text, if there is any 
+                    $sMsg .= $aClean['sReplyText']."\n"; // append the reply text, if there is any 
                 }
 
                 addmsg("testing data deleted.", "green");
@@ -335,10 +335,10 @@ class testData{
                 $sSubject = "Test Results rejected for version ".$oVersion->sName." of ".$oApp->sName." submitted by ".$_SESSION['current']->sRealname;
                 $sMsg  .= $sBacklink;
                  // if replyText is set we should report the reason the data was rejected 
-                if($aClean['replyText'])
+                if($aClean['sReplyText'])
                 {
                     $sMsg .= "Reason given:\n";
-                    $sMsg .= $aClean['replyText']."\n"; // append the reply text, if there is any 
+                    $sMsg .= $aClean['sReplyText']."\n"; // append the reply text, if there is any 
                 }
                 addmsg("testing data rejected.", "green");
             break;

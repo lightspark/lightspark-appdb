@@ -301,7 +301,7 @@ class Screenshot {
     {
         $aClean = array(); //array of filtered user input
 
-        $aClean['replyText'] = makeSafe($_REQUEST['replyText']);
+        $aClean['sReplyText'] = makeSafe($_REQUEST['sReplyText']);
 
         if($this->iSubmitterId)
         {
@@ -316,7 +316,7 @@ class Screenshot {
                  $sSubject =  "Submitted screenshot rejected";
                  $sMsg  = "The screenshot you submitted for ".$sAppName." has been rejected.";
             }
-            $sMsg .= $aClean['replyText']."\n";
+            $sMsg .= $aClean['sReplyText']."\n";
             $sMsg .= "We appreciate your help in making the Application Database better for all users.";
                 
             mail_appdb($oSubmitter->sEmail, $sSubject ,$sMsg);
