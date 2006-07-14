@@ -654,8 +654,8 @@ class testData{
                 echo $oSubmitter->sRealname;
                 echo $oSubmitter->sEmail ? "</a>":"";
                 echo "    </td>\n";
-                echo "    <td>".$oApp->sName."</td>\n";
-                echo "    <td>".$oVersion->sName."</td>\n";
+                echo '    <td><a href="'.BASE.'appview.php?iAppId='.$oApp->iAppId.'">'.$oApp->sName.'</a></td>';
+                echo '    <td><a href="'.BASE.'appview.php?iVersionId='.$oVersion->iVersionId.'&iTestingId='.$oTest->iTestingId.'">'.$oVersion->sName.'</a></td>';
                 echo "    <td>".$oTest->sTestedRelease."</td>\n";
                 echo "    <td>".$oTest->sTestedRating."</td>\n";
                 echo "    <td align=\"center\">[<a href=".$_SERVER['PHP_SELF']."?sSub=view&iTestingId=".$oTest->iTestingId.">process</a>]</td>\n";
