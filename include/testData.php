@@ -356,6 +356,8 @@ class testData{
         echo $this->sWhatDoesnt;
         echo '<p><b>What was not tested</b><br />',"\n";
         echo $this->sWhatNotTested;
+        echo '<p><b>Additional Comments</b><br />',"\n";
+        echo $this->sComments;
     }
 
     // Show the Test results for a application version
