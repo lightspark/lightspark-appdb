@@ -45,11 +45,13 @@ function filter_gpc()
             break;
             default:
                 // don't filter the AppDB session cookie and MAX_FILE_SIZE
-                if($aKeys[$i]!="whq_appdb" && $aKeys[$i]!="MAX_FILE_SIZE")
-                { 
+                // and the DialogX values that xinha uses
+                if($aKeys[$i]!="whq_appdb" && $aKeys[$i]!="MAX_FILE_SIZE" && $aKeys[$i]!="PHPSESSID"
+                   && strpos($aKeys[$i], "Dialog") == 0)
+                {
                     util_show_error_page_and_exit("Fatal error: type of variable ".$aKeys[$i]." is not recognized.");
                 }
-            break;
+                break;
         }
     }
     
