@@ -18,6 +18,10 @@ $aClean['iVersionId'] = makeSafe($_REQUEST['iVersionId']);
 $aClean['iDistributionId'] = makeSafe($_REQUEST['iDistributionId']);
 $aClean['sDistribution'] = makeSafe($_REQUEST['sDistribution']);
 
+//deny access if not logged on
+if(!$_SESSION['current']->isLoggedIn())
+    util_show_error_page_and_exit("Insufficient privileges to create test results.  Are you sure you are logged in?");
+
 
 if ($aClean['sSub'])
 {

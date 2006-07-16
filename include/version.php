@@ -802,10 +802,18 @@ class Version {
             $oTest->ShowVersionsTestingTable($_SERVER['PHP_SELF']."?iVersionId=".$this->iVersionId."&iTestingId=",
                                              5);
         }
-        echo '<form method=post name=sMessage action=testResults.php?sSub=view&iVersionId='.$this->iVersionId.'>';
-        echo '<input type=submit value="Add Testing Data" class="button" />';
-        echo '</form>';
-
+        if($_SESSION['current']->isLoggedIn())
+        {
+            echo '<form method=post name=sMessage action=testResults.php?sSub=view&iVersionId='.$this->iVersionId.'>';
+            echo '<input type=submit value="Add Testing Data" class="button" />';
+            echo '</form>';
+        } else
+        {
+            echo '<form method="post" name="sMessage" action="account.php">';
+            echo '<input type="hidden" name="sCmd" value="login">';
+            echo '<input type=submit value="Log in add Testing Data" class="button">';
+            echo '</form>';
+        }
         echo "</td></tr>";
     
         /* close the table */
