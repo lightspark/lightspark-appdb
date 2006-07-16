@@ -6,12 +6,12 @@
 /*
  * get the userIds of super maintainers for this appId
  */
-function getSuperMaintainersUserIdsFromAppId($appId)
+function getSuperMaintainersUserIdsFromAppId($iAppId)
 {
     $sQuery = "SELECT userId FROM ".
                           "appMaintainers WHERE appId = '?' " .
-                          "AND superMaintainer = '1';";
-    $hResult = query_parameters($sQuery, $appId);
+                          "AND superMaintainer = '1' AND queued='?';";
+    $hResult = query_parameters($sQuery, $iAppId, "false");
     $retval = array();
     $c = 0;
     while($oRow = mysql_fetch_object($hResult))

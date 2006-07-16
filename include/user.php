@@ -261,12 +261,12 @@ class User {
         /* otherwise check if we maintain this specific version */
         if($iVersionId)
         {
-            $sQuery = "SELECT * FROM appMaintainers WHERE userid = '?' AND versionId = '?'";
-            $hResult = query_parameters($sQuery, $this->iUserId, $iVersionId);
+            $sQuery = "SELECT * FROM appMaintainers WHERE userid = '?' AND versionId = '?' AND queued = '?'";
+            $hResult = query_parameters($sQuery, $this->iUserId, $iVersionId, "false");
         } else // are we maintaining any version ?
         {
-            $sQuery = "SELECT * FROM appMaintainers WHERE userid = '?'";
-            $hResult = query_parameters($sQuery, $this->iUserId);
+            $sQuery = "SELECT * FROM appMaintainers WHERE userid = '?' AND queued = '?'";
+            $hResult = query_parameters($sQuery, $this->iUserId, "false");
         }
         if(!$hResult)
             return false;
@@ -284,12 +284,12 @@ class User {
 
         if($iAppId)
         {
-            $sQuery = "SELECT * FROM appMaintainers WHERE userid = '?' AND appId = '?' AND superMaintainer = '1'";
-            $hResult = query_parameters($sQuery, $this->iUserId, $iAppId);
+            $sQuery = "SELECT * FROM appMaintainers WHERE userid = '?' AND appId = '?' AND superMaintainer = '1' AND queued = '?'";
+            $hResult = query_parameters($sQuery, $this->iUserId, $iAppId, "false");
         } else /* are we super maintainer of any applications? */
         {
-            $sQuery = "SELECT * FROM appMaintainers WHERE userid = '?' AND superMaintainer = '1'";
-            $hResult = query_parameters($sQuery, $this->iUserId);
+            $sQuery = "SELECT * FROM appMaintainers WHERE userid = '?' AND superMaintainer = '1' AND queued = '?'";
+            $hResult = query_parameters($sQuery, $this->iUserId, "false");
         }
         if(!$hResult)
             return false;
@@ -304,7 +304,8 @@ class User {
         /* retrieve the list of application and order them by application name */
         $hResult = query_parameters("SELECT appMaintainers.appId, versionId, superMaintainer, appName FROM ".
                                     "appFamily, appMaintainers WHERE appFamily.appId = appMaintainers.appId ".
-                                    "AND userId = '?' ORDER BY appName", $this->iUserId);
+                                    "AND userId = '?' AND appMaintainers.queued = '?' ORDER BY appName",
+                                    $this->iUserId, "false");
         if(!$hResult || mysql_num_rows($hResult) == 0)
             return NULL;
 
@@ -323,8 +324,9 @@ class User {
     {
         if(!$this->isLoggedIn()) return 0;
 
-        $sQuery = "SELECT count(*) as cnt from appMaintainers WHERE userid = '?' AND superMaintainer = '?'";
-        $hResult = query_parameters($sQuery, $this->iUserId, $bSuperMaintainer);
+        $sQuery = "SELECT count(*) as cnt from appMaintainers WHERE userid = '?' AND superMaintainer = '?'".
+                  " AND queued ='?'";
+        $hResult = query_parameters($sQuery, $this->iUserId, $bSuperMaintainer ? "1" : "0", "false");
         if(!$hResult)
             return 0;
         $oRow = mysql_fetch_object($hResult);
@@ -335,8 +337,10 @@ class User {
      /**
       * Add the user as a maintainer
       */
-    function addAsMaintainer($iAppId, $iVersionId, $bSuperMaintainer, $iQueueId)
-     {
+    //FIXME: we really don't need any parameter except $iMaintainerId here
+    //  we'll clean this up when we clean up maintainers
+    function addAsMaintainer($iAppId, $iVersionId, $bSuperMaintainer, $iMaintainerId)
+    {
 
          $aClean = array();
          $aClean['sReplyText'] = makeSafe($_REQUEST['sReplyText']);
@@ -347,18 +351,14 @@ class User {
          if(!$this->isSuperMaintainer($iAppId) &&
             ((!$bSuperMaintainer && !$this->isMaintainer($iVersionId)) | $bSuperMaintainer))
          {
-             // insert the new entry into the maintainers list
-             $hResult = query_parameters("INSERT INTO appMaintainers (maintainerId, appId,".
-                                         "versionId, userId, superMaintainer, submitTime) ".
-                                         "VALUES (?, '?', '?', '?', '?', ?)",
-                                         "null", $iAppId, $iVersionId, $this->iUserId,
-                                         $bSuperMaintainer, "NOW()");
+             /* unqueue the maintainer entry */
+             $hResult = query_parameters("UPDATE appMaintainers SET queued='false' WHERE userId = '?' AND maintainerId = '?'",
+                                         $this->iUserId, $iMaintainerId);
+
             if($hResult)
             {
                 $statusMessage = "<p>The maintainer was successfully added into the database</p>\n";
 
-                //delete the item from the queue
-                query_parameters("DELETE from appMaintainerQueue where queueId = '?'", $iQueueId);
                 $oApp = new Application($iAppId);
                 $oVersion = new Version($iVersionId);
                 //Send Status Email
@@ -376,7 +376,8 @@ class User {
         } else
         {
             //delete the item from the queue
-            query_parameters("DELETE from appMaintainerQueue where queueId = '?'", $iQueueId);
+            query_parameters("DELETE from appMaintainers WHERE userId = '?' AND maintainerId = '?'",
+                             $this->iUserId, $iMaintainerId);
 
             if($this->isSuperMaintainer($iAppId) && !$bSuperMaintainer)
                 $statusMessage = "<p>User is already a super maintainer of this application</p>\n";
@@ -437,7 +438,7 @@ class User {
         {
             /* find all queued versions of applications that the user is a super maintainer of */
             $hResult = query_parameters("SELECT count(*) as queued_versions FROM appVersion, appMaintainers
-                        WHERE queued='true' AND appMaintainers.superMaintainer ='1'
+                        WHERE Appversion.queued='true' AND appMaintainers.superMaintainer ='1'
                         AND appVersion.appId = appMaintainers.appId
                         AND appMaintainers.userId ='?'", $this->iUserId);
         }
@@ -606,7 +607,7 @@ class User {
              if($queryAppFamily)
              {
                  $sQuery = "SELECT appFamily.appId FROM appFamily, appMaintainers
-                            WHERE queued = 'true'
+                            WHERE appFamily.queued = 'true'
                             AND appFamily.appId = appMaintainers.appId
                             AND appMaintainers.superMaintainer = '1'
                             AND appMaintainers.userId = '".mysql_real_escape_string($this->iUserId)."';";
@@ -848,7 +849,7 @@ class User {
              $hResult = query_parameters("SELECT appMaintainers.userId 
                                  FROM appMaintainers, appVersion
                                  WHERE appVersion.appId = appMaintainers.appId 
-                                 AND appVersion.versionId = '?'",
+                                 AND appVersion.versionId = '?' AND appMaintainers.queued = 'false'",
                                 $iVersionId);
          } 
          /*
@@ -858,7 +859,7 @@ class User {
          {
              $hResult = query_parameters("SELECT userId 
                                  FROM appMaintainers
-                                 WHERE appId = '?'",
+                                 WHERE appId = '?' AND queued = 'false'",
                                 $iAppId);
          }
 

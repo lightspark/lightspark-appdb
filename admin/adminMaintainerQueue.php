@@ -14,7 +14,7 @@ require_once(BASE."include/mail.php");
 $aClean = array(); //array of filtered user input
 
 $aClean['sSub'] = makeSafe( $_REQUEST['sSub'] );
-$aClean['iQueueId'] = makeSafe( $_REQUEST['iQueueId'] );
+$aClean['iMaintainerId'] = makeSafe( $_REQUEST['iMaintainerId'] );
 $aClean['sAdd'] = makeSafe( $_REQUEST['sAdd'] );
 $aClean['sReject'] = makeSafe( $_REQUEST['sReject'] );
 $aClean['sReplyText'] = makeSafe( $_REQUEST['sReplyText'] );
@@ -25,14 +25,14 @@ if(!$_SESSION['current']->hasPriv("admin"))
 
 if ($aClean['sSub'])
 {
-    if ($aClean['iQueueId'])
+    if ($aClean['iMaintainerId'])
     {
         //get data
-        $sQuery = "SELECT queueId, appId, versionId,".
+        $sQuery = "SELECT maintainerId, appId, versionId,".
                      "userId, maintainReason, superMaintainer,".
                      "UNIX_TIMESTAMP(submitTime) as submitTime ".
-                     "FROM appMaintainerQueue WHERE queueId = '?'";
-        $hResult = query_parameters($sQuery, $aClean['iQueueId']);
+                     "FROM appMaintainers WHERE maintainerId = '?' AND queued = 'true'";
+        $hResult = query_parameters($sQuery, $aClean['iMaintainerId']);
         $oRow = mysql_fetch_object($hResult);
         $oUser = new User($oRow->userId);
         mysql_free_result($hResult);
@@ -44,7 +44,7 @@ if ($aClean['sSub'])
     }
 
     //process according to which request was submitted and optionally the sub flag
-    if (!$aClean['sAdd'] && !$aClean['sReject'] && $aClean['iQueueId'])
+    if (!$aClean['sAdd'] && !$aClean['sReject'] && $aClean['iMaintainerId'])
     {
         apidb_header("Admin Maintainer Queue");
         echo '<form name="sQform" action="adminMaintainerQueue.php" method="post" enctype="multipart/form-data">',"\n";
@@ -171,7 +171,7 @@ if ($aClean['sSub'])
 
         echo '</table>',"\n";
         echo '<input type=hidden name="sSub" value="inside_form" />',"\n"; 
-        echo '<input type=hidden name="iQueueId" value="'.$aClean['iQueueId'].'" />',"\n";  
+        echo '<input type=hidden name="iMaintainerId" value="'.$aClean['iMaintainerId'].'" />',"\n";  
 
         echo html_frame_end("&nbsp;");
         echo html_back_link(1,'adminMaintainerQueue.php');
@@ -180,7 +180,7 @@ if ($aClean['sSub'])
         exit;
 
     }
-    else if ($aClean['sAdd'] && $aClean['iQueueId'])
+    else if ($aClean['sAdd'] && $aClean['iMaintainerId'])
     {
         /* create a new user object for the maintainer */
         $oMaintainerUser = new User($oRow->userId);
@@ -188,11 +188,11 @@ if ($aClean['sSub'])
         /* add the user as a maintainer and return the statusMessage */
         $sStatusMessage = $oMaintainerUser->addAsMaintainer($oRow->appId, $oRow->versionId,
                                                           $oRow->superMaintainer,
-                                                          $aClean['iQueueId']);
+                                                          $aClean['iMaintainerId']);
         //done
         addmsg("<p><b>$sStatusMessage</b></p>", 'green');
     }
-    else if (($aClean['sReject'] || ($aClean['sSub'] == 'sReject')) && $aClean['iQueueId'])
+    else if (($aClean['sReject'] || ($aClean['sSub'] == 'sReject')) && $aClean['iMaintainerId'])
     {
        $sEmail = $oUser->sEmail;
        if ($sEmail)
@@ -209,8 +209,8 @@ if ($aClean['sSub'])
        }
 
        //delete main item
-       $sQuery = "DELETE from appMaintainerQueue where queueId = '?'";
-       $hResult = query_parameters($sQuery, $aClean['iQueueId']);
+       $sQuery = "DELETE from appMaintainers where maintainerId = '?'";
+       $hResult = query_parameters($sQuery, $aClean['iMaintainerId']);
        if(!$hResult) addmsg("unable to delete selected maintainer application", "red");
        echo html_frame_start("Delete maintainer application",400,"",0);
        if($hResult)
@@ -233,11 +233,11 @@ if ($aClean['sSub'])
     echo '<form name="sQform" action="adminMaintainerQueue.php" method="post" enctype="multipart/form-data">',"\n";
 
     //get available maintainers
-    $sQuery = "SELECT queueId, appId, versionId,".
+    $sQuery = "SELECT maintainerId, appId, versionId,".
                      "userId, maintainReason,".
                      "superMaintainer,".
                      "submitTime as submitTime ".
-                     "from appMaintainerQueue;";
+                     "FROM appMaintainers WHERE queued='true';";
     $hResult = query_parameters($sQuery);
 
     if(!$hResult || !mysql_num_rows($hResult))
@@ -291,7 +291,7 @@ if ($aClean['sSub'])
             }
 
             echo "    <td><a href=\"mailto:".$oUser->sEmail."\">".$oUser->sRealname."</a></td>\n";
-            echo "    <td>[<a href=\"adminMaintainerQueue.php?sSub=view&iQueueId=$oRow->queueId\">answer</a>]</td>\n";
+            echo "    <td>[<a href=\"adminMaintainerQueue.php?sSub=view&iMaintainerId=$oRow->maintainerId\">answer</a>]</td>\n";
             echo "</tr>\n\n";
             $iRowCount++;
         }

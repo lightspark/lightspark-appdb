@@ -297,9 +297,21 @@ function test_user_getMaintainerCount()
       */
     $iAppId = 655000;
     $iVersionId = 655200;
-    $iQueueId = 655300;
-    $statusMessage = $oUser->addAsMaintainer($iAppId, $iVersionId, TRUE, $iQueueId);
 
+    //FIXME: when we clean up maintainers we'll want to clean this code up as well
+    /* queue up the maintainership */
+    // add to queue
+    $hResult = query_parameters("INSERT INTO appMaintainers (appId, versionId, ".
+                                "userId, maintainReason, superMaintainer, submitTime, queued) ".
+                                "VALUES ('?', '?', '?', '?', '?', ?, '?')",
+                                $iAppId, $iVersionId,
+                                $_SESSION['current']->iUserId, "Some crazy reason",
+                                TRUE ? "1" : "0", "NOW()", 'true');
+
+    $iMaintainerId = mysql_insert_id();
+
+    $statusMessage = $oUser->addAsMaintainer($iAppId, $iVersionId, TRUE, $iMaintainerId);
+    
     /* see that the user is a super maintainer of the one application we added them to be */
     $iExpected = 1; /* we expect 1 super maintainer for this user */
     $iSuperMaintainerCount = $oUser->getMaintainerCount(TRUE);
@@ -327,7 +339,19 @@ function test_user_getMaintainerCount()
     /**
      * make the user a maintainer
      */
-    $statusMessage = $oUser->addAsMaintainer($iAppId, $iVersionId, FALSE, $iQueueId);
+    //FIXME: when we clean up maintainers we'll want to clean this code up as well
+    /* queue up the maintainership */
+    // add to queue
+    $hResult = query_parameters("INSERT INTO appMaintainers (appId, versionId, ".
+                                "userId, maintainReason, superMaintainer, submitTime, queued) ".
+                                "VALUES ('?', '?', '?', '?', '?', ?, '?')",
+                                $iAppId, $iVersionId,
+                                $_SESSION['current']->iUserId, "Some crazy reason",
+                                FALSE ? "1" : "0", "NOW()", 'true');
+
+    $iMaintainerId = mysql_insert_id();
+
+    $statusMessage = $oUser->addAsMaintainer($iAppId, $iVersionId, FALSE, $iMaintainerId);
    
     /* see that the user is a super maintainer of no applications */
     $iExpected = 0; /* we expect 1 super maintainer for this user */
@@ -388,9 +412,21 @@ function test_user_getAppsMaintained()
       */
     $iAppId = $oApp->iAppId; /* use the iAppId of the application we just created */
     $iVersionId = 655200;
-    $iQueueId = 655300;
     $bSuperMaintainer = TRUE;
-    $statusMessage = $oUser->addAsMaintainer($iAppId, $iVersionId, $bSuperMaintainer, $iQueueId);
+
+    //FIXME: when we clean up maintainers we'll want to clean this code up as well
+    /* queue up the maintainership */
+    // add to queue
+    $hResult = query_parameters("INSERT INTO appMaintainers (appId, versionId, ".
+                                "userId, maintainReason, superMaintainer, submitTime, queued) ".
+                                "VALUES ('?', '?', '?', '?', '?', ?, '?')",
+                                $iAppId, $iVersionId,
+                                $_SESSION['current']->iUserId, "Some crazy reason",
+                                $bSuperMaintainer ? "1" : "0", "NOW()", 'true');
+
+    $iMaintainerId = mysql_insert_id();
+
+    $statusMessage = $oUser->addAsMaintainer($iAppId, $iVersionId, $bSuperMaintainer, $iMaintainerId);
 
     /* get an array of the apps maintained */
     $aAppsMaintained = $oUser->getAppsMaintained();

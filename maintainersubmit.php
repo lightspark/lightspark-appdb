@@ -85,17 +85,20 @@ if( $aClean['sMaintainReason'] )
         apidb_header("Submit Maintainer Request");    
 
     // add to queue
-    $hResult = query_parameters("INSERT INTO appMaintainerQueue (queueId, appId, versionId, ".
-                                "userId, maintainReason, superMaintainer, submitTime) ".
-                                "VALUES (?, '?', '?', '?', '?', '?', ?)",
-                                "null", $aClean['iAppId'], $aClean['iVersionId'],
+    $hResult = query_parameters("INSERT INTO appMaintainers (appId, versionId, ".
+                                "userId, maintainReason, superMaintainer, submitTime, queued) ".
+                                "VALUES ('?', '?', '?', '?', '?', ?, '?')",
+                                $aClean['iAppId'], $aClean['iVersionId'],
                                 $_SESSION['current']->iUserId, $aClean['sMaintainReason'],
-                                $aClean['iSuperMaintainer'], "NOW()");
+                                $aClean['iSuperMaintainer'], "NOW()", 'true');
 
     if ($hResult)
     {
         echo "<p>Your maintainer request has been submitted for review. You should hear back\n";
         echo "soon about the status of your submission</p>\n";
+    } else
+    {
+        addmsg("Error submitting maintainer request.  Please contact the appdb admins at appdb@winehq.org", "red");
     }
 } else
 {
