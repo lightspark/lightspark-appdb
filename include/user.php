@@ -438,7 +438,7 @@ class User {
         {
             /* find all queued versions of applications that the user is a super maintainer of */
             $hResult = query_parameters("SELECT count(*) as queued_versions FROM appVersion, appMaintainers
-                        WHERE Appversion.queued='true' AND appMaintainers.superMaintainer ='1'
+                        WHERE appVersion.queued='true' AND appMaintainers.superMaintainer ='1'
                         AND appVersion.appId = appMaintainers.appId
                         AND appMaintainers.userId ='?'", $this->iUserId);
         }
