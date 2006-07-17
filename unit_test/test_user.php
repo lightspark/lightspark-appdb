@@ -463,6 +463,10 @@ function test_user_getAppsMaintained()
     /* remove maintainership for this user */
     $oUser->deleteMaintainer($iAppId);
 
+    /* remove this application */
+    $oApp = new Application($iAppId);
+    $oApp->delete();
+
     return true;
 }
 
