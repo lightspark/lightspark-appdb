@@ -1,6 +1,6 @@
 <?php
 
-/* unit tests for functions in include/db.php */
+/* unit tests for functions in include/query.php */
 
 require_once("path.php");
 require_once("test_common.php");
@@ -62,7 +62,7 @@ function test_query_parameters()
      * test that '&' in a query is properly replaced by the contents from a file
      */
     /* write to a file that we will use for the test of '&' */
-    $sFilename = "/tmp/test_db.txt";
+    $sFilename = "/tmp/test_query.txt";
     $hFile = fopen($sFilename, "wb");
     if($hFile)
     {
