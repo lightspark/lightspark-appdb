@@ -56,12 +56,6 @@ function do_html_tr($t, $arr, $class, $extra)
 	return $str;
 }
 
-// HTML TH
-function html_th($arr, $class = "", $extra = "")
-{
-	return do_html_tr("th", $arr, $class, $extra);
-}
-
 // HTML TR
 function html_tr($arr, $class = "", $extra = "")
 {
@@ -117,13 +111,6 @@ function html_body_end()
 	return do_indent("</body>", -1);
 }
 
-
-// HTML BR
-function html_br($count = 1)
-{
-	return do_indent(str_repeat("<br>", $count));
-}
-
 // HTML A HREF
 function html_ahref($label, $url, $extra = "")
 {
@@ -141,39 +128,6 @@ function html_ahref($label, $url, $extra = "")
 		return do_indent(" <a href=\"$url\" $extra>$label</a> ");
 	}
 }
-
-// HTML echo a string
-function html_echo($str)
-{
-	return do_indent($str);
-}
-
-// HTML B (bold)
-function html_b($str)
-{
-	return do_indent("<b>$str</b>");
-}
-
-// HTML SMALL (small text)
-function html_small($str)
-{
-	return do_indent("<small>$str</small>");
-}
-
-// HTML P
-function html_p()
-{
-	return do_indent("<p>");
-}
-
-function html_line($thickness = 1, $colspan = 1, $color = "#000000")
-{
-    return do_indent("<tr><td bgcolor=\"$color\" colspan=$colspan> ".
-		     "<img src=\"/images/blank.gif\" height=\"$thickness\" ".
-		     "vspace=\"0\"> </td></tr>");
-}
-
-
 
 function html_imagebutton($text, $url, $extra = "")
 {
@@ -323,26 +277,6 @@ function make_inx_option_list($varname, $inx = null)
         }
     echo "</select>\n";
 
-}
-
-
-function make_quality_option_list($varname, $quality)
-{
-    $list = array(-1, 1, 2, 3, 4, 5);
-    echo "<select name='$varname'>\n";
-    while(list($idx, $value) = each($list))
-	{
-	    if($value == -1)
-		$label = "unknown";
-	    else
-		$label = $value;
-
-	    if($quality == $value)
-		echo "<option value=$value selected>$label\n";
-	    else
-		echo "<option value=$value>$label\n";
-	}
-    echo "</select>\n";
 }
 
 ?>
