@@ -2,6 +2,8 @@
 $hAppdbLink = null;
 $hBugzillaLink = null;
 
+define(MYSQL_DEADLOCK_ERRNO, 1213);
+
 function query_appdb($sQuery,$sComment="")
 {
     global $hAppdbLink;
@@ -12,10 +14,33 @@ function query_appdb($sQuery,$sComment="")
         $hAppdbLink = mysql_connect(APPS_DBHOST, APPS_DBUSER, APPS_DBPASS,true);
         mysql_select_db(APPS_DB, $hAppdbLink);
     }
-    
-    $hResult = mysql_query($sQuery, $hAppdbLink);
-    if(!$hResult) query_error($sQuery, $sComment);
-    return $hResult;
+
+    $iRetries = 2;
+
+    /* we need to retry queries that hit transaction deadlocks */
+    /* as a deadlock isn't really a failure */
+    while($iRetries)
+    {
+        $hResult = mysql_query($sQuery, $hAppdbLink);
+        if(!$hResult)
+        {
+            /* if this error isn't a deadlock OR if it is a deadlock and we've */
+            /* run out of retries, report the error */
+            $iErrno = mysql_errno();
+            if(($iErrno != MYSQL_DEADLOCK_ERRNO) || (($iErrno == MYSQL_DEADLOCK_ERRNO) && ($iRetries <= 0)))
+            {
+                query_error($sQuery, $sComment);
+                return $hResult;
+            }
+
+            $iRetries--;
+        } else
+        {
+            return $hResult;
+        }
+    }
+
+    return NULL;
 }
 
 /*
