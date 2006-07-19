@@ -30,3 +30,5 @@ mysql -p -u root < buglinks.sql
 echo Adding monitors
 mysql -p -u root < monitors.sql
 
+echo Creating error logging tables
+mysql -p -u root < error_log.sql

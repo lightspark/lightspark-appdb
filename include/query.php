@@ -113,11 +113,10 @@ function query_bugzilladb($sQuery,$sComment="")
 
 function query_error($sQuery, $sComment="")
 {
-    $sStatusMessage  = "<p><b>Database Error!</b><br />";
-    $sStatusMessage .= "Query: ".$sQuery."<br />";
-    $sStatusMessage .= $sComment ? $sComment."<br />" : "";
-    $sStatusMessage .= mysql_error()."</p>\n";
-    addmsg($sStatusMessage, "red");
+    $sStatusMessage = "<p><b>An internal error has occurred and has been logged and reported to appdb admins</b></p>";
+    addmsg($sStatusMessage);
+
+    error_log::log_error(ERROR_SQL, "Query: '".$sQuery."' mysql_error(): '".mysql_error()."' comment: '".$sComment."'");
 }
 
 ?>

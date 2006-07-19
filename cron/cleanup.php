@@ -78,7 +78,8 @@ orphanSessionMessagesCheck();
 /* check and purge any expired sessions from the session_list table */
 orphanSessionListCheck();
 
-
+/* report error log entries to admins and flush the error log after doing so */
+reportErrorLogEntries();
 
 
 /* Users that are unwarned and inactive since $iMonths */
@@ -228,3 +229,11 @@ function orphanSessionListCheck()
     $sQuery = "DELETE from session_list where TO_DAYS(NOW()) - TO_DAYS(stamp) > ?";
     $hResult = query_parameters($sQuery, SESSION_DAYS_TO_EXPIRE + 2);
 }
+
+function reportErrorLogEntries()
+{
+    error_log::mail_admins_error_log();
+    error_log::flush();
+}
+
+?>

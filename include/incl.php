@@ -11,6 +11,7 @@ require(BASE."include/user.php");
 require(BASE."include/session.php");
 require(BASE."include/menu.php");
 require(BASE."include/html.php");
+require(BASE."include/error_log.php");
 require(BASE."include/query.php");
 
 /* if magic quotes are enabled make sure the user disables them */
