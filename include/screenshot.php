@@ -394,11 +394,11 @@ class Screenshot {
 
         if(!$hResult || !mysql_num_rows($hResult))
         {
-            $sImgFile = '<img src="images/no_screenshot.png" alt="No Screenshot" />';
+            $sImgFile.= '<img src="images/no_screenshot.png" alt="No Screenshot" />';
         } else
         {
             $oRow = mysql_fetch_object($hResult);
-            $sImgFile = '<img src="appimage.php?bThumbnail=true&amp;iId='.$oRow->id.'" alt="'.$oRow->description.'" />';
+            $sImgFile.= '<img src="appimage.php?bThumbnail=true&amp;iId='.$oRow->id.'" alt="'.$oRow->description.'" />';
         }
 
         if($bFormatting)
