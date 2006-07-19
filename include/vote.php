@@ -7,18 +7,18 @@ define('MAX_VOTES',3);
 /**
  * count the number of votes for appId by userId
  */
-function vote_count($appId, $userId = null)
+function vote_count($iAppId, $iUserId = null)
 {
 
-    if(!$userId)
+    if(!$iUserId)
     {
         if($_SESSION['current']->isLoggedIn())
-            $userId = $_SESSION['current']->iUserId;
+            $iUserId = $_SESSION['current']->iUserId;
         else
             return 0;
-}
+    }
     $hResult = query_parameters("SELECT * FROM appVotes WHERE appId = '?' AND userId = '?'",
-                            $appId, $userId);
+                            $iAppId, $iUserId);
     return mysql_num_rows($hResult);
 }
 
@@ -26,16 +26,16 @@ function vote_count($appId, $userId = null)
 /**
  * total votes by userId
  */
-function vote_count_user_total($userId = null)
+function vote_count_user_total($iUserId = null)
 {
-    if(!$userId)
+    if(!$iUserId)
     {
         if($_SESSION['current']->isLoggedIn())
-            $userId = $_SESSION['current']->iUserId;
+            $iUserId = $_SESSION['current']->iUserId;
         else
             return 0;
     }
-    $hResult = query_parameters("SELECT * FROM appVotes WHERE userId = '?'", $userId);
+    $hResult = query_parameters("SELECT * FROM appVotes WHERE userId = '?'", $iUserId);
     return mysql_num_rows($hResult);
 }
 
@@ -43,9 +43,9 @@ function vote_count_user_total($userId = null)
 /*
  * total votes for appId
  */
-function vote_count_app_total($appId)
+function vote_count_app_total($iAppId)
 {
-    $hResult = query_parameters("SELECT * FROM appVotes WHERE appId = '?'", $appId);
+    $hResult = query_parameters("SELECT * FROM appVotes WHERE appId = '?'", $iAppId);
     return mysql_num_rows($hResult);
 }
 
@@ -53,55 +53,55 @@ function vote_count_app_total($appId)
 /**
  * add a vote for appId
  */
-function vote_add($appId, $slot, $userId = null)
+function vote_add($iAppId, $iSlot, $iUserId = null)
 {
-    if(!$userId)
+    if(!$iUserId)
     {
         if($_SESSION['current']->isLoggedIn())
-            $userId = $_SESSION['current']->iUserId;
+            $iUserId = $_SESSION['current']->iUserId;
         else
             return;
     }
 
-    if($slot > MAX_VOTES)
+    if($iSlot > MAX_VOTES)
         return;
     
-    vote_remove($slot, $userId);
+    vote_remove($iSlot, $iUserId);
 
     query_parameters("INSERT INTO appVotes (id, time, appId, userId, slot)
-                      VALUES (?, ?, '?', '?', '?')", "null", "null", $appId, $userId, $slot);
+                      VALUES (?, ?, '?', '?', '?')", "null", "null", $iAppId, $iUserId, $iSlot);
 }
 
 
 /**
  * remove vote for a slot
  */
-function vote_remove($slot, $userId = null)
+function vote_remove($iSlot, $iUserId = null)
 {
     
-    if(!$userId)
+    if(!$iUserId)
     {
         if($_SESSION['current']->isLoggedIn())
-            $userId = $_SESSION['current']->iUserId;
+            $iUserId = $_SESSION['current']->iUserId;
         else
             return;
     }
 
     $sQuery = "DELETE FROM appVotes WHERE userId = '?' AND slot = '?'";
-    query_parameters($sQuery, $userId, $slot);
+    query_parameters($sQuery, $iUserId, $iSlot);
 }
 
 
-function vote_get_user_votes($userId = null)
+function vote_get_user_votes($iUserId = null)
 {
-    if(!$userId)
+    if(!$iUserId)
     {
         if($_SESSION['current']->isLoggedIn())
-            $userId = $_SESSION['current']->iUserId;
-        if(!$userId)
+            $iUserId = $_SESSION['current']->iUserId;
+        if(!$iUserId)
             return array();
     }
-    $hResult = query_parameters("SELECT * FROM appVotes WHERE userId = '?'", $userId);
+    $hResult = query_parameters("SELECT * FROM appVotes WHERE userId = '?'", $iUserId);
     if(!$hResult)
         return array();
 
@@ -128,7 +128,7 @@ function vote_menu()
         {
             $sAppName = Application::lookup_name($votes[$i]->appId);
             $str = "<a href='appview.php?iAppId=".$votes[$i]->appId."'> $sAppName</a>";
-            $m->add("<input type=radio name=slot value='$i'> ".$str);
+            $m->add("<input type=radio name=iSlot value='$i'> ".$str);
         }
         else
             $m->add("<input type=radio name=iSlot value='$i'> No App Selected");
@@ -156,7 +156,7 @@ function vote_update($vars)
     if( !is_numeric($vars['iAppId']) OR !is_numeric($vars['iSlot']))
     {
         if(is_numeric($vars['iAppId']))
-           util_redirect_and_exit(apidb_fullurl("appview.php?iAppId=".$vars["iAppId"]));
+           util_redirect_and_exit(apidb_fullurl("appview.php?iAppId=".$vars['iAppId']));
         else
             util_redirect_and_exit(apidb_fullurl("index.php"));
 
@@ -165,37 +165,37 @@ function vote_update($vars)
     
     if($vars["sVote"])
     {
-        addmsg("Registered vote for App #".$vars["iAppId"], "green");
-        vote_add($vars["iAppId"], $vars["slot"]);
-    } else if($vars["sClear"])
+        addmsg("Registered vote for App #".$vars['iAppId'], "green");
+        vote_add($vars['iAppId'], $vars['iSlot']);
+    } else if($vars['sClear'])
     {
         /* see if we have a vote in this slot, if we don't there is */
         /* little reason to remove it or even mention that we did anything */
-        if(is_vote_in_slot($vars["slot"]))
+        if(is_vote_in_slot($vars['iSlot']))
         {
-            vote_remove($vars["slot"]);
-            addmsg("Removed vote for App #".$vars["iAppId"], "green");
+            vote_remove($vars['iSlot']);
+            addmsg("Removed vote for App #".$vars['iAppId'], "green");
         }
     }
 
-    util_redirect_and_exit(apidb_fullurl("appview.php?iAppId=".$vars["iAppId"]));
+    util_redirect_and_exit(apidb_fullurl("appview.php?iAppId=".$vars['iAppId']));
 }
 
 // tell us if there is a vote in a given slot so we don't
 // display incorrect information to the user or go
 // through the trouble of trying to remove a vote that doesn't exist
-function is_vote_in_slot($slot, $userId = null)
+function is_vote_in_slot($iSlot, $iUserId = null)
 {
-    if(!$userId)
+    if(!$iUserId)
     {
         if($_SESSION['current']->isLoggedIn())
-            $userId = $_SESSION['current']->iUserId;
+            $iUserId = $_SESSION['current']->iUserId;
         else
             return;
     }
 
     $sQuery = "SELECT COUNT(*) as count from appVotes WHERE userId = '?' AND slot = '?'";
-    if($hResult = query_parameters($sQuery, $userId, $slot))
+    if($hResult = query_parameters($sQuery, $iUserId, $iSlot))
     {
         $oRow = mysql_fetch_object($hResult);        
         if($oRow->count != 0)
