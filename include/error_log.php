@@ -31,6 +31,17 @@ class error_log
                                     '0');
     }
 
+    /* get a backtrace and log it to the database */
+    function logBackTrace($sDescription)
+    {
+        ob_start();
+        print_r(debug_backtrace());
+        $sDebugOutput = ob_get_contents();
+        ob_end_clean();
+
+        error_log::log_error("general_error", $sDescription.' '.$sDebugOutput);
+    }
+
     function getEntryCount()
     {
         $sQuery = "SELECT count(*) as cnt FROM error_log WHERE deleted = '0'";
