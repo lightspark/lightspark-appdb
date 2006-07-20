@@ -254,6 +254,16 @@ class Comment {
      */
     function grab_comments($iVersionId, $iParentId = null)
     {
+        /* TODO: remove the logging when we figure out where the */
+        /* invalid $iVersionId is coming */
+        /* if $iVersionId is invalid we should log where we came from */
+        /* so we can debug the problem */
+        if($iVersionId == "")
+        {
+            error_log::logBackTrace("logging iVersionId oddity");
+            return NULL;
+        }
+
         /* escape input so we can use query_appdb() without concern */
         $iVersionId = mysql_real_escape_string($iVersionId);
         $iParentId = mysql_real_escape_string($iParentId);
