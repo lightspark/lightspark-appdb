@@ -252,22 +252,22 @@ class Comment {
      * grab comments for appId / versionId
      * if parentId is not -1 only comments for that thread are returned
      */
-    function grab_comments($versionId, $parentId = -1)
+    function grab_comments($iVersionId, $iParentId = null)
     {
         /* escape input so we can use query_appdb() without concern */
-        $versionId = mysql_real_escape_string($versionId);
-        $parentId = mysql_real_escape_string($parentId);
+        $iVersionId = mysql_real_escape_string($iVersionId);
+        $iParentId = mysql_real_escape_string($iParentId);
 
-        $extra = "";
-        if($parentId != -1)
-        $extra = "AND parentId = $parentId ";
+        $sExtra = "";
+        if($iParentId)
+            $sExtra = "AND parentId = '".$iParentId."' ";
 
-        $qstring = "SELECT from_unixtime(unix_timestamp(appComments.time), \"%W %M %D %Y, %k:%i\") as time, ".
+        $sQuery = "SELECT from_unixtime(unix_timestamp(appComments.time), \"%W %M %D %Y, %k:%i\") as time, ".
             "appComments.commentId, appComments.parentId, appComments.versionId, appComments.userId, appComments.subject, appComments.body, appVersion.appId ".
-            "FROM appComments, appVersion WHERE appComments.versionId = appVersion.versionId AND appComments.versionId = '$versionId' ".
-            $extra.
+            "FROM appComments, appVersion WHERE appComments.versionId = appVersion.versionId AND appComments.versionId = '".$iVersionId."' ".
+            $sExtra.
             "ORDER BY appComments.time ASC";
-        $hResult = query_appdb($qstring);
+        $hResult = query_appdb($sQuery);
 
         return $hResult;
     }
