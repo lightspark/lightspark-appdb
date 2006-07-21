@@ -409,15 +409,16 @@ class testData{
             $oSubmitter = new User($oTest->iSubmitterId);
             $oDistribution = new distribution($oTest->iDistributionId);
             $bgcolor = $oTest->sTestedRating;
-            echo '<tr class='.$bgcolor.'>',"\n";
 
             /* if the test we are displaying is this test then */
             /* mark it as the current test */
             if ($oTest->iTestingId == $this->iTestingId)
             {
+                echo '<tr class='.$bgcolor.'>',"\n";
                 echo '    <td align="center" class="color2"><b>Current</b></td>',"\n";
-            } else
+            } else /* make all non-current rows clickable so clicking on them selects the test as current */
             {
+                html_tr_highlight_clickable($bgcolor, "", "color2", $link.$oTest->iTestingId); 
                 echo '    <td align="center" class="color2">[<a href="'.$link.$oTest->iTestingId;
 
                 if(is_string($showAll))

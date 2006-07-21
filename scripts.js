@@ -18,3 +18,22 @@ function deleteURL(text, url) {
 	   self.location = url;
 	}
 }
+
+function ChangeTrColor(tableRow, bHighLight, sHighlightColor, sInactiveColor)
+{
+    if (bHighLight)
+    {
+        tableRow.style.backgroundColor = sHighlightColor;
+        tableRow.style.cursor = "hand";
+    }
+    else
+    {
+        tableRow.style.backgroundColor = sInactiveColor;
+        tableRow.style.cursor = "pointer";
+    }
+}
+
+function DoNav(sUrl)
+{
+    document.location.href = sUrl;
+}
