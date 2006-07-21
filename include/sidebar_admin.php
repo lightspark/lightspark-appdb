@@ -3,7 +3,7 @@
 /* sidebar_admin */
 /*****************/
 require_once(BASE."include/testData.php");
-require_once(BASE."include/distributions.php");
+require_once(BASE."include/distribution.php");
 
 function global_admin_menu() {
 

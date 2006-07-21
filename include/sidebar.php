@@ -2,7 +2,7 @@
 /***********/
 /* SideBar */
 /***********/
-require_once(BASE."include/distributions.php");
+require_once(BASE."include/distribution.php");
 require_once(BASE."include/vendor.php");
 require_once(BASE."include/util.php");
   

@@ -2,7 +2,7 @@
 /*****************************************/
 /* this class represents Testing results */
 /*****************************************/
-require_once(BASE."include/distributions.php");
+require_once(BASE."include/distribution.php");
 require_once(BASE."include/util.php");
 // Class for handling Testing History.
 
