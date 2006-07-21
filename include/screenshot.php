@@ -360,6 +360,21 @@ class Screenshot {
             mail_appdb($sEmail, $sSubject ,$sMsg);
     } 
 
+    function get_zoomicon_overlay()
+    {
+        /* if the user is using mozilla or firefox show the zoom icon over images */
+        /* otherwise because IE doesn't support transparent PNGs or proper css we have to */
+        /* skip it for IE */
+        if(strpos($_SERVER['HTTP_USER_AGENT'], "MSIE") === false)
+        {
+            $sZoomIcon = '<img class="zoom_overlay" src="'.BASE.'images/xmag_32.png">';
+        }
+        else
+            $sZoomIcon = "";
+
+        return $sZoomIcon;
+    }
+
     /**
      * Get a random image for a particular version of an app.
      * If the version is not set, get a random app image 
@@ -407,19 +422,22 @@ class Screenshot {
         if($bFormatting)
             $sImg = html_frame_start("",'128','',2);
 
+        /* retrieve the url for the zoom icon overlay */
+        $sZoomIcon = Screenshot::get_zoomicon_overlay();
+
         /* we have screenshots */
         if(mysql_num_rows($hResult))
         {
             if($iVersionId)
-                $sImg .= "<a href='screenshots.php?iAppId=$iAppId&amp;iVersionId=$iVersionId'>$sImgFile<center>View/Submit&nbsp;Screenshot</center></a>";
+                $sImg .= "<a href='screenshots.php?iAppId=$iAppId&amp;iVersionId=$iVersionId'>".$sImgFile.$sZoomIcon."<center>View/Submit&nbsp;Screenshot</center></a>";
             else
-                $sImg .= "<a href='screenshots.php?iAppId=$iAppId&amp;iVersionId=$iVersionId'>$sImgFile<center>View&nbsp;Screenshot</center></a>";
+                $sImg .= "<a href='screenshots.php?iAppId=$iAppId&amp;iVersionId=$iVersionId'>".$sImgFile.$sZoomIcon."<center>View&nbsp;Screenshot</center></a>";
         } else if($iVersionId) /* we are asking for a specific app version but it has no screenshots */
         {
-            $sImg .= "<a href='screenshots.php?iAppId=$iAppId&amp;iVersionId=$iVersionId'>$sImgFile<center>Submit&nbsp;Screenshot</center></a>";
+            $sImg .= "<a href='screenshots.php?iAppId=$iAppId&amp;iVersionId=$iVersionId'>".$sImgFile.$sZoomIcon."<center>Submit&nbsp;Screenshot</center></a>";
         } else /* we have no screenshots and we aren't a specific version, we don't allow adding screenshots for an app */
         {
-            $sImg .= $sImgFile; 
+            $sImg .= $sImgFile.$sZoomIcon; 
         }
 
         if($bFormatting)
@@ -476,7 +494,7 @@ class Screenshot {
             '?iId='.$this->iScreenshotId.'\',\''.$sRandName.'\','.
             ($this->get_screenshot_width() + 20).','.
             ($this->get_screenshot_height() + 6).
-            ');return false;">'.$shImgSRC.'</a>';
+            ');return false;">'.$shImgSRC.Screenshot::get_zoomicon_overlay().'</a>';
 
         // set image link based on user pref
         if ($_SESSION['current']->isLoggedIn())

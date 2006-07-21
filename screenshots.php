@@ -32,6 +32,7 @@ if($aClean['sCmd'])
     // process screenshot upload
     if($aClean['sCmd'] == "screenshot_upload")
     {   
+	//FIXME: use a defined value here instead of just 600000
         if($_FILES['sImageFile']['size']>600000)
         {
             addmsg("Your screenshot was not accepted because it is too big. Please try to keep your screenshots under 600KB by saving games/video screenshots to jpeg and normal applications to png you might be able to achieve very good results with less bytes", "red");

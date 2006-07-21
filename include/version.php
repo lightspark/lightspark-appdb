@@ -658,7 +658,7 @@ class Version {
         echo "<tr class=\"color0\" valign=\"top\"><td><b>Maintainers Version</b></td><td>".$this->sTestedRelease."</td></tr>\n";
 
         // image
-        $img = Screenshot::get_random_screenshot_img($oApp->iAppId, $this->iVersionId);
+        $img = Screenshot::get_random_screenshot_img($oApp->iAppId, $this->iVersionId, false);
         echo "<tr><td align=\"center\" colspan=\"2\">$img</td></tr>\n";
 
         // display all maintainers of this application

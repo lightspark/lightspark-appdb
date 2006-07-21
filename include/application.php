@@ -546,7 +546,7 @@ class Application {
         }
 
         // image
-        $img = Screenshot::get_random_screenshot_img($this->iAppId);
+        $img = Screenshot::get_random_screenshot_img($this->iAppId, null, false);
         echo "<tr><td align=\"center\" colspan=\"2\">$img</td></tr>\n";
     
         echo "      </table>\n"; /* close of name/vendor/bugs/url table */

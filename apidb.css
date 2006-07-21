@@ -232,3 +232,6 @@ TD.app_name { width: 150px }
 
 /* Editor textarea */
 #editor { height: 25em; width:700px; }
+
+/* zoom image overlay style */
+.zoom_overlay { position:relative; top:10px; left:0px; margin-left:-32px; padding:0px; }
