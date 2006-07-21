@@ -62,11 +62,12 @@ function html_tr($arr, $class = "", $extra = "")
 	return do_html_tr("td", $arr, $class, $extra);
 }
 
-function html_tr_highlight_clickable($sClass, $sHighlightColor, $sInactiveColor, $sUrl)
+function html_tr_highlight_clickable($sUrl, $sClass, $sHighlightColor, $sInactiveColor,
+                                     $sTextDecorationHighlight = "none", $sTextDecorationInactive = "none")
 {
     echo '<tr class='.$sClass.' '.
-        'onmouseover="ChangeTrColor(this, true, \''.$sHighlightColor.'\', \''.$sInactiveColor.'\');"'.
-        'onmouseout="ChangeTrColor(this, false, \''.$sHighlightColor.'\', \''.$sInactiveColor.'\');"'.
+        'onmouseover="ChangeTr(this, true, \''.$sHighlightColor.'\', \''.$sInactiveColor.'\', \''.$sTextDecorationHighlight.'\', \''.$sTextDecorationInactive.'\');"'.
+        'onmouseout="ChangeTr(this, false, \''.$sHighlightColor.'\', \''.$sInactiveColor.'\', \''.$sTextDecorationHighlight.'\', \''.$sTextDecorationInactive.'\');"'.
         'onclick="DoNav(\''.$sUrl.'\');">';
 }
 

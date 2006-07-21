@@ -19,17 +19,20 @@ function deleteURL(text, url) {
 	}
 }
 
-function ChangeTrColor(tableRow, bHighLight, sHighlightColor, sInactiveColor)
+function ChangeTr(tableRow, bRowActive, sHighlightColor, sInactiveColor,
+                       sTextDecorationHighlight, sTextDecorationInactive)
 {
-    if (bHighLight)
+    if (bRowActive)
     {
         tableRow.style.backgroundColor = sHighlightColor;
         tableRow.style.cursor = "hand";
+        tableRow.style.textDecoration = sTextDecorationHighlight;
     }
     else
     {
         tableRow.style.backgroundColor = sInactiveColor;
         tableRow.style.cursor = "pointer";
+        tableRow.style.textDecoration = sTextDecorationInactive;
     }
 }
 

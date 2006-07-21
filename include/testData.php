@@ -418,7 +418,7 @@ class testData{
                 echo '    <td align="center" class="color2"><b>Current</b></td>',"\n";
             } else /* make all non-current rows clickable so clicking on them selects the test as current */
             {
-                html_tr_highlight_clickable($bgcolor, "", "color2", $link.$oTest->iTestingId); 
+                html_tr_highlight_clickable($link.$oTest->iTestingId, $bgcolor, "", "color2", "underline"); 
                 echo '    <td align="center" class="color2">[<a href="'.$link.$oTest->iTestingId;
 
                 if(is_string($showAll))
