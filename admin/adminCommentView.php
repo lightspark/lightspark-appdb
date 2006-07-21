@@ -4,8 +4,8 @@
 /* Without having go into each application version to do so */
 /************************************************************/
 
-include("path.php");
-include(BASE."include/incl.php");
+require("path.php");
+require(BASE."include/incl.php");
 
 apidb_header("Comments");
 

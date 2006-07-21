@@ -22,8 +22,8 @@
  */
 
 // application environment
-include("path.php");
-include(BASE."include/incl.php");
+require("path.php");
+require(BASE."include/incl.php");
 
 function build_prefs_list($oUser)
 {

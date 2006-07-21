@@ -3,8 +3,8 @@
 /* Users Management */
 /********************/
 
-include("path.php");
-include(BASE."include/incl.php");
+require("path.php");
+require(BASE."include/incl.php");
 
 $aClean = array(); //filtered user input
 

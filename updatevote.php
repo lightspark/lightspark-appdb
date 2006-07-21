@@ -6,9 +6,9 @@
 /*
  * application environment
  */ 
-include("path.php");
-include(BASE."include/incl.php");
-include(BASE."include/vote.php");
+require("path.php");
+require(BASE."include/incl.php");
+require(BASE."include/vote.php");
 
 vote_update($_POST);
 
