@@ -280,7 +280,7 @@ function outputTopXRow($oRow)
     $oVersion = new Version($oRow->versionId);
     $oApp = new Application($oVersion->iAppId);
     $img = Screenshot::get_random_screenshot_img(null, $oRow->versionId, false); // image, disable extra formatting
-    html_tr_highlight_clickable('appview.php?iVersionId='.$oRow->versionId, "white", "#fffef6", "white");
+    html_tr_highlight_clickable('appview.php?iVersionId='.$oRow->versionId, "white", "#f0f6ff", "white");
     echo '
       <td class="app_name">
             <a href="appview.php?iVersionId='.$oRow->versionId.'">'.$oApp->sName.' '.$oVersion->sName.'</a></td>
