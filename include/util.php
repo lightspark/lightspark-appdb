@@ -184,24 +184,6 @@ function make_maintainer_rating_list($varname, $cvalue)
     echo "</select>\n";
 }
 
-/* get the number of queued maintainers */
-function getQueuedMaintainerCount()
-{
-    $sQuery = "SELECT count(*) as queued_maintainers FROM appMaintainers where queued='true'";
-    $hResult = query_parameters($sQuery);
-    $oRow = mysql_fetch_object($hResult);
-    return $oRow->queued_maintainers;
-}
-
-/* get the total number of maintainers and applications in the appMaintainers table */
-function getMaintainerCount()
-{
-    $sQuery = "SELECT count(*) as maintainers FROM appMaintainers where queued='false'";
-    $hResult = query_parameters($sQuery);
-    $oRow = mysql_fetch_object($hResult);
-    return $oRow->maintainers;
-}
-
 /* get the total number of vendors from the vendor table */
 function getVendorCount()
 {
@@ -225,13 +207,6 @@ function getNumberOfVersions()
     $hResult = query_parameters("SELECT count(versionId) as num_versions FROM appVersion WHERE versionName != 'NONAME';");
     $oRow = mysql_fetch_object($hResult);
     return $oRow->num_versions;
-}
-
-/* Get the number of maintainers in the database */
-function getNumberOfMaintainers()
-{
-    $hResult = query_parameters("SELECT DISTINCT userId FROM appMaintainers WHERE queued='false';");
-    return mysql_num_rows($hResult);
 }
 
 /* Get the number of app familes in the database */

@@ -19,7 +19,7 @@ function global_sidebar_login() {
         
         /* if this user maintains any applications list them */
         /* in their sidebar */
-        $apps_user_maintains = $_SESSION['current']->getAppsMaintained();
+        $apps_user_maintains = Maintainer::getAppsMaintained($_SESSION['current']);
         if($apps_user_maintains)
         {
             $g->addmisc("");

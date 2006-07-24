@@ -224,8 +224,8 @@ class Application {
         }
 
         // remove any supermaintainers for this application so we don't orphan them
-        $sQuery = "DELETE from appMaintainers WHERE appId='?'";
-        if(!($hResult = query_parameters($sQuery, $this->iAppId)))
+        $hResult = Maintainer::deleteMaintainersForApplication($this);
+        if(!$hResult)
         {
             addmsg("Error removing app maintainers for the deleted application!", "red");
         }
@@ -557,7 +557,7 @@ class Application {
         // Display all supermaintainers maintainers of this application
         echo "      <table class=\"color4\" width=\"250\" border=\"1\">\n";
         echo "        <tr><td align=\"left\"><b>Super maintainers:</b></td></tr>\n";
-        $other_maintainers = getSuperMaintainersUserIdsFromAppId($this->iAppId);
+        $other_maintainers = Maintainer::getSuperMaintainersUserIdsFromAppId($this->iAppId);
         if($other_maintainers)
         {
             echo "        <tr><td align=\"left\"><ul>\n";

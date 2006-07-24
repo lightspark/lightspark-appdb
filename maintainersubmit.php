@@ -85,12 +85,14 @@ if( $aClean['sMaintainReason'] )
         apidb_header("Submit Maintainer Request");    
 
     // add to queue
-    $hResult = query_parameters("INSERT INTO appMaintainers (appId, versionId, ".
-                                "userId, maintainReason, superMaintainer, submitTime, queued) ".
-                                "VALUES ('?', '?', '?', '?', '?', ?, '?')",
-                                $aClean['iAppId'], $aClean['iVersionId'],
-                                $_SESSION['current']->iUserId, $aClean['sMaintainReason'],
-                                $aClean['iSuperMaintainer'], "NOW()", 'true');
+    $oMaintainer = new Maintainer();
+    $oMaintainer->iAppId = $aClean['iAppId'];
+    $oMaintainer->iVersionId = $aClean['iVersionId'];
+    $oMaintainer->iUserId = $_SESSION['current']->iUserId;
+    $oMaintainer->sMaintainReason = $aClean['sMaintainReason'];
+    $oMaintainer->bSuperMaintainer = $aClean['iSuperMaintainer'];
+
+    $hResult = $oMaintainer->create();
 
     if ($hResult)
     {

@@ -59,7 +59,7 @@ if($hUsersToDelete)
             /* is the user a maintainer?  if so remove their maintainer privilages */
             if($oUser->isMaintainer())
             {
-                $oUser->deleteMaintainer();
+                Maintainer::deleteMaintainer($oUser);
             }
 
             $usersWithData++;

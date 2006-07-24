@@ -4,6 +4,7 @@
 /************************************/
 
 require_once(BASE."include/version.php");
+require_once(BASE."include/maintainer.php");
 require_once(BASE."include/util.php");
 
 define(SUCCESS, 0);
@@ -187,11 +188,10 @@ class User {
      */
     function delete()
     {
-        if(!$this->isLoggedIn()) return false;
         $hResult2 = query_parameters("DELETE FROM user_privs WHERE userid = '?'", $this->iUserId);
         $hResult3 = query_parameters("DELETE FROM user_prefs WHERE userid = '?'", $this->iUserId);
         $hResult4 = query_parameters("DELETE FROM appVotes WHERE userid = '?'", $this->iUserId);
-        $hResult5 = query_parameters("DELETE FROM appMaintainers WHERE userid = '?'", $this->iUserId);
+        $hResult5 = Maintainer::deleteMaintainer($this);
         $hResult6 = query_parameters("DELETE FROM appComments WHERE userId = '?'", $this->iUserId);
         return($hResult = query_parameters("DELETE FROM user_list WHERE userid = '?'", $this->iUserId));
     }
@@ -246,174 +246,16 @@ class User {
     }
 
 
-    /**
-     * Check if this user is a maintainer of a given appId/versionId.
-     */
+    /* Check if this user is a maintainer of a given appId/versionId */
     function isMaintainer($iVersionId=null)
     {
-        if(!$this->isLoggedIn()) return false;
-
-        /* if we are a super maintainer, we are a maintainer of this version as well */
-        $oVersion = new Version($iVersionId);
-        if($this->isSuperMaintainer($oVersion->iAppId))
-            return true;
-
-        /* otherwise check if we maintain this specific version */
-        if($iVersionId)
-        {
-            $sQuery = "SELECT * FROM appMaintainers WHERE userid = '?' AND versionId = '?' AND queued = '?'";
-            $hResult = query_parameters($sQuery, $this->iUserId, $iVersionId, "false");
-        } else // are we maintaining any version ?
-        {
-            $sQuery = "SELECT * FROM appMaintainers WHERE userid = '?' AND queued = '?'";
-            $hResult = query_parameters($sQuery, $this->iUserId, "false");
-        }
-        if(!$hResult)
-            return false;
-
-        return mysql_num_rows($hResult);
+        return Maintainer::isUserMaintainer($this, $iVersionId);
     }
 
-
-    /*
-     * Check if this user is a maintainer of a given appId/versionId.
-     */
+    /* Check if this user is a maintainer of a given appId/versionId */
     function isSuperMaintainer($iAppId=null)
     {
-        if(!$this->isLoggedIn()) return false;
-
-        if($iAppId)
-        {
-            $sQuery = "SELECT * FROM appMaintainers WHERE userid = '?' AND appId = '?' AND superMaintainer = '1' AND queued = '?'";
-            $hResult = query_parameters($sQuery, $this->iUserId, $iAppId, "false");
-        } else /* are we super maintainer of any applications? */
-        {
-            $sQuery = "SELECT * FROM appMaintainers WHERE userid = '?' AND superMaintainer = '1' AND queued = '?'";
-            $hResult = query_parameters($sQuery, $this->iUserId, "false");
-        }
-        if(!$hResult)
-            return false;
-        return mysql_num_rows($hResult);
-    }
-
-    /**
-     * get the applications and versions that this user maintains 
-     */
-    function getAppsMaintained()
-    {
-        /* retrieve the list of application and order them by application name */
-        $hResult = query_parameters("SELECT appMaintainers.appId, versionId, superMaintainer, appName FROM ".
-                                    "appFamily, appMaintainers WHERE appFamily.appId = appMaintainers.appId ".
-                                    "AND userId = '?' AND appMaintainers.queued = '?' ORDER BY appName",
-                                    $this->iUserId, "false");
-        if(!$hResult || mysql_num_rows($hResult) == 0)
-            return NULL;
-
-        $aAppsMaintained = array();
-        $c = 0;
-        while($oRow = mysql_fetch_object($hResult))
-        {
-            $aAppsMaintained[$c] = array($oRow->appId, $oRow->versionId, $oRow->superMaintainer);
-            $c++;
-        }
-
-        return $aAppsMaintained;
-    }
-
-    function getMaintainerCount($bSuperMaintainer)
-    {
-        if(!$this->isLoggedIn()) return 0;
-
-        $sQuery = "SELECT count(*) as cnt from appMaintainers WHERE userid = '?' AND superMaintainer = '?'".
-                  " AND queued ='?'";
-        $hResult = query_parameters($sQuery, $this->iUserId, $bSuperMaintainer ? "1" : "0", "false");
-        if(!$hResult)
-            return 0;
-        $oRow = mysql_fetch_object($hResult);
-        return $oRow->cnt;
-    }
-
-
-     /**
-      * Add the user as a maintainer
-      */
-    //FIXME: we really don't need any parameter except $iMaintainerId here
-    //  we'll clean this up when we clean up maintainers
-    function addAsMaintainer($iAppId, $iVersionId, $bSuperMaintainer, $iMaintainerId)
-    {
-
-         $aClean = array();
-         $aClean['sReplyText'] = makeSafe($_REQUEST['sReplyText']);
-
-         /* if the user isn't already a supermaintainer of the application and */
-         /* if they are trying to become a maintainer and aren't already a maintainer of */
-         /* the version, then continue processing the request */
-         if(!$this->isSuperMaintainer($iAppId) &&
-            ((!$bSuperMaintainer && !$this->isMaintainer($iVersionId)) | $bSuperMaintainer))
-         {
-             /* unqueue the maintainer entry */
-             $hResult = query_parameters("UPDATE appMaintainers SET queued='false' WHERE userId = '?' AND maintainerId = '?'",
-                                         $this->iUserId, $iMaintainerId);
-
-            if($hResult)
-            {
-                $statusMessage = "<p>The maintainer was successfully added into the database</p>\n";
-
-                $oApp = new Application($iAppId);
-                $oVersion = new Version($iVersionId);
-                //Send Status Email
-                $sEmail = $oUser->sEmail;
-                if ($sEmail)
-                {
-                    $sSubject =  "Application Maintainer Request Report";
-                    $sMsg  = "Your application to be the maintainer of ".$oApp->sName." ".$oVersion->sName." has been accepted. ";
-                    $sMsg .= $aClean['sReplyText'];
-                    $sMsg .= "We appreciate your help in making the Application Database better for all users.\n\n";
-
-                    mail_appdb($sEmail, $sSubject ,$sMsg);
-                }       
-            }
-        } else
-        {
-            //delete the item from the queue
-            query_parameters("DELETE from appMaintainers WHERE userId = '?' AND maintainerId = '?'",
-                             $this->iUserId, $iMaintainerId);
-
-            if($this->isSuperMaintainer($iAppId) && !$bSuperMaintainer)
-                $statusMessage = "<p>User is already a super maintainer of this application</p>\n";
-            else
-                $statusMessage = "<p>User is already a maintainer/super maintainer of this application/version</p>\n";
-        }
-
-        return $statusMessage;
-     }
-
-    /* remove maintainership */
-    /* if $iAppId and $iVersionId are null, delete all maintainership for this user */
-    function deleteMaintainer($iAppId = null, $iVersionId = null)
-    {
-        /* remove supermaintainer */
-        if($iAppId && ($iVersionId == null))
-        {
-            $superMaintainer = 1;
-            $hResult = query_parameters("DELETE FROM appMaintainers WHERE userId = '?'
-                                         AND appId = '?' AND superMaintainer = '?'",
-                                        $this->iUserId, $iAppId, $superMaintainer);
-        } else if($iAppId && $iVersionId) /* remove a normal maintainer */
-        {
-            $superMaintainer = 0;
-            $hResult = query_parameters("DELETE FROM appMaintainers WHERE userId = '?'
-                                         AND appId = '?' AND versionId = '?' AND superMaintainer = '?'",
-                                        $this->iUserId, $iAppId, $iVersionId, $superMaintainer);
-        } else if(($iAppId == null) && ($iVersionId == null)) /* remove all maintainership by this user */
-        {
-            $hResult = query_parameters("DELETE FROM appMaintainers WHERE userId = '?'", $this->iUserId);
-        }
-
-        if($hResult)
-            return true;
-        
-        return false;
+        return Maintainer::isUserSuperMaintainer($this, $iAppId);
     }
 
     /* get the number of queued applications */
@@ -717,10 +559,8 @@ class User {
          $oRow = mysql_fetch_object($hResult);
          if($oRow->c != 0) return true;
 
-         $hResult = query_parameters("SELECT count(userId) as c FROM appMaintainers WHERE userId = '?'",
-                                 $this->iUserId);
-         $oRow = mysql_fetch_object($hResult);
-         if($oRow->c != 0) return true;
+         if($this->isMaintainer() || $this->isSuperMaintainer())
+             return true;
 
          $hResult = query_parameters("SELECT count(userId) as c FROM appVotes WHERE userId = '?'",
                                  $this->iUserId);
@@ -841,27 +681,7 @@ class User {
          /*
           * Retrieve version maintainers.
           */
-         /*
-          * If versionId was supplied we fetch supermaintainers of application and maintainer of version.
-          */
-         if($iVersionId)
-         {
-             $hResult = query_parameters("SELECT appMaintainers.userId 
-                                 FROM appMaintainers, appVersion
-                                 WHERE appVersion.appId = appMaintainers.appId 
-                                 AND appVersion.versionId = '?' AND appMaintainers.queued = 'false'",
-                                $iVersionId);
-         } 
-         /*
-          * If versionId was not supplied we fetch supermaintainers of application and maintainer of all versions.
-          */
-         elseif($iAppId)
-         {
-             $hResult = query_parameters("SELECT userId 
-                                 FROM appMaintainers
-                                 WHERE appId = '?' AND queued = 'false'",
-                                $iAppId);
-         }
+         $hResult = Maintainer::getMaintainersForAppIdVersionId($iAppId, $iVersionId);
 
          if($hResult)
          {

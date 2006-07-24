@@ -305,8 +305,8 @@ class Version {
 
 
         // remove any maintainers for this version so we don't orphan them
-        $hResult = query_parameters("DELETE from appMaintainers WHERE versionId='?'", $this->iVersionId);
-        if(!$hResult)
+        $result = Maintainer::deleteMaintainersForVersion($this);
+        if(!$result)
         {
             addmsg("Error removing version maintainers for the deleted version!", "red");
         }
@@ -665,7 +665,7 @@ class Version {
         echo "<tr class=\"color0\"><td align=\"left\" colspan=\"2\"><b>Maintainers of this version:</b>\n";
         echo "<table width=\"250\" border=\"0\">";
         $aMaintainers = $this->getMaintainersUserIds();
-        $aSupermaintainers = getSuperMaintainersUserIdsFromAppId($this->iAppId);
+        $aSupermaintainers = Maintainer::getSuperMaintainersUserIdsFromAppId($this->iAppId);
         $aAllMaintainers = array_merge($aMaintainers,$aSupermaintainers);
         $aAllMaintainers = array_unique($aAllMaintainers);
         if(sizeof($aAllMaintainers)>0)
@@ -940,9 +940,7 @@ class Version {
         if($this->iVersionId == 0)
             return $aMaintainers;
     
-        $sQuery = "SELECT userId FROM ".
-            "appMaintainers WHERE versionId = '?';";
-        $hResult = query_parameters($sQuery, $this->iVersionId);
+        $hResult = Maintainer::getMaintainersForAppIdVersionId(null, $this->iVersionId);
         $iCount = 0;
         while($oRow = mysql_fetch_object($hResult))
         {

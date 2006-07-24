@@ -25,8 +25,8 @@ if ($aClean['sSub'])
 {
     if($aClean['sSub'] == 'delete')
     {
-        $sQuery = "DELETE FROM appMaintainers WHERE maintainerId = '?'";
-        $hResult = query_parameters($sQuery, $aClean['iMaintainerId']);
+        $oMaintainer = new maintainer($aClean['iMaintainerId']);
+        $oMaintainer->delete();
         echo html_frame_start("Delete maintainer: ".$aClean['iMaintainerId'],400,"",0);
         if($hResult)
         {
@@ -84,7 +84,7 @@ if ($aClean['sSub'])
                 else
                     echo "    <td style=\"$style\"><a href=\"mailto:".$oUser->sEmail."\">".$oUser->sRealname."</a></td>\n";
 
-                $count = $oUser->getMaintainerCount(true);
+                $count = Maintainer::getMaintainerCountForUser($oUser, true);
                 if($count == 0)
                     echo "    <td style=\"$style\">&nbsp</td>\n";
                 else if($count <= 1)
@@ -93,7 +93,7 @@ if ($aClean['sSub'])
                     echo "    <td style=\"$style\">".$count." apps</td>\n";
 
 
-                $count = $oUser->getMaintainerCount(false);
+                $count = Maintainer::getMaintainerCountForUser($oUser, false);
                 if($count == 0)
                     echo "    <td style=\"$style\">&nbsp</td>\n";
                 else if($count <= 1)
