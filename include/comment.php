@@ -269,7 +269,9 @@ class Comment {
         $iParentId = mysql_real_escape_string($iParentId);
 
         $sExtra = "";
-        if($iParentId)
+
+        /* NOTE: we must compare against NULL here because $iParentId of 0 is valid */
+        if($iParentId != NULL)
             $sExtra = "AND parentId = '".$iParentId."' ";
 
         $sQuery = "SELECT from_unixtime(unix_timestamp(appComments.time), \"%W %M %D %Y, %k:%i\") as time, ".
