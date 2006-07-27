@@ -303,11 +303,8 @@ class maintainer
 
         if($iVersionId)
         {
-            $hResult = query_parameters("SELECT appMaintainers.userId 
-                                 FROM appMaintainers, appVersion
-                                 WHERE appVersion.appId = appMaintainers.appId 
-                                 AND appVersion.versionId = '?' AND appMaintainers.queued = 'false'",
-                                        $iVersionId);
+            $hResult = query_parameters("SELECT userId from appMaintainers WHERE appMaintainers.queued = 'false' AND ".
+                                        "appMaintainers.versionId = '?'", $iVersionId);
         } 
         /*
          * If versionId was not supplied we fetch supermaintainers of application and maintainer of all versions.
