@@ -119,10 +119,10 @@ if ($aClean['sSub'])
 
 
         //help
-        echo "<p>This is the Screen for inputting testing information so that others looking at the database will know \n";
+        echo "<p>This is the screen for inputting testing information so that others looking at the database will know \n";
         echo "what was working or a particular release of Wine.</p>\n";
         echo "<p>Please be as detailed as you can.</p>\n";
-        echo "<p>If you can not find your distribution on the list of existing Distributions please add it add it in the \n";
+        echo "<p>If you can not find your distribution in the list of existing distributions, please add it in the \n";
         echo "field provided.</p>\n\n";        
 
         if(!empty($errors))
