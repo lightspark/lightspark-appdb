@@ -32,3 +32,6 @@ mysql -p -u root < monitors.sql
 
 echo Creating error logging tables
 mysql -p -u root < error_log.sql
+
+echo Adding distributions
+mysql -p -u root < distributions.sql
