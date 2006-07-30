@@ -19,6 +19,6 @@ create table appMaintainers (
     maintainReason  text,
     superMaintainer bool,
     submitTime      datetime,
-    queued          enum('true','false','rejected') NOT NULL default 'false';
+    queued          enum('true','false','rejected') NOT NULL default 'false',
     key(maintainerId)
 );
