@@ -2,6 +2,8 @@
 /*****************************/
 /* functions for maintainers */
 /*****************************/
+require_once(BASE."include/application.php");
+require_once(BASE."include/version.php");
 
 class maintainer
 {
