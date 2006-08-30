@@ -5,6 +5,7 @@
 
 require_once(BASE."include/version.php");
 require_once(BASE."include/vendor.php");
+require_once(BASE."include/category.php");
 require_once(BASE."include/url.php");
 require_once(BASE."include/util.php");
 require_once(BASE."include/mail.php");
