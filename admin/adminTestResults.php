@@ -56,7 +56,7 @@ if ($aClean['sSub'])
         $oTest = new testData($aClean['iTestingId']);
     }
     $oVersion = new Version($oTest->iVersionId);
-    $oApp = new application($oVersion->iAppId);
+    $oApp = new Application($oVersion->iAppId);
     $sVersionInfo = $oApp->sName." ".$oVersion->sName;
 
     if ($aClean['sSub'] == 'view')

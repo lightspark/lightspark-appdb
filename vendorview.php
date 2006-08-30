@@ -50,7 +50,7 @@ if($oVendor->iVendorId)
         echo '<br />Applications by '.$oVendor->sName.'<br /><ol>',"\n";
         foreach($oVendor->aApplicationsIds as $iAppId)
         {
-            $oApp  = new application($iAppId);
+            $oApp  = new Application($iAppId);
             echo '<li> <a href="appview.php?iAppId='.$oApp->iAppId.'">'.$oApp->sName.'</a> </li>',"\n";
         }
         echo '</ol>',"\n";

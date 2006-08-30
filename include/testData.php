@@ -405,7 +405,7 @@ class testData{
         {
             $oTest = new testData($oRow->testingId);
             $oVersion = new version($oTest->iVersionId);
-            $oApp  = new application($oVersion->iAppId);
+            $oApp  = new Application($oVersion->iAppId);
             $oSubmitter = new User($oTest->iSubmitterId);
             $oDistribution = new distribution($oTest->iDistributionId);
             $bgcolor = $oTest->sTestedRating;
@@ -647,7 +647,7 @@ class testData{
             // dont show testing results of versions that are still queued.
             if ($oVersion->sQueued == 'false')
             {
-                $oApp  = new application($oVersion->iAppId);
+                $oApp  = new Application($oVersion->iAppId);
                 $oSubmitter = new User($oTest->iSubmitterId);
                 $bgcolor = $oTest->sTestedRating;
                 echo '<tr class='.$bgcolor.'>',"\n";

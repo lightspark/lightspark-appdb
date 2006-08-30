@@ -113,7 +113,7 @@ else
         {
             $oTest = new testData($iTestingId);
             $oVersion = new version($oTest->iVersionId);
-            $oApp  = new application($oVersion->iAppId);
+            $oApp  = new Application($oVersion->iAppId);
             $oSubmitter = new User($oTest->iSubmitterId);
             $bgcolor = $oTest->sTestedRating;
 

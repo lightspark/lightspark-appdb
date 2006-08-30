@@ -94,7 +94,7 @@ if ($aClean['sSub'])
     }
     if ($aClean['sSub'] == 'view')
     {
-        $oApp = new application($oVersion->iAppId);
+        $oApp = new Application($oVersion->iAppId);
         $sVersionInfo = $oApp->sName." ".$oVersion->sName;
 
         switch($oTest->sQueued)
