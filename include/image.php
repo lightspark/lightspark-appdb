@@ -270,7 +270,7 @@ class Image {
                            ." in $sBorderColor");
         imagedestroy($this->oImage);
         $this->oImage = $new;
-        $this->iWidth = $new_witdh;
+        $this->iWidth = $iNewWidth;
         $this->iHeight= $iNewHeight;
     }
     

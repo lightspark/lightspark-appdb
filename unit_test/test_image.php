@@ -217,7 +217,23 @@ function test_image_add_watermark()
     return true;
 }
 
+function test_resize_image_border()
+{
+    test_start(__FUNCTION__);
+    $sBorderColor = '#00EEFF';
+    $iBorderWidth = 1;
+    $iNewWidth = 3;
+    $iNewHeight = 3;
+    $sImageFilename = TEST_IMAGE_FILENAME;
 
+    /* create a new image from a known image file */
+    $oImage = new Image($sImageFilename);
+
+    /* resize the image with a border */
+    $oImage->resize_image_border($sBorderColor, $iBorderWidth, $iNewWidth, $iNewHeight);
+
+    return true;
+}
 
 
 if(!test_image_constructor())
@@ -245,4 +261,8 @@ if(!test_image_add_watermark())
 else
     echo "test_image_add_watermark() passed\n";
 
+if(!test_resize_image_border())
+    echo "test_resize_image_border() failed!\n";
+else
+    echo "test_resize_image_border() passed\n";
 ?>
