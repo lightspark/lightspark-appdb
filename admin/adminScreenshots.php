@@ -116,7 +116,7 @@ echo "<div align=center><table><tr>\n";
 while ($oRow = mysql_fetch_object($Ids))
 {
     // display thumbnail
-    $oVersion = new version($oRow->versionId);
+    $oVersion = new Version($oRow->versionId);
     $oApp = new Application($oVersion->iAppId);
     $oScreenshot = new Screenshot($oRow->id);
     $img = $oScreenshot->get_thumbnail_img();

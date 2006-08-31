@@ -85,11 +85,11 @@ if ($aClean['sSub'])
         {
             util_show_error_page_and_exit("Insufficient privileges.");
         } else
-        $oVersion = new version($oTest->iVersionId);
+        $oVersion = new Version($oTest->iVersionId);
     } else
     { 
         $oTest->iVersionId = $aClean['iVersionId'];
-        $oVersion = new version($aClean['iVersionId']);       
+        $oVersion = new Version($aClean['iVersionId']);       
         $oTest->sQueued = "new";
     }
     if ($aClean['sSub'] == 'view')

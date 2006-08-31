@@ -112,7 +112,7 @@ else
         foreach($oDistribution->aTestingIds as $iTestingId)
         {
             $oTest = new testData($iTestingId);
-            $oVersion = new version($oTest->iVersionId);
+            $oVersion = new Version($oTest->iVersionId);
             $oApp  = new Application($oVersion->iAppId);
             $oSubmitter = new User($oTest->iSubmitterId);
             $bgcolor = $oTest->sTestedRating;
