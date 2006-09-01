@@ -2,7 +2,7 @@
 /***************************************/
 /* comment class and related functions */
 /***************************************/
-
+require_once(BASE."include/user.php");
 
 /**
  * Comment class for handling comments
