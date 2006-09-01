@@ -280,7 +280,7 @@ class TableVE {
 
         if($field->name == "lastmodby")
         {
-            $user = new user();
+            $user = new User();
             $name = $user->lookup_realname($value);
             if(!$name)
                 $name = "system";
