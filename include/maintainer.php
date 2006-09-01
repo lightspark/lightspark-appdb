@@ -4,6 +4,7 @@
 /*****************************/
 require_once(BASE."include/application.php");
 require_once(BASE."include/version.php");
+require_once(BASE."include/user.php");
 
 class maintainer
 {
