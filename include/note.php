@@ -1,5 +1,6 @@
 <?php
 require_once(BASE."include/util.php");
+require_once(BASE."include/version.php");
 
 $aClean = array(); //array of filtered user input
 $aClean['sReplyText'] = makeSafe( $_REQUEST['sReplyText'] );
