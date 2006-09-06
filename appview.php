@@ -91,7 +91,7 @@ if ($aClean['sSub'])
             $_SESSION['current']->isMaintainer($oVersion->iVersionId) ||
             $_SESSION['current']->isSuperMaintainer($oVersion->iAppId)))
         {
-            $oBuglink = new bug($aClean['iBuglinkId']);
+            $oBuglink = new Bug($aClean['iBuglinkId']);
             $oBuglink->delete();
             util_redirect_and_exit(apidb_fullurl("appview.php?iVersionId=".$aClean['iVersionId']));
         }
@@ -103,7 +103,7 @@ if ($aClean['sSub'])
             $_SESSION['current']->isMaintainer($oVersion->iVersionId) ||
             $_SESSION['current']->isSuperMaintainer($oVersion->iAppId)))
         {
-            $oBuglink = new bug($aClean['iBuglinkId']);
+            $oBuglink = new Bug($aClean['iBuglinkId']);
             $oBuglink->unqueue();
             util_redirect_and_exit(apidb_fullurl("appview.php?iVersionId=".$aClean['iVersionId']));
         }
@@ -111,7 +111,7 @@ if ($aClean['sSub'])
     }
     if(($aClean['sSub'] == 'Submit a new bug link.' ) && ($aClean['iBuglinkId']))
     {
-        $oBuglink = new bug();
+        $oBuglink = new Bug();
         $oBuglink->create($aClean['iVersionId'],$aClean['iBuglinkId']);
         util_redirect_and_exit(apidb_fullurl("appview.php?iVersionId=".$aClean['iVersionId']));
     }

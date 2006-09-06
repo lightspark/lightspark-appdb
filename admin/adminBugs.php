@@ -27,12 +27,12 @@ if ($aClean['sSub'])
 {
     if(($aClean['sSub'] == 'delete' ) && ($aClean['iBuglinkId']))
     {
-        $oBuglink = new bug($aClean['iBuglinkId']);
+        $oBuglink = new Bug($aClean['iBuglinkId']);
         $oBuglink->delete();
     }
     if(($aClean['sSub'] == 'unqueue' ) && ($aClean['iBuglinkId']))
     {
-        $oBuglink = new bug($aClean['iBuglinkId']);
+        $oBuglink = new Bug($aClean['iBuglinkId']);
         $oBuglink->unqueue();
     }
     util_redirect_and_exit($_SERVER['PHP_SELF']."?iItemsPerPage=".$aClean['iItemsPerPage']."&sQueuedOnly=".$aClean['sQueuedOnly']."&iPage=".$aClean['iPage']);

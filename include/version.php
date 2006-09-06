@@ -255,7 +255,7 @@ class Version {
 
         foreach($this->aBuglinkIds as $iBug_id)
         {
-            $oBug = new bug($iBug_id);
+            $oBug = new Bug($iBug_id);
             $oBug->delete($bSilent);
         }
 

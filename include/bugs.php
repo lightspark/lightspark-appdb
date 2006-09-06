@@ -301,7 +301,7 @@ function view_version_bugs($iVersionId = null, $aBuglinkIds)
     $c = 0;
     foreach($aBuglinkIds as $iBuglinkId)
     {
-        $oBuglink = new bug($iBuglinkId);
+        $oBuglink = new Bug($iBuglinkId);
 
         // set row color
         $bgcolor = ($c % 2 == 0) ? "color0" : "color1";
