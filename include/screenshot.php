@@ -7,7 +7,7 @@ require_once(BASE."include/util.php");
 require_once(BASE."include/image.php");
 
 // load the watermark
-$watermark = new image("/images/watermark.png");
+$watermark = new Image("/images/watermark.png");
 
 /**
  * Screenshot class for handling screenshots and thumbnails
