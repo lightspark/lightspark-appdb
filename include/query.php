@@ -138,6 +138,16 @@ function query_bugzilladb($sQuery,$sComment="")
 
 function query_error($sQuery, $sComment="")
 {
+    static $bInQueryError = false;
+
+    // if we are already reporting an error we can't report it again
+    // as that indicates that error reporting itself produced an error
+    if($bInQueryError)
+        return;
+
+    // record that we are inside of this function, we don't want to recurse
+    $bInQueryError = true;
+
     error_log::log_error(ERROR_SQL, "Query: '".$sQuery."' ".
                          "mysql_errno(): '".mysql_errno()."' ".
                          "mysql_error(): '".mysql_error()."' ".
@@ -145,6 +155,8 @@ function query_error($sQuery, $sComment="")
 
     $sStatusMessage = "<p><b>An internal error has occurred and has been logged and reported to appdb admins</b></p>";
     addmsg($sStatusMessage);
+
+    $bInQueryError = false; // clear variable upon exit
 }
 
 ?>
