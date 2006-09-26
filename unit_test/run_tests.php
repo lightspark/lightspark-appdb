@@ -13,6 +13,7 @@ include_once("test_query.php");
 echo "\n";
 include_once("test_image.php");
 echo "\n";
+include_once("test_application.php");
+echo "\n";
 include_once("test_error_log.php");
-
 ?>

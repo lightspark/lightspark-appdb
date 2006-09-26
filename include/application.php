@@ -9,7 +9,6 @@ require_once(BASE."include/category.php");
 require_once(BASE."include/url.php");
 require_once(BASE."include/util.php");
 require_once(BASE."include/mail.php");
-
 /**
  * Application class for handling applications.
  */
@@ -62,15 +61,12 @@ class Application {
             //FIXME: it would be nice to move this permission into the user class as well as keep it generic
             if($_SESSION['current']->hasPriv("admin"))
             {
-                $sQuery = "SELECT versionId FROM appVersion WHERE
-                            appId = '?'";
+                $hResult = $this->_internal_retrieve_all_versions();
             } else
             {
-                $sQuery = "SELECT versionId FROM appVersion WHERE
-                            queued = 'false' AND
-                            appId = '?'";
+                $hResult = $this->_internal_retrieve_unqueued_versions();
             }
-            if($hResult = query_parameters($sQuery, $this->iAppId))
+            if($hResult)
             {
                 while($oRow = mysql_fetch_object($hResult))
                 {
@@ -80,6 +76,22 @@ class Application {
         }
     }
 
+    function _internal_retrieve_all_versions()
+    {
+        $sQuery = "SELECT versionId FROM appVersion WHERE
+                        appId = '?'";
+        $hResult  = query_parameters($sQuery, $this->iAppId);
+        return $hResult;
+    }
+
+    function _internal_retrieve_unqueued_versions()
+    {
+        $sQuery = "SELECT versionId FROM appVersion WHERE
+                        queued = 'false' AND
+                        appId = '?'";
+        $hResult  = query_parameters($sQuery, $this->iAppId);
+        return $hResult;
+    }
 
     /**
      * Creates a new application.
@@ -196,8 +208,15 @@ class Application {
         if(!$_SESSION['current']->canDeleteApplication($this))
             return false;
 
-        foreach($this->aVersionsIds as $iVersionId)
+        /* we have to retrieve the versions again here because */
+        /* new ones could have been added since this application */
+        /* object was created */
+        //FIXME: how to deal with concurrency issues such as
+        //  if a new version was added during this deletion?
+        $hResult = $this->_internal_retrieve_all_versions();
+        while($oRow = mysql_fetch_object($hResult))
         {
+            $iVersionId = $oRow->versionId;
             $oVersion = new Version($iVersionId);
             $oVersion->delete($bSilent);
         }
@@ -339,7 +358,6 @@ class Application {
         }
     }
 
- 
     function SendNotificationMail($sAction="add",$sMsg=null)
     {
         $aClean = array(); //array of filtered user input
