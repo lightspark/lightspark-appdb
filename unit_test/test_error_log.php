@@ -5,6 +5,8 @@ require_once(BASE."include/incl.php");
 
 function test_error_log_log_error()
 {
+    error_log::flush(); /* flush the error log */
+
     error_log::log_error(ERROR_SQL, "This is a sql error");
     error_log::log_error(ERROR_GENERAL, "This is a general error");
 
