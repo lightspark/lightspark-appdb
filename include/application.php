@@ -9,6 +9,14 @@ require_once(BASE."include/category.php");
 require_once(BASE."include/url.php");
 require_once(BASE."include/util.php");
 require_once(BASE."include/mail.php");
+
+define("PLATINUM_RATING", "Platinum");
+define("GOLD_RATING", "Gold");
+define("SILVER_RATING", "Silver");
+define("BRONZE_RATING", "Bronze");
+define("GARBAGE_RATING", "Garbage");
+
+
 /**
  * Application class for handling applications.
  */
@@ -356,6 +364,38 @@ class Application {
             }
             mail_appdb($oSubmitter->sEmail, $sSubject ,$sMsg);
         }
+    }
+
+
+    function countWithRating($sRating)
+    {
+        $sQuery = "SELECT DISTINCT count(appId) as total 
+                       FROM appVersion
+                       WHERE maintainer_rating = '?'";
+
+        if($hResult = query_parameters($sQuery, $sRating))
+        {
+            $oRow = mysql_fetch_object($hResult);
+        }
+	     return $oRow->total;
+    }
+
+    function getWithRating($sRating, $iOffset, $iItemsPerPage)
+    {
+        $aApps = array();
+        $sQuery = "SELECT DISTINCT appId 
+                       FROM appVersion
+                       WHERE maintainer_rating = '?'
+                       ORDER BY appId ASC LIMIT ?, ?";
+        
+        if($hResult = query_parameters($sQuery, $sRating, $iOffset, $iItemsPerPage))
+        {
+            while($aRow = mysql_fetch_row($hResult))
+            {
+                array_push($aApps, $aRow[0]);
+            }
+        }
+        return $aApps;
     }
 
     function SendNotificationMail($sAction="add",$sMsg=null)

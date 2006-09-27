@@ -17,39 +17,9 @@ function test_application_delete()
 {
     test_start(__FUNCTION__);
 
-    global $test_email, $test_password;
-
-    $oUser = new User();
-
-    /* delete the user if they already exist */
-    if($oUser->login($test_email, $test_password) == SUCCESS)
-    {
-        $oUser->delete();
-        $oUser = new User();
-    }
-
-    /* create the user */
-    $retval = $oUser->create("testemail@somesite.com", "password", "Test user", "20051020");
-    if($retval != SUCCESS)
-    {
-        if($retval == USER_CREATE_EXISTS)
-            echo "The user already exists!\n";
-        else if($retval == USER_LOGIN_FAILED)
-            echo "User login failed!\n";
-        else
-            echo "ERROR: UNKNOWN ERROR!!\n";
-            
+    if(!$oUser = create_and_login_user())
         return false;
-    }
-
-    /* login the user */
-    $retval = $oUser->login($test_email, $test_password);
-    if($retval != SUCCESS)
-    {
-        echo "Got '".$retval."' instead of SUCCESS(".SUCCESS.")\n";
-        return false;
-    }
-
+    
     /* make this user an admin so we can create applications without having them queued */
     $hResult = query_parameters("INSERT into user_privs values ('?', '?')",
                                 $oUser->iUserId, "admin");
@@ -67,16 +37,12 @@ function test_application_delete()
 
     $iAppId = $oApp->iAppId; /* use the iAppId of the application we just created */
     
-    $iVersionIdBase = 400000;
     for($iVersionIdIndex = 0; $iVersionIdIndex < 10; $iVersionIdIndex++)
     {
-        $iVersionId = $iVersionIdBase + $iVersionIdIndex;
-
         $oVersion = new Version();
-        $oVersion->versionName = "Some Version".$iVersionId;
-        $oVersion->description = "Some Version description".$iVersionId;
+        $oVersion->versionName = "Some Version".$iVersionIdIndex;
+        $oVersion->description = "Some Version description".$iVersionIdIndex;
         $oVersion->iAppId = $oApp->iAppId;
-        $oVersion->iVersionId = $iVersionId;
         
         if(!$oVersion->create())
         {
@@ -107,16 +73,145 @@ function test_application_delete()
     
 }
 
+
+function test_application_getWithRating()
+{
+    test_start(__FUNCTION__);
+
+    if(!$oUser = create_and_login_user())
+        return false;
+
+    /* make this user an admin so we can create applications without having them queued */
+    $hResult = query_parameters("INSERT into user_privs values ('?', '?')",
+                                $oUser->iUserId, "admin");
+
+    $oApp = new Application();
+    $oApp->sName = "Some application";
+    $oApp->sDescription = "some description";
+    $oApp->submitterId = $oUser->iUserId;
+    if(!$oApp->create())
+    {
+        $oUser->delete();
+        echo "Failed to create application!\n";
+        return false;
+    }
+
+    $iAppId = $oApp->iAppId; /* use the iAppId of the application we just created */
+    
+ 
+    /* Create several versions of the new application to test uniqueness of getWithRating() results */
+    
+    for($iVersionIdIndex = 0; $iVersionIdIndex < 10; $iVersionIdIndex++)
+    {    
+        $oVersion = new Version();
+        $oVersion->versionName = "Some Version".$iVersionIdIndex;
+        $oVersion->description = "Some Version description".$iVersionIdIndex;
+        $oVersion->iAppId = $oApp->iAppId;
+        
+        
+        /* Create Several Ratings, some duplicate */
+        if ($iVersionIdIndex < 4)
+        {
+            $oVersion->sTestedRating = "Platinum";
+        }
+        elseif ($iVersionIdIndex  < 8)
+        {
+            $oVersion->sTestedRating = "Gold";
+        }
+        else
+        {
+            $oVersion->sTestedRating = "Bronze";
+        }
+        
+        if(!$oVersion->create())
+        {
+            delete_app_and_user($oApp, $oUser);  
+            echo "Failed to create version!\n";
+            return false;
+        }
+    }
+    
+
+    $iItemsPerPage = 50;
+    $iOffset = 0;
+    $sRating = 'Bronze';        
+    $aApps=Application::getWithRating($sRating, $iOffset, $iItemsPerPage);
+    $aTest = array();//array to test the uniqueness our query results
+    while(list($i, $iId) = each($aApps)) //cycle through results returned by getWithRating
+    {
+        if ( in_array($iId, $aTest) ) //if the appId is already in our test results fail unique test
+        {
+            delete_app_and_user($oApp, $oUser);  
+            echo "getWithRating failed to return a unique result set\n";   
+            return false;
+        }
+           
+        array_push($aTest, $iId); //push the appId on to our test array
+      
+    }
+    
+ 
+    delete_app_and_user($oApp, $oUser);  
+    
+    return true;
+} 
+
+
 function delete_app_and_user($oApp, $oUser)
 {
     $oApp->delete();
     $oUser->delete();
 }
 
+function create_and_login_user()
+{
+    global $test_email, $test_password;
+    
+    $oUser = new User();
+
+    /* delete the user if they already exist */
+    if($oUser->login($test_email, $test_password) == SUCCESS)
+    {
+        $oUser->delete();
+        $oUser = new User();
+    }
+
+    /* create the user */
+    $retval = $oUser->create("$test_email", "$test_password", "Test user", "20051020");
+    if($retval != SUCCESS)
+    {
+        if($retval == USER_CREATE_EXISTS)
+            echo "The user already exists!\n";
+        else if($retval == USER_LOGIN_FAILED)
+            echo "User login failed!\n";
+        else
+            echo "ERROR: UNKNOWN ERROR!!\n";
+            
+        return false;
+    }
+
+    /* login the user */
+    $retval = $oUser->login($test_email, $test_password);
+    if($retval != SUCCESS)
+    {
+        echo "Got '".$retval."' instead of SUCCESS(".SUCCESS.")\n";
+        return false;
+    }
+    
+    return $oUser;
+
+}
+
 if(!test_application_delete())
     echo "test_application_delete() failed!\n";
 else
     echo "test_application_delete() passed!\n";
+    
+
+if(!test_application_getWithRating())
+    echo "test_application_getWithRating() failed!\n";
+else
+    echo "test_application_getWithRating() passed!\n"; 
     
 ?>
 
