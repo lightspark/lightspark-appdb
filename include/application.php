@@ -371,7 +371,8 @@ class Application {
     {
         $sQuery = "SELECT DISTINCT count(appId) as total 
                        FROM appVersion
-                       WHERE maintainer_rating = '?'";
+                       WHERE maintainer_rating = '?'
+                       AND queued='false'";
 
         if($hResult = query_parameters($sQuery, $sRating))
         {
@@ -386,6 +387,7 @@ class Application {
         $sQuery = "SELECT DISTINCT appId 
                        FROM appVersion
                        WHERE maintainer_rating = '?'
+                       AND queued = 'false'
                        ORDER BY appId ASC LIMIT ?, ?";
         
         if($hResult = query_parameters($sQuery, $sRating, $iOffset, $iItemsPerPage))

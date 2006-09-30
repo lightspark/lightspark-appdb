@@ -153,6 +153,50 @@ function test_application_getWithRating()
  
     delete_app_and_user($oApp, $oUser);  
     
+    
+    //test to ensure getWithRating doesn't return applications that are queued
+    
+    if(!$oUser = create_and_login_user()) //create user without admin priveliges
+    return false;
+    
+    
+    $oApp = new Application();
+    $oApp->sName = "Some application";
+    $oApp->sDescription = "some description";
+    $oApp->submitterId = $oUser->iUserId;
+    if(!$oApp->create())
+    {
+        $oUser->delete(); /* clean up the user we created prior to exiting */
+        echo "Failed to create application!\n";
+        return false;
+    }
+
+    $iAppId = $oApp->iAppId; /* use the iAppId of the application we just created */    
+    
+    $oVersion = new Version();
+    $oVersion->versionName = "Some Version".$iVersionIdIndex;
+    $oVersion->description = "Some Version description".$iVersionIdIndex;
+    $oVersion->iAppId = $oApp->iAppId;
+    $oVersion->sTestedRating = "Bronze";
+    $oVersion->sQueued = "True";
+        
+    if(!$oVersion->create())
+    {
+        delete_app_and_user($oApp, $oUser);  
+        echo "Failed to create version!\n";
+        return false;
+    }        
+    
+    
+    $aApps=Application::getWithRating($sRating, $iOffset, $iItemsPerPage);
+        
+    if ( in_array($iAppId, $aApps )) //if the appId is in our test results fail queued test
+    {
+        delete_app_and_user($oApp, $oUser);  
+        echo "getWithRating failed to return a unique result set\n";   
+        return false;
+    }
+    
     return true;
 } 
 
@@ -197,7 +241,7 @@ function create_and_login_user()
         echo "Got '".$retval."' instead of SUCCESS(".SUCCESS.")\n";
         return false;
     }
-    
+     
     return $oUser;
 
 }
