@@ -2,7 +2,7 @@
 $hAppdbLink = null;
 $hBugzillaLink = null;
 
-define(MYSQL_DEADLOCK_ERRNO, 1213);
+define("MYSQL_DEADLOCK_ERRNO", 1213);
 
 function query_appdb($sQuery,$sComment="")
 {

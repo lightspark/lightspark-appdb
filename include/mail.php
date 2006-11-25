@@ -1,4 +1,6 @@
 <?php
+require_once(BASE."include/config.php");
+
 function mail_appdb($sEmailList,$sSubject,$sMsg)
 {
     $sHeaders  = "MIME-Version: 1.0\r\n";

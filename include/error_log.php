@@ -1,7 +1,7 @@
 <?php
 
-define(ERROR_SQL, "sql_error");
-define(ERROR_GENERAL, "general_error");
+define("ERROR_SQL", "sql_error");
+define("ERROR_GENERAL", "general_error");
 
 class error_log
 {

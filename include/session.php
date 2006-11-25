@@ -6,7 +6,7 @@
  */
 
 /* the number of days a session cookie is flaged to last */
-define(SESSION_DAYS_TO_EXPIRE, 2);
+define("SESSION_DAYS_TO_EXPIRE", 2);
 
 class session
 {
@@ -73,7 +73,10 @@ class session
         $result = query_parameters("SELECT data FROM session_list WHERE session_id = '?'", $key);
         if (!$result) { return null; }
         $oRow = mysql_fetch_object($result);
-        return $oRow->data; 
+        if($oRow)
+            return $oRow->data; 
+        else
+            return NULL;
     }
     
     // write session to DB

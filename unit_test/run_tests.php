@@ -5,7 +5,7 @@
 
 /* TODO: test the rest of the classes we have */
 
-error_reporting(E_ALL ^  E_NOTICE);
+error_reporting(E_ALL);
 
 include_once("test_user.php");
 echo "\n";

@@ -38,21 +38,24 @@ class testData{
                 if($hResult = query_parameters($sQuery, $iTestingId))
                 {
                     $oRow = mysql_fetch_object($hResult);
-                    $this->iTestingId = $oRow->testingId;
-                    $this->iVersionId = $oRow->versionId;
-                    $this->sWhatWorks = $oRow->whatWorks;
-                    $this->sWhatDoesnt = $oRow->whatDoesnt;
-                    $this->sWhatNotTested = $oRow->whatNotTested;
-                    $this->sTestedDate = $oRow->testedDate;
-                    $this->iDistributionId = $oRow->distributionId;
-                    $this->sTestedRelease = $oRow->testedRelease;
-                    $this->sInstalls = $oRow->installs;
-                    $this->sRuns = $oRow->runs;
-                    $this->sTestedRating = $oRow->testedRating;
-                    $this->sComments = $oRow->comments;
-                    $this->sSubmitTime = $oRow->submitTime;
-                    $this->iSubmitterId = $oRow->submitterId;
-                    $this->sQueued = $oRow->queued;
+                    if($oRow)
+                    {
+                        $this->iTestingId = $oRow->testingId;
+                        $this->iVersionId = $oRow->versionId;
+                        $this->sWhatWorks = $oRow->whatWorks;
+                        $this->sWhatDoesnt = $oRow->whatDoesnt;
+                        $this->sWhatNotTested = $oRow->whatNotTested;
+                        $this->sTestedDate = $oRow->testedDate;
+                        $this->iDistributionId = $oRow->distributionId;
+                        $this->sTestedRelease = $oRow->testedRelease;
+                        $this->sInstalls = $oRow->installs;
+                        $this->sRuns = $oRow->runs;
+                        $this->sTestedRating = $oRow->testedRating;
+                        $this->sComments = $oRow->comments;
+                        $this->sSubmitTime = $oRow->submitTime;
+                        $this->iSubmitterId = $oRow->submitterId;
+                        $this->sQueued = $oRow->queued;
+                    }
                 }
             }
         }

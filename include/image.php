@@ -57,7 +57,7 @@ class Image {
         $this->iHeight = $oInfo[1];
         $this->iType = $oInfo[2];
         
-        $this->set_debuglog("New image class created with as $sFile as"
+        $this->set_debuglog("New image class created with as $this->sFile as"
                           ." file and {$oInfo[2]} as type. Dimensions"
                           ." {$oInfo[0]}x{$oInfo[1]}");
     }
@@ -214,7 +214,7 @@ class Image {
                              $iNewWidth,$iNewHeight,$this->iWidth,$this->iHeight);
         }
         
-        $this->set_debuglog("imagecopyresized($new,$this->oImage,0,0,0,0,$iNewWidth,"
+        $this->set_debuglog("imagecopyresized($oNewImage,$this->oImage,0,0,0,0,$iNewWidth,"
                             ."$iNewHeight,$this->iWidth,$this->iHeight);");
         imagedestroy($this->oImage);
         $this->oImage = $oNewImage;
@@ -231,7 +231,6 @@ class Image {
      */
     function resize_image_border($sBorderColor, $iBorderWidth, $iNewHeight, $iNewWidth)
     {
-        
         $r = hexdec(substr($sBorderColor, 1, 2));
         $g = hexdec(substr($sBorderColor, 3, 2));
         $b = hexdec(substr($sBorderColor, 5, 2));

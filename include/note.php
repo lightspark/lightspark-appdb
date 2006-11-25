@@ -3,7 +3,10 @@ require_once(BASE."include/util.php");
 require_once(BASE."include/version.php");
 
 $aClean = array(); //array of filtered user input
-$aClean['sReplyText'] = makeSafe( $_REQUEST['sReplyText'] );
+if(isset($_REQUEST['sReplyText']))
+    $aClean['sReplyText'] = makeSafe( $_REQUEST['sReplyText'] );
+else
+    $aClean['sReplyText'] = "";
 
 /************************************/
 /* note class and related functions */
@@ -34,11 +37,14 @@ class Note {
                        AND noteId = '?'";
             $hResult = query_parameters($sQuery, $iNoteId);
             $oRow = mysql_fetch_object($hResult);
-            $this->iNoteId = $oRow->noteId;
-            $this->iAppId = $oRow->appId;
-            $this->iVersionId = $oRow->versionId;
-            $this->sTitle = $oRow->noteTitle;
-            $this->sDescription = $oRow->noteDesc;
+            if($oRow)
+            {
+                $this->iNoteId = $oRow->noteId;
+                $this->iAppId = $oRow->appId;
+                $this->iVersionId = $oRow->versionId;
+                $this->sTitle = $oRow->noteTitle;
+                $this->sDescription = $oRow->noteDesc;
+            }
         }
     }
 

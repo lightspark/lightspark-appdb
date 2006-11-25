@@ -5,7 +5,7 @@
 
 // get modules
 ini_set("memory_limit","64M");
-require(BASE."include/config.php");
+require_once(BASE."include/config.php");
 require(BASE."include/util.php");
 require(BASE."include/user.php");
 require(BASE."include/session.php");

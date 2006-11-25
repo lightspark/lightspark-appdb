@@ -32,13 +32,16 @@ class distribution{
                 if($hResult = query_parameters($sQuery, $iDistributionId))
                 {
                     $oRow = mysql_fetch_object($hResult);
-                    $this->iDistributionId = $iDistributionId;
-                    $this->sName = $oRow->name;
-                    $this->sDescription = $oRow->description;
-                    $this->sUrl = $oRow->url;
-                    $this->sSubmitTime = $oRow->submitTime;
-                    $this->iSubmitterId = $oRow->submitterId;
-                    $this->sQueued = $oRow->queued;
+                    if($oRow)
+                    {
+                        $this->iDistributionId = $iDistributionId;
+                        $this->sName = $oRow->name;
+                        $this->sDescription = $oRow->description;
+                        $this->sUrl = $oRow->url;
+                        $this->sSubmitTime = $oRow->submitTime;
+                        $this->iSubmitterId = $oRow->submitterId;
+                        $this->sQueued = $oRow->queued;
+                    }
                 }
             }
 

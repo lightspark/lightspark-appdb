@@ -5,11 +5,11 @@
 require_once("path.php");
 require_once("test_common.php");
 
-DEFINE(TEST_IMAGE_FILENAME, "/images/appdb_montage.jpg");
-DEFINE(TEST_IMAGE_OUTPUT_FILENAME, "/tmp/tmpfile.png");
-DEFINE(TEST_IMAGE_WIDTH, 391);
-DEFINE(TEST_IMAGE_HEIGHT, 266);
-DEFINE(TEST_IMAGE_WATERMARK, "/images/watermark.png");
+DEFINE("TEST_IMAGE_FILENAME", "/images/appdb_montage.jpg");
+DEFINE("TEST_IMAGE_OUTPUT_FILENAME", "/tmp/tmpfile.png");
+DEFINE("TEST_IMAGE_WIDTH", 391);
+DEFINE("TEST_IMAGE_HEIGHT", 266);
+DEFINE("TEST_IMAGE_WATERMARK", "/images/watermark.png");
 
 function test_image_constructor()
 {
@@ -73,7 +73,7 @@ function test_image_make_thumbnail()
                                                                   from the ratio of the height
                                                                   to width of the original image */
     $iBorderWidth = 20;
-    $oImage->make_thumb($iWidth, $iHeight, $iBorderWidthm, "#0000FF");
+    $oImage->make_thumb($iWidth, $iHeight, $iBorderWidth, "#0000FF");
 
     /* did we get the correct size? */
     $iActualWidth = $oImage->get_width();

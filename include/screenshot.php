@@ -40,14 +40,17 @@ class Screenshot {
             if($hResult)
             {
                 $oRow = mysql_fetch_object($hResult);
-                $this->iScreenshotId = $iScreenshotId;
-                $this->sDescription = $oRow->description;
-                $this->iAppId = $oRow->appId;
-                $this->iVersionId = $oRow->versionId;
-                $this->sUrl = $oRow->url;
-                $this->bQueued = ($oRow->queued=="true")?true:false;
-                $this->sSubmitTime = $oRow->submitTime;
-                $this->iSubmitterId = $oRow->submitterId;
+                if($oRow)
+                {
+                    $this->iScreenshotId = $iScreenshotId;
+                    $this->sDescription = $oRow->description;
+                    $this->iAppId = $oRow->appId;
+                    $this->iVersionId = $oRow->versionId;
+                    $this->sUrl = $oRow->url;
+                    $this->bQueued = ($oRow->queued=="true")?true:false;
+                    $this->sSubmitTime = $oRow->submitTime;
+                    $this->iSubmitterId = $oRow->submitterId;
+                }
            }
         }
     }

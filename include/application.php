@@ -49,17 +49,20 @@ class Application {
             if($hResult = query_parameters($sQuery, $iAppId))
             {
                 $oRow = mysql_fetch_object($hResult);
-                $this->iAppId = $iAppId;
-                $this->iVendorId = $oRow->vendorId;
-                $this->iCatId = $oRow->catId;
-                $this->iSubmitterId = $oRow->submitterId;
-                $this->sSubmitTime = $oRow->submitTime;
-                $this->sDate = $oRow->submitTime;
-                $this->sName = $oRow->appName;
-                $this->sKeywords = $oRow->keywords;
-                $this->sDescription = $oRow->description;
-                $this->sWebpage = $oRow->webPage;
-                $this->sQueued = $oRow->queued;
+                if($oRow)
+                {
+                    $this->iAppId = $iAppId;
+                    $this->iVendorId = $oRow->vendorId;
+                    $this->iCatId = $oRow->catId;
+                    $this->iSubmitterId = $oRow->submitterId;
+                    $this->sSubmitTime = $oRow->submitTime;
+                    $this->sDate = $oRow->submitTime;
+                    $this->sName = $oRow->appName;
+                    $this->sKeywords = $oRow->keywords;
+                    $this->sDescription = $oRow->description;
+                    $this->sWebpage = $oRow->webPage;
+                    $this->sQueued = $oRow->queued;
+                }
             }
 
             /* fetch versions of this application, if there are any */
@@ -404,7 +407,10 @@ class Application {
     {
         $aClean = array(); //array of filtered user input
 
-        $aClean['sReplyText'] = makeSafe($_REQUEST['sReplyText']);	
+        if(isset($_REQUEST['sReplyText']))
+            $aClean['sReplyText'] = makeSafe($_REQUEST['sReplyText']);	
+        else
+            $aClean['sReplyText'] = "";
 
         switch($sAction)
         {

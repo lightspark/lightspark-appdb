@@ -28,10 +28,13 @@ function test_user_create()
     {
         $oUser->delete();
         $oUser = new User();
+    } else
+    {
+        echo "User doesn't already exist\n";
     }
 
     /* create the user */
-    $retval = $oUser->create("testemail@somesite.com", "password", "Test user", "20051020");
+    $retval = $oUser->create($test_email, $test_password, "Test user", "20051020");
     if($retval != SUCCESS)
     {
         if($retval == USER_CREATE_EXISTS)
@@ -45,7 +48,7 @@ function test_user_create()
     }
 
     /* try creating the user again, see that we get USER_CREATE_EXISTS */
-    $retval = $oUser->create("testemail@somesite.com", "password", "Test user", "20051020");
+    $retval = $oUser->create($test_email, $test_password, "Test user", "20051020");
     if($retval != USER_CREATE_EXISTS)
     {
         echo "Got '".$retval."' instead of USER_CREATE_EXISTS(".USER_CREATE_EXISTS.")\n";
@@ -68,15 +71,17 @@ function test_user_login()
     $retval = $oUser->login($test_email, $test_password);
     if($retval != SUCCESS)
     {
+        echo "Test that correct information results in a correct login FAILED\n";
         echo "Got '".$retval."' instead of SUCCESS(".SUCCESS.")\n";
         return false;
     }
 
     /* test that incorrect user results in a login failed */
     $oUser = new User();
-    $retval = $oUser->login("some nutty username", $testpassword);
+    $retval = $oUser->login("some nutty username", $test_password);
     if($retval != USER_LOGIN_FAILED)
     {
+        echo "Test that incorrect user results in a failed login FAILED\n";
         echo "Got '".$retval."' instead of SUCCESS(".SUCCESS.")\n";
         return false;
     }
@@ -86,6 +91,7 @@ function test_user_login()
     $retval = $oUser->login($test_email, "some password");
     if($retval != USER_LOGIN_FAILED)
     {
+        echo "Test that incorrect passowrd results in a login failed FAILED\n";
         echo "Got '".$retval."' instead of SUCCESS(".SUCCESS.")\n";
         return false;
     }

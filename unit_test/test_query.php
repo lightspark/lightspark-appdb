@@ -121,7 +121,7 @@ function test_query_parameters()
 if(!test_query_parameters())
     echo "test_query_parameters() failed!\n";
 else
-    echo "test_query_parameters() passed!\n";
+    echo "test_query_parameters() passed\n";
 
 
 ?>

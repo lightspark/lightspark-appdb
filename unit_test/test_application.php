@@ -135,7 +135,7 @@ function test_application_getWithRating()
     $iItemsPerPage = 50;
     $iOffset = 0;
     $sRating = 'Bronze';        
-    $aApps=Application::getWithRating($sRating, $iOffset, $iItemsPerPage);
+    $aApps = Application::getWithRating($sRating, $iOffset, $iItemsPerPage);
     $aTest = array();//array to test the uniqueness our query results
     while(list($i, $iId) = each($aApps)) //cycle through results returned by getWithRating
     {
@@ -249,13 +249,13 @@ function create_and_login_user()
 if(!test_application_delete())
     echo "test_application_delete() failed!\n";
 else
-    echo "test_application_delete() passed!\n";
+    echo "test_application_delete() passed\n";
     
 
 if(!test_application_getWithRating())
     echo "test_application_getWithRating() failed!\n";
 else
-    echo "test_application_getWithRating() passed!\n"; 
+    echo "test_application_getWithRating() passed\n"; 
     
 ?>
 

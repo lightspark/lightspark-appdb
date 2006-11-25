@@ -24,14 +24,17 @@ class maintainer
         if($hResult)
         {
             $oRow = mysql_fetch_object($hResult);
-            $this->iMaintainerId = $oRow->maintainerId;
-            $this->iAppId = $oRow->appId;
-            $this->iVersionId = $oRow->versionId;
-            $this->iUserId = $oRow->userId;
-            $this->sMaintainReason = $oRow->maintainReason;
-            $this->bSuperMaintainer = $oRow->superMaintainer;
-            $this->aSubmitTime = $oRow->submitTime;
-            $this->bQueued = $oRow->queued;
+            if($oRow)
+            {
+                $this->iMaintainerId = $oRow->maintainerId;
+                $this->iAppId = $oRow->appId;
+                $this->iVersionId = $oRow->versionId;
+                $this->iUserId = $oRow->userId;
+                $this->sMaintainReason = $oRow->maintainReason;
+                $this->bSuperMaintainer = $oRow->superMaintainer;
+                $this->aSubmitTime = $oRow->submitTime;
+                $this->bQueued = $oRow->queued;
+            }
         }
     }
 
@@ -73,8 +76,8 @@ class maintainer
             {
                 $sStatusMessage = "<p>The maintainer was successfully added into the database</p>\n";
 
-                $oApp = new Application($iAppId);
-                $oVersion = new Version($iVersionId);
+                $oApp = new Application($this->iAppId);
+                $oVersion = new Version($this->iVersionId);
                 //Send Status Email
                 $sEmail = $oUser->sEmail;
                 if ($sEmail)

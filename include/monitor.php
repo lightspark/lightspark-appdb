@@ -26,11 +26,13 @@ class Monitor {
                        WHERE monitorId = '".$iMonitorId."'";
             $hResult = query_appdb($sQuery);
             $oRow = mysql_fetch_object($hResult);
-            $this->iMonitorId = $oRow->monitorId;
-            $this->iAppId = $oRow->appId;
-            $this->iVersionId = $oRow->versionId;
-            $this->iUserId = $oRow->userId;
-
+            if($oRow)
+            {
+                $this->iMonitorId = $oRow->monitorId;
+                $this->iAppId = $oRow->appId;
+                $this->iVersionId = $oRow->versionId;
+                $this->iUserId = $oRow->userId;
+            }
         }
     }
 

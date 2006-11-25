@@ -7,13 +7,13 @@ require_once(BASE."include/version.php");
 require_once(BASE."include/maintainer.php");
 require_once(BASE."include/util.php");
 
-define(SUCCESS, 0);
-define(USER_CREATE_EXISTS, 1);
-define(USER_CREATE_FAILED, 2);
-define(USER_LOGIN_FAILED, 3);
-define(USER_UPDATE_FAILED, 4);
-define(USER_UPDATE_FAILED_EMAIL_EXISTS, 5); /* user updating to an email address that is already in use */
-define(USER_UPDATE_FAILED_NOT_LOGGED_IN, 6); /* user::update() called but user not logged in */
+define("SUCCESS", 0);
+define("USER_CREATE_EXISTS", 1);
+define("USER_CREATE_FAILED", 2);
+define("USER_LOGIN_FAILED", 3);
+define("USER_UPDATE_FAILED", 4);
+define("USER_UPDATE_FAILED_EMAIL_EXISTS", 5); /* user updating to an email address that is already in use */
+define("USER_UPDATE_FAILED_NOT_LOGGED_IN", 6); /* user::update() called but user not logged in */
 
 /**
  * User class for handling users
@@ -41,13 +41,16 @@ class User {
                        WHERE userId = '?'";
             $hResult = query_parameters($sQuery, $iUserId);
             $oRow = mysql_fetch_object($hResult);
-            $this->iUserId = $oRow->userid;
-            $this->sEmail = $oRow->email;
-            $this->sRealname = $oRow->realname;
-            $this->sStamp = $oRow->stamp;
-            $this->sDateCreated = $oRow->created;
-            $this->sWineRelease = $oRow->CVSrelease;
-            $this->bInactivityWarned = $oRow->inactivity_warned;
+            if($oRow)
+            {
+                $this->iUserId = $oRow->userid;
+                $this->sEmail = $oRow->email;
+                $this->sRealname = $oRow->realname;
+                $this->sStamp = $oRow->stamp;
+                $this->sDateCreated = $oRow->created;
+                $this->sWineRelease = $oRow->CVSrelease;
+                $this->bInactivityWarned = $oRow->inactivity_warned;
+            }
         }
         return $this->isLoggedIn();
     }
@@ -65,12 +68,16 @@ class User {
         $hResult = query_parameters($sQuery, $sEmail, $sPassword);
 
         $oRow = mysql_fetch_object($hResult);
-        $this->iUserId = $oRow->userid;
-        $this->sEmail = $oRow->email;
-        $this->sRealname = $oRow->realname;
-        $this->sStamp = $oRow->stamp;
-        $this->sDateCreated = $oRow->created;
-        $this->sWineRelease = $oRow->CVSrelease;
+        if($oRow)
+        {
+            $this->iUserId = $oRow->userid;
+            $this->sEmail = $oRow->email;
+            $this->sRealname = $oRow->realname;
+            $this->sStamp = $oRow->stamp;
+            $this->sDateCreated = $oRow->created;
+            $this->sWineRelease = $oRow->CVSrelease;
+        }
+
         if($this->isLoggedIn())
         {
             // Update timestamp and clear the inactivity flag if it was set
@@ -740,13 +747,19 @@ class User {
              while($oRow = mysql_fetch_object($hResult))
              {
                  $i = array_search($oRow->userid, $aUserId);
-                 if ($aUserId[$i] != array($oRow->userid))
+
+                 // if we didn't find this entry in the $aUserId
+                 // array then we should add it
+                 if($i === false)
                  {
                      $aUserId[$c] = array($oRow->userid);
                      $c++;
                  }
              }
          }
+
+         // go through the email entries and only add the emails for the users
+         // that want to receive it
          if ($c > 0)
          {
              while(list($index, list($userIdValue)) = each($aUserId))
@@ -756,6 +769,7 @@ class User {
                      $retval .= $oUser->sEmail." ";
              }
          }
+
          return $retval;
      }
 

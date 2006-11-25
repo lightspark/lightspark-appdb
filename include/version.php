@@ -45,19 +45,19 @@ class Version {
                 if($hResult = query_parameters($sQuery, $iVersionId))
                 {
                     $oRow = mysql_fetch_object($hResult);
-                    $this->iVersionId = $iVersionId;
-                    $this->iAppId = $oRow->appId;
-                    $this->iCatId = $oRow->catId;
-                    $this->iSubmitterId = $oRow->submitterId;
-                    $this->sSubmitTime = $oRow->submitTime;
-                    $this->sDate = $oRow->submitTime;
-                    $this->sName = $oRow->versionName;
-                    $this->sKeywords = $oRow->keywords;
-                    $this->sDescription = $oRow->description;
-                    $this->sTestedRelease = $oRow->maintainer_release;
-                    $this->sTestedRating = $oRow->maintainer_rating;
-                    $this->sWebpage = $oRow->webPage;
-                    $this->sQueued = $oRow->queued;
+                    if($oRow)
+                    {
+                        $this->iVersionId = $iVersionId;
+                        $this->iAppId = $oRow->appId;
+                        $this->iSubmitterId = $oRow->submitterId;
+                        $this->sSubmitTime = $oRow->submitTime;
+                        $this->sDate = $oRow->submitTime;
+                        $this->sName = $oRow->versionName;
+                        $this->sDescription = $oRow->description;
+                        $this->sTestedRelease = $oRow->maintainer_release;
+                        $this->sTestedRating = $oRow->maintainer_rating;
+                        $this->sQueued = $oRow->queued;
+                    }
                 }
             }
         }
@@ -394,7 +394,12 @@ class Version {
     function mailSubmitter($sAction="add")
     {
         $aClean = array(); //array of filtered user input
-        $aClean['sReplyText'] = makeSafe($_REQUEST['sReplyText']);
+
+        // use 'sReplyText' if it is defined, otherwise define the value as an empty string
+        if(isset($_REQUEST['sReplyText']))
+            $aClean['sReplyText'] = makeSafe($_REQUEST['sReplyText']);
+        else
+            $aClean['sReplyText'] = "";
 
         if($this->iSubmitterId)
         {
@@ -403,12 +408,12 @@ class Version {
             switch($sAction)
             {
             case "add":
-                $sSubject =  "Submitted version accepted";
+                $sSubject = "Submitted version accepted";
                 $sMsg  = "The version you submitted (".$oApp->sName." ".$this->sName.") has been accepted by ".$_SESSION['current']->sRealname.".";
                 $sMsg .= "Administrators Responce:\n";
             break;
             case "reject":
-                $sSubject =  "Submitted version rejected";
+                $sSubject = "Submitted version rejected";
                 $sMsg  = "The version you submitted (".$oApp->sName." ".$this->sName.") has been rejected by ".$_SESSION['current']->sRealname.".";
                 $sMsg .= "Clicking on the link in this email will allow you to modify and resubmit the version. ";
                 $sMsg .= "A link to your queue of applications and versions will also show up on the left hand side of the Appdb site once you have logged in. ";
@@ -416,7 +421,7 @@ class Version {
                 $sMsg .= "Reason given:\n";
             break;
             case "delete":
-                $sSubject =  "Submitted version deleted";
+                $sSubject = "Submitted version deleted";
                 $sMsg  = "The version you submitted (".$oApp->sName." ".$this->sName.") has been deleted by ".$_SESSION['current']->sRealname.".";
                 $sMsg .= "Reason given:\n";
             break;
@@ -432,7 +437,12 @@ class Version {
     function SendNotificationMail($sAction="add",$sMsg=null)
     {
         $aClean = array(); //array of filtered user input
-        $aClean['sReplyText'] = makeSafe($_REQUEST['sReplyText']);
+        
+        // use 'sReplyText' if it is defined, otherwise define the value as an empty string
+        if(isset($_REQUEST['sReplyText']))
+            $aClean['sReplyText'] = makeSafe($_REQUEST['sReplyText']);
+        else
+            $aClean['sReplyText'] = "";
 
         $oApp = new Application($this->iAppId);
         switch($sAction)

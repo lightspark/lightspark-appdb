@@ -32,11 +32,13 @@ class Category {
             if($hResult = query_parameters($sQuery, $iCatId))
             {
                 $oRow = mysql_fetch_object($hResult);
-                $this->iCatId = $iCatId;
-                $this->iParentId = $oRow->catParent;
-                $this->sName = $oRow->catName;
-                $this->sDescription = $oRow->catDescription;
-
+                if($oRow)
+                {
+                    $this->iCatId = $iCatId;
+                    $this->iParentId = $oRow->catParent;
+                    $this->sName = $oRow->catName;
+                    $this->sDescription = $oRow->catDescription;
+                }
             }
 
             /*
