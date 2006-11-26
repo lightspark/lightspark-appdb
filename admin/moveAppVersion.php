@@ -22,7 +22,8 @@ if(!empty($aClean['sAction']))
 {
     /* move this version to the given application */
     $oVersion = new Version($aClean['iVersionId']);
-    $oVersion->update(null, null, null, null, $aClean['iAppId']);
+    $oVersion->iAppId = $aClean['iAppId'];
+    $oVersion->update();
 
     /* redirect to the application we just moved this version to */
     util_redirect_and_exit(apidb_fullurl("appview.php?iAppId=".$aClean['iAppId']));
