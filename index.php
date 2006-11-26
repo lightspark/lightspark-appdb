@@ -47,7 +47,7 @@ if(!$_SESSION['current']->isLoggedIn())
 
     $str_benefits
 
-    <p>We'd like to thank your for being a member and being logged in the system. Your help in
+    <p>We'd like to thank you for being a member and being logged in to the system. Your help in
     stomping out Wine issues will be greatly appreciated.</p>";
 
 }
