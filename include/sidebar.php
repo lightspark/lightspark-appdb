@@ -23,6 +23,7 @@ function global_sidebar_menu() {
     $g->add("AppDB Home", BASE);
     $g->add("Screenshots", BASE."viewScreenshots.php");
     $g->add("Browse Apps", BASE."appbrowse.php");
+    $g->add("Browse Newest Apps", BASE."browse_newest_apps.php");
     $g->add("Browse Apps by Rating", BASE."browse_by_rating.php");
     $g->add("Top 25", BASE."votestats.php");
     $g->add("Submit Application", BASE."appsubmit.php?sSub=view&sAppType=application");

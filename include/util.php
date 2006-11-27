@@ -63,12 +63,16 @@ function values($arr)
 }
 
 
-/*
- * format date
- */
+// print the month, day, year, hour, minute, second
 function print_date($sTimestamp)
 {
     return date("F d Y  H:i:s", $sTimestamp);
+}
+
+// print the month, day and year
+function print_short_date($sTimestamp)
+{
+    return date("F d Y", $sTimestamp);
 }
 
 function mysqltimestamp_to_unixtimestamp($sTimestamp)
