@@ -582,7 +582,15 @@ class testData{
 
         if (empty($aValues['sTestedRating']))
             $errors .= "<li>Please enter a rating based on how well this application runs.</li>\n";
-        
+
+        // Basic checking of rating logic to ensure that the users test results
+        // are consistent
+        if (($aValues['sRuns'] != "Yes") && ($aValues['sTestedRating'] != GARBAGE_RATING))
+            $errors .= "<li>Applications that do not run should be rated &#8216;Garbage&#8217;.</li>\n";
+
+        if (($aValues['sInstalls'] == "No") && ($aValues['sTestedRating'] == PLATINUM_RATING))
+            $errors .= "<li>An application can only get a Platinum rating if it installs and runs &#8216;out of the box&#8217;.</li>\n";
+
         return $errors;
 
     }
