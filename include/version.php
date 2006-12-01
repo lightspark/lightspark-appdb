@@ -540,7 +540,7 @@ class Version {
         echo html_frame_start("Version Form", "90%", "", 0);
         echo "<table width='100%' border=0 cellpadding=2 cellspacing=0>\n";
 
-        echo '<input type="hidden" name="iVersionId" value='.$this->iVersionId.' />';
+        echo '<input type="hidden" name="iVersionId" value="'.$this->iVersionId.'" />';
 
         if($editParentApplication)
         {
@@ -552,7 +552,7 @@ class Version {
             echo '</td></tr>',"\n";
         } else
         {
-            echo '<input type="hidden" name="iAppId" value='.$this->iAppId.' />';
+            echo '<input type="hidden" name="iAppId" value="'.$this->iAppId.'" />';
         }
 
         // version name
@@ -583,8 +583,8 @@ class Version {
             echo html_frame_end();
         } else
         {
-            echo '<input type="hidden" name="sMaintainerRating" value='.$this->sTestedRating.' />';
-            echo '<input type="hidden" name="sMaintainerRelease" value='.$this->sTestedRelease.' />';
+            echo '<input type="hidden" name="sMaintainerRating" value="'.$this->sTestedRating.'" />';
+            echo '<input type="hidden" name="sMaintainerRelease" value="'.$this->sTestedRelease.'" />';
         }
     }
 
