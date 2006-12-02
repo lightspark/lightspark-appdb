@@ -721,7 +721,7 @@ class Version {
                 } else /* nope */
                 {
                     echo '<form method="post" name="sMessage" action="maintainersubmit.php">';
-                    echo '<input type="submit" value="Be a maintainer for this app" class="button" title="Click here to know more about maintainers.">';
+                    echo '<input type="submit" value="Be a Maintainer for This Version" class="button" title="Click here to know more about maintainers.">';
                     echo "<input type=hidden name=\"iAppId\" value=\"".$oApp->iAppId."\">";
                     echo "<input type=hidden name=\"iVersionId\" value=\"".$this->iVersionId."\">";
                     echo "</form>";
@@ -732,7 +732,7 @@ class Version {
                     {
                         echo '<form method=post name=sMessage action=appview.php?iVersionId='.$this->iVersionId.'&iAppId='.$oApp->iAppId.'>';
                         echo '<input type=hidden name="sSub" value="StartMonitoring" />';
-                        echo '<input type=submit value="Monitor Version" class="button" />';
+                        echo '<input type=submit value="Monitor Changes" class="button" />';
                         echo "</form>";
                     }
                 }
