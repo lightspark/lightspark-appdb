@@ -55,7 +55,7 @@ else
 
    // url edit form
     echo '<form enctype="multipart/form-data" action="editAppFamily.php" method="post">',"\n";
-    echo '<input type=hidden name="iAppId" value='.$oApp->iAppId.'>';
+    echo '<input type="hidden" name="iAppId" value="'.$oApp->iAppId.'" />';
     echo html_frame_start("Edit URL","90%","",0);
     echo '<table border=0 cellpadding=6 cellspacing=0 width="100%">',"\n";
 
@@ -77,7 +77,7 @@ else
             echo '<tr><td class=color3><input type="checkbox" name="'.$temp0.'"></td>',"\n";
             echo '<td class=color3><input size=45% type="text" name="'.$temp1.'" value ="'.stripslashes($oRow->description).'"</td>',"\n";
             echo '<td class=color3><input size=45% type="text" name="'.$temp2.'" value="'.$oRow->url.'"></td></tr>',"\n";
-            echo '<input type=hidden name="'.$temp3.'" value='.$oRow->id.'>';
+            echo '<input type="hidden" name="'.$temp3.'" value="'.$oRow->id.'" />';
             echo '<input type=hidden name="'.$temp4.'" value="'.stripslashes($oRow->description).'">';
             echo '<input type=hidden name="'.$temp5.'" value="'.$oRow->url.'">',"\n";
             $i++;

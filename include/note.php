@@ -234,9 +234,9 @@ class Note {
         echo html_frame_start("Edit Application Note {$aClean['noteId']}", "90%","",0);
         echo html_table_begin("width='100%' border=0 align=left cellpadding=6 cellspacing=0 class='box-body'");
 
-        echo '<input type="hidden" name="iNoteId" value='.$this->iNoteId.'>';
-        echo '<input type="hidden" name="iAppId" value='.$this->iAppId.'>';
-        echo '<input type="hidden" name="iVersionId" value='.$this->iVersionId.'>';
+        echo '<input type="hidden" name="iNoteId" value="'.$this->iNoteId.'" />';
+        echo '<input type="hidden" name="iAppId" value="'.$this->iAppId.'" />';
+        echo '<input type="hidden" name="iVersionId" value="'.$this->iVersionId.'" />';
 
         echo '<tr><td class=color1>Title</td>'."\n";
         echo '    <td class=color0><input size=80% type="text" name="sNoteTitle" type="text" value="'.$this->sTitle.'"></td></tr>',"\n";

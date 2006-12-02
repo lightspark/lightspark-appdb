@@ -39,8 +39,8 @@ if(!empty($aClean['sAction']))
 
     echo "<form method=post action='moveAppVersion.php'>\n";
     echo html_frame_start("Move ".$oApp->sName." ".$oVersion->sName, "90%","",0);
-    echo '<input type="hidden" name="iAppId" value='.$oVersion->iAppId.' />';
-    echo '<input type="hidden" name="iVersionId" value='.$oVersion->iVersionId.' />';
+    echo '<input type="hidden" name="iAppId" value="'.$oVersion->iAppId.'" />';
+    echo '<input type="hidden" name="iVersionId" value="'.$oVersion->iVersionId.'" />';
 
 
     /* build a table of applications and their versions */

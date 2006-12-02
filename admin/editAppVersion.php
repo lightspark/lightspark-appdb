@@ -47,8 +47,8 @@ if(!empty($aClean['sSubmit']))
 
     // url edit form
     echo '<form enctype="multipart/form-data" action="editAppVersion.php" method="post">',"\n";
-    echo '<input type=hidden name="iAppId" value='.$oVersion->iAppId.'>';
-    echo '<input type=hidden name="iVersionId" value='.$oVersion->iVersionId.'>';
+    echo '<input type="hidden" name="iAppId" value="'.$oVersion->iAppId.'" />';
+    echo '<input type="hidden" name="iVersionId" value="'.$oVersion->iVersionId.'" />';
     echo html_frame_start("Edit URL","90%","",0);
     echo '<table border=0 cellpadding=6 cellspacing=0 width="100%">',"\n";
             
@@ -96,8 +96,8 @@ if(!empty($aClean['sSubmit']))
     {
         // move version form
         echo '<form enctype="multipart/form-data" action="moveAppVersion.php" method="post">',"\n";
-        echo '<input type=hidden name="iAppId" value='.$oVersion->iAppId.'>';
-        echo '<input type=hidden name="iVersionId" value='.$oVersion->iVersionId.'>';
+        echo '<input type="hidden" name="iAppId" value="'.$oVersion->iAppId.'" />';
+        echo '<input type="hidden" name="iVersionId" value="'.$oVersion->iVersionId.'" />';
         echo html_frame_start("Move version to another application","90%","",0);
         echo '<center><input type="submit" name="sView" value="Move this version"></center>',"\n";
         echo html_frame_end();

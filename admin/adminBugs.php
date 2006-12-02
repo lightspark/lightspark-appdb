@@ -67,7 +67,7 @@ if ($aClean['sSub'])
     echo '<br />',"\n";
 
     /* display the option to choose how many comments per-page to display */
-    echo '<input type=hidden name=iPage value='.$currentPage.'>';
+    echo '<input type="hidden" name="iPage" value="'.$currentPage.'" />';
 
     echo '<b>Number of Bug Links per page: </b>';
     echo '<select name="iItemsPerPage">';
@@ -76,9 +76,9 @@ if ($aClean['sSub'])
     foreach($ItemsPerPageArray as $i => $value)
     {
         if($ItemsPerPageArray[$i] == $ItemsPerPage)
-            echo '<option value='.$ItemsPerPageArray[$i].' SELECTED>'.$ItemsPerPageArray[$i],"\n";
+            echo '<option value="'.$ItemsPerPageArray[$i].'" selected="selected">'.$ItemsPerPageArray[$i],"\n";
         else
-            echo '<option value='.$ItemsPerPageArray[$i].'>'.$ItemsPerPageArray[$i],"\n";
+            echo '<option value="'.$ItemsPerPageArray[$i].'">'.$ItemsPerPageArray[$i],"\n";
     }
     echo '</select>',"\n";
 
