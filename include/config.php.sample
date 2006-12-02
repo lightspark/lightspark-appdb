@@ -19,6 +19,9 @@ define("APPDB_OWNER_URL","http://www.winehq.org/"); // website of this product/c
 define("APPDB_OWNER_EMAIL","appdb@winehq.org"); // e-mail of this product/company
 define("BUGZILLA_ROOT","http://bugs.winehq.org/"); // path to bugzilla
 
+// AppDB developers: Use this define to disable email from being sent from the appdb during testing
+//if(!defined("DISABLE_EMAIL"))
+// define("DISABLE_EMAIL", true); // disable email, see mail_appdb() in include/mail.php
 
 /*
  * apps database info

@@ -3,6 +3,11 @@ require_once(BASE."include/config.php");
 
 function mail_appdb($sEmailList,$sSubject,$sMsg)
 {
+    // NOTE: For AppDB developers: If email is disabled return from this function
+    //  immediately. See include/config.php.sample for information
+    if(defined("DISABLE_EMAIL"))
+        return;
+
     $sHeaders  = "MIME-Version: 1.0\r\n";
     $sHeaders .= "From: AppDB <".APPDB_OWNER_EMAIL.">\r\n";
     $sHeaders .= "Reply-to: AppDB <".APPDB_OWNER_EMAIL.">\r\n";
