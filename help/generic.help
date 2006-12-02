@@ -17,26 +17,24 @@ for a certain program doesn't exist.
        </ul>
 	<p>
 
-<li> You can run winecheck this handy tool is located in the /tools directory.
-(chmod +x winecheck; ./winecheck)
-to verify the most important aspects of Wine environment configuration.</li><p>
-
 <li> Run your program</li><p>
+
+<li> If it gives an error about missing files, or does not start at all, try running it from the directory where it was installed.</li><p>
+
+<li> Many newer games contain copy protection, which is often not supported in Wine.  Cracks are available from sites such as <a href="http://www.megagames.com/trainers.html" target="_blank">MegaGames</a>.</li><p>
 
 <li> In case of failure, try different builtin, native DLL settings:
 Run Wine with --debugmsg +loaddll to find out which
 DLLs are loaded as native or builtin.
 Then make sure appropriate native versions are in the
-c:\windows\system directory as configured in your Wine
-config file. There are five options you can choose from when setting
-dll overrides, I will use commctrl here as an example.</li><p>
+c:\windows\system32 directory as configured in Winecfg&#8217;s DLL overrides tab. There are four options you can choose from when setting
+dll overrides.</li><p>
 
 <pre>
-"commctrl" = "native, builtin"
-"commctrl" = "builtin, native "
-"commctrl" = "native"
-"commctrl" = "builtin"
-"commctrl" = ""
+(native, builtin)
+(builtin, native)
+(native)
+(builtin)
 </pre>
 
 
@@ -45,33 +43,7 @@ dll overrides, I will use commctrl here as an example.</li><p>
 and you may also want to read the
 <a href="http://www.winehq.org/site/docs/wine-faq/index">Wine FAQ</a>.</li><p>
 
-<li> The many different way's of getting help.</li>
-
-<ul>
-
-<li> You can ask for help on the <a href="http://www.winehq.org/mailman/listinfo/wine-users">wine-users</a>
-mailing list. </li>
-
-<li>WineHQ has a newsgroup hosted by <a href="news:comp.emulators.ms-windows.wine">Usenet</a>. You can read and post using a
-newsgroup reader such as <a href="http://www.mozilla.org/">Mozilla</a>
-or <a href="http://pan.rebelbase.com/">Pan</a>. or via the web at 
-<a href="http://groups.google.com/groups?group=comp.emulators.ms-windows.wine">Google</a>.</li>
-
-<li><a href="http://www.freenode.net">Freenode.net</a> hosts a chat room for
-Wine. You can access the chat room using an IRC program such as
-<a href="http://www.xchat.org/">Xchat</a>. Use the settings listed below.</li><p>
-
-<blockquote>
-    <b>Server:</b> irc.freenode.net<br>
-
-    <b>Port:</b> 6667<br>
-    <b>Channel:</b> #winehq<br>
-</blockquote>
-
-<li>If you use Mozilla or any other browser that supports IRC urls, you can
-join the chat by clicking on <a href="irc://irc.freenode.net/#winehq">irc://irc.freenode.net/#winehq</a>.</li><p>
-
-</ul>
+<li> The Wine <a href="http://winehq.org/site/getting_help">'Getting Help'</a> page shows the current methods of getting help with Wine.</li><p>
 
 <li> If you have more questions, please contact us
 at <a href="mailto:appdb@winehq.org">appdb@winehq.org</a>.</li></p>
