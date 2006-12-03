@@ -92,9 +92,8 @@ class maintainer
             }
         } else
         {
-            //delete the item from the queue
-            query_parameters("DELETE from appMaintainers WHERE userId = '?' AND maintainerId = '?'",
-                             $this->iUserId, $this->iMaintainerId);
+            /* Delete entry, but only if queued */
+            query_parameters("DELETE from appMaintainers WHERE userId = '?' AND maintainerId = '?' AND queued = 'true'", $this->iUserId, $this->iMaintainerId);
 
             if($oUser->isSuperMaintainer($this->iAppId) && !$this->bSuperMaintainer)
                 $sStatusMessage = "<p>User is already a super maintainer of this application</p>\n";

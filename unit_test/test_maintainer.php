@@ -5,6 +5,9 @@ require_once(BASE.'include/maintainer.php');
 
 /* unit tests for maintainer class */
 
+// test that the maintainer count for a given user is accurate for both
+//   maintainers and super maintainers when the user is either a maintainer
+//   or a super maintainer
 function test_maintainer_getMaintainerCountForUser()
 {
     test_start(__FUNCTION__);
@@ -99,6 +102,8 @@ function test_maintainer_getMaintainerCountForUser()
     return true;
 }
 
+// test that applications a user maintains are accurately reported by
+//  maintainer::GetAppsMaintained()
 function test_maintainer_getAppsMaintained()
 {
     test_start(__FUNCTION__);
@@ -190,6 +195,67 @@ function test_maintainer_getAppsMaintained()
     return true;
 }
 
+// test that unQueueing a queued maintainer request twice is ignored
+function test_maintainer_unQueue()
+{
+    test_start(__FUNCTION__);
+
+    global $test_email, $test_password;
+
+    /* login the user */
+    $oUser = new User();
+    $retval = $oUser->login($test_email, $test_password);
+    if($retval != SUCCESS)
+    {
+        echo "Got '".$retval."' instead of SUCCESS(".SUCCESS.")\n";
+        return false;
+    }
+
+    /**
+      * make the user a super maintatiner
+      */
+    $iAppId = 655000;
+    $iVersionId = 655200;
+
+    /* queue up this maintainer */
+    $oMaintainer = new Maintainer();
+    $oMaintainer->iAppId = $iAppId;
+    $oMaintainer->iVersionId = $iVersionId;
+    $oMaintainer->iUserId = $_SESSION['current']->iUserId;
+    $oMaintainer->sMaintainReason = "Some crazy reason";
+    $oMaintainer->bSuperMaintainer = TRUE;
+    $oMaintainer->create();
+
+    /* and unqueue it to accept the user as a maintainer */
+    $oMaintainer->unQueue("Some reply text");
+
+    /* unqueue it again to ensure that unQueueing a maintainer request twice works properly */
+    $oMaintainer->unQueue("Some other reply text");
+
+
+    /* see that the user is a super maintainer of the one application we added them to be */
+    $iExpected = 1; /* we expect 1 super maintainer for this user */
+    $iSuperMaintainerCount = Maintainer::getMaintainerCountForUser($oUser, TRUE);
+    if($iSuperMaintainerCount != $iExpected)
+    {
+        echo "Got super maintainer count of '".$iSuperMaintainerCount."' instead of '".$iExpected."'\n";
+        return false;
+    }
+
+    /* maintainer count should be zero */
+    $iExpected = 0;
+    $iMaintainerCount = Maintainer::getMaintainerCountForUser($oUser, FALSE);
+    if($iMaintainerCount != $iExpected)
+    {
+        echo "Got maintainer count of '".$iMaintainerCount."' instead of '".$iExpected."'\n";
+        return false;
+    }
+
+    /* remove maintainership for this user */
+    Maintainer::deleteMaintainer($oUser, $iAppId);
+
+    return true;
+}
 
 
 if(!test_maintainer_getMaintainerCountForUser())
@@ -202,5 +268,11 @@ if(!test_maintainer_getAppsMaintained())
     echo "test_maintainer_getAppsMaintained() failed!\n";
 else
     echo "test_maintainer_getAppsMaintained() passed\n";
+
+
+if(!test_maintainer_unQueue())
+    echo "test_maintainer_unQueue() failed!\n";
+else
+    echo "test_maintainer_unQueue() passed\n";
 
 ?>
