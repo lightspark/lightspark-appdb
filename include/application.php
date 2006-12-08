@@ -345,12 +345,12 @@ class Application {
             {
             case "add":
                 $sSubject =  "Submitted application accepted";
-                $sMsg  = "The application you submitted (".$oApp->sName." ".$this->sName.") has been accepted by ".$_SESSION['current']->sRealname.".";
+                $sMsg  = "The application you submitted (".$this->sName." ".$this->sName.") has been accepted by ".$_SESSION['current']->sRealname.".";
                 $sMsg .= "Administrators Responce:\n";
             break;
             case "reject":
                 $sSubject =  "Submitted application rejected";
-                $sMsg  = "The application you submitted (".$oApp->sName." ".$this->sName.") has been rejected by ".$_SESSION['current']->sRealname.".";
+                $sMsg  = "The application you submitted (".$this->sName." ".$this->sName.") has been rejected by ".$_SESSION['current']->sRealname.".";
                 $sMsg .= "Clicking on the link in this email will allow you to modify and resubmit the application. ";
                 $sMsg .= "A link to your queue of applications and versions will also show up on the left hand side of the Appdb site once you have logged in. ";
                 $sMsg .= APPDB_ROOT."appsubmit.php?sub=view&apptype=application&appId=".$this->iAppId."\n";
