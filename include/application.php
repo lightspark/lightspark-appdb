@@ -9,6 +9,7 @@ require_once(BASE."include/category.php");
 require_once(BASE."include/url.php");
 require_once(BASE."include/util.php");
 require_once(BASE."include/mail.php");
+require_once(BASE."include/maintainer.php");
 
 define("PLATINUM_RATING", "Platinum");
 define("GOLD_RATING", "Gold");
@@ -33,6 +34,8 @@ class Application {
     var $sSubmitTime;
     var $iSubmitterId;
     var $aVersionsIds;  // an array that contains the versionId of every version linked to this app.
+    var $bSuperMaintainerRequest; // Temporary variable used in application submission.
+                                  // If the user wants to become a super maintainer for the application
 
     /**    
      * constructor, fetches the data.
@@ -128,6 +131,18 @@ class Application {
             $this->iAppId = mysql_insert_id();
             $this->application($this->iAppId);
             $this->SendNotificationMail();  // Only administrators will be mailed as no supermaintainers exist for this app.
+
+            /* Submit super maintainer request if asked to */
+            if($this->bSuperMaintainerRequest)
+            {
+                $oMaintainer = new Maintainer();
+                $oMaintainer->iAppId = $this->iAppId;
+                $oMaintainer->iUserId = $_SESSION['current']->iUserId;
+                $oMaintainer->sMaintainReason = "This user submitted the application; auto-queued.";
+                $oMaintainer->bSuperMaintainer = 1;
+                $oMaintainer->create();
+            }
+
             return true;
         } else
         {
@@ -291,6 +306,15 @@ class Application {
             // we send an e-mail to intersted people
             $this->mailSubmitter();
             $this->SendNotificationMail();
+
+            /* Unqueue matching super maintainer request */
+            $hResultMaint = query_parameters("SELECT maintainerId FROM appMaintainers WHERE userId = '?' AND appId = '?'", $this->iSubmitterId, $this->iAppId);
+            if($hResultMaint)
+            {
+                $oMaintainerRow = mysql_fetch_object($hResultMaint);
+                $oMaintainer = new Maintainer($oMaintainerRow->maintainerId);
+                $oMaintainer->unQueue("OK");
+            }
         }
     }
 
@@ -336,7 +360,10 @@ class Application {
     {
         $aClean = array(); //array of filtered user input
 
-        $aClean['sReplyText'] = makeSafe($_REQUEST['sReplyText']);	
+        if(isset($_REQUEST['sReplyText']))
+            $aClean['sReplyText'] = makeSafe($_REQUEST['sReplyText']);	
+        else
+            $aClean['sReplyText'] = "";
 
         if($this->iSubmitterId)
         {
@@ -517,6 +544,15 @@ class Application {
 
         echo $this->sDescription.'</textarea></p></td></tr>',"\n";
 
+        // Allow user to apply as super maintainer if this is a new app
+        if(!$this->iAppId)
+        {
+            if($this->bSuperMaintainerRequest)
+                $sRequestSuperMaintainerChecked = 'checked="checked"';
+            echo '<tr valign="top"><td class="color0"><b>Become super maintainer?</b></td>',"\n";
+            echo '<td><input type="checkbox" '.$sRequestSuperMaintainerChecked.' name="bSuperMaintainerRequest" /> Check this to request being a super maintainer for the application</td></tr>',"\n";
+        }
+
         echo "</table>\n";
 
         echo html_frame_end();
@@ -556,6 +592,7 @@ class Application {
         $this->iVendorId = $aValues['iAppVendorId'];
         $this->sWebpage = $aValues['sAppWebpage'];
         $this->sKeywords = $aValues['sAppKeywords'];
+        $this->bSuperMaintainerRequest = $aValues['bSuperMaintainerRequest'];
     }
 
     /* display this application */

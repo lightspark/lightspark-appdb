@@ -257,6 +257,53 @@ function test_maintainer_unQueue()
     return true;
 }
 
+/* Test whether a super maintainer request submitted along with an application is also accepted when the application is accepted */
+function test_superMaintainerOnAppSubmit()
+{
+    test_start(__FUNCTION__);
+
+    global $test_email, $test_password;
+
+    /* Log in */
+    $oUser = new User();
+    if($retval = $oUser->login($test_email, $test_password) != SUCCESS)
+    {
+        echo "Received '$retval' instead of SUCCESS('".SUCCESS."').";
+        return FALSE;
+    }
+
+    $iAppId = 655000;
+    $iVersionId = 655200;
+
+    $oApp = new Application($iAppId);
+
+    /* The user wants to be a super maintainer */
+    $oApp->bSuperMaintainerRequest = 1;
+
+    /* Make sure the user is not an admin, so the app will be queued */
+    $oUser->delPriv("admin");
+
+    $oApp->create();
+
+    /* Make the user an admin so the app can be unqueued */
+    $oUser->addPriv("admin");
+
+    $oApp->unQueue();
+
+    /* The user should now be a super maintainer */
+    $iExpected = 1;
+    $iGot = Maintainer::getMaintainerCountForUser($oUser, TRUE);
+
+    if($iGot != $iExpected)
+    {
+        echo "Got maintainer count of '$iGot' instead of '$iExpected'";
+        return false;
+    }
+
+    Maintainer::deleteMaintainer($oUser, $iAppId);
+
+    return true;
+}
 
 if(!test_maintainer_getMaintainerCountForUser())
     echo "test_maintainer_getMaintainerCountForUser() failed!\n";
@@ -274,5 +321,10 @@ if(!test_maintainer_unQueue())
     echo "test_maintainer_unQueue() failed!\n";
 else
     echo "test_maintainer_unQueue() passed\n";
+
+if(!test_superMaintainerOnAppSubmit())
+    echo "test_superMaintainerOnAppSubmit() failed!\n";
+else
+    echo "test_superMaintainerOnAppSubmit() passed\n";
 
 ?>

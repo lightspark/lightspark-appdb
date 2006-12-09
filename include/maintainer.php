@@ -185,9 +185,11 @@ class maintainer
 
     function ObjectGetEntries($bQueued)
     {
+        /* Excluding requests for queued apps, as these will be handled automatically */
         if($bQueued)
-            $sQuery = "SELECT maintainerId FROM appMaintainers, user_list WHERE appMaintainers.userid = user_list.userid ".
-                "AND queued = '?' ORDER by submitTime";
+            $sQuery = "SELECT maintainerId FROM appMaintainers, user_list, appFamily WHERE appMaintainers.userid = user_list.userid ".
+                "AND appMaintainers.queued = '?' AND appMaintainers.appId = ".
+                "appFamily.appId AND appFamily.queued = 'false' ORDER by ". "appMaintainers.submitTime";
         else
             $sQuery = "SELECT maintainerId FROM appMaintainers, user_list WHERE appMaintainers.userid = user_list.userid ".
                 "AND queued = '?' ORDER by realname";
@@ -248,7 +250,8 @@ class maintainer
 
     function getQueuedMaintainerCount()
     {
-        $sQuery = "SELECT count(*) as queued_maintainers FROM appMaintainers where queued='true'";
+        /* Excluding requests for queued apps, as these are handled automatically */
+        $sQuery = "SELECT COUNT(*) as queued_maintainers FROM appMaintainers, appFamily WHERE appMaintainers.queued='true' AND appFamily.appId = appMaintainers.appId AND appFamily.queued = 'false'";
         $hResult = query_parameters($sQuery);
         $oRow = mysql_fetch_object($hResult);
         return $oRow->queued_maintainers;
