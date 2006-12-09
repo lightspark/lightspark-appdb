@@ -930,6 +930,8 @@ class Version {
 
                     if($oVersion->sTestedRating && $oVersion->sTestedRating != "/")
                         $sRatingColor = "class=\"$oVersion->sTestedRating\"";
+                    else
+                        $sRatingColor = "class=\"$bgcolor\"";
 
                     //display row
                     echo "<tr class=$bgcolor>\n";
