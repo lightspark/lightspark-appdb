@@ -159,7 +159,7 @@ class Bug {
             if(!$bSilent)
                 $this->SendNotificationMail(true);
         }
-        if($this->iSubmitterId)
+        if($this->iSubmitterId && ($this->iSubmitterId != $oUser->iUserId))
         {
             $this->mailSubmitter(true);
         }
