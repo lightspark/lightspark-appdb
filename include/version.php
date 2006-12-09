@@ -662,9 +662,14 @@ class Version {
             echo "        </td></tr>\n";
         }    
 
+        if($this->sTestedRating != "/" && $this->sTestedRating)
+            $sMaintainerColor = $this->sTestedRating;
+        else
+            $sMaintainerColor = "color0";
+
         // rating Area
-        echo "<tr class=\"color1\" valign=\"top\"><td><b>Maintainer Rating</b></td><td>".$this->sTestedRating."</td></tr>\n";
-        echo "<tr class=\"color0\" valign=\"top\"><td><b>Maintainers Version</b></td><td>".$this->sTestedRelease."</td></tr>\n";
+        echo "<tr class=\"$sMaintainerColor\" valign=\"top\"><td><b>Maintainer&#8217;s Rating</b></td><td>".$this->sTestedRating."</td></tr>\n";
+        echo "<tr class=\"$sMaintainerColor\" valign=\"top\"><td><b>Maintainer&#8217;s Version</b></td><td>".$this->sTestedRelease."</td></tr>\n";
 
         // image
         $img = Screenshot::get_random_screenshot_img($oApp->iAppId, $this->iVersionId, false);
@@ -923,12 +928,15 @@ class Version {
                     // set row color
                     $bgcolor = ($c % 2 == 0) ? "color0" : "color1";
 
+                    if($oVersion->sTestedRating && $oVersion->sTestedRating != "/")
+                        $sRatingColor = "class=\"$oVersion->sTestedRating\"";
+
                     //display row
                     echo "<tr class=$bgcolor>\n";
                     echo "    <td><a href=\"".BASE."appview.php?iVersionId=".$iVersionId."\">".$oVersion->sName."</a></td>\n";
                     echo "    <td>".util_trim_description($oVersion->sDescription)."</td>\n";
-                    echo "    <td align=center>".$oVersion->sTestedRating."</td>\n";
-                    echo "    <td align=center>".$oVersion->sTestedRelease."</td>\n";
+                    echo "    <td $sRatingColor align=center>".$oVersion->sTestedRating."</td>\n";
+                    echo "    <td $sRatingColor align=center>".$oVersion->sTestedRelease."</td>\n";
                     echo "    <td align=center>".Comment::get_comment_count_for_versionid($oVersion->iVersionId)."</td>\n";
                     echo "</tr>\n\n";
 
