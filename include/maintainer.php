@@ -49,7 +49,7 @@ class maintainer
                                     "VALUES ('?', '?', '?', '?', '?', ?, '?')",
                                     $this->iAppId, $this->iVersionId,
                                     $this->iUserId, $this->sMaintainReason,
-                                    $this->bSuperMaintainer, "NOW()", 'true');
+                                    $this->bSuperMaintainer, "NOW()", $this->mustBeQueued() ? "true" : "false");
 
         /* this objects id is the insert id returned by mysql */
         $this->iMaintainerId = mysql_insert_id();
@@ -126,6 +126,15 @@ class maintainer
         $hResult = query_parameters($sQuery, $this->iMaintainerId);
 
         return $hResult;
+    }
+
+    function mustBeQueued()
+    {
+        /* In place for future fine-grained permisson system, only allow admins for now */
+        if($_SESSION['current']->hasPriv("admin"))
+            return FALSE;
+        else
+            return TRUE;
     }
 
     function delete()
