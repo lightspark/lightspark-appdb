@@ -135,6 +135,22 @@ class Monitor {
         $sEmail = User::get_notify_email_address_list(null, $this->iVersionId);
         if($sEmail)
             mail_appdb($sEmail, $sSubject ,$sMsg);
-    } 
+    }
+
+    /* Retrieve the user's monitored versions */
+    function getVersionsMonitored($oUser)
+    {
+         $hResult = query_parameters("SELECT appId, versionId FROM appMonitors WHERE userId = '?'", $oUser->iUserId);
+
+         if(!$hResult || mysql_num_rows($hResult) == 0)
+             return NULL;
+
+         $aVersionsMonitored = array();
+
+         for($i = 0; $oRow = mysql_fetch_object($hResult); $i++)
+             $aVersionsMonitored[$i] = array($oRow->appId, $oRow->versionId);
+
+         return $aVersionsMonitored;
+    }
 }
 ?>

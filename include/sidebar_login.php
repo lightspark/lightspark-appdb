@@ -6,6 +6,7 @@
 require_once(BASE."include/maintainer.php");
 require_once(BASE."include/application.php");
 require_once(BASE."include/user.php");
+require_once(BASE."include/monitor.php");
 
 function global_sidebar_login() {
   
@@ -35,6 +36,16 @@ function global_sidebar_login() {
         $appsRejected = $_SESSION['current']->getAllRejectedApps();
         if($appsRejected)
             $g->addmisc("<a href='".BASE."appsubmit.php?'>Review Rejected Apps</a>", "center");
+
+        $aMonitored = Monitor::getVersionsMonitored($_SESSION['current']);
+        if($aMonitored)
+        {
+            $g->addmisc("");
+            $g->addmisc("You monitor:\n");
+
+            while(list($i, list($iAppId, $iVersionId)) = each($aMonitored))
+                $g->addmisc("<a href=\"".BASE."appview.php?iVersionId=$iVersionId\">".Application::lookup_name($iAppId)." ".Version::lookup_name($iVersionId)."</a>","center");
+        }
 
     }
     else
