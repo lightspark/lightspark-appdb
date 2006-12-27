@@ -969,6 +969,33 @@ class Version {
 
         return $aMaintainers;
     }
+
+    /* List the versions submitted by a user.  Ignore versions for queued applications */
+    function listSubmittedBy($iUserId, $bQueued = true)
+    {
+        $hResult = query_parameters("SELECT appFamily.appName, appVersion.versionName, appVersion.description, appVersion.versionId, appVersion.submitTime FROM appFamily, appVersion WHERE appFamily.appId = appVersion.appId AND appVersion.submitterId = '?' AND appVersion.queued = '?' AND appFamily.queued = '?'", $iUserId, $bQueued ? "true" : "false", "false");
+
+        if(!$hResult || !mysql_num_rows($hResult))
+            return false;
+
+        $sResult = html_table_begin("width=\"100%\" align=\"center\"");
+        $sResult .= html_tr(array(
+            "Name",
+            "Description",
+            "Submission Date"),
+            "color4");
+
+        for($i = 1; $oRow = mysql_fetch_object($hResult); $i++)
+            $sResult .= html_tr(array(
+                "<a href=\"".BASE."appview.php?iVersionId=$oRow->versionId\">$oRow->appName: $oRow->versionName</a>",
+                $oRow->description,
+                print_date(mysqltimestamp_to_unixtimestamp($oRow->submitTime))),
+                ($i % 2) ? "color0" : "color1");
+
+        $sResult .= html_table_end();
+
+        return $sResult;
+    }
 }
 
 ?>

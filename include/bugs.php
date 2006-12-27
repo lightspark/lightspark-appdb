@@ -252,7 +252,43 @@ class Bug {
         {
             mail_appdb($sEmail, $sSubject ,$sMsg);
         }
-    } 
+    }
+
+    /* Get a list of bugs submitted by a given user */
+    function listSubmittedBy($iUserId, $bQueued = true)
+    {
+        $hResult = query_parameters("SELECT appFamily.appName, buglinks.versionId, appVersion.versionName, buglinks.submitTime, buglinks.bug_id FROM buglinks, appFamily, appVersion WHERE appFamily.appId = appVersion.appId AND buglinks.versionId = appVersion.versionId AND buglinks.queued = '?' AND buglinks.submitterId = '?' ORDER BY buglinks.versionId", $bQueued ? "true" : "false", $iUserId);
+
+        if(!$hResult || !mysql_num_rows($hResult))
+            return FALSE;
+
+        $sReturn = html_table_begin("width=\"100%\" align=\"center\"");
+        $sReturn .= html_tr(array(
+            "Version",
+            array("Bug #", 'width="50"'),
+            array("Status", 'width="80"'),
+            array("Resolution", 'width="110"'),
+            "Description",
+            "Submit time"),
+            "color4");
+
+        for($i = 1; $oRow = mysql_fetch_object($hResult); $i++)
+        {
+            $oBug = new Bug($oRow->bug_id);
+            $sReturn .= html_tr(array(
+                "<a href=\"".BASE."appview.php?iVersionId=".$oRow->versionId."\">".$oRow->appName.": ".$oRow->versionName."</a>",
+                "<a href=\"".BUGZILLA_ROOT."show_bug.cgi?id=".$oRow->bug_id."\">".$oRow->bug_id."</a>",
+                $oBug->sBug_status,
+                $oBug->sResolution,
+                $oBug->sShort_desc,
+                print_date(mysqltimestamp_to_unixtimestamp($oRow->submitTime))),
+                ($i % 2) ? "color0" : "color1");
+        }
+
+        $sReturn .= html_table_end();
+
+        return $sReturn;
+    }
 }
 
 
@@ -342,6 +378,6 @@ function view_version_bugs($iVersionId = null, $aBuglinkIds)
     }
     echo '</table>',"\n";
     echo html_frame_end();
-}    
+}
 
 ?>

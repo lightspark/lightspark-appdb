@@ -740,6 +740,35 @@ class testData{
         }
         echo "</select>\n";
     }
+
+    /* List test data submitted by a given user.  Ignore test results for queued applications/versions */
+    function listSubmittedBy($iUserId, $bQueued = true)
+    {
+        $hResult = query_parameters("SELECT testResults.versionId, testResults.testedDate, testResults.testedRelease, testResults.testedRating, testResults.submitTime, appFamily.appName, appVersion.versionName from testResults, appFamily, appVersion WHERE testResults.versionId = appVersion.versionId AND appVersion.appId = appFamily.appId AND (appFamily.queued = '?' OR appVersion.queued = '?') AND testResults.submitterId = '?' AND testResults.queued = '?' ORDER BY testResults.testingId", "false", "false", $iUserId, $bQueued ? "true" : "false");
+
+        if(!$hResult || !mysql_num_rows($hResult))
+            return false;
+
+        $sReturn = html_table_begin("width=\"100%\" align=\"center\"");
+        $sReturn .= html_tr(array(
+            "Version",
+            "Rating",
+            "Wine version",
+            "Submission Date"),
+            "color4");
+
+        for($i = 1; $oRow = mysql_fetch_object($hResult); $i++)
+            $sReturn .= html_tr(array(
+                "<a href=\"".BASE."appview.php?iVersionId=$oRow->versionId\">$oRow->appName: $oRow->versionName</a>",
+                $oRow->testedRating,
+                $oRow->testedRelease,
+                print_date(mysqltimestamp_to_unixtimestamp($oRow->submitTime))),
+                $oRow->testedRating);
+
+        $sReturn .= html_table_end();
+
+        return $sReturn;
+    }
 }
 
 ?>

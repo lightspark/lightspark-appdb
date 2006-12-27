@@ -786,6 +786,35 @@ class Application {
         echo "</table>\n\n";
         echo html_frame_end("&nbsp;");
     }
+
+    /* List applications submitted by a given user */
+    function listSubmittedBy($iUserId, $bQueued = true)
+    {
+        $hResult = query_parameters("SELECT appId, appName, appFamily.vendorId, description, submitTime, vendorName FROM appFamily, vendor WHERE appFamily.vendorId = vendor.vendorId AND submitterId = '?' AND queued = '?' ORDER BY appId", $iUserId, $bQueued ? "true" : "false");
+
+        if(!$hResult || !mysql_num_rows($hResult))
+            return false;
+
+        $sResult = html_table_begin("width=\"100%\" align=\"center\"");
+        $sResult .= html_tr(array(
+            "Application",
+            "Description",
+            "Vendor",
+            "Submission Date"),
+            "color4");
+
+        for($i = 1; $oRow = mysql_fetch_object($hResult); $i++)
+            $sResult .= html_tr(array(
+                "<a href=\"".BASE."appview.php?iAppId=$oRow->appId\">$oRow->appName</a>",
+                $oRow->description,
+                "<a href=\"".BASE."vendorview.php?iVendorId=$oRow->vendorId\">$oRow->vendorName</a>",
+                print_date(mysqltimestamp_to_unixtimestamp($oRow->submitTime))),
+                ($i % 2) ? "color0" : "color1");
+
+        $sResult .= html_table_end();
+
+        return $sResult;
+    }
 }
 
 ?>

@@ -47,6 +47,14 @@ function global_sidebar_login() {
                 $g->addmisc("<a href=\"".BASE."appview.php?iVersionId=$iVersionId\">".Application::lookup_name($iAppId)." ".Version::lookup_name($iVersionId)."</a>","center");
         }
 
+        /* Display a link to the user's queued items,
+           but not for admins, as theirs are auto-accepted */
+        if(!$_SESSION['current']->hasPriv("admin"))
+        {
+            $g->addmisc("");
+            $g->addmisc("<a href=\"".BASE."queueditems.php\">Your queued items</a>");
+        }
+
     }
     else
     {
