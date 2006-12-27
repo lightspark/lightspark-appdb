@@ -35,3 +35,6 @@ mysql -p -u root < error_log.sql
 
 echo Adding distributions
 mysql -p -u root < distributions.sql
+
+echo Adding test data tables
+mysql -p -u root < testResults.sql
