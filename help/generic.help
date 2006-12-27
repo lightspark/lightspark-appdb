@@ -17,14 +17,14 @@ for a certain program doesn't exist.
        </ul>
 	<p>
 
-<li> Run your program</li><p>
+<li> Run your program (something like &#8216;wine yourprogram.exe&#8217;, or tell your file manager to open .exe files with 'wine').</li><p>
 
 <li> If it gives an error about missing files, or does not start at all, try running it from the directory where it was installed.</li><p>
 
 <li> Many newer games contain copy protection, which is often not supported in Wine.  Cracks are available from sites such as <a href="http://www.megagames.com/trainers.html" target="_blank">MegaGames</a>.</li><p>
 
 <li> In case of failure, try different builtin, native DLL settings:
-Run Wine with --debugmsg +loaddll to find out which
+Run Wine with &#8216;WINEDEBUG=+loaddll wine yourprogram.exe&#8217; to find out which
 DLLs are loaded as native or builtin.
 Then make sure appropriate native versions are in the
 c:\windows\system32 directory as configured in Winecfg&#8217;s DLL overrides tab. There are four options you can choose from when setting
@@ -37,6 +37,7 @@ dll overrides.</li><p>
 (builtin)
 </pre>
 
+<li> For sound problems, run &#8216;winecfg&#8217; and look at the audio tab.</li><p>
 
 <li> In case of persisting failure, you may want to read over the
 <a href="http://www.winehq.org/site/documentation">Wine Documentation</a>
