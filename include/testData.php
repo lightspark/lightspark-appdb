@@ -169,7 +169,8 @@ class testData{
         if(!$bSilent)
             $this->SendNotificationMail("delete");
 
-        $this->mailSubmitter("delete");
+        if($this->iSubmitterId && ($this->iSubmitterId != $_SESSION['current']->iUserId))
+            $this->mailSubmitter("delete");
     }
 
 
