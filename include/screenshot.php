@@ -144,7 +144,7 @@ class Screenshot {
             if(!$bSilent)
                 $this->mailMaintainers(true);
         }
-        if($this->iSubmitterId)
+        if($this->iSubmitterId && ($this->iSubmitterId != $_SESSION['current']->iUserId))
         {
             $this->mailSubmitter(true);
         }
