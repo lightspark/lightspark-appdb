@@ -252,29 +252,36 @@ class testData{
         if($this->iSubmitterId)
         {
             $oSubmitter = new User($this->iSubmitterId);
+
+            /* Get the full app/version name to display */
+            $oVersion = new Version($this->iVersionId);
+            $sAppName = application::lookup_name($oVersion->iAppId);
+            $sVersionName = version::lookup_name($oVersion->iVersionId);
+            $sName = "$sAppName: $sVersionName";
+
             switch($sAction)
             {
             case "add":
                 $sSubject =  "Submitted testing data accepted";
-                $sMsg  = "The testing data you submitted (".$oApp->sName." ".$this->sName.") has been accepted.";
+                $sMsg  = "The testing data you submitted for '$sName' has been accepted.";
                 $sMsg .= APPDB_ROOT."appview.php?iVersionId=".$this->iVersionId."&iTestingId=".$this->iTestingId."\n";
                 $sMsg .= "Administrators Responce:\n";
             break;
             case "reject":
                 $sSubject =  "Submitted testing data rejected";
-                $sMsg  = "The testing data you submitted (".$oApp->sName." ".$this->sName.") has been rejected.";
+                $sMsg  = "The testing data you submitted for '$sName' has been rejected.";
                 $sMsg .= APPDB_ROOT."testResults.php?sSub=view&iTestingId=".$this->iTestingId."\n";
                 $sMsg .= "Reason given:\n";
             break;
             case "delete":
                 $sSubject =  "Submitted testing data deleted";
-                $sMsg  = "The testing data you submitted (".$oApp->sName." ".$this->sName.") has been deleted.";
+                $sMsg  = "The testing data you submitted for '$sName' has been deleted.";
                 $sMsg .= "Reason given:\n";
             break;
             }
             $sMsg .= $aClean['sReplyText']."\n";
             $sMsg .= "We appreciate your help in making the Application Database better for all users.";
-        
+
             mail_appdb($oSubmitter->sEmail, $sSubject ,$sMsg);
         }
     }
