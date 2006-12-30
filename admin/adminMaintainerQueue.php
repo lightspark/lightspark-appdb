@@ -11,6 +11,9 @@ require_once(BASE."include/maintainer.php");
 require_once(BASE."include/application.php");
 require_once(BASE."include/mail.php");
 
+/* The initial help text displayed in the admin's response field */
+$sReplyTextHelp = "Enter a personalized reason for accepting or rejecting the user's maintainer request here";
+
 $aClean = array(); //array of filtered user input
 
 $aClean['sSub'] = makeSafe( $_REQUEST['sSub'] );
@@ -19,9 +22,12 @@ $aClean['sAdd'] = makeSafe( $_REQUEST['sAdd'] );
 $aClean['sReject'] = makeSafe( $_REQUEST['sReject'] );
 $aClean['sReplyText'] = makeSafe( $_REQUEST['sReplyText'] );
 
+/* If the admin's response text has not been modified, it should not be included in the e-mail sent to the rejected/accepted maintainer */
+if($aClean['sReplyText'] == $sReplyTextHelp)
+    $aClean['sReplyText'] = "";
+
 if(!$_SESSION['current']->hasPriv("admin"))
     util_show_error_page_and_exit("Insufficient privileges.");
-
 
 if ($aClean['sSub'])
 {
@@ -61,7 +67,7 @@ if ($aClean['sSub'])
 
         //email response
         echo '<tr valign=top><td class=color0><b>Email reply</b></td>',"\n";
-        echo "<td><textarea name='sReplyText' rows=10 cols=35>Enter a personalized reason for acceptance or rejection of the users maintainer request here</textarea></td></tr>\n";
+        echo "<td><textarea name='sReplyText' rows=10 cols=35>$sReplyTextHelp</textarea></td></tr>\n";
 
         /* Add button */
         echo '<tr valign=top><td class=color3 align=center colspan=2>' ,"\n";
