@@ -199,7 +199,7 @@ else // if ($aClean['sSub']) is not defined, display the Testing results queue p
     {
         //no Test Results in queue
         echo html_frame_start("Rejected Testing Results","90%");
-        echo '<p><b>The Rejected Testng Results Queue is empty.</b></p>',"\n";
+        echo '<p><b>The Rejected Testing Results Queue is empty.</b></p>',"\n";
         echo html_frame_end("&nbsp;");         
     }
     else
