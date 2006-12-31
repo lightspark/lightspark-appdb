@@ -17,7 +17,7 @@ INSERT INTO prefs_list VALUES (0, 'sidebar', 'left', 'left|right', 'Sidebar loca
 INSERT INTO prefs_list VALUES (0, 'window:query', 'no', 'yes|no', 'Display query results in a new window');
 INSERT INTO prefs_list VALUES (0, 'window:help', 'no', 'yes|no', 'Display help in a new window');
 INSERT INTO prefs_list VALUES (0, 'window:offsite', 'no', 'yes|no', 'Display offsite URLs in a new window');
-INSERT INTO prefs_list VALUES (0, 'confirm_comment_deletion', 'yes', 'yes|no', 'Asks why you are deleting a comment before to delete it');
+INSERT INTO prefs_list VALUES (0, 'confirm_comment_deletion', 'yes', 'yes|no', 'Ask why you are deleting a comment before deleting it');
 INSERT INTO prefs_list VALUES (0, 'query:mode', 'view', 'view|edit', 'Default API details mode');
 INSERT INTO prefs_list VALUES (0, 'query:hide_header', 'no', 'yes|no', 'Hide apidb header in query results');
 INSERT INTO prefs_list VALUES (0, 'query:hide_sidebar', 'no', 'yes|no', 'Hide apidb sidebar in query results');
