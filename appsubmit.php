@@ -72,17 +72,17 @@ function newSubmition($errors)
         echo "   and click on &#8216;Submit new version&#8217;</li>\n";
     }
     echo " <li>Entered a valid version for this application.  This is the application\n";
-    echo "   version, NOT the Wine version (which goes in the testing results section of the template)</li>\n";
+    echo "   version, NOT the Wine version (which goes in the test results section of the template)</li>\n";
     echo " <li>Tested this application under Wine.  There are tens of thousands of applications\n";
     echo "   for Windows, we do not need placeholder entries in the database.  Please enter as complete \n";
-    echo "   as possible testing results in the version template provided below</li>\n";
+    echo "   as possible test results in the version template provided below</li>\n";
     echo "</ul></p>";
     echo "<p>Please do not forget to mention which Wine version you used, how well it worked\n";
     echo "and if any workarounds were needed.  Having app descriptions just sponsoring the app\n";
     echo "(yes, some vendors want to use the appdb for this) or saying &#8216;I haven&#8217;t tried this app with Wine&#8217; ";
     echo "will not help Wine development or Wine users.</p>\n";
     echo "<b><span style=\"color:red\">Please only submit applications/versions that you have tested.\n";
-    echo "Submissions without testing information or not using the provided template will be rejected.\n";
+    echo "Submissions without test information or not using the provided template will be rejected.\n";
     echo "If you are unable to see the in-browser editors below, please try Firefox, Mozilla or Opera browsers.\n</span></b>";
     echo "<p>After your application has been added, you will be able to submit screenshots for it, post";
     echo " messages in its forums or become a maintainer to help others trying to run the application.</p>";
@@ -139,7 +139,7 @@ if ($aClean['sSub'])
         util_redirect_and_exit($_SERVER['PHP_SELF']);
     }
 
-    // Get the Testing results if they exist
+    // Get the Test results if they exist
     $hResult = query_parameters("Select testingId from testResults where versionId = '?'",
                             $oVersion->iVersionId);
     if($hResult)

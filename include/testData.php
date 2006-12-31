@@ -1,10 +1,10 @@
 <?php
 /*****************************************/
-/* this class represents Testing results */
+/* this class represents Test results    */
 /*****************************************/
 require_once(BASE."include/distribution.php");
 require_once(BASE."include/util.php");
-// Class for handling Testing History.
+// Class for handling Test History.
 
 class testData{
     var $iTestingId;
@@ -64,7 +64,7 @@ class testData{
     // Creates a new Test Results.
     function create()
     {
-        // Security, if we are not an administrator or an maintainer the test result must be queued.
+        // Security, if we are not an administrator or a maintainer the test result must be queued.
         $oVersion = new Version($oTest->iVersionId);
         if(!$_SESSION['current']->hasPriv("admin") && 
            !$_SESSION['current']->hasAppVersionModifyPermission($oVersion))
@@ -100,7 +100,7 @@ class testData{
     // Update Test Results.
     function update($bSilent=false)
     {
-        // is the current user allowed to update this testing result? 
+        // is the current user allowed to update this test result? 
         $oVersion = new Version($this->iVersionId);
         if(!$_SESSION['current']->hasPriv("admin") && 
            !$_SESSION['current']->hasAppVersionModifyPermission($oVersion) &&
@@ -146,10 +146,10 @@ class testData{
         }
     }
     
-    // Delete testing results.
+    // Delete test results.
     function delete($bSilent=false)
     {
-        // is the current user allowed to delete this testing result? 
+        // is the current user allowed to delete this test result? 
         $oVersion = new Version($this->iVersionId);
         if(!$_SESSION['current']->hasPriv("admin") && 
            !$_SESSION['current']->hasAppVersionModifyPermission($oVersion) &&
@@ -157,13 +157,13 @@ class testData{
         {
             return;
         }
-        // now delete the testing data 
+        // now delete the test data 
         $sQuery = "DELETE FROM testResults
                    WHERE testingId = '?' 
                    LIMIT 1";
         if(!($hResult = query_parameters($sQuery, $this->iTestingId)))
         {
-            addmsg("Error removing the deleted testing data!", "red");
+            addmsg("Error removing the deleted test data!", "red");
         }
 
         if(!$bSilent)
@@ -174,10 +174,10 @@ class testData{
     }
 
 
-    // Move Testing Data out of the queue.
+    // Move Test Data out of the queue.
     function unQueue()
     {
-        // is the current user allowed to delete this testing data? 
+        // is the current user allowed to delete this test data? 
         $oVersion = new Version($this->iVersionId);
         if(!$_SESSION['current']->hasPriv("admin") &&
            !$_SESSION['current']->hasAppVersionModifyPermission($oVersion))
@@ -185,7 +185,7 @@ class testData{
             return;
         }
 
-        // If we are not in the queue, we can't move the testing data out of the queue.
+        // If we are not in the queue, we can't move the test data out of the queue.
         if(!$this->sQueued == 'true')
             return false;
 
@@ -193,7 +193,7 @@ class testData{
                             "false", $this->iTestingId))
         {
             $this->sQueued = 'false';
-            // we send an e-mail to intersted people
+            // we send an e-mail to interested people
             $this->mailSubmitter("unQueue");
             $this->SendNotificationMail();
         }
@@ -201,7 +201,7 @@ class testData{
 
     function Reject()
     {
-        // is the current user allowed to delete this testing data? 
+        // is the current user allowed to delete this test data? 
         $oVersion = new Version($this->iVersionId);
         if(!$_SESSION['current']->hasPriv("admin") &&
            !$_SESSION['current']->hasAppVersionModifyPermission($oVersion))
@@ -217,7 +217,7 @@ class testData{
                             "rejected", $this->iTestingId))
         {
             $this->sQueued = 'rejected';
-            // we send an e-mail to intersted people
+            // we send an e-mail to interested people
             $this->mailSubmitter("reject");
             $this->SendNotificationMail("reject");
         }
@@ -238,7 +238,7 @@ class testData{
                             "true", $this->iTestingId))
         {
             $this->sQueued = 'true';
-            // we send an e-mail to intersted people
+            // we send an e-mail to interested people
             $this->SendNotificationMail();
         }
     }
@@ -308,7 +308,7 @@ class testData{
                     if($this->iSubmitterId)
                     {
                         $oSubmitter = new User($this->iSubmitterId);
-                        $sMsg .= "This Testing data has been submitted by ".$oSubmitter->sRealname.".";
+                        $sMsg .= "This Test data has been submitted by ".$oSubmitter->sRealname.".";
                         $sMsg .= "\n";
                     }
                     if($aClean['sReplyText'])
@@ -316,20 +316,20 @@ class testData{
                         $sMsg .= "Appdb admin reply text:\n";
                         $sMsg .= $aClean['sReplyText']."\n"; // append the reply text, if there is any 
                     }
-                    addmsg("The testing data was successfully added into the database.", "green");
-                } else // testing data queued.
+                    addmsg("The test data was successfully added into the database.", "green");
+                } else // test data queued.
                 {
                     $sSubject = "Test Results submitted for version ".$oVersion->sName." of ".$oApp->sName." submitted by ".$_SESSION['current']->sRealname;
                     $sMsg  .= $sBacklink;
-                    $sMsg .= "This testing data has been queued.";
+                    $sMsg .= "This test data has been queued.";
                     $sMsg .= "\n";
-                    addmsg("The testing data you submitted will be added to the database after being reviewed.", "green");
+                    addmsg("The test data you submitted will be added to the database after being reviewed.", "green");
                 }
             break;
             case "edit":
                 $sSubject = "Test Results modified for version ".$oVersion->sName." of ".$oApp->sName." submitted by ".$_SESSION['current']->sRealname;
                 $sMsg  .= $sBacklink;
-                addmsg("testing data modified.", "green");
+                addmsg("test data modified.", "green");
             break;
             case "delete":
                 $sSubject = "Test Results deleted for version ".$oVersion->sName." of ".$oApp->sName." submitted by ".$_SESSION['current']->sRealname;
@@ -340,7 +340,7 @@ class testData{
                     $sMsg .= $aClean['sReplyText']."\n"; // append the reply text, if there is any 
                 }
 
-                addmsg("testing data deleted.", "green");
+                addmsg("test data deleted.", "green");
             break;
             case "reject":
                 $sSubject = "Test Results rejected for version ".$oVersion->sName." of ".$oApp->sName." submitted by ".$_SESSION['current']->sRealname;
@@ -351,7 +351,7 @@ class testData{
                     $sMsg .= "Reason given:\n";
                     $sMsg .= $aClean['sReplyText']."\n"; // append the reply text, if there is any 
                 }
-                addmsg("testing data rejected.", "green");
+                addmsg("test data rejected.", "green");
             break;
         }
         $sEmail = User::get_notify_email_address_list(null, $this->iVersionId);
@@ -399,7 +399,7 @@ class testData{
 
         if($rowsUsed == 0)
              return;
-        echo '<p><span class="title">Testing Results</span><br />',"\n";
+        echo '<p><span class="title">Test Results</span><br />',"\n";
         echo '<table width="100%" border="1" class="historyTable">',"\n";
         echo '<thead class="historyHeader">',"\n";
         echo '<tr>',"\n";
@@ -501,7 +501,7 @@ class testData{
     {
         HtmlAreaLoaderScript(array("Test1", "Test2", "Test3"));
 
-        echo html_frame_start("Testing Form", "90%", "", 0);
+        echo html_frame_start("Test Form", "90%", "", 0);
         echo "<table width='100%' border=0 cellpadding=2 cellspacing=0>\n";
 
         // What works
@@ -663,7 +663,7 @@ class testData{
         {
             $oTest = new testData($oRow->testingId);
             $oVersion = new Version($oTest->iVersionId);
-            // dont show testing results of versions that are still queued.
+            // don't show test results of versions that are still queued.
             if ($oVersion->sQueued == 'false')
             {
                 $oApp  = new Application($oVersion->iAppId);

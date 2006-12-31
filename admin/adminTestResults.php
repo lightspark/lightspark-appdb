@@ -31,18 +31,18 @@ if ($aClean['sSub'])
             $oTest = new testData($aClean['iTestingId']);
             $oTest->GetOutputEditorValues($_REQUEST);
 
-            if($aClean['sSub'] == 'Submit')        // submit the testing results
+            if($aClean['sSub'] == 'Submit')        // submit the test results
             {
                 $oTest->update(true);
                 $oTest->unQueue();
-            } else if($aClean['sSub'] == 'Save')   // save the testing results
+            } else if($aClean['sSub'] == 'Save')   // save the test results
             {
                 $oTest->update();
-            } else if($aClean['sSub'] == 'Reject') // reject testing results
+            } else if($aClean['sSub'] == 'Reject') // reject test results
             {
                 $oTest->update(true);
                 $oTest->Reject();
-            } else if($aClean['sSub'] == 'Delete') // delete testing results
+            } else if($aClean['sSub'] == 'Delete') // delete test results
             {
                 $oTest->delete();
             }
@@ -64,18 +64,18 @@ if ($aClean['sSub'])
         switch($oTest->sQueued)
         {
         case "true":
-            apidb_header("Edit new testing results for ".$sVersionInfo);
+            apidb_header("Edit new test results for ".$sVersionInfo);
             break;
         case "rejected":
-            apidb_header("Edit rejected testing results for ".$sVersionInfo);
+            apidb_header("Edit rejected test results for ".$sVersionInfo);
             break;
         case "false":
-            apidb_header("Edit testing results for ".$sVersionInfo);
+            apidb_header("Edit test results for ".$sVersionInfo);
             break;
         }
 
         echo '<form name="sQform" action="'.$_SERVER['PHP_SELF'].'" method="post" enctype="multipart/form-data">',"\n";
-        // View Testing Details
+        // View Test Details
         echo "<table width='100%' border=0 cellpadding=2 cellspacing=0>\n";
 
         //help
@@ -83,21 +83,21 @@ if ($aClean['sSub'])
         switch($oTest->sQueued)
         {
         case "false":
-            echo "<p>This Testing result has already been verified and accepted int the database. \n";
-            echo "You can edit the entry and the save it back to the database by clicking on save. \n";
+            echo "<p>This Test result has already been verified and accepted into the database. \n";
+            echo "You can edit the entry and save it back to the database by clicking on save. \n";
             break;
         case "true":
-            echo "<p>This Testing result has not yet been and accepted into the database. \n";
-            echo "You can edit the entry and ether submit it into the database by clicking on Submit or you can reject it \n";
+            echo "<p>This Test result has not yet been and accepted into the database. \n";
+            echo "You can edit the entry and either submit it into the database by clicking on Submit, or you can reject it \n";
             echo "for further editing by the submitter by clicking on Reject. \n";
             break;
         case "rejected":
-            echo "<p>This Testing result has been rejected and is awaiting further information from the submitter. \n";
-            echo "You can edit the entry and ether submit it into the database by clicking on Submit or you can save it \n";
+            echo "<p>This Test result has been rejected and is awaiting further information from the submitter. \n";
+            echo "You can edit the entry and either submit it into the database by clicking on Submit, or you can save it \n";
             echo "for further editing by the submitter by clicking on Save. \n";
             break;
         }
-        echo "<p>Click delete to remove it entirly from the database. An email will automatically be sent to the\n";
+        echo "<p>Click delete to remove it entirely from the database. An email will automatically be sent to the\n";
         echo "submitter to let them know the item was deleted.</p>\n\n";        
         echo "</td></tr></table></div>\n\n";    
 
@@ -143,40 +143,40 @@ if ($aClean['sSub'])
         util_redirect_and_exit($_SERVER['PHP_SELF']);
     } 
 }
-else // if ($aClean['sSub']) is not defined, display the Testing results queue page 
+else // if ($aClean['sSub']) is not defined, display the Test results queue page 
 {
     $oTest = new TestData();
-    apidb_header("Testing Results");
+    apidb_header("Test Results");
 
-    // Get queued testing results.
+    // Get queued test results.
 
     $hResult = $oTest->getTestingQueue("true");
     if(!$hResult)
     {
          //no apps in queue
-        echo html_frame_start("Submitted Testing Results","90%");
-        echo '<p><b>The Submitted Testing Results Queue is empty.</b></p>',"\n";
+        echo html_frame_start("Submitted Test Results","90%");
+        echo '<p><b>The Submitted Test Results Queue is empty.</b></p>',"\n";
         echo html_frame_end("&nbsp;");         
     }
     else
     {
         //help
         echo "<div align=center><table width='90%' border=0 cellpadding=3 cellspacing=0><tr><td>\n\n";
-        echo "<p>This is the list of test results waiting for submition, rejection or deletion.</p>\n";
+        echo "<p>This is the list of test results waiting for submission, rejection or deletion.</p>\n";
         echo "<p>To view a submission, click on its name. From that page you can Submit it into \n";
         echo "the AppDB reject it or delete it.<br>\n";
         echo "</td></tr></table></div>\n\n";
 
-        $oTest->ShowListofTests($hResult,"Submitted Testing Results");
+        $oTest->ShowListofTests($hResult,"Submitted Test Results");
     }
 
-    // Get rejected testing results.
+    // Get rejected test results.
     $hResult = $oTest->getTestingQueue("rejected");
     if(!$hResult || !mysql_num_rows($hResult))
     {
         //no rejected test results in queue
-        echo html_frame_start("Rejected Testing Results","90%");
-        echo '<p><b>The Rejected Testing Results Queue is empty.</b></p>',"\n";
+        echo html_frame_start("Rejected Test Results","90%");
+        echo '<p><b>The Rejected Test Results Queue is empty.</b></p>',"\n";
         echo html_frame_end("&nbsp;");         
     }
     else
@@ -188,7 +188,7 @@ else // if ($aClean['sSub']) is not defined, display the Testing results queue p
         echo "the AppDB, edit and save it or delete it.<br>\n";
         echo "</td></tr></table></div>\n\n";
 
-        $oTest->ShowListofTests($hResult,"Rejected Testing Results");
+        $oTest->ShowListofTests($hResult,"Rejected Test Results");
     }
 }
 apidb_footer();       

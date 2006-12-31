@@ -344,7 +344,7 @@ class Version {
                             "false", $this->iVersionId))
         {
             $this->sQueued = 'false';
-            // we send an e-mail to intersted people
+            // we send an e-mail to interested people
             $this->mailSubmitter("unQueue");
             $this->SendNotificationMail();
         }
@@ -363,7 +363,7 @@ class Version {
                             "rejected", $this->iVersionId))
         {
             $this->sQueued = 'rejected';
-            // we send an e-mail to intersted people
+            // we send an e-mail to interested people
             if(!$bSilent)
             {
                 $this->mailSubmitter("reject");
@@ -383,7 +383,7 @@ class Version {
                             "true", $this->iVersionId))
         {
             $this->sQueued = 'true';
-            // we send an e-mail to intersted people
+            // we send an e-mail to interested people
             $this->SendNotificationMail();
 
             // the version has been unqueued
@@ -798,14 +798,14 @@ class Version {
         echo $this->sDescription;
 
 
-        // Show testing data
+        // Show test data
 
         $oTest = new testData($iTestingId);
 
         /* if $iTestingId wasn't valid then it won't be valid in $oTest */
         if(!$oTest->iTestingId)
         {
-            /* fetch a new testing id for this version */
+            /* fetch a new test id for this version */
             $iTestingId = testData::get_test_for_versionid($this->iVersionId);
             $oTest = new testData($iTestingId);
         }
@@ -819,13 +819,13 @@ class Version {
         if($_SESSION['current']->isLoggedIn())
         {
             echo '<form method=post name=sMessage action=testResults.php?sSub=view&iVersionId='.$this->iVersionId.'>';
-            echo '<input type=submit value="Add Testing Data" class="button" />';
+            echo '<input type=submit value="Add Test Data" class="button" />';
             echo '</form>';
         } else
         {
             echo '<form method="post" name="sMessage" action="account.php">';
             echo '<input type="hidden" name="sCmd" value="login">';
-            echo '<input type=submit value="Log in add Testing Data" class="button">';
+            echo '<input type=submit value="Log in add Test Data" class="button">';
             echo '</form>';
         }
         echo "</td></tr>";

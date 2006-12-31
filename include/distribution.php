@@ -5,7 +5,7 @@
 require_once(BASE."include/mail.php");
 require_once(BASE."include/util.php");
 
-// Testing class for handling Distributions.
+// Test class for handling Distributions.
 
 class distribution{
     var $iDistributionId;
@@ -182,7 +182,7 @@ class distribution{
                             "false", $this->iDistributionId))
         {
             $this->sQueued = 'false';
-            // we send an e-mail to intersted people
+            // we send an e-mail to interested people
             $this->mailSubmitter("unQueue");
             $this->SendNotificationMail();
             return true;
@@ -209,7 +209,7 @@ class distribution{
                             "rejected", $this->iDistributionId))
         {
             $this->sQueued = 'rejected';
-            // we send an e-mail to intersted people
+            // we send an e-mail to interested people
             if(!$bSilent)
             {
                 $this->mailSubmitter("reject");
@@ -240,10 +240,10 @@ class distribution{
                                 "true", $this->iDistributionId))
             {
                 $this->sQueued = 'true';
-                // we send an e-mail to intersted people
+                // we send an e-mail to interested people
                 $this->SendNotificationMail();
 
-                // the testing data has been resubmitted
+                // the test data has been resubmitted
                 addmsg("The Distribution has been resubmitted", "green");
                 return true;
             }
@@ -320,10 +320,10 @@ class distribution{
                         $sMsg .= $aClean['sReplyText']."\n"; // append the reply text, if there is any 
                     }
                     addmsg("The Distribution was successfully added into the database.", "green");
-                } else // testing data queued.
+                } else // test data queued.
                 {
                     $sSubject = "Distribution ".$this->sName." submitted by ".$_SESSION['current']->sRealname;
-                    $sMsg .= "This testing data has been queued.";
+                    $sMsg .= "This test data has been queued.";
                     $sMsg .= "\n";
                     addmsg("The Distribution you submitted will be added to the database after being reviewed.", "green");
                 }

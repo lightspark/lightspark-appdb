@@ -66,7 +66,7 @@ class Image {
      * isLoaded()
      * This function should always be checked after loading a file
      * with the constructor. Returns true if the image has been
-     * succesfully loaded.
+     * successfully loaded.
      */ 
     function isLoaded()
     {
@@ -235,8 +235,8 @@ class Image {
         $g = hexdec(substr($sBorderColor, 3, 2));
         $b = hexdec(substr($sBorderColor, 5, 2));
         
-        /* We multiply the border width by two because there are are borders
-        at both sides */
+        /* We multiply the border width by two because there are borders
+         on both sides */
         // GD 2.x
         if(function_exists("imagecreatetruecolor"))
         {
@@ -276,7 +276,7 @@ class Image {
     /**
      * add_watermark()
      *
-     * $watermark is a image resource identifier to any image resource.
+     * $watermark is an image resource identifier to any image resource.
      *
      * $min_mark_wwidth and $min_mark_height are the minimum sizes of the
      * destination image before the watermark is added. If none are set
@@ -306,10 +306,10 @@ class Image {
     }
     
     /**
-     * Output the image to a file set with $store.
+     * Save the image to a file set with $store.
      *
      * $iType is optional and is set like the second index of getimagesize().
-     * If none (or 0) is set the orginal type of the file is used.
+     * If none (or 0) is set the original type of the file is used.
      * If $store is not give, the current file name will be used.
      * $quality is the jpeg output quality (100 best, 0 worst). Default is 75
      */
@@ -324,16 +324,16 @@ class Image {
         {
             case 2:
             imagejpeg($this->oImage, $sOutputFilename, $iQuality);
-            $this->set_debuglog("Outputed file as jpeg to $sOutputFilename");
+            $this->set_debuglog("Saved file as jpeg to $sOutputFilename");
             break;
             
             case 3:
             imagepng($this->oImage, $sOutputFilename);
-            $this->set_debuglog("Outputed file as png to $sOutputFilename");
+            $this->set_debuglog("Saved file as png to $sOutputFilename");
             break;
             
             default:
-            $this->set_debuglog("Unkown output type");
+            $this->set_debuglog("Unknown output type");
             return;
         }
         
@@ -346,7 +346,7 @@ class Image {
      * If $bHeader is true a Content-type header with the correct type
      * is set.
      * $iType is optional and is set like the second index of getimagesize().
-     * If none (or 0) is set the orginal type of the file is used.
+     * If none (or 0) is set the original type of the file is used.
      *
      * $iQuality is the jpeg output quality (100 best, 0 worst)
      */  
@@ -372,7 +372,7 @@ class Image {
             break;
             
             default:
-            $this->set_debuglog("Unkown output type");
+            $this->set_debuglog("Unknown output type");
         }
     }
     
@@ -429,7 +429,7 @@ class ImageResource extends Image {
         $this->iHeight = imagesy($oImage);
         $this->iType = $iType;
         
-        $this->set_debuglog("New image class created with as $oImage as"
+        $this->set_debuglog("New image class created with $oImage as"
                           ." image resource and $iType as type. Dimensions"
                           ." {$this->iWidth}x{$this->iHeight}");
     }

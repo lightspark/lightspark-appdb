@@ -284,7 +284,7 @@ function test_user_update_password()
 }
 
 /*************************/
-/* Main testing routines */
+/* Main test routines */
 
 if(!test_user_create())
     echo "test_user_create() failed!\n";
@@ -323,7 +323,7 @@ include_once("test_maintainer.php");
 /* TODO: the rest of the user member functions we don't currently test */
 
 
-/* clean up the user we created during testing */
+/* clean up the user we created during the tests */
 /* so the unit test leaves no trace that it ran */
 $oUser = new User();
 

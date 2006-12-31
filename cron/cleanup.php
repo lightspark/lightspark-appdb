@@ -30,7 +30,7 @@ if($hUsersToWarn)
     {
         $oUser = new User($oRow->userid);
 
-        /* if we get back true the user was warned and flaged as being warned */
+        /* if we get back true the user was warned and flagged as being warned */
         /* if we get back false we didn't warn the user and didn't flag the user as warned */
         /*  because they have data associated with their account */
         if($oUser->warnForInactivity())
@@ -56,7 +56,7 @@ if($hUsersToDelete)
             deleteUser($oRow->userid);
         } else
         {
-            /* is the user a maintainer?  if so remove their maintainer privilages */
+            /* is the user a maintainer?  if so remove their maintainer privileges */
             if($oUser->isMaintainer())
             {
                 Maintainer::deleteMaintainer($oUser);

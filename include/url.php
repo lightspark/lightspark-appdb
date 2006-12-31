@@ -115,7 +115,7 @@ class Url {
         if(query_parameters("UPDATE appData SET queued = '?' WHERE id='?'",
                        "false", $this->iUrlId))
         {
-            // we send an e-mail to intersted people
+            // we send an e-mail to interested people
             $this->mailSubmitter();
             $this->SendNotificationMail();
             // the url has been unqueued

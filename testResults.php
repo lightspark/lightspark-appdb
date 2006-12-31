@@ -30,7 +30,7 @@ if ($aClean['sSub'])
         $oTest->iVersionId = $aClean['iVersionId'];
     $errors = "";
 
-    // Submit or Resubmit the new testing results
+    // Submit or Resubmit the new test results
     if (($aClean['sSub'] == 'Submit') || ($aClean['sSub'] == 'Resubmit'))
     {
         $errors = $oTest->CheckOutputEditorInput($_REQUEST);
@@ -62,7 +62,7 @@ if ($aClean['sSub'])
         }
     }
 
-    // Delete testing results
+    // Delete test results
     if ($aClean['sSub'] == 'Delete')
     {
         if(is_numeric($aClean['iTestingId']))
@@ -77,7 +77,7 @@ if ($aClean['sSub'])
     // is this an old test?
     if(is_numeric($aClean['iTestingId']))
     {
-        // make sure the user has permission to view this testing result
+        // make sure the user has permission to view this test result
         $oVersion = new Version($oTest->iVersionId);
         if(!$_SESSION['current']->hasPriv("admin") && 
            !$_SESSION['current']->hasAppVersionModifyPermission($oVersion)&&
@@ -100,30 +100,30 @@ if ($aClean['sSub'])
         switch($oTest->sQueued)
         {
         case "new":
-            apidb_header("Submit new testing results for ".$sVersionInfo);
+            apidb_header("Submit new test results for ".$sVersionInfo);
             $oTest->sTestedDate = date('Y-m-d H:i:s');
             break;
         case "true":
-            apidb_header("Edit new testing results for ".$sVersionInfo);
+            apidb_header("Edit new test results for ".$sVersionInfo);
             break;
         case "rejected":
-            apidb_header("Resubmit testing results for ".$sVersionInfo);
+            apidb_header("Resubmit test results for ".$sVersionInfo);
             break;
         case "False":
-            apidb_header("Edit testing results for ".$sVersionInfo);
+            apidb_header("Edit test results for ".$sVersionInfo);
             break;
         default:
-            apidb_header("Edit testing results for ");
+            apidb_header("Edit test results for ");
         }
         echo '<form name="sQform" action="'.$_SERVER['PHP_SELF'].'" method="post" enctype="multipart/form-data">',"\n";
 
 
         //help
-        echo "<p>This is the screen for inputting testing information so that others looking at the database will know \n";
-        echo "what was working or a particular release of Wine.</p>\n";
+        echo "<p>This is the screen for inputing test information so that others looking at the database will know \n";
+        echo "what was working on a particular release of Wine.</p>\n";
         echo "<p>Please be as detailed as you can.</p>\n";
-        echo "<p>If you can not find your distribution in the list of existing distributions, please add it in the \n";
-        echo "field provided.</p>\n\n";        
+        echo "<p>If you cannot find your distribution in the list of existing distributions, please add it in the \n";
+        echo "provided field.</p>\n\n";        
 
         if(!empty($errors))
         {
@@ -133,7 +133,7 @@ if ($aClean['sSub'])
             echo '<p></p>',"\n";
         }
    
-        // View Testing Details
+        // View Test Details
         $oTest->OutputEditor($aClean['sDistribution'],true);
 
         echo '<a href="'.BASE."appview.php?iVersionId=".$oTest->iVersionId.'">Back to Version</a>';
@@ -206,12 +206,12 @@ else // if ($aClean['sSub']) is not defined, display the Testing results queue p
     {
         //help
         echo "<div align=center><table width='90%' border=0 cellpadding=3 cellspacing=0><tr><td>\n\n";
-        echo "<p>This is the list of Rejected Test Results waiting for re-submition or deletion.</p>\n";
+        echo "<p>This is the list of Rejected Test Results waiting for re-submission or deletion.</p>\n";
         echo "<p>To view a submission, click on its name. From that page you can delete or edit and re-submit it into \n";
         echo "the AppDB .<br>\n";
         echo "</td></tr></table></div>\n\n";
 
-        $oTest->ShowListofTests($hResult,"Rejected Testing Results");
+        $oTest->ShowListofTests($hResult,"Rejected Test Results");
     }
 }
 apidb_footer();       

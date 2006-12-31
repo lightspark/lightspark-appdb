@@ -32,7 +32,7 @@ To install locally for testing/hacking:
    short_open_tag 0
    register_long_arrays 0
    magic_quotes_gpc 0
- Or ensure your appdb directory has AllowOveride' set to 'All' inside 
+ Or ensure your appdb directory has AllowOverride' set to 'All' inside 
  httpd.conf to let .htaccess set these settings.
  
 # An AppDB admin user has been automatically created while running 
@@ -42,12 +42,12 @@ To install locally for testing/hacking:
   You should change the password as soon as possible!
 
 #------------------------------------------------------------------------#
-You can create ether set up a real bugzilla database or a fake one 
-
+You can either set up a real bugzilla database or a fake one 
+#
 # cd tables, run ./create_bugzilla_tables to create the fake bugzilla tables
 #------------------------------------------------------------------------#
 # or installing a real bugzilla database (hope this helps)
-
+#
 # download buzilla  (password for cvs is cvs)
 
 cd /var/www/html

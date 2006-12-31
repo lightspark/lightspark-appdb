@@ -180,7 +180,7 @@ class Bug {
                             "false", $this->iLinkId))
         {
             $this->bQueued = false;
-            // we send an e-mail to intersted people
+            // we send an e-mail to interested people
             $this->mailSubmitter();
             $this->SendNotificationMail();
             // the Bug has been unqueued

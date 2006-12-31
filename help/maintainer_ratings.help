@@ -38,9 +38,9 @@ Application works, but it has some issues, even for normal use; a game may not r
 <li class="Garbage">Garbage</li>
 
 <p>
-An app gets this rating if it can not be used for the purpose it was designed.
+An app gets this rating if it cannot be used for the purpose it was designed for.
 There should be at least one bug report in bugzilla if an app gets this rating.
-Application doesn't start, or starts but has so many errors that it is nearly impossible to use it
+Application doesn't start, or starts but has so many errors that it is nearly impossible to use it.
 </p>
 
 </ul>

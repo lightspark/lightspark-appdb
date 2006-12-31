@@ -164,7 +164,7 @@ class Screenshot {
                             "false", $this->iScreenshotId))
         {
             $this->bQueued = false;
-            // we send an e-mail to intersted people
+            // we send an e-mail to interested people
             $this->mailSubmitter();
             $this->mailMaintainers();
             // the screenshot has been unqueued
@@ -198,7 +198,7 @@ class Screenshot {
     
     /**
      * This method generates a watermarked screenshot and thumbnail from the original file.
-     * Usefull when changing thumbnail, upgrading GD, adding an image, etc.
+     * Useful when changing thumbnail, upgrading GD, adding an image, etc.
      * Return false if an image could not be loaded.
      */
     function generate() 

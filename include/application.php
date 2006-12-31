@@ -303,7 +303,7 @@ class Application {
                             "false",  str_replace(" *** ","",$this->sKeywords), $this->iAppId))
         {
             $this->sQueued = 'false';
-            // we send an e-mail to intersted people
+            // we send an e-mail to interested people
             $this->mailSubmitter();
             $this->SendNotificationMail();
 
@@ -331,11 +331,11 @@ class Application {
                             "rejected", $this->iAppId))
         {
             $this->sQueued = 'rejected';
-            // we send an e-mail to intersted people
+            // we send an e-mail to interested people
             $this->mailSubmitter("reject");
             $this->SendNotificationMail("reject");
 
-            // the application has been rejectedd
+            // the application has been rejected
             addmsg("The application has been rejected.", "green");
         }
     }
@@ -348,7 +348,7 @@ class Application {
                             "true", $this->iAppId))
         {
             $this->sQueued = 'true';
-            // we send an e-mail to intersted people
+            // we send an e-mail to interested people
             $this->SendNotificationMail();
 
             // the application has been re-queued
