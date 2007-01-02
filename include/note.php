@@ -22,6 +22,8 @@ class Note {
     var $iVersionId;
     var $sTitle;
     var $sDescription;
+    var $iSubmitterId;
+    var $sSubmitTime;
 
     /**
      * Constructor.
@@ -44,6 +46,8 @@ class Note {
                 $this->iVersionId = $oRow->versionId;
                 $this->sTitle = $oRow->noteTitle;
                 $this->sDescription = $oRow->noteDesc;
+                $this->sSubmitTime = $oRow->submitTime;
+                $this->iSubmitterId = $oRow->submitterId;
             }
         }
     }
@@ -56,9 +60,9 @@ class Note {
      */
     function create()
     {
-        $hResult = query_parameters("INSERT INTO appNotes (versionId, noteTitle, noteDesc) ".
-                                    "VALUES('?', '?', '?')",
-                                    $this->iVersionId, $this->sTitle, $this->sDescription);
+        $hResult = query_parameters("INSERT INTO appNotes (versionId, noteTitle, noteDesc, submitterId) ".
+                                    "VALUES('?', '?', '?', '?')",
+                                    $this->iVersionId, $this->sTitle, $this->sDescription, $_SESSION['current']->iUserId);
 
         if($hResult)
         {
@@ -152,12 +156,14 @@ class Note {
                 addmsg("Note modified.", "green");
             break;
             case "delete":
+                $oSubmitter = new User($this->iSubmitterId);
                 $sSubject = "Note ".$this->sTitle." for ".$sAppName." has been deleted by ".$_SESSION['current']->sRealname;
-                $sMsg .= "This note was made on ".substr($this->sDateCreated,0,10)." by ".$this->oOwner->sRealname."\n";
+                $sMsg .= "This note was made on ".print_date(mysqltimestamp_to_unixtimestamp($this->sSubmitTime))." by ".$oSubmitter->sRealname."\n";
                 $sMsg .= "\n";
                 $sMsg .= "Subject: ".$this->sTitle."\n";
                 $sMsg .= "\n";
-                $sMsg .= $this->sBody."\n";
+                $sMsg .= "Note contents:\n";
+                $sMsg .= $this->sDescription."\n";
                 $sMsg .= "\n";
                 $sMsg .= "Because:\n";
                 if($aClean['sReplyText'])
