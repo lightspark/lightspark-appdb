@@ -373,7 +373,7 @@ class Application {
             case "add":
                 $sSubject =  "Submitted application accepted";
                 $sMsg  = "The application you submitted (".$this->sName.") has been accepted by ".$_SESSION['current']->sRealname.".";
-                $sMsg .= "Administrators Responce:\n";
+                $sMsg .= "Administrator's Response:\n";
             break;
             case "reject":
                 $sSubject =  "Submitted application rejected";
