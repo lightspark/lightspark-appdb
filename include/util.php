@@ -552,91 +552,93 @@ function outputSearchTableForhResult($search_words, $hResult)
 
 /* pass in $isVersion of true if we are processing changes for an app version */
 /* or false if processing changes for an application family */
-function process_app_version_changes($isVersion)
+function process_app_version_changes($bIsVersion)
 {
+    global $aClean;
+
     /* load up the version or application depending on which values are set */
-    if($isVersion)
-        $oVersion = new Version($_REQUEST['iVersionId']);
+    if($bIsVersion)
+        $oVersion = new Version($aClean['iVersionId']);
     else
-        $oApp = new Application($_REQUEST['iAppId']);
+        $oApp = new Application($aClean['iAppId']);
 
     // commit changes of form to database
-    if(($_REQUEST['sSubmit'] == "Update Database") && $isVersion) /* is a version */
+    if(($aClean['sSubmit'] == "Update Database") && $bIsVersion) /* is a version */
     {
-        $oVersion->GetOutputEditorValues($_REQUEST);
+        $oVersion->GetOutputEditorValues($aClean);
         $oVersion->update();
-    } else if(($_REQUEST['sSubmit'] == "Update Database") && !$isVersion) /* is an application */
+    } else if(($aClean['sSubmit'] == "Update Database") && !$bIsVersion) /* is an application */
     {
-        $oApp->GetOutputEditorValues($_REQUEST);
+        $oApp->GetOutputEditorValues($aClean);
         $oApp->update();
-    } else if($_REQUEST['sSubmit'] == "Update URL")
+    } else if($aClean['sSubmit'] == "Update URL")
     {
         $sWhatChanged = "";
         $bAppChanged = false;
 
-        if (!empty($_REQUEST['sUrlDesc']) && !empty($_REQUEST['sUrl']) )
+        if (!empty($aClean['sUrlDesc']) && !empty($aClean['sUrl']) )
         {
             // process added URL
-            if($_SESSION['current']->showDebuggingInfos()) { echo "<p align=center><b>{$_REQUEST['sUrl']}:</b> {$_REQUEST['sUrlDesc']} </p>"; }
+            if($_SESSION['current']->showDebuggingInfos()) { echo "<p align=center><b>{$aClean['sUrl']}:</b> {$aClean['sUrlDesc']} </p>"; }
 
-            if($isVersion)
+            if($bIsVersion)
             {
                 $hResult = query_parameters("INSERT INTO appData (versionId, type, description, url) ".
                                             "VALUES ('?', '?', '?', '?')",
-                                            $_REQUEST['iVersionId'], "url", $_REQUEST['sUrlDesc'],
-                                            $_REQUEST['sUrl']);
+                                            $aClean['iVersionId'], "url", $aClean['sUrlDesc'],
+                                            $aClean['sUrl']);
             } else
             {
                 $hResult = query_parameters("INSERT INTO appData (appId, type, description, url) ".
                                             "VALUES ('?', '?', '?', '?')",
-                                            $_REQUEST['iAppId'], "url", $_REQUEST['sUrlDesc'],
-                                            $_REQUEST['sUrl']);
+                                            $aClean['iAppId'], "url", $aClean['sUrlDesc'],
+                                            $aClean['sUrl']);
             
             }
             
             if ($hResult)
             {
                 addmsg("The URL was successfully added into the database", "green");
-                $sWhatChanged .= "  Added Url:     Description: ".stripslashes($_REQUEST['sUrlDesc'])."\n";
-                $sWhatChanged .= "                         Url: ".stripslashes($_REQUEST['sUrl'])."\n";
+                $sWhatChanged .= "  Added Url:     Description: ".stripslashes($aClean['sUrlDesc'])."\n";
+                $sWhatChanged .= "                         Url: ".stripslashes($aClean['sUrl'])."\n";
                 $bAppChanged = true;
             }
         }
         
         // Process changed URLs  
-        for($i = 0; $i < $_REQUEST['iRows']; $i++)
+        for($i = 0; $i < $aClean['iRows']; $i++)
         {
-            if($_SESSION['current']->showDebuggingInfos()) { echo "<p align=center><b>{$_REQUEST['adescription'][$i]}:</b> {$_REQUEST['aURL'][$i]}: {$_REQUEST['adelete'][$i]} : {$_REQUEST['aId'][$i]} : .{$_REQUEST['aOldDesc'][$i]}. : {$_REQUEST['aOldURL'][$i]}</p>"; }
+            if($_SESSION['current']->showDebuggingInfos()) { echo "<p align=center><b>{$aClean['adescription'][$i]}:</b> {$aClean['aURL'][$i]}: {$aClean['adelete'][$i]} : {$aClean['aId'][$i]} : .{$aClean['aOldDesc'][$i]}. : {$aClean['aOldURL'][$i]}</p>"; }
 
-            if ($_REQUEST['adelete'][$i] == "on")
+            if ($aClean['adelete'][$i] == "on")
             {
-                $hResult = query_parameters("DELETE FROM appData WHERE id = '?'", $_REQUEST['aId'][$i]);
+                $hResult = query_parameters("DELETE FROM appData WHERE id = '?'", $aClean['aId'][$i]);
 
                 if($hResult)
                 {
-                    addmsg("<p><b>Successfully deleted URL ".$_REQUEST['aOldDesc'][$i]." (".$_REQUEST['aOldURL'][$i].")</b></p>\n",'green');
-                    $sWhatChanged .= "Deleted Url:     Description: ".stripslashes($_REQUEST['aOldDesc'][$i])."\n";
-                    $sWhatChanged .= "                         url: ".stripslashes($_REQUEST['aOldURL'][$i])."\n";
+                    addmsg("<p><b>Successfully deleted URL ".$aClean['aOldDesc'][$i]." (".$aClean['aOldURL'][$i].")</b></p>\n",'green');
+                    $sWhatChanged .= "Deleted Url:     Description: ".stripslashes($aClean['aOldDesc'][$i])."\n";
+                    $sWhatChanged .= "                         url: ".stripslashes($aClean['aOldURL'][$i])."\n";
                     $bAppChanged = true;
                 }
 
 
             }
-            else if( $_REQUEST['aURL'][$i] != $_REQUEST['aOldURL'][$i] || $_REQUEST['adescription'][$i] != $_REQUEST['aOldDesc'][$i])
+            else if( $aClean['aURL'][$i] != $aClean['aOldURL'][$i] || $aClean['adescription'][$i] != $aClean['aOldDesc'][$i])
             {
-                if(empty($_REQUEST['aURL'][$i]) || empty($_REQUEST['adescription'][$i]))
+                if(empty($aClean['aURL'][$i]) || empty($aClean['adescription'][$i]))
                     addmsg("The URL or description was blank. URL not changed in the database", "red");
                 else
                 {
                     if (query_parameters("UPDATE appData SET description = '?', url = '?' WHERE id = '?'",
-                                         $_REQUEST['adescription'][$i], $_REQUEST['aURL'][$i],
-                                         $_REQUEST['aId'][$i]))
+                                         $aClean['adescription'][$i], $aClean['aURL'][$i],
+                                         $aClean['aId'][$i]))
                     {
-                         addmsg("<p><b>Successfully updated ".$_REQUEST['aOldDesc'][$i]." (".$_REQUEST['aOldURL'][$i].")</b></p>\n",'green');
-                         $sWhatChanged .= "Changed Url: Old Description: ".stripslashes($_REQUEST['aOldDesc'][$i])."\n";
-                         $sWhatChanged .= "                     Old Url: ".stripslashes($_REQUEST['aOldURL'][$i])."\n";
-                         $sWhatChanged .= "             New Description: ".stripslashes($_REQUEST['adescription'][$i])."\n";
-                         $sWhatChanged .= "                     New url: ".stripslashes($_REQUEST['aURL'][$i])."\n";
+                         addmsg("<p><b>Successfully updated ".$aClean['aOldDesc'][$i]." (".$aClean['aOldURL'][$i].")</b></p>\n",'green');
+                         $sWhatChanged .= "Changed Url: Old Description: ".stripslashes($aClean['aOldDesc'][$i])."\n";
+                         $sWhatChanged .= "                     Old Url: ".stripslashes($aClean['aOldURL'][$i])."\n";
+                         $sWhatChanged .= "             New Description: ".stripslashes($aClean['adescription'][$i])."\n";
+                         $sWhatChanged .= "                     New url: ".stripslashes($aClean['aURL'][$i])."\n";
                          $bAppChanged = true;
                     }
                 }
@@ -644,16 +646,16 @@ function process_app_version_changes($isVersion)
         }
         if ($bAppChanged)
         {
-            $sEmail = User::get_notify_email_address_list($_REQUEST['iAppId']);
-            $oApp = new Application($_REQUEST['iAppId']);
+            $sEmail = User::get_notify_email_address_list($aClean['iAppId']);
+            $oApp = new Application($aClean['iAppId']);
             if($sEmail)
             {
-                if($isVersion)
+                if($bIsVersion)
                     $sSubject = "Links for ".$oApp->sName." ".$oVersion->sName." have been updated by ".$_SESSION['current']->sRealname;
                 else
                     $sSubject = "Links for ".$oApp->sName." have been updated by ".$_SESSION['current']->sRealname;
                     
-                $sMsg  = APPDB_ROOT."appview.php?iAppId=".$_REQUEST['iAppId']."\n";
+                $sMsg  = APPDB_ROOT."appview.php?iAppId=".$aClean['iAppId']."\n";
                 $sMsg .= "\n";
                 $sMsg .= "The following changes have been made:";
                 $sMsg .= "\n";

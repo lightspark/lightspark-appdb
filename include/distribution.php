@@ -257,10 +257,7 @@ class distribution{
 
     function mailSubmitter($sAction="add")
     {
-
-        $aClean = array(); //array of filtered user input
-
-        $aClean['sReplyText'] = makeSafe($_REQUEST['sReplyText']);
+        global $aClean;
 
         if($this->iSubmitterId)
         {
@@ -301,9 +298,8 @@ class distribution{
  
     function SendNotificationMail($sAction="add",$sMsg=null)
     {
-        $aClean = array(); //array of filtered user input
+        global $aClean;
 
-        $aClean['sReplyText'] = makeSafe($_REQUEST['sReplyText']);
         switch($sAction)
         {
             case "add":

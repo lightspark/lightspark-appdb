@@ -15,11 +15,6 @@ $pageRange = 10;
 $ItemsPerPage = 10;
 $currentPage = 1;
 
-$aClean = array(); //array of filtered user input
-
-$aClean['iItemsPerPage'] = makeSafe($_REQUEST['iItemsPerPage']);
-$aClean['iPage'] = makeSafe($_REQUEST['iPage']);
-
 if($aClean['iItemsPerPage'])
     $ItemsPerPage = $aClean['iItemsPerPage'];
 if($aClean['iPage'])

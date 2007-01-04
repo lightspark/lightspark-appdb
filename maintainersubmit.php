@@ -21,13 +21,6 @@ require(BASE."include/incl.php");
 require_once(BASE."include/application.php");
 require_once(BASE.'include/version.php');
 
-$aClean = array(); //array of filtered user input
-
-$aClean['sMaintainReason'] = makeSafe($_REQUEST['sMaintainReason']);
-$aClean['iAppId'] = makeSafe($_POST['iAppId']);
-$aClean['iVersionId'] = makeSafe(strip_tags($_POST['iVersionId']));
-$aClean['iSuperMaintainer'] = makeSafe($_POST['iSuperMaintainer']);
-
 
 /**
  * Check the input of a submitted form. And output with a list

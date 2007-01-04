@@ -9,11 +9,6 @@ require_once(BASE."include/tableve.php");
 require_once(BASE."include/application.php");
 require_once(BASE."include/category.php");
 
-$aClean = array(); //array of filtered user input
-
-$aClean['iAppId'] = makeSafe($_REQUEST['iAppId']);
-$aClean['sSubmit'] = makeSafe($_REQUEST['sSubmit']);
-
 if(!is_numeric($aClean['iAppId']))
     util_show_error_page_and_exit("Wrong ID");
 

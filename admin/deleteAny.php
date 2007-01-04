@@ -13,14 +13,6 @@ require_once(BASE."include/application.php");
 require_once(BASE."include/monitor.php");
 require_once(BASE."include/testData.php");
 
-$aClean = array(); //filtered user input
-
-$aClean['sConfirmed'] = makeSafe($_REQUEST['sConfirmed']);
-$aClean['sWhat'] = makeSafe($_REQUEST['sWhat']);
-$aClean['iCatId'] = makeSafe($_REQUEST['iCatId']);
-$aClean['iAppId'] = makeSafe($_REQUEST['iAppId']);
-$aClean['iVersionId'] = makeSafe($_REQUEST['iVersionId']);
-
 if($aClean['sConfirmed'] != "yes")
 {
     // ask for confirmation

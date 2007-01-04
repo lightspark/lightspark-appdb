@@ -6,7 +6,6 @@
 
 require("path.php");
 require(BASE."include/incl.php");
-require(BASE."include/filter.php");
 require_once(BASE."include/screenshot.php");
 require_once(BASE."include/application.php");
 

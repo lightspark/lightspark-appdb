@@ -358,11 +358,8 @@ class Application {
 
     function mailSubmitter($sAction="add")
     {
-        $aClean = array(); //array of filtered user input
-
-        if(isset($_REQUEST['sReplyText']))
-            $aClean['sReplyText'] = makeSafe($_REQUEST['sReplyText']);	
-        else
+        global $aClean;
+        if(!isset($aClean['sReplyText']))
             $aClean['sReplyText'] = "";
 
         if($this->iSubmitterId)
@@ -432,11 +429,8 @@ class Application {
 
     function SendNotificationMail($sAction="add",$sMsg=null)
     {
-        $aClean = array(); //array of filtered user input
-
-        if(isset($_REQUEST['sReplyText']))
-            $aClean['sReplyText'] = makeSafe($_REQUEST['sReplyText']);	
-        else
+        global $aClean;
+        if(!isset($aClean['sReplyText']))
             $aClean['sReplyText'] = "";
 
         switch($sAction)
@@ -581,7 +575,7 @@ class Application {
         return $errors;
     }
 
-    /* retrieves values from $_REQUEST that were output by OutputEditor() */
+    /* retrieves values from $aValues that were output by OutputEditor() */
     /* $aValues can be $_REQUEST or any array with the values from OutputEditor() */
     function GetOutputEditorValues($aValues)
     {

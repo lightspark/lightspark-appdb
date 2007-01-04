@@ -12,7 +12,6 @@
 // application environment
 require("path.php");
 require(BASE."include/incl.php");
-require(BASE."include/filter.php");
 
 apidb_header("Search Results");
 perform_search_and_output_results($aClean['sSearchQuery']);

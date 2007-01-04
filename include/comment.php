@@ -366,10 +366,7 @@ class Comment {
 
     function view_app_comments($versionId, $threadId = 0)
     {
-        $aClean = array(); //array of filtered user input
-
-        $aClean['sCmode'] = makeSafe($_REQUEST['sCmode']);
-        $aClean['sMode'] = makeSafe($_REQUEST['sMode']);
+        global $aClean;
 
         // count posts
         $hResult = query_parameters("SELECT commentId FROM appComments WHERE versionId = '?'", $versionId);

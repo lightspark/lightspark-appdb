@@ -9,21 +9,6 @@ require_once(BASE."include/tableve.php");
 require_once(BASE."include/application.php");
 require_once(BASE."include/testData.php");
 
-$aClean = array(); //array of filtered user input
-
-$aClean['iTestingId'] = makeSafe($_REQUEST['iTestingId']);
-$aClean['sSub'] = makeSafe($_REQUEST['sSub'] );
-$aClean['sAppType'] = makeSafe($_REQUEST['sAppType']);
-$aClean['iAppId'] = makeSafe($_REQUEST['iAppId']);
-$aClean['iVersionId'] = makeSafe($_REQUEST['iVersionId']);
-$aClean['sAppVendorName'] = makeSafe($_REQUEST['sAppVendorName']);
-$aClean['iAppVendorId']  = makeSafe($_REQUEST['iAppVendorId']);
-$aClean['sAppWebpage'] = makeSafe($_REQUEST['sAppWebpage']);
-$aClean['iAppIdMergeTo'] = makeSafe($_REQUEST['iAppIdMergeTo']);
-$aClean['sReplyText'] = makeSafe($_REQUEST['sReplyText']);
-$aClean['iVersionIdMergeTo'] = makeSafe($_REQUEST['iVersionIdMergeTo']);
-$aClean['sDistribution'] = makeSafe($_REQUEST['sDistribution']);
-
 function get_vendor_from_keywords($sKeywords)
 {
     $aKeywords = explode(" *** ",$sKeywords);
@@ -188,12 +173,12 @@ if ($aClean['sSub'])
     {
         $oVersion = new Version($aClean['iVersionId']);
         $oTest = new testData($aClean['iTestingId']);
-        $oVersion->GetOutputEditorValues($_REQUEST);
-        $oTest->GetOutputEditorValues($_REQUEST);
+        $oVersion->GetOutputEditorValues($aClean);
+        $oTest->GetOutputEditorValues($aClean);
         if ($aClean['sAppType'] == "application") // application
         {
             $oApp = new Application($aClean['iAppId']);
-            $oApp->GetOutputEditorValues($_REQUEST); // load the values from $_REQUEST 
+            $oApp->GetOutputEditorValues($aClean); // load the values from $aClean
             // add new vendor
             if($aClean['sAppVendorName'] and !$aClean['iAppVendorId'])
             {
@@ -267,12 +252,12 @@ if ($aClean['sSub'])
     {
         $oVersion = new Version($aClean['iVersionId']);
         $oTest = new testData($aClean['iTestingId']);
-        $oVersion->GetOutputEditorValues($_REQUEST);
-        $oTest->GetOutputEditorValues($_REQUEST);
+        $oVersion->GetOutputEditorValues($aClean);
+        $oTest->GetOutputEditorValues($aClean);
         if ($aClean['sAppType'] == "application") // application
         {
             $oApp = new Application($aClean['iAppId']);
-            $oApp->GetOutputEditorValues($_REQUEST); // load the values from $_REQUEST 
+            $oApp->GetOutputEditorValues($aClean); // load the values from $aClean
             $oApp->update(true);
             $oApp->reject();
         }

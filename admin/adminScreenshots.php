@@ -9,15 +9,6 @@ require(BASE."include/incl.php");
 require_once(BASE."include/screenshot.php");
 require_once(BASE."include/application.php");
 
-$aClean = array(); //array of filtered user input
-
-$aClean['sCmd'] = makeSafe($_REQUEST['sCmd']);
-$aClean['iImageId'] = makeSafe($_REQUEST['iImageId']);
-$aClean['iItemsPerPage'] = makeSafe($_REQUEST['iItemsPerPage']);
-$aClean['iPage'] = makeSafe($_REQUEST['iPage']);
-$aClean['bRegenerate'] = makeSafe($_REQUEST['bRegenerate']);
-$aClean['iVersionId'] = makeSafe($_REQUEST['iVersionId']);
-
 // deny access if not admin
 if(!$_SESSION['current']->hasPriv("admin"))
     util_show_error_page_and_exit("Insufficient privileges.");

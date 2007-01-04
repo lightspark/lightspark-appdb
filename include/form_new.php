@@ -1,12 +1,6 @@
 <?php
 require_once(BASE."include/util.php");
 
-$aClean = array(); //array of filtered user input
-
-$aClean['sUserEmail'] = makeSafe($_POST['sUserEmail']);
-$aClean['sUserRealname'] = makeSafe($_POST['realname']);
-
-
 /********************/
 /* New Account Form */
 /********************/

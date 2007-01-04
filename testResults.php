@@ -10,14 +10,6 @@ require_once(BASE."include/application.php");
 require_once(BASE."include/testData.php");
 require_once(BASE."include/distribution.php");
 
-$aClean = array(); //array of filtered user input
-
-$aClean['sSub'] = makeSafe($_REQUEST['sSub']);
-$aClean['iTestingId'] = makeSafe($_REQUEST['iTestingId']);
-$aClean['iVersionId'] = makeSafe($_REQUEST['iVersionId']);
-$aClean['iDistributionId'] = makeSafe($_REQUEST['iDistributionId']);
-$aClean['sDistribution'] = makeSafe($_REQUEST['sDistribution']);
-
 //deny access if not logged on
 if(!$_SESSION['current']->isLoggedIn())
     util_show_error_page_and_exit("Insufficient privileges to create test results.  Are you sure you are logged in?");
@@ -33,8 +25,8 @@ if ($aClean['sSub'])
     // Submit or Resubmit the new test results
     if (($aClean['sSub'] == 'Submit') || ($aClean['sSub'] == 'Resubmit'))
     {
-        $errors = $oTest->CheckOutputEditorInput($_REQUEST);
-        $oTest->GetOutputEditorValues($_REQUEST); // retrieve the values from the current $_REQUEST 
+        $errors = $oTest->CheckOutputEditorInput($aClean);
+        $oTest->GetOutputEditorValues($aClean); // retrieve the values from the current $aClean
         if(empty($errors))
         {
             if(!$aClean['iDistributionId'])

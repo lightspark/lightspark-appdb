@@ -5,12 +5,6 @@ require_once(BASE."include/tableve.php");
 require_once(BASE."include/application.php");
 require_once(BASE."include/version.php");
 
-$aClean = array(); //array of filtered user input
-
-$aClean['iAppId'] = makeSafe($_REQUEST['iAppId']);
-$aClean['iVersionId'] = makeSafe($_REQUEST['iVersionId']);
-$aClean['sAction'] = makeSafe($_REQUEST['sAction']);
-
 if(!is_numeric($aClean['iAppId']) OR !is_numeric($aClean['iVersionId']))
     util_show_error_page_and_exit("Wrong ID");
 

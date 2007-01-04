@@ -71,28 +71,6 @@ function show_user_fields($oUser)
 }
 
 
-$aClean = array(); //array of filtered user input
-
-$aClean['iUserId'] = makeSafe($_REQUEST['iUserId']);
-$aClean['iLimit'] = makeSafe($_REQUEST['iLimit']);
-$aClean['sOrderBy'] = makeSafe($_REQUEST['sOrderBy']);
-$aClean['sUserPassword'] = makeSafe($_REQUEST['sUserPassword']);
-$aClean['sUserPassword2'] = makeSafe($_REQUEST['sUserPassword2']);
-$aClean['sUserEmail'] = makeSafe($_REQUEST['sUserEmail']);
-$aClean['sUserRealname'] = makeSafe($_REQUEST['sUserRealname']);
-$aClean['sWineRelease'] = makeSafe($_REQUEST['sWineRelease']);
-$aClean['sHasAdmin'] = makeSafe($_POST['sHasAdmin']); 
-
-/* filter all of the preferences */
-while(list($sKey, $sValue) = each($_REQUEST))
-{
-    if(ereg("^pref_(.+)$", $sKey, $arr))
-        $aClean[$sKey] = makeSafe($sValue);
-}
-
-
-
-
 if(!$_SESSION['current']->isLoggedIn())
     util_show_error_page_and_exit("You must be logged in to edit preferences");
 
@@ -109,8 +87,8 @@ if($_SESSION['current']->hasPriv("admin") &&
     $oUser = &$_SESSION['current'];
 }
 
-if($_POST)
-{   
+if($aClean['sSubmit'] == "Update")
+{
     while(list($sKey, $sValue) = each($aClean))
     {
         /* if a parameter lacks 'pref_' at its head it isn't a */
@@ -184,7 +162,7 @@ if($oUser->iUserId != $aClean['iUserId']) build_prefs_list($oUser);
 
 echo html_table_end();
 echo html_frame_end();
-echo "<br /> <div align=center> <input type=\"submit\" value=\"Update\" /> </div> <br />\n";
+echo "<br /> <div align=center> <input type=\"submit\" name='sSubmit' value=\"Update\" /> </div> <br />\n";
 echo "</form>\n";
 
 apidb_footer();

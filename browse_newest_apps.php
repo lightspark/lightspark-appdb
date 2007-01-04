@@ -6,7 +6,6 @@
 
 require("path.php");
 require(BASE."include/incl.php");
-require(BASE."include/filter.php");
 
 /* Set default value */
 if(empty($aClean['iNumVersions']) || $aClean['iNumVersions'] > 200 || $aClean['iNumVersions'] < 0)

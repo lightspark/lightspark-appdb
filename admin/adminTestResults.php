@@ -11,11 +11,6 @@ require_once(BASE."include/version.php");
 require_once(BASE."include/testData.php");
 require_once(BASE."include/distribution.php");
 
-$aClean = array();
-
-$aClean['sSub'] = makeSafe($_REQUEST['sSub']);
-$aClean['iTestingId'] = makeSafe($_REQUEST['iTestingId']);
-
 if ($aClean['sSub'])
 {
     $oTest = new testData($aClean['iTestingId']);
@@ -29,7 +24,7 @@ if ($aClean['sSub'])
         if(is_numeric($aClean['iTestingId']))
         {
             $oTest = new testData($aClean['iTestingId']);
-            $oTest->GetOutputEditorValues($_REQUEST);
+            $oTest->GetOutputEditorValues($aClean);
 
             if($aClean['sSub'] == 'Submit')        // submit the test results
             {

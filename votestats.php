@@ -10,7 +10,6 @@
 // application environment
 require("path.php");
 require(BASE."include/incl.php");
-require(BASE."include/filter.php");
 require_once(BASE."include/category.php");
 
 // set default values and check if the value makes sense

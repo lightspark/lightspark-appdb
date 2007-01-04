@@ -245,10 +245,7 @@ class testData{
 
     function mailSubmitter($sAction="add")
     {
-
-        $aClean = array(); //array of filtered user input
-
-        $aClean = makeSafe($_REQUEST['sReplyText']);
+        global $aClean;
 
         if($this->iSubmitterId)
         {
@@ -290,9 +287,7 @@ class testData{
  
     function SendNotificationMail($sAction="add",$sMsg=null)
     {
-        $aClean = array(); //array of filtered user input
-
-        $aClean['sReplyText'] = makeSafe($_REQUEST['sReplyText']);
+        global $aClean;
 
         $oVersion = new Version($this->iVersionId);
         $oApp = new Application($oVersion->iAppId);
@@ -374,12 +369,11 @@ class testData{
     // Show the Test results for a application version
     function ShowVersionsTestingTable($link, $iDisplayLimit)
     {
+        global $aClean;
+
         /* escape input parameters */
         $link = mysql_real_escape_string($link);
         $iDisplayLimit = mysql_real_escape_string($iDisplayLimit);
-
-        $aClean = array(); //array of filtered user input
-        $aClean['showAll'] = makeSafe($_REQUEST['showAll']);
 
         $showAll = $aClean['showAll'];
 
@@ -559,7 +553,7 @@ class testData{
         echo html_frame_end();
     }
 
-    /* $aValues can be $_REQUEST or any array with the values from OutputEditor() */
+    /* $aValues can be $aValues or any array with the values from OutputEditor() */
     function CheckOutputEditorInput($aValues, $sDistribution="")
     {
         $errors = "";
@@ -603,7 +597,7 @@ class testData{
 
     }
 
-    /* retrieves values from $_REQUEST that were output by OutputEditor() */
+    /* retrieves values from $aValues that were output by OutputEditor() */
     /* $aValues can be $_REQUEST or any array with the values from OutputEditor() */
     function GetOutputEditorValues($aValues)
     {

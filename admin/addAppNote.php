@@ -7,13 +7,6 @@ require("path.php");
 require(BASE."include/incl.php");
 require_once(BASE."include/note.php");
 
-$aClean = array(); //array of filtered user input
-
-$aClean['iVersionId'] = makeSafe($_REQUEST['iVersionId']);
-$aClean['iAppId'] = makeSafe( $_REQUEST['iAppId']);
-$aClean['sSub'] = makeSafe($_REQUEST['sSub']);
-$aClean['sSubmit'] = makeSafe($_REQUEST['sSubmit']);
-
 //FIXME: get rid of appId references everywhere, as version is enough.
 $sQuery = "SELECT appId FROM appVersion WHERE versionId = '?'";
 $hResult = query_parameters($sQuery, $aClean['iVersionId']);
@@ -37,7 +30,7 @@ else
     exit;
 
 $oNote = new Note();
-$oNote->GetOutputEditorValues($_REQUEST);
+$oNote->GetOutputEditorValues($aClean);
 
 if($aClean['sSub'] == "Submit")
 {

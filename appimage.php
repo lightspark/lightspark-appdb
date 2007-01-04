@@ -17,7 +17,6 @@
 // application environment
 require("path.php");
 require(BASE."include/incl.php");
-require(BASE."include/filter.php");
 require_once(BASE."include/screenshot.php");
 
 // an image doesn't have a link, so a cookie makes no sense

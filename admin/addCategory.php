@@ -3,14 +3,6 @@ require("path.php");
 require(BASE."include/incl.php");
 require_once(BASE."include/category.php");
 
-$aClean = array(); //array of filtered user input
-
-$aClean['iCatId'] = makeSafe($_REQUEST['iCatId']);
-$aClean['sName'] = makeSafe($_REQUEST['sName']);
-$aClean['sDescription'] = makeSafe($_REQUEST['sDescription']);
-$aClean['iParentId'] = makeSafe($_REQUEST['iParentId']);
-$aClean['sSubmit'] = makeSafe($_REQUEST['sSubmit']);
-
 if(!$_SESSION['current']->hasPriv("admin"))
     util_show_error_page_and_exit();
 

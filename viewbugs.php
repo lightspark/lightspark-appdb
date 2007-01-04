@@ -12,7 +12,6 @@
 // application environment
 require("path.php");
 require(BASE."include/incl.php");
-require(BASE."include/filter.php");
 
 /* code to View versions affected by a Bug */
 

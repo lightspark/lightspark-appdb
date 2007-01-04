@@ -51,10 +51,7 @@ class Url {
      */
     function create($sDescription = null, $sUrl = null, $iVersionId = null, $iAppId = null)
     {
-        $aClean = array(); //array of filtered user input
-
-        $aClean['iVersionId'] = makeSafe($_REQUEST['iVersionId']);
-        $aClean['iAppId'] = makeSafe($_REQUEST['iAppId']);
+        global $aClean;
 
         // Security, if we are not an administrator or a maintainer, the url must be queued.
         if(!($_SESSION['current']->hasPriv("admin") || $_SESSION['current']->isMaintainer($aClean['iVersionId']) || $_SESSION['current']->isSupermaintainer($aClean['iAppId'])))
@@ -180,9 +177,8 @@ class Url {
     
     function mailSubmitter($bRejected=false)
     {
-        $aClean = array(); //array of filtered user input
+        global $aClean;
 
-        $aClean['sReplyText'] = makeSafe($_REQUEST['sReplyText']);
         if($this->iSubmitterId)
         {
             $sAppName = Application::lookup_name($this->appId)." ".Version::lookup_name($this->versionId);

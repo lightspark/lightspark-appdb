@@ -9,11 +9,6 @@
 require("path.php");
 require(BASE."include/incl.php");
 
-$aClean = array(); //array of filtered user input
-
-$aClean['sSub'] = makeSafe($_REQUEST['sSub']);
-$aClean['iMaintainerId'] = makeSafe($_REQUEST['iMaintainerId']);
-
 // deny access if not logged in
 if(!$_SESSION['current']->hasPriv("admin"))
     util_show_error_page_and_exit("Insufficient privileges.");

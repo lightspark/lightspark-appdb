@@ -10,15 +10,6 @@ require("path.php");
 require(BASE."include/incl.php");
 require_once(BASE."include/bugs.php");
 
-$aClean = array(); //array of filtered user input
-
-$aClean['sSub'] = makeSafe($_REQUEST['sSub']);
-$aClean['iBuglinkId'] = makeSafe($_REQUEST['iBuglinkId']);
-$aClean['iItemsPerPage'] = makeSafe($_REQUEST['iItemsPerPage']);
-$aClean['sQueuedOnly'] = makeSafe($_REQUEST['sQueuedOnly']);
-$aClean['iPage'] = makeSafe($_REQUEST['iPage']);
-
-
 // deny access if not logged in
 if(!$_SESSION['current']->hasPriv("admin"))
     util_show_error_page_and_exit("Insufficient privileges.");

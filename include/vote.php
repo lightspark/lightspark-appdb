@@ -9,7 +9,6 @@ define('MAX_VOTES',3);
  */
 function vote_count($iAppId, $iUserId = null)
 {
-
     if(!$iUserId)
     {
         if($_SESSION['current']->isLoggedIn())
@@ -78,7 +77,6 @@ function vote_add($iAppId, $iSlot, $iUserId = null)
  */
 function vote_remove($iSlot, $iUserId = null)
 {
-    
     if(!$iUserId)
     {
         if($_SESSION['current']->isLoggedIn())
@@ -114,9 +112,7 @@ function vote_get_user_votes($iUserId = null)
 
 function vote_menu()
 {
-
-    $aClean = array(); //array of filtered user input
-    $aClean['iAppId'] = makeSafe($_REQUEST['iAppId']);
+    global $aClean;
 
     $m = new htmlmenu("Votes","updatevote.php");
     

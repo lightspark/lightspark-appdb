@@ -3,12 +3,6 @@ require("path.php");
 require(BASE."include/incl.php");
 require_once(BASE."include/vendor.php");
 
-$aClean = array(); //array of filtered user input
-$aClean['iVendorId'] = makeSafe($_REQUEST['iVendorId']);
-$aClean['sSubmit'] = makeSafe($_REQUEST['sSubmit']);
-$aClean['sName'] = makeSafe($_REQUEST['sName']);
-$aClean['sWebpage'] = makeSafe($_REQUEST['sWebpage']);
-
 if(!$_SESSION['current']->hasPriv("admin"))
     util_show_error_page_and_exit();
 

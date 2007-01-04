@@ -27,14 +27,6 @@ require_once(BASE."include/category.php");
 require_once(BASE."include/maintainer.php");
 require_once(BASE."include/monitor.php");
 
-$aClean = array(); //array of filtered user input
-
-$aClean['iAppId'] = makeSafe($_REQUEST['iAppId']);
-$aClean['iVersionId'] = makeSafe($_REQUEST['iVersionId']);
-$aClean['sSub'] = makeSafe($_REQUEST['sSub']);
-$aClean['iBuglinkId'] = makeSafe($_REQUEST['iBuglinkId']);
-$aClean['iTestingId'] = makeSafe($_REQUEST['iTestingId']);
-
 $oApp = new Application($aClean['iAppId']);
 $oVersion = new Version($aClean['iVersionId']);
 

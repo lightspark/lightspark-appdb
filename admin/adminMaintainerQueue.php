@@ -14,14 +14,6 @@ require_once(BASE."include/mail.php");
 /* The initial help text displayed in the admin's response field */
 $sReplyTextHelp = "Enter a personalized reason for accepting or rejecting the user's maintainer request here";
 
-$aClean = array(); //array of filtered user input
-
-$aClean['sSub'] = makeSafe( $_REQUEST['sSub'] );
-$aClean['iMaintainerId'] = makeSafe( $_REQUEST['iMaintainerId'] );
-$aClean['sAdd'] = makeSafe( $_REQUEST['sAdd'] );
-$aClean['sReject'] = makeSafe( $_REQUEST['sReject'] );
-$aClean['sReplyText'] = makeSafe( $_REQUEST['sReplyText'] );
-
 /* If the admin's response text has not been modified, it should not be included in the e-mail sent to the rejected/accepted maintainer */
 if($aClean['sReplyText'] == $sReplyTextHelp)
     $aClean['sReplyText'] = "";

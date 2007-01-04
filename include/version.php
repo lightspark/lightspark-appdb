@@ -393,12 +393,10 @@ class Version {
 
     function mailSubmitter($sAction="add")
     {
-        $aClean = array(); //array of filtered user input
+        global $aClean; //FIXME: we should pass the sReplyText value in
 
         // use 'sReplyText' if it is defined, otherwise define the value as an empty string
-        if(isset($_REQUEST['sReplyText']))
-            $aClean['sReplyText'] = makeSafe($_REQUEST['sReplyText']);
-        else
+        if(!isset($aClean['sReplyText']))
             $aClean['sReplyText'] = "";
 
         if($this->iSubmitterId)
@@ -436,12 +434,10 @@ class Version {
  
     function SendNotificationMail($sAction="add",$sMsg=null)
     {
-        $aClean = array(); //array of filtered user input
+        global $aClean;
         
         // use 'sReplyText' if it is defined, otherwise define the value as an empty string
-        if(isset($_REQUEST['sReplyText']))
-            $aClean['sReplyText'] = makeSafe($_REQUEST['sReplyText']);
-        else
+        if(!isset($aClean['sReplyText']))
             $aClean['sReplyText'] = "";
 
         $oApp = new Application($this->iAppId);
@@ -601,7 +597,7 @@ class Version {
         return $errors;
     }
 
-    /* retrieves values from $_REQUEST that were output by OutputEditor() */
+    /* retrieves values from $aValues that were output by OutputEditor() */
     /* $aValues can be $_REQUEST or any array with the values from OutputEditor() */
     function GetOutputEditorValues($aValues)
     {

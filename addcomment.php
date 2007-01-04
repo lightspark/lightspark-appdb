@@ -14,7 +14,6 @@
 // application environment
 require("path.php");
 require(BASE."include/incl.php");
-require(BASE."include/filter.php");
 require_once(BASE."include/comment.php");
 
 // you must be logged in to submit comments

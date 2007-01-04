@@ -6,15 +6,6 @@
 require("path.php");
 require(BASE."include/incl.php");
 
-$aClean = array(); //filtered user input
-
-$aClean['sAction'] = makeSafe($_REQUEST['sAction']);
-$aClean['iUserId'] = makeSafe($_REQUEST['iUserId']);
-$aClean['sSearch'] = makeSafe($_REQUEST['sSearch']);
-$aClean['iLimit'] = makeSafe($_REQUEST['iLimit']);
-$aClean['sOrderBy'] = makeSafe($_REQUEST['sOrderBy']);
-$aClean['sSubmit'] = makeSafe($_REQUEST['sSubmit']);
-
 apidb_header("Admin Users Management");
 
 if(!$_SESSION['current']->hasPriv("admin"))

@@ -7,13 +7,6 @@ require("path.php");
 require(BASE."include/incl.php");
 require_once(BASE."include/note.php");
 
-$aClean = array(); //array of filtered user input
-
-$aClean['iNoteId'] = makeSafe($_REQUEST['iNoteId']);
-$aClean['sSub'] = makeSafe($_REQUEST['sSub']);
-$aClean['sSubmit'] = makeSafe($_REQUEST['sSubmit']);
-$aClean['sPreview'] = makeSafe($_REQUEST['sPreview']);
-
 if(!is_numeric($aClean['iNoteId']))
     util_show_error_page_and_exit('Wrong note ID');
 
@@ -26,7 +19,7 @@ if(!$_SESSION['current']->hasPriv("admin") && !$_SESSION['current']->isMaintaine
 
 if(!empty($aClean['sSub']))
 {
-    $oNote->GetOutputEditorValues($_REQUEST); /* retrieve the updated values */
+    $oNote->GetOutputEditorValues($aClean); /* retrieve the updated values */
 
     if ($aClean['sSub'] == 'Delete')
     {
@@ -45,7 +38,7 @@ if(!empty($aClean['sSub']))
     /* if preview is set display the note for review */
     if($aClean['sPreview'])
     {
-        $oNote->GetOutputEditorValues($_REQUEST); /* retrieve the updated values */
+        $oNote->GetOutputEditorValues($aClean); /* retrieve the updated values */
         $oNote->show(true);
     }
 

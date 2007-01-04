@@ -9,8 +9,19 @@ function filter_gpc()
 {
     global $aClean;
     $aKeys = array_keys($_REQUEST);
-    for($i=0;$i<sizeof($aKeys);$i++)
+    for($i=0; $i < sizeof($aKeys); $i++)
     {
+        // Special cases for variables that don't fit our filtering scheme
+        // don't filter the AppDB session cookie and MAX_FILE_SIZE
+        // and the DialogX values that xinha uses
+        if($aKeys[$i] == "whq_appdb" || ($aKeys[$i] == "MAX_FILE_SIZE") || ($aKeys[$i] == "PHPSESSID")
+           || (strpos($aKeys[$i], "Dialog") == 0) || (strpos($aKeys[$i], "pref_") == 0))
+        {
+            // copy the key over to the clean array
+            $aClean[$aKeys[$i]] = trim(strip_tags($_REQUEST[$aKeys[$i]]));
+            continue; // go to the next entry
+        }
+
         switch($aKeys[$i][0])
         {
             case "i": // integer
@@ -47,13 +58,7 @@ function filter_gpc()
                     util_show_error_page_and_exit("Fatal error: ".$aKeys[$i]." should be an array.");
             break;
             default:
-                // don't filter the AppDB session cookie and MAX_FILE_SIZE
-                // and the DialogX values that xinha uses
-                if($aKeys[$i]!="whq_appdb" && $aKeys[$i]!="MAX_FILE_SIZE" && $aKeys[$i]!="PHPSESSID"
-                   && strpos($aKeys[$i], "Dialog") == 0)
-                {
-                    util_show_error_page_and_exit("Fatal error: type of variable ".$aKeys[$i]." is not recognized.");
-                }
+                util_show_error_page_and_exit("Fatal error: type of variable ".$aKeys[$i]." is not recognized.");
                 break;
         }
     }

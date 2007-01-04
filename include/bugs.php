@@ -191,9 +191,9 @@ class Bug {
 
     function mailSubmitter($bRejected=false)
     {
-        $aClean = array(); //array of filtered user input
-
-        $aClean['sReplyText'] = makeSafe($_REQUEST['sReplyText']);
+        global $aClean;
+        if(!isset($aClean['sReplyText']))
+            $aClean['sReplyText'] = "";
 	
         if($this->iSubmitterId)
         {
@@ -298,9 +298,7 @@ class Bug {
 
 function view_version_bugs($iVersionId = null, $aBuglinkIds)
 {
-    $aClean = array(); //array of filtered user input
-
-    $aClean['buglinkId'] = makeSafe($_REQUEST['buglinkId']);
+    global $aClean;
 
     $bCanEdit = FALSE;
     $oVersion = new Version($iVersionId);

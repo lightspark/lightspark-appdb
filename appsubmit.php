@@ -33,20 +33,6 @@ require_once(BASE."include/tableve.php");
 require_once(BASE."include/application.php");
 require_once(BASE."include/testData.php");
 
-$aClean = array(); //array of filtered user input
-
-$aClean['sAppType'] = makeSafe($_REQUEST['sAppType']);
-$aClean['sSub'] = makeSafe($_REQUEST['sSub']);
-$aClean['iAppId'] = makeSafe($_REQUEST['iAppId']);
-$aClean['iVersionId'] = makeSafe($_REQUEST['iVersionId']);
-$aClean['iTestingId'] = makeSafe($_REQUEST['iTestingId']);
-$aClean['sAppVendorName'] = makeSafe($_REQUEST['sAppVendorName']);
-$aClean['iVendorId'] = makeSafe($_REQUEST['iVendorId']);
-$aClean['sAppWebpage'] = makeSafe($_REQUEST['sAppWebpage']);
-$aClean['sAppKeywords'] = makeSafe($_REQUEST['sAppKeywords']);
-$aClean['iDistributionId'] = makeSafe($_REQUEST['iDistributionId']);
-$aClean['sDistribution'] = makeSafe($_REQUEST['sDistribution']);
-
 function get_vendor_from_keywords($sKeywords)
 {
     $aKeywords = explode(" *** ",$sKeywords);
@@ -158,15 +144,15 @@ if ($aClean['sSub'])
         $errors = "";
         $oVersion = new Version($aClean['iVersionId']);
         $oTest = new testData($aClean['iTestingId']);
-        $errors .= $oVersion->CheckOutputEditorInput($_REQUEST);
-        $errors .= $oTest->CheckOutputEditorInput($_REQUEST);
-        $oVersion->GetOutputEditorValues($_REQUEST);
-        $oTest->GetOutputEditorValues($_REQUEST);
+        $errors .= $oVersion->CheckOutputEditorInput($aClean);
+        $errors .= $oTest->CheckOutputEditorInput($aClean);
+        $oVersion->GetOutputEditorValues($aClean);
+        $oTest->GetOutputEditorValues($aClean);
         if ($aClean['sAppType'] == "application") // application
         {
             $oApp = new Application($aClean['iAppId']);
-            $errors .= $oApp->CheckOutputEditorInput($_REQUEST);
-            $oApp->GetOutputEditorValues($_REQUEST); // load the values from $_REQUEST 
+            $errors .= $oApp->CheckOutputEditorInput($aClean);
+            $oApp->GetOutputEditorValues($aClean); // load the values from $aClean
 
             if(empty($errors))
             {

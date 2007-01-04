@@ -1,9 +1,6 @@
 <?php
 require_once(BASE."include/util.php");
 
-$aClean = array(); //array of filtered user input
-
-$aClean['iUserId'] = makeSafe($_REQUEST['iUserId']);
 /*********************/
 /* Edit Account Form */
 /*********************/

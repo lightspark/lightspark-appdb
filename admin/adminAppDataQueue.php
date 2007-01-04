@@ -11,15 +11,6 @@ require_once(BASE."include/application.php");
 require_once(BASE."include/version.php");
 require_once(BASE."include/user.php");
 
-$aClean = array(); //array of user input
-
-$aClean['iId'] = makeSafe($_REQUEST['iId']);
-$aClean['sSub'] = makeSafe($_REQUEST['sSub']);
-$aClean['sAdd'] = makeSafe($_REQUEST['sAdd']);
-$aClean['sDescription'] = makeSafe($_REQUEST['sDescription']);
-$aClean['sReplyText'] = makeSafe($_REQUEST['sReplyText']);
-$aClean['sReject'] = makeSafe($_REQUEST['sReject']);
-
 // deny access if not admin or at least some kind of maintainer
 if(!$_SESSION['current']->hasPriv("admin") && !$_SESSION['current']->isMaintainer())
     util_show_error_page_and_exit("Insufficient privileges.");

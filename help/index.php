@@ -8,9 +8,9 @@ require(BASE."include/"."incl.php");
 
 $help_path = BASE."/help";
 
-if($_GET['sTopic'])
+if($aClean['sTopic'])
 {
-    display_help($_GET['sTopic']);
+    display_help($aClean['sTopic']);
 } else {
     display_index();    
 }
@@ -81,17 +81,17 @@ function get_help_title ($file)
 {
     $fp = @fopen($file, "r");
     if(!$fp)
-	return null;
+        return null;
 
     $line = fgets($fp, 1024);
     if(!$line)
-	return null;
+        return null;
 
     $line = trim($line);
 
     if(eregi("^<!--TITLE: (.+)-->$", $line, $arr))
     {
-	return $arr[1];
+        return $arr[1];
     }
     return "Internal Error: missing title";
 }

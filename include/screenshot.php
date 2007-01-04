@@ -302,9 +302,7 @@ class Screenshot {
 
     function mailSubmitter($bRejected=false)
     {
-        $aClean = array(); //array of filtered user input
-
-        $aClean['sReplyText'] = makeSafe($_REQUEST['sReplyText']);
+        global $aClean;
 
         if($this->iSubmitterId)
         {

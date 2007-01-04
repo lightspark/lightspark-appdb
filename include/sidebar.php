@@ -6,11 +6,9 @@ require_once(BASE."include/distribution.php");
 require_once(BASE."include/vendor.php");
 require_once(BASE."include/util.php");
   
-function global_sidebar_menu() {
-     
-    $aClean = array(); //array of filtered user input
-
-    $aClean['sSearchQuery'] = makeSafe($_REQUEST['sSearchQuery']);
+function global_sidebar_menu()
+{
+    global $aClean;
 
     $g = new htmlmenu(APPDB_OWNER." Menu");
     $g->add(APPDB_OWNER, APPDB_OWNER_URL);

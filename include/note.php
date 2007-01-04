@@ -2,12 +2,6 @@
 require_once(BASE."include/util.php");
 require_once(BASE."include/version.php");
 
-$aClean = array(); //array of filtered user input
-if(isset($_REQUEST['sReplyText']))
-    $aClean['sReplyText'] = makeSafe( $_REQUEST['sReplyText'] );
-else
-    $aClean['sReplyText'] = "";
-
 /************************************/
 /* note class and related functions */
 /************************************/
@@ -257,7 +251,7 @@ class Note {
         echo html_frame_end();
     }
 
-    /* retrieves values from $_REQUEST that were output by OutputEditor() */
+    /* retrieves values from $aValue that were output by OutputEditor() */
     /* $aValues can be $_REQUEST or any array with the values from OutputEditor() */
     function GetOutputEditorValues($aValues)
     {
