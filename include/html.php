@@ -23,9 +23,16 @@ function do_html_tr($t, $arr, $class, $extra)
 	if(strlen($class))
 		$class = " class=\"$class\"";
 
-	$str = do_indent("<tr$class>", 1);
+	/* $extra contains parameters to <tr>, such as valign="top" */
+	if(strlen($extra))
+		$extra = " $extra";
+
+	$str = do_indent("<tr$class$extra>", 1);
 	for($i = 0; $i < sizeof($arr); $i++)
 	{
+		/* If it is not an array, it contains the entire table cell.  If it
+		   is an array, [0] holds the main content and [1] the options like
+		   valign="top" */
 		if(is_array($arr[$i]))
 		{
 			$val = $arr[$i][0];
