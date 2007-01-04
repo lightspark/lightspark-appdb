@@ -1,11 +1,11 @@
-<!--TITLE: Maintainers Ratings Definitions -->
+<!--TITLE: Maintainer Rating Definitions -->
 
-<h3>Maintainers Ratings Definitions</h3>
+<h3>Maintainer Rating Definitions</h3>
 
 <p>
-The Application Database features a Maintainers rating system that allows you to see
-which applications work the best in Wine. This rating system is designed to assist
-users by giving a rating based on an "expert's" experience.
+The Application Database features a maintainer rating system that allows you to see
+which applications work best in Wine. This rating system is designed to assist
+users by giving a rating based on an &#8216;expert&#8217;s&#8217; experience.
 </p>
 
 <ul>
@@ -13,7 +13,7 @@ users by giving a rating based on an "expert's" experience.
 <li class="platinum">Platinum</li>
 
 <p>
-An application can be rated as Platinum if it installs and runs "out of the box" No changes required to winecfg.
+An application can be rated as Platinum if it installs and runs flawlessly &#8216;out of the box&#8217;.  No changes required in winecfg.
 </p>
 
 <li class="gold">Gold</li>
@@ -25,22 +25,22 @@ Application works flawlessly with some DLL overrides or other settings, crack et
 <li class="silver">Silver</li>
 
 <p>
-Application works excellently for 'normal' use; a game works fine in single-player but not 
-in multi-player, Windows Media Player works fine as a plug-in and stand-alone player, but can't handle DRM etc.
+Application works excellently for &#8216;normal&#8217; use; a game works fine in single-player but not 
+in multi-player, Windows Media Player works fine as a plug-in and stand-alone player, but cannot handle DRM etc.
 </p>
 
 <li class="Bronze">Bronze</li>
 
 <p>
-Application works, but it has some issues, even for normal use; a game may not redraw properly or display fonts in wrong colours, be a much slower than it should etc.
+Application works, but it has some issues, even for normal use; a game may not redraw properly or display fonts in wrong colours, be much slower than it should etc.
 </p>
 
 <li class="Garbage">Garbage</li>
 
 <p>
-An app gets this rating if it cannot be used for the purpose it was designed for.
-There should be at least one bug report in bugzilla if an app gets this rating.
-Application doesn't start, or starts but has so many errors that it is nearly impossible to use it.
+An application gets this rating if it cannot be used for the purpose it was designed for.
+There should be at least one bug report in Bugzilla if it gets this rating.
+Application does not start, or starts but has so many errors that it is nearly impossible to use it.
 </p>
 
 </ul>
