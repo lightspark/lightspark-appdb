@@ -145,6 +145,10 @@ if ($aClean['sSub'])
 
         $oApp = new Application($aClean['iAppId']);
 
+        /* Check that the application actually exists */
+        if(!$oApp->iAppId)
+            util_show_error_page_and_exit("There is no application with that ID.");
+
         // if we are processing a queued application there MUST be an implicitly queued 
         // version to go along with it.  
         $hResult = query_parameters("SELECT versionId from appVersion where appId='?';", $aClean['iAppId']);
