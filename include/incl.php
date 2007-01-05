@@ -290,7 +290,6 @@ $session->register("current");
 
 if(!isset($_SESSION['current']))
 {
-    echo "Session not set, creating new user";
     $_SESSION['current'] = new User();
 }
 
