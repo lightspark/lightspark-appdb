@@ -51,6 +51,25 @@ class appData
 
         return $sReturn;
     }
+
+    /* Get appData for a given version/application, optionally filter by type */
+    function getData($iId, $sType, $bIsVersion = TRUE)
+    {
+        $iAppId = 0;
+        $iVersionId = 0;
+
+        if($bIsVersion)
+            $iVersionId = $iId;
+        else
+            $iAppId = $iId;
+
+        $hResult = query_parameters("SELECT * FROM appData WHERE appId = '?' AND versionId = '?' AND TYPE = '?'", $iAppId, $iVersionId, $sType);
+
+        if(!$hResult || !mysql_num_rows($hResult))
+            return FALSE;
+
+        return $hResult;
+    }
 }
 
 ?>

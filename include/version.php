@@ -10,6 +10,7 @@ require_once(BASE."include/screenshot.php");
 require_once(BASE."include/bugs.php");
 require_once(BASE."include/util.php");
 require_once(BASE."include/testData.php");
+require_once(BASE."include/downloadurl.php");
 
 /**
  * Version class for handling versions.
@@ -666,6 +667,9 @@ class Version {
         // rating Area
         echo "<tr class=\"$sMaintainerColor\" valign=\"top\"><td><b>Maintainer&#8217;s Rating</b></td><td>".$this->sTestedRating."</td></tr>\n";
         echo "<tr class=\"$sMaintainerColor\" valign=\"top\"><td><b>Maintainer&#8217;s Version</b></td><td>".$this->sTestedRelease."</td></tr>\n";
+
+        if($sDownloadurls = downloadurl::display($this->iVersionId))
+            echo $sDownloadurls;
 
         // image
         $img = Screenshot::get_random_screenshot_img($oApp->iAppId, $this->iVersionId, false);

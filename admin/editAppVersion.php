@@ -16,6 +16,7 @@ if(!$_SESSION['current']->hasPriv("admin") && !$_SESSION['current']->isMaintaine
 if(!empty($aClean['sSubmit']))
 {
     process_app_version_changes(true);
+    downloadurl::processForm($_REQUEST);
     util_redirect_and_exit(apidb_fullurl("appview.php?iVersionId=".$aClean['iVersionId']));
 } else /* or display the webform for making changes */
 {
@@ -84,6 +85,9 @@ if(!empty($aClean['sSubmit']))
     echo '</table>',"\n";
     echo html_frame_end();
     echo "</form>";
+
+    /* Download URL editor */
+    echo downloadurl::editor($oVersion, "editAppVersion.php");
 
     /* only admins can move versions */
     if($_SESSION['current']->hasPriv("admin"))
