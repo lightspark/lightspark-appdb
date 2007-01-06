@@ -14,7 +14,7 @@ function filter_gpc()
         // Special cases for variables that don't fit our filtering scheme
         // don't filter the AppDB session cookie and MAX_FILE_SIZE
         // and the DialogX values that xinha uses
-        if(strpos($aKeys[$i], "Dialog") == 0) // Xinha variables
+        if(strpos($aKeys[$i], "Dialog") === 0) // Xinha variables
         {
             // copy the key over to the clean array
             // NOTE: we do not strip html tags or trim any Xinha variables
@@ -24,7 +24,7 @@ function filter_gpc()
             continue; // go to the next entry
         } else if($aKeys[$i] == "whq_appdb" || ($aKeys[$i] == "MAX_FILE_SIZE")
                   || ($aKeys[$i] == "PHPSESSID")
-                  || (strpos($aKeys[$i], "pref_") == 0)) // other variables
+                  || (strpos($aKeys[$i], "pref_")) === 0) // other variables
         {
             // copy the key over to the clean array after stripping tags and trimming
             $aClean[$aKeys[$i]] = trim(strip_tags($_REQUEST[$aKeys[$i]]));
