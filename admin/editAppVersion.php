@@ -16,7 +16,7 @@ if(!$_SESSION['current']->hasPriv("admin") && !$_SESSION['current']->isMaintaine
 if(!empty($aClean['sSubmit']))
 {
     process_app_version_changes(true);
-    downloadurl::processForm($_REQUEST);
+    downloadurl::processForm($aClean);
     util_redirect_and_exit(apidb_fullurl("appview.php?iVersionId=".$aClean['iVersionId']));
 } else /* or display the webform for making changes */
 {

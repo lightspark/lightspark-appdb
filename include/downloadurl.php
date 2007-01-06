@@ -198,7 +198,7 @@ class downloadurl
             $sMsg .= "The following changed were made\n\n";
             $sMsg .= "$sWhatChanged\n\n";
 
-            mail_appdb("$sEmail, $sSubject, $sMsg");
+            mail_appdb($sEmail, $sSubject, $sMsg);
         }
 
         return TRUE;
