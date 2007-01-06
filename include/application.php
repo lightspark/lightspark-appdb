@@ -216,7 +216,7 @@ class Application {
                 return false;
             $oCatBefore = new Category($oApp->iCatId);
             $oCatAfter = new Category($this->iCatId);
-            $sWhatChanged .= "Vendor was changed from ".$oCatBefore->sName." to ".$oCatAfter->sName.".\n\n";
+            $sWhatChanged .= "Category was changed from ".$oCatBefore->sName." to ".$oCatAfter->sName.".\n\n";
         }
         if($sWhatChanged and !$bSilent)
             $this->SendNotificationMail("edit",$sWhatChanged);
