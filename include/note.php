@@ -15,7 +15,7 @@ class Note {
     var $iAppId;
     var $iVersionId;
     var $sTitle;
-    var $sDescription;
+    var $shDescription;
     var $iSubmitterId;
     var $sSubmitTime;
 
@@ -39,7 +39,7 @@ class Note {
                 $this->iAppId = $oRow->appId;
                 $this->iVersionId = $oRow->versionId;
                 $this->sTitle = $oRow->noteTitle;
-                $this->sDescription = $oRow->noteDesc;
+                $this->shDescription = $oRow->noteDesc;
                 $this->sSubmitTime = $oRow->submitTime;
                 $this->iSubmitterId = $oRow->submitterId;
             }
@@ -56,12 +56,12 @@ class Note {
     {
         $hResult = query_parameters("INSERT INTO appNotes (versionId, noteTitle, noteDesc, submitterId) ".
                                     "VALUES('?', '?', '?', '?')",
-                                    $this->iVersionId, $this->sTitle, $this->sDescription, $_SESSION['current']->iUserId);
+                                    $this->iVersionId, $this->sTitle, $this->shDescription, $_SESSION['current']->iUserId);
 
         if($hResult)
         {
             $this->note(mysql_insert_id());
-            $sWhatChanged = "Description is:\n".$this->sDescription.".\n\n";
+            $sWhatChanged = "Description is:\n".$this->shDescription.".\n\n";
             $this->SendNotificationMail("add", $sWhatChanged);
             return true;
         }
@@ -92,12 +92,12 @@ class Note {
             $sWhatChanged .= "Title was changed from ".$oNote->sTitle." to ".$this->sTitle.".\n\n";
         }
 
-        if ($this->sDescription && $this->sDescription!=$oNote->sDescription)
+        if ($this->shDescription && $this->shDescription!=$oNote->shDescription)
         {
             if (!query_parameters("UPDATE appNotes SET noteDesc = '?' WHERE noteId = '?'",
-                                  $this->sDescription, $this->iNoteId))
+                                  $this->shDescription, $this->iNoteId))
                 return false;
-            $sWhatChanged .= "Description was changed from\n ".$oNote->sDescription."\n to \n".$this->sDescription.".\n\n";
+            $sWhatChanged .= "Description was changed from\n ".$oNote->shDescription."\n to \n".$this->shDescription.".\n\n";
         }
 
         if ($this->iVersionId && $this->iVersionId!=$oNote->iVersionId)
@@ -157,7 +157,7 @@ class Note {
                 $sMsg .= "Subject: ".$this->sTitle."\n";
                 $sMsg .= "\n";
                 $sMsg .= "Note contents:\n";
-                $sMsg .= $this->sDescription."\n";
+                $sMsg .= $this->shDescription."\n";
                 $sMsg .= "\n";
                 $sMsg .= "Because:\n";
                 if($aClean['sReplyText'])
@@ -204,7 +204,7 @@ class Note {
         $shOutput .= "<table width=\"100%\" border=\"0\" cellspacing=\"0\">\n";
         $shOutput .= "<tr bgcolor=\"".$sColor."\" align=\"center\" valign=\"top\"><td><b>".$sTitle."</b></td></tr>\n";
         $shOutput .= "<tr><td class=\"note\">\n";
-        $shOutput .= $this->sDescription;
+        $shOutput .= $this->shDescription;
         $shOutput .= "</td></tr>\n";
 
         if(!$bDisplayOnly)
@@ -242,7 +242,7 @@ class Note {
         echo '    <td class=color0><input size=80% type="text" name="sNoteTitle" type="text" value="'.$this->sTitle.'"></td></tr>',"\n";
         echo '<tr><td class=color4>Description</td><td class=color0>', "\n";
         echo '<p style="width:700px">', "\n";
-        echo '<textarea cols="80" rows="20" id="editor" name="sNoteDesc">'.$this->sDescription.'</textarea>',"\n";
+        echo '<textarea cols="80" rows="20" id="editor" name="shNoteDesc">'.$this->shDescription.'</textarea>',"\n";
         echo '</p>';
         echo '</td></tr>'."\n";
         echo '<tr><td colspan="2" align="center" class="color3">',"\n";
@@ -258,7 +258,7 @@ class Note {
         $this->iVersionId = $aValues['iVersionId'];
         $this->iAppId = $aValues['iAppId'];
         $this->sTitle = $aValues['sNoteTitle'];
-        $this->sDescription = $aValues['sNoteDesc'];
+        $this->shDescription = $aValues['shNoteDesc'];
     }
 }
 ?>
