@@ -20,4 +20,6 @@ echo "\n";
 include_once("test_application.php");
 echo "\n";
 include_once("test_error_log.php");
+echo "\n";
+include_once("test_filter.php");
 ?>
