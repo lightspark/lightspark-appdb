@@ -81,11 +81,6 @@ if(isset($_REQUEST['mode']))
 }
 /* End backwards compatibility code */
 
-
-// include filter.php to filter all REQUEST input
-require(BASE."include/filter.php");
-
-
 // create arrays
 $sidebar_func_list = array();
 $help_list = array();
@@ -295,4 +290,8 @@ if(!isset($_SESSION['current']))
 
 // if we are debugging we need to see all errors
 if($_SESSION['current']->showDebuggingInfos()) error_reporting(E_ALL ^ E_NOTICE);
+
+// include filter.php to filter all REQUEST input
+require(BASE."include/filter.php");
+
 ?>
