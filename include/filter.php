@@ -52,7 +52,7 @@ function filter_gpc()
                 switch($aKeys[$i][1])
                 {
                      case "h": // HTML string
-                         $aClean[$aKeys[$i]] = trim(htmlspecialchars($_REQUEST[$aKeys[$i]]));
+                         $aClean[$aKeys[$i]] = trim($_REQUEST[$aKeys[$i]]);
                          // if there is no content and no image, make the variable empty
                          if(strip_tags($aClean[$aKeys[$i]],'<img>')=="")
                              $aClean[$aKeys[$i]] = "";
