@@ -593,6 +593,11 @@ class testData{
         if (($aValues['sInstalls'] == "No") && ($aValues['sTestedRating'] == PLATINUM_RATING))
             $errors .= "<li>An application can only get a Platinum rating if it installs and runs &#8216;out of the box&#8217;.</li>\n";
 
+        // Basic checking of logic.  Runs? can obviously only be 'Not Installable'
+        // if the application does not install
+        if (($aValues['sInstalls'] != "No") && ($aValues['sRuns'] == "Not Installable"))
+            $errors .= "<li>You can only set Runs? to &#8216;Not Installable&#8217; if the applicatino&#8217;s installer does not work</li>\n";
+
         return $errors;
 
     }
