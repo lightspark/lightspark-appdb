@@ -158,7 +158,7 @@ class downloadurl
                     if(!query_parameters("UPDATE appData SET description = '?',
                         url = '?' WHERE id = '?'",
                             $aValues["sDescription$oRow->id"],
-                            $aValues["sURL$oRow->id"], $oRow->id))
+                            $aValues["sUrl$oRow->id"], $oRow->id))
                         return FALSE;
 
                     $sWhatChangedModify .= "Modified\nOld URL: $oRow->url\nOld ".
