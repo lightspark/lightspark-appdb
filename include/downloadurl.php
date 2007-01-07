@@ -87,7 +87,8 @@ class downloadurl
             for($i = 1; $oRow = mysql_fetch_object($hResult); $i++)
             {
                 $sReturn .= html_tr(array(
-                    "<input type=\"checkbox\" name=\"bRemove$oRow->id\" />",
+                    "<input type=\"checkbox\" name=\"bRemove$oRow->id\" ".
+                    "value=\"true\" />",
                     "<input type=\"text\" size=\"45\" name=\"".
                     "sDescription$oRow->id\" value=\"$oRow->description\" />",
                     "<input type=\"text\" size=\"45\" name=\"sUrl$oRow->id\" ".
