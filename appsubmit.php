@@ -168,7 +168,7 @@ if ($aClean['sSub'])
                 }
                 //FIXME: remove this when we fix vendor submission
                 $oApp->sKeywords = $aClean['sAppKeywords']." *** ".$aClean['sAppVendorName'];
-                if(is_numeric($oApp->iAppId))
+                if($oApp->iAppId)
                 {
                     $oApp->update();
                     $oApp->ReQueue();
@@ -187,7 +187,7 @@ if ($aClean['sSub'])
         } 
         else
         {
-            if(is_numeric($oVersion->iVersionId))
+            if($oVersion->iVersionId)
             {
                 $oVersion->update();
                 $oVersion->ReQueue();
@@ -208,7 +208,7 @@ if ($aClean['sSub'])
                 }
             }
             $oTest->iVersionId = $oVersion->iVersionId;
-            if(is_numeric($oTest->iTestingId))
+            if($oTest->iTestingId)
             {
                 $oTest->update(true);
                 $oTest->ReQueue();
@@ -221,7 +221,7 @@ if ($aClean['sSub'])
     }
     if ($aClean['sSub'] == 'Delete')
     {
-        if (($aClean['sAppType'] == "application") && is_numeric($aClean['iAppId'])) // application
+        if (($aClean['sAppType'] == "application") && $aClean['iAppId']) // application
         {
             // get the queued versions that refers to the application entry we just removed
             // and delete them as we implicitly added a version entry when adding a new application
@@ -239,7 +239,7 @@ if ($aClean['sSub'])
             // delete the application entry
             $oApp = new Application($aClean['iAppId']);
             $oApp->delete();
-        } else if(($aClean['sAppType'] == "version") && is_numeric($aClean['iVersionId']))  // version
+        } else if(($aClean['sAppType'] == "version") && $aClean['iVersionId'])  // version
         {
             $oVersion = new Version($aClean['iVersionId']);
             $oVersion->delete();
@@ -265,7 +265,7 @@ if ($aClean['sSub'])
                 perform_search_and_output_results($oApp->sName);
                 echo html_frame_end("&nbsp;");
             }
-            if(is_numeric($oApp->iAppId))
+            if($oApp->iAppId)
             {
             
             //help
@@ -316,7 +316,7 @@ if ($aClean['sSub'])
                 $aClean['sAppVendorName'] = "";
         } else //app version
         { 
-            if(is_numeric($oVersion->iVersionId))
+            if($oVersion->iVersionId)
             {
                 $oAppForVersion = new Application($oVersion->iAppId);
                 echo html_frame_start("Potential duplicate versions in the database for application: ".$oAppForVersion->sName,"90%","",0);
@@ -362,7 +362,7 @@ if ($aClean['sSub'])
         if($aClean['sAppType'] == 'application') // application
         {
             echo '<input type="hidden" name="sAppType" value="application" />';
-            if(is_numeric($oApp->iAppId))
+            if($oApp->iAppId)
             {
                 echo '<tr valign=top><td class=color3 align=center colspan=2>' ,"\n";
                 echo '<input type=submit value=" Re-Submit App Into Database " class=button>&nbsp',"\n";
@@ -376,7 +376,7 @@ if ($aClean['sSub'])
         {
             echo '<input type="hidden" name="sAppType" value="version" />';
             echo '<input type="hidden" name="iAppId" value="'.$aClean['iAppId'].'" />';
-            if(is_numeric($oVersion->iVersionId))
+            if($oVersion->iVersionId)
             {
                 echo '<tr valign=top><td class=color3 align=center colspan=2>' ,"\n";
                 echo '<input type="submit" value="Re-Submit Version Into Database " class="button">&nbsp',"\n";
