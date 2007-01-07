@@ -41,11 +41,11 @@ if ($aClean['sSub'])
             }
             if($aClean['sSub'] == 'Submit')
             {
-	        $oTest->create();
+                $oTest->create();
             } else if($aClean['sSub'] == 'Resubmit')
             {
                 $oTest->update(true);
-	        $oTest->ReQueue();
+                $oTest->ReQueue();
             }
             util_redirect_and_exit($_SERVER['PHP_SELF']);
         } else 
@@ -57,17 +57,17 @@ if ($aClean['sSub'])
     // Delete test results
     if ($aClean['sSub'] == 'Delete')
     {
-        if(is_numeric($aClean['iTestingId']))
+        if($aClean['iTestingId'])
         {
             $oTest = new testData($aClean['iTestingId']);
             $oTest->delete();
         }
-        
+
         util_redirect_and_exit($_SERVER['PHP_SELF']);
     }
 
     // is this an old test?
-    if(is_numeric($aClean['iTestingId']))
+    if($aClean['iTestingId'])
     {
         // make sure the user has permission to view this test result
         $oVersion = new Version($oTest->iVersionId);
@@ -77,11 +77,13 @@ if ($aClean['sSub'])
         {
             util_show_error_page_and_exit("Insufficient privileges.");
         } else
-        $oVersion = new Version($oTest->iVersionId);
+        {
+            $oVersion = new Version($oTest->iVersionId);
+        }
     } else
     { 
         $oTest->iVersionId = $aClean['iVersionId'];
-        $oVersion = new Version($aClean['iVersionId']);       
+        $oVersion = new Version($aClean['iVersionId']);
         $oTest->sQueued = "new";
     }
     if ($aClean['sSub'] == 'view')
@@ -105,7 +107,8 @@ if ($aClean['sSub'])
             apidb_header("Edit test results for ".$sVersionInfo);
             break;
         default:
-            apidb_header("Edit test results for ");
+            util_show_error_page_and_exit('$oTest->sQueued of \''.$oTest->sQueued."'is invalid");
+            break;
         }
         echo '<form name="sQform" action="'.$_SERVER['PHP_SELF'].'" method="post" enctype="multipart/form-data">',"\n";
 
