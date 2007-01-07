@@ -163,7 +163,7 @@ class downloadurl
 
                     $sWhatChangedModify .= "Modified\nOld URL: $oRow->url\nOld ".
                         "Description: $oRow->description\nNew URL: ".
-                        $aValues["sUrl$oRow->id"]." New Description: ".
+                        $aValues["sUrl$oRow->id"]."\nNew Description: ".
                         $aValues["sDescription$oRow->id"]."\n\n";
                 }
             }
@@ -187,12 +187,13 @@ class downloadurl
         $sWhatChanged .= "$sWhatChangedRemove$sWhatChangedModify";
 
         if($sWhatChanged && $sEmail =
-           User::get_notify_email_address_list($aValues['iAppId']))
+           User::get_notify_email_address_list($aValues['iVersionId']))
         {
             $oApp = new Application($aValues["iAppId"]);
+            $oVersion = new Version($aValues["iVersionId"]);
 
-            $sSubject = "Download URLs for $oApp->sName updated by ". 
-                        $_SESSION['current']->sRealname;
+            $sSubject = "Download URLs for $oApp->sName $oVersion->sName".
+            " updated by ".$_SESSION['current']->sRealname;
 
             $sMsg = APPDB_ROOT."appview.php?iVersionId=".$aValues['iVersionId'];
             $sMsg .= "\n\n";
