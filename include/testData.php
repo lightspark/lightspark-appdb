@@ -298,7 +298,7 @@ class testData{
             case "add":
                 if($this->sQueued == "false")
                 {
-                    $sSubject = "Test Results added to version ".$oVersion->sName." of ".$oApp->sName." submitted by ".$_SESSION['current']->sRealname;
+                    $sSubject = "Test Results added to version ".$oVersion->sName." of ".$oApp->sName." by ".$_SESSION['current']->sRealname;
                     $sMsg  .= $sBacklink;
                     if($this->iSubmitterId)
                     {
@@ -314,7 +314,7 @@ class testData{
                     addmsg("The test data was successfully added into the database.", "green");
                 } else // test data queued.
                 {
-                    $sSubject = "Test Results submitted for version ".$oVersion->sName." of ".$oApp->sName." submitted by ".$_SESSION['current']->sRealname;
+                    $sSubject = "Test Results submitted for version ".$oVersion->sName." of ".$oApp->sName." by ".$_SESSION['current']->sRealname;
                     $sMsg  .= $sBacklink;
                     $sMsg .= "This test data has been queued.";
                     $sMsg .= "\n";
@@ -322,12 +322,12 @@ class testData{
                 }
             break;
             case "edit":
-                $sSubject = "Test Results modified for version ".$oVersion->sName." of ".$oApp->sName." submitted by ".$_SESSION['current']->sRealname;
+                $sSubject = "Test Results modified for version ".$oVersion->sName." of ".$oApp->sName." by ".$_SESSION['current']->sRealname;
                 $sMsg  .= $sBacklink;
                 addmsg("test data modified.", "green");
             break;
             case "delete":
-                $sSubject = "Test Results deleted for version ".$oVersion->sName." of ".$oApp->sName." submitted by ".$_SESSION['current']->sRealname;
+                $sSubject = "Test Results deleted for version ".$oVersion->sName." of ".$oApp->sName." by ".$_SESSION['current']->sRealname;
                 // if replyText is set we should report the reason the data was deleted 
                 if($aClean['sReplyText'])
                 {
@@ -338,7 +338,7 @@ class testData{
                 addmsg("test data deleted.", "green");
             break;
             case "reject":
-                $sSubject = "Test Results rejected for version ".$oVersion->sName." of ".$oApp->sName." submitted by ".$_SESSION['current']->sRealname;
+                $sSubject = "Test Results rejected for version ".$oVersion->sName." of ".$oApp->sName." by ".$_SESSION['current']->sRealname;
                 $sMsg  .= $sBacklink;
                  // if replyText is set we should report the reason the data was rejected 
                 if($aClean['sReplyText'])
