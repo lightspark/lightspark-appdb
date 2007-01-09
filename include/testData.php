@@ -9,9 +9,9 @@ require_once(BASE."include/util.php");
 class testData{
     var $iTestingId;
     var $iVersionId;
-    var $sWhatWorks;
-    var $sWhatDoesnt;
-    var $sWhatNotTested;
+    var $shWhatWorks;
+    var $shWhatDoesnt;
+    var $shWhatNotTested;
     var $sTestedRelease;
     var $iDistributionId;
     var $sTestedDate;
@@ -42,9 +42,9 @@ class testData{
                     {
                         $this->iTestingId = $oRow->testingId;
                         $this->iVersionId = $oRow->versionId;
-                        $this->sWhatWorks = $oRow->whatWorks;
-                        $this->sWhatDoesnt = $oRow->whatDoesnt;
-                        $this->sWhatNotTested = $oRow->whatNotTested;
+                        $this->shWhatWorks = $oRow->whatWorks;
+                        $this->shWhatDoesnt = $oRow->whatDoesnt;
+                        $this->shWhatNotTested = $oRow->whatNotTested;
                         $this->sTestedDate = $oRow->testedDate;
                         $this->iDistributionId = $oRow->distributionId;
                         $this->sTestedRelease = $oRow->testedRelease;
@@ -78,8 +78,8 @@ class testData{
                                     "installs, runs, testedRating, comments, submitterId, queued)".
                                     " VALUES('?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?',".
                                     "'?', '?')",
-                                    $this->iVersionId, $this->sWhatWorks, $this->sWhatDoesnt,
-                                    $this->sWhatNotTested, $this->sTestedDate, $this->iDistributionId,
+                                    $this->iVersionId, $this->shWhatWorks, $this->shWhatDoesnt,
+                                    $this->shWhatNotTested, $this->sTestedDate, $this->iDistributionId,
                                     $this->sTestedRelease, $this->sInstalls, $this->sRuns,
                                     $this->sTestedRating, $this->sComments, $_SESSION['current']->iUserId,
                                     $this->sQueued);
@@ -123,9 +123,9 @@ class testData{
                                         comments        = '?'
                                     WHERE testingId = '?'",
                             $this->iVersionId,
-                            $this->sWhatWorks,
-                            $this->sWhatDoesnt,
-                            $this->sWhatNotTested,
+                            $this->shWhatWorks,
+                            $this->shWhatDoesnt,
+                            $this->shWhatNotTested,
                             $this->sTestedDate,
                             $this->iDistributionId,
                             $this->sTestedRelease,
@@ -357,11 +357,11 @@ class testData{
     function ShowTestResult()
     {
         echo '<p><b>What works</b><br />',"\n";
-        echo $this->sWhatWorks;
+        echo $this->shWhatWorks;
         echo '<p><b>What does not</b><br />',"\n";
-        echo $this->sWhatDoesnt;
+        echo $this->shWhatDoesnt;
         echo '<p><b>What was not tested</b><br />',"\n";
-        echo $this->sWhatNotTested;
+        echo $this->shWhatNotTested;
         echo '<p><b>Additional Comments</b><br />',"\n";
         echo $this->sComments;
     }
@@ -500,16 +500,16 @@ class testData{
 
         // What works
         echo '<tr valign=top><td class="color0"><b>What works</b></td>',"\n";
-        echo '<td class="color0"><p><textarea cols="80" rows="20" id="Test1" name="sWhatWorks">';
-        echo $this->sWhatWorks.'</textarea></p></td></tr>',"\n";
+        echo '<td class="color0"><p><textarea cols="80" rows="20" id="Test1" name="shWhatWorks">';
+        echo $this->shWhatWorks.'</textarea></p></td></tr>',"\n";
         // What Does not work
         echo '<tr valign=top><td class=color1><b>What does not work</b></td>',"\n";
-        echo '<td class="color0"><p><textarea cols="80" rows="20" id="Test2" name="sWhatDoesnt">';
-        echo $this->sWhatDoesnt.'</textarea></p></td></tr>',"\n";
+        echo '<td class="color0"><p><textarea cols="80" rows="20" id="Test2" name="shWhatDoesnt">';
+        echo $this->shWhatDoesnt.'</textarea></p></td></tr>',"\n";
         // What was not tested
         echo '<tr valign=top><td class=color0><b>What was not tested</b></td>',"\n";
-        echo '<td class="color0"><p><textarea cols="80" rows="20" id="Test3" name="sWhatNotTested">';
-        echo $this->sWhatNotTested.'</textarea></p></td></tr>',"\n";
+        echo '<td class="color0"><p><textarea cols="80" rows="20" id="Test3" name="shWhatNotTested">';
+        echo $this->shWhatNotTested.'</textarea></p></td></tr>',"\n";
         // Date Tested
         echo '<tr valign=top><td class="color1"><b>Date tested </b></td>',"\n";
         echo '<td class="color0"><input type=text name="sTestedDate" value="'.$this->sTestedDate.'" size="20"></td></tr>',"\n";
@@ -557,13 +557,13 @@ class testData{
     function CheckOutputEditorInput($aValues, $sDistribution="")
     {
         $errors = "";
-        if (empty($aValues['sWhatWorks']))
+        if (empty($aValues['shWhatWorks']))
             $errors .= "<li>Please enter what worked.</li>\n";
 
-        if (empty($aValues['sWhatDoesnt']))
+        if (empty($aValues['shWhatDoesnt']))
             $errors .= "<li>Please enter what did not work.</li>\n";
 
-        if (empty($aValues['sWhatNotTested']))
+        if (empty($aValues['shWhatNotTested']))
             $errors .= "<li>Please enter what was not tested.</li>\n";
 
         if (empty($aValues['sTestedDate']))
@@ -608,9 +608,9 @@ class testData{
     {
         $this->iTestingId = $aValues['iTestingId'];
         $this->iVersionId = $aValues['iVersionId'];
-        $this->sWhatWorks = $aValues['sWhatWorks'];
-        $this->sWhatDoesnt = $aValues['sWhatDoesnt'];
-        $this->sWhatNotTested = $aValues['sWhatNotTested'];
+        $this->shWhatWorks = $aValues['shWhatWorks'];
+        $this->shWhatDoesnt = $aValues['shWhatDoesnt'];
+        $this->shWhatNotTested = $aValues['shWhatNotTested'];
         $this->sTestedDate = $aValues['sTestedDate'];
         $this->iDistributionId = $aValues['iDistributionId'];
         $this->sTestedRelease = $aValues['sTestedRelease'];
