@@ -36,23 +36,20 @@ class Monitor {
         }
     }
 
-    function find($iUserId, $iAppId=0, $iVersionId=0)
+    function find($iUserId, $iVersionId=0)
     {
-        if($iUserId)
+        if($iUserId && $iVersionId)
         {
-            if($iVersionId)
-            {
-                $sQuery = "SELECT *
+            $sQuery = "SELECT *
                           FROM appMonitors
                           WHERE userId = '".$iUserId."'
                           AND versionId = '".$iVersionId."'";
-                $hResult = query_appdb($sQuery);
-                $oRow = mysql_fetch_object($hResult);
-                $this->iMonitorId = $oRow->monitorId;
-                $this->iAppId = $oRow->appId;
-                $this->iVersionId = $oRow->versionId;
-                $this->iUserId = $oRow->userId;
-            }
+            $hResult = query_appdb($sQuery);
+            $oRow = mysql_fetch_object($hResult);
+            $this->iMonitorId = $oRow->monitorId;
+            $this->iAppId = $oRow->appId;
+            $this->iVersionId = $oRow->versionId;
+            $this->iUserId = $oRow->userId;
         }
     }
 

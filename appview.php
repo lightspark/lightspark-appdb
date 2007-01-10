@@ -116,7 +116,7 @@ if ($aClean['sSub'])
     if($aClean['sSub'] == 'StopMonitoring')
     {
         $oMonitor = new Monitor();
-        $oMonitor->find($_SESSION['current']->iUserId,$aClean['iAppId'],$aClean['iVersionId']);
+        $oMonitor->find($_SESSION['current']->iUserId, $aClean['iVersionId']);
         if($oMonitor->iMonitorId)
         {
             $oMonitor->delete();

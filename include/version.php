@@ -731,8 +731,7 @@ class Version {
                     echo "<input type=hidden name=\"iVersionId\" value=\"".$this->iVersionId."\">";
                     echo "</form>";
                     $oMonitor = new Monitor();
-                    $oMonitor->find($_SESSION['current']->iUserId,
-                                    $oApp->iAppId,$this->iVersionId);
+                    $oMonitor->find($_SESSION['current']->iUserId, $this->iVersionId);
                     if(!$oMonitor->iMonitorId)
                     {
                         echo '<form method=post name=sMessage action=appview.php?iVersionId='.$this->iVersionId.'&iAppId='.$oApp->iAppId.'>';
@@ -780,7 +779,7 @@ class Version {
             echo "</td></tr>";
         }
         $oMonitor = new Monitor();
-        $oMonitor->find($_SESSION['current']->iUserId, $oApp->iAppId, $this->iVersionId);
+        $oMonitor->find($_SESSION['current']->iUserId, $this->iVersionId);
         if($oMonitor->iMonitorId)
         {
             echo '<tr><td colspan="2" align="center">';
