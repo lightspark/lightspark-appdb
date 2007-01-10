@@ -261,19 +261,19 @@ class testData{
             {
             case "add":
                 $sSubject =  "Submitted testing data accepted";
-                $sMsg  = "The testing data you submitted for '$sName' has been accepted.";
+                $sMsg  = "The testing data you submitted for '$sName' has been accepted by ".$_SESSION['current']->sRealname.".";
                 $sMsg .= APPDB_ROOT."appview.php?iVersionId=".$this->iVersionId."&iTestingId=".$this->iTestingId."\n";
                 $sMsg .= "Administrators Responce:\n";
             break;
             case "reject":
                 $sSubject =  "Submitted testing data rejected";
-                $sMsg  = "The testing data you submitted for '$sName' has been rejected.";
+                $sMsg  = "The testing data you submitted for '$sName' has been rejected by ".$_SESSION['current']->sRealname.".";
                 $sMsg .= APPDB_ROOT."testResults.php?sSub=view&iTestingId=".$this->iTestingId."\n";
                 $sMsg .= "Reason given:\n";
             break;
             case "delete":
                 $sSubject =  "Submitted testing data deleted";
-                $sMsg  = "The testing data you submitted for '$sName' has been deleted.";
+                $sMsg  = "The testing data you submitted for '$sName' has been deleted by ".$_SESSION['current']->sRealname.".";
                 $sMsg .= "Reason given:\n";
             break;
             }
