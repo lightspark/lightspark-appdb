@@ -87,7 +87,7 @@ if(!empty($aClean['sSubmit']))
     echo "</form>";
 
     /* Download URL editor */
-    echo downloadurl::editor($oVersion, "editAppVersion.php");
+    echo downloadurl::OutputEditor($oVersion, "editAppVersion.php");
 
     /* only admins can move versions */
     if($_SESSION['current']->hasPriv("admin"))
