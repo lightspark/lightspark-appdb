@@ -21,7 +21,7 @@ class downloadurl
     {
         $hResult = query_parameters("SELECT id, versionId, description, url,
             submitTime, submitterId, queued FROM appData WHERE id = '?'",
-                $this->iId);
+                $iId);
 
         if($hResult && mysql_num_rows($hResult))
         {
@@ -139,11 +139,12 @@ class downloadurl
 
             while($oRow = mysql_fetch_object($hResult))
             {
+                $oDownloadurl = new downloadurl($oRow->id);
+
                 /* Remove URL */
                 if($aValues["bRemove$oRow->id"])
                 {
-                    if(!query_parameters("DELETE FROM appData WHERE id = '?'",
-                        $oRow->id))
+                    if(!$oDownloadurl->delete())
                         return FALSE;
 
                     $sWhatChangedRemove .= "Removed\nURL: $oRow->url\n".
@@ -155,10 +156,11 @@ class downloadurl
                 $aValues["sUrl$oRow->id"] != $oRow->url) && 
                 $aValues["sDescription$oRow->id"] && $aValues["sUrl$oRow->id"])
                 {
-                    if(!query_parameters("UPDATE appData SET description = '?',
-                        url = '?' WHERE id = '?'",
-                            $aValues["sDescription$oRow->id"],
-                            $aValues["sUrl$oRow->id"], $oRow->id))
+                    $oDownloadurl->sDescription =
+                        $aValues["sDescription$oRow->id"];
+                    $oDownloadurl->sUrl = $aValues["sUrl$oRow->id"];
+
+                    if(!$oDownloadurl->update())
                         return FALSE;
 
                     $sWhatChangedModify .= "Modified\nOld URL: $oRow->url\nOld ".
@@ -172,12 +174,12 @@ class downloadurl
         /* Insert new URL */
         if($aValues["sDescriptionNew"] && $aValues["sUrlNew"])
         {
-            if(!query_parameters("INSERT INTO appData (versionId, TYPE, 
-            description, url, submitterId, queued)
-            VALUES('?', '?', '?', '?', '?', '?')",
-                    $aValues["iVersionId"], "downloadurl", 
-                    $aValues["sDescriptionNew"], $aValues["sUrlNew"], 
-                    $_SESSION["current"]->iUserId, "false"))
+            $oDownloadurl = new downloadurl();
+            $oDownloadurl->iVersionId = $aValues["iVersionId"];
+            $oDownloadurl->sUrl = $aValues["sUrlNew"];
+            $oDownloadurl->sDescription = $aValues["sDescriptionNew"];
+
+            if(!$oDownloadurl->create())
                 return FALSE;
 
             $sWhatChanged = "Added\nURL: ".$aValues["sUrlNew"]."\nDescription: ".
@@ -206,18 +208,62 @@ class downloadurl
         return TRUE;
     }
 
-    function canEdit($iVersionId)
+    function canEdit($iVersionId = NULL)
     {
         $oUser = new User($_SESSION['current']->iUserId);
 
-        if($oUser->hasPriv("admin") || maintainer::isUserMaintainer($oUser, 
-                                                                    $iVersionId))
+        if($oUser->hasPriv("admin") || ($iVersionId &&
+           maintainer::isUserMaintainer($oUser, $iVersionId)))
         {
             return TRUE;
         } else
         {
             return FALSE;
         }
+    }
+
+    function create()
+    {
+        if(!$this->sUrl or !$this->sDescription or !$this->iVersionId)
+            return FALSE;
+
+        $hResult = query_parameters("INSERT INTO appData (versionId, type,
+            description, url, queued, submitterId)
+                VALUES('?','?','?','?','?','?')",
+                    $this->iVersionId, "downloadurl", $this->sDescription,
+                    $this->sUrl, downloadurl::canEdit($this->iVersionId) ?
+                    "false" : "true", $_SESSION['current']->iUserId);
+
+        if(!$hResult)
+            return FALSE;
+
+        return TRUE;
+    }
+
+    function update()
+    {
+        if(!$this->bQueued && !$this->canEdit($this->iVersionId))
+            return FALSE;
+
+        $hResult = query_parameters("UPDATE appData SET
+                   description = '?', url = '?' WHERE id = '?'",
+                       $this->sDescription, $this->sUrl, $this->iId);
+
+        if(!$hResult)
+            return FALSE;
+
+        return TRUE;
+    }
+
+    function delete()
+    {
+        if(!downloadurl::canEdit($this->iVersionId))
+            return FALSE;
+
+        if(!query_parameters("DELETE FROM appData WHERE id = '?'", $this->iId))
+            return FALSE;
+
+        return TRUE;
     }
 }
 
