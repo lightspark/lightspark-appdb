@@ -4,69 +4,69 @@ $_indent_level = 0;
 
 function do_indent($str, $v = 0)
 {
-	global $_indent_level;
+    global $_indent_level;
 
-	if($v < 0)
-		$_indent_level += $v;
+    if($v < 0)
+        $_indent_level += $v;
 
-	if($_indent_level > 0)
-	    $str =  str_repeat("  ", $_indent_level) . $str;
+    if($_indent_level > 0)
+        $str =  str_repeat("  ", $_indent_level) . $str;
 
-	if($v > 0)
-		$_indent_level += $v;
+    if($v > 0)
+        $_indent_level += $v;
 
-	return $str . "\n";
+    return $str . "\n";
 }
 
 function do_html_tr($t, $arr, $class, $extra)
 {
-	if(strlen($class))
-		$class = " class=\"$class\"";
+    if(strlen($class))
+        $class = " class=\"$class\"";
 
-	/* $extra contains parameters to <tr>, such as valign="top" */
-	if(strlen($extra))
-		$extra = " $extra";
+    /* $extra contains parameters to <tr>, such as valign="top" */
+    if(strlen($extra))
+        $extra = " $extra";
 
-	$str = do_indent("<tr$class$extra>", 1);
-	for($i = 0; $i < sizeof($arr); $i++)
-	{
-		/* If it is not an array, it contains the entire table cell.  If it
-		   is an array, [0] holds the main content and [1] the options like
-		   valign="top" */
-		if(is_array($arr[$i]))
-		{
-			$val = $arr[$i][0];
-			$extra = " ".$arr[$i][1];
-		}
-		else
-		{
-			$val = $arr[$i];
-			$extra = "";
-		}
+    $str = do_indent("<tr$class$extra>", 1);
+    for($i = 0; $i < sizeof($arr); $i++)
+    {
+        /* If it is not an array, it contains the entire table cell.  If it
+           is an array, [0] holds the main content and [1] the options like
+           valign="top" */
+        if(is_array($arr[$i]))
+        {
+            $val = $arr[$i][0];
+            $extra = " ".$arr[$i][1];
+        }
+        else
+        {
+            $val = $arr[$i];
+            $extra = "";
+        }
 
-		if (! $val)
-		{
-			$val = "&nbsp;";
-		}
+        if (! $val)
+        {
+            $val = "&nbsp;";
+        }
 
-		if(stristr($val, "<$t"))
-		{
-			$str .= do_indent($val);
-		}
-		else
-		{
-			$str .= do_indent("<$t$class$extra> ".trim($val)." </$t>", 0);
-		}
-	}
-	$str .= do_indent("</tr>", -1);
+        if(stristr($val, "<$t"))
+        {
+            $str .= do_indent($val);
+        }
+        else
+        {
+            $str .= do_indent("<$t$class$extra> ".trim($val)." </$t>", 0);
+        }
+    }
+    $str .= do_indent("</tr>", -1);
 
-	return $str;
+    return $str;
 }
 
 // HTML TR
 function html_tr($arr, $class = "", $extra = "")
 {
-	return do_html_tr("td", $arr, $class, $extra);
+    return do_html_tr("td", $arr, $class, $extra);
 }
 
 function html_tr_highlight_clickable($sUrl, $sClass, $sHighlightColor, $sInactiveColor,
@@ -81,68 +81,68 @@ function html_tr_highlight_clickable($sUrl, $sClass, $sHighlightColor, $sInactiv
 // HTML TABLE
 function html_table_begin($extra = "")
 {
-	return do_indent("<table $extra>", 1);
+    return do_indent("<table $extra>", 1);
 }
 
 function html_table_end()
 {
-	return do_indent("</table>", -1);
+    return do_indent("</table>", -1);
 }
 
 
 // HTML HTML
 function html_begin()
 {
-	return do_indent("<html>", 1);
+    return do_indent("<html>", 1);
 }
 
 function html_end()
 {
-	return do_indent("</html>", -1);
+    return do_indent("</html>", -1);
 }
 
 
 // HTML HEAD
 function html_head($title, $stylesheet = 0)
 {
-	$str  = do_indent("<head>", 1);
-	$str .= do_indent("<title> $title </title>", 0);
-	if($stylesheet)
-		$str .= do_indent("<link rel=\"stylesheet\" ".
-				  "href=\"$stylesheet\" type=\"text/css\">", 0);
-	$str .= do_indent("</head>", -1);
+    $str  = do_indent("<head>", 1);
+    $str .= do_indent("<title> $title </title>", 0);
+    if($stylesheet)
+        $str .= do_indent("<link rel=\"stylesheet\" ".
+                  "href=\"$stylesheet\" type=\"text/css\">", 0);
+    $str .= do_indent("</head>", -1);
 
-	return $str;
+    return $str;
 }
 
 
 // HTML BODY
 function html_body_begin()
 {
-	return do_indent("<body>", 1);
+    return do_indent("<body>", 1);
 }
 
 function html_body_end()
 {
-	return do_indent("</body>", -1);
+    return do_indent("</body>", -1);
 }
 
 // HTML A HREF
 function html_ahref($label, $url, $extra = "")
 {
-	$label = stripslashes($label);
-	if (!$label and $url)
-	{
-		return do_indent(" <a href=\"$url\" $extra>$url</a> ");
-	}
-	else if (!$label)
-	{
-		return do_indent(" &nbsp; ");
-	}
-	else
-	{
-		return do_indent(" <a href=\"$url\" $extra>$label</a> ");
-	}
+    $label = stripslashes($label);
+    if (!$label and $url)
+    {
+        return do_indent(" <a href=\"$url\" $extra>$url</a> ");
+    }
+    else if (!$label)
+    {
+        return do_indent(" &nbsp; ");
+    }
+    else
+    {
+        return do_indent(" <a href=\"$url\" $extra>$label</a> ");
+    }
 }
 
 function html_imagebutton($text, $url, $extra = "")
@@ -226,16 +226,16 @@ function html_select($name, $values, $default = null, $descs = null)
 {
     $str = "<select name='$name'>\n";
     while(list($idx, $value) = each($values))
-	{
-	    $desc = $value;
-	    if($descs)
-		$desc = $descs[$idx];
+    {
+        $desc = $value;
+        if($descs)
+        $desc = $descs[$idx];
 
-	    if($value == $default)
-		$str .= "  <option selected value='$value'>$desc\n";
-	    else
-		$str .= "  <option value='$value'>$desc\n";
-	}
+        if($value == $default)
+        $str .= "  <option selected value='$value'>$desc\n";
+        else
+        $str .= "  <option value='$value'>$desc\n";
+    }
     $str .= "</select>\n";
 
     return $str;
@@ -253,13 +253,13 @@ function html_back_link($howmany = 1, $url = "")
 
 function p()
 {
-	return "\n<p>&nbsp;</p>\n";
+    return "\n<p>&nbsp;</p>\n";
 }
 
 function add_br($text = "")
 {
-	$text = ereg_replace("\n","<br>\n",$text);
-	return $text;
+    $text = ereg_replace("\n","<br>\n",$text);
+    return $text;
 }
 
 function make_dll_option_list($varname, $dllid = -1)
@@ -270,12 +270,12 @@ function make_dll_option_list($varname, $dllid = -1)
     //echo "<option value='ALL'>ALL\n";
     $list = $db->get_dll_names();
     while(list($name, $id) = each($list))
-	{
-	    if($dllid == $id)
-		echo "<option value=$id selected>$name  ($id)\n";
-	    else
-		echo "<option value=$id>$name  ($id)\n";
-	}
+    {
+        if($dllid == $id)
+        echo "<option value=$id selected>$name  ($id)\n";
+        else
+        echo "<option value=$id>$name  ($id)\n";
+    }
     echo "</select>\n";
 }
 
