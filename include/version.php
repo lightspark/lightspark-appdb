@@ -531,7 +531,7 @@ class Version {
     /* if $editParentApplication is true that means we need to display fields */
     /* to let the user change the parent application of this version */
     /* otherwise, if $editParentAppliation is false, we leave them out */
-    function OutputEditor($editParentApplication, $editRatingAndRelease)
+    function outputEditor($editParentApplication, $editRatingAndRelease)
     {
         HtmlAreaLoaderScript(array("version_editor"));
         echo html_frame_start("Version Form", "90%", "", 0);

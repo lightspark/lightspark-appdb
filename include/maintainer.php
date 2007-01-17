@@ -401,7 +401,7 @@ class maintainer
         echo "</td></tr></table></div>\n\n";    
     }
 
-    function OutputEditor()
+    function outputEditor()
     {
         //view application details
         echo html_frame_start("New Maintainer Form",600,"",0);

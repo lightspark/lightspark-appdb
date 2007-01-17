@@ -53,7 +53,7 @@ if ($aClean['sSub'])
         Maintainer::ObjectDisplayQueueProcessingHelp();
 
         $oMaintainer = new maintainer($aClean['iMaintainerId']);
-        $oMaintainer->OutputEditor();
+        $oMaintainer->outputEditor();
 
         echo "<table border=1 cellpadding=2 cellspacing=0 style='margin-left:auto; margin-right:auto'>\n";
 

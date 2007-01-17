@@ -499,7 +499,7 @@ class Application {
 
 
     /* output a html table and this applications values to the fields for editing */
-    function OutputEditor($sVendorName)
+    function outputEditor($sVendorName)
     {
         HtmlAreaLoaderScript(array("app_editor"));
 
@@ -575,8 +575,8 @@ class Application {
         return $errors;
     }
 
-    /* retrieves values from $aValues that were output by OutputEditor() */
-    /* $aValues can be $_REQUEST or any array with the values from OutputEditor() */
+    /* retrieves values from $aValues that were output by outputEditor() */
+    /* $aValues can be $_REQUEST or any array with the values from outputEditor() */
     function GetOutputEditorValues($aValues)
     {
         $this->iAppId = $aValues['iAppId'];

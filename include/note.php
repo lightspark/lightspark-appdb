@@ -227,7 +227,7 @@ class Note {
     }
 
 
-    function OutputEditor()
+    function outputEditor()
     {
         HtmlAreaLoaderScript(array("editor"));
     
@@ -251,8 +251,8 @@ class Note {
         echo html_frame_end();
     }
 
-    /* retrieves values from $aValue that were output by OutputEditor() */
-    /* $aValues can be $_REQUEST or any array with the values from OutputEditor() */
+    /* retrieves values from $aValue that were output by outputEditor() */
+    /* $aValues can be $_REQUEST or any array with the values from outputEditor() */
     function GetOutputEditorValues($aValues)
     {
         $this->iVersionId = $aValues['iVersionId'];

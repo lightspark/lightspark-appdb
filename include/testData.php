@@ -491,7 +491,7 @@ class testData{
     }
 
     // show the fields for editing
-    function OutputEditor($sDistribution="", $bNewDist=false)
+    function outputEditor($sDistribution="", $bNewDist=false)
     {
         HtmlAreaLoaderScript(array("Test1", "Test2", "Test3"));
 
@@ -553,7 +553,7 @@ class testData{
         echo html_frame_end();
     }
 
-    /* $aValues can be $aValues or any array with the values from OutputEditor() */
+    /* $aValues can be $aValues or any array with the values from outputEditor() */
     function CheckOutputEditorInput($aValues, $sDistribution="")
     {
         $errors = "";
@@ -602,8 +602,8 @@ class testData{
 
     }
 
-    /* retrieves values from $aValues that were output by OutputEditor() */
-    /* $aValues can be $_REQUEST or any array with the values from OutputEditor() */
+    /* retrieves values from $aValues that were output by outputEditor() */
+    /* $aValues can be $_REQUEST or any array with the values from outputEditor() */
     function GetOutputEditorValues($aValues)
     {
         $this->iTestingId = $aValues['iTestingId'];

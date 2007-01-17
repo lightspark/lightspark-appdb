@@ -22,7 +22,7 @@ else
     // Show the form
     echo '<form name="sQform" action="'.$_SERVER['PHP_SELF'].'" method="post" enctype="multipart/form-data">',"\n";
 
-    $oVendor->OutputEditor();
+    $oVendor->outputEditor();
 
     echo '<tr valign=top><td class=color3 align=center colspan=2>',"\n";
     echo '<input name="sSubmit" type="submit" value="Submit" class="button" >&nbsp',"\n";

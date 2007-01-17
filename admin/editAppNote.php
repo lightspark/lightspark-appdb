@@ -45,7 +45,7 @@ if(!empty($aClean['sSub']))
     echo "<form method=post action='editAppNote.php'>\n";
 
     /* display the editor for this note */
-    $oNote->OutputEditor();
+    $oNote->outputEditor();
    
     echo '<center>';
     echo '<input type="submit" name=sPreview value="Preview">&nbsp',"\n";

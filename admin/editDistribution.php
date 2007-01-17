@@ -29,7 +29,7 @@ else
 
     echo '<form name="sQform" action="'.$_SERVER['PHP_SELF'].'" method="post" enctype="multipart/form-data">',"\n";
 
-    $oDistribution->OutputEditor();
+    $oDistribution->outputEditor();
 
     echo '<tr valign=top><td class=color3 align=center colspan=2>',"\n";
     echo '<input name="sSubmit" type="submit" value="Submit" class="button" >&nbsp',"\n";

@@ -373,15 +373,12 @@ if ($aClean['sSub'])
         /* output the appropriate editors depending on whether we are processing an application */
         /* and a version or just a version */
         if($oApp)
-        {
-            $oApp->OutputEditor($sVendor);
-            $oVersion->OutputEditor(false, false);
-        } else
-        {
-            $oVersion->OutputEditor(false, false);
-        }
-        $oTest->OutputEditor($aClean['sDistribution']);
-                                
+            $oApp->outputEditor($sVendor);
+
+        $oVersion->outputEditor(false, false);
+
+        $oTest->outputEditor($aClean['sDistribution']);
+
         echo html_frame_start("Reply text", "90%", "", 0);
         echo "<table width='100%' border=0 cellpadding=2 cellspacing=0>\n";
         echo '<tr valign=top><td class="color0"><b>email Text</b></td>',"\n";

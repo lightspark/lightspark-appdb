@@ -118,7 +118,7 @@ class Vendor {
         }
     }
 
-    function OutputEditor()
+    function outputEditor()
     {
         echo html_frame_start("Vendor Form", "90%", "", 0);
         echo "<table width='100%' border=0 cellpadding=2 cellspacing=0>\n";

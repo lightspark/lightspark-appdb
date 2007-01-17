@@ -39,7 +39,7 @@ else
 
     echo "<form method=\"post\" action=\"editAppFamily.php\">\n";
 
-    $oApp->OutputEditor("");
+    $oApp->outputEditor("");
 
     echo '<table border=0 cellpadding=6 cellspacing=0 width="100%">', "\n";
     echo '<tr><td colspan=2 align=center><input type="submit" name=sSubmit value="Update Database"></td></tr>',"\n";

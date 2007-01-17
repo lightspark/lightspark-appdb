@@ -347,15 +347,11 @@ if ($aClean['sSub'])
             $oTest->sTestedDate = date('Y-m-d H:i:s');
 
         if($aClean['sAppType'] == 'application')
-        {
-            $oApp->OutputEditor($aClean['sAppVendorName']);
-            $oVersion->OutputEditor(false, false);
-        } else
-        {
-            $oVersion->OutputEditor(false, false);
-        }
+            $oApp->outputEditor($aClean['sAppVendorName']);
 
-        $oTest->OutputEditor($aClean['sDistribution'],true);
+        $oVersion->outputEditor(false, false);
+
+        $oTest->outputEditor($aClean['sDistribution'],true);
 
         echo "<table width='100%' border=0 cellpadding=2 cellspacing=2>\n";
 

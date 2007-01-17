@@ -98,7 +98,7 @@ if ($aClean['sSub'])
 
         echo html_back_link(1, $_SERVER['PHP_SELF']);
 
-        $oTest->OutputEditor();
+        $oTest->outputEditor();
         echo html_frame_start("Reply text", "90%", "", 0);
         echo "<table width='100%' border=0 cellpadding=2 cellspacing=0>\n";
         echo '<tr valign=top><td class="color0"><b>email Text</b></td>',"\n";

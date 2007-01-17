@@ -28,9 +28,9 @@ if(!empty($aClean['sSubmit']))
     echo "<form method=post action='editAppVersion.php'>\n";
 
     if($_SESSION['current']->hasPriv("admin"))
-        $oVersion->OutputEditor(true, true); /* false = not allowing the user to modify the parent application */
+        $oVersion->outputEditor(true, true); /* false = not allowing the user to modify the parent application */
     else
-        $oVersion->OutputEditor(false, true); /* false = not allowing the user to modify the parent application */
+        $oVersion->outputEditor(false, true); /* false = not allowing the user to modify the parent application */
         
     echo '<table border=0 cellpadding=2 cellspacing=0 width="100%">',"\n";
     echo '<tr><td colspan=2 align=center class=color2><input type="submit" name="sSubmit" value="Update Database" /></td></tr>',"\n";
@@ -87,7 +87,7 @@ if(!empty($aClean['sSubmit']))
     echo "</form>";
 
     /* Download URL editor */
-    echo downloadurl::OutputEditor($oVersion, "editAppVersion.php");
+    echo downloadurl::outputEditor($oVersion, "editAppVersion.php");
 
     /* only admins can move versions */
     if($_SESSION['current']->hasPriv("admin"))

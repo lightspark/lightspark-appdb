@@ -129,7 +129,7 @@ if ($aClean['sSub'])
         }
    
         // View Test Details
-        $oTest->OutputEditor($aClean['sDistribution'],true);
+        $oTest->outputEditor($aClean['sDistribution'],true);
 
         echo '<a href="'.BASE."appview.php?iVersionId=".$oTest->iVersionId.'">Back to Version</a>';
 

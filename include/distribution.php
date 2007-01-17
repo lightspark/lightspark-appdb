@@ -360,7 +360,7 @@ class distribution{
             mail_appdb($sEmail, $sSubject ,$sMsg);
     }
 
-    function OutputEditor()
+    function outputEditor()
     {
         echo html_frame_start("Distribution Form", "90%", "", 0);
         echo "<table width='100%' border=0 cellpadding=2 cellspacing=0>\n";
@@ -378,8 +378,8 @@ class distribution{
         echo html_frame_end();
     }
 
-    /* retrieves values from $_REQUEST that were output by OutputEditor() */
-    /* $aValues can be $_REQUEST or any array with the values from OutputEditor() */
+    /* retrieves values from $_REQUEST that were output by outputEditor() */
+    /* $aValues can be $_REQUEST or any array with the values from outputEditor() */
     function GetOutputEditorValues($aValues)
     {
         $this->iDistributionId = $aValues['iDistributionId'];

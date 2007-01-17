@@ -57,7 +57,7 @@ class downloadurl
     }
 
     /* Output an editor for Download URL fields */
-    function OutputEditor($oVersion, $sFormAction)
+    function outputEditor($oVersion, $sFormAction)
     {
         /* Check for correct permissions */
         if(!downloadurl::canEdit($oVersion->iVersionId))
