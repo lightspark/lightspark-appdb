@@ -234,6 +234,30 @@ class Url {
         $sEmail = User::get_notify_email_address_list(null, $this->iVersionId);
         if($sEmail)
             mail_appdb($sEmail, $sSubject ,$sMsg);
-    } 
+    }
+
+    /* Display links for a given version/application */
+    function display($iVersionId, $iAppId = NULL)
+    {
+        if($iVersionId)
+        {
+            if(!($hResult = appData::getData($iVersionId, "url")))
+                return FALSE;
+        } else
+        {
+            if(!($hResult = appData::getData($iAppId, "url", FALSE)))
+                return FALSE;
+        }
+
+        for($i = 0; $oRow = mysql_fetch_object($hResult); $i++)
+        {
+            $sReturn .= html_tr(array(
+                "<b>Link</b>",
+                "<a href=\"$oRow->url\">$oRow->description</a>"),
+                "color1");
+        }
+
+        return $sReturn;
+    }
 }
 ?>

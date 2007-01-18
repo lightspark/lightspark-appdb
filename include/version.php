@@ -646,28 +646,20 @@ class Version {
         // main URL
         echo "        <tr class=\"color1\"><td><b>URL</b></td><td>".$appLinkURL."</td></tr>\n";
 
-        // links
-        $result = query_parameters("SELECT * FROM appData WHERE versionID = '?' AND type = 'url'",
-                                   $this->iVersionId);
-        if($result && mysql_num_rows($result) > 0)
-        {
-            echo "        <tr class=\"color1\"><td><b>Links</b></td><td>\n";
-            while($oRow = mysql_fetch_object($result))
-            {
-                echo "        <a href=\"$oRow->url\">".substr(stripslashes($oRow->description),0,30)."</a> <br />\n";
-            }
-            echo "        </td></tr>\n";
-        }    
-
         if($this->sTestedRating != "/" && $this->sTestedRating)
             $sMaintainerColor = $this->sTestedRating;
         else
             $sMaintainerColor = "color0";
 
+        // URLs
+        if($sUrls = url::display($this->iVersionId))
+            echo $sUrls;
+
         // rating Area
         echo "<tr class=\"$sMaintainerColor\" valign=\"top\"><td><b>Maintainer&#8217;s Rating</b></td><td>".$this->sTestedRating."</td></tr>\n";
         echo "<tr class=\"$sMaintainerColor\" valign=\"top\"><td><b>Maintainer&#8217;s Version</b></td><td>".$this->sTestedRelease."</td></tr>\n";
 
+        // Download URLs
         if($sDownloadurls = downloadurl::display($this->iVersionId))
             echo $sDownloadurls;
 
