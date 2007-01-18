@@ -180,9 +180,9 @@ else // if ($aClean['sSub']) is not defined, display the Testing results queue p
     {
         // help
         echo "<div align=center><table width='90%' border=0 cellpadding=3 cellspacing=0><tr><td>\n\n";
-        echo "<p>This is the list of Test Results waiting for submition, or to be deleted.</p>\n";
+        echo "<p>This is the list of test results waiting to be accepted or deleted.</p>\n";
         echo "<p>To view a submission, click on its name. From that page you can delete or edit and\n";
-        echo "re-submit it into the AppDB .<br>\n";
+        echo "re-submit it into the AppDB.<br>\n";
         echo "</td></tr></table></div>\n\n";
 
         $oTest->ShowListofTests($hResult,"Submitted Testing Results");
