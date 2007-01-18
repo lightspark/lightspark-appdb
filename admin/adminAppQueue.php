@@ -193,6 +193,9 @@ if ($aClean['sSub'])
         $oVersion->unQueue();
         $oTest->update(true);
         $oTest->unQueue();
+
+        downloadurl::processFormSingle($oVersion->iVersionId, $aClean, TRUE);
+
         util_redirect_and_exit($_SERVER['PHP_SELF']);
     }
     else if ($aClean['sSub'] == 'duplicate')
@@ -376,6 +379,8 @@ if ($aClean['sSub'])
             $oApp->outputEditor($sVendor);
 
         $oVersion->outputEditor(false, false);
+
+        echo downloadurl::outputEditorSingle($oVersion->iVersionId, $aClean);
 
         $oTest->outputEditor($aClean['sDistribution']);
 

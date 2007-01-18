@@ -216,6 +216,9 @@ if ($aClean['sSub'])
             {
                 $oTest->create();
             }
+
+            downloadurl::processFormSingle($oVersion->iVersionId, $aClean);
+
             util_redirect_and_exit($_SERVER['PHP_SELF']);
         }
     }
@@ -350,6 +353,8 @@ if ($aClean['sSub'])
             $oApp->outputEditor($aClean['sAppVendorName']);
 
         $oVersion->outputEditor(false, false);
+
+        echo downloadurl::outputEditorSingle($iVersionId, $aClean);
 
         $oTest->outputEditor($aClean['sDistribution'],true);
 

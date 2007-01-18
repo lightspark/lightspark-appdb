@@ -53,7 +53,7 @@ class appData
     }
 
     /* Get appData for a given version/application, optionally filter by type */
-    function getData($iId, $sType, $bIsVersion = TRUE)
+    function getData($iId, $sType, $bIsVersion = TRUE, $bQueued = FALSE)
     {
         $iAppId = 0;
         $iVersionId = 0;
@@ -63,7 +63,9 @@ class appData
         else
             $iAppId = $iId;
 
-        $hResult = query_parameters("SELECT * FROM appData WHERE appId = '?' AND versionId = '?' AND TYPE = '?'", $iAppId, $iVersionId, $sType);
+        $hResult = query_parameters("SELECT * FROM appData WHERE appId = '?' AND
+            versionId = '?' AND TYPE = '?' AND queued = '?'",
+                $iAppId, $iVersionId, $sType, $bQueued ? "true" : "false");
 
         if(!$hResult || !mysql_num_rows($hResult))
             return FALSE;

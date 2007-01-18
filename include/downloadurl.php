@@ -222,6 +222,50 @@ class downloadurl
         }
     }
 
+    /* Output an editor for a single new URL */
+    function outputEditorSingle($iVersionId = NULL, $aValues = NULL)
+    {
+        if($iVersionId)
+        {
+            if($hResult = appData::getData($iVersionId, "downloadurl",
+                                           TRUE, TRUE))
+            {
+                $oRow = mysql_fetch_object($hResult);
+                $sDownloadUrlUrl = $oRow->url;
+                $sDownloadUrlDescription = $oRow->description;
+            }
+        } else
+        {
+            $sDownloadUrlUrl = $aValues["sDownloadUrlUrl"];
+            $sDownloadUrlDescription = $aValues["sDownloadUrlDescription"];
+        }
+
+        $sReturn .= html_frame_start("Download URL","90%");
+        $sReturn .= html_table_begin("");
+
+        $sReturn .= "A place where this version can be downloaded for free".
+                    " (if applicable). You can add more links later.<br />";
+
+        $sReturn .= html_tr(array(
+            array("Download URL", "valign=\"top\""),
+            array("<input type=\"text\" name=\"sDownloadUrlUrl\" ".
+            "value=\"$sDownloadUrlUrl\" size=\"60\" />",
+            "class=\"color4\"")),
+            "color0");
+
+        $sReturn .= html_tr(array(
+            array("Download URL Description", "valign=\"top\""),
+            array("<input type=\"text\" name=\"sDownloadUrlDescription\" ".
+            "value=\"$sDownloadUrlDescription\" size=\"60\" />",
+            "class=\"color4\"")),
+            "color0");
+
+        $sReturn .= html_table_end();
+        $sReturn .= html_frame_end("nbsp;");
+
+        return $sReturn;
+    }
+
     function create()
     {
         if(!$this->sUrl or !$this->sDescription or !$this->iVersionId)
@@ -248,6 +292,42 @@ class downloadurl
         $hResult = query_parameters("UPDATE appData SET
                    description = '?', url = '?' WHERE id = '?'",
                        $this->sDescription, $this->sUrl, $this->iId);
+
+        if(!$hResult)
+            return FALSE;
+
+        return TRUE;
+    }
+
+    /* Process a form made only for submitting one URL */
+    function processFormSingle($iVersionId, $aValues, $bUnQueue = FALSE)
+    {
+        if($hResult = appData::getData($iVersionId, "downloadurl", TRUE, TRUE))
+            $iId = mysql_fetch_object($hResult)->id;
+
+        $oDownloadurl = new downloadurl($iId);
+
+        $oDownloadurl->sDescription = $aValues['sDownloadUrlDescription'];
+        $oDownloadurl->sUrl = $aValues['sDownloadUrlUrl'];
+        $oDownloadurl->iVersionId = $iVersionId;
+
+        if($iId)
+            $oDownloadurl->update();
+        else
+            $oDownloadurl->create();
+
+        if($bUnQueue)
+            $oDownloadurl->unQueue();
+    }
+
+    function unQueue()
+    {
+        if(!$this->canEdit($this->iVersionId))
+            return FALSE;
+
+        $hResult = query_parameters("UPDATE appData SET queued = '?'
+                   WHERE id = '?'",
+                       "false", $this->iId);
 
         if(!$hResult)
             return FALSE;
