@@ -4,20 +4,16 @@
  * A list of the user's queued items
  */
 
-require("path.php");
-require(BASE."include/incl.php");
-require(BASE."include/filter.php");
-require(BASE."include/appData.php");
-
-apidb_header("View Your Queued Items");
+require_once("path.php");
+require_once(BASE."include/incl.php");
+require_once(BASE."include/appData.php");
 
 $oUser = new User($_SESSION['current']->iUserId);
 
 if(!$oUser->isLoggedIn())
-{
-    echo "You need to log in to display your queued items.";
-    apidb_footer();
-}
+    util_show_error_page_and_exit("You need to log in to view your queued items.");
+
+apidb_header("View Your Queued Items");
 
 /* Test data */
 if($sResult = testData::listSubmittedBy($oUser->iUserId))
