@@ -303,7 +303,10 @@ class downloadurl
     function processFormSingle($iVersionId, $aValues, $bUnQueue = FALSE)
     {
         if($hResult = appData::getData($iVersionId, "downloadurl", TRUE, TRUE))
-            $iId = mysql_fetch_object($hResult)->id;
+        {
+            $oObject = mysql_fetch_object($hResult);
+            $iId = $oObject->id;
+        }
 
         $oDownloadurl = new downloadurl($iId);
 
