@@ -680,7 +680,8 @@ class Version {
             while(list($index, $userIdValue) = each($aAllMaintainers))
             {
                 $oUser = new User($userIdValue);
-                echo "<li>".$oUser->sRealname."</li>";
+                echo "<li>$oUser->sRealname (<a href=\"".BASE."contact.php?".
+                     "iRecipientId=$oUser->iUserId\">e-mail</a>)</li>";
             }
             echo "</ul></td></tr>\n";
         } else

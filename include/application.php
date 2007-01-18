@@ -662,7 +662,9 @@ class Application {
             while(list($index, $userIdValue) = each($other_maintainers))
             {
                 $oUser = new User($userIdValue);
-                echo "        <li>".$oUser->sRealname."</li>\n";
+                echo "        <li>$oUser->sRealname (<a href=\"".
+                              BASE."contact.php?iRecipientId=$oUser->iUserId\">".
+                              "e-mail</a>)</li>\n";
             }
             echo "</ul></td></tr>\n";
         } else
