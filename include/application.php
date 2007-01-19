@@ -631,22 +631,13 @@ class Application {
         echo "        <tr class=\"color1\"><td><b>URL</b></td><td>".$appLinkURL."</td></tr>\n";
 
         // optional links
-        $result = query_parameters("SELECT * FROM appData WHERE appId = '?' AND versionID = 0 AND type = 'url'",
-                                   $this->iAppId);
-        if($result && mysql_num_rows($result) > 0)
-        {
-            echo "        <tr class=\"color1\"><td> <b>Links</b></td><td>\n";
-            while($oRow = mysql_fetch_object($result))
-            {
-                echo "        <a href='$oRow->url'>".substr(stripslashes($oRow->description),0,30)."</a> <br />\n";
-            }
-            echo "        </td></tr>\n";
-        }
+        if($sUrls = url::display(NULL, $this->iAppId))
+            echo $sUrls;
 
         // image
         $img = Screenshot::get_random_screenshot_img($this->iAppId, null, false);
         echo "<tr><td align=\"center\" colspan=\"2\">$img</td></tr>\n";
-    
+
         echo "      </table>\n"; /* close of name/vendor/bugs/url table */
 
         echo "    </td></tr>\n";
