@@ -49,32 +49,35 @@ class Url {
     /**
      * Creates a new url.
      */
-    function create($sDescription = null, $sUrl = null, $iVersionId = null, $iAppId = null)
+    function create($sDescription = null, $sUrl = null, $iVersionId = null, $iAppId = null, $bSilent = false)
     {
         global $aClean;
 
         // Security, if we are not an administrator or a maintainer, the url must be queued.
-        if(!($_SESSION['current']->hasPriv("admin") || $_SESSION['current']->isMaintainer($aClean['iVersionId']) || $_SESSION['current']->isSupermaintainer($aClean['iAppId'])))
-        {
+        if(($iAppId && !url::canEdit(NULL, $iAppId)) ||
+        ($iVersionId && !url::canEdit($iVersionId)))
             $this->bQueued = true;
-        }
 
-        $hResult = query_parameters("INSERT INTO appData (appId, versionId, type, description,".
-                                    "queued, submitterId) VALUES ('?', '?', '?', '?', '?', '?')",
-                                    $iAppId, $iVersionId, "url", $sDescription, $this->bQueued,
-                                    $_SESSION['current']->iUserId);
-        if($hResult)
-        {
-            $this->iUrlId = mysql_insert_id();
-            $this->url($this->iUrlId,$this->bQueued);
-            $this->SendNotificationMail();
-            return true;
-        }
-        else
+        $hResult = query_parameters("INSERT INTO appData (appId, versionId, type,
+            description, queued, submitterId, url)
+                VALUES ('?', '?', '?', '?', '?', '?', '?')",
+                    $iAppId, $iVersionId, "url", $sDescription,
+                    $this->bQueued ? "true" : "false",
+                    $_SESSION['current']->iUserId, $sUrl);
+
+        if(!$hResult)
         {
             addmsg("Error while creating a new url.", "red");
             return false;
         }
+
+        $this->iUrlId = mysql_insert_id();
+        $this->url($this->iUrlId,$this->bQueued);
+
+        if(!$bSilent)
+            $this->SendNotificationMail();
+
+        return true;
     }
 
 
@@ -88,15 +91,19 @@ class Url {
                    WHERE id = '?' 
                    AND type = 'url' 
                    LIMIT 1";
-        if($hResult = query_parameters($sQuery, $this->iUrlId))
-        {
-            if(!$bSilent)
-                $this->SendNotificationMail(true);
-        }
-        if($this->iSubmitterId)
+        if(!$hResult = query_parameters($sQuery, $this->iUrlId))
+            return false;
+
+        if(!$bSilent)
+            $this->SendNotificationMail(true);
+
+        if($this->iSubmitterId &&
+        $this->iSubmitterId != $_SESSION['current']->iUserId)
         {
             $this->mailSubmitter(true);
         }
+
+        return true;
     }
 
 
@@ -125,8 +132,12 @@ class Url {
      * Update url.
      * Returns true on success and false on failure.
      */
-    function update($sDescription = null, $sUrl = null, $iVersionId = null, $iAppId = null)
+    function update($sDescription = null, $sUrl = null, $iVersionId = null, $iAppId = null, $bSilent = false)
     {
+        if(!$this->iUrlId)
+            return FALSE;
+
+
         $sWhatChanged = "";
 
         if ($sDescription && $sDescription!=$this->sDescription)
@@ -140,8 +151,8 @@ class Url {
 
         if ($sUrl && $sUrl!=$this->sUrl)
         {
-            if (!query_parameters("UPDATE appData SET noteDesc = '?' WHERE id = '?'",
-                                  $sDescription, $this->iUrlId))
+            if (!query_parameters("UPDATE appData SET url = '?' WHERE id = '?'",
+                                  $sUrl, $this->iUrlId))
                 return false;
             $sWhatChanged .= "Url was changed from ".$this->sUrl." to ".$sUrl.".\n\n";
             $this->sUrl = $sUrl;
@@ -169,7 +180,7 @@ class Url {
             $sWhatChanged .= "Application was changed from ".$oAppBefore->sName." to ".$oAppAfter->sName.".\n\n";
             $this->iAppId = $iAppId;
         }
-        if($sWhatChanged)
+        if($sWhatChanged && !$bSilent)
             $this->SendNotificationMail("edit",$sWhatChanged);       
         return true;
     }
@@ -181,7 +192,7 @@ class Url {
 
         if($this->iSubmitterId)
         {
-            $sAppName = Application::lookup_name($this->appId)." ".Version::lookup_name($this->versionId);
+            $sAppName = Application::lookup_name($this->iAppId)." ".Version::lookup_name($this->iVersionId);
             $oSubmitter = new User($this->iSubmitterId);
             if(!$bRejected)
             {
@@ -202,7 +213,7 @@ class Url {
  
     function SendNotificationMail($bDeleted=false)
     {
-        $sAppName = Application::lookup_name($this->appId)." ".Version::lookup_name($this->versionId);
+        $sAppName = Application::lookup_name($this->iAppId)." ".Version::lookup_name($this->iVersionId);
         if(!$bDeleted)
         {
             if(!$this->bQueued)
@@ -234,6 +245,21 @@ class Url {
         $sEmail = User::get_notify_email_address_list(null, $this->iVersionId);
         if($sEmail)
             mail_appdb($sEmail, $sSubject ,$sMsg);
+    }
+
+    function canEdit($iVersionId, $iAppId = NULL)
+    {
+        $oUser = new User($_SESSION['current']->iUserId);
+
+        if($oUser->hasPriv("admin") || ($iVersionId &&
+            maintainer::isUserMaintainer($oUser, $iVersionId)) || ($iAppId &&
+            maintainer::isSuperMaintainer($oUser, $iAppId)))
+        {
+            return TRUE;
+        } else
+        {
+            return FALSE;
+        }
     }
 
     /* Display links for a given version/application */
