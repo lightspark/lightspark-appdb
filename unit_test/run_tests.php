@@ -22,4 +22,6 @@ echo "\n";
 include_once("test_error_log.php");
 echo "\n";
 include_once("test_filter.php");
+echo "\n";
+include_once("test_url.php");
 ?>
