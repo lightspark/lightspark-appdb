@@ -26,6 +26,10 @@ class Version {
     var $iSubmitterId;
     var $sDate;
     var $sQueued;
+    var $iMaintainerRequest; /* Temporary variable for version submisson.
+                                Indicates whether the user wants to become a 
+                                maintainer of the version being submitted.
+                                Value denotes type of request. */
 
     /**
      * constructor, fetches the data.
@@ -90,6 +94,19 @@ class Version {
             $this->iVersionId = mysql_insert_id();
             $this->Version($this->iVersionId);
             $this->SendNotificationMail();
+
+            /* Submit maintainer request if asked to */
+            if($this->iMaintainerRequest == MAINTAINER_REQUEST)
+            {
+                $oMaintainer = new Maintainer();
+                $oMaintainer->iAppId = $this->iAppId;
+                $oMaintainer->iVersionId = $this->iVersionId;
+                $oMaintainer->iUserId = $_SESSION['current']->iUserId;
+                $oMaintainer->sMaintainReason = "This user submitted the version;". 
+                                                "auto-queued.";
+                $oMaintainer->bSuperMaintainer = 0;
+                $oMaintainer->create();
+            }
             return true;
         }
         else
@@ -348,6 +365,18 @@ class Version {
             // we send an e-mail to interested people
             $this->mailSubmitter("unQueue");
             $this->SendNotificationMail();
+
+            /* Unqueue matching maintainer request */
+            $hResultMaint = query_parameters("SELECT maintainerId FROM 
+            appMaintainers WHERE userId = '?' AND versionId = '?'", 
+            $this->iSubmitterId, $this->iVersionId);
+
+            if($hResultMaint && mysql_num_rows($hResultMaint))
+            {
+                $oMaintainerRow = mysql_fetch_object($hResultMaint);
+                $oMaintainer = new Maintainer($oMaintainerRow->maintainerId);
+                $oMaintainer->unQueue("OK");
+            }
         }
     }
 
@@ -562,6 +591,21 @@ class Version {
 
         echo $this->sDescription.'</textarea></p></td></tr>',"\n";
 
+        /* Allow the user to apply as maintainer if this is a new version.
+           If it is a new application as well, radio boxes will be displayed
+           by the application class instead. */
+        if(!$this->iVersionId && $_REQUEST['iAppId'])
+        {
+            if($this->iMaintainerRequest == MAINTAINER_REQUEST)
+                $sRequestMaintainerChecked = 'checked="checked"';
+            echo html_tr(array(
+                array("<b>Become maintainer?</b>", "class=\"color0\""),
+                "<input type=\"checkbox\" $sRequestMaintainerChecked".
+                "name=\"iMaintainerRequest\" value=\"".MAINTAINER_REQUEST."\" /> ".
+                "Check this box to request being a maintainer for this version"),
+                "","valign=\"top\"");
+        }
+
         echo '</table>',"\n";
 
         echo html_frame_end();
@@ -608,6 +652,7 @@ class Version {
         $this->sDescription = $aValues['shVersionDescription'];
         $this->sTestedRating = $aValues['sMaintainerRating'];
         $this->sTestedRelease = $aValues['sMaintainerRelease'];
+        $this->iMaintainerRequest = $aValues['iMaintainerRequest'];
     }
 
     function display($iTestingId)

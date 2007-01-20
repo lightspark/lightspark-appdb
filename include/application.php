@@ -17,6 +17,8 @@ define("SILVER_RATING", "Silver");
 define("BRONZE_RATING", "Bronze");
 define("GARBAGE_RATING", "Garbage");
 
+define("MAINTAINER_REQUEST", 1);
+define("SUPERMAINTAINER_REQUEST", 2);
 
 /**
  * Application class for handling applications.
@@ -34,8 +36,8 @@ class Application {
     var $sSubmitTime;
     var $iSubmitterId;
     var $aVersionsIds;  // an array that contains the versionId of every version linked to this app.
-    var $bSuperMaintainerRequest; // Temporary variable used in application submission.
-                                  // If the user wants to become a super maintainer for the application
+    var $iMaintainerRequest; /* Temporary variable for tracking maintainer
+                                requests on app submission.  Value denotes type of request */
 
     /**    
      * constructor, fetches the data.
@@ -133,7 +135,7 @@ class Application {
             $this->SendNotificationMail();  // Only administrators will be mailed as no supermaintainers exist for this app.
 
             /* Submit super maintainer request if asked to */
-            if($this->bSuperMaintainerRequest)
+            if($this->iMaintainerRequest == SUPERMAINTAINER_REQUEST)
             {
                 $oMaintainer = new Maintainer();
                 $oMaintainer->iAppId = $this->iAppId;
@@ -309,7 +311,7 @@ class Application {
 
             /* Unqueue matching super maintainer request */
             $hResultMaint = query_parameters("SELECT maintainerId FROM appMaintainers WHERE userId = '?' AND appId = '?'", $this->iSubmitterId, $this->iAppId);
-            if($hResultMaint)
+            if($hResultMaint && mysql_num_rows($hResultMaint))
             {
                 $oMaintainerRow = mysql_fetch_object($hResultMaint);
                 $oMaintainer = new Maintainer($oMaintainerRow->maintainerId);
@@ -541,10 +543,25 @@ class Application {
         // Allow user to apply as super maintainer if this is a new app
         if(!$this->iAppId)
         {
-            if($this->bSuperMaintainerRequest)
-                $sRequestSuperMaintainerChecked = 'checked="checked"';
-            echo '<tr valign="top"><td class="color0"><b>Become super maintainer?</b></td>',"\n";
-            echo '<td><input type="checkbox" '.$sRequestSuperMaintainerChecked.' name="bSuperMaintainerRequest" /> Check this to request being a super maintainer for the application</td></tr>',"\n";
+            $sMaintainerOptions = 
+                "<input type=\"radio\" name=\"iMaintainerRequest\" value=\"0\" />".
+                "I would not like to become a maintainer<br />\n".
+                "<input type=\"radio\" name=\"iMaintainerRequest\" ". 
+                "value=\"".MAINTAINER_REQUEST."\" />".
+                "I would like to be a maintainer of the new version only<br />\n".
+                "<input type=\"radio\" name=\"iMaintainerRequest\" ". 
+                "value=\"".SUPERMAINTAINER_REQUEST."\" />".
+                "I would like to be a maintainer of the entire application<br />\n";
+
+            $sMaintainerOptionsSelected = str_replace(
+                "value=\"$this->iMaintainerRequest\"",
+                "value=\"$this->iMaintainerRequest\" checked=\"checked\"",
+                $sMaintainerOptions);
+
+            echo html_tr(array(
+                array("<b>Maintainer options</b>", "class=\"color0\""),
+                $sMaintainerOptionsSelected),
+                "", "valign=\"top\"");
         }
 
         echo "</table>\n";
@@ -586,7 +603,7 @@ class Application {
         $this->iVendorId = $aValues['iAppVendorId'];
         $this->sWebpage = $aValues['sAppWebpage'];
         $this->sKeywords = $aValues['sAppKeywords'];
-        $this->bSuperMaintainerRequest = $aValues['bSuperMaintainerRequest'];
+        $this->iMaintainerRequest = $aValues['iMaintainerRequest'];
     }
 
     /* display this application */

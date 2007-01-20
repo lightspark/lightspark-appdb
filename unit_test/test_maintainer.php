@@ -278,7 +278,7 @@ function test_superMaintainerOnAppSubmit()
     $oApp = new Application($iAppId);
 
     /* The user wants to be a super maintainer */
-    $oApp->bSuperMaintainerRequest = 1;
+    $oApp->iMaintainerRequest = SUPERMAINTAINER_REQUEST;
 
     /* Make sure the user is not an admin, so the app will be queued */
     $oUser->delPriv("admin");

@@ -191,19 +191,31 @@ class maintainer
 
     function ObjectGetEntries($bQueued)
     {
-        /* Excluding requests for queued apps, as these will be handled automatically */
+        /* Excluding requests for queued apps and versions, as these will be
+           handled automatically */
         if($bQueued)
-            $sQuery = "SELECT maintainerId FROM appMaintainers, user_list, appFamily WHERE appMaintainers.userid = user_list.userid ".
-                "AND appMaintainers.queued = '?' AND appMaintainers.appId = ".
-                "appFamily.appId AND appFamily.queued = 'false' ORDER by ". "appMaintainers.submitTime";
+            $sQuery = "SELECT appMaintainers.submitTime, maintainerId FROM 
+                appMaintainers, user_list, appFamily
+                    WHERE appMaintainers.userid = user_list.userid AND 
+                    appMaintainers.queued = '?' AND appMaintainers.appId = 
+                    appFamily.appId AND appMaintainers.versionId = '' AND 
+                    appFamily.queued = 'false' UNION SELECT 
+                    appMaintainers.submitTime, maintainerId FROM 
+                    appMaintainers, user_list, appVersion WHERE 
+                    user_list.userid = appMaintainers.userid AND 
+                    appMaintainers.versionId = appVersion.versionId AND 
+                    appVersion.queued = 'false' AND appMaintainers.queued = '?' 
+                        ORDER by submitTime";
         else
-            $sQuery = "SELECT maintainerId FROM appMaintainers, user_list WHERE appMaintainers.userid = user_list.userid ".
+            $sQuery = "SELECT maintainerId FROM appMaintainers, user_list
+                WHERE appMaintainers.userid = user_list.userid ".
                 "AND queued = '?' ORDER by realname";
 
         if($bQueued)
         {
             if($_SESSION['current']->hasPriv("admin"))
-                return query_parameters($sQuery, $bQueued ? "true" : "false");
+                return query_parameters($sQuery, $bQueued ? "true" : "false",
+                    $bQueued ? "true" : "false");
             else
                 return NULL;
         } else
@@ -256,10 +268,21 @@ class maintainer
 
     function getQueuedMaintainerCount()
     {
-        /* Excluding requests for queued apps, as these are handled automatically */
-        $sQuery = "SELECT COUNT(*) as queued_maintainers FROM appMaintainers, appFamily WHERE appMaintainers.queued='true' AND appFamily.appId = appMaintainers.appId AND appFamily.queued = 'false'";
-        $hResult = query_parameters($sQuery);
+        /* Excluding requests for queued apps and versions, as these are handled 
+           automatically.  One SELECT for super maintainers, one for maintainers. */
+        $sQuery = "SELECT COUNT(DISTINCT maintainerId) as queued_maintainers FROM 
+                appMaintainers, appFamily, appVersion
+                WHERE appMaintainers.queued='true' AND ((appFamily.appId =
+                    appMaintainers.appId AND appFamily.queued = 'false' AND 
+                    appMaintainers.versionId = '') OR (
+                            appVersion.versionId = appMaintainers.versionId
+                            AND appVersion.queued = 'false'))";
+
+        if(!($hResult = query_parameters($sQuery)))
+            return FALSE;
+
         $oRow = mysql_fetch_object($hResult);
+
         return $oRow->queued_maintainers;
     }
 
