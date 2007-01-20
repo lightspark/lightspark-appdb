@@ -59,18 +59,18 @@ but the application is not actually added until after it has been
 reviewed by a maintainer or administrator.</p>
 </blockquote>
 
-<p><b>Q: How can I submit Screenshots?</b></p>
+<p><b>Q: How can I submit screenshots?</b></p>
 <blockquote>
 <p><b>A:</b> We love to hear from our users. Send those helpful screenshots by clicking on any screenshot image you will see in the specific version page of the application you want to add a screenshot for. If you are not a maintainer, your screenshot will be reviewed and will then be added to the database.</p>
 </blockquote>
 
-<p><b>Q: How can I submit How-to's?</b></p>
+<p><b>Q: How can I submit how-to's?</b></p>
 <blockquote>
 <p><b>A:</b>If you are not a maintainer, you can't create new official How-to's. So the best way to proceed is to  post your How-to as a comment in the specific version page of the application of interest. A maintainer might then choose to add your How-to as an official How-to for this database entry.</p>
 </blockquote>
 
 
-<p><b>Q: How do I become an application database maintainer?</b></p>
+<p><b>Q: How do I become an Application Database maintainer?</b></p>
 <blockquote>
 <p><b>A:</b> Pretty much anyone supporting Wine is welcome (begged?) to be an application maintainer.
 Simply click on the button you will find in the application overview or specific version page to send your request. An administrator will then review your proposal and add you the the maintainer's team for this application or version. Once we have a community of maintainers, we hope that community will further refine the policies and procedures.</p>
@@ -79,7 +79,7 @@ Simply click on the button you will find in the application overview or specific
 
 <p><b>Q: What is the difference between a super maintainer and a maintainer?</b></p>
 <blockquote>
-<p><b>A:</b> A super maintainer maintains an application and all it's versions. A maintainer maintains only one specific version of an application.</p>
+<p><b>A:</b> A super maintainer maintains an application and all its versions. A maintainer maintains only one specific version of an application.</p>
 </blockquote>
 
 <p><b>Q: What is meant by the term &#8216;vendor&#8217;?</b></p>
