@@ -247,6 +247,196 @@ class Url {
             mail_appdb($sEmail, $sSubject ,$sMsg);
     }
 
+    /* Output an editor for URL fields */
+    function outputEditor($sFormAction, $oVersion, $oApp = NULL)
+    {
+        /* Check for correct permissions */
+        if(($oVersion && !url::canEdit($oVersion->iVersionId)) ||
+            ($oApp && !url::canEdit(NULL, $oApp->iAppId)))
+            return FALSE;
+
+        if($oVersion)
+            $hResult = appData::getData($oVersion->iVersionId, "url");
+        else
+            $hResult = appData::getData($oApp->iAppId, "url", FALSE);
+
+        $sReturn .= html_frame_start("URLs", "90%", "", 0);
+        $sReturn .= "<form method=\"post\" action=\"$sFormAction\">\n";
+        $sReturn .= html_table_begin("width=100%");
+        $sReturn .= html_tr(array(
+            array("<b>Remove</b>", "width=\"90\""),
+            "<b>Description</b>",
+            "<b>URL</b>"
+            ),
+            "color0");
+
+            $sReturn .= html_tr(array(
+                "&nbsp;",
+                "<input type=\"text\" size=\"45\" name=\"".
+                "sDescriptionNew\" />",
+                "<input type=\"text\" size=\"45\" name=\"sUrlNew\" />"),
+                "color4");
+
+        if($hResult)
+        {
+            for($i = 1; $oRow = mysql_fetch_object($hResult); $i++)
+            {
+                $sReturn .= html_tr(array(
+                    "<input type=\"checkbox\" name=\"bRemove$oRow->id\" ".
+                    "value=\"true\" />",
+                    "<input type=\"text\" size=\"45\" name=\"".
+                    "sDescription$oRow->id\" value=\"$oRow->description\" />",
+                    "<input type=\"text\" size=\"45\" name=\"sUrl$oRow->id\" ".
+                    "value=\"$oRow->url\" />"),
+                    ($i % 2) ? "color0" : "color4");
+            }
+        }
+
+        if($oVersion)
+            $iAppId = $oVersion->iAppId;
+        else
+            $iAppId = $oApp->iAppId;
+
+        $sReturn .= html_table_end();
+        $sReturn .= "<div align=\"center\"><input type=\"submit\" value=\"".
+                    "Update URLs\" name=\"sSubmit\" /></div>\n";
+
+        if($oVersion)
+            $sReturn .=" <input type=\"hidden\" name=\"iVersionId\" ".
+                    "value=\"$oVersion->iVersionId\" />\n";
+
+        $sReturn .= "<input type=\"hidden\" name=\"iAppId\" ".
+                    "value=\"$iAppId\" />\n";
+        $sReturn .= "</form>\n";
+        $sReturn .= html_frame_end("&nbsp;");
+
+        return $sReturn;
+    }
+
+    /* Process data from a URL form */
+    function ProcessForm($aValues)
+    {
+
+        /* Check that we are processing a Download URL form */
+        if($aValues["sSubmit"] != "Update URLs")
+            return FALSE;
+
+        /* Check permissions */
+        if(($aValues['iVersionId'] && !url::canEdit($aValues["iVersionId"])) ||
+            (!$aValues['iVersionId'] && !url::canEdit(NULL, $aValues['iAppId'])))
+            return FALSE;
+
+        if($aValues["iVersionId"])
+        {
+            if(!($hResult = query_parameters("SELECT COUNT(*) as num FROM appData 
+                WHERE TYPE = '?' AND versionId = '?'",
+                    "url", $aValues["iVersionId"])))
+                return FALSE;
+        } else
+        {
+            if(!($hResult = query_parameters("SELECT COUNT(*) as num FROM appData 
+                WHERE TYPE = '?' AND appId = '?'",
+                    "url", $aValues["iAppId"])))
+                return FALSE;
+        }
+
+        if(!($oRow = mysql_fetch_object($hResult)))
+            return FALSE;
+
+        $num = $oRow->num;
+
+        /* Update URLs.  Nothing to do if none are present in the database */
+        if($num)
+        {
+            if($aValues['iVersionId'])
+            {
+                if(!$hResult = appData::getData($aValues["iVersionId"], "url"))
+                    return FALSE;
+            } else
+            {
+                if(!$hResult = appData::getData($aValues['iAppId'], "url", FALSE))
+                    return FALSE;
+            }
+
+            while($oRow = mysql_fetch_object($hResult))
+            {
+                $url = new url($oRow->id);
+
+                /* Remove URL */
+                if($aValues["bRemove$oRow->id"])
+                {
+                    if(!$url->delete(TRUE))
+                        return FALSE;
+
+                    $sWhatChangedRemove .= "Removed\nURL: $oRow->url\n".
+                    "Description: $oRow->description\n\n";
+                }
+
+                /* Change description/URL */
+                if(($aValues["sDescription$oRow->id"] != $oRow->description or 
+                $aValues["sUrl$oRow->id"] != $oRow->url) && 
+                $aValues["sDescription$oRow->id"] && $aValues["sUrl$oRow->id"])
+                {
+                    if(!$url->update($aValues["sDescription$oRow->id"],
+                    $aValues["sUrl$oRow->id"], $aValues["iVersionId"],
+                    $aValues["iVersionId"] ? 0 : $aValues["iAppId"], TRUE))
+                        return FALSE;
+
+                    $sWhatChangedModify .= "Modified\nOld URL: $oRow->url\nOld ".
+                        "Description: $oRow->description\nNew URL: ".
+                        $aValues["sUrl$oRow->id"]."\nNew Description: ".
+                        $aValues["sDescription$oRow->id"]."\n\n";
+                }
+            }
+        }
+
+        /* Insert new URL */
+        if($aValues["sDescriptionNew"] && $aValues["sUrlNew"])
+        {
+            $url = new Url();
+
+            if(!$url->create($aValues["sDescriptionNew"], $aValues["sUrlNew"],
+                $aValues["iVersionId"] ? $aValues["iVersionId"] : "0",
+                $aValues["iVersionId"] ? "0" : $aValues["iAppId"], TRUE))
+                return FALSE;
+
+            $sWhatChanged = "Added\nURL: ".$aValues["sUrlNew"]."\nDescription: ".
+                            $aValues["sDescriptionNew"]."\n\n";
+        }
+
+        $sWhatChanged .= "$sWhatChangedRemove$sWhatChangedModify";
+
+        if($aValues["iVersionId"])
+            $sEmail = User::get_notify_email_address_list($aValues['iVersionId']);
+        else
+            $sEmail = User::get_notify_email_address_list($aValues['iAppId'])
+;
+        if($sWhatChanged && $sEmail)
+        {
+            $oApp = new Application($aValues["iAppId"]);
+
+            if($aValues["iVersionId"])
+            {
+                $oVersion = new Version($aValues["iVersionId"]);
+                $sVersionName = " $oVersion->sName";
+            }
+
+            $sSubject = "Links for $oApp->sName$sVersionName updated by ". 
+                        $_SESSION['current']->sRealname;
+
+            $sMsg = $aValues["iVersionId"] ? 
+                APPDB_ROOT."appview.php?iVersionId=".$aValues['iVersionId'] :
+                APPDB_ROOT."appview.php?iAppId=".$avalues["iAppid"];
+            $sMsg .= "\n\n";
+            $sMsg .= "The following changed were made\n\n";
+            $sMsg .= "$sWhatChanged\n\n";
+
+            mail_appdb($sEmail, $sSubject, $sMsg);
+        }
+
+        return TRUE;
+    }
+
     function canEdit($iVersionId, $iAppId = NULL)
     {
         $oUser = new User($_SESSION['current']->iUserId);
