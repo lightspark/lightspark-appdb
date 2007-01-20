@@ -40,7 +40,7 @@ function get_vendor_from_keywords($sKeywords)
     return($aKeywords[$iLastElt]);
 }
 
-function newSubmition($errors)
+function newSubmission($errors)
 {
     global $aClean;
     // show add to queue form
@@ -281,7 +281,7 @@ if ($aClean['sSub'])
             echo "</td></tr></table></div>\n\n";    
             } else
             {
-                newSubmition('');
+                newSubmission('');
             }
             // vendor/alt vendor fields
             // if user selected a predefined vendorId:
@@ -336,7 +336,7 @@ if ($aClean['sSub'])
                 echo "</td></tr></table></div>\n\n";
             } else
             {
-                newSubmition($errors);
+                newSubmission($errors);
             }
         }
         if(!empty($errors))
