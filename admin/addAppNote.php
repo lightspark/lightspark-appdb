@@ -47,7 +47,7 @@ else if($aClean['sSub'] == 'Preview' OR empty($aClean['sSubmit']))
 
     echo "<form method=post action='addAppNote.php'>\n";
 
-    $oNote->OutputEditor();
+    $oNote->outputEditor();
 
     echo '<center>';
     echo '<input type="submit" name="sSub" value="Preview">&nbsp',"\n";
