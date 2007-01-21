@@ -73,6 +73,22 @@ function newSubmission($errors)
     echo "<p>After your application has been added, you will be able to submit screenshots for it, post";
     echo " messages in its forums or become a maintainer to help others trying to run the application.</p>";
 }
+
+function promptForAppName()
+{
+    apidb_header("Enter app name");
+
+    echo "First, please enter the name of the application you wish to add. ";
+    echo "This will allow you to determine whether there is already an entry for it ";
+    echo "in the database.\n";
+    echo "<form method=\"post\" action=\"".$_SERVER['PHP_SELF']."\">\n";
+    echo "<input type=\"text\" name=\"sAppName\" size=\"60\" />\n";
+    echo "<input type=\"submit\" value=\"Proceed\" />\n";
+    echo "<input type=\"hidden\" name=\"sSub\" value=\"view\" />\n";
+    echo "<input type=\"hidden\" name=\"sAppType\" value=\"application\" />\n";
+    echo "</form>\n";
+}
+
 //deny access if not logged on
 if(!$_SESSION['current']->isLoggedIn())
     util_show_error_page_and_exit("Insufficient privileges to create application.  Are you sure you are logged in?");
@@ -250,8 +266,13 @@ if ($aClean['sSub'])
         
         util_redirect_and_exit($_SERVER['PHP_SELF']);
     }
-    if ($aClean['sSub'] == 'view')
+
+    if ($aClean['sSub'] == 'view' && 
+       ($aClean['sAppName'] || $aClean['sAppType'] != "application"))
     {
+        /* The appname is already entered in the potential duplicates step */
+        $oApp->sName = $aClean['sAppName'];
+
         $x = new TableVE("view");
         apidb_header("Application Queue");
 
@@ -394,7 +415,10 @@ if ($aClean['sSub'])
         echo html_frame_end("&nbsp;");
         apidb_footer();
     }
-    else 
+    else if ($aClean['sSub'] == 'view' && !$aClean['sAppName'])
+    {
+        promptForAppName();
+    } else
     {
         // error no sub!
         addmsg("Internal Routine Not Found!!", "red");
