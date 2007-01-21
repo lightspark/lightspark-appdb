@@ -12,6 +12,12 @@ require_once(BASE."include/util.php");
 require_once(BASE."include/testData.php");
 require_once(BASE."include/downloadurl.php");
 
+define("LICENSE_OPENSOURCE", "Open Source");
+define("LICENSE_FREEWARE", "Freeware");
+define("LICENSE_SHAREWARE", "Shareware");
+define("LICENSE_DEMO", "Demo");
+define("LICENSE_RETAIL", "Retail");
+
 /**
  * Version class for handling versions.
  */
@@ -26,6 +32,7 @@ class Version {
     var $iSubmitterId;
     var $sDate;
     var $sQueued;
+    var $sLicense;
     var $iMaintainerRequest; /* Temporary variable for version submisson.
                                 Indicates whether the user wants to become a 
                                 maintainer of the version being submitted.
@@ -62,6 +69,7 @@ class Version {
                         $this->sTestedRelease = $oRow->maintainer_release;
                         $this->sTestedRating = $oRow->maintainer_rating;
                         $this->sQueued = $oRow->queued;
+                        $this->sLicense = $oRow->license;
                     }
                 }
             }
@@ -82,12 +90,14 @@ class Version {
         else
             $this->sQueued = 'false';
 
-        $hResult = query_parameters("INSERT INTO appVersion (versionName, description, maintainer_release,".
-                                    "maintainer_rating, appId, submitterId, queued) VALUES ".
-                                    "('?', '?', '?', '?', '?', '?', '?')",
-                                    $this->sName, $this->sDescription, $this->sTestedRelease,
-                                    $this->sTestedRating, $this->iAppId, $_SESSION['current']->iUserId,
-                                    $this->sQueued);
+        $hResult = query_parameters("INSERT INTO appVersion
+                   (versionName, description, maintainer_release,
+                   maintainer_rating, appId, submitterId, queued, license)
+                       VALUES ('?', '?', '?', '?', '?', '?', '?', '?')",
+                           $this->sName, $this->sDescription, $this->sTestedRelease,
+                           $this->sTestedRating, $this->iAppId,
+                           $_SESSION['current']->iUserId, $this->sQueued, 
+                           $this->sLicense);
 
         if($hResult)
         {
@@ -181,6 +191,17 @@ class Version {
             $oAppBefore = new Application($oVersion->iAppId);
             $oAppAfter = new Application($this->iAppId);
             $sWhatChanged .= "Version was moved from application ".$oAppBefore->sName." to application ".$oAppAfter->sName.".\n\n";
+        }
+
+        if ($this->sLicense && ($this->sLicense!=$oVersion->sLicense))
+        {
+            if(!query_parameters("UPDATE appVersion SET license = '?'
+                                  WHERE versionId = '?'",
+                                      $this->sLicense, $this->iVersionId))
+            return FALSE;
+
+            $sWhatChanged .= "License was changed from $oVersion->sLicense to".
+                             "$this->sLicense.\n\n";
         }
 
         if($sWhatChanged and !$bSilent)
@@ -585,6 +606,11 @@ class Version {
         echo '<tr valign=top><td class="color0"><b>Version name</b></td>',"\n";
         echo '<td><input size="20" type="text" name="sVersionName" value="'.$this->sName.'"></td></tr>',"\n";
 
+        // version license
+        echo html_tr(array(
+            array("<b>License</b>", "class=\"color0\""),
+            $this->MakeLicenseList()));
+
         // version description
         echo '<tr valign=top><td class=color0><b>Version description</b></td>',"\n";
         echo '<td><p><textarea cols="80" rows="20" id="version_editor" name="shVersionDescription">',"\n";
@@ -652,6 +678,7 @@ class Version {
         $this->sDescription = $aValues['shVersionDescription'];
         $this->sTestedRating = $aValues['sMaintainerRating'];
         $this->sTestedRelease = $aValues['sMaintainerRelease'];
+        $this->sLicense = $aValues['sLicense'];
         $this->iMaintainerRequest = $aValues['iMaintainerRequest'];
     }
 
@@ -687,6 +714,10 @@ class Version {
         echo '<table width="250" border="0" cellpadding="3" cellspacing="1">',"\n";
         echo "<tr class=\"color0\" valign=\"top\"><td width=\"100\"> <b>Name</b></td><td width=\"100%\">".$oApp->sName."</td>\n";
         echo "<tr class=\"color1\" valign=\"top\"><td><b>Version</b></td><td>".$this->sName."</td></tr>\n";
+        echo html_tr(array(
+            "<b>License</b>",
+            $this->sLicense),
+            "color0");
 
         // main URL
         echo "        <tr class=\"color1\"><td><b>URL</b></td><td>".$appLinkURL."</td></tr>\n";
@@ -1033,6 +1064,29 @@ class Version {
 
         return $sResult;
     }
+
+    function MakeLicenseList()
+    {
+        $sReturn = "<select name=\"sLicense\">\n";
+        $sReturn .= "<option value=\"\">Choose . . .</option>\n";
+        $aLicense = array(LICENSE_RETAIL, LICENSE_OPENSOURCE, LICENSE_FREEWARE,
+                          LICENSE_DEMO, LICENSE_SHAREWARE);
+        $iMax = count($aLicense);
+
+        for($i = 0; $i < $iMax; $i++)
+        {
+            if($aLicense[$i] == $this->sLicense)
+                $sSelected = " selected=\"selected\"";
+
+                $sReturn .= "<option value=\"$aLicense[$i]\"$sSelected>".
+                            "$aLicense[$i]</option>\n";
+        }
+
+        $sReturn .= "</select>\n";
+
+        return $sReturn;
+    }
+
 }
 
 ?>

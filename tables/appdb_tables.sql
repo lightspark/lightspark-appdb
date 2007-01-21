@@ -58,6 +58,7 @@ create table appVersion (
   submitTime            timestamp(14) NOT NULL,
   submitterId           int(11) NOT NULL default '0',
   queued                enum('true','false','rejected') NOT NULL default 'false',
+  license		enum('Retail','Open Source','Freeware','Demo','Shareware'),
   key(versionId),
   index(appId)
 );
