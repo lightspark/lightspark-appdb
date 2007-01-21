@@ -698,6 +698,11 @@ class Version {
         if(!$this->iVersionId) 
             util_show_error_page_and_exit('Internal Database Access Error. No Version Found.');
 
+        // show Vote Menu
+        if($_SESSION['current']->isLoggedIn())
+            apidb_sidebar_add("vote_menu");
+
+
         // header
         apidb_header("Viewing App- ".$oApp->sName." Version - ".$this->sName);
 
@@ -721,6 +726,12 @@ class Version {
 
         // main URL
         echo "        <tr class=\"color1\"><td><b>URL</b></td><td>".$appLinkURL."</td></tr>\n";
+
+        // Votes
+        echo html_tr(array(
+            "<b>Votes</b>",
+            vote_count_version_total($this->iVersionId)),
+            "color0");
 
         if($this->sTestedRating != "/" && $this->sTestedRating)
             $sMaintainerColor = $this->sTestedRating;
