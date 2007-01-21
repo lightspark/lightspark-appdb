@@ -668,8 +668,8 @@ class Version {
         return $errors;
     }
 
-    /* retrieves values from $aValues that were output by OutputEditor() */
-    /* $aValues can be $_REQUEST or any array with the values from OutputEditor() */
+    /* retrieves values from $aValues that were output by outputEditor() */
+    /* $aValues can be $_REQUEST or any array with the values from outputEditor() */
     function GetOutputEditorValues($aValues)
     {
         $this->iAppId = $aValues['iAppId'];
@@ -929,6 +929,24 @@ class Version {
         $ob = mysql_fetch_object($result);
         return $ob->versionName;
     }
+
+    function fullName($iVersionId)
+    {
+        if(!$iVersionId)
+            return FALSE;
+
+        $hResult = query_parameters(
+            "SELECT appFamily.appName, appVersion.versionName
+                FROM appVersion, appFamily WHERE appVersion.appId = appFamily.appId
+                AND versionId = '?'",
+                    $iVersionId);
+
+        if(!$hResult || !mysql_num_rows($hResult))
+            return FALSE;
+
+        $oRow = mysql_fetch_object($hResult);
+        return "$oRow->appName $oRow->versionName";
+}
 
     function showList($hResult)
     {

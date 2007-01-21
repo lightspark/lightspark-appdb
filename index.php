@@ -59,21 +59,20 @@ If you have screenshots or links to contribute, please browse the database and u
 
     $numApps = getNumberOfVersions();
 
-    $voteQuery = "SELECT appVotes.appId, appName, count(userId) as count ".
-        "FROM appVotes, appFamily ".
-        "WHERE appVotes.appId = appFamily.appId ".
-        "GROUP BY appId ORDER BY count DESC LIMIT 1";
+    $voteQuery = "SELECT appVotes.versionId, count(userId) as count ".
+        "FROM appVotes ".
+        "GROUP BY versionId ORDER BY count DESC LIMIT 1";
     $hResult = query_parameters($voteQuery);
     $oRow = mysql_fetch_object($hResult);
 
-    $voteAppId = $oRow->appId;
-    $voteAppName = $oRow->appName;
+    $sVoteVersionId = $oRow->versionId;
+    $sVoteAppName = version::fullName($oRow->versionId);
 
     // don't mention the top application if there are no votes yet
-    if($voteAppId != "")
+    if($sVoteVersionId != "")
     {
        echo "There are <b>$numApps</b> applications currently in the database with\n";
-       echo "<a href='appview.php?iAppId=$voteAppId'>$voteAppName</a> being the\n";
+       echo "<a href='appview.php?iVersionId=$sVoteVersionId'>$sVoteAppName</a> being the\n";
        echo "top <a href='votestats.php'>voted</a> application.\n";
     } else
     {

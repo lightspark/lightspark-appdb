@@ -125,10 +125,13 @@ echo '<br />';
 if(empty($aClean['iCategoryId']))
 {
     /* leave out the appFamily.catId = '$aClean['iCategoryId']' */
-    $hResult = query_parameters("SELECT appVotes.appId, appName, count(userId) as count ".
-                           "FROM appVotes, appFamily ".
-                           "WHERE appVotes.appId = appFamily.appId ".
-                           "GROUP BY appId ORDER BY count DESC LIMIT ?", $aClean['iTopNumber']);
+    $hResult = query_parameters("SELECT appVotes.versionId, appName, count(userId) as 
+                           count
+                           FROM appVotes, appFamily, appVersion
+                           WHERE appVotes.versionId = appVersion.versionId AND
+                           appFamily.appId = appVersion.appId
+                           GROUP BY appVotes.versionId ORDER BY count DESC LIMIT ?", 
+                               $aClean['iTopNumber']);
 } else
 {
     /* Display all application for a given category (including sub categories)
@@ -139,15 +142,16 @@ if(empty($aClean['iCategoryId']))
     c.catId =29
     OR c.catParent =29)*/
     
-    $hResult = query_parameters("SELECT v.appId, f.appName, count( v.appId ) AS count
-                  FROM appFamily AS f, appCategory AS c, appVotes AS v
-                  WHERE v.appId = f.appId
+    $hResult = query_parameters("SELECT v.versionId, f.appName, count( v.versionId ) AS count
+                  FROM appFamily AS f, appCategory AS c, appVotes AS v, appVersion
+                  WHERE appVersion.appId = f.appId
+                  AND appVersion.versionId = v.versionId
                   AND f.catId = c.catId
                   AND (
                         c.catId = '?'
                         OR c.catParent = '?'
                       )
-                  GROUP BY appId
+                  GROUP BY v.versionId
                   ORDER BY count DESC LIMIT ?", $aClean['iCategoryId'], $aClean['iCategoryId'], $aClean['iTopNumber']);
 }
 
@@ -162,7 +166,7 @@ if($hResult)
     while($row = mysql_fetch_object($hResult))
     {
         $bgcolor = ($c % 2) ? "color0" : "color1";
-        $link = "<a href='appview.php?iAppId=$row->appId'>$row->appName</a>";
+        $link = "<a href='appview.php?iVersionId=$row->versionId'>$row->appName</a>";
         echo "<tr class=$bgcolor><td width='90%'>$c. $link </td> <td> $row->count </td></tr>\n";
         $c++;
     }

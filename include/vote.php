@@ -3,11 +3,10 @@ require_once(BASE."include/util.php");
 /* max votes per user */
 define('MAX_VOTES',3);
 
-
 /**
  * count the number of votes for appId by userId
  */
-function vote_count($iAppId, $iUserId = null)
+function vote_count($iVersionId, $iUserId = null)
 {
     if(!$iUserId)
     {
@@ -16,8 +15,8 @@ function vote_count($iAppId, $iUserId = null)
         else
             return 0;
     }
-    $hResult = query_parameters("SELECT * FROM appVotes WHERE appId = '?' AND userId = '?'",
-                            $iAppId, $iUserId);
+    $hResult = query_parameters("SELECT * FROM appVotes WHERE versionId = '?' AND userId = '?'",
+                            $iVersionId, $iUserId);
     return mysql_num_rows($hResult);
 }
 
@@ -40,11 +39,12 @@ function vote_count_user_total($iUserId = null)
 
 
 /*
- * total votes for appId
+ * total votes for versionId
  */
-function vote_count_app_total($iAppId)
+function vote_count_version_total($iVersionId)
 {
-    $hResult = query_parameters("SELECT * FROM appVotes WHERE appId = '?'", $iAppId);
+    $hResult = query_parameters("SELECT * FROM appVotes WHERE versionId = '?'",
+                                    $iVersionId);
     return mysql_num_rows($hResult);
 }
 
@@ -52,7 +52,7 @@ function vote_count_app_total($iAppId)
 /**
  * add a vote for appId
  */
-function vote_add($iAppId, $iSlot, $iUserId = null)
+function vote_add($iVersionId, $iSlot, $iUserId = null)
 {
     if(!$iUserId)
     {
@@ -67,8 +67,9 @@ function vote_add($iAppId, $iSlot, $iUserId = null)
     
     vote_remove($iSlot, $iUserId);
 
-    query_parameters("INSERT INTO appVotes (id, time, appId, userId, slot)
-                      VALUES (?, ?, '?', '?', '?')", "null", "null", $iAppId, $iUserId, $iSlot);
+    query_parameters("INSERT INTO appVotes (id, time, versionId, userId, slot)
+                      VALUES (?, ?, '?', '?', '?')", "null", "null",
+                          $iVersionId, $iUserId, $iSlot);
 }
 
 
@@ -115,19 +116,21 @@ function vote_menu()
     global $aClean;
 
     $m = new htmlmenu("Votes","updatevote.php");
-    
+
     $votes = vote_get_user_votes();
 
     for($i = 1;$i <= MAX_VOTES; $i++)
     {
         if(isset($votes[$i]))
         {
-            $sAppName = Application::lookup_name($votes[$i]->appId);
-            $str = "<a href='appview.php?iAppId=".$votes[$i]->appId."'> $sAppName</a>";
-            $m->add("<input type=radio name=iSlot value='$i'> ".$str);
+            $sName = Version::fullName($votes[$i]->versionId);
+            $str = "<a href='appview.php?iVersionId=".$votes[$i]->versionId."'>".
+                   "$sName</a>";
         }
         else
-            $m->add("<input type=radio name=iSlot value='$i'> No App Selected");
+            $str = "No App Selected";
+
+        $m->add("<input type=radio name=iSlot value='$i'> $str");
     }
     
     $m->addmisc("&nbsp;");
@@ -135,7 +138,7 @@ function vote_menu()
     $m->add("<input type=submit name=sClear value=' Clear Vote   ' class=votebutton>");
     $m->add("<input type=submit name=sVote value='Vote for App' class=votebutton>");
     
-    $m->addmisc("<input type=hidden name=iAppId value={$aClean['iAppId']}>");
+    $m->addmisc("<input type=hidden name=iVersionId value={$aClean['iVersionId']}>");
     
     $m->add("View Results", BASE."votestats.php");
     $m->add("Voting Help", BASE."help/?sTopic=voting");
@@ -149,10 +152,11 @@ function vote_update($vars)
     if(!$_SESSION['current']->isLoggedIn())
         util_show_error_page_and_exit("You must be logged in to vote");
 
-    if( !is_numeric($vars['iAppId']) OR !is_numeric($vars['iSlot']))
+    if( !is_numeric($vars['iVersionId']) OR !is_numeric($vars['iSlot']))
     {
-        if(is_numeric($vars['iAppId']))
-           util_redirect_and_exit(apidb_fullurl("appview.php?iAppId=".$vars['iAppId']));
+        if(is_numeric($vars['iVersionId']))
+           util_redirect_and_exit(apidb_fullurl(
+               "appview.php?iVersionId=".$vars['iVersionId']));
         else
             util_redirect_and_exit(apidb_fullurl("index.php"));
 
@@ -161,8 +165,8 @@ function vote_update($vars)
     
     if($vars["sVote"])
     {
-        addmsg("Registered vote for App #".$vars['iAppId'], "green");
-        vote_add($vars['iAppId'], $vars['iSlot']);
+        addmsg("Registered vote for App #".$vars['iVersionId'], "green");
+        vote_add($vars['iVersionId'], $vars['iSlot']);
     } else if($vars['sClear'])
     {
         /* see if we have a vote in this slot, if we don't there is */
@@ -170,11 +174,12 @@ function vote_update($vars)
         if(is_vote_in_slot($vars['iSlot']))
         {
             vote_remove($vars['iSlot']);
-            addmsg("Removed vote for App #".$vars['iAppId'], "green");
+            addmsg("Removed vote for App #".$vars['iVersionId'], "green");
         }
     }
 
-    util_redirect_and_exit(apidb_fullurl("appview.php?iAppId=".$vars['iAppId']));
+    util_redirect_and_exit(apidb_fullurl(
+        "appview.php?iVersionId=".$vars['iVersionId']));
 }
 
 // tell us if there is a vote in a given slot so we don't

@@ -613,10 +613,6 @@ class Application {
         if(!$_SESSION['current']->canViewApplication($this))
             util_show_error_page_and_exit("Something went wrong with the application or version id");
 
-        // show Vote Menu
-        if($_SESSION['current']->isLoggedIn())
-            apidb_sidebar_add("vote_menu");
-
         // header
         apidb_header("Viewing App - ".$this->sName);
 
@@ -640,12 +636,10 @@ class Application {
         echo "        <tr class=color0 valign=top><td width=\"100\"><b>Name</b></td><td width='100%'> ".$this->sName." </td>\n";
         echo "        <tr class=\"color1\"><td><b>Vendor</b></td><td> ".
             "        <a href='vendorview.php?iVendorId=$oVendor->iVendorId'> ".$oVendor->sName." </a> &nbsp;\n";
-        echo "        <tr class=\"color0\"><td><b>Votes</b></td><td> ";
-        echo vote_count_app_total($this->iAppId);
         echo "        </td></tr>\n";
     
         // main URL
-        echo "        <tr class=\"color1\"><td><b>URL</b></td><td>".$appLinkURL."</td></tr>\n";
+        echo "        <tr class=\"color0\"><td><b>URL</b></td><td>".$appLinkURL."</td></tr>\n";
 
         // optional links
         if($sUrls = url::display(NULL, $this->iAppId))

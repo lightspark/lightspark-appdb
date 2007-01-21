@@ -152,11 +152,11 @@ create table appData (
 create table appVotes (
 	id		int not null auto_increment,
 	time		timestamp,
-	appId		int not null,
+	versionId	int not null,
 	userId		int not null,
 	slot		int not null,
 	key(id),
-	index(appId),
+	index(versionId),
 	index(userId)
 );
 

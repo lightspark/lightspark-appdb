@@ -279,11 +279,11 @@ function outputTopXRowAppsFromRating($rating, $iNum_apps)
     /* them again when filling in any empty spots in the list */
     $appIdArray = array();
 
-    $sQuery = "SELECT appVotes.appId AS appId, appVersion.versionId, COUNT( appVotes.appId ) AS c
+    $sQuery = "SELECT appVotes.versionId, COUNT( appVotes.versionId ) AS c
            FROM appVotes, appVersion
            WHERE appVersion.maintainer_rating = '?'
-           AND appVersion.appId = appVotes.appId
-           GROUP BY appVotes.appId
+           AND appVersion.versionId = appVotes.versionId
+           GROUP BY appVotes.versionId
            ORDER BY c DESC
            LIMIT ?";
     $hResult = query_parameters($sQuery, $rating, $iNum_apps);
@@ -298,7 +298,7 @@ function outputTopXRowAppsFromRating($rating, $iNum_apps)
     if(!$iNum_apps) return;
 
     /* if we have any empty spots in the list, get these from applications with images */
-    $sQuery = "SELECT DISTINCT appVersion.appId as appId, appVersion.versionId
+    $sQuery = "SELECT DISTINCT appVersion.versionId
            FROM appVersion, appData
            WHERE appVersion.maintainer_rating = '$rating'
            AND appVersion.versionId = appData.versionId
@@ -307,7 +307,7 @@ function outputTopXRowAppsFromRating($rating, $iNum_apps)
 
     /* make sure we exclude any apps we've already output */
     foreach($appIdArray as $key=>$value)
-        $sQuery.="AND appVersion.appId != '".$value."' ";
+        $sQuery.="AND appVersion.versionId != '".$value."' ";
 
     $sQuery.=" LIMIT $iNum_apps";
 
