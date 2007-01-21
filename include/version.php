@@ -200,7 +200,7 @@ class Version {
                                       $this->sLicense, $this->iVersionId))
             return FALSE;
 
-            $sWhatChanged .= "License was changed from $oVersion->sLicense to".
+            $sWhatChanged .= "License was changed from $oVersion->sLicense to ".
                              "$this->sLicense.\n\n";
         }
 
