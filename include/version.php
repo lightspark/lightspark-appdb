@@ -609,7 +609,7 @@ class Version {
         // version license
         echo html_tr(array(
             array("<b>License</b>", "class=\"color0\""),
-            $this->MakeLicenseList()));
+            $this->makeLicenseList()));
 
         // version description
         echo '<tr valign=top><td class=color0><b>Version description</b></td>',"\n";
@@ -1083,8 +1083,11 @@ class Version {
         return $sResult;
     }
 
-    function MakeLicenseList()
+    function makeLicenseList($sLicense = NULL)
     {
+        if(!$sLicense)
+            $sLicense = $this->sLicense;
+
         $sReturn = "<select name=\"sLicense\">\n";
         $sReturn .= "<option value=\"\">Choose . . .</option>\n";
         $aLicense = array(LICENSE_RETAIL, LICENSE_OPENSOURCE, LICENSE_FREEWARE,
@@ -1093,8 +1096,10 @@ class Version {
 
         for($i = 0; $i < $iMax; $i++)
         {
-            if($aLicense[$i] == $this->sLicense)
+            if($aLicense[$i] == $sLicense)
                 $sSelected = " selected=\"selected\"";
+            else
+                $sSelected = "";
 
                 $sReturn .= "<option value=\"$aLicense[$i]\"$sSelected>".
                             "$aLicense[$i]</option>\n";
