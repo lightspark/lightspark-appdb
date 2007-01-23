@@ -444,12 +444,12 @@ class User {
          {
              if($queryAppFamily)
              {
-                 $sQuery = "SELECT appFamily.appId FROM appFamily WHERE queued = 'true'";
+                 $sQuery = "SELECT appFamily.appId FROM appFamily WHERE queued = 'true' ORDER BY appId";
              } else
              {
                  $sQuery = "SELECT appVersion.versionId FROM appVersion, appFamily
                             WHERE appFamily.appId = appVersion.appId 
-                            AND appFamily.queued = 'false' AND appVersion.queued = 'true'";
+                            AND appFamily.queued = 'false' AND appVersion.queued = 'true' ORDER BY versionId";
              }
          } else
          {
