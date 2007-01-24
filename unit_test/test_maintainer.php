@@ -305,6 +305,38 @@ function test_superMaintainerOnAppSubmit()
     return true;
 }
 
+/* deleteMaintainersForVersion() should fail if versionId = 0
+   Otherwise it will delete all super maintainers */
+function test_maintainer_deleteMaintainersForVersion()
+{
+    test_start(__FUNCTION__);
+
+    global $test_email, $test_password;
+
+    $oUser = new user();
+    $oUser->login($test_email, $test_password);
+
+    $oMaintainer = new maintainer();
+    $oMaintainer->iAppId = 655000;
+    $oMaintainer->iVersionId = 0;
+    $oMaintainer->iUserId = 655000;
+    $oMaintainer->sMaintainReason = "Silly reason";
+    $oMaintainer->bSuperMaintainer = 1;
+
+    $oMaintainer->create();
+
+    $oVersion = new version();
+    $oVersion->iVersionId = 0;
+
+    if(maintainer::deleteMaintainersForVersion($oVersion) !== FALSE)
+    {
+        echo "Got success, but this should fail.\n";
+        return FALSE;
+    }
+
+    return TRUE;
+}
+
 if(!test_maintainer_getMaintainerCountForUser())
     echo "test_maintainer_getMaintainerCountForUser() failed!\n";
 else
@@ -326,5 +358,10 @@ if(!test_superMaintainerOnAppSubmit())
     echo "test_superMaintainerOnAppSubmit() failed!\n";
 else
     echo "test_superMaintainerOnAppSubmit() passed\n";
+
+if(!test_maintainer_deleteMaintainersForVersion())
+    echo "test_maintainer_deleteMaintainersForVersion() failed!\n";
+else
+    echo "test_maintainer_deleteMaintianersForVersion() passed\n";
 
 ?>
