@@ -14,8 +14,7 @@ function test_url_update()
     $bSuccess = true; // default to success until we detect failure
 
     /* Log in */
-    $oUser = new User();
-    if($retval = $oUser->login($test_email, $test_password) != SUCCESS)
+    if(!$oUser = create_and_login_user())
     {
         echo "Received '$retval' instead of SUCCESS('".SUCCESS."').";
         return FALSE;
@@ -61,6 +60,7 @@ function test_url_update()
     }
 
     $oUrl->delete(TRUE);
+    $oUser->delete();
 
     return $bSuccess;
 }

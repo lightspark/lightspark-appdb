@@ -197,6 +197,8 @@ function test_application_getWithRating()
         return false;
     }
     
+    delete_app_and_user($oApp, $oUser);
+
     return true;
 } 
 

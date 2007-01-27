@@ -302,6 +302,8 @@ function test_superMaintainerOnAppSubmit()
 
     Maintainer::deleteMaintainer($oUser, $iAppId);
 
+    $oApp->delete();
+
     return true;
 }
 
