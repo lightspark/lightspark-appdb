@@ -1121,6 +1121,20 @@ class Version {
         return $sReturn;
     }
 
+    /* In order to prevent MySQL injections.  Returns matched license */
+    function checkLicense($sLicense)
+    {
+        $aLicense = array(LICENSE_RETAIL, LICENSE_OPENSOURCE, LICENSE_FREEWARE,
+                          LICENSE_DEMO, LICENSE_SHAREWARE);
+
+        foreach($aLicense as $sElement)
+        {
+            if($sLicense == $sElement)
+                return $sElement;
+        }
+
+        return FALSE;
+    }
 }
 
 ?>

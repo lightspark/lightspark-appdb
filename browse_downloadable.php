@@ -9,6 +9,9 @@ require(BASE."include/incl.php");
 
 apidb_header("Browse Downloadable Applications");
 
+/* Match specific license? */
+$sLicense = version::checkLicense($aClean['sLicense']);
+
 /* Set default values */
 if(!$aClean['iNumVersions'] || $aClean['iNumVersions'] > 200 || $aClean['iNumVersions'] < 0)
     $aClean['iNumVersions'] = 25;
@@ -17,12 +20,19 @@ if(!$aClean['iPage'])
     $aClean['iPage'] = 1;
 
 /* Count the possible matches */
-$hResult = query_parameters("SELECT DISTINCT appFamily.appName,
+$sQuery = "SELECT DISTINCT appFamily.appName,
     appVersion.versionName, appVersion.versionId, appFamily.description
         FROM appFamily, appVersion, appData
             WHERE appData.type = '?' AND appData.versionId = appVersion.versionId
-            AND appFamily.appId = appVersion.appId",
-                    "downloadurl");
+            AND appFamily.appId = appVersion.appId";
+
+if(!$sLicense)
+    $hResult = query_parameters($sQuery, "downloadurl");
+else
+{
+    $sQuery .= " AND license = '?'";
+    $hResult = query_parameters($sQuery, "downloadurl", $sLicense);
+}
 
 if($hResult && mysql_num_rows($hResult))
     $num = mysql_num_rows($hResult);
@@ -58,16 +68,38 @@ foreach($numVersionsArray as $i)
 
 echo "</select>\n";
 
+echo "<b>Filter by license</b>\n";
+$oVersion = new Version();
+echo $oVersion->makeLicenseList($sLicense);
+
 echo " <input type=\"submit\" value=\"Refresh\" />\n";
 echo "</form></div>\n<br />\n";
 
-$hResult = query_parameters("SELECT DISTINCT appFamily.appName,
-    appVersion.versionName, appVersion.versionId, appFamily.description
-        FROM appFamily, appVersion, appData
-            WHERE appData.type = '?' AND appData.versionId = appVersion.versionId
-            AND appFamily.appId = appVersion.appId
-                ORDER BY appFamily.appName LIMIT ?, ?",
-                    "downloadurl", $iLimitLower, $aClean['iNumVersions']);
+if(!$num)
+{
+    echo "<div align=\"center\"><font color=\"red\">No matches found</font></div>\n";
+    echo html_frame_end("&nbsp;");
+    exit;
+}
+
+$sQuery = "SELECT DISTINCT appFamily.appName,
+        appVersion.versionName, appVersion.versionId, appFamily.description
+            FROM appFamily, appVersion, appData
+                WHERE appData.type = '?' AND appData.versionId = appVersion.versionId
+                AND appFamily.appId = appVersion.appId ";
+
+if(!$sLicense)
+{
+    $sQuery .= "ORDER BY appFamily.appName LIMIT ?, ?";
+    $hResult = query_parameters($sQuery, "downloadurl", $iLimitLower,
+                                $aClean['iNumVersions']);
+} else
+{
+    $sQuery .= "AND license = '?' ORDER BY appFamily.appName LIMIT ?, ?";
+    $hResult = query_parameters($sQuery,
+                        "downloadurl", $sLicense, $iLimitLower,
+                        $aClean['iNumVersions']);
+}
 
 if($hResult && mysql_num_rows($hResult))
 {
