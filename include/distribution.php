@@ -7,7 +7,7 @@ require_once(BASE."include/util.php");
 
 // Test class for handling Distributions.
 
-class distribution{
+class distribution {
     var $iDistributionId;
     var $sName;
     var $sDescription;
@@ -421,6 +421,76 @@ class distribution{
                 echo "<option value=$value>$name\n";
         }
         echo "</select>\n";
+    }
+
+    function ObjectOutputHeader($sClass = "")
+    {
+        $aCells = array(
+            "Distribution name",
+            "Distribution url",
+            array("Linked Tests", "align=\"right\""));
+
+        if(distribution::canEdit())
+            $aCells[3] = array("Action", "align=\"center\"");
+
+        echo html_tr($aCells, $sClass);
+    }
+
+    function ObjectGetEntries($bQueued)
+    {
+        if($bQueued)
+        {
+            if(distribution::canEdit())
+            {
+                /* Only users with edit privileges are allowed to view queued
+                   items, so return NULL in that case */
+                $sQuery = "SELECT distributionId FROM distributions
+                               WHERE queued = '?' ORDER BY name";
+                return query_parameters($sQuery, $bQueued ? "true" : "false");
+            } else
+                return NULL;
+        } else
+        {
+            $sQuery = "SELECT distributionId FROM distributions
+                           WHERE queued = '?' ORDER BY name";
+            return query_parameters($sQuery, "false");
+        }
+    }
+
+    function ObjectGetInstanceFromRow($oRow)
+    {
+        return new distribution($oRow->distributionId);
+    }
+
+    function display($sClass = "")
+    {
+        $aCells = array(
+             "<a href=\"".BASE."distributionView.php?iDistributionId=".
+             $this->iDistributionId."\">$this->sName.</a>",
+             "<a href=\"$this->sUrl\">$this->sUrl</a>",
+             array(sizeof($this->aTestingIds), "align=\"right\""));
+
+        if($this->canEdit())
+        {
+            $aCells[3] = array(
+                "[<a href='".BASE."admin/editDistribution.php?iDistributionId=".
+                $this->iDistributionId."'>edit</a>]".
+                (!sizeof($this->aTestingIds)) ?
+                " &nbsp; [<a href='".$_SERVER['PHP_SELF']."?sSub=delete&".
+                "iDistributionId=$this->iDistributionId'>delete</a>]" : "",
+                "align=\"center\"");
+        }
+
+        echo html_tr($aCells, $sClass);
+    }
+
+    // Whether the user has permission to edit distributions
+    function canEdit()
+    {
+        if($_SESSION['current']->hasPriv("admin"))
+            return TRUE;
+
+        return FALSE;
     }
 }
 
