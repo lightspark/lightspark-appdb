@@ -520,7 +520,7 @@ class Application {
 
         // vendor name
         echo '<tr valign=top><td class="color0"><b>Vendor</b></td>',"\n";
-        echo '<td><input size="20" type=text name="sAppVendorName" value="'.$sVendorName.'"></td></tr>',"\n";
+        echo '<td><input size="20" type=text name="sVendorName" value="'.$sVendorName.'"></td></tr>',"\n";
 
         // alt vendor
         $x = new TableVE("view");
@@ -583,7 +583,7 @@ class Application {
             $errors .= "<li>Please enter an application name.</li>\n";
 
         // No vendor entered, and nothing in the list is selected
-        if (empty($aValues['sAppVendorName']) && !$aValues['iAppVendorId'])
+        if (empty($aValues['sVendorName']) && !$aValues['iAppVendorId'])
             $errors .= "<li>Please enter a vendor.</li>\n";
 
         if (empty($aValues['shAppDescription']))

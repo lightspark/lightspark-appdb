@@ -9,7 +9,8 @@ if(!$_SESSION['current']->hasPriv("admin"))
 $oVendor = new Vendor($aClean['iVendorId']);
 if($aClean['sSubmit'])
 {
-    $oVendor->update($aClean['sName'],$aClean['sWebpage']);
+    $oVendor->getOutputEditorValues($aClean);
+    $oVendor->update();
     util_redirect_and_exit(apidb_fullurl("vendorview.php"));
 }
 else

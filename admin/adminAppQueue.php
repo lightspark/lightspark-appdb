@@ -180,10 +180,12 @@ if ($aClean['sSub'])
             $oApp = new Application($aClean['iAppId']);
             $oApp->GetOutputEditorValues($aClean); // load the values from $aClean
             // add new vendor
-            if($aClean['sAppVendorName'] and !$aClean['iAppVendorId'])
+            if($aClean['sVendorName'] and !$aClean['iAppVendorId'])
             {
                 $oVendor = new Vendor();
-                $oVendor->create($aClean['sAppVendorName'],$aClean['sAppWebpage']);
+                $oVendor->getOutputEditorValues($aClean);
+                $oVendor->sWebpage = $aClean['sAppWebpage'];
+                $oVendor->create();
                 $oApp->iVendorId = $oVendor->iVendorId;
             }
             $oApp->update(true);

@@ -54,10 +54,11 @@ class Vendor {
     /**
      * Creates a new vendor.
      */
-    function create($sName=null, $sWebpage=null)
+    function create()
     {
         $hResult = query_parameters("INSERT INTO vendor (vendorName, vendorURL) ".
-                                    "VALUES ('?', '?')", $sName, $sWebpage);
+                                    "VALUES ('?', '?')",
+                                        $this->sName, $this->sWebpage);
         if($hResult)
         {
             $this->iVendorId = mysql_insert_id();
@@ -76,23 +77,23 @@ class Vendor {
      * Update vendor.
      * Returns true on success and false on failure.
      */
-    function update($sName=null, $sWebpage=null)
+    function update()
     {
         if(!$this->iVendorId)
-            return $this->create($sName, $sWebpage);
+            return $this->create();
 
-        if($sName)
+        if($this->sName)
         {
             if (!query_parameters("UPDATE vendor SET vendorName = '?' WHERE vendorId = '?'",
-                                  $sName, $this->iVendorId))
+                                  $this->sName, $this->iVendorId))
                 return false;
             $this->sName = $sName;
-        }     
+        }
 
-        if($sWebpage)
+        if($this->sWebpage)
         {
             if (!query_parameters("UPDATE vendor SET vendorURL = '?' WHERE vendorId = '?'",
-                                  $sWebpage, $this->iVendorId))
+                                  $this->sWebpage, $this->iVendorId))
                 return false;
             $this->sWebpage = $sWebpage;
         }
@@ -100,7 +101,7 @@ class Vendor {
     }
 
 
-    /**    
+    /**
      * Deletes the vendor from the database. 
      */
     function delete($bSilent=false)
@@ -113,29 +114,45 @@ class Vendor {
             $sQuery = "DELETE FROM vendor 
                        WHERE vendorId = '?' 
                        LIMIT 1";
-            query_parameters($sQuery, $this->iVendorId);
-            addmsg("The vendor has been deleted.", "green");
+            if(query_parameters($sQuery, $this->iVendorId))
+            {
+                addmsg("The vendor has been deleted.", "green");
+                return TRUE;
+            }
+
+            return FALSE;
         }
     }
 
     function outputEditor()
     {
-        echo html_frame_start("Vendor Form", "90%", "", 0);
         echo "<table width='100%' border=0 cellpadding=2 cellspacing=0>\n";
 
         // Name
         echo '<tr valign=top><td class="color1" width="20%"><b>Vendor Name</b></td>',"\n";
-        echo '<td class="color0"><input type=text name="sName" value="'.$this->sName.'" size="50"></td></tr>',"\n";
+        echo '<td class="color0"><input type=text name="sVendorName" value="'.$this->sName.'" size="50"></td></tr>',"\n";
         // Url
         echo '<tr valign=top><td class="color1"><b>Vendor Url</b></td>',"\n";
-        echo '<td class="color0"><input type=text name="sWebpage" value="'.$this->sWebpage.'" size="50"></td></tr>',"\n";
+        echo '<td class="color0"><input type=text name="sVendorWebpage" value="'.$this->sWebpage.'" size="50"></td></tr>',"\n";
 
         echo  '<input type="hidden" name="iVendorId" value="'.$this->iVendorId.'">',"\n";
 
         echo "</table>\n";
-        echo html_frame_end();
     }
 
+    function canEdit()
+    {
+        if($_SESSION['current']->hasPriv("admin"))
+            return TRUE;
+        else
+            return FALSE;
+    }
+
+   function getOutputEditorValues($aClean)
+    {
+        $this->sName = $aClean['sVendorName'];
+        $this->sWebpage = $aClean['sVendorWebpage'];
+    }
 }
 
 /* Get the total number of Vendors in the database */

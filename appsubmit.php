@@ -12,7 +12,7 @@
  *  - iAppId, application identifier
  *  - iVersionId, version identifier
  *  - iTestingId,
- *  - sAppVendorName,
+ *  - sVendorName,
  *  - iVendorId,
  *  - sAppWebpage,
  *  - sAppKeywords,
@@ -172,18 +172,21 @@ if ($aClean['sSub'])
 
             if(empty($errors))
             {
-                if($aClean['sAppVendorName'])
+                if($aClean['sVendorName'])
                 {
                     $aClean['iVendorId']="";
                     //FIXME: fix this when we fix vendor submission
                     if($_SESSION['current']->hasPriv("admin"))
                     {
                         $oVendor = new Vendor();
-                        $oVendor->create($aClean['sAppVendorName'],$aClean['sAppWebpage']);
+                        $oVendor->getOutputEditorValues($aClean);
+                        $oVendor->sWebpage = $aClean['sAppWebpage'];
+                        $oVendor->create();
+                        $oApp->iVendorId = $oVendor->iVendorId;
                     }
                 }
                 //FIXME: remove this when we fix vendor submission
-                $oApp->sKeywords = $aClean['sAppKeywords']." *** ".$aClean['sAppVendorName'];
+                $oApp->sKeywords = $aClean['sAppKeywords']." *** ".$aClean['sVendorName'];
                 if($oApp->iAppId)
                 {
                     $oApp->update();
@@ -315,7 +318,7 @@ if ($aClean['sSub'])
             if(!$iVendorId)
             {
                 $sVendor = get_vendor_from_keywords($oApp->sKeywords);
-                $sQuery = "SELECT vendorId FROM vendor WHERE vendorname = '".$aClean['sAppVendorName']."';";
+                $sQuery = "SELECT vendorId FROM vendor WHERE vendorname = '".$aClean['sVendorName']."';";
                 $hResult = query_appdb($sQuery);
                 if($hResult)
                 {
@@ -328,7 +331,7 @@ if ($aClean['sSub'])
             if(!$iVendorId)
             {
                 $hResult = query_parameters("select * from vendor where vendorname like '%?%'",
-                                        $aClean['sAppVendorName']);
+                                        $aClean['sVendorName']);
                 if($hResult)
                 {
                     $oRow = mysql_fetch_object($hResult);
@@ -337,7 +340,7 @@ if ($aClean['sSub'])
             }
             //vendor field
             if($iVendorId)
-                $aClean['sAppVendorName'] = "";
+                $aClean['sVendorName'] = "";
         } else //app version
         { 
             if($oVersion->iVersionId)
@@ -371,7 +374,7 @@ if ($aClean['sSub'])
             $oTest->sTestedDate = date('Y-m-d H:i:s');
 
         if($aClean['sAppType'] == 'application')
-            $oApp->outputEditor($aClean['sAppVendorName']);
+            $oApp->outputEditor($aClean['sVendorName']);
 
         $oVersion->outputEditor(false, false);
 
