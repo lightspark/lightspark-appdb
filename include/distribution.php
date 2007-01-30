@@ -474,12 +474,14 @@ class distribution {
 
         if($this->canEdit())
         {
+            if(!sizeof($this->aTestingIds))
+            {
+                $sDelete = " &nbsp; [<a href='".$_SERVER['PHP_SELF']."?sSub=delete&".
+                "iDistributionId=$this->iDistributionId'>delete</a>]";
+            }
             $aCells[3] = array(
                 "[<a href='".BASE."admin/editDistribution.php?iDistributionId=".
-                $this->iDistributionId."'>edit</a>]".
-                (!sizeof($this->aTestingIds)) ?
-                " &nbsp; [<a href='".$_SERVER['PHP_SELF']."?sSub=delete&".
-                "iDistributionId=$this->iDistributionId'>delete</a>]" : "",
+                $this->iDistributionId."'>edit</a>]$sDelete",
                 "align=\"center\"");
         }
 
