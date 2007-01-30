@@ -425,7 +425,7 @@ class distribution {
         echo "</select>\n";
     }
 
-    function ObjectOutputHeader($sClass = "")
+    function objectOutputHeader($sClass = "")
     {
         $aCells = array(
             "Distribution name",
@@ -438,7 +438,7 @@ class distribution {
         echo html_tr($aCells, $sClass);
     }
 
-    function ObjectGetEntries($bQueued)
+    function objectGetEntries($bQueued)
     {
         if($bQueued)
         {
