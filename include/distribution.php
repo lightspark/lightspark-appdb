@@ -162,6 +162,8 @@ class distribution {
             $this->SendNotificationMail("delete");
 
         $this->mailSubmitter("delete");
+
+        return true;
     }
 
 
