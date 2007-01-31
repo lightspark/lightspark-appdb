@@ -33,28 +33,7 @@ if($oVendor->iVendorId)
     apidb_header("View Vendor");
     echo html_frame_start("Vendor Information",500);
 
-    echo 'Vendor Name: '.$oVendor->sName,"\n";
-    if($_SESSION['current']->hasPriv("admin"))
-    {
-        echo ' [<a href="'.apidb_fullurl("admin/editVendor.php").'?iVendorId='.$oVendor->iVendorId.'">edit</a>]',"\n";
-    }
-
-    echo '<br />',"\n";
-    if ($oVendor->sWebpage)
-        echo 'Vendor URL:  <a href="'.$oVendor->sWebpage.'">'.$oVendor->sWebpage.'</a> <br />',"\n";
-
-
-    if($oVendor->aApplicationsIds)
-    {
-        echo '<br />Applications by '.$oVendor->sName.'<br /><ol>',"\n";
-        foreach($oVendor->aApplicationsIds as $iAppId)
-        {
-            $oApp  = new Application($iAppId);
-            echo '<li> <a href="appview.php?iAppId='.$oApp->iAppId.'">'.$oApp->sName.'</a> </li>',"\n";
-        }
-        echo '</ol>',"\n";
-    }
-
+    $oVendor->display();
 
     echo html_frame_end();
     echo html_back_link(1);

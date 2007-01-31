@@ -148,10 +148,37 @@ class Vendor {
             return FALSE;
     }
 
-   function getOutputEditorValues($aClean)
+    function getOutputEditorValues($aClean)
     {
         $this->sName = $aClean['sVendorName'];
         $this->sWebpage = $aClean['sVendorWebpage'];
+    }
+
+    function display()
+    {
+        echo 'Vendor Name: '.$this->sName,"\n";
+        if($this->canEdit())
+        {
+            echo "[<a href=\"".BASE."admin/editVendor.php?iVendorId=$this->iVendorId\">edit</a>]";
+        }
+
+        echo '<br />',"\n";
+        if ($this->sWebpage)
+            echo 'Vendor URL:  <a href="'.$this->sWebpage.'">'.
+                 $this->sWebpage.'</a> <br />',"\n";
+
+
+        if($this->aApplicationsIds)
+        {
+            echo '<br />Applications by '.$this->sName.'<br /><ol>',"\n";
+            foreach($this->aApplicationsIds as $iAppId)
+            {
+                $oApp  = new Application($iAppId);
+                echo '<li> <a href="appview.php?iAppId='.$oApp->iAppId.'">'.
+                     $oApp->sName.'</a> </li>',"\n";
+            }
+            echo '</ol>',"\n";
+        }
     }
 }
 
