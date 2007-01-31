@@ -45,21 +45,13 @@ else
     apidb_header("View Vendors");
 
     //get available vendors
-    $hResult = query_parameters("SELECT vendorId FROM vendor ORDER BY vendorName, vendorId;");
+    $hResult = vendor::objectGetEntries(false);
 
     // show vendorlist
     echo "<table width='100%' border=0 cellpadding=3 cellspacing=0>\n\n";
 
-    echo '<tr class="color4">',"\n";
-    echo '<td>Vendor name</td>',"\n";
-    echo '<td>Vendor\'s Web Page</td>',"\n";
-    echo '<td align="right">linked Apps</td>',"\n";
-    if ($_SESSION['current']->hasPriv("admin"))
-    {
-        echo '<td align="center">Action</td>',"\n";
-    }
-    echo '</tr>',"\n";
-        
+    vendor::objectOutputHeader("color4");
+
     $c = 1;
     while($oRow = mysql_fetch_object($hResult))
     {

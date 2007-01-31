@@ -140,6 +140,34 @@ class Vendor {
         echo "</table>\n";
     }
 
+    function objectGetEntries($bQueued)
+    {
+        /* Vendor queueing is not implemented yet */
+        if($bQueued)
+            return NULL;
+
+        $hResult = query_parameters("SELECT * FROM vendor
+                   ORDER BY vendorName");
+
+        if(!$hResult)
+            return FALSE;
+
+        return $hResult;
+    }
+
+    function objectOutputHeader($sClass = "")
+    {
+        $sCells = array(
+            "Name",
+            "Website",
+            array("Linked apps", "align=\"right\""));
+
+        if(vendor::canEdit())
+            $sCells[sizeof($sCells)] = "Action";
+
+        echo html_tr($sCells, $sClass);
+    }
+
     function canEdit()
     {
         if($_SESSION['current']->hasPriv("admin"))
