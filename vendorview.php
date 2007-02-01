@@ -52,25 +52,10 @@ else
 
     vendor::objectOutputHeader("color4");
 
-    $c = 1;
-    while($oRow = mysql_fetch_object($hResult))
+    for($c = 0; $oRow = mysql_fetch_object($hResult); $c++)
     {
-        if ($c % 2 == 1) { $bgcolor = 'color0'; } else { $bgcolor = 'color1'; }
-        $oVendor = new Vendor($oRow->vendorId);
-        echo '<tr class="'.$bgcolor.'">',"\n";
-        echo '<td><a href="'.BASE.'vendorview.php?iVendorId='.$oVendor->iVendorId.'">'.$oVendor->sName.'</a></td>',"\n";
-        echo '<td><a href="'.$oVendor->sWebpage.'">'.substr($oVendor->sWebpage,0,30).'</a></td>',"\n";
-        echo '<td align="right">'.sizeof($oVendor->aApplicationsIds).'</td>',"\n";
-        if ($_SESSION['current']->hasPriv("admin"))
-        {
-            echo '<td align="center">',"\n";
-            echo '[<a href="'.BASE.'admin/editVendor.php?iVendorId='.$oVendor->iVendorId.'">edit</a>]',"\n";
-            if(!sizeof($oVendor->aApplicationsIds)) 
-                echo '&nbsp[<a href="'.$_SERVER['PHP_SELF'].'?sSub=delete&iVendorId='.$oVendor->iVendorId.'">delete</a>]',"\n";
-            echo '</td>',"\n";
-        }
-        echo '</tr>',"\n";
-        $c++;
+        $oVendor = vendor::objectGetInstanceFromRow($oRow);
+        $oVendor->objectOutputTableRow(($c % 2) ? "color0" : "color1");
     }
 
     echo '<tr><td>',"\n";

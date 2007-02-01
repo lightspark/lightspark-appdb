@@ -15,20 +15,25 @@ class Vendor {
     /**    
      * constructor, fetches the data.
      */
-    function Vendor($iVendorId = null)
+    function Vendor($iVendorId = null, $oRow = null)
     {
         // we are working on an existing vendor
         if(is_numeric($iVendorId))
         {
-            /*
-             * We fetch the data related to this vendor.
-             */
-            $sQuery = "SELECT *
-                       FROM vendor
-                       WHERE vendorId = '?'";
-            if($hResult = query_parameters($sQuery, $iVendorId))
+            if(!$oRow)
             {
-                $oRow = mysql_fetch_object($hResult);
+                /*
+                 * We fetch the data related to this vendor.
+                 */
+                $sQuery = "SELECT *
+                           FROM vendor
+                           WHERE vendorId = '?'";
+                if($hResult = query_parameters($sQuery, $iVendorId))
+                    $oRow = mysql_fetch_object($hResult);
+            }
+
+            if($oRow)
+            {
                 $this->iVendorId = $iVendorId;
                 $this->sName = $oRow->vendorName;
                 $this->sWebpage = $oRow->vendorURL;
@@ -140,14 +145,18 @@ class Vendor {
         echo "</table>\n";
     }
 
-    function objectGetEntries($bQueued)
+    function objectGetEntries($bQueued, $iRows = 0, $iStart = 0)
     {
         /* Vendor queueing is not implemented yet */
         if($bQueued)
             return NULL;
 
+        if(!$iRows)
+            $iRows = getNumberOfVendors();
+
         $hResult = query_parameters("SELECT * FROM vendor
-                   ORDER BY vendorName");
+                       ORDER BY vendorName LIMIT ?,?",
+                           $iStart, $iRows);
 
         if(!$hResult)
             return FALSE;
@@ -166,6 +175,33 @@ class Vendor {
             $sCells[sizeof($sCells)] = "Action";
 
         echo html_tr($sCells, $sClass);
+    }
+
+    function objectGetInstanceFromRow($oRow)
+    {
+        return new vendor($oRow->vendorId, $oRow);
+    }
+
+    function objectOutputTableRow($sClass = "")
+    {
+        $aCells = array(
+            "<a href=\"".BASE."vendorview.php?iVendorId=$this->iVendorId\">".
+            "$this->sName</a>",
+            "<a href=\"$this->sWebpage\">$this->sWebpage</a>",
+            array(sizeof($this->aApplicationsIds), "align=\"right\""));
+
+        if($this->canEdit())
+        {
+            if(!sizeof($this->aApplicationsIds))
+                $sDelete = " &nbsp; [<a href=\"".BASE."vendorview.php?sSub=delete&".
+                "iVendorId=$this->iVendorId\">".
+                "delete</a>]";
+
+            $aCells[sizeof($aCells)] = "[<a href=\"".BASE."admin/editVendor.php?".
+            "iVendorId=$this->iVendorId\">edit</a>]$sDelete";
+        }
+
+        echo html_tr($aCells, $sClass);
     }
 
     function canEdit()
