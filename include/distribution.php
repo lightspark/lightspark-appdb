@@ -18,31 +18,30 @@ class distribution {
     var $aTestingIds;
 
      // constructor, fetches the data.
-    function distribution($iDistributionId = null)
+    function distribution($iDistributionId = null, $oRow = null)
     {
         // we are working on an existing distribution.
         if(is_numeric($iDistributionId))
         {
             // We fetch the data related to this distribution.
-            if(!$this->$iDistributionId)
+            if(!$oRow)
             {
                 $sQuery = "SELECT *
                            FROM distributions
                            WHERE distributionId = '?'";
                 if($hResult = query_parameters($sQuery, $iDistributionId))
-                {
                     $oRow = mysql_fetch_object($hResult);
-                    if($oRow)
-                    {
-                        $this->iDistributionId = $iDistributionId;
-                        $this->sName = $oRow->name;
-                        $this->sDescription = $oRow->description;
-                        $this->sUrl = $oRow->url;
-                        $this->sSubmitTime = $oRow->submitTime;
-                        $this->iSubmitterId = $oRow->submitterId;
-                        $this->sQueued = $oRow->queued;
-                    }
-                }
+            }
+
+            if($oRow)
+            {
+                $this->iDistributionId = $iDistributionId;
+                $this->sName = $oRow->name;
+                $this->sDescription = $oRow->description;
+                $this->sUrl = $oRow->url;
+                $this->sSubmitTime = $oRow->submitTime;
+                $this->iSubmitterId = $oRow->submitterId;
+                $this->sQueued = $oRow->queued;
             }
 
             /*
@@ -438,30 +437,26 @@ class distribution {
         echo html_tr($aCells, $sClass);
     }
 
-    function objectGetEntries($bQueued)
+    function objectGetEntries($bQueued, $iRows = 0, $iStart = 0)
     {
-        if($bQueued)
-        {
-            if(distribution::canEdit())
-            {
-                /* Only users with edit privileges are allowed to view queued
-                   items, so return NULL in that case */
-                $sQuery = "SELECT distributionId FROM distributions
-                               WHERE queued = '?' ORDER BY name";
-                return query_parameters($sQuery, $bQueued ? "true" : "false");
-            } else
-                return NULL;
-        } else
-        {
-            $sQuery = "SELECT distributionId FROM distributions
-                           WHERE queued = '?' ORDER BY name";
-            return query_parameters($sQuery, "false");
-        }
+        /* Only users with edit privileges are allowed to view queued
+           items, so return NULL in that case */
+        if($bQueued && !distribution::canEdit())
+            return NULL;
+
+        if(!$iRows)
+            $iRows = distribution::getNumberOfDistributions($bQueued);
+
+        $sQuery = "SELECT * FROM distributions
+                       WHERE queued = '?' ORDER BY name LIMIT ?,?";
+
+        return query_parameters($sQuery, $bQueued ? "true" : "false",
+                                $iStart, $iRows);
     }
 
-    function ObjectGetInstanceFromRow($oRow)
+    function objectGetInstanceFromRow($oRow)
     {
-        return new distribution($oRow->distributionId);
+        return new distribution($oRow->distributionId, $oRow);
     }
 
     function objectOutputTableRow($sClass = "")
