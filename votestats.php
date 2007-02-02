@@ -125,8 +125,8 @@ echo '<br />';
 if(empty($aClean['iCategoryId']))
 {
     /* leave out the appFamily.catId = '$aClean['iCategoryId']' */
-    $hResult = query_parameters("SELECT appVotes.versionId, appName, count(userId) as 
-                           count
+    $hResult = query_parameters("SELECT appVotes.versionId, versionName, appName,
+                       count(userId) as count
                            FROM appVotes, appFamily, appVersion
                            WHERE appVotes.versionId = appVersion.versionId AND
                            appFamily.appId = appVersion.appId
@@ -141,8 +141,9 @@ if(empty($aClean['iCategoryId']))
     AND (
     c.catId =29
     OR c.catParent =29)*/
-    
-    $hResult = query_parameters("SELECT v.versionId, f.appName, count( v.versionId ) AS count
+
+    $hResult = query_parameters("SELECT v.versionId, appVersion.versionName,
+              f.appName, count( v.versionId ) AS count
                   FROM appFamily AS f, appCategory AS c, appVotes AS v, appVersion
                   WHERE appVersion.appId = f.appId
                   AND appVersion.versionId = v.versionId
@@ -152,7 +153,8 @@ if(empty($aClean['iCategoryId']))
                         OR c.catParent = '?'
                       )
                   GROUP BY v.versionId
-                  ORDER BY count DESC LIMIT ?", $aClean['iCategoryId'], $aClean['iCategoryId'], $aClean['iTopNumber']);
+                  ORDER BY count DESC LIMIT ?",
+              $aClean['iCategoryId'], $aClean['iCategoryId'], $aClean['iTopNumber']);
 }
 
 if($hResult)
@@ -161,13 +163,15 @@ if($hResult)
     echo html_table_begin("width='100%' align=center");
     echo "<tr class=color4><td><font color=white>Application Name</font></td>\n";
     echo "<td><font color=white>Votes</font></td></tr>\n";
-    
+
     $c = 1;
     while($row = mysql_fetch_object($hResult))
     {
         $bgcolor = ($c % 2) ? "color0" : "color1";
-        $link = "<a href='appview.php?iVersionId=$row->versionId'>$row->appName</a>";
-        echo "<tr class=$bgcolor><td width='90%'>$c. $link </td> <td> $row->count </td></tr>\n";
+        $link = "<a href='appview.php?iVersionId=$row->versionId'>$row->appName ".
+            "$row->versionName</a>";
+        echo "<tr class=$bgcolor><td width='90%'>$c. $link </td> <td> $row->count ".
+            "</td></tr>\n";
         $c++;
     }
 
