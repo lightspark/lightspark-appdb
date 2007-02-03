@@ -61,6 +61,9 @@ class Vendor {
      */
     function create()
     {
+        if(!$this->canEdit())
+            return FALSE;
+
         $hResult = query_parameters("INSERT INTO vendor (vendorName, vendorURL) ".
                                     "VALUES ('?', '?')",
                                         $this->sName, $this->sWebpage);
@@ -182,23 +185,23 @@ class Vendor {
         return new vendor($oRow->vendorId, $oRow);
     }
 
-    function objectOutputTableRow($sClass = "")
+    function objectOutputTableRow($oObject, $sClass = "")
     {
         $aCells = array(
-            "<a href=\"".BASE."vendorview.php?iVendorId=$this->iVendorId\">".
-            "$this->sName</a>",
+            "<a href=\"".$oObject->makeUrl("view", $this->iVendorId,
+            "View Vendor")."\">$this->sName</a>",
             "<a href=\"$this->sWebpage\">$this->sWebpage</a>",
             array(sizeof($this->aApplicationsIds), "align=\"right\""));
 
         if($this->canEdit())
         {
             if(!sizeof($this->aApplicationsIds))
-                $sDelete = " &nbsp; [<a href=\"".BASE."vendorview.php?sSub=delete&".
-                "iVendorId=$this->iVendorId\">".
+                $sDelete = " &nbsp; [<a href=\"".$oObject->makeUrl("delete",
+                $this->iVendorId, "View Vendors")."\">".
                 "delete</a>]";
 
-            $aCells[sizeof($aCells)] = "[<a href=\"".BASE."admin/editVendor.php?".
-            "iVendorId=$this->iVendorId\">edit</a>]$sDelete";
+            $aCells[sizeof($aCells)] = "[<a href=\"".$oObject->makeUrl("edit",
+            $this->iVendorId, "Edit Vendor")."\">edit</a>]$sDelete";
         }
 
         echo html_tr($aCells, $sClass);
@@ -223,7 +226,8 @@ class Vendor {
         echo 'Vendor Name: '.$this->sName,"\n";
         if($this->canEdit())
         {
-            echo "[<a href=\"".BASE."admin/editVendor.php?iVendorId=$this->iVendorId\">edit</a>]";
+            echo "[<a href=\"".$_SERVER['PHP_SELF']."?sClass=vendor&sAction=edit&".
+                 "iId=$this->iVendorId&sTitle=Edit%20Vendor\">edit</a>]";
         }
 
         echo '<br />',"\n";

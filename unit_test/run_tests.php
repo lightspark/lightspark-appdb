@@ -24,4 +24,6 @@ echo "\n";
 include_once("test_filter.php");
 echo "\n";
 include_once("test_url.php");
+echo "\n";
+include_once("test_om_objects.php");
 ?>

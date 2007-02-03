@@ -363,7 +363,6 @@ class distribution {
 
     function outputEditor()
     {
-        echo html_frame_start("Distribution Form", "90%", "", 0);
         echo "<table width='100%' border=0 cellpadding=2 cellspacing=0>\n";
 
         // Name
@@ -376,7 +375,6 @@ class distribution {
         echo  '<input type="hidden" name="iDistributionId" value="'.$this->iDistributionId.'">',"\n";
 
         echo "</table>\n";
-        echo html_frame_end();
     }
 
     /* retrieves values from $_REQUEST that were output by outputEditor() */
@@ -459,11 +457,11 @@ class distribution {
         return new distribution($oRow->distributionId, $oRow);
     }
 
-    function objectOutputTableRow($sClass = "")
+    function objectOutputTableRow($oManager, $sClass)
     {
         $aCells = array(
-             "<a href=\"".BASE."distributionView.php?iDistributionId=".
-             $this->iDistributionId."\">$this->sName.</a>",
+             "<a href=\"".$oManager->makeUrl("view", $this->iDistributionId,
+             "View distribution")."\">$this->sName.</a>",
              "<a href=\"$this->sUrl\">$this->sUrl</a>",
              array(sizeof($this->aTestingIds), "align=\"right\""));
 
@@ -471,12 +469,12 @@ class distribution {
         {
             if(!sizeof($this->aTestingIds))
             {
-                $sDelete = " &nbsp; [<a href='".$_SERVER['PHP_SELF']."?sSub=delete&".
-                "iDistributionId=$this->iDistributionId'>delete</a>]";
+                $sDelete = " &nbsp; [<a href='".$oManager->makeUrl("delete",
+                    $this->iDistributionId)."'>delete</a>]";
             }
             $aCells[3] = array(
-                "[<a href='".BASE."admin/editDistribution.php?iDistributionId=".
-                $this->iDistributionId."'>edit</a>]$sDelete",
+                "[<a href='".$oManager->makeUrl("edit", $this->iDistributionId,
+                "Edit Distribution")."'>edit</a>]$sDelete",
                 "align=\"center\"");
         }
 
