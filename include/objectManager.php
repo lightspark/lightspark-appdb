@@ -172,7 +172,7 @@ class ObjectManager
     function display_queue_processing_help()
     {
         /* No help text defined, so do nothing */
-        if(!method_exists($this->sClass, "ObjectDisplayQueueProcessingHelp"))
+        if(!method_exists(new $this->sClass(), "ObjectDisplayQueueProcessingHelp"))
             return FALSE;
 
         call_user_func(array($this->sClass,
