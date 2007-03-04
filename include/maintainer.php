@@ -16,6 +16,7 @@ class maintainer
     var $bSuperMaintainer;
     var $aSubmitTime;
     var $bQueued;
+    var $sReplyText;
 
     function maintainer($iMaintainerId = "")
     {
@@ -57,7 +58,7 @@ class maintainer
         return $hResult;
     }
 
-    function unQueue($sReplyText)
+    function unQueue()
     {
         /* if the user isn't already a supermaintainer of the application and */
         /* if they are trying to become a maintainer and aren't already a maintainer of */
@@ -90,7 +91,7 @@ class maintainer
                     $sSubject =  "Application Maintainer Request Report";
                     $sMsg  = "Your application to be the maintainer of ".$oApp->sName." ".$oVersion->sName." has been accepted.\n";
                     $sMsg .= "$sURL\n";
-                    $sMsg .= "$sReplyText\n";
+                    $sMsg .= "$this->sReplyText\n";
                     $sMsg .= "We appreciate your help in making the Application Database better for all users.\n\n";
 
                     mail_appdb($sEmail, $sSubject ,$sMsg);
@@ -110,7 +111,7 @@ class maintainer
         return $sStatusMessage;
     }
 
-    function reject($sReplyText)
+    function reject()
     {
         $oUser = new User($this->iUserId);
         $sEmail = $oUser->sEmail;
@@ -120,10 +121,10 @@ class maintainer
             $oVersion = new Version($oRow->versionId);
             $sSubject =  "Application Maintainer Request Report";
             $sMsg  = "Your application to be the maintainer of ".$oApp->sName." ".$oVersion->sName." was rejected. ";
-            $sMsg .= $sReplyText;
+            $sMsg .= $this->sReplyText;
             $sMsg .= "";
             $sMsg .= "-The AppDB admins\n";
-                
+
            mail_appdb($sEmail, $sSubject ,$sMsg);
         }
 
@@ -389,34 +390,40 @@ class maintainer
         return $aUserIds;
     }
 
-    function ObjectOutputHeader()
+    function ObjectOutputHeader($sClass)
     {
-        echo "    <td>Submission Date</td>\n";
-        echo "    <td>Application Name</td>\n";
-        echo "    <td>Version</td>\n";
-        echo "    <td>Super maintainer?</td>\n";
-        echo "    <td>Submitter</td>\n";
+        $aCells = array(
+            "Submission Date",
+            "Application Name",
+            "Version",
+            "Super maintainer?",
+            "Submitter");
+
+        if(maintainer::canEdit())
+            $aCells[sizeof($aCells)] = "Action";
+
+        echo html_tr($aCells, $sClass);
     }
 
-    function ObjectOutputTableRow()
+    function ObjectOutputTableRow($oObject, $sClass)
     {
         $oUser = new User($this->iUserId);
         $oApp = new Application($this->iAppId);
         $oVersion = new Version($this->iVersionId);
-        echo "<td>".print_date(mysqldatetime_to_unixtimestamp($this->aSubmitTime))." &nbsp;</td>\n";
-        echo "<td>".$oApp->sName."</td>\n";
 
-        if($this->bSuperMaintainer)
-        {
-            echo "<td>N/A</td>\n";
-            echo "<td>Yes</td>\n";
-        } else
-        {
-  	        echo "<td>".$oVersion->sName." &nbsp;</td>\n";
-            echo "<td>No</td>\n";
-        }
+        $aCells = array(
+            print_date(mysqldatetime_to_unixtimestamp($this->aSubmitTime)),
+            $oApp->sName,
+            ($this->bSuperMaintainer) ? "N/A" : $oVersion->sName,
+            ($this->bSuperMaintainer) ? "Yes" : "No",
+            "<a href=\"mailto:".$oUser->sEmail."\">".$oUser->sRealname."</a>");
 
-        echo "<td><a href=\"mailto:".$oUser->sEmail."\">".$oUser->sRealname."</a></td>\n";
+        if(maintainer::canEdit())
+            $aCells[sizeof($aCells)] = "<a href=\"".$oObject->makeUrl("edit",
+            $this->iMaintainerId)."\">answer</a>";
+
+        echo html_tr($aCells,
+            $sClass);
     }
 
     function ObjectDisplayQueueProcessingHelp()
@@ -427,12 +434,26 @@ class maintainer
         echo "</td></tr></table></div>\n\n";    
     }
 
+    function objectGetInstanceFromRow($oRow)
+    {
+        return new maintainer($oRow->maintainerId, $oRow);
+    }
+
+    function canEdit()
+    {
+        if($_SESSION['current']->hasPriv("admin"))
+            return TRUE;
+
+        return FALSE;
+    }
+
     function outputEditor()
     {
         //view application details
         echo html_frame_start("New Maintainer Form",600,"",0);
         echo "<table width='100%' border=0 cellpadding=2 cellspacing=0>\n";
-
+        echo "<input type=\"hidden\" name=\"iMaintainerId\" ".
+             "value=\"$this->iMaintainerId\" />";
         /**
           * Show the other maintainers of this application, if there are any
           */
@@ -536,6 +557,37 @@ class maintainer
 
         echo html_frame_end("&nbsp;");
     }
-};
+
+    function ObjectGetId()
+    {
+        return $this->iMaintainerId;
+    }
+
+    function getOutputEditorValues($aClean)
+    {
+        $this->sReplyText = $aClean['sReplyText'];
+
+        return TRUE;
+    }
+
+    function update()
+    {
+        /* STUB: No updating possible at the moment */
+        return TRUE;
+    }
+
+    function getDefaultReply()
+    {
+        $sReplyTextHelp = "Enter a personalized reason for accepting or rejecting the ".
+                          "user's maintainer request here";
+
+        return $sReplyTextHelp;
+    }
+
+    function objectHideDelete()
+    {
+        return TRUE;
+    }
+}
 
 ?>

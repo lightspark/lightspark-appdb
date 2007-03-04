@@ -56,7 +56,7 @@ class ObjectManager
     function display_table()
     {
         $this->checkMethods(array("ObjectGetEntries", "ObjectOutputHeader",
-             "ObjectGetInstanceFromRow", "ObjectOutputTableRow"));
+             "ObjectGetInstanceFromRow", "ObjectOutputTableRow", "canEdit"));
 
 
         /* query the class for its entries */
@@ -137,21 +137,28 @@ class ObjectManager
            queued entry */
         if($this->bIsQueue)
         {
+            /* If it isn't implemented, that means there is no default text */
+            if(method_exists(new $this->sClass, "getDefaultReply"))
+                $sDefaultReply = $oObject->getDefaultReply();
+
             echo html_frame_start("Reply text", "90%", "", 0);
             echo "<table width='100%' border=0 cellpadding=2 cellspacing=0>\n";
             echo '<tr valign=top><td class="color0"><b>email Text</b></td>',"\n";
             echo '<td><textarea name="sReplyText" style="width: 100%" cols="80" '. 
-                 'rows="10"></textarea></td></tr>',"\n";
+                 'rows="10">'.$sDefaultReply.'</textarea></td></tr>',"\n";
 
             /* buttons for operations we can perform on this entry */
             echo '<tr valign=top><td class=color3 align=center colspan=2>' ,"\n";
-            echo '<input name="sSub" type="submit" value="Submit" class="button" '. 
+            echo '<input name="sSubmit" type="submit" value="Submit" class="button" '. 
                  '/>',"\n";
-            echo '<input name="sSub" type="submit" value="Delete" class="button" '.
+            if(!method_exists(new $this->sClass, "objectHideDelete"))
+            {
+                echo '<input name="sSubmit" type="submit" value="Delete" '.
+                     'class="button" />',"\n";
+            }
+            echo '<input name="sSubmit" type="submit" value="Reject" class="button" '.
                  '/>',"\n";
-            echo '<input name="sSub" type="submit" value="Reject" class="button" '.
-                 '/>',"\n";
-            echo '<input name="sSub" type="submit" value="Cancel" class="button" '.
+            echo '<input name="sSubmit" type="submit" value="Cancel" class="button" '.
                  '/>',"\n";
             echo '</td></tr>',"\n";
             echo '</table>';
@@ -159,7 +166,7 @@ class ObjectManager
         } else
         {
             echo '<tr valign=top><td class=color3 align=center colspan=2>',"\n";
-            echo '<input name="sSubmit" type="submit" value="Save" class="button">'.
+            echo '<input name="sSubmit" type="submit" value="Submit" class="button">'.
                  '&nbsp',"\n";
             echo "</td></tr>\n";
         }
@@ -243,21 +250,51 @@ class ObjectManager
 
         $oObject = new $this->sClass($this->iId);
 
+        /* If it isn't implemented, that means there is no default text */
+        if(method_exists(new $this->sClass, "getDefaultReply"))
+        {
+            /* Don't send the default reply text */
+            if($oObject->getDefaultReply() == $aClean['sReplyText'])
+                $aClean['sReplyText'] = "";
+        }
+
         $oObject->getOutputEditorValues($aClean);
 
-        if($this->iId)
+        switch($aClean['sSubmit'])
         {
-            if(!$oObject->canEdit())
-                return FALSE;
+            case "Submit":
+                if($this->iId)
+                {
+                    if(!$oObject->canEdit())
+                        return FALSE;
 
-            $oObject->update();
+                    if($this->bIsQueue)
+                        $oObject->unQueue();
+
+                    $oObject->update();
+                }
+                else
+                    $oObject->create();
+            break;
+
+            case "Reject":
+                if(!$oObject->canEdit())
+                    return FALSE;
+
+                $oObject->reject();
+            break;
+            case "Delete":
+                $this->delete_entry();
         }
-        else
-            $oObject->create();
 
         $sIsQueue = $tihs->bIsQueue ? "true" : "false";
 
-        util_redirect_and_exit($this->makeUrl("view", false, "$this->sClass list"));
+        if(!$this->bIsQueue)
+            $sAction = "view";
+        else
+            $sAction = false;
+
+        util_redirect_and_exit($this->makeUrl($sAction, false, "$this->sClass list"));
     }
 
     /* Make an objectManager URL based on the object and optional parameters */

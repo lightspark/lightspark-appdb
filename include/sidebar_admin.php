@@ -15,11 +15,15 @@ function global_admin_menu() {
     
     $g->addmisc("&nbsp;");
     $g->add("View App Queue (".$_SESSION['current']->getQueuedAppCount()."/".$_SESSION['current']->getQueuedVersionCount().")", BASE."admin/adminAppQueue.php");
-    $g->add("View App Data Queue (".$_SESSION['current']->getQueuedAppDataCount().")", BASE."admin/adminAppDataQueue.php");
-    $g->add("View Maintainer Queue (".Maintainer::getQueuedMaintainerCount().")", BASE."admin/adminMaintainerQueue.php");
+    $g->add("View App Data Queue (".$_SESSION['current']->getQueuedAppDataCount().")",
+            BASE."admin/adminAppDataQueue.php");
+    $g->add("View Maintainer Queue (".Maintainer::getQueuedMaintainerCount().")",
+            BASE."objectManager.php?sClass=maintainer&bIsQueue=true&sTitle=Maintainer%20Queue");
     $g->add("View Maintainer Entries (".Maintainer::getMaintainerCount().")", BASE."admin/adminMaintainers.php");
-    $g->add("View Bug Links (".getNumberOfQueuedBugLinks()."/".getNumberOfBugLinks().")", BASE."admin/adminBugs.php");
-    $g->add("View Test Results Queue (".testData::getNumberOfQueuedTests().")", BASE."admin/adminTestResults.php");
+    $g->add("View Bug Links (".getNumberOfQueuedBugLinks()."/".getNumberOfBugLinks().")",
+            BASE."admin/adminBugs.php");
+    $g->add("View Test Results Queue (".testData::getNumberOfQueuedTests().")",
+            BASE."admin/adminTestResults.php");
 
     $g->addmisc("&nbsp;");
     $g->add("Users Management", BASE."admin/adminUsers.php");
