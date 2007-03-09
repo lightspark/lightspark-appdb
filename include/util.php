@@ -269,15 +269,15 @@ function outputTopXRow($oRow)
 }
 
 /* Output the rows for the Top-X tables on the main page */
-function outputTopXRowAppsFromRating($rating, $iNum_apps)
+function outputTopXRowAppsFromRating($sRating, $iNumApps)
 {
     /* clean the input values so we can continue to use query_appdb() */
-    $rating = mysql_real_escape_string($rating);
-    $iNum_apps = mysql_real_escape_string($iNum_apps);
+    $sRating = mysql_real_escape_string($sRating);
+    $iNumApps = mysql_real_escape_string($iNumApps);
 
-    /* list of appIds we've already output, so we don't output */
+    /* list of versionIds we've already output, so we don't output */
     /* them again when filling in any empty spots in the list */
-    $appIdArray = array();
+    $aVersionId = array();
 
     $sQuery = "SELECT appVotes.versionId, COUNT( appVotes.versionId ) AS c
            FROM appVotes, appVersion
@@ -286,37 +286,36 @@ function outputTopXRowAppsFromRating($rating, $iNum_apps)
            GROUP BY appVotes.versionId
            ORDER BY c DESC
            LIMIT ?";
-    $hResult = query_parameters($sQuery, $rating, $iNum_apps);
-    $iNum_apps-=mysql_num_rows($hResult); /* take away the rows we are outputting here */
+    $hResult = query_parameters($sQuery, $sRating, $iNumApps);
+    $iNumApps -= mysql_num_rows($hResult); /* take away the rows we are outputting here */
     while($oRow = mysql_fetch_object($hResult))
     {
-        array_push($appIdArray, $oRow->appId); /* keep track of the apps we've already output */
+        /* keep track of the apps we've already output */
+        $aVersionId[] = $oRow->versionId;
         outputTopXRow($oRow);
     }
 
     /* if we have no more app entries we should stop now and save ourselves a query */
-    if(!$iNum_apps) return;
+    if(!$iNumApps) return;
 
     /* if we have any empty spots in the list, get these from applications with images */
     $sQuery = "SELECT DISTINCT appVersion.versionId
            FROM appVersion, appData
-           WHERE appVersion.maintainer_rating = '$rating'
+           WHERE appVersion.maintainer_rating = '$sRating'
            AND appVersion.versionId = appData.versionId
            AND appData.type = 'image'
            AND appData.queued = 'false'";
 
     /* make sure we exclude any apps we've already output */
-    foreach($appIdArray as $key=>$value)
+    foreach($aVersionId as $key=>$value)
         $sQuery.="AND appVersion.versionId != '".$value."' ";
 
-    $sQuery.=" LIMIT $iNum_apps";
+    $sQuery .= " LIMIT $iNumApps";
 
     /* get the list that will fill the empty spots */
     $hResult = query_appdb($sQuery);
     while($oRow = mysql_fetch_object($hResult))
-    {
         outputTopXRow($oRow);
-    }
 }
 
 /* return true if this word is in the list of words to ignore */
