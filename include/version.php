@@ -758,13 +758,10 @@ class Version {
         echo "<tr class=\"color0\"><td align=\"left\" colspan=\"2\"><b>Maintainers of this version:</b>\n";
         echo "<table width=\"250\" border=\"0\">";
         $aMaintainers = $this->getMaintainersUserIds();
-        $aSupermaintainers = Maintainer::getSuperMaintainersUserIdsFromAppId($this->iAppId);
-        $aAllMaintainers = array_merge($aMaintainers,$aSupermaintainers);
-        $aAllMaintainers = array_unique($aAllMaintainers);
-        if(sizeof($aAllMaintainers)>0)
+        if(sizeof($aMaintainers)>0)
         {
             echo "<tr class=\"color0\"><td align=\"left\" colspan=\"2\"><ul>";
-            while(list($index, $userIdValue) = each($aAllMaintainers))
+            while(list($index, $userIdValue) = each($aMaintainers))
             {
                 $oUser = new User($userIdValue);
                 echo "<li>$oUser->sRealname (<a href=\"".BASE."contact.php?".
