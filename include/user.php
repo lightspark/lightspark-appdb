@@ -682,8 +682,6 @@ class User {
      function get_notify_email_address_list($iAppId = null, $iVersionId = null)
      {
          $aUserId = array();
-         $c = 0;
-         $retval = "";
 
          /*
           * Retrieve version maintainers.
@@ -695,10 +693,7 @@ class User {
              if(mysql_num_rows($hResult) > 0)
              {
                  while($oRow = mysql_fetch_object($hResult))
-                 {
-                     $aUserId[$c] = array($oRow->userId);
-                     $c++;
-                 }
+                     $aUserId[] = $oRow->userId;
              }
          }
 
@@ -731,10 +726,7 @@ class User {
              if(mysql_num_rows($hResult) > 0)
              {
                  while($oRow = mysql_fetch_object($hResult))
-                 {
-                     $aUserId[$c] = array($oRow->userId);
-                     $c++;
-                 }
+                     $aUserId[] = $oRow->userId;
              }
          }
 
@@ -751,26 +743,23 @@ class User {
                  // if we didn't find this entry in the $aUserId
                  // array then we should add it
                  if($i === false)
-                 {
-                     $aUserId[$c] = array($oRow->userid);
-                     $c++;
-                 }
+                     $aUserId[] = $oRow->userid;
              }
          }
 
          // go through the email entries and only add the emails for the users
          // that want to receive it
-         if ($c > 0)
+         if (sizeof($aUserId) > 0)
          {
-             while(list($index, list($userIdValue)) = each($aUserId))
+             foreach($aUserId as $iUserId)
              {
-                 $oUser = new User($userIdValue);
+                 $oUser = new User($iUserId);
                  if ($oUser->wantsEmail())
-                     $retval .= $oUser->sEmail." ";
+                     $sRetval .= $oUser->sEmail." ";
              }
          }
 
-         return $retval;
+         return $sRetval;
      }
 
 
