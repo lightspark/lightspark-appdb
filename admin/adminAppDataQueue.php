@@ -106,10 +106,10 @@ if (!$aClean['iId'])
         echo '<td><textarea name="sDescription" rows=10 cols=35>'.stripslashes($obj_row->description).'</textarea></td></tr>',"\n";
         
         //data
-        if($obj_row->type == "image") 
+        if($obj_row->type == "screenshot") 
         {
            $oScreenshot = new Screenshot($obj_row->id);
-           echo '<tr valign=top><td class=color0><b>Submited image</b></td>',"\n";
+           echo '<tr valign=top><td class=color0><b>Submited screenshot</b></td>',"\n";
            echo '<td>';
            $imgSRC = '<img width="'.$oScreenshot->get_thumbnail_width().'" height="'.$oScreenshot->get_thumbnail_height().'" src="../appimage.php?bQueued=true&iId='.$obj_row->id.'" />';
            // generate random tag for popup window
@@ -152,7 +152,7 @@ if (!$aClean['iId'])
         $statusMessage = "";
          $goodtogo = 0;
         
-        if($obj_row->type == "image")
+        if($obj_row->type == "screenshot")
         { 
             $oScreenshot = new Screenshot($obj_row->id);
             $oScreenshot->unQueue();
@@ -186,7 +186,7 @@ if (!$aClean['iId'])
         util_redirect_and_exit(apidb_fullurl("admin/adminAppDataQueue.php"));
     } elseif ($aClean['sReject'])
     {
-        if($obj_row->type == "image")
+        if($obj_row->type == "screenshot")
         { 
             $oScreenshot = new Screenshot($obj_row->id);
             $oScreenshot->delete();

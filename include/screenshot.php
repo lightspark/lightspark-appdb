@@ -36,7 +36,7 @@ class Screenshot {
                        FROM appData, appVersion 
                        WHERE appData.versionId = appVersion.versionId 
                        AND id = '?'
-                       AND type = 'image'", $iScreenshotId);
+                       AND type = 'screenshot'", $iScreenshotId);
             if($hResult)
             {
                 $oRow = mysql_fetch_object($hResult);
@@ -73,7 +73,7 @@ class Screenshot {
 
         $hResult = query_parameters("INSERT INTO appData (versionId, type, description, queued, submitterId) ".
                                     "VALUES('?', '?', '?', '?', '?')",
-                                    $iVersionId, "image", $sDescription, $this->bQueued?"true":"false",
+                                    $iVersionId, "screenshot", $sDescription, $this->bQueued?"true":"false",
                                     $_SESSION['current']->iUserId);
         if($hResult)
         {
@@ -190,7 +190,7 @@ class Screenshot {
      */
     function setDescription($sDescription)
     {
-        if($hResult = query_parameters("UPDATE id SET description = '?' WHERE id = '?' AND type = 'image'",
+        if($hResult = query_parameters("UPDATE id SET description = '?' WHERE id = '?' AND type = 'screenshot'",
                                        $sDescription, $this->iScreenshotId))
             $this->sDescription = $sDescription;
     }
@@ -392,7 +392,7 @@ class Screenshot {
                                FROM appData, appVersion 
                                WHERE appData.versionId = appVersion.versionId
                                AND appVersion.appId = '?' 
-                               AND type = 'image' 
+                               AND type = 'screenshot' 
                                AND appData.queued = 'false' 
                                ORDER BY rand", $iAppId);
         } else if ($iVersionId) // we want a random screenshot for this version
@@ -400,7 +400,7 @@ class Screenshot {
             $hResult = query_parameters("SELECT id, description, RAND() AS rand 
                                 FROM appData 
                                 WHERE versionId = '?' 
-                                AND type = 'image' 
+                                AND type = 'screenshot' 
                                 AND queued = 'false' 
                                 ORDER BY rand", $iVersionId);
         }
@@ -457,7 +457,7 @@ class Screenshot {
             $hResult = query_parameters("SELECT appData.*, appVersion.appId as appId
                                  FROM appData, appVersion
                                  WHERE appVersion.versionId = appData.versionId
-                                 AND type = 'image'
+                                 AND type = 'screenshot'
                                  AND appVersion.appId = '?'
                                  AND appData.queued = '?'", $iAppId, $bQueued);
         }
@@ -469,7 +469,7 @@ class Screenshot {
             $hResult = query_parameters("SELECT appData.*, appVersion.appId as appId
                                  FROM appData, appVersion
                                  WHERE appVersion.versionId = appData.versionId
-                                 AND type = 'image'
+                                 AND type = 'screenshot'
                                  AND appData.versionId = '?'
                                  AND appData.queued = '?'", $iVersionId, $bQueued);
         } else

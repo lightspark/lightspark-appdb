@@ -221,14 +221,6 @@ function getNumberOfAppFamilies()
     return $oRow->num_appfamilies;
 }
 
-/* Get the number of images in the database */
-function getNumberOfImages()
-{
-    $hResult = query_parameters("SELECT count(*) as num_images FROM appData WHERE type='image';");
-    $oRow = mysql_fetch_object($hResult);
-    return $oRow->num_images;
-}
-
 /* Get the number of queued bug links in the database */
 function getNumberOfQueuedBugLinks()
 {
