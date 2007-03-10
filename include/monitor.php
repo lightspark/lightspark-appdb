@@ -60,6 +60,12 @@ class Monitor {
      */
     function create($iUserId, $iAppId=0, $iVersionId=0)
     {
+        /* Check for duplicate entries */
+        $oMonitor = new monitor();
+        $oMonitor->find($iUserId, $iVersionId);
+        if($oMonitor->iVersionId)
+            return FALSE;
+
         $hResult = query_parameters("INSERT INTO appMonitors (versionId, appId, userId) ".
                                     "VALUES ('?', '?', '?')",
                                     $iVersionId, $iAppId, $iUserId);
