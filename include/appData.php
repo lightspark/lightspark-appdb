@@ -72,6 +72,82 @@ class appData
 
         return $hResult;
     }
+
+    function objectGetEntriesCount($sQueued, $sType = null)
+    {
+        if(($sQueued == "true" || $sQueued == "all") && !appData::canEdit($sType))
+           return FALSE;
+
+        if(($sQueued == "true" || $sQueued == "all") &&
+            !$_SESSION['current']->hasPriv("admin"))
+        {
+            $sQuery = "SELECT COUNT(DISTINCT id) as count FROM appData, appMaintainers,
+            appVersion, appFamily
+                WHERE appMaintainers.userId = '?' AND
+                ((((appMaintainers.appId = appFamily.appId) OR appMaintainers.appId = 
+                    appVersion.appId) AND 
+                    appMaintainers.superMaintainer = '1' AND (appData.appId = 
+                    appMaintainers.appId OR (appData.versionId = appVersion.versionId
+                    AND appVersion.appId = appMaintainers.appId))
+                ) OR (appMaintainers.superMaintainer = '0' AND appMaintainers.versionId = 
+                    appVersion.versionId AND appMaintainers.versionId = appData.versionId))
+                AND appVersion.queued = 'false' AND
+                appFamily.queued = 'false'";
+
+            if($sQueued == "true")
+                $sQuery .= " AND appData.queued = 'true'";
+
+            if($sType)
+            {
+                $sQuery = " AND type = '?'";
+                $hResult = query_parameters($sQuery, $_SESSION['current']->iUserId, 
+                                            $sType);
+            } else {
+                $hResult = query_parameters($sQuery, $_SESSION['current']->iUserId);
+            }
+        } else
+        {
+            $sQuery = "SELECT COUNT(DISTINCT id) as count FROM appData,
+                appFamily, appVersion
+                    WHERE ((appData.appId = appFamily.appId) OR (appData.versionId =
+                    appVersion.versionId)) AND appVersion.queued = 'false' AND
+                    appFamily.queued = 'false'";
+
+            if($sQueued == "true" || $sQueued == "false")
+                $sQuery .= " AND appData.queued = '$sQueued'";
+
+            if($sType)
+            {
+                $sQuery .= " AND type = '?'";
+                $hResult = query_parameters($sQuery,$sType);
+            } else
+                $hResult = query_parameters($sQuery);
+        }
+
+        if(!$hResult)
+            return FALSE;
+
+        if(!$oRow = mysql_fetch_object($hResult))
+            return FALSE;
+
+        return $oRow->count;
+    }
+
+    function canEdit($sType = null)
+    {
+        if($sType)
+        {
+            $oObject = new $sType();
+            return $oObject->canEdit();
+        } else
+        {
+            if($_SESSION['current']->hasPriv("admin") ||
+               maintainer::isUserMaintainer($_SESSION['current']))
+                return TRUE;
+            else
+                return FALSE;
+        }
+    }
 }
 
 ?>

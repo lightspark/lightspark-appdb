@@ -299,15 +299,6 @@ class User {
         return $oRow->queued_versions - $this->getQueuedAppCount();
     }
 
-
-    /* get the number of queued appdata */
-    function getQueuedAppDataCount()
-    {
-        $hResult = $this->getAppDataQuery(0, true, false);
-        $oRow = mysql_fetch_object($hResult);
-        return $oRow->queued_appdata;
-    }
-
     function addPriv($sPriv)
     {
         if(!$this->isLoggedIn() || !$sPriv)
@@ -682,6 +673,7 @@ class User {
      function get_notify_email_address_list($iAppId = null, $iVersionId = null)
      {
          $aUserId = array();
+         $sRetval = "";
 
          /*
           * Retrieve version maintainers.
