@@ -105,20 +105,45 @@ class appData
         if(($sQueued == "true" || $sQueued == "all") && !appData::canEdit($sType))
            return FALSE;
 
-/*        if(($sQueued == "true" || $sQueued == "all") &&
+        if(($sQueued == "true" || $sQueued == "all") &&
             !$_SESSION['current']->hasPriv("admin"))
         {
            $sQuery = "SELECT COUNT(DISTINCT id) as count FROM appData, appMaintainers,
-            appVersion, appFamily
-                WHERE appMaintainers.userId = '?' AND
-                ((((appMaintainers.appId = appFamily.appId) OR appMaintainers.appId = 
-                    appVersion.appId) AND 
-                    appMaintainers.superMaintainer = '1' AND (appData.appId = 
-                    appMaintainers.appId OR (appData.versionId = appVersion.versionId
-                    AND appVersion.appId = appMaintainers.appId))
-                ) OR (appMaintainers.superMaintainer = '0' AND appMaintainers.versionId = 
-                    appVersion.versionId AND appMaintainers.versionId = appData.versionId))
-                AND appVersion.queued = 'false' AND
+                appVersion, appFamily WHERE
+                appFamily.appId = appVersion.appId
+                AND
+                appMaintainers.userId = '?'
+                AND
+                (
+                    (
+                        appMaintainers.appId = appFamily.appId
+                        OR
+                        appMaintainers.appId = appVersion.appId
+                    )
+                    AND
+                    appMaintainers.superMaintainer = '1'
+                    AND
+                    (
+                        appData.appId = appMaintainers.appId
+                        OR
+                        (
+                            appData.versionId = appVersion.versionId
+                            AND
+                            appVersion.appId = appMaintainers.appId
+                        )
+                    )
+                    OR
+                    (
+                        appMaintainers.superMaintainer = '0'
+                        AND
+                        appMaintainers.versionId = appVersion.versionId
+                        AND
+                        appMaintainers.versionId = appData.versionId
+                    )
+                )
+                AND
+                appVersion.queued = 'false'
+                AND
                 appFamily.queued = 'false'";
 
             if($sQueued == "true")
@@ -135,34 +160,29 @@ class appData
         } else
         {
             $sQuery = "SELECT COUNT(DISTINCT id) as count FROM appData,
-                appFamily, appVersion
-                    WHERE ((appData.appId = appFamily.appId) OR (appData.versionId =
-                    appVersion.versionId)) AND appVersion.queued = 'false' AND
-                    appFamily.queued = 'false'";*/
-
-            $sQuery = "SELECT COUNT(*) as count FROM appData WHERE 1";
+                appFamily, appVersion WHERE
+                    appFamily.appId = appVersion.appId
+                    AND
+                    (
+                        appData.appId = appFamily.appId
+                        OR
+                        appData.versionId = appVersion.versionId
+                    )
+                    AND
+                    appVersion.queued = 'false'
+                    AND
+                    appFamily.queued = 'false'";
 
             if($sQueued == "true" || $sQueued == "false")
                 $sQuery .= " AND appData.queued = '$sQueued'";
 
-        if($_SESSION['current']->hasPriv("admin"))
-        {
+
             if($sType)
             {
                 $sQuery .= " AND type = '?'";
                 $hResult = query_parameters($sQuery, $sType);
             } else
                 $hResult = query_parameters($sQuery);
-        } else
-        {
-            $sQuery .= " AND submitterId = '?'";
-            if($sType)
-            {
-                $sQuery .= " AND type = '?'";
-                $hResult = query_parameters($sQuery, $_SESSION['current']->iUserId, 
-                                            $sType);
-            } else
-                $hResult = query_parameters($sQuery, $_SESSION['current']->iUserId);
         }
 
         if(!$hResult)
@@ -193,44 +213,77 @@ class appData
     {
         if($bQueued && !appData::canEdit($sType))
             return FALSE;
-/*
+
         if($bQueued && !$_SESSION['current']->hasPriv("admin"))
         {
             $sQuery = "SELECT DISTINCT appData.* FROM appData, appMaintainers,
-                appVersion, appFamily
-                WHERE appMaintainers.userId = '?' AND
-                ((((appMaintainers.appId = appFamily.appId) OR appMaintainers.appId = 
-                    appVersion.appId) AND 
-                    appMaintainers.superMaintainer = '1' AND (appData.appId = 
-                    appMaintainers.appId OR (appData.versionId = appVersion.versionId
-                    AND appVersion.appId = appMaintainers.appId))
-                ) OR (appMaintainers.superMaintainer = '0' AND appMaintainers.versionId = 
-                    appVersion.versionId AND appMaintainers.versionId = appData.versionId))
-                AND appVersion.queued = 'false' AND
-                appFamily.queued = 'false' AND appData.queued = '?' AND
+                appVersion, appFamily WHERE
+                appFamily.appId = appVersion.appId
+                AND
+                appMaintainers.userId = '?'
+                AND
+                (
+                    (
+                        (
+                            appMaintainers.appId = appFamily.appId
+                            OR
+                            appMaintainers.appId = appVersion.appId
+                        )
+                        AND
+                        appMaintainers.superMaintainer = '1'
+                        AND
+                        (
+                            appData.appId = appMaintainers.appId
+                            OR
+                            (
+                                appData.versionId = appVersion.versionId
+                                AND
+                                appVersion.appId = appMaintainers.appId
+                            )
+                        )
+                    )
+                    OR
+                    (
+                        appMaintainers.superMaintainer = '0'
+                        AND
+                        appMaintainers.versionId = appVersion.versionId
+                        AND
+                        appMaintainers.versionId = appData.versionId
+                    )
+                )
+                AND
+                appVersion.queued = 'false'
+                AND
+                appFamily.queued = 'false'
+                AND
+                appData.queued = '?'
+                AND
                 appData.type = '?'";
             $hResult = query_parameters($sQuery, $_SESSION['current']->iUserId,
                                         $bQueued ? "true" : "false", $sType);
         } else
         {
             $sQuery = "SELECT DISTINCT appData.* FROM appData, appFamily, appVersion
-                    WHERE ((appData.appId = appFamily.appId) OR (appData.versionId =
-                    appVersion.versionId)) AND appVersion.queued = 'false' AND
-                    appFamily.queued = 'false' AND appData.queued = '?' AND
-                    appData.type = '?'"; */
-
-        $sQuery = "SELECT * FROM appData WHERE queued = '?' AND type = '?'";
-
-        if($_SESSION['current']->hasPriv("admin"))
+                    WHERE
+                    appVersion.appId = appFamily.appId
+                    AND
+                    (
+                        appData.appId = appFamily.appId
+                        OR
+                        appData.versionId = appVersion.versionId
+                    )
+                    AND
+                    appVersion.queued = 'false'
+                    AND
+                    appFamily.queued = 'false'
+                    AND
+                    appData.queued = '?'
+                    AND
+                    appData.type = '?'";
             $hResult = query_parameters($sQuery, $bQueued ? "true" : "false", $sType);
-        else
-        {
-            $sQuery .= " AND submitterId = '?'";
-            $hResult = query_parameters($sQuery, $bQueued ? "true" : "false", $sType,
-                                        $_SESSION['current']->iUserId);
         }
 
-            if(!$hResult)
+        if(!$hResult)
             return FALSE;
 
         return $hResult;
