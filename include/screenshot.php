@@ -508,6 +508,41 @@ class Screenshot {
         }
         return $shImg;
     }
+
+    function objectGetEntries($bQueued)
+    {
+        return appData::objectGetEntries($bQueued, "screenshot");
+    }
+
+    function objectOutputHeader($sClass)
+    {
+        return appData::objectOutputHeader($sClass, "screenshot");
+    }
+
+    function canEdit()
+    {
+        if($_SESSION['current']->hasPriv("admin") ||
+           maintainer::isUserMaintainer($_SESSION['current']))
+            return TRUE;
+        else
+            return FALSE;
+    }
+
+    function objectGetInstanceFromRow($oRow)
+    {
+        return new appData($oRow->id, $oRow);
+    }
+
+    function objectOutputTableRow($oObject, $sClass)
+    {
+        $oAppData = new AppData();
+        $oAppData->objectOutputTableRow($oObject, $sClass);
+    }
+
+    function objectDisplayQueueProcessingHelp()
+    {
+        return appData::objectDisplayQueueProcessingHelp();
+    }
 }
 
 ?>
