@@ -134,7 +134,7 @@ create table appData (
 	id            int not null auto_increment,
 	appId         int not null,
 	versionId	    int default 0,
-	type          enum('image', 'url', 'bug','downloadurl'),
+	type          enum('screenshot', 'url', 'bug','downloadurl'),
 	description	  text,
 	url	          varchar(255) default NULL,
 	submitTime    timestamp(14) NOT NULL,
