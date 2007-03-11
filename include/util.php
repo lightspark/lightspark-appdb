@@ -295,7 +295,7 @@ function outputTopXRowAppsFromRating($sRating, $iNumApps)
            FROM appVersion, appData
            WHERE appVersion.maintainer_rating = '$sRating'
            AND appVersion.versionId = appData.versionId
-           AND appData.type = 'image'
+           AND appData.type = 'screenshot'
            AND appData.queued = 'false'";
 
     /* make sure we exclude any apps we've already output */
