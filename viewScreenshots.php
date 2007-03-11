@@ -22,7 +22,7 @@ if($aClean['iPage'])
     $currentPage = $aClean['iPage'];
 
 $ItemsPerPage = min($ItemsPerPage,100);
-$totalPages = ceil(getNumberOfImages()/$ItemsPerPage);
+$totalPages = ceil(appData::objectGetEntriesCount(false)/$ItemsPerPage);
 $currentPage = min($currentPage,$totalPages);
 $offset = (($currentPage-1) * $ItemsPerPage);
 
@@ -58,7 +58,10 @@ echo "</center>";
 
 /* query for all of the Screenshots in assending order */
 $Ids = query_parameters("SELECT * from appData 
-                     WHERE type = 'image' 
+                     WHERE
+                     type = 'screenshot'
+                     AND
+                     queued = 'false'
                      ORDER BY id ASC LIMIT ?, ?",
                     $offset, $ItemsPerPage);
 $c = 1;

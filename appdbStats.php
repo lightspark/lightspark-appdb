@@ -73,8 +73,8 @@ echo "</tr>\n\n";
 
 /* Display the number of images */
 echo "<tr class=color4>\n";
-echo "    <td>Images:</td>\n";
-echo "    <td>".getNumberOfImages()."</td>\n";
+echo "    <td>Screenshots:</td>\n";
+echo "    <td>".appData::objectGetEntriesCount(false)."</td>\n";
 echo "</tr>\n\n";
 	
 echo "</table>\n\n";
