@@ -270,19 +270,33 @@ class maintainer
         return $aAppsMaintained;
     }
 
-    function getQueuedMaintainerCount()
+    function objectGetEntriesCount($bQueued)
     {
         /* Excluding requests for queued apps and versions, as these are handled 
            automatically.  One SELECT for super maintainers, one for maintainers. */
-        $sQuery = "SELECT COUNT(DISTINCT maintainerId) as queued_maintainers FROM 
-                appMaintainers, appFamily, appVersion
-                WHERE appMaintainers.queued='true' AND ((appFamily.appId =
-                    appMaintainers.appId AND appFamily.queued = 'false' AND 
-                    appMaintainers.versionId = '') OR (
-                            appVersion.versionId = appMaintainers.versionId
-                            AND appVersion.queued = 'false'))";
+       $sQuery = "SELECT COUNT(DISTINCT maintainerId) as queued_maintainers FROM 
+                appMaintainers, appFamily, appVersion WHERE
+                appMaintainers.queued = '?'
+                AND
+                appFamily.appId = appVersion.appId
+                AND
+                (
+                    (
+                        appFamily.appId = appMaintainers.appId
+                        AND
+                        appFamily.queued = 'false'
+                        AND 
+                        appMaintainers.versionId = ''
+                    )
+                    OR
+                    (
+                        appVersion.versionId = appMaintainers.versionId
+                        AND
+                        appVersion.queued = 'false'
+                    )
+                )";
 
-        if(!($hResult = query_parameters($sQuery)))
+        if(!($hResult = query_parameters($sQuery, $bQueued ? "true" : "false")))
             return FALSE;
 
         $oRow = mysql_fetch_object($hResult);

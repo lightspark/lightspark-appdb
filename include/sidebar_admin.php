@@ -21,7 +21,7 @@ function global_admin_menu() {
             "screenshot").")",
             BASE."objectManager.php?sClass=screenshot&bIsQueue=true&sTitle=".
             "Screenshot%20Queue");
-    $g->add("View Maintainer Queue (".Maintainer::getQueuedMaintainerCount().")",
+    $g->add("View Maintainer Queue (".Maintainer::objectGetEntriesCount(true).")",
             BASE."objectManager.php?sClass=maintainer&bIsQueue=true&sTitle=".
             "Maintainer%20Queue");
     $g->add("View Maintainer Entries (".Maintainer::getMaintainerCount().")",
