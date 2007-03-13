@@ -248,6 +248,19 @@ class Vendor {
             echo '</ol>',"\n";
         }
     }
+
+    /* Make a URL for viewing the specified vendor */
+    function objectMakeUrl()
+    {
+        $oManager = new objectManager("vendor", "View Vendor");
+        return $oManager->makeUrl("view", $this->iVendorId);
+    }
+
+    /* Make a HTML link for viewing the specified vendor */
+    function objectMakeLink()
+    {
+        return "<a href=\"".$this->objectMakeUrl()."\">$this->sName</a>";
+    }
 }
 
 /* Get the total number of Vendors in the database */

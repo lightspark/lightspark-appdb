@@ -635,7 +635,7 @@ class Application {
         echo '      <table width="250" border="0" cellpadding="3" cellspacing="1">',"\n";
         echo "        <tr class=color0 valign=top><td width=\"100\"><b>Name</b></td><td width='100%'> ".$this->sName." </td>\n";
         echo "        <tr class=\"color1\"><td><b>Vendor</b></td><td> ".
-            "        <a href='vendorview.php?iVendorId=$oVendor->iVendorId'> ".$oVendor->sName." </a> &nbsp;\n";
+            $oVendor->objectMakeLink()."&nbsp;\n";
         echo "        </td></tr>\n";
     
         // main URL
@@ -788,7 +788,13 @@ class Application {
     /* List applications submitted by a given user */
     function listSubmittedBy($iUserId, $bQueued = true)
     {
-        $hResult = query_parameters("SELECT appId, appName, appFamily.vendorId, description, submitTime, vendorName FROM appFamily, vendor WHERE appFamily.vendorId = vendor.vendorId AND submitterId = '?' AND queued = '?' ORDER BY appId", $iUserId, $bQueued ? "true" : "false");
+        $hResult = query_parameters("SELECT appId, appName, vendorId, description,
+               submitTime FROM appFamily
+                WHERE
+                submitterId = '?'
+                AND
+                queued = '?'
+                    ORDER BY appId", $iUserId, $bQueued ? "true" : "false");
 
         if(!$hResult || !mysql_num_rows($hResult))
             return false;
@@ -802,12 +808,15 @@ class Application {
             "color4");
 
         for($i = 1; $oRow = mysql_fetch_object($hResult); $i++)
+        {
+            $oVendor = new vendor($oRow->vendorId);
             $sResult .= html_tr(array(
                 "<a href=\"".BASE."appview.php?iAppId=$oRow->appId\">$oRow->appName</a>",
                 $oRow->description,
-                "<a href=\"".BASE."vendorview.php?iVendorId=$oRow->vendorId\">$oRow->vendorName</a>",
+                $oVendor->objectMakeLink(),
                 print_date(mysqltimestamp_to_unixtimestamp($oRow->submitTime))),
                 ($i % 2) ? "color0" : "color1");
+        }
 
         $sResult .= html_table_end();
 
