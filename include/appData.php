@@ -13,6 +13,7 @@ class appData
     var $iVersionId;
     var $iSubmitterId;
     var $sSubmitTime;
+    var $sDescription;
 
     function appData($iId = null, $oRow = null)
     {
@@ -21,8 +22,8 @@ class appData
 
         if(!$oRow)
         {
-            $hResult = query_parameters("SELECT * FROM appData WHERE $iId = '?'", $iId);
-            $oRow = mysql_fetch_object();
+            $hResult = query_parameters("SELECT * FROM appData WHERE id = '?'", $iId);
+            $oRow = mysql_fetch_object($hResult);
         }
 
         if($oRow)
@@ -32,6 +33,7 @@ class appData
             $this->iVersionId = $oRow->versionId;
             $this->sSubmitTime = $oRow->submitTime;
             $this->iId = $iId;
+            $this->sDescription = $oRow->description;
         }
     }
 
@@ -344,8 +346,8 @@ class appData
                 $this->iVersionId ? $oVersion->sName : "N/A");
 
         if(appData::canEdit($oObject->sClass))
-            $aCells[] = "[ <a href=\"".BASE."admin/adminAppDataQueue.php?iId=".
-                        "$this->iId\">Process</a> ]";
+            $aCells[] = "[ <a href=\"".$oObject->makeUrl("edit",
+                        $this->iId)."\">Process</a> ]";
 
         echo html_tr($aCells, $sClass);
     }
@@ -355,6 +357,44 @@ class appData
         $sHelp = "<p>This is a list of application data submitted by users. ".
                  "Please inspect the data carefully before accepting or rejecting it.</p>";
         echo $sHelp;
+    }
+
+    /* Output the part of an appData editor which is the same for all data types */
+    function outputEditorGeneric()
+    {
+        $oVersion = new version($this->iVersionId);
+        if($oVersion->iVersionId)
+        {
+            $this->iAppId = $oVersion->iAppId;
+            $sVersionName = $oVersion->objectMakeLink();
+        }
+        else
+            $sVersionName = "N/A";
+
+        $oApp = new Application($this->iAppId);
+
+        // view application details
+        echo html_frame_start("New Application Data Form",600,"",0);
+        echo "<table width='100%' border=0 cellpadding=2 cellspacing=0>\n";
+
+        // app name
+        echo '<tr valign=top><td class=color0><b>App Name</b></td>',"\n";
+        echo "<td>".$oApp->objectMakeLink()."</td></tr>\n";
+
+        // version
+        echo '<tr valign=top><td class=color0><b>App Version</b></td>',"\n";
+        echo "<td>$sVersionName</td></tr>\n";
+
+        //dataDescription
+        echo '<tr valign=top><td class=color0><b>Description</b></td>',"\n";
+        echo '<td><textarea name="sDescription" rows=10 cols=35>'.stripslashes($this->sDescription).'</textarea></td></tr>',"\n";
+    }
+
+    function getDefaultReply()
+    {
+        $sReplyText = "Enter a personalized reason for acceptance or rejection of the".
+                      " submitted application data here";
+        return $sReplyText;
     }
 }
 

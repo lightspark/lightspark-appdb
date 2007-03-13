@@ -954,7 +954,7 @@ class Version {
 
         $oRow = mysql_fetch_object($hResult);
         return "$oRow->appName $oRow->versionName";
-}
+    }
 
     function showList($hResult)
     {
@@ -1131,6 +1131,13 @@ class Version {
         }
 
         return FALSE;
+    }
+
+    function objectMakeLink()
+    {
+        $sLink = "<a href=\"".BASE."appview.php?iVersionId=$this->iVersionId\">".
+                 $this->sName."</a>";
+        return $sLink;
     }
 }
 

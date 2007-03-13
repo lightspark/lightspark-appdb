@@ -813,6 +813,13 @@ class Application {
 
         return $sResult;
     }
+
+    function objectMakeLink()
+    {
+        $sLink = "<a href=\"".BASE."appview.php?iAppId=$this->iAppId\">".
+                 $this->sName."</a>";
+        return $sLink;
+    }
 }
 
 ?>

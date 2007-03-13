@@ -150,6 +150,10 @@ class Screenshot {
         }
     }
 
+    function reject()
+    {
+        $this->delete();
+    }
 
     /**
      * Move screenshot out of the queue.
@@ -542,6 +546,59 @@ class Screenshot {
     function objectDisplayQueueProcessingHelp()
     {
         return appData::objectDisplayQueueProcessingHelp();
+    }
+
+    function outputEditor()
+    {
+        $oAppData = new appData($this->iScreenshotId);
+        $oAppData->outputEditorGeneric();
+
+        echo '<tr valign=top><td class=color0><b>Submited screenshot</b></td>',"\n";
+        echo '<td>';
+        $imgSRC = '<img width="'.$this->get_thumbnail_width().'" height="'.
+                $this->get_thumbnail_height().'" src="'.BASE.
+                'appimage.php?bQueued=true&iId='.$this->iScreenshotId.'" />';
+        // generate random tag for popup window
+        $randName = User::generate_passwd(5);
+        // set image link based on user pref
+        $img = '<a href="javascript:openWin(\''.BASE.'appimage.php?bQueued=true&iId='.
+                $this->iScreenshotId.'\',\''.$randName.'\','.$this->get_screenshot_width()
+                .','.($this->get_screenshot_height()+4).');">'.$imgSRC.'</a>';
+        if ($_SESSION['current']->isLoggedIn())
+        {
+            if ($_SESSION['current']->getpref("window:screenshot") == "no")
+            {
+                $img = '<a href="'.BASE.'appimage.php?bQueued=true&iId='.
+                        $this->iScreenshotId.'">'.$imgSRC.'</a>';
+            }
+        }
+        echo $img;
+        echo '</td></tr>',"\n";
+        echo '<input type="hidden" name="iScreenshotId" value="'.
+                $this->iScreenshotId.'" />';
+        echo html_frame_end();
+    }
+
+    function getOutputEditorValues($aClean)
+    {
+        /* STUB: No update possible, reply text fetched from $aClean */
+        return TRUE;
+    }
+
+    function update()
+    {
+        /* STUB: No updating possible at the moment */
+        return TRUE;
+    }
+
+    function objectHideDelete()
+    {
+        return TRUE;
+    }
+
+    function getDefaultReply()
+    {
+        return appData::getDefaultReply();
     }
 }
 
