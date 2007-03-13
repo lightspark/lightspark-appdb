@@ -145,9 +145,15 @@ class distribution {
         // is the current user allowed to delete this Distribution? 
         if(!$_SESSION['current']->hasPriv("admin") &&
            !($_SESSION['current']->iUserId == $this->iSubmitterId))
-        {
             return;
+
+        /* Check for associated test results */
+        if(sizeof($this->aTestingIds))
+        {
+            addmsg("This distribution still has associated test results", "red");
+            return FALSE;
         }
+
         // now delete the Distribution 
         $sQuery = "DELETE FROM distributions
                    WHERE distributionId = '?' 
@@ -179,7 +185,7 @@ class distribution {
         if(!$this->sQueued == 'true')
             return false;
 
-        if(query_parameters("UPDATE distribution SET queued = '?' WHERE distributionId = '?'",
+        if(query_parameters("UPDATE distributions SET queued = '?' WHERE distributionId = '?'",
                             "false", $this->iDistributionId))
         {
             $this->sQueued = 'false';
@@ -206,23 +212,7 @@ class distribution {
         if(!$this->sQueued == 'true')
             return false;
 
-        if(query_parameters("UPDATE distribution SET queued = '?' WHERE distributionId = '?'",
-                            "rejected", $this->iDistributionId))
-        {
-            $this->sQueued = 'rejected';
-            // we send an e-mail to interested people
-            if(!$bSilent)
-            {
-                $this->mailSubmitter("reject");
-                $this->SendNotificationMail("reject");
-            }
-            // the Distribution data has been rejected
-            return true;
-        } else
-        {
-            addmsg("Error while rejecting Distribution", "red");
-            return false;
-        }
+        return $this->delete();
     }
 
     function ReQueue()
@@ -270,16 +260,6 @@ class distribution {
                    $sSubject =  "Submitted Distribution accepted";
                    $sMsg  = "The Distribution you submitted (".$this->sName.") has been accepted.";
                }
-            break;
-            case "reject":
-                {
-                    $sSubject =  "Distribution rejected";
-                    $sMsg  = "The Distribution you submitted (".$this->sName.") has been rejected.";
-                    $sMsg .= APPDB_ROOT."testingData.php?sSub=view&iVersionId=".$this->iVersionId."\n";
-                    $sMsg .= "Reason given:\n";
-                    $sMsg .= $aClean['sReplyText']."\n"; // append the reply text, if there is any 
-                }
-
             break;
             case "delete":
                 {
@@ -387,14 +367,12 @@ class distribution {
     }
 
     /* Get the total number of Distributions in the database */
-    function getNumberOfDistributions($bQueued)
+    function objectGetEntriesCount($bQueued)
     {
-        if($bQueued)
-            $hResult = query_parameters("SELECT count(*) as num_dists FROM
-                                        distributions WHERE queued='true';");
-        else
-            $hResult = query_parameters("SELECT count(*) as num_dists FROM
-                                        distributions");
+            $hResult = query_parameters("SELECT count(distributionId) as num_dists FROM
+                                        distributions WHERE queued='?'",
+                                        $bQueued ? "true" : "false");
+
         if($hResult)
         {
             $oRow = mysql_fetch_object($hResult);
@@ -488,6 +466,11 @@ class distribution {
             return TRUE;
 
         return FALSE;
+    }
+
+    function objectHideDelete()
+    {
+        return TRUE;
     }
 
     function display()

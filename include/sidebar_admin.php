@@ -30,6 +30,9 @@ function global_admin_menu() {
             BASE."admin/adminBugs.php");
     $g->add("View Test Results Queue (".testData::getNumberOfQueuedTests().")",
             BASE."admin/adminTestResults.php");
+    $g->add("View Distribution Queue (".distribution::objectGetEntriesCount(true).")",
+            BASE."objectManager.php?sClass=distribution&bIsQueue=true&sTitle=".
+            "Distribution%20Queue");
 
     $g->addmisc("&nbsp;");
     $g->add("Users Management", BASE."admin/adminUsers.php");
