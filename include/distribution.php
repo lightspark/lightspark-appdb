@@ -420,8 +420,9 @@ class distribution {
         if($bQueued && !distribution::canEdit())
             return NULL;
 
+        /* If row limit is 0 we want to fetch all rows */
         if(!$iRows)
-            $iRows = distribution::getNumberOfDistributions($bQueued);
+            $iRows = distribution::objectGetEntriesCount($bQueued);
 
         $sQuery = "SELECT * FROM distributions
                        WHERE queued = '?' ORDER BY name LIMIT ?,?";
