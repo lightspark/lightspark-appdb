@@ -108,8 +108,8 @@ class appData
         if(($sQueued == "true" || $sQueued == "all") &&
             !$_SESSION['current']->hasPriv("admin"))
         {
-           $sQuery = "SELECT COUNT(DISTINCT id) as count FROM appData, appMaintainers,
-                appVersion, appFamily WHERE
+           $sQuery = "SELECT COUNT(DISTINCT appData.id) as count FROM appData,
+           appMaintainers, appVersion, appFamily WHERE
                 appFamily.appId = appVersion.appId
                 AND
                 appMaintainers.userId = '?'
@@ -159,7 +159,7 @@ class appData
             }
         } else
         {
-            $sQuery = "SELECT COUNT(DISTINCT id) as count FROM appData,
+            $sQuery = "SELECT COUNT(DISTINCT appData.id) as count FROM appData,
                 appFamily, appVersion WHERE
                     appFamily.appId = appVersion.appId
                     AND
@@ -209,7 +209,7 @@ class appData
         echo html_tr($aCells, $sClass);
     }
 
-    function objectGetEntries($bQueued, $sType)
+    function objectGetEntries($bQueued, $iRows = 0, $iStart = 0, $sType)
     {
         if($bQueued && !appData::canEdit($sType))
             return FALSE;
@@ -259,8 +259,20 @@ class appData
                 appData.queued = '?'
                 AND
                 appData.type = '?'";
-            $hResult = query_parameters($sQuery, $_SESSION['current']->iUserId,
+            if(!$iRows && !$iStarts)
+            {
+                $hResult = query_parameters($sQuery, $_SESSION['current']->iUserId,
                                         $bQueued ? "true" : "false", $sType);
+            } else
+            {
+                if(!$iRows)
+                    $iRows = appData::objectGetEntriesCount($bQueued ? "true" : "false",
+                                                            $sType);
+                $sQuery .= " LIMIT ?,?";
+                $hResult = query_parameters($sQuery, $_SESSION['current']->iUserId,
+                                            $bQueued ? "true" : "false", $sType,
+                                            $iStart, $iRows);
+            }
         } else
         {
             $sQuery = "SELECT DISTINCT appData.* FROM appData, appFamily, appVersion
@@ -280,7 +292,18 @@ class appData
                     appData.queued = '?'
                     AND
                     appData.type = '?'";
-            $hResult = query_parameters($sQuery, $bQueued ? "true" : "false", $sType);
+            if(!$iRows && !$iStart)
+            {
+                $hResult = query_parameters($sQuery, $bQueued ? "true" : "false", $sType);
+            } else
+            {
+                if(!$iRows)
+                    $iRows = appData::objectGetEntriesCount($bQueued ? "true" : "false",
+                                                            $sType);
+                $sQuery .= " LIMIT ?,?";
+                $hResult = query_parameters($sQuery, $bQueued ? "true" : "false", $sType,
+                                            $iStart, $iRows);
+            }
         }
 
         if(!$hResult)

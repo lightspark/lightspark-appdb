@@ -74,7 +74,7 @@ echo "</tr>\n\n";
 /* Display the number of images */
 echo "<tr class=color4>\n";
 echo "    <td>Screenshots:</td>\n";
-echo "    <td>".appData::objectGetEntriesCount(false)."</td>\n";
+echo "    <td>".appData::objectGetEntriesCount("false", "screenshot")."</td>\n";
 echo "</tr>\n\n";
 	
 echo "</table>\n\n";
