@@ -12,15 +12,19 @@ require_once(BASE.'include/maintainer.php');
 //require_once(BASE.'include/version_queue.php');
 
 /* internal function */
-function test_class($sClassName)
+function test_class($sClassName, $aTestMethods)
 {
-    $oOMM = new objectManager($sClassName);
-    if(!$oOMM->hasValidMethods(true))
+    $oObject = new ObjectManager("");
+    $oObject->sClass = $sClassName;
+    if(!$oObject->checkMethods($aTestMethods, false))
     {
+        echo $oObject->sClass." class does not have valid methods for use with".
+             " the object manager\n";
         return false;
+    } else
+    {
+        echo "PASSED:\t\t".$oObject->sClass."\n";
     }
-
-    return true;
 }
 
 function test_object_methods()
@@ -65,44 +69,18 @@ function test_object_methods()
     } else
     {
         echo "PASSED:\t\t".$sClassName."\n";
-    }
-
-    $sClassName = 'maintainer';
-    if(!test_class($sClassName))
-    {
-        echo $sClassName." class does not have valid methods for use with the object manager\n";
-        return false;
-    } else
-    {
-        echo "PASSED:\t\t".$sClassName."\n";
-    } */
+    }*/
 
     $aTestMethods = array("objectOutputHeader", "objectOutputTableRow",
                           "objectGetEntries", "display",
-                          "objectGetInstanceFromRow", "outputEditor", "canEdit");
+                          "objectGetInstanceFromRow", "outputEditor", "canEdit",
+                          "getOutputEditorValues", "objectGetEntries",
+                          "objectMakeUrl", "objectMakeLink");
 
-    $oObject = new ObjectManager("");
-    $oObject->sClass = 'distribution';
-    if(!$oObject->checkMethods($aTestMethods, false))
-    {
-        echo $oObject->sClass." class does not have valid methods for use with".
-             " the object manager\n";
-        return false;
-    } else
-    {
-        echo "PASSED:\t\t".$oObject->sClass."\n";
-    }
-
-    $oObject->sClass = 'vendor';
-    if(!$oObject->checkMethods($aTestMethods, false))
-    {
-        echo $oObject->sClass." class does not have valid methods for use with".
-             " the object manager\n";
-        return false;
-    } else
-    {
-        echo "PASSED:\t\t".$oObject->sClass."\n";
-    }
+    test_class("distribution", $aTestMethods);
+    test_class("vendor", $aTestMethods);
+/*    test_class("maintainer", $aTestMethods);
+    test_class("screenshot", $aTestMethods); */
 
     return true;
 }
