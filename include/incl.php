@@ -13,6 +13,7 @@ require(BASE."include/menu.php");
 require(BASE."include/html.php");
 require(BASE."include/error_log.php");
 require(BASE."include/query.php");
+require_once(BASE."include/objectManager.php");
 
 /* if magic quotes are enabled make sure the user disables them */
 /* otherwise they will see all kinds of odd effects that are difficult */

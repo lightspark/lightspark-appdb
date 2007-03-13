@@ -286,8 +286,9 @@ class distribution {
             case "add":
                 if($this->sQueued == "false")
                 {
-                    $sSubject = "Distribution ".$this->sName." added by ".$_SESSION['current']->sRealname;
-                    $sMsg  = APPDB_ROOT."distributionView.php?iDistributionId=".$this->iDistributionId."\n";
+                    $sSubject = "Distribution ".$this->sName." added by ".
+                            $_SESSION['current']->sRealname;
+                    $sMsg  = $this->objectMakeUrl."\n";
                     if($this->iSubmitterId)
                     {
                         $oSubmitter = new User($this->iSubmitterId);
@@ -307,7 +308,7 @@ class distribution {
             break;
             case "edit":
                 $sSubject =  "Distribution ".$this->sName." has been modified by ".$_SESSION['current']->sRealname;
-                $sMsg  = APPDB_ROOT."distributionView.php?iDistributionId=".$this->iDistributionId."\n";
+                $sMsg  = $this->objectMakeUrl()."\n";
                 addmsg("Distribution modified.", "green");
             break;
             case "delete":
@@ -323,8 +324,9 @@ class distribution {
                 addmsg("Distribution deleted.", "green");
             break;
             case "reject":
-                $sSubject = "Distribution '".$this->sName." has been rejected by ".$_SESSION['current']->sRealname;
-                $sMsg  = APPDB_ROOT."distributionView.php?iDistributionId=".$this->iDistributionId."\n";
+                $sSubject = "Distribution '".$this->sName." has been rejected by ".
+                        $_SESSION['current']->sRealname;
+                $sMsg  = $this->objectMakeUrl()."\n";
 
                  // if sReplyText is set we should report the reason the data was rejected 
                 if($aClean['sReplyText'])
@@ -548,6 +550,19 @@ class distribution {
             }
             echo '</table>',"\n";
         }
+    }
+
+    /* Make a URL for viewing the specified distribution */
+    function objectMakeUrl()
+    {
+        $oObject = new objectManager("distribution", "View Distribution");
+        return $oObject->makeUrl("view", $this->iDistributionId);
+    }
+
+    /* Make an HTML link for viewing the specified distirbution */
+    function objectMakeLink()
+    {
+        return "<a href=\"".$this->objectMakeUrl()."\">$this->sName</a>";
     }
 }
 

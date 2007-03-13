@@ -446,8 +446,7 @@ class testData{
             }
 
             echo '    <td>',"\n";
-            echo '<a href="'.BASE.'distributionView.php?iDistributionId='.$oTest->iDistributionId.'">',"\n";
-            echo $oDistribution->sName.'</a>',"\n";
+            echo $oDistribution->objectMakeLink()."\n";
             echo '    </td>',"\n";
             echo '    <td>'.date("M d Y", mysqldatetime_to_unixtimestamp($oTest->sTestedDate)).'</td>',"\n";
             echo '    <td>'.$oTest->sTestedRelease.'&nbsp</td>',"\n";
