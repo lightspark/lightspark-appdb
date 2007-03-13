@@ -421,7 +421,8 @@ class maintainer
         echo html_tr($aCells, $sClass);
     }
 
-    function ObjectOutputTableRow($oObject, $sClass)
+    /* arg1 = OM object, arg2 = CSS style, arg3 = text for edit link */
+    function ObjectOutputTableRow($oObject, $sClass, $sEditLinkLabel)
     {
         $oUser = new User($this->iUserId);
         $oApp = new Application($this->iAppId);
@@ -435,8 +436,8 @@ class maintainer
             "<a href=\"mailto:".$oUser->sEmail."\">".$oUser->sRealname."</a>");
 
         if(maintainer::canEdit())
-            $aCells[sizeof($aCells)] = "<a href=\"".$oObject->makeUrl("edit",
-            $this->iMaintainerId)."\">answer</a>";
+            $aCells[sizeof($aCells)] = "[ <a href=\"".$oObject->makeUrl("edit",
+            $this->iMaintainerId)."\">$sEditLinkLabel</a> ]";
 
         echo html_tr($aCells,
             $sClass);

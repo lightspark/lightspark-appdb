@@ -330,7 +330,8 @@ class appData
         }
     }
 
-    function objectOutputTableRow($oObject, $sClass)
+    /* arg1 = OM object, arg2 = CSS style, arg3 = text for edit link */
+    function objectOutputTableRow($oObject, $sClass, $sEditLinkLabel)
     {
         $oVersion = new Version($this->iVersionId);
 
@@ -347,7 +348,7 @@ class appData
 
         if(appData::canEdit($oObject->sClass))
             $aCells[] = "[ <a href=\"".$oObject->makeUrl("edit",
-                        $this->iId)."\">Process</a> ]";
+                        $this->iId)."\">$sEditLinkLabel</a> ]";
 
         echo html_tr($aCells, $sClass);
     }

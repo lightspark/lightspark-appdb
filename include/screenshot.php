@@ -537,10 +537,11 @@ class Screenshot {
         return new appData($oRow->id, $oRow);
     }
 
-    function objectOutputTableRow($oObject, $sClass)
+    /* arg1 = OM object, arg2 = CSS style, arg3 = text for edit link */
+    function objectOutputTableRow($oObject, $sClass, $sEditLinkLabel)
     {
         $oAppData = new AppData();
-        $oAppData->objectOutputTableRow($oObject, $sClass);
+        $oAppData->objectOutputTableRow($oObject, $sClass, $sEditLinkLabel);
     }
 
     function objectDisplayQueueProcessingHelp()

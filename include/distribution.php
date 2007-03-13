@@ -438,7 +438,8 @@ class distribution {
         return new distribution($oRow->distributionId, $oRow);
     }
 
-    function objectOutputTableRow($oManager, $sClass)
+    /* arg1 = OM object, arg2 = CSS style, arg3 = text for edit link */
+    function objectOutputTableRow($oManager, $sClass, $sEditLinkLabel)
     {
         $aCells = array(
              "<a href=\"".$oManager->makeUrl("view", $this->iDistributionId,
@@ -449,13 +450,12 @@ class distribution {
         if($this->canEdit())
         {
             if(!sizeof($this->aTestingIds))
-            {
-                $sDelete = " &nbsp; [<a href='".$oManager->makeUrl("delete",
+                $shDeleteLink = " &nbsp; [<a href='".$oManager->makeUrl("delete",
                     $this->iDistributionId)."'>delete</a>]";
-            }
-            $aCells[3] = array(
-                "[<a href='".$oManager->makeUrl("edit", $this->iDistributionId,
-                "Edit Distribution")."'>edit</a>]$sDelete",
+
+            $aCells[] = array(
+                "[<a href='".$oManager->makeUrl("edit",
+                $this->iDistributionId)."'>$sEditLinkLabel</a>]$shDeleteLink",
                 "align=\"center\"");
         }
 

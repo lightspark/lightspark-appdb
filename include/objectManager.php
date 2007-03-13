@@ -95,8 +95,9 @@ class ObjectManager
             $oObject = call_user_func(array($this->sClass,
                                             "objectGetInstanceFromRow"), $oRow);
 
-            $oObject->objectOutputTableRow($this,
-                ($iCount % 2) ? "color0" : "color1");
+            /* arg1 = OM object, arg2 = CSS style, arg3 = text for edit link */
+            $oObject->objectOutputTableRow($this, ($iCount % 2) ? "color0" : "color1",
+                $this->bIsQueue ? "process" : "edit");
         }
 
         echo "</table>";
@@ -313,7 +314,7 @@ class ObjectManager
 
         $sTitle = urlencode($sTitle);
 
-        return $_SERVER['PHP_SELF']."?bIsQueue=$sIsQueue&sClass=$this->sClass".
+        return BASE."objectManager.php?bIsQueue=$sIsQueue&sClass=$this->sClass".
                "&sTitle=$sTitle$sId$sAction";
     }
 
