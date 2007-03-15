@@ -1133,9 +1133,14 @@ class Version {
         return FALSE;
     }
 
+    function objectMakeUrl()
+    {
+        return BASE."appview.php?iVersionId=$this->iVersionId";
+    }
+
     function objectMakeLink()
     {
-        $sLink = "<a href=\"".BASE."appview.php?iVersionId=$this->iVersionId\">".
+        $sLink = "<a href=\"".$this->objectMakeUrl()."\">".
                  $this->sName."</a>";
         return $sLink;
     }

@@ -26,4 +26,6 @@ echo "\n";
 include_once("test_url.php");
 echo "\n";
 include_once("test_om_objects.php");
+echo "\n";
+include_once("test_appData.php");
 ?>

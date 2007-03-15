@@ -39,22 +39,17 @@ class appData
 
     function listSubmittedBy($iUserId, $bQueued = true)
     {
-        $hResult = query_parameters("SELECT appData.TYPE, appData.appId,
-            appData.versionId, appData.description, appData.submitTime,
-            appFamily.appName, appVersion.versionName FROM appData,
-            appFamily, appVersion
-                WHERE (appFamily.appId = appData.appId OR
-                (appData.versionId = appVersion.versionId AND appFamily.appId =
-                appVersion.appId)) AND (appFamily.queued = '?' OR
-                appVersion.queued = '?') AND appData.submitterId = '?' AND
+        $hResult = query_parameters("SELECT * FROM appData WHERE
+                appData.submitterId = '?'
+                AND
                 appData.queued = '?'
                     ORDER BY appData.id",
-                        "false", "false", $iUserId, $bQueued ? "true" : "false");
+                        $iUserId, $bQueued ? "true" : "false");
 
         if(!$hResult || !mysql_num_rows($hResult))
             return false;
 
-        $sReturn .= html_table_begin("width=\"100%\" align=\"center\"");
+        $sReturn = html_table_begin("width=\"100%\" align=\"center\"");
         $sReturn .= html_tr(array(
             "Version",
             "Type",
@@ -64,13 +59,19 @@ class appData
 
         for($i = 1; $oRow = mysql_fetch_object($hResult); $i++)
         {
+            if($oRow->versionId)
+            {
+                $oVersion = new version($oRow->versionId);
+                $sLink = "<a href=\"".$oVersion->objectMakeUrl()."\">".
+                         $oVersion->fullName($oVersion->iVersionId)."</a>";
+            } else
+            {
+                $oApp = new application($this->appId);
+                $sLink = $oApp->objectMakeLink();
+            }
             $sReturn .= html_tr(array(
-                $oRow->versionId ?
-                "<a href=\"".BASE."appview.php?iVersionId=$oRow->versionId\">".
-                "$oRow->appName: $oRow->versionName</a>" :
-                "<a href=\"".BASE."appview.php?iAppId=$oRow->appId\">".
-                "$oRow->appName</a>",
-                $oRow->TYPE,
+                $sLink,
+                $oRow->type,
                 $oRow->description,
                 print_date(mysqltimestamp_to_unixtimestamp($oRow->submitTime))),
                 ($i % 2) ? "color0" : "color1");
@@ -79,6 +80,7 @@ class appData
         $sReturn .= html_table_end("");
 
         return $sReturn;
+
     }
 
     /* Get appData for a given version/application, optionally filter by type */
