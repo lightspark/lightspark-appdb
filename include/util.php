@@ -77,13 +77,30 @@ function print_short_date($sTimestamp)
 
 function mysqltimestamp_to_unixtimestamp($sTimestamp)
 {
-  $d = substr($sTimestamp,6,2); // day
-  $m = substr($sTimestamp,4,2); // month
-  $y = substr($sTimestamp,0,4); // year
-  $hours = substr($sTimestamp,8,2); // year
-  $minutes = substr($sTimestamp,10,2); // year
-  $seconds = substr($sTimestamp,12,2); // year
-  return mktime($hours,$minutes,$seconds,$m, $d, $y);
+    $sResult = mysql_get_server_info();
+    $fVersion = substr($sResult, 0, 3);
+
+    /* This differs between MySQL versions, newer ones are in the form
+       yyyy-mm-dd hh:mm:ss */
+    if($fVersion >= 4.1)
+    {
+        $iDay = substr($sTimestamp, 8, 2);
+        $iMonth = substr($sTimestamp, 5, 2);
+        $iYear = substr($sTimestamp, 0, 4);
+        $iHours = substr($sTimestamp, 11, 2);
+        $iMinutes = substr($sTimestamp, 14, 2);
+        $iSeconds = substr($sTimestamp, 17, 2);
+    } else
+    /* The old ones are in the form yyyymmddhhmmss */
+    {
+        $iDay = substr($sTimestamp,6,2);
+        $iMonth = substr($sTimestamp,4,2);
+        $iYear = substr($sTimestamp,0,4);
+        $iHours = substr($sTimestamp,8,2);
+        $iMinutes = substr($sTimestamp,10,2);
+        $iSeconds = substr($sTimestamp,12,2);
+    }
+    return mktime($iHours, $iMinutes, $iSeconds, $iMonth, $iDay, $iYear);
 }
 
 function mysqldatetime_to_unixtimestamp($sDatetime)
