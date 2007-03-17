@@ -42,32 +42,34 @@ class Application {
     /**    
      * constructor, fetches the data.
      */
-    function Application($iAppId = null)
+    function Application($iAppId = null, $oRow = null)
     {
         // we are working on an existing application
         if(is_numeric($iAppId))
         {
-            /* fetch this applications information */
-            $sQuery = "SELECT *
-                       FROM appFamily 
-                       WHERE appId = '?'";
-            if($hResult = query_parameters($sQuery, $iAppId))
+            if(!$oRow)
             {
-                $oRow = mysql_fetch_object($hResult);
-                if($oRow)
-                {
-                    $this->iAppId = $iAppId;
-                    $this->iVendorId = $oRow->vendorId;
-                    $this->iCatId = $oRow->catId;
-                    $this->iSubmitterId = $oRow->submitterId;
-                    $this->sSubmitTime = $oRow->submitTime;
-                    $this->sDate = $oRow->submitTime;
-                    $this->sName = $oRow->appName;
-                    $this->sKeywords = $oRow->keywords;
-                    $this->sDescription = $oRow->description;
-                    $this->sWebpage = $oRow->webPage;
-                    $this->sQueued = $oRow->queued;
-                }
+                /* fetch this applications information */
+                $sQuery = "SELECT *
+                        FROM appFamily 
+                        WHERE appId = '?'";
+                if($hResult = query_parameters($sQuery, $iAppId))
+                    $oRow = mysql_fetch_object($hResult);
+            }
+
+            if($oRow)
+            {
+                $this->iAppId = $iAppId;
+                $this->iVendorId = $oRow->vendorId;
+                $this->iCatId = $oRow->catId;
+                $this->iSubmitterId = $oRow->submitterId;
+                $this->sSubmitTime = $oRow->submitTime;
+                $this->sDate = $oRow->submitTime;
+                $this->sName = $oRow->appName;
+                $this->sKeywords = $oRow->keywords;
+                $this->sDescription = $oRow->description;
+                $this->sWebpage = $oRow->webPage;
+                $this->sQueued = $oRow->queued;
             }
 
             /* fetch versions of this application, if there are any */
@@ -829,6 +831,87 @@ class Application {
                  $this->sName."</a>";
         return $sLink;
     }
+
+    function objectGetEntries($bQueued)
+    {
+        $sQuery = "SELECT * FROM appFamily WHERE
+                     appFamily.queued = '?'";
+
+        if($bQueued && !application::canEdit())
+        {
+            $sQuery .= "AND appFamily.submitterId = '?'";
+            $hResult = query_parameters($sQuery, $bQueued ? "true" : "false",
+                                        $_SESSION['current']->iUserId);
+        } else
+        {
+            $hResult = query_parameters($sQuery, $bQueued ? "true" : "false");
+        }
+
+        if(!$hResult)
+            return FALSE;
+
+        return $hResult;
+    }
+
+    function objectGetHeader()
+    {
+        $aCells = array(
+                "Submission Date",
+                "Submitter",
+                "Vendor",
+                "Application");
+
+        return $aCells;
+    }
+
+    function objectGetInstanceFromRow($oRow)
+    {
+        return new application($oRow->appId, $oRow);
+    }
+
+    function objectOutputTableRow($oObject, $sClass, $sEditLinkLabel)
+    {
+        $oUser = new user($this->iSubmitterId);
+        $oVendor = new vendor($this->iVendorId);
+        if(!$oVendor->sName)
+            $oVendor->sName = get_vendor_from_keywords($this->sKeywords);
+
+        $aCells = array(
+                print_date(mysqltimestamp_to_unixtimestamp($this->sSubmitTime)),
+                $oUser->sRealname,
+                $oVendor->sName,
+                $this->sName);
+
+        if($this->canEdit() || $oObject->bQueued)
+            $aCells[] = "[ <a href=\"".BASE."admin/adminAppQueue.php?sAppType=".
+                    "application&sSub=view&iAppId=$this->iAppId\">".
+                    "$sEditLinkLabel</a> ]";
+
+        echo html_tr($aCells, $sClass);
+    }
+
+    function canEdit()
+    {
+        if($_SESSION['current']->hasPriv("admin"))
+            return TRUE;
+        else
+            return FALSE;
+    }
+
+    function objectDisplayQueueProcessingHelp()
+    {
+        echo "<p>This is the list of applications waiting for your approval, ".
+             "or to be rejected.</p>\n";
+        echo "<p>To view a submission, click on its name. ".
+             "From that page you can edit, delete or approve it into the AppDB.</p>\n";
+    }
+}
+
+function get_vendor_from_keywords($sKeywords)
+{
+    $aKeywords = explode(" *** ",$sKeywords);
+    $iLastElt = (sizeOf($aKeywords)-1);
+    return($aKeywords[$iLastElt]);
 }
 
 ?>

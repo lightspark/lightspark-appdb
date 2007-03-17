@@ -9,13 +9,6 @@ require_once(BASE."include/tableve.php");
 require_once(BASE."include/application.php");
 require_once(BASE."include/testData.php");
 
-function get_vendor_from_keywords($sKeywords)
-{
-    $aKeywords = explode(" *** ",$sKeywords);
-    $iLastElt = (sizeOf($aKeywords)-1);
-    return($aKeywords[$iLastElt]);
-}
-
 /* allows the admin to click on a row and mark the current application as a duplicate */
 /* of the selected application */
 function outputSearchTableForDuplicateFlagging($currentAppId, $hResult)
@@ -420,30 +413,6 @@ if ($aClean['sSub'])
 else /* if ($aClean['sSub']) is not defined, display the main app queue page */
 {
     apidb_header("Admin App Queue");
-
-    // get queued apps that the current user should see
-    $hResult = $_SESSION['current']->getAppQueueQuery(true); /* query for the app family */
-
-    if(!$hResult || !mysql_num_rows($hResult))
-    {
-         //no apps in queue
-        echo html_frame_start("Application Queue","90%");
-        echo '<p><b>The Application Queue is empty.</b></p>',"\n";
-        echo html_frame_end("&nbsp;");         
-    }
-    else
-    {
-        //help
-        echo "<div align=center><table width='90%' border=0 cellpadding=3 cellspacing=0><tr><td>\n\n";
-        echo "<p>This is the list of applications waiting for your approval, or to be rejected.</p>\n";
-        echo "<p>To view a submission, click on its name. From that page you can edit, delete or approve it into \n";
-        echo "the AppDB .<br>\n";
-        echo "</td></tr></table></div>\n\n";
-    
-        //show applist
-        Application::showList($hResult);
-
-    }
 
      // get queued versions (only versions where application are not queued already)
      $hResult = $_SESSION['current']->getAppQueueQuery(false); /* query for the app version */

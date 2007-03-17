@@ -33,13 +33,6 @@ require_once(BASE."include/tableve.php");
 require_once(BASE."include/application.php");
 require_once(BASE."include/testData.php");
 
-function get_vendor_from_keywords($sKeywords)
-{
-    $aKeywords = explode(" *** ",$sKeywords);
-    $iLastElt = (sizeOf($aKeywords)-1);
-    return($aKeywords[$iLastElt]);
-}
-
 function newSubmission($errors)
 {
     global $aClean;

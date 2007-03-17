@@ -14,8 +14,10 @@ function global_admin_menu() {
     "false&sAction=add&sTitle=Add%20Vendor");
 
     $g->addmisc("&nbsp;");
-    $g->add("View App Queue (".$_SESSION['current']->getQueuedAppCount()."/".
-            $_SESSION['current']->getQueuedVersionCount().")",
+    $g->add("View App Queue (".$_SESSION['current']->getQueuedAppCount().")",
+            BASE."objectManager.php?sClass=application&bIsQueue=true&sTitle=".
+            "Application%20Queue");
+    $g->add("View Version Queue (".$_SESSION['current']->getQueuedVersionCount().")",
             BASE."admin/adminAppQueue.php");
     $g->add("View Screenshot Queue (".appData::objectGetEntriesCount("true",
             "screenshot").")",
