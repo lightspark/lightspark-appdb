@@ -271,10 +271,11 @@ if ($aClean['sSub'])
     }
 
     if ($aClean['sSub'] == 'view' && 
-       ($aClean['sAppName'] || $aClean['sAppType'] != "application"))
+       ($aClean['sAppName'] || $aClean['iAppId'] || $aClean['sAppType'] != "application"))
     {
         /* The appname is already entered in the potential duplicates step */
-        $oApp->sName = $aClean['sAppName'];
+        if(!$oApp->sName)
+            $oApp->sName = $aClean['sAppName'];
 
         $x = new TableVE("view");
         apidb_header("Application Queue");
