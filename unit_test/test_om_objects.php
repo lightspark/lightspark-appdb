@@ -143,7 +143,7 @@ function test_object_methods()
         echo "PASSED:\t\t".$sClassName."\n";
     }*/
 
-    $aTestMethods = array("objectOutputHeader", "objectOutputTableRow",
+    $aTestMethods = array("objectGetHeader", "objectOutputTableRow",
                           "objectGetEntries", "display",
                           "objectGetInstanceFromRow", "outputEditor", "canEdit",
                           "getOutputEditorValues", "objectMakeUrl", "objectMakeLink");

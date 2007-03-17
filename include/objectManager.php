@@ -55,7 +55,7 @@ class ObjectManager
     /* displays the list of entries */
     function display_table()
     {
-        $this->checkMethods(array("ObjectGetEntries", "ObjectOutputHeader",
+        $this->checkMethods(array("ObjectGetEntries", "ObjectGetHeader",
              "ObjectGetInstanceFromRow", "ObjectOutputTableRow", "canEdit"));
 
 
@@ -85,9 +85,8 @@ class ObjectManager
         /* output the header */
         echo '<table width="100%" border="0" cellpadding="3" cellspacing="0">';
 
-        call_user_func(array($this->sClass,
-                             "objectOutputHeader"), "color4");
-
+        /* Output header cells */
+        $this->outputHeader("color4");
 
         /* output each entry */
         for($iCount = 0; $oRow = mysql_fetch_object($hResult); $iCount++)
@@ -323,6 +322,20 @@ class ObjectManager
     {
         $sId = "i".ucfirst($this->sClass)."Id";
         return $aClean[$sId];
+    }
+
+    /* Output headers for a table */
+    function outputHeader($sClass)
+    {
+        $oObject = new $this->sClass();
+        $aCells = $oObject->objectGetHeader();
+
+        /* Add an action column if the user can edit this class, or if it is a queue.
+           Even though a user annot process items, he can edit his queued submissions */
+        if($oObject->canEdit() || $this->bIsQueue)
+            $aCells[] = "Action";
+
+        echo html_tr($aCells, $sClass);
     }
 }
 

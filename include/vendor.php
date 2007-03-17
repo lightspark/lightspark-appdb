@@ -167,17 +167,14 @@ class Vendor {
         return $hResult;
     }
 
-    function objectOutputHeader($sClass = "")
+    function objectGetHeader()
     {
-        $sCells = array(
+        $aCells = array(
             "Name",
             "Website",
             array("Linked apps", "align=\"right\""));
 
-        if(vendor::canEdit())
-            $sCells[sizeof($sCells)] = "Action";
-
-        echo html_tr($sCells, $sClass);
+        return $aCells;
     }
 
     function objectGetInstanceFromRow($oRow)

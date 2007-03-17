@@ -409,7 +409,7 @@ class maintainer
         return $aUserIds;
     }
 
-    function ObjectOutputHeader($sClass)
+    function ObjectGetHeader()
     {
         $aCells = array(
             "Submission Date",
@@ -418,10 +418,7 @@ class maintainer
             "Super maintainer?",
             "Submitter");
 
-        if(maintainer::canEdit())
-            $aCells[sizeof($aCells)] = "Action";
-
-        echo html_tr($aCells, $sClass);
+        return $aCells;
     }
 
     /* arg1 = OM object, arg2 = CSS style, arg3 = text for edit link */

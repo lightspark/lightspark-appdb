@@ -400,17 +400,14 @@ class distribution {
         echo "</select>\n";
     }
 
-    function objectOutputHeader($sClass = "")
+    function objectGetHeader()
     {
         $aCells = array(
             "Distribution name",
             "Distribution url",
             array("Linked Tests", "align=\"right\""));
 
-        if(distribution::canEdit())
-            $aCells[3] = array("Action", "align=\"center\"");
-
-        echo html_tr($aCells, $sClass);
+        return $aCells;
     }
 
     function objectGetEntries($bQueued, $iRows = 0, $iStart = 0)

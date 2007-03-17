@@ -199,7 +199,7 @@ class appData
 
     }
 
-    function objectOutputHeader($sClass, $sType)
+    function objectGetHeader($sType)
     {
         $aCells = array(
             "Submission Date",
@@ -207,10 +207,7 @@ class appData
             "Application",
             "Version");
 
-        if(appData::canEdit($sType))
-            $aCells[] = "Action";
-
-        echo html_tr($aCells, $sClass);
+        return $aCells;
     }
 
     function objectGetEntries($bQueued, $iRows = 0, $iStart = 0, $sType)

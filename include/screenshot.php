@@ -518,9 +518,9 @@ class Screenshot {
         return appData::objectGetEntries($bQueued, $iRows, $iStart, "screenshot");
     }
 
-    function objectOutputHeader($sClass)
+    function objectGetHeader()
     {
-        return appData::objectOutputHeader($sClass, "screenshot");
+        return appData::objectGetHeader("screenshot");
     }
 
     function canEdit()
