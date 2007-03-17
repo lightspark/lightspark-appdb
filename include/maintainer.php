@@ -197,29 +197,32 @@ class maintainer
     {
         /* Excluding requests for queued apps and versions, as these will be
            handled automatically */
-        if($bQueued)
-            $sQuery = "SELECT appMaintainers.submitTime, maintainerId FROM 
-                appMaintainers, user_list, appFamily
-                    WHERE appMaintainers.userid = user_list.userid AND 
-                    appMaintainers.queued = '?' AND appMaintainers.appId = 
-                    appFamily.appId AND appMaintainers.versionId = '' AND 
-                    appFamily.queued = 'false' UNION SELECT 
-                    appMaintainers.submitTime, maintainerId FROM 
-                    appMaintainers, user_list, appVersion WHERE 
-                    user_list.userid = appMaintainers.userid AND 
-                    appMaintainers.versionId = appVersion.versionId AND 
-                    appVersion.queued = 'false' AND appMaintainers.queued = '?' 
-                        ORDER by submitTime";
-        else
-            $sQuery = "SELECT maintainerId FROM appMaintainers, user_list
-                WHERE appMaintainers.userid = user_list.userid ".
-                "AND queued = '?' ORDER by realname";
+        $sQuery = "SELECT DISTINCT maintainerId, appMaintainers.submitTime FROM 
+            appMaintainers, appFamily, appVersion WHERE
+            appMaintainers.queued = '?'
+            AND
+            appFamily.appId = appVersion.appId
+            AND
+            (
+                (
+                    appFamily.appId = appMaintainers.appId
+                    AND
+                    appFamily.queued = 'false'
+                    AND 
+                    appMaintainers.versionId = ''
+                )
+                OR
+                (
+                    appVersion.versionId = appMaintainers.versionId
+                    AND
+                    appVersion.queued = 'false'
+                )
+            )";
 
         if($bQueued)
         {
             if($_SESSION['current']->hasPriv("admin"))
-                return query_parameters($sQuery, $bQueued ? "true" : "false",
-                    $bQueued ? "true" : "false");
+                return query_parameters($sQuery, $bQueued ? "true" : "false");
             else
                 return NULL;
         } else
