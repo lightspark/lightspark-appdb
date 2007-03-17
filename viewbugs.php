@@ -26,6 +26,7 @@ if(!is_numeric($aClean['iBugId']))
     echo '    <td width=80>Application Name</td>',"\n";
     echo '    <td>Description</td>',"\n";
     echo '    <td width=80>version</td>',"\n";
+    echo '    <td>Downloads</td>',"\n";
     echo '</tr>',"\n";
 
 
@@ -43,6 +44,14 @@ if(!is_numeric($aClean['iBugId']))
     {
         while($oRow = mysql_fetch_object($hResult))
         {
+            $sDownloadUrls = "";
+            if($hDownloadUrls = appData::getData($oRow->versionId, "downloadurl"))
+            {
+                while($oDownloadUrl = mysql_fetch_object($hDownloadUrls))
+                    $sDownloadUrls .= "<a href=\"$oDownloadUrl->url\">".
+                            "$oDownloadUrl->description</a><br />";
+            }
+
             // set row color
             $bgcolor = ($c % 2 == 0) ? "color0" : "color1";
             echo '<tr class='.$bgcolor.'>',"\n";
@@ -53,6 +62,7 @@ if(!is_numeric($aClean['iBugId']))
             echo '    <td>',"\n";
             echo '    <a href="appview.php?iVersionId='.$oRow->versionId.'">'.$oRow->versionName.'</a>',"\n";
             echo '    </td>',"\n";
+            echo "    <td>$sDownloadUrls</td>\n";
             echo '</tr>',"\n";
         }
     }
@@ -63,13 +73,13 @@ if(!is_numeric($aClean['iBugId']))
     echo '</tr>',"\n";
 
     echo '<tr class=color4>',"\n";
-    echo '    <td colspan=3 >&nbsp Bug #</td>',"\n";
+    echo '    <td colspan=4 >&nbsp Bug #</td>',"\n";
     echo '</tr>',"\n";
 
     echo '<tr class=color3>',"\n";
     echo '    <td align=center>',"\n";
     echo '    <input type="text" name="iBugId" value="'.$aClean['iBugId'].'" size="8"></td>',"\n";
-    echo '    <td colspan=2><input type="submit" name="sSub" value="Search"></td>',"\n";
+    echo '    <td colspan=3><input type="submit" name="sSub" value="Search"></td>',"\n";
     echo '</tr>',"\n";
 
     echo '</table>',"\n";
