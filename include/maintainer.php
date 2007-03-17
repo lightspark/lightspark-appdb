@@ -605,6 +605,24 @@ class maintainer
     {
         return TRUE;
     }
+
+    function display()
+    {
+        /* STUB: There is not much use for this, but it may be implemented later */
+        return TRUE;
+    }
+
+    function objectMakeUrl()
+    {
+        /* STUB: There is not much use for this, but it may be implemented later */
+        return TRUE;
+    }
+
+    function objectMakeLink()
+    {
+        /* STUB: There is not much use for this, but it may be implemented later */
+        return TRUE;
+    }
 }
 
 ?>

@@ -16,15 +16,87 @@ function test_class($sClassName, $aTestMethods)
 {
     $oObject = new ObjectManager("");
     $oObject->sClass = $sClassName;
+
+    /* Check whether the required methods are present */
     if(!$oObject->checkMethods($aTestMethods, false))
     {
-        echo $oObject->sClass." class does not have valid methods for use with".
+        echo "FAILED\t\t".$oObject->sClass." does not have valid methods for use with".
              " the object manager\n";
         return false;
-    } else
-    {
-        echo "PASSED:\t\t".$oObject->sClass."\n";
     }
+
+    /* Set up test user */
+    global $test_email, $test_password;
+    if(!$oUser = create_and_login_user())
+    {
+        echo "Failed to create and log in user.\n";
+        return FALSE;
+    }
+    /* Test the methods' functionality */
+    foreach($aTestMethods as $sMethod)
+    {
+        switch($sMethod)
+        {
+            /* Should also test for queued entries, but vendor does not support
+               queueing yet */
+            case "objectGetEntries":
+                $oUser->addPriv("admin");
+                $oTestObject = new $sClassName();
+                /* Set up one test entry, depending on class */
+                switch($sClassName)
+                {
+                    case "distribution":
+                        $oTestObject->sName = "Silly test distribution";
+                        $oTestObject->sUrl = "http://appdb.winehq.org/";
+                    break;
+                    case "maintainer":
+                        $iAppId = 65555;
+                        $oApp = new application();
+
+                        if(!$oApp->create())
+                        {
+                            echo "Failed to create application";
+                            return FALSE;
+                        }
+                        $oApp->iAppId = $iAppId;
+                        $oApp->update();
+                        $oTestObject->iUserId = $oUser->iUserId;
+                        $oTestObject->iAppId = $iAppId;
+                        $oTestObject->sMaintainReason = "I need it";
+                    break;
+                }
+                /* Should return 1 */
+                if(!$oTestObject->create())
+                {
+                    echo "FAILED\t\t$sClassName::create()\n";
+                    return FALSE;
+                }
+                $iExpected = 1;
+                $hResult = $oTestObject->objectGetEntries(false);
+                $iReceived = mysql_num_rows($hResult);
+                $oTestObject->delete();
+                if($iExpected > $iReceived)
+                {
+                    echo "Got $iReceived instead of >= $iExpected\n";
+                    echo "FAILED\t\t$sClassName::$sMethod\n";
+                    return FALSE;
+                }
+                /* Class specific clean-up */
+                switch($sClassName)
+                {
+                    case "maintainer":
+                        $oApp->delete();
+                    break;
+                }
+                echo "PASSED\t\t$sClassName::$sMethod\n";
+            break;
+        }
+    }
+
+    $oUser->delete();
+
+    echo "PASSED\t\t".$oObject->sClass."\n";
+    return TRUE;
 }
 
 function test_object_methods()
@@ -74,14 +146,19 @@ function test_object_methods()
     $aTestMethods = array("objectOutputHeader", "objectOutputTableRow",
                           "objectGetEntries", "display",
                           "objectGetInstanceFromRow", "outputEditor", "canEdit",
-                          "getOutputEditorValues", "objectGetEntries",
-                          "objectMakeUrl", "objectMakeLink");
+                          "getOutputEditorValues", "objectMakeUrl", "objectMakeLink");
 
-    test_class("distribution", $aTestMethods);
-    test_class("vendor", $aTestMethods);
-/*    test_class("maintainer", $aTestMethods);
-    test_class("screenshot", $aTestMethods); */
+    if(!test_class("distribution", $aTestMethods))
+        return FALSE;
 
+    if(!test_class("vendor", $aTestMethods))
+        return FALSE;
+
+    if(!test_class("maintainer", $aTestMethods))
+        return FALSE;
+
+/*    if(!test_class("screenshot", $aTestMethods))
+        return FALSE;  */
     return true;
 }
 
