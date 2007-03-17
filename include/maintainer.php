@@ -479,58 +479,49 @@ class maintainer
           */
         echo '<tr valign=top><td class=color0 style=\'text-align:right\'><b>Other maintainers of this app:</b></td>',"\n";
 
-        $bFoundMaintainers = false;
-
-        $bFirstDisplay = true; /* if false we need to fix up table rows appropriately */
-
-        /* display maintainers for the version */
+        /* Fetch maintainers and super maintainers */
         $oVersion = new Version($this->iVersionId);
-        $aOtherUsers = $oVersion->getMaintainersUserIds();
-        if($aOtherUsers)
-        {
+        $aOtherMaintainers = $oVersion->getMaintainersUserIds();
+        $aOtherSuperMaintainers =
+               Maintainer::getSuperMaintainersUserIdsFromAppId($this->iAppId);
+
+        if($aOtherMaintainers || $aOtherSuperMaintainers)
             $bFoundMaintainers = true;
-            while(list($index, $iUserId) = each($aOtherUsers))
+        else
+            $bFoundMaintainers = false;
+
+        echo "<td>\n";
+        /* display maintainers for the version */
+        if($aOtherMaintainers)
+        {
+            while(list($index, $iUserId) = each($aOtherMaintainers))
             {
                 $oUser = new User($iUserId);
-                if($bFirstDisplay)
-                {
-                    echo "<td>".$oUser->sRealname."</td></tr>\n";
-                    $bFirstDisplay = false;
-                } else
-                {
-                    echo "<tr><td class=\"color0\"></td><td>".$oUser->sRealname."</td></tr>\n";
-                }
+                echo "$oUser->sRealname<br />\n";
             }
         }
 
         /* display super maintainers for the given app */
-        $aOtherUsers = Maintainer::getSuperMaintainersUserIdsFromAppId($this->iAppId);
-        if($aOtherUsers)
+
+        if($aOtherSuperMaintainers)
         {
-            $bFoundMaintainers = true;
-            while(list($index, $iUserId) = each($aOtherUsers))
+            while(list($index, $iUserId) = each($aOtherSuperMaintainers))
             {
                 $oUser = new User($iUserId);
-                if($bFirstDisplay)
-                {
-                    echo "<td>".$oUser->sRealname."*</td></tr>\n";
-                    $bFirstDisplay = false;
-                } else
-                {
-                    echo "<tr><td class=\"color0\"></td><td>".$oUser->sRealname."*</td></tr>\n";
-                }
+                echo "$oUser->sRealname*<br />\n";
             }
         }
 
         if(!$bFoundMaintainers)
         {
-            echo "<td>No other maintainers</td></tr>\n";
+            echo "No other maintainers";
         }
 
-        // Show which other apps the user maintains
-        echo '<tr valign="top"><td class="color0" style=\'text-align:right\'><b>This user also maintains these apps:</b></td>',"\n";
+        echo "</td></tr>\n";
 
-        $bFirstDisplay = true;
+        // Show which other apps the user maintains
+        echo '<tr valign="top"><td class="color0" style=\'text-align:right\'><b>This user also maintains these apps:</b></td><td>',"\n";
+
         $oUser = new User($this->iUserId);
         $aOtherApps = Maintainer::getAppsMaintained($oUser);
         if($aOtherApps)
@@ -538,37 +529,29 @@ class maintainer
             while(list($index, list($iAppIdOther, $iVersionIdOther, $bSuperMaintainerOther)) = each($aOtherApps))
             {
                 $oApp = new Application($iAppIdOther);
-                $oVersion = new Version($iVersionIdOther);
-                if($bFirstDisplay)
-                {
-                    $bFirstDisplay = false;
-                    if($bSuperMaintainerOther)
-                        echo "<td>".$oApp->sName."*</td></tr>\n";
-                    else
-                        echo "<td>".$oApp->sName." ".$oVersion->sName."</td></tr>\n";
-                } else
-                {
-                    if($bSuperMaintainerOther)
-                        echo "<td class=color0></td><td>".$oApp->sName."*</td></tr>\n";
-                    else
-                        echo "<td class=color0></td><td>".$oApp->sName." ".$oVersion->sName."</td></tr>\n";
-                }
+
+                if($bSuperMaintainerOther)
+                    echo $oApp->objectMakeLink()."*<br />\n";
+                else
+                    echo $oVersion->fullNameLink($iVersionIdOther)."<br />\n";
             }
         } else
         {
-            echo "<td>User maintains no other applications</td></tr>\n";
+            echo "User maintains no other applications";
         }
+
+        echo "</td></tr>\n";
 
         $oApp = new Application($this->iAppId);
         $oVersion = new Version($this->iVersionId);
 
         //app name
         echo '<tr valign=top><td class=color0 style=\'text-align:right\'><b>App Name:</b></td>',"\n";
-        echo "<td>".$oApp->sName."</td></tr>\n";
+        echo "<td>".$oApp->objectMakeLink()."</td></tr>\n";
 
         //version
         echo '<tr valign=top><td class=color0 style=\'text-align:right\'><b>App Version:</b></td>',"\n";
-        echo "<td>".$oVersion->sName."</td></tr>\n";
+        echo "<td>".$oVersion->objectMakeLink()."</td></tr>\n";
          
         //maintainReason
         echo '<tr valign=top><td class=color0 style=\'text-align:right\'><b>Maintainer request reason:</b></td>',"\n";

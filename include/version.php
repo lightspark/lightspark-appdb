@@ -956,6 +956,15 @@ class Version {
         return "$oRow->appName $oRow->versionName";
     }
 
+    /* Creates a link to the version labelled with the full application name */
+    function fullNameLink($iVersionId)
+    {
+        $oVersion = new version($iVersionId);
+        $sLink = "<a href=\"".$oVersion->objectMakeUrl()."\">".
+                $oVersion->fullName($iVersionId)."</a>";
+        return $sLink;
+    }
+
     function showList($hResult)
     {
         //show applist
