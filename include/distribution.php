@@ -10,7 +10,6 @@ require_once(BASE."include/util.php");
 class distribution {
     var $iDistributionId;
     var $sName;
-    var $sDescription;
     var $sUrl;
     var $sSubmitTime;
     var $iSubmitterId;
@@ -37,7 +36,6 @@ class distribution {
             {
                 $this->iDistributionId = $iDistributionId;
                 $this->sName = $oRow->name;
-                $this->sDescription = $oRow->description;
                 $this->sUrl = $oRow->url;
                 $this->sSubmitTime = $oRow->submitTime;
                 $this->iSubmitterId = $oRow->submitterId;
@@ -288,7 +286,7 @@ class distribution {
                 {
                     $sSubject = "Distribution ".$this->sName." added by ".
                             $_SESSION['current']->sRealname;
-                    $sMsg  = $this->objectMakeUrl."\n";
+                    $sMsg  = $this->objectMakeUrl()."\n";
                     if($this->iSubmitterId)
                     {
                         $oSubmitter = new User($this->iSubmitterId);
