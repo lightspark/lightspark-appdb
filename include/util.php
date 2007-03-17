@@ -431,7 +431,7 @@ function searchForApplication($search_words)
            FROM appFamily, vendor
            WHERE appName != 'NONAME'
            AND appFamily.vendorId = vendor.vendorId
-           AND queued = 'false'
+           AND appFamily.queued = 'false'
            AND (appName LIKE '%".mysql_real_escape_string($search_words)."%'
            OR keywords LIKE '%".mysql_real_escape_string($search_words)."%'";
 
