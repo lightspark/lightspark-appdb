@@ -13,6 +13,9 @@ function global_maintainer_admin_menu() {
             "screenshot").")",
             BASE."objectManager.php?sClass=screenshot&bIsQueue=true&sTitle=".
             "Screenshot%20Queue");
+    $g->add("View Test Results Queue (".testData::objectGetEntriesCount(true).")",
+            BASE."objectManager.php?sClass=testData&bIsQueue=true&sTitle=".
+            "Test%20Results%20Queue");
     $g->done();
 }
 

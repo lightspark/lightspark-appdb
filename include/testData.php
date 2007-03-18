@@ -27,36 +27,35 @@ class testData{
     function testData($iTestingId = null)
     {
         // we are working on an existing test
-        if(is_numeric($iTestingId))
+        if($iTestingId)
         {
             // We fetch the data related to this test.
-            if(!$this->iTestingId)
+            if(!$oRow)
             {
                 $sQuery = "SELECT *
                            FROM testResults
                            WHERE testingId = '?'";
                 if($hResult = query_parameters($sQuery, $iTestingId))
-                {
                     $oRow = mysql_fetch_object($hResult);
-                    if($oRow)
-                    {
-                        $this->iTestingId = $oRow->testingId;
-                        $this->iVersionId = $oRow->versionId;
-                        $this->shWhatWorks = $oRow->whatWorks;
-                        $this->shWhatDoesnt = $oRow->whatDoesnt;
-                        $this->shWhatNotTested = $oRow->whatNotTested;
-                        $this->sTestedDate = $oRow->testedDate;
-                        $this->iDistributionId = $oRow->distributionId;
-                        $this->sTestedRelease = $oRow->testedRelease;
-                        $this->sInstalls = $oRow->installs;
-                        $this->sRuns = $oRow->runs;
-                        $this->sTestedRating = $oRow->testedRating;
-                        $this->sComments = $oRow->comments;
-                        $this->sSubmitTime = $oRow->submitTime;
-                        $this->iSubmitterId = $oRow->submitterId;
-                        $this->sQueued = $oRow->queued;
-                    }
-                }
+            }
+
+            if($oRow)
+            {
+                $this->iTestingId = $oRow->testingId;
+                $this->iVersionId = $oRow->versionId;
+                $this->shWhatWorks = $oRow->whatWorks;
+                $this->shWhatDoesnt = $oRow->whatDoesnt;
+                $this->shWhatNotTested = $oRow->whatNotTested;
+                $this->sTestedDate = $oRow->testedDate;
+                $this->iDistributionId = $oRow->distributionId;
+                $this->sTestedRelease = $oRow->testedRelease;
+                $this->sInstalls = $oRow->installs;
+                $this->sRuns = $oRow->runs;
+                $this->sTestedRating = $oRow->testedRating;
+                $this->sComments = $oRow->comments;
+                $this->sSubmitTime = $oRow->submitTime;
+                $this->iSubmitterId = $oRow->submitterId;
+                $this->sQueued = $oRow->queued;
             }
         }
     }
@@ -687,24 +686,6 @@ class testData{
         echo html_frame_end();
     }
 
-    /* Get the number of TestResults in the database */
-    function getNumberOfQueuedTests()
-    {
-        $sQuery = "SELECT count(*) as num_tests
-               FROM testResults, appVersion
-               WHERE appVersion.versionId=testResults.versionId
-               and appVersion.queued='false' 
-               and testResults.queued='true';";
-
-        $hResult = query_parameters($sQuery);
-        if($hResult)
-        {
-            $oRow = mysql_fetch_object($hResult);
-            return $oRow->num_tests;
-        }
-        return 0;
-    }
-
     function make_Installs_list($sVarname, $sSelectedValue)
     {
         echo "<select name='$sVarname'>\n";
@@ -766,6 +747,153 @@ class testData{
         $sReturn .= html_table_end();
 
         return $sReturn;
+    }
+
+    function objectGetEntriesCount($bQueued)
+    {
+        if($bQueued && !testData::canEdit())
+        {
+            if(testData::canEditSome())
+            {
+                $sQuery = "SELECT COUNT(testingId) AS count FROM
+                        testResults, appVersion, appMaintainers WHERE
+                            testResults.versionId = appVersion.versionId
+                            AND
+                            appVersion.queued = 'false'
+                            AND
+                            appMaintainers.userId = '?'
+                            AND
+                            (
+                            appMaintainers.appId = appVersion.appid
+                            OR
+                            appMaintainers.versionId = appVersion.versionId
+                            )
+                            AND
+                            testResults.queued = '?'";
+                $hResult = query_parameters($sQuery, $_SESSION['current']->iUserId,
+                                            $bQueued ? "true": "false");
+            }
+        } else
+        {
+            $sQuery = "SELECT COUNT(testingId) as count FROM testResults,
+                    appVersion WHERE
+                    appVersion.versionId = testResults.versionId
+                    AND
+                    appVersion.queued = 'false'
+                    AND
+                    testResults.queued = '?'";
+            $hResult = query_parameters($sQuery, $bQueued ? "true" : "false");
+        }
+
+        if(!$hResult)
+            return FALSE;
+
+        if(!$oRow = mysql_fetch_object($hResult))
+            return FALSE;
+
+        return $oRow->count;
+    }
+
+    function objectGetEntries($bQueued)
+    {
+        if($bQueued && !testData::canEdit())
+        {
+            if(testData::canEditSome())
+            {
+                $sQuery = "SELECT testResults.* FROM testResults, appVersion,
+                            appMaintainers WHERE
+                            testResults.versionId = appVersion.versionId
+                            AND
+                            appMaintainers.userId = '?'
+                            AND
+                            appVersion.queued = 'false'
+                            AND
+                            (
+                            appMaintainers.appId = appVersion.appid
+                            OR
+                            appMaintainers.versionId = appVersion.versionId
+                            )
+                            AND
+                            testResults.queued = '?'";
+                $hResult = query_parameters($sQuery, $_SESSION['current']->iUserId,
+                                            $bQueued ? "true": "false");
+            }
+        } else
+        {
+            $sQuery = "SELECT testResults.* FROM testResults, appVersion WHERE
+                    testResults.versionId = appVersion.versionId
+                    AND
+                    appVersion.queued = 'false'
+                    AND
+                    testResults.queued = '?' ORDER by testingId";
+            $hResult = query_parameters($sQuery, $bQueued ? "true" : "false");
+        }
+
+        if(!$hResult)
+            return FALSE;
+
+        return $hResult;
+    }
+
+    function objectGetHeader()
+    {
+        $aCells = array(
+                "Submission Date",
+                "Submitter",
+                "Application",
+                "Version",
+                "Release",
+                "Rating");
+        return $aCells;
+    }
+
+    function objectGetInstanceFromRow($oRow)
+    {
+        return new testData($oRow->testingId, $oRow);
+    }
+
+    function objectOutputTableRow($oObject, $sClass, $sEditLinkLabel)
+    {
+        $oVersion = new version($this->iVersionId);
+        $oApp = new application($oVersion->iAppId);
+        $oUser = new user($this->iSubmitterId);
+        $aCells = array(
+                print_date(mysqltimestamp_to_unixtimestamp($this->sSubmitTime)),
+                $oUser->sRealname,
+                $oApp->objectMakeLink(),
+                $oVersion->objectMakeLink(),
+                $this->sTestedRelease,
+                $this->sTestedRating);
+
+        if(testData::canEditSome())
+            $aCells[] = "[ <a href=\"".BASE."admin/adminTestResults.php?sSub=view&".
+                        "iTestingId=$this->iTestingId\">$sEditLinkLabel</a> ]";
+
+        echo html_tr($aCells, $this->sTestedRating);
+    }
+
+    function canEditSome()
+    {
+        if(testData::canEdit() || maintainer::isUserMaintainer($_SESSION['current']))
+            return TRUE;
+        else
+            return FALSE;
+    }
+
+    function canEdit()
+    {
+        if($_SESSION['current']->hasPriv("admin"))
+            return TRUE;
+        else
+            return FALSE;
+    }
+
+    function objectDisplayQueueProcessingHelp()
+    {
+        echo "<p>This is the list of test results waiting for submission, ".
+             "rejection or deletion.</p>\n";
+        echo "<p>To view a submission, click on its name. From that page ".
+             "you can submit it into the AppDB, reject it or delete it.</p>\n";
     }
 }
 

@@ -30,13 +30,16 @@ function global_admin_menu() {
             BASE."admin/adminMaintainers.php");
     $g->add("View Bug Links (".getNumberOfQueuedBugLinks()."/".getNumberOfBugLinks().")",
             BASE."admin/adminBugs.php");
-    $g->add("View Test Results Queue (".testData::getNumberOfQueuedTests().")",
-            BASE."admin/adminTestResults.php");
+    $g->add("View Test Results Queue (".testData::objectGetEntriesCount(true).")",
+            BASE."objectManager.php?sClass=testData&bIsQueue=true&sTitle=".
+            "Test%20Results%20Queue");
     $g->add("View Distribution Queue (".distribution::objectGetEntriesCount(true).")",
             BASE."objectManager.php?sClass=distribution&bIsQueue=true&sTitle=".
             "Distribution%20Queue");
 
     $g->addmisc("&nbsp;");
+    $g->add("View Rejected Test Results",
+            BASE."admin/adminTestResults.php");
     $g->add("Users Management", BASE."admin/adminUsers.php");
     $g->add("Comments Management", BASE."admin/adminCommentView.php");
     $g->add("Screenshots Management", BASE."admin/adminScreenshots.php");
