@@ -163,51 +163,7 @@ if ($aClean['sSub'])
 } 
 else // if ($aClean['sSub']) is not defined, display the Testing results queue page 
 {
-    apidb_header("Testing Results");
-
-    // Get queued testing results.
-    $oTest = new TestData();
-    $hResult = $oTest->getTestingQueue("true");
-
-    if(!$hResult)
-    {
-        // no Tests in queue
-        echo html_frame_start("Submitted Testing Results","90%");
-        echo '<p><b>The Submitted Testing Results Queue is empty.</b></p>',"\n";
-        echo html_frame_end("&nbsp;");         
-    }
-    else
-    {
-        // help
-        echo "<div align=center><table width='90%' border=0 cellpadding=3 cellspacing=0><tr><td>\n\n";
-        echo "<p>This is the list of test results waiting to be accepted or deleted.</p>\n";
-        echo "<p>To view a submission, click on its name. From that page you can delete or edit and\n";
-        echo "re-submit it into the AppDB.<br>\n";
-        echo "</td></tr></table></div>\n\n";
-
-        $oTest->ShowListofTests($hResult,"Submitted Testing Results");
-    }
-    // Get rejected testing results.
-    $hResult = $oTest->getTestingQueue("rejected");
-
-    if(!$hResult || !mysql_num_rows($hResult))
-    {
-        //no Test Results in queue
-        echo html_frame_start("Rejected Testing Results","90%");
-        echo '<p><b>The Rejected Testing Results Queue is empty.</b></p>',"\n";
-        echo html_frame_end("&nbsp;");         
-    }
-    else
-    {
-        //help
-        echo "<div align=center><table width='90%' border=0 cellpadding=3 cellspacing=0><tr><td>\n\n";
-        echo "<p>This is the list of Rejected Test Results waiting for re-submission or deletion.</p>\n";
-        echo "<p>To view a submission, click on its name. From that page you can delete or edit and re-submit it into \n";
-        echo "the AppDB .<br>\n";
-        echo "</td></tr></table></div>\n\n";
-
-        $oTest->ShowListofTests($hResult,"Rejected Test Results");
-    }
+    util_show_error_page_and_exit("No test id defined!");
 }
-apidb_footer();       
+apidb_footer();
 ?>
