@@ -313,7 +313,7 @@ class ObjectManager
 
         $sTitle = urlencode($sTitle);
 
-        return BASE."objectManager.php?bIsQueue=$sIsQueue&sClass=$this->sClass".
+        return APPDB_ROOT."objectManager.php?bIsQueue=$sIsQueue&sClass=$this->sClass".
                "&sTitle=$sTitle$sId$sAction";
     }
 
