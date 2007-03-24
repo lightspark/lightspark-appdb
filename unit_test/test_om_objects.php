@@ -88,7 +88,7 @@ function test_class($sClassName, $aTestMethods)
 
                 /* Should return 1 or more, since there may be entries present already */
                 $iExpected = 1;
-                $hResult = $oTestObject->objectGetEntries(false);
+                $hResult = $oTestObject->objectGetEntries(false, false);
                 $iReceived = mysql_num_rows($hResult);
                 $oTestObject->delete();
                 if($iExpected > $iReceived)

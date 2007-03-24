@@ -9,6 +9,7 @@ class ObjectManager
     var $bIsQueue;
     var $sTitle;
     var $iId;
+    var $bIsRejected;
 
     function ObjectManager($sClass, $sTitle = "list", $iId = false)
     {
@@ -58,27 +59,23 @@ class ObjectManager
         $this->checkMethods(array("ObjectGetEntries", "ObjectGetHeader",
              "ObjectGetInstanceFromRow", "ObjectOutputTableRow", "canEdit"));
 
-
+        $oObject = new $this->sClass();
         /* query the class for its entries */
         /* We pass in $this->bIsQueue to tell the object */
         /* if we are requesting a list of its queued objects or */
         /* all of its objects */
-        $hResult = call_user_func(array($this->sClass,
-                                        "objectGetEntries"), $this->bIsQueue);
+        $hResult = $oObject->objectGetEntries($this->bIsQueue, $this->sIsRejected);
 
         /* did we get any entries? */
         if(mysql_num_rows($hResult) == 0)
         {
-            $sIsQueue = $this->bIsQueue ? "true" : "false";
-
             if($this->bIsQueue)
                 echo "<center>The queue for '$this->sClass' is empty</center>";
             else
                 echo "<center>No entries of '$this->sClass' are present</center>";
 
-            echo "<br /><center><a href=\"".$_SERVER['PHP_SELF']."?sClass=".
-                 "$this->sClass&bIsQueue=$sIsQueue&sTitle=".
-                 urlencode($this->sTitle)."&sAction=add\">Add an entry?</a></center>";
+            echo "<br /><center><a href=\"".$this->makeUrl("add", false,
+                    "Add $this->sClass entry")."\">Add an entry?</a></center>";
             return;
         }
 
@@ -104,9 +101,8 @@ class ObjectManager
         $oObject = new $this->sClass();
         if($oObject->canEdit())
         {
-            echo "<br /><br /><a href=\"".$_SERVER['PHP_SELF']."?sClass=".
-                 "$this->sClass&sAction=add&sTitle=Add\">".
-                 "Add entry</a>\n";
+            echo "<br /><br /><a href=\"".$this->makeUrl("add", false,
+                    "Add $this->sClass")."\">Add entry</a>\n";
         }
     }
 
@@ -127,7 +123,9 @@ class ObjectManager
         echo '<input type="hidden" name="sTitle" value="'.$this->sTitle.'" />';
         echo '<input type="hidden" name="iId" value="'.$this->iId.'" />';
         echo '<input type="hidden" name="bIsQueue" '.
-             'value='.($this->bIsQueue ? "true" : "false").'>';
+             'value='.($this->bIsQueue ? "true" : "false").' />';
+        echo '<input type="hidden" name=bIsRejected" '.
+             'value='.($this->bIsRejected ? "true" : "false").' />';
 
         $oObject = new $this->sClass($this->iId);
 
@@ -307,6 +305,7 @@ class ObjectManager
             $sAction = "&sAction=$sAction";
 
         $sIsQueue = $this->bIsQueue ? "true" : "false";
+        $sIsRejected = $this->bIsRejected ? "true" : "false";
 
         if(!$sTitle)
             $sTitle = $this->sTitle;
@@ -314,7 +313,7 @@ class ObjectManager
         $sTitle = urlencode($sTitle);
 
         return APPDB_ROOT."objectManager.php?bIsQueue=$sIsQueue&sClass=$this->sClass".
-               "&sTitle=$sTitle$sId$sAction";
+               "&sTitle=$sTitle$sId$sAction&bIsRejected=$sIsRejected";
     }
 
     /* Get id from form data */
@@ -336,6 +335,20 @@ class ObjectManager
             $aCells[] = "Action";
 
         echo html_tr($aCells, $sClass);
+    }
+
+    function getQueueString($bQueued, $bRejected)
+    {
+        if($bQueued)
+        {
+            if($bRejected)
+                $sQueueString = "rejected";
+            else
+                $sQueueString = "true";
+        } else
+            $sQueueString = "false";
+
+        return $sQueueString;
     }
 }
 

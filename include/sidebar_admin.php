@@ -20,20 +20,21 @@ function global_admin_menu() {
     $g->add("View Version Queue (".$_SESSION['current']->getQueuedVersionCount().")",
             BASE."admin/adminAppQueue.php");
     $g->add("View Screenshot Queue (".appData::objectGetEntriesCount("true",
-            "screenshot").")",
+            false, "screenshot").")",
             BASE."objectManager.php?sClass=screenshot&bIsQueue=true&sTitle=".
             "Screenshot%20Queue");
-    $g->add("View Maintainer Queue (".Maintainer::objectGetEntriesCount(true).")",
+    $g->add("View Maintainer Queue (".Maintainer::objectGetEntriesCount(true, false).")",
             BASE."objectManager.php?sClass=maintainer&bIsQueue=true&sTitle=".
             "Maintainer%20Queue");
     $g->add("View Maintainer Entries (".Maintainer::getMaintainerCount().")",
             BASE."admin/adminMaintainers.php");
     $g->add("View Bug Links (".getNumberOfQueuedBugLinks()."/".getNumberOfBugLinks().")",
             BASE."admin/adminBugs.php");
-    $g->add("View Test Results Queue (".testData::objectGetEntriesCount(true).")",
+    $g->add("View Test Results Queue (".testData::objectGetEntriesCount(true, false).")",
             BASE."objectManager.php?sClass=testData&bIsQueue=true&sTitle=".
             "Test%20Results%20Queue");
-    $g->add("View Distribution Queue (".distribution::objectGetEntriesCount(true).")",
+    $g->add("View Distribution Queue (".distribution::objectGetEntriesCount(true, 
+            false).")",
             BASE."objectManager.php?sClass=distribution&bIsQueue=true&sTitle=".
             "Distribution%20Queue");
 

@@ -513,9 +513,10 @@ class Screenshot {
         return $shImg;
     }
 
-    function objectGetEntries($bQueued, $iRows = 0, $iStart = 0)
+    function objectGetEntries($bQueued, $bRejected, $iRows = 0, $iStart = 0)
     {
-        return appData::objectGetEntries($bQueued, $iRows, $iStart, "screenshot");
+        return appData::objectGetEntries($bQueued, $bRejected, $iRows, $iStart,
+                                         "screenshot");
     }
 
     function objectGetHeader()

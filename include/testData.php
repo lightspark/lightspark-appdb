@@ -754,9 +754,10 @@ class testData{
         return $sReturn;
     }
 
-    function objectGetEntriesCount($bQueued)
+    function objectGetEntriesCount($bQueued, $bRejected)
     {
         $oTest = new testData();
+        $sQueued = objectManager::getQueueString($bQueued, $bRejected);
         if($bQueued && !$oTest->canEdit())
         {
             if($oTest->canEditSome())
@@ -777,7 +778,7 @@ class testData{
                             AND
                             testResults.queued = '?'";
                 $hResult = query_parameters($sQuery, $_SESSION['current']->iUserId,
-                                            $bQueued ? "true": "false");
+                                            $sQueued);
             }
         } else
         {
@@ -788,7 +789,7 @@ class testData{
                     appVersion.queued = 'false'
                     AND
                     testResults.queued = '?'";
-            $hResult = query_parameters($sQuery, $bQueued ? "true" : "false");
+            $hResult = query_parameters($sQuery, $sQueued);
         }
 
         if(!$hResult)
@@ -800,9 +801,10 @@ class testData{
         return $oRow->count;
     }
 
-    function objectGetEntries($bQueued)
+    function objectGetEntries($bQueued, $bRejected)
     {
         $oTest = new testData();
+        $sQueued = objectManager::getQueueString($bQueued, $bRejected);
         if($bQueued && !$oTest->canEdit())
         {
             if($oTest->canEditSome())
@@ -823,7 +825,7 @@ class testData{
                             AND
                             testResults.queued = '?'";
                 $hResult = query_parameters($sQuery, $_SESSION['current']->iUserId,
-                                            $bQueued ? "true": "false");
+                                            $sQueued);
             }
         } else
         {
@@ -833,7 +835,7 @@ class testData{
                     appVersion.queued = 'false'
                     AND
                     testResults.queued = '?' ORDER by testingId";
-            $hResult = query_parameters($sQuery, $bQueued ? "true" : "false");
+            $hResult = query_parameters($sQuery, $sQueued);
         }
 
         if(!$hResult)

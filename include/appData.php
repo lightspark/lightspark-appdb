@@ -104,8 +104,18 @@ class appData
         return $hResult;
     }
 
-    function objectGetEntriesCount($sQueued, $sType = null)
+    function objectGetEntriesCount($sQueued, $bRejected, $sType = null)
     {
+        /* Not implemented for appData */
+        if($bRejected)
+            return FALSE;
+
+        /* Compatibility with objectManager */
+        if($sQueued === true)
+            $sQueued = "true";
+        if($sQueued === false)
+            $sQueued = "false";
+
         if(($sQueued == "true" || $sQueued == "all") && !appData::canEdit($sType))
            return FALSE;
 
@@ -210,8 +220,12 @@ class appData
         return $aCells;
     }
 
-    function objectGetEntries($bQueued, $iRows = 0, $iStart = 0, $sType)
+    function objectGetEntries($bQueued, $bRejected, $iRows = 0, $iStart = 0, $sType)
     {
+        /* Not implemented for appData */
+        if($bRejected)
+            return FALSE;
+
         if($bQueued && !appData::canEdit($sType))
             return FALSE;
 
@@ -268,7 +282,7 @@ class appData
             {
                 if(!$iRows)
                     $iRows = appData::objectGetEntriesCount($bQueued ? "true" : "false",
-                                                            $sType);
+                                                            $bRejected, $sType);
                 $sQuery .= " LIMIT ?,?";
                 $hResult = query_parameters($sQuery, $_SESSION['current']->iUserId,
                                             $bQueued ? "true" : "false", $sType,
@@ -300,7 +314,7 @@ class appData
             {
                 if(!$iRows)
                     $iRows = appData::objectGetEntriesCount($bQueued ? "true" : "false",
-                                                            $sType);
+                                                            $bRejected, $sType);
                 $sQuery .= " LIMIT ?,?";
                 $hResult = query_parameters($sQuery, $bQueued ? "true" : "false", $sType,
                                             $iStart, $iRows);

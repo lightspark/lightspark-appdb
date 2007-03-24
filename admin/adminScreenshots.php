@@ -64,7 +64,8 @@ if($aClean['iPage'])
     $currentPage = $aClean['iPage'];
 
 $ItemsPerPage = min($ItemsPerPage,100);
-$totalPages = ceil(appData::objectGetEntriesCount("all", "screenshot")/$ItemsPerPage);
+$totalPages = ceil(appData::objectGetEntriesCount("all", false,
+                    "screenshot")/$ItemsPerPage);
 $currentPage = min($currentPage,$totalPages);
 $offset = (($currentPage-1) * $ItemsPerPage);
 

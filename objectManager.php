@@ -25,9 +25,18 @@ if(!class_exists($aClean['sClass']))
 
 $oObject = new objectManager($aClean['sClass'], $aClean['sTitle'], $aClean['iId']);
 
-if($aClean['bIsQueue'] == 'true') $oObject->bIsQueue = true;
-else $oObject->bIsQueue = false;
+if($aClean['bIsQueue'] == 'true')
+    $oObject->bIsQueue = true;
+else
+    $oObject->bIsQueue = false;
 
+/* If it is rejected it is defined as queued */
+if($aClean['bIsRejected'] == 'true')
+{
+    $oObject->bIsRejected = true;
+    $oObject->bIsQueue = true;
+} else
+    $oObject->bIsRejected = false;
 
 $oOtherObject = new $oObject->sClass($oObject->iId);
 

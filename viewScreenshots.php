@@ -22,7 +22,8 @@ if($aClean['iPage'])
     $currentPage = $aClean['iPage'];
 
 $ItemsPerPage = min($ItemsPerPage,100);
-$totalPages = ceil(appData::objectGetEntriesCount("false", "screenshot")/$ItemsPerPage);
+$totalPages = ceil(appData::objectGetEntriesCount("false", false,
+                    "screenshot")/$ItemsPerPage);
 $currentPage = min($currentPage,$totalPages);
 $offset = (($currentPage-1) * $ItemsPerPage);
 
@@ -57,7 +58,7 @@ echo "</form>";
 echo "</center>";
 
 /* query for all of the Screenshots in assending order */
-$Ids = appData::objectGetEntries(false, $ItemsPerPage, $offset, "screenshot");
+$Ids = appData::objectGetEntries(false, false, $ItemsPerPage, $offset, "screenshot");
 $c = 1;
 echo "<div align=center><table><tr>\n";
 while ($oRow = mysql_fetch_object($Ids))

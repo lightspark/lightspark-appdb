@@ -367,8 +367,12 @@ class distribution {
     }
 
     /* Get the total number of Distributions in the database */
-    function objectGetEntriesCount($bQueued)
+    function objectGetEntriesCount($bQueued, $bRejected)
     {
+        /* Not implemented */
+        if($bRejected)
+            return FALSE;
+
             $hResult = query_parameters("SELECT count(distributionId) as num_dists FROM
                                         distributions WHERE queued='?'",
                                         $bQueued ? "true" : "false");
@@ -410,8 +414,12 @@ class distribution {
         return $aCells;
     }
 
-    function objectGetEntries($bQueued, $iRows = 0, $iStart = 0)
+    function objectGetEntries($bQueued, $bRejected, $iRows = 0, $iStart = 0)
     {
+        /* Not implemented */
+        if($bRejected)
+            return FALSE;
+
         /* Only users with edit privileges are allowed to view queued
            items, so return NULL in that case */
         if($bQueued && !distribution::canEdit())
@@ -419,7 +427,7 @@ class distribution {
 
         /* If row limit is 0 we want to fetch all rows */
         if(!$iRows)
-            $iRows = distribution::objectGetEntriesCount($bQueued);
+            $iRows = distribution::objectGetEntriesCount($bQueued, $bRejected);
 
         $sQuery = "SELECT * FROM distributions
                        WHERE queued = '?' ORDER BY name LIMIT ?,?";

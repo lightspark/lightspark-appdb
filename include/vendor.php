@@ -148,11 +148,15 @@ class Vendor {
         echo "</table>\n";
     }
 
-    function objectGetEntries($bQueued, $iRows = 0, $iStart = 0)
+    function objectGetEntries($bQueued, $bRejected, $iRows = 0, $iStart = 0)
     {
         /* Vendor queueing is not implemented yet */
         if($bQueued)
-            return NULL;
+            return FALSE;
+
+        /* Not implemented */
+        if($bRejected)
+            return FALSE;
 
         if(!$iRows)
             $iRows = getNumberOfVendors();

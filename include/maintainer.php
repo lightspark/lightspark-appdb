@@ -193,8 +193,12 @@ class maintainer
         return $hResult;
     }
 
-    function ObjectGetEntries($bQueued)
+    function ObjectGetEntries($bQueued, $bRejected)
     {
+        /* Not implemented */
+        if($bRejected)
+            return FALSE;
+
         /* Excluding requests for queued apps and versions, as these will be
            handled automatically */
         $sQuery = "SELECT DISTINCT maintainerId, appMaintainers.submitTime FROM 
@@ -273,8 +277,12 @@ class maintainer
         return $aAppsMaintained;
     }
 
-    function objectGetEntriesCount($bQueued)
+    function objectGetEntriesCount($bQueued, $bRejected)
     {
+        /* Not implemented */
+        if($bRejected)
+            return FALSE;
+
         /* Excluding requests for queued apps and versions, as these are handled 
            automatically.  One SELECT for super maintainers, one for maintainers. */
        $sQuery = "SELECT COUNT(DISTINCT maintainerId) as queued_maintainers FROM 

@@ -838,19 +838,21 @@ class Application {
         return $sLink;
     }
 
-    function objectGetEntries($bQueued)
+    function objectGetEntries($bQueued, $bRejected)
     {
         $sQuery = "SELECT * FROM appFamily WHERE
                      appFamily.queued = '?'";
 
+        $sQueued = objectManager::getQueueString($bQueued, $bRejected);
+
         if($bQueued && !application::canEdit())
         {
             $sQuery .= "AND appFamily.submitterId = '?'";
-            $hResult = query_parameters($sQuery, $bQueued ? "true" : "false",
+            $hResult = query_parameters($sQuery, $sQueued,
                                         $_SESSION['current']->iUserId);
         } else
         {
-            $hResult = query_parameters($sQuery, $bQueued ? "true" : "false");
+            $hResult = query_parameters($sQuery, $sQueued);
         }
 
         if(!$hResult)
