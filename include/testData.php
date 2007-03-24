@@ -64,7 +64,7 @@ class testData{
     function create()
     {
         // Security, if we are not an administrator or a maintainer the test result must be queued.
-        $oVersion = new Version($oTest->iVersionId);
+        $oVersion = new Version($this->iVersionId);
         if(!$_SESSION['current']->hasPriv("admin") && 
            !$_SESSION['current']->hasAppVersionModifyPermission($oVersion))
             $this->sQueued = 'true';
