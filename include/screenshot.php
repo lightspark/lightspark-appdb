@@ -601,6 +601,24 @@ class Screenshot {
     {
         return appData::getDefaultReply();
     }
+
+    function display()
+    {
+        /* STUB */
+        return TRUE;
+    }
+
+    function objectMakeLink()
+    {
+        /* STUB */
+        return TRUE;
+    }
+
+    function objectMakeUrl()
+    {
+        /* STUB */
+        return TRUE;
+    }
 }
 
 ?>

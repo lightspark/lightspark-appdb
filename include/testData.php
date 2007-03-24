@@ -24,7 +24,7 @@ class testData{
     var $sQueued;
 
      // constructor, fetches the data.
-    function testData($iTestingId = null)
+    function testData($iTestingId = null, $oRow = null)
     {
         // we are working on an existing test
         if($iTestingId)
@@ -894,6 +894,25 @@ class testData{
              "rejection or deletion.</p>\n";
         echo "<p>To view a submission, click on its name. From that page ".
              "you can submit it into the AppDB, reject it or delete it.</p>\n";
+    }
+
+    function display()
+    {
+        /* STUB */
+        return TRUE;
+    }
+
+
+    function objectMakeUrl()
+    {
+        /* STUB */
+        return TRUE;
+    }
+
+    function objectMakeLink()
+    {
+        /* STUB */
+        return TRUE;
     }
 }
 

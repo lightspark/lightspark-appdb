@@ -4,12 +4,9 @@
 
 require_once("path.php");
 require_once("test_common.php");
-//require_once(BASE."include/incl.php");
 require_once(BASE.'include/objectManager.php');
 require_once(BASE.'include/application.php');
-//require_once(BASE.'include/application_queue.php');
 require_once(BASE.'include/maintainer.php');
-//require_once(BASE.'include/version_queue.php');
 
 /* internal function */
 function test_class($sClassName, $aTestMethods)
@@ -65,12 +62,31 @@ function test_class($sClassName, $aTestMethods)
                         $oTestObject->sMaintainReason = "I need it";
                     break;
                 }
-                /* Should return 1 */
-                if(!$oTestObject->create())
+
+                /* We cannot use screenshot::create() because it requires an image */
+                if($sClassName != "screenshot")
                 {
-                    echo "FAILED\t\t$sClassName::create()\n";
-                    return FALSE;
+                    if(!$oTestObject->create())
+                    {
+                        echo "FAILED\t\t$sClassName::create()\n";
+                        return FALSE;
+                    }
+                } else
+                {
+                    $sQuery = "INSERT INTO appData
+                            (versionId, type, description, queued, submitterId)
+                            VALUES('?','?','?','?','?')";
+                    $hResult = query_parameters($sQuery, 0, "screenshot", "", "false",
+                                                $oUser->iUserId);
+                    if(!$hResult)
+                    {
+                        echo "FAILED\t\t$sClassName to create screenshot entry";
+                        returN FALSE;
+                    }
+                    $oTestObject->iScreenshotId = mysql_insert_id();
                 }
+
+                /* Should return 1 or more, since there may be entries present already */
                 $iExpected = 1;
                 $hResult = $oTestObject->objectGetEntries(false);
                 $iReceived = mysql_num_rows($hResult);
@@ -103,46 +119,6 @@ function test_object_methods()
 {
     test_start(__FUNCTION__);
 
-/*    $sClassName = 'application';
-    if(!test_class($sClassName))
-    {
-        echo $sClassName." class does not have valid methods for use with the object manager\n";
-        return false;
-    } else
-    {
-        echo "PASSED:\t\t".$sClassName."\n";
-    }
-
-    $sClassName = 'application_queue';
-    if(!test_class($sClassName))
-    {
-        echo $sClassName." class does not have valid methods for use with the object manager\n";
-        return false;
-    } else
-    {
-        echo "PASSED:\t\t".$sClassName."\n";
-    }
-
-    $sClassName = 'version';
-    if(!test_class($sClassName))
-    {
-        echo $sClassName." class does not have valid methods for use with the object manager\n";
-        return false;
-    } else
-    {
-        echo "PASSED:\t\t".$sClassName."\n";
-    }
-
-    $sClassName = 'version_queue';
-    if(!test_class($sClassName))
-    {
-        echo $sClassName." class does not have valid methods for use with the object manager\n";
-        return false;
-    } else
-    {
-        echo "PASSED:\t\t".$sClassName."\n";
-    }*/
-
     $aTestMethods = array("objectGetHeader", "objectOutputTableRow",
                           "objectGetEntries", "display",
                           "objectGetInstanceFromRow", "outputEditor", "canEdit",
@@ -152,13 +128,23 @@ function test_object_methods()
         return FALSE;
 
     if(!test_class("vendor", $aTestMethods))
-        return FALSE;
+        return FALSE; 
 
     if(!test_class("maintainer", $aTestMethods))
         return FALSE;
 
-/*    if(!test_class("screenshot", $aTestMethods))
-        return FALSE;  */
+    if(!test_class("screenshot", $aTestMethods))
+        return FALSE;
+
+    if(!test_class("application", $aTestMethods))
+        return FALSE;
+
+    if(!test_class("testData", $aTestMethods))
+        return FALSE;
+
+/*    if(!test_class("version", $aTestMethods))
+        return FALSE; */
+
     return true;
 }
 
