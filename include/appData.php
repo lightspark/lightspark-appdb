@@ -354,7 +354,7 @@ class appData
         $oApp = new Application($this->iAppId);
         $oUser = new User($this->iSubmitterId);
         $aCells = array(
-                print_date(mysqldatetime_to_unixtimestamp($this->sSubmitTime)),
+                print_date(mysqltimestamp_to_unixtimestamp($this->sSubmitTime)),
                 $oUser->sRealname,
                 $oApp->sName,
                 $this->iVersionId ? $oVersion->sName : "N/A");
