@@ -170,6 +170,8 @@ class testData{
 
         if($this->iSubmitterId && ($this->iSubmitterId != $_SESSION['current']->iUserId))
             $this->mailSubmitter("delete");
+
+        return TRUE;
     }
 
 
@@ -455,7 +457,9 @@ class testData{
             echo '    <td>'.$sStatus.'&nbsp</td>',"\n";
             if ($_SESSION['current']->hasAppVersionModifyPermission($oVersion))
             {
-                echo '<td><a href="'.BASE.'admin/adminTestResults.php?sSub=view&iTestingId='.$oTest->iTestingId.'">',"\n";
+                $oObject = new objectManager("testData");
+                echo '<td><a href="'.$oObject->makeUrl("edit", $oTest->iTestingId,
+                        "Edit Test Results").'">',"\n";
                 echo 'Edit</a></td>',"\n";
             }
             echo '</tr>',"\n";
@@ -545,6 +549,7 @@ class testData{
 
         echo '<input type="hidden" name="iVersionId" value="'.$this->iVersionId.'" >';
         echo '<input type="hidden" name="iTestingId" value="'.$this->iTestingId.'" >';
+        echo '<input type="hidden" name="iTestDataId" value="'.$this->iTestingId.'" >';
 
         echo "</table>\n";
 
@@ -751,9 +756,10 @@ class testData{
 
     function objectGetEntriesCount($bQueued)
     {
-        if($bQueued && !testData::canEdit())
+        $oTest = new testData();
+        if($bQueued && !$oTest->canEdit())
         {
-            if(testData::canEditSome())
+            if($oTest->canEditSome())
             {
                 $sQuery = "SELECT COUNT(testingId) AS count FROM
                         testResults, appVersion, appMaintainers WHERE
@@ -796,9 +802,10 @@ class testData{
 
     function objectGetEntries($bQueued)
     {
-        if($bQueued && !testData::canEdit())
+        $oTest = new testData();
+        if($bQueued && !$oTest->canEdit())
         {
-            if(testData::canEditSome())
+            if($oTest->canEditSome())
             {
                 $sQuery = "SELECT testResults.* FROM testResults, appVersion,
                             appMaintainers WHERE
@@ -865,16 +872,16 @@ class testData{
                 $this->sTestedRelease,
                 $this->sTestedRating);
 
-        if(testData::canEditSome())
-            $aCells[] = "[ <a href=\"".BASE."admin/adminTestResults.php?sSub=view&".
-                        "iTestingId=$this->iTestingId\">$sEditLinkLabel</a> ]";
+        if($this->canEditSome())
+            $aCells[] = "[ <a href=\"".$oObject->makeUrl("edit",
+                $this->iTestingId)."\">$sEditLinkLabel</a> ]";
 
         echo html_tr($aCells, $this->sTestedRating);
     }
 
     function canEditSome()
     {
-        if(testData::canEdit() || maintainer::isUserMaintainer($_SESSION['current']))
+        if($this->canEdit() || maintainer::isUserMaintainer($_SESSION['current']))
             return TRUE;
         else
             return FALSE;
@@ -884,7 +891,14 @@ class testData{
     {
         if($_SESSION['current']->hasPriv("admin"))
             return TRUE;
-        else
+        else if($this->iTestingId)
+        {
+            $oVersion = new version($this->iVersionId);
+            if($_SESSION['current']->hasAppVersionModifyPermission($oVersion))
+                return TRUE;
+            else
+                return FALSE;
+        } else
             return FALSE;
     }
 
