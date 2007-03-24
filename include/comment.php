@@ -454,7 +454,8 @@ function forum_lookup_user($iUserId)
     {
         $oUser = new User($iUserId);
         if($_SESSION['current']->isLoggedIn())
-            $sMailto = '<a href="mailto:' . $oUser->sEmail . '">' . $oUser->sRealname . '</a>';
+            $sMailto = '<a href="'.BASE.'contact.php?iRecipientId='.
+                    $oUser->iUserId.'">' .$oUser->sRealname . '</a>';
         else
             $sMailto = $oUser->sRealname;
     }
