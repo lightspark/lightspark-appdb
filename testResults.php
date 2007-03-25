@@ -114,11 +114,7 @@ if ($aClean['sSub'])
 
 
         //help
-        echo "<p>This is the screen for inputing test information so that others looking at the database will know \n";
-        echo "what was working on a particular release of Wine.</p>\n";
-        echo "<p>Please be as detailed as you can.</p>\n";
-        echo "<p>If you cannot find your distribution in the list of existing distributions, please add it in the \n";
-        echo "provided field.</p>\n\n";        
+        $oTest->objectDisplayAddItemHelp();
 
         if(!empty($errors))
         {
