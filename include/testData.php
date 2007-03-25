@@ -921,8 +921,8 @@ class testData{
 
     function objectMakeUrl()
     {
-        /* STUB */
-        return TRUE;
+        $oObject = new objectManager("testData", "Edit Test Results", $this->iTestingId);
+        return $oObject->makeUrl("edit", $this->iTestingId);
     }
 
     function objectMakeLink()

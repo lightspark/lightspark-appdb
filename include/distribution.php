@@ -546,7 +546,7 @@ class distribution {
                 echo '<td>'.$oTest->sTestedRating.'&nbsp</td>',"\n";
                 if ($_SESSION['current']->hasAppVersionModifyPermission($oVersion))
                 {
-                    echo '<td><a href="'.BASE.'admin/adminTestResults.php?sSub=view&iTestingId='.$oTest->iTestingId.'">',"\n";
+                    echo '<td><a href="'.$oTest->objectMakeUrl().'">',"\n";
                     echo 'Edit</a></td>',"\n";
                 }
                 echo '</tr>',"\n";

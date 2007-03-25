@@ -39,8 +39,10 @@ function global_admin_menu() {
             "Distribution%20Queue");
 
     $g->addmisc("&nbsp;");
-    $g->add("View Rejected Test Results",
-            BASE."admin/adminTestResults.php");
+    $g->add("View Rejected Test Results (".testData::objectGetEntriesCount(true,
+            true).")",
+            BASE."objectManager.php?sClass=testData&bIsQueue=true&bIsRejected=true&".
+            "sTitle=Rejected%20Test%20Results");
     $g->add("Users Management", BASE."admin/adminUsers.php");
     $g->add("Comments Management", BASE."admin/adminCommentView.php");
     $g->add("Screenshots Management", BASE."admin/adminScreenshots.php");

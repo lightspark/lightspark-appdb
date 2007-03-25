@@ -64,15 +64,24 @@ class ObjectManager
         /* We pass in $this->bIsQueue to tell the object */
         /* if we are requesting a list of its queued objects or */
         /* all of its objects */
-        $hResult = $oObject->objectGetEntries($this->bIsQueue, $this->sIsRejected);
+        $hResult = $oObject->objectGetEntries($this->bIsQueue, $this->bIsRejected);
 
         /* did we get any entries? */
         if(mysql_num_rows($hResult) == 0)
         {
-            if($this->bIsQueue)
-                echo "<center>The queue for '$this->sClass' is empty</center>";
-            else
-                echo "<center>No entries of '$this->sClass' are present</center>";
+            switch($this->getQueueString($this->bIsQueue, $this->bIsRejected))
+            {
+                case "true":
+                    echo "<center>The queue for '$this->sClass' is empty</center>";
+                break;
+                case "false":
+                    echo "<center>No entries of '$this->sClass' are present</center>";
+                break;
+                case "rejected":
+                    echo "<center>No rejected entries of '$this->sClass' are ".
+                            "present</center>";
+                break;
+            }
 
             echo "<br /><center><a href=\"".$this->makeUrl("add", false,
                     "Add $this->sClass entry")."\">Add an entry?</a></center>";
@@ -124,7 +133,7 @@ class ObjectManager
         echo '<input type="hidden" name="iId" value="'.$this->iId.'" />';
         echo '<input type="hidden" name="bIsQueue" '.
              'value='.($this->bIsQueue ? "true" : "false").' />';
-        echo '<input type="hidden" name=bIsRejected" '.
+        echo '<input type="hidden" name="bIsRejected" '.
              'value='.($this->bIsRejected ? "true" : "false").' />';
 
         $oObject = new $this->sClass($this->iId);
@@ -154,8 +163,13 @@ class ObjectManager
                 echo '<input name="sSubmit" type="submit" value="Delete" '.
                      'class="button" />',"\n";
             }
-            echo '<input name="sSubmit" type="submit" value="Reject" class="button" '.
-                 '/>',"\n";
+
+            if(!$this->bIsRejected)
+            {
+                echo '<input name="sSubmit" type="submit" value="Reject" class="button" '.
+                    '/>',"\n";
+            }
+
             echo '<input name="sSubmit" type="submit" value="Cancel" class="button" '.
                  '/>',"\n";
             echo '</td></tr>',"\n";
@@ -284,8 +298,6 @@ class ObjectManager
             case "Delete":
                 $this->delete_entry();
         }
-
-        $sIsQueue = $tihs->bIsQueue ? "true" : "false";
 
         if(!$this->bIsQueue)
             $sAction = "view";
