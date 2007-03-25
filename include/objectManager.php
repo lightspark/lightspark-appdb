@@ -116,7 +116,7 @@ class ObjectManager
     }
 
     /* display the entry for editing */
-    function display_entry_for_editing($sBackLink)
+    function display_entry_for_editing($sBackLink, $sErrors)
     {
         $this->checkMethods(array("outputEditor", "getOutputEditorValues",
                                   "update", "create"));
@@ -124,9 +124,17 @@ class ObjectManager
         // link back to the previous page
         echo html_back_link(1, $sBackLink);
 
-        echo '<form name="sQform" action="'.BASE.'objectManager.php?sClass='.
-             $this->sClass."&bIsQueue=".($this->bIsQueue ? "true" : "false").
-             ' method="post" enctype="multipart/form-data">',"\n";
+        $oObject = new $this->sClass($this->iId);
+
+        /* Display errors, if any, and fetch form data */
+        if($this->displayErrors($sErrors))
+        {
+            global $aClean;
+            $oObject->getOutputEditorValues($aClean);
+        }
+
+        echo '<form name="sQform" action="'.$this->makeUrl("edit", $this->iId).
+                '" method="post" enctype="multipart/form-data">',"\n";
 
         echo '<input type="hidden" name="sClass" value="'.$this->sClass.'" />';
         echo '<input type="hidden" name="sTitle" value="'.$this->sTitle.'" />';
@@ -135,8 +143,6 @@ class ObjectManager
              'value='.($this->bIsQueue ? "true" : "false").' />';
         echo '<input type="hidden" name="bIsRejected" '.
              'value='.($this->bIsRejected ? "true" : "false").' />';
-
-        $oObject = new $this->sClass($this->iId);
 
         $oObject->outputEditor();
 
@@ -215,13 +221,24 @@ class ObjectManager
     }
 
     /* Display screen for submitting a new entry of given type */
-    function add_entry($sBackLink)
+    function add_entry($sBackLink, $sErrors = "")
     {
         $this->checkMethods(array("outputEditor", "getOutputEditorValues",
                                   "update", "create"));
 
+
         $oObject = new $this->sClass();
 
+        /* Display help if it is exists */
+        if(method_exists(new $this->sClass, "objectDisplayAddItemHelp"))
+            $oObject->objectDisplayAddItemHelp();
+
+        /* Display errors, if any, and fetch form data */
+        if($this->displayErrors($sErrors))
+        {
+            global $aClean;
+            $oObject->getOutputEditorValues($aClean);
+        }
         echo "<form method=\"post\">\n";
 
         $oObject->outputEditor();
@@ -272,6 +289,14 @@ class ObjectManager
 
         $oObject->getOutputEditorValues($aClean);
 
+        /* Check input, if necessary */
+        if(method_exists(new $this->sClass, "checkOutputEditorInput"))
+        {
+            $sErrors = $oObject->checkOutputEditorInput($aClean);
+            if($sErrors)
+                return $sErrors;
+        }
+
         switch($aClean['sSubmit'])
         {
             case "Submit":
@@ -299,12 +324,16 @@ class ObjectManager
                 $this->delete_entry();
         }
 
-        if(!$this->bIsQueue)
-            $sAction = "view";
+        /* Displaying the entire un-queued list for a class is not a good idea,
+        so only do so for queued data */
+        if($this->bIsQueue)
+            $sRedirectLink = $this->makeUrl("view", false, "$this->sClass list");
         else
-            $sAction = false;
+            $sRedirectLink = APPDB_ROOT;
 
-        util_redirect_and_exit($this->makeUrl($sAction, false, "$this->sClass list"));
+        util_redirect_and_exit($sRedirectLink);
+
+        return TRUE;
     }
 
     /* Make an objectManager URL based on the object and optional parameters */
@@ -361,6 +390,18 @@ class ObjectManager
             $sQueueString = "false";
 
         return $sQueueString;
+    }
+
+    function displayErrors($sErrors)
+    {
+        if($sErrors)
+        {
+            echo "<font color=\"red\">\n";
+            echo "The following errors were found<br />\n";
+            echo "<ul>$sErrors</ul>\n";
+            echo "</font><br />";
+        } else
+            return FALSE;
     }
 }
 

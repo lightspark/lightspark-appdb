@@ -40,8 +40,12 @@ if($aClean['bIsRejected'] == 'true')
 
 $oOtherObject = new $oObject->sClass($oObject->iId);
 
-/* Certain actions must be performed before the header is set */
-$oObject->processForm($aClean);
+/* Certain actions must be performed before the header is set
+   processForm return TRUE on success, or a user-readable list of errors
+   on failure */
+$sErrors = $oObject->processForm($aClean);
+if($sErrors === TRUE)
+    $sErrors = "";
 
 if($oObject->iId && $aClean['sAction'] == "delete")
     $oObject->delete_entry();
@@ -58,7 +62,7 @@ if($oObject->iId)
         break;
 
         case "edit":
-        $oObject->display_entry_for_editing($REQUEST_URI);
+        $oObject->display_entry_for_editing($REQUEST_URI, $sErrors);
         break;
 
         default:
@@ -66,7 +70,7 @@ if($oObject->iId)
         break;
     }
 } else if ($aClean['sAction'] == "add")
-    $oObject->add_entry($REQUEST_URI);
+    $oObject->add_entry($REQUEST_URI, $sErrors);
 else
 {
     // if displaying a queue display the help for the given queue
