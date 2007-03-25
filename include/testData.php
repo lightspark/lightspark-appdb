@@ -244,16 +244,6 @@ class testData{
         }
     }
 
-    function getFormattedApplicationVersionName()
-    {
-        $oVersion = new Version($this->iVersionId);
-        $sAppName = application::lookup_name($oVersion->iAppId);
-        $sVersionName = version::lookup_name($oVersion->iVersionId);
-        $sName = "$sAppName: $sVersionName";
-
-        return $sName;        
-    }
-
     function mailSubmitter($sAction="add")
     {
         global $aClean;
@@ -263,7 +253,7 @@ class testData{
             $oSubmitter = new User($this->iSubmitterId);
 
             /* Get the full app/version name to display */
-            $sName = $this->getFormattedApplicationVersionName();
+            $sName = version::fullName($this->iVersionId);
 
             switch($sAction)
             {
@@ -493,7 +483,7 @@ class testData{
     {
         HtmlAreaLoaderScript(array("Test1", "Test2", "Test3"));
 
-        $sName = $this->getFormattedApplicationVersionName();
+        $sName = version::fullName($this->iVersionId);
 
         echo html_frame_start("Test Form - $sName", "90%", "", 0);
         echo "<table width='100%' border=0 cellpadding=2 cellspacing=0>\n";
