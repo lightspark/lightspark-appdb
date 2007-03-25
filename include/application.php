@@ -888,8 +888,7 @@ class Application {
 
         $aCells = array(
                 print_date(mysqltimestamp_to_unixtimestamp($this->sSubmitTime)),
-                "<a href=\"contact.php?iRecipientId=$oUser->iUserId\">".
-                        "$oUser->sRealname</a>",
+                $oUser->objectMakeLink(),
                 $sVendor,
                 $this->sName);
 

@@ -1043,6 +1043,18 @@ class User {
 
          return false;
      }
+
+     function objectMakeUrl()
+     {
+         $sUrl = BASE."contact.php?iRecipientId=$this->iUserId";
+         return $sUrl;
+     }
+
+     function objectMakeLink()
+     {
+         $sLink = "<a href=\"".$this->objectMakeUrl()."\">$this->sRealname</a>";
+         return $sLink;
+     }
 }
 
 ?>
