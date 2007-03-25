@@ -355,9 +355,9 @@ class appData
         $oUser = new User($this->iSubmitterId);
         $aCells = array(
                 print_date(mysqltimestamp_to_unixtimestamp($this->sSubmitTime)),
-                $oUser->sRealname,
-                $oApp->sName,
-                $this->iVersionId ? $oVersion->sName : "N/A");
+                $oUser->objectMakeLink(),
+                $oApp->objectMakeLink(),
+                $this->iVersionId ? $oVersion->objectMakeLink() : "N/A");
 
         if(appData::canEdit($oObject->sClass))
             $aCells[] = "[ <a href=\"".$oObject->makeUrl("edit",
