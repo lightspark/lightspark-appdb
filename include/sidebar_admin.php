@@ -9,11 +9,6 @@ function global_admin_menu() {
 
     $g = new htmlmenu("Global Admin");
 
-    $g->add("Add Category", BASE."admin/addCategory.php");
-    $g->add("Add Vendor", BASE."objectManager.php?sClass=vendor&bQueue=".
-    "false&sAction=add&sTitle=Add%20Vendor");
-
-    $g->addmisc("&nbsp;");
     $g->add("View App Queue (".$_SESSION['current']->getQueuedAppCount().")",
             BASE."objectManager.php?sClass=application&bIsQueue=true&sTitle=".
             "Application%20Queue");
@@ -26,10 +21,6 @@ function global_admin_menu() {
     $g->add("View Maintainer Queue (".Maintainer::objectGetEntriesCount(true, false).")",
             BASE."objectManager.php?sClass=maintainer&bIsQueue=true&sTitle=".
             "Maintainer%20Queue");
-    $g->add("View Maintainer Entries (".Maintainer::getMaintainerCount().")",
-            BASE."admin/adminMaintainers.php");
-    $g->add("View Bug Links (".getNumberOfQueuedBugLinks()."/".getNumberOfBugLinks().")",
-            BASE."admin/adminBugs.php");
     $g->add("View Test Results Queue (".testData::objectGetEntriesCount(true, false).")",
             BASE."objectManager.php?sClass=testData&bIsQueue=true&sTitle=".
             "Test%20Results%20Queue");
@@ -39,13 +30,27 @@ function global_admin_menu() {
             "Distribution%20Queue");
 
     $g->addmisc("&nbsp;");
+
+    $g->add("View Maintainer Entries (".Maintainer::getMaintainerCount().")",
+            BASE."admin/adminMaintainers.php");
+    $g->add("View Bug Links (".getNumberOfQueuedBugLinks()."/".getNumberOfBugLinks().")",
+            BASE."admin/adminBugs.php");
+    $g->add("Users Management", BASE."admin/adminUsers.php");
+    $g->add("Comments Management", BASE."admin/adminCommentView.php");
+    $g->add("Screenshots Management", BASE."admin/adminScreenshots.php");
+
+    $g->addmisc("&nbsp;");
+
     $g->add("View Rejected Test Results (".testData::objectGetEntriesCount(true,
             true).")",
             BASE."objectManager.php?sClass=testData&bIsQueue=true&bIsRejected=true&".
             "sTitle=Rejected%20Test%20Results");
-    $g->add("Users Management", BASE."admin/adminUsers.php");
-    $g->add("Comments Management", BASE."admin/adminCommentView.php");
-    $g->add("Screenshots Management", BASE."admin/adminScreenshots.php");
+
+    $g->addmisc("&nbsp;");
+
+    $g->add("Add Category", BASE."admin/addCategory.php");
+    $g->add("Add Vendor", BASE."objectManager.php?sClass=vendor&bQueue=".
+    "false&sAction=add&sTitle=Add%20Vendor");
 
     $g->done();
 }
