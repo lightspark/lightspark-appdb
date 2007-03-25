@@ -438,10 +438,10 @@ class maintainer
 
         $aCells = array(
             print_date(mysqldatetime_to_unixtimestamp($this->aSubmitTime)),
-            $oApp->sName,
-            ($this->bSuperMaintainer) ? "N/A" : $oVersion->sName,
+            $oApp->objectMakeLink(),
+            ($this->bSuperMaintainer) ? "N/A" : $oVersion->objectMakeLink(),
             ($this->bSuperMaintainer) ? "Yes" : "No",
-            "<a href=\"mailto:".$oUser->sEmail."\">".$oUser->sRealname."</a>");
+            $oUser->objectMakeLink());
 
         if(maintainer::canEdit())
             $aCells[sizeof($aCells)] = "[ <a href=\"".$oObject->makeUrl("edit",
