@@ -882,12 +882,15 @@ class Application {
         $oUser = new user($this->iSubmitterId);
         $oVendor = new vendor($this->iVendorId);
         if(!$oVendor->sName)
-            $oVendor->sName = get_vendor_from_keywords($this->sKeywords);
+            $sVendor = get_vendor_from_keywords($this->sKeywords);
+        else
+            $sVendor = $oVendor->objectMakeLink();
 
         $aCells = array(
                 print_date(mysqltimestamp_to_unixtimestamp($this->sSubmitTime)),
-                $oUser->sRealname,
-                $oVendor->sName,
+                "<a href=\"contact.php?iRecipientId=$oUser->iUserId\">".
+                        "$oUser->sRealname</a>",
+                $sVendor,
                 $this->sName);
 
         if($this->canEdit() || $oObject->bQueued)
