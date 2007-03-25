@@ -380,13 +380,15 @@ class testData{
 
         $sQuery = "SELECT * 
                    FROM testResults
-                   WHERE versionId = '".$this->iVersionId."'
+                   WHERE versionId = '?'
+                   AND
+                   queued = '?'
                    ORDER BY testedDate DESC";
 	
         if(!$showAll)
             $sQuery.=" LIMIT 0,".$iDisplayLimit;
 
-        $hResult = query_appdb($sQuery);
+        $hResult = query_parameters($sQuery, $this->iVersionId, "false");
         if(!$hResult)
             return;
 
@@ -405,7 +407,7 @@ class testData{
         echo '<td>Installs?</td>',"\n";
         echo '<td>Runs?</td>',"\n";
         echo '<td>Rating</td>',"\n";
-        echo '<td>Status</td>',"\n";
+        echo '<td>Submitter</td>',"\n";
         echo '</tr></thead>',"\n";
         while($oRow = mysql_fetch_object($hResult))
         {
@@ -433,19 +435,6 @@ class testData{
                     echo '">Show</a>]</td>',"\n";
             }
 
-            switch($oTest->sQueued)
-            {
-                case "false":
-                   $sStatus = "Checked";
-                break;
-                case "true":
-                   $sStatus = "Queued";
-                break;
-                case "rejected":
-                   $sStatus = "Rejected";
-                break;
-            }
-
             echo '    <td>',"\n";
             echo $oDistribution->objectMakeLink()."\n";
             echo '    </td>',"\n";
@@ -454,7 +443,7 @@ class testData{
             echo '    <td>'.$oTest->sInstalls.'&nbsp</td>',"\n";
             echo '    <td>'.$oTest->sRuns.'&nbsp</td>',"\n";
             echo '    <td>'.$oTest->sTestedRating.'&nbsp</td>',"\n";
-            echo '    <td>'.$sStatus.'&nbsp</td>',"\n";
+            echo '    <td>'.$oSubmitter->objectMakeLink().'&nbsp</td>',"\n";
             if ($_SESSION['current']->hasAppVersionModifyPermission($oVersion))
             {
                 $oObject = new objectManager("testData");
