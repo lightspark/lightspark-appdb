@@ -184,6 +184,7 @@ class maintainer
 
         $hResult = query_parameters("DELETE from appMaintainers WHERE versionId='?'",
                                     $oVersion->iVersionId);
+        return $hResult;
     }
 
     function deleteMaintainersForApplication($oApp)
