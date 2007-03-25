@@ -159,7 +159,7 @@ class Vendor {
             return FALSE;
 
         if(!$iRows)
-            $iRows = getNumberOfVendors();
+            $iRows = objectGetEntriesCount($bQueued, $bRejected);
 
         $hResult = query_parameters("SELECT * FROM vendor
                        ORDER BY vendorName LIMIT ?,?",
@@ -263,17 +263,27 @@ class Vendor {
     {
         return "<a href=\"".$this->objectMakeUrl()."\">$this->sName</a>";
     }
+
+    function objectGetEntriesCount($bQueued, $bRejected)
+    {
+        /* Not implemented */
+        if($bQueued)
+            return FALSE;
+
+        /* Not implemented */
+        if($bRejected)
+            return FALSE;
+
+        $hResult = query_parameters("SELECT COUNT(vendorId) as count FROM vendor");
+
+        if(!$hResult)
+            return FALSE;
+
+        if(!$oRow = mysql_fetch_object($hResult))
+            return FALSE;
+
+        return $oRow->count;
+    }
 }
 
-/* Get the total number of Vendors in the database */
-function getNumberOfVendors()
-{
-    $hResult = query_parameters("SELECT count(*) as num_vendors FROM vendor");
-    if($hResult)
-    {
-      $oRow = mysql_fetch_object($hResult);
-      return $oRow->num_vendors;
-    }
-    return 0;
-}
 ?>

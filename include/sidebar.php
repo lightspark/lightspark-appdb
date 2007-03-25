@@ -29,7 +29,7 @@ function global_sidebar_menu()
     $g->add("Help &amp; Documentation", BASE."help/");
     $g->add("AppDB Stats", BASE."appdbStats.php");
     $g->add("View Distributions (".distribution::objectGetEntriesCount(false, false).")", BASE."objectManager.php?sClass=distribution&bIsQueue=false&sTitle=View%20Distributions");
-    $g->add("View Vendors (".getNumberOfvendors().")", BASE."objectManager.php?sClass=vendor&bIsQueue=false&sTitle=View%20Vendors");
+    $g->add("View Vendors (".vendor::objectGetEntriesCount(false, false).")", BASE."objectManager.php?sClass=vendor&bIsQueue=false&sTitle=View%20Vendors");
     $g->add("Email your suggestions for improving the AppDB", "mailto:appdb@winehq.org");
     $g->done();    
 
