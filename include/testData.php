@@ -868,7 +868,7 @@ class testData{
         $oUser = new user($this->iSubmitterId);
         $aCells = array(
                 print_date(mysqltimestamp_to_unixtimestamp($this->sSubmitTime)),
-                $oUser->sRealname,
+                $oUser->objectMakeLink(),
                 $oApp->objectMakeLink(),
                 $oVersion->objectMakeLink(),
                 $this->sTestedRelease,
