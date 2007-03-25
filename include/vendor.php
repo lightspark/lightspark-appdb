@@ -159,7 +159,7 @@ class Vendor {
             return FALSE;
 
         if(!$iRows)
-            $iRows = objectGetEntriesCount($bQueued, $bRejected);
+            $iRows = Vendor::objectGetEntriesCount($bQueued, $bRejected);
 
         $hResult = query_parameters("SELECT * FROM vendor
                        ORDER BY vendorName LIMIT ?,?",
