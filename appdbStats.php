@@ -71,6 +71,12 @@ echo "    <td>Application maintainers:</td>\n";
 echo "    <td>".Maintainer::getNumberOfMaintainers()."</td>\n";
 echo "</tr>\n\n";
 
+/* Display the number of testing reports */
+echo "<tr class=color4>\n";
+echo "    <td>Testing reports:</td>\n";
+echo "    <td>".testData::objectGetEntriescount(false, false)."</td>\n";
+echo "</tr>\n\n";
+
 /* Display the number of images */
 echo "<tr class=color4>\n";
 echo "    <td>Screenshots:</td>\n";
