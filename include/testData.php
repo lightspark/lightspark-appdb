@@ -468,7 +468,10 @@ class testData{
     /* retrieve the latest test result for a given version id */
     function get_test_for_versionid($iVersionId)
     {
-        $sQuery = "SELECT testingId from testResults where versionId = '?' 
+        $sQuery = "SELECT testingId FROM testResults WHERE
+                versionId = '?'
+                AND
+                queued = 'false'
                      ORDER BY testedDate DESC limit 1";
         $hResult = query_parameters($sQuery, $iVersionId);
         if(!$hResult)
