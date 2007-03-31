@@ -764,8 +764,7 @@ class Version {
             while(list($index, $userIdValue) = each($aMaintainers))
             {
                 $oUser = new User($userIdValue);
-                echo "<li>$oUser->sRealname (<a href=\"".BASE."contact.php?".
-                     "iRecipientId=$oUser->iUserId\">e-mail</a>)</li>";
+                echo "<li>".$oUser->objectMakeLink()."</li>";
             }
             echo "</ul></td></tr>\n";
         } else
