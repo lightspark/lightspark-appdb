@@ -125,9 +125,13 @@ function test_filter()
 /* Main test routines */
 
 if(!test_filter())
+{
     echo "test_filter() failed!\n";
-else
+    $bTestSuccess = false;
+} else
+{
     echo "test_filter() passed\n";
+}
 
 
 ?>

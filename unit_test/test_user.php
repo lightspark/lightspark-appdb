@@ -287,34 +287,58 @@ function test_user_update_password()
 /* Main test routines */
 
 if(!test_user_create())
+{
     echo "test_user_create() failed!\n";
-else
+    $bTestSuccess = false;
+} else
+{
     echo "test_user_create() passed\n";
+}
 
 if(!test_user_login())
+{
     echo "test_user_login() failed!\n";
-else
+    $bTestSuccess = false;
+} else
+{
     echo "test_user_login() passed\n";
+}
 
 if(!test_user_update())
+{
     echo "test_user_update() failed!\n";
-else
+    $bTestSuccess = false;
+} else
+{
     echo "test_user_update() passed\n";
+}
 
 if(!test_user_delete())
+{
     echo "test_user_delete() failed!\n";
-else
+    $bTestSuccess = false;
+} else
+{
     echo "test_user_delete() passed\n";
+}
 
 if(!test_user_getpref_setpref())
+{
     echo "test_user_getpref_setpref() failed!\n";
-else
+    $bTestSuccess = false;
+} else
+{
     echo "test_user_getpref_setpref() passed\n";
+}
 
 if(!test_user_update_password())
+{
     echo "test_user_update_password() failed!\n";
-else
+    $bTestSuccess = false;
+} else
+{
     echo "test_user_update_password() passed\n";
+}
 
 /* Perform the maintainer tests here because they require that a user we can log into */
 /* and we want to save on having to clean up the user by duplicating the cleanup code below */

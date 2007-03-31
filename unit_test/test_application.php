@@ -249,15 +249,23 @@ function create_and_login_user()
 }
 
 if(!test_application_delete())
+{
     echo "test_application_delete() failed!\n";
-else
+    $bTestSuccess = false;
+} else
+{
     echo "test_application_delete() passed\n";
+}
     
 
 if(!test_application_getWithRating())
+{
     echo "test_application_getWithRating() failed!\n";
-else
+    $bTestSuccess = false;
+} else
+{
     echo "test_application_getWithRating() passed\n"; 
+}
     
 ?>
 

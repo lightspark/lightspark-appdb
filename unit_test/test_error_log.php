@@ -35,8 +35,12 @@ function test_error_log_log_error()
 
 
 if(!test_error_log_log_error())
+{
     echo "test_error_log_log_error() failed!\n";
-else
+    $bTestSuccess = false;
+} else
+{
     echo "test_error_log_log_error() passed\n";
+}
 
 ?>

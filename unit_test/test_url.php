@@ -66,8 +66,12 @@ function test_url_update()
 }
 
 if(!test_url_update())
+{
     echo "test_url_update() failed!\n";
-else
+    $bTestSuccess = false;
+} else
+{
     echo "test_url_update() passed\n";
+}
 
 ?>

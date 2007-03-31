@@ -149,8 +149,12 @@ function test_object_methods()
 }
 
 if(!test_object_methods())
+{
     echo "test_object_methods() failed!\n";
-else
+    $bTestSuccess = false;
+} else
+{
     echo "test_object_methods() passed\n";
+}
 
 ?>

@@ -44,8 +44,12 @@ function test_appData_listSubmittedBy()
 }
 
 if(!test_appData_listSubmittedBy())
+{
     echo "test_appData_listSubmittedBy() failed!\n";
-else
+    $bTestSuccess = false;
+} else
+{
     echo "test_appData_listSubmittedBy() passed\n";
+}
 
 ?>

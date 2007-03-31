@@ -340,30 +340,50 @@ function test_maintainer_deleteMaintainersForVersion()
 }
 
 if(!test_maintainer_getMaintainerCountForUser())
+{
     echo "test_maintainer_getMaintainerCountForUser() failed!\n";
-else
+    $bTestSuccess = false;
+} else
+{
     echo "test_maintainer_getMaintainerCountForUser() passed\n";
+}
 
 
 if(!test_maintainer_getAppsMaintained())
+{
     echo "test_maintainer_getAppsMaintained() failed!\n";
-else
+    $bTestSuccess = false;
+} else
+{
     echo "test_maintainer_getAppsMaintained() passed\n";
+}
 
 
 if(!test_maintainer_unQueue())
+{
     echo "test_maintainer_unQueue() failed!\n";
-else
+    $bTestSuccess = false;
+} else
+{
     echo "test_maintainer_unQueue() passed\n";
+}
 
 if(!test_superMaintainerOnAppSubmit())
+{
     echo "test_superMaintainerOnAppSubmit() failed!\n";
-else
+    $bTestSuccess = false;
+} else
+{
     echo "test_superMaintainerOnAppSubmit() passed\n";
+}
 
 if(!test_maintainer_deleteMaintainersForVersion())
+{
     echo "test_maintainer_deleteMaintainersForVersion() failed!\n";
-else
+    $bTestSuccess = false;
+} else
+{
     echo "test_maintainer_deleteMaintianersForVersion() passed\n";
+}
 
 ?>

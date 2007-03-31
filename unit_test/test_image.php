@@ -237,32 +237,56 @@ function test_resize_image_border()
 
 
 if(!test_image_constructor())
+{
     echo "test_image_constructor() failed!\n";
-else
+    $bTestSuccess = false;
+} else
+{
     echo "test_image_constructor() passed\n";
+}
 
 if(!test_image_make_thumbnail())
+{
     echo "test_image_make_thumbnail() failed!\n";
-else
+    $bTestSuccess = false;
+} else
+{
     echo "test_image_make_thumbnail() passed\n";
+}
 
 if(!test_image_make_full())
+{
     echo "test_image_make_full() failed!\n";
-else
+    $bTestSuccess = false;
+} else
+{
     echo "test_image_make_full() passed\n";
+}
 
 if(!test_image_output_to_file())
+{
     echo "test_image_output_to_file() failed!\n";
-else
+    $bTestSuccess = false;
+} else
+{
     echo "test_image_output_to_file() passed\n";
+}
 
 if(!test_image_add_watermark())
+{
     echo "test_image_add_watermark() failed!\n";
-else
+    $bTestSuccess = false;
+} else
+{
     echo "test_image_add_watermark() passed\n";
+}
 
 if(!test_resize_image_border())
+{
     echo "test_resize_image_border() failed!\n";
-else
+    $bTestSuccess = false;
+} else
+{
     echo "test_resize_image_border() passed\n";
+}
 ?>
