@@ -881,7 +881,7 @@ class Version {
         if(!$oTest->iTestingId)
         {
             /* fetch a new test id for this version */
-            $iTestingId = testData::get_test_for_versionid($this->iVersionId);
+            $iTestingId = testData::getNewestTestIdFromVersionId($this->iVersionId);
             $oTest = new testData($iTestingId);
         }
 

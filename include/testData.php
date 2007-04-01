@@ -466,7 +466,7 @@ class testData{
     }
 
     /* retrieve the latest test result for a given version id */
-    function get_test_for_versionid($iVersionId)
+    function getNewestTestIdFromVersionId($iVersionId)
     {
         $sQuery = "SELECT testingId FROM testResults WHERE
                 versionId = '?'
