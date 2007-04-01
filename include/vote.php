@@ -122,11 +122,7 @@ function vote_menu()
     for($i = 1;$i <= MAX_VOTES; $i++)
     {
         if(isset($votes[$i]))
-        {
-            $sName = Version::fullName($votes[$i]->versionId);
-            $str = "<a href='appview.php?iVersionId=".$votes[$i]->versionId."'>".
-                   "$sName</a>";
-        }
+            $str = Version::fullNameLink($votes[$i]->versionId);
         else
             $str = "No App Selected";
 

@@ -168,8 +168,7 @@ if($hResult)
     while($row = mysql_fetch_object($hResult))
     {
         $bgcolor = ($c % 2) ? "color0" : "color1";
-        $link = "<a href='appview.php?iVersionId=$row->versionId'>$row->appName ".
-            "$row->versionName</a>";
+        $link = version::fullNameLink($row->versionId);
         echo "<tr class=$bgcolor><td width='90%'>$c. $link </td> <td> $row->count ".
             "</td></tr>\n";
         $c++;

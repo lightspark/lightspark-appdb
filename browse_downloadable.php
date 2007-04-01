@@ -113,13 +113,13 @@ if($hResult && mysql_num_rows($hResult))
 
     for($i = 1; $oRow = mysql_fetch_object($hResult); $i++)
     {
+        $oVersion = new version($oRow->versionId);
         echo html_tr_highlight_clickable(
-            "appview.php?iVersionId=$oRow->versionId",
+            $oVersion->objectMakeUrl(),
             ($i % 2) ? "color1" : "color0",
             ($i % 2) ? "color1" : "color0",
             ($i % 2) ? "color1" : "color0");
-        echo "<td><a href=\"appview.php?iVersionId=$oRow->versionId\">".
-             "$oRow->appName $oRow->versionName</a></td>\n";
+        echo "<td>".version::fullNameLink($oVersion->iVersionId)."</td>\n";
         echo "<td>$oRow->description</td>\n";
         echo "</tr>\n";
     }

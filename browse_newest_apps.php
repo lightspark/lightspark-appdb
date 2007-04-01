@@ -50,8 +50,9 @@ if($hResult)
     $c = 1;
     while($row = mysql_fetch_object($hResult))
     {
+        $oApp = new application($row->appId);
         $bgcolor = ($c % 2) ? "color0" : "color1";
-        $link = "<a href=\"appview.php?iAppId=$row->appId\"> $row->appName </a>";
+        $link = $oApp->objectMakeLink();
         echo "<tr class=\"$bgcolor\">";
         echo "<td width=\"20%\">".print_short_date(mysqltimestamp_to_unixtimestamp($row->submitTime))."</td>\n";
         echo "<td>$link </td>\n";

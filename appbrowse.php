@@ -107,7 +107,7 @@ if($apps)
 	
         //display row
         echo "<tr class=$bgcolor>\n";
-        echo "    <td><a href='appview.php?iAppId=$iAppId'>".$oApp->sName."</a></td>\n";
+        echo "    <td>".$oApp->objectMakeLink()."</td>\n";
         echo "    <td>$desc &nbsp;</td>\n";
         echo "    <td>".sizeof($oApp->aVersionsIds)."</td>\n";
         echo "</tr>\n\n";

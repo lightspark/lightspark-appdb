@@ -27,10 +27,11 @@ function global_sidebar_login() {
             $g->addmisc("You maintain:\n");
             while(list($index, list($appId, $versionId, $superMaintainer)) = each($apps_user_maintains))
             {
+                $oApp = new application($appId);
                 if($superMaintainer)
-                    $g->addmisc("<a href='".BASE."appview.php?iAppId=$appId'>".Application::lookup_name($appId)."*</a>", "center");
+                    $g->addmisc($oApp->objectMakeLink()."*", "center");
                 else
-                    $g->addmisc("<a href='".BASE."appview.php?iVersionId=$versionId'>".Application::lookup_name($appId)." ".Version::lookup_name($versionId)."</a>", "center");
+                    $g->addmisc(version::fullNameLink($versionId), "center");
             }
         }
         $appsRejected = $_SESSION['current']->getAllRejectedApps();
@@ -44,7 +45,7 @@ function global_sidebar_login() {
             $g->addmisc("You monitor:\n");
 
             while(list($i, list($iAppId, $iVersionId)) = each($aMonitored))
-                $g->addmisc("<a href=\"".BASE."appview.php?iVersionId=$iVersionId\">".Application::lookup_name($iAppId)." ".Version::lookup_name($iVersionId)."</a>","center");
+                $g->addmisc(version::fullNameLink($iVersionId),"center");
         }
 
         /* Display a link to the user's queued items,

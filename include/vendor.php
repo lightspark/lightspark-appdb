@@ -244,8 +244,7 @@ class Vendor {
             foreach($this->aApplicationsIds as $iAppId)
             {
                 $oApp  = new Application($iAppId);
-                echo '<li> <a href="appview.php?iAppId='.$oApp->iAppId.'">'.
-                     $oApp->sName.'</a> </li>',"\n";
+                echo '<li>'.$oApp->objectMakeLink().'</li>',"\n";
             }
             echo '</ol>',"\n";
         }

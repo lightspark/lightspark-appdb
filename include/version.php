@@ -1037,7 +1037,7 @@ class Version {
 
                     //display row
                     echo "<tr class=$bgcolor>\n";
-                    echo "    <td><a href=\"".BASE."appview.php?iVersionId=".$iVersionId."\">".$oVersion->sName."</a></td>\n";
+                    echo "    <td>".$oVersion->objectMakeLink()."</td>\n";
                     echo "    <td>".util_trim_description($oVersion->sDescription)."</td>\n";
                     echo "    <td $sRatingColor align=center>".$oVersion->sTestedRating."</td>\n";
                     echo "    <td $sRatingColor align=center>".$oVersion->sTestedRelease."</td>\n";
