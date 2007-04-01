@@ -237,7 +237,7 @@ class Category {
             if(!empty($versionId))
             {
                 $oVersion = new Version($versionId);
-                $str .= " &gt; ".html_ahref($oApp->sName,"appview.php?iAppId=$appId");
+                $str .= " &gt; ".$oApp->objectMakeLink();
                 $str .= " &gt; ".$oVersion->sName;
             } else
             {
