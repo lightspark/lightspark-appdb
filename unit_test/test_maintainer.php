@@ -203,56 +203,162 @@ function test_maintainer_unQueue()
     global $test_email, $test_password;
 
     /* login the user */
-    $oUser = new User();
-    $retval = $oUser->login($test_email, $test_password);
+    $oFirstUser = new User();
+    $retval = $oFirstUser->login($test_email, $test_password);
     if($retval != SUCCESS)
     {
         echo "Got '".$retval."' instead of SUCCESS(".SUCCESS.")\n";
         return false;
     }
 
-    /**
-      * make the user a super maintatiner
-      */
     $iAppId = 655000;
     $iVersionId = 655200;
 
+    $oApp = new Application();
+    $oVersion = new Version();
+    $oApp->iAppId = $iAppId;
+    $oVersion->iVersionId = $iVersionId;
+    $oSecondUser = new User();
+    $oSecondUser->iUserId = $_SESSION['current']->iUserId + 1;
+    /* Create a non-super maintainer for a different userId; it should not be affected
+       by the other user first becoming a maintainer and then a super maintainer of
+       the same application */
+    $oSecondUserMaintainer = new Maintainer();
+    $oSecondUserMaintainer->iAppId = $iAppId;
+    $oSecondUserMaintainer->iVersionId = $iVersionId;
+    $oSecondUserMaintainer->iUserId = $oSecondUser->iUserId;
+    $oSecondUserMaintainer->sMaintainReason = "I need it";
+    $oSecondUserMaintainer->bSuperMaintainer = FALSE;
+    $oSecondUserMaintainer->create();
+
+    /* Create a super maintainer for a different userId; it should not be affected
+       by the other user first becoming a maintainer and then a super maintainer of
+       the same application */
+    $oSecondUserSuperMaintainer = new Maintainer();
+    $oSecondUserSuperMaintainer->iAppId = $iAppId;
+    $oSecondUserSuperMaintainer->iVersionId = $iVersionId;
+    $oSecondUserSuperMaintainer->iUserId = $oSecondUser->iUserId;
+    $oSecondUserSuperMaintainer->sMaintainReason = "I need it";
+    $oSecondUserSuperMaintainer->bSuperMaintainer = TRUE;
+
+    $oFirstUser->delPriv("admin");
+    $oSecondUserSuperMaintainer->create();
+    $oFirstUser->addPriv("admin");
+
+    /* Create a non-super maintainer
+       It should be removed later because a super maintainer entry for the same
+       application is added */
+    $oFirstUserMaintainer = new Maintainer();
+    $oFirstUserMaintainer->iAppId = $iAppId;
+    $oFirstUserMaintainer->iVersionId = $iVersionId;
+    $oFirstUserMaintainer->iUserId = $_SESSION['current']->iUserId;
+    $oFirstUserMaintainer->sMaintainReason = "The most stupid reason";
+    $oFirstUserMaintainer->bSuperMaintainer = FALSE;
+    $oFirstUserMaintainer->create();
+
+    $oFirstUserMaintainer->unQueue("");
+
+    /* There should now be 1 maintainer and 0 super maintainers */
+    $iExpected = 1;
+    $iReceived = maintainer::getMaintainerCountForUser($oFirstUser, FALSE);
+    if($iExpected != $iReceived)
+    {
+        echo "Got maintainer count of $iReceived instead of $iExpected\n";
+        maintainer::deleteMaintainersForApplication($oApp);
+        maintainer::deleteMaintainersForVersion($oVersion);
+        return FALSE;
+    }
+
+    $iExpected = 0;
+    $iReceived = maintainer::getMaintainerCountForUser($oFirstUser, TRUE);
+    if($iExpected != $iReceived)
+    {
+        echo "Got super maintainer count of $iReceived instead of $iExpected\n";
+        maintainer::deleteMaintainersForApplication($oApp);
+        maintainer::deleteMaintainersForVersion($oVersion);
+        return FALSE;
+    }
+
+    /**
+      * make the user a super maintatiner
+      */
     /* queue up this maintainer */
-    $oMaintainer = new Maintainer();
-    $oMaintainer->iAppId = $iAppId;
-    $oMaintainer->iVersionId = $iVersionId;
-    $oMaintainer->iUserId = $_SESSION['current']->iUserId;
-    $oMaintainer->sMaintainReason = "Some crazy reason";
-    $oMaintainer->bSuperMaintainer = TRUE;
-    $oMaintainer->create();
+    $oFirstUserSuperMaintainer = new Maintainer();
+    $oFirstUserSuperMaintainer->iAppId = $iAppId;
+    $oFirstUserSuperMaintainer->iVersionId = $iVersionId;
+    $oFirstUserSuperMaintainer->iUserId = $_SESSION['current']->iUserId;
+    $oFirstUserSuperMaintainer->sMaintainReason = "Some crazy reason";
+    $oFirstUserSuperMaintainer->bSuperMaintainer = TRUE;
+    $oFirstUserSuperMaintainer->create();
 
     /* and unqueue it to accept the user as a maintainer */
-    $oMaintainer->unQueue("Some reply text");
+    $oFirstUserSuperMaintainer->unQueue("Some reply text");
 
     /* unqueue it again to ensure that unQueueing a maintainer request twice works properly */
-    $oMaintainer->unQueue("Some other reply text");
+    $oFirstUserSuperMaintainer->unQueue("Some other reply text");
 
 
     /* see that the user is a super maintainer of the one application we added them to be */
     $iExpected = 1; /* we expect 1 super maintainer for this user */
-    $iSuperMaintainerCount = Maintainer::getMaintainerCountForUser($oUser, TRUE);
+    $iSuperMaintainerCount = maintainer::getMaintainerCountForUser($oFirstUser, TRUE);
     if($iSuperMaintainerCount != $iExpected)
     {
         echo "Got super maintainer count of '".$iSuperMaintainerCount."' instead of '".$iExpected."'\n";
+        maintainer::deleteMaintainersForApplication($oApp);
+        maintainer::deleteMaintainersForVersion($oVersion);
         return false;
     }
 
-    /* maintainer count should be zero */
+    /* maintainer count should be zero, because unQueue should have removed the
+       previous non-super maintainer entry */
     $iExpected = 0;
-    $iMaintainerCount = Maintainer::getMaintainerCountForUser($oUser, FALSE);
+    $iMaintainerCount = maintainer::getMaintainerCountForUser($oFirstUser, FALSE);
     if($iMaintainerCount != $iExpected)
     {
         echo "Got maintainer count of '".$iMaintainerCount."' instead of '".$iExpected."'\n";
+        maintainer::deleteMaintainersForApplication($oApp);
+        maintainer::deleteMaintainersForVersion($oVersion);
         return false;
     }
 
+    /* Now the maintainer request for the other user should still be present */
+    $iExpected = 1;
+    $iReceived = maintainer::getmaintainerCountForUser($oSecondUser, FALSE);
+    if($iExpected != $iReceived)
+    {
+        echo "Got maintainer count of $iReceived instead of $iExpected\n";
+        maintainer::deleteMaintainersForApplication($oApp);
+        maintainer::deleteMaintainersForVersion($oVersion);
+        return FALSE;
+    }
+
+    /* Now the super maintainer request for the other user should still be present */
+    $oSecondUserSuperMaintainer->unQueue();
+    $iExpected = 1;
+    $iReceived = maintainer::getmaintainerCountForUser($oSecondUser, TRUE);
+    if($iExpected != $iReceived)
+    {
+        echo "Got super maintainer count of $iReceived instead of $iExpected\n";
+        maintainer::deleteMaintainersForApplication($oApp);
+        maintainer::deleteMaintainersForVersion($oVersion);
+        return FALSE;
+    }
+
+    /* Now the maintainer request of the other user should be gone */
+    $oSecondUserMaintainer->unQueue();
+    $iExpected = 0;
+    $iReceived = maintainer::getmaintainerCountForUser($oSecondUser, FALSE);
+    if($iExpected != $iReceived)
+    {
+        echo "Got maintainer count of $iReceived instead of $iExpected\n";
+        maintainer::deleteMaintainersForApplication($oApp);
+        maintainer::deleteMaintainersForVersion($oVersion);
+        return FALSE;
+    }
+
     /* remove maintainership for this user */
-    Maintainer::deleteMaintainer($oUser, $iAppId);
+    maintainer::deleteMaintainersForApplication($oApp);
+    maintainer::deleteMaintainersForVersion($oVersion);
 
     return true;
 }
@@ -335,6 +441,8 @@ function test_maintainer_deleteMaintainersForVersion()
         echo "Got success, but this should fail.\n";
         return FALSE;
     }
+
+    $oMaintainer->delete();
 
     return TRUE;
 }

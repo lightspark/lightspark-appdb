@@ -55,6 +55,12 @@ class maintainer
         /* this objects id is the insert id returned by mysql */
         $this->iMaintainerId = mysql_insert_id();
 
+        /* If this is a non-queued maintainer submission, remove the user's non-
+           super maintainer entries for the application's versions.  This check is
+           also done in unQueue() */
+        if(!$this->mustBeQueued() & $this->bSuperMaintainer)
+            $this->removeUserFromAppVersions();
+
         return $hResult;
     }
 
@@ -107,6 +113,11 @@ class maintainer
             else
                 $sStatusMessage = "<p>User is already a maintainer/super maintainer of this application/version</p>\n";
         }
+
+        /* Delete any maintainer entries the user had for the application's versions,
+           if this is a super maintainer request */
+        if($this->bSuperMaintainer)
+            $this->removeUserFromAppVersions();
 
         return $sStatusMessage;
     }
@@ -613,6 +624,24 @@ class maintainer
     function objectMakeLink()
     {
         /* STUB: There is not much use for this, but it may be implemented later */
+        return TRUE;
+    }
+
+    /* Delete a user's non-super maintainer entries for an application.  This is useful
+       to ensure that the user has no maintainer entries for an app he supermaintains */
+    function removeUserFromAppVersions()
+    {
+        $sQuery = "DELETE FROM appMaintainers WHERE
+                superMaintainer = '0'
+                AND
+                appId = '?'
+                AND
+                userId = '?'";
+        $hResult = query_parameters($sQuery, $this->iAppId, $this->iUserId);
+
+        if(!$hResult)
+            return FALSE;
+
         return TRUE;
     }
 }
