@@ -31,6 +31,8 @@ echo "\n";
 include_once("test_om_objects.php");
 echo "\n";
 include_once("test_appData.php");
+echo "\n";
+include_once("test_testData.php");
 
 if($bTestSuccess == true)
 {
