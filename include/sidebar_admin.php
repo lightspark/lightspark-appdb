@@ -9,7 +9,7 @@ function global_admin_menu() {
 
     $g = new htmlmenu("Global Admin");
 
-    $g->add("View App Queue (".$_SESSION['current']->getQueuedAppCount().")",
+    $g->add("View App Queue (".application::objectGetEntriesCount(true, false).")",
             BASE."objectManager.php?sClass=application&bIsQueue=true&sTitle=".
             "Application%20Queue");
     $g->add("View Version Queue (".$_SESSION['current']->getQueuedVersionCount().")",
@@ -41,6 +41,10 @@ function global_admin_menu() {
 
     $g->addmisc("&nbsp;");
 
+    $g->add("View Rejected Applications (".application::objectGetEntriesCount(true,
+            true).")",
+            BASE."objectManager.php?sClass=application&bIsQueue=true&bIsRejected=true&".
+            "sTitle=Rejected%20Applications");
     $g->add("View Rejected Test Results (".testData::objectGetEntriesCount(true,
             true).")",
             BASE."objectManager.php?sClass=testData&bIsQueue=true&bIsRejected=true&".

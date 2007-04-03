@@ -913,6 +913,37 @@ class Application {
         echo "<p>To view a submission, click on its name. ".
              "From that page you can edit, delete or approve it into the AppDB.</p>\n";
     }
+
+    function objectGetEntriesCount($bQueued, $bRejected)
+    {
+        $sQueued = objectManager::getQueueString($bQueued, $bRejected);
+
+        if($bQueued && !application::canEdit())
+        {
+            /* Without edit rights users can only resubmit their rejected entries */
+            if(!$bRejected)
+                return FALSE;
+
+            $sQuery = "SELECT COUNT(appId) as count FROM appFamily WHERE
+                    submitterId = '?'
+                    AND
+                    queued = '?'";
+            $hResult = query_parameters($sQuery, $_SESSION['current']->iUserId,
+                                        $sQueued);
+        } else
+        {
+            $sQuery = "SELECT COUNT(appId) as count FROM appFamily WHERE queued = '?'";
+            $hResult = query_parameters($sQuery, $sQueued);
+        }
+
+        if(!$hResult)
+            return FALSE;
+
+        if(!$oRow = mysql_fetch_object($hResult))
+            return FALSE;
+
+        return $oRow->count;
+    }
 }
 
 function get_vendor_from_keywords($sKeywords)
