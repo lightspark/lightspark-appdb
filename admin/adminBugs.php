@@ -122,6 +122,8 @@ if ($aClean['sSub'])
     {
         while($oRow = mysql_fetch_object($hResult))
         {
+            $oApp = new application($oRow->appId);
+            $oVersion = new version($oRow->versionId);
             // set row color
             $bgcolor = ($c % 2 == 0) ? "color0" : "color1";
             echo '<tr class='.$bgcolor.'>',"\n";
@@ -131,11 +133,11 @@ if ($aClean['sSub'])
             echo '    <td align=center>'.$oRow->bug_status.'</td>',"\n";
             echo '    <td>'.$oRow->short_desc.'</td>',"\n";
             echo '    <td>',"\n";
-            echo '    <a href="'.apidb_fullurl('appview.php?iAppId='.$oRow->appId).'">'.$oRow->appName.'</a>',"\n";
+            echo      $oApp->objectMakeLink()."\n";
             echo '    </td>',"\n";
             echo '    <td>'.$oRow->appDescription.'</td>',"\n";
             echo '    <td>',"\n";
-            echo '    <a href="'.apidb_fullurl('appview.php?iVersionId='.$oRow->versionId).'">'.$oRow->versionName.'</a>',"\n";
+            echo      $oVersion->objectMakeLink()."\n";
             echo '    </td>',"\n";
             echo '    <td align=center>[<a href="adminBugs.php?sSub=delete',"\n";
             echo          '&iBuglinkId='.$oRow->linkId,"\n";

@@ -443,7 +443,7 @@ class Application {
                 if($this->sQueued == 'false') // Has been accepted.
                 {
                     $sSubject = $this->sName." has been added by ".$_SESSION['current']->sRealname;
-                    $sMsg  = APPDB_ROOT."appview.php?iAppId=".$this->iAppId."\n";
+                    $sMsg  = $this->objectMakeUrl()."\n";
                     if($this->iSubmitterId)
                     {
                         $oSubmitter = new User($this->iSubmitterId);
@@ -467,7 +467,7 @@ class Application {
             break;
             case "edit":
                 $sSubject =  $this->sName." has been modified by ".$_SESSION['current']->sRealname;
-                $sMsg  .= APPDB_ROOT."appview.php?iAppId=".$this->iAppId."\n";
+                $sMsg  .= $this->objectMakeUrl()."\n";
                 addmsg("Application modified.", "green");
             break;
             case "delete":
@@ -810,8 +810,9 @@ class Application {
         for($i = 1; $oRow = mysql_fetch_object($hResult); $i++)
         {
             $oVendor = new vendor($oRow->vendorId);
+            $oApp = new application($oRow->appId);
             $sResult .= html_tr(array(
-                "<a href=\"".BASE."appview.php?iAppId=$oRow->appId\">$oRow->appName</a>",
+                $oApp->objectMakeLink(),
                 $oRow->description,
                 $oVendor->objectMakeLink(),
                 print_date(mysqltimestamp_to_unixtimestamp($oRow->submitTime))),

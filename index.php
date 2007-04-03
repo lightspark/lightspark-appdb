@@ -65,14 +65,12 @@ If you have screenshots or links to contribute, please browse the database and u
     $hResult = query_parameters($voteQuery);
     $oRow = mysql_fetch_object($hResult);
 
-    $sVoteVersionId = $oRow->versionId;
-    $sVoteAppName = version::fullName($oRow->versionId);
-
     // don't mention the top application if there are no votes yet
-    if($sVoteVersionId != "")
+    if($oRow->versionId)
     {
+       $sVoteAppLink = version::fullNameLink($oRow->versionId);
        echo "There are <b>$numApps</b> applications currently in the database with\n";
-       echo "<a href='appview.php?iVersionId=$sVoteVersionId'>$sVoteAppName</a> being the\n";
+       echo "$shVoteAppLink being the\n";
        echo "top <a href='votestats.php'>voted</a> application.\n";
     } else
     {

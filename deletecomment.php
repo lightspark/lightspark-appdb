@@ -55,6 +55,7 @@ if($_SESSION['current']->getPref("confirm_comment_deletion") != "no" && !isset($
 } else
 {
     $oComment->delete($aClean['sWhy']);
-    util_redirect_and_exit(apidb_fullurl("appview.php?iVersionId=".$oComment->iVersionId));
+    $oVersion = new version($oComment->iVersionId);
+    util_redirect_and_exit($oVersion->objectMakeUrl());
 }
 ?>

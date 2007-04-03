@@ -219,13 +219,14 @@ class Bug {
  
     function SendNotificationMail($bDeleted=false)
     {
-        $sAppName = Application::lookup_name($this->iAppId)." ".Version::lookup_name($this->iVersionId);
+        $sAppName = version::fullName($this->iVersionId);
+        $oVersion = new version($this->iVersionId);
         if(!$bDeleted)
         {
             if(!$this->bQueued)
             {
                 $sSubject = "Link between Bug ".$this->iBug_id." and ".$sAppName." added by ".$_SESSION['current']->sRealname;
-                $sMsg  = APPDB_ROOT."appview.php?iVersionId=".$this->iVersionId."\n";
+                $sMsg  = $oVersion->objectMakeUrl()."\n";
                 if($this->iSubmitterId)
                 {
                     $oSubmitter = new User($this->iSubmitterId);
@@ -236,7 +237,7 @@ class Bug {
             } else // Bug Link queued.
             {
                 $sSubject = "Link between Bug ".$this->iBug_id." and ".$sAppName." submitted by ".$_SESSION['current']->sRealname;
-                $sMsg  = APPDB_ROOT."appview.php?iVersionId=".$this->iVersionId."\n";
+                $sMsg  = $oVersion->objectMakeUrl()."\n";
                 $sMsg .= "This Bug Link has been queued.";
                 $sMsg .= "\n";
                 addmsg("The Bug Link you submitted will be added to the database after being reviewed.", "green");
@@ -244,7 +245,7 @@ class Bug {
         } else // Bug Link deleted.
         {
             $sSubject = "Link between Bug ".$this->iBug_id." and ".$sAppName." deleted by ".$_SESSION['current']->sRealname;
-            $sMsg  = APPDB_ROOT."appview.php?iVersionId=".$this->iVersionId."\n";
+            $sMsg  = $oVersion->objectMakeUrl()."\n";
             addmsg("Bug Link deleted.", "green");
         }
 
@@ -277,7 +278,7 @@ class Bug {
         {
             $oBug = new Bug($oRow->bug_id);
             $sReturn .= html_tr(array(
-                "<a href=\"".BASE."appview.php?iVersionId=".$oRow->versionId."\">".$oRow->appName.": ".$oRow->versionName."</a>",
+                version::fullNameUrl($oRow->versionId),
                 "<a href=\"".BUGZILLA_ROOT."show_bug.cgi?id=".$oRow->bug_id."\">".$oRow->bug_id."</a>",
                 $oBug->sBug_status,
                 $oBug->sResolution,
@@ -315,7 +316,7 @@ function view_version_bugs($iVersionId = null, $aBuglinkIds)
     //start format table
     if($_SESSION['current']->isLoggedIn())
     {
-        echo "<form method=post action='appview.php?iVersionId=".$iVersionId."'>\n";
+        echo "<form method=post action='".$oVersion->objectMakeUrl()."'>\n";
     }
     echo html_frame_start("Known bugs","98%",'',0);
     echo "<table width=\"100%\" border=\"0\" cellpadding=\"3\" cellspacing=\"1\">\n\n";
@@ -352,10 +353,10 @@ function view_version_bugs($iVersionId = null, $aBuglinkIds)
         
         if($bCanEdit == true)
         {
-            echo "<td align=center>[<a href='appview.php?sSub=delete&iBuglinkId=".$oBuglink->iLinkId."&iVersionId=".$oBuglink->iVersionId."'>delete</a>]</td>\n";
+            echo "<td align=center>[<a href='".$oVersion->objectMakeUrl()."&sSub=delete&iBuglinkId=".$oBuglink->iLinkId."'>delete</a>]</td>\n";
             if ($oBuglink->bQueued)
             {
-                echo "<td align=center>[<a href='appview.php?sSub=unqueue&iBuglinkId=".$oBuglink->iLinkId."&iVersionId=".$oBuglink->iVersionId."'>OK</a>]</td>\n";
+                echo "<td align=center>[<a href='".$oVersion->objectMakeUrl()."&sSub=unqueue&iBuglinkId=".$oBuglink->iLinkId."'>OK</a>]</td>\n";
             } else
             {
                 echo "<td align=center>Yes</td>\n";

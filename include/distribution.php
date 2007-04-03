@@ -527,8 +527,8 @@ class distribution {
                     continue;
 
                 echo '<tr class='.$bgcolor.'>',"\n";
-                echo '<td><a href="'.BASE.'appview.php?iVersionId='.$oTest->iVersionId.'&iTestingId='.$oTest->iTestingId.'">',"\n";
-                echo $oApp->sName.' '.$oVersion->sName.'</a></td>',"\n";
+                echo '<td><a href="'.$oVersion->objectMakeUrl().'&iTestingId='.$oTest->iTestingId.'">',"\n";
+                echo version::fullName($oVersion->iVersionId).'</a></td>',"\n";
                 echo '<td>',"\n";
                 if($_SESSION['current']->isLoggedIn())
                 {

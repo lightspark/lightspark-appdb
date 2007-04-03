@@ -55,12 +55,13 @@ function display_bundle($iAppId)
     $c = 0;
     while($ob = mysql_fetch_object($hResult))
     {
+        $oApp = new application($ob->appId);
         //set row color
         $bgcolor = ($c % 2 == 0) ? "color0" : "color1";
 
         //display row
         echo "<tr class=\"$bgcolor\">\n";
-        echo "    <td><a href=\"appview.php?iAppId=$ob->appId\">".stripslashes($ob->appName)."</a></td>\n";
+        echo "    <td>".$oApp->objectMakeLink()."</td>\n";
         echo "    <td>".util_trim_description($oApp->sDescription)."</td>\n";
         echo "</tr>\n\n";
 
@@ -85,7 +86,7 @@ if ($aClean['sSub'])
         {
             $oBuglink = new Bug($aClean['iBuglinkId']);
             $oBuglink->delete();
-            util_redirect_and_exit(apidb_fullurl("appview.php?iVersionId=".$aClean['iVersionId']));
+            util_redirect_and_exit($oVersion->objectMakeUrl());
         }
  
     }
@@ -97,7 +98,7 @@ if ($aClean['sSub'])
         {
             $oBuglink = new Bug($aClean['iBuglinkId']);
             $oBuglink->unqueue();
-            util_redirect_and_exit(apidb_fullurl("appview.php?iVersionId=".$aClean['iVersionId']));
+            util_redirect_and_exit($oVersion->objectMakeUrl());
         }
  
     }
@@ -105,13 +106,13 @@ if ($aClean['sSub'])
     {
         $oBuglink = new Bug();
         $oBuglink->create($aClean['iVersionId'],$aClean['iBuglinkId']);
-        util_redirect_and_exit(apidb_fullurl("appview.php?iVersionId=".$aClean['iVersionId']));
+        util_redirect_and_exit($oVersion->objectMakeUrl());
     }
     if($aClean['sSub'] == 'StartMonitoring')
     {
         $oMonitor = new Monitor();
         $oMonitor->create($_SESSION['current']->iUserId,$aClean['iAppId'],$aClean['iVersionId']);
-        util_redirect_and_exit(apidb_fullurl("appview.php?iVersionId=".$aClean['iVersionId']));
+        util_redirect_and_exit($oVersion->objectMakeUrl());
     }
     if($aClean['sSub'] == 'StopMonitoring')
     {
@@ -121,7 +122,7 @@ if ($aClean['sSub'])
         {
             $oMonitor->delete();
         }
-        util_redirect_and_exit(apidb_fullurl("appview.php?iVersionId=".$aClean['iVersionId']));
+        util_redirect_and_exit($oVersion->objectMakeUrl());
     }
 
 }

@@ -87,7 +87,7 @@ class Comment {
                 $sSubject = "Comment for '".Application::lookup_name($this->iAppId)." ".Version::lookup_name($this->iVersionId)."' added by ".$_SESSION['current']->sRealname;
                 $sMsg  = "To reply to this email please use the link provided below.\n";
                 $sMsg .= "DO NOT reply via your email client as it will not reach the person who wrote the comment\n";
-                $sMsg .= APPDB_ROOT."appview.php?iVersionId=".$this->iVersionId."&mode=nested#Comment-".$this->iCommentId."\n";
+                $sMsg .= $this->objectMakeUrl()."\n";
                 $sMsg .= "\n";
                 $sMsg .= "Subject: ".$this->sSubject."\r\n";
                 $sMsg .= "\n";
@@ -165,8 +165,9 @@ class Comment {
             $sEmail .= $this->oOwner->sEmail;
             if($sEmail)
             {
-                $sSubject = "Comment for '".Application::lookup_name($this->iAppId)." ".Version::lookup_name($this->iVersionId)."' deleted by ".$_SESSION['current']->sRealname;
-                $sMsg  = APPDB_ROOT."appview.php?iVersionId=".$this->iVersionId."\n";
+                $sSubject = "Comment for '".version::fullName($this->iVersionId)."' deleted by ".$_SESSION['current']->sRealname;
+                $oVersion = new version($this->iVersionId);
+                $sMsg  = $oVersion->objectMakeUrl()."\n";
                 $sMsg .= "\n";
                 $sMsg .= "This comment was made on ".substr($this->sDateCreated,0,10)." by ".$this->oOwner->sRealname."\n";
                 $sMsg .= "\n";
@@ -385,8 +386,10 @@ class Comment {
             if (!empty($aClean['sCmode']))
                 $_SESSION['current']->setPref("comments:mode", $aClean['sCmode']);
 
+            $oVersion = new version($versionId);
             $sel[$_SESSION['current']->getPref("comments:mode", "threaded")] = 'selected';
-            echo '<td><form method="post" name="sMode" action="appview.php">',"\n";
+            echo '<td><form method="post" name="sMode" action="'.
+                    $oVersion->objectMakeUrl().'">',"\n";
             echo "<b>Application Comments</b> $messageCount total comments ";
             echo '<b>Mode</b> <select name="sCmode" onchange="document.sMode.submit();">',"\n";
             echo '   <option value="flat" '.$sel['flat'].'>Flat</option>',"\n";
@@ -394,7 +397,7 @@ class Comment {
             echo '   <option value="nested" '.$sel['nested'].'>Nested</option>',"\n";
             echo '   <option value="off" '.$sel['off'].'>No Comments</option>',"\n";
             echo '</select>',"\n";
-            echo '<input type="hidden" name="iVersionId" value="'.$versionId.'"></form></td>',"\n";
+            echo '</form></td>',"\n";
         }
     
         // blank space
@@ -440,7 +443,14 @@ class Comment {
         }
 
         echo '</td></tr></table>',"\n";
-    }    
+    }
+
+    function objectMakeUrl()
+    {
+        $oVersion = new version($this->iVersionId);
+        $sUrl = $oVersion->objectMakeUrl()."#Comment-".$this->iCommentId;
+        return $sUrl;
+    }
 }
 
 

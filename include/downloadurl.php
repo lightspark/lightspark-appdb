@@ -191,13 +191,12 @@ class downloadurl
         if($sWhatChanged && $sEmail =
            User::get_notify_email_address_list($aValues['iVersionId']))
         {
-            $oApp = new Application($aValues["iAppId"]);
             $oVersion = new Version($aValues["iVersionId"]);
 
-            $sSubject = "Download URLs for $oApp->sName $oVersion->sName".
+            $sSubject = "Download URLs for ".version::fullName($oVersion->iVersionId).
             " updated by ".$_SESSION['current']->sRealname;
 
-            $sMsg = APPDB_ROOT."appview.php?iVersionId=".$aValues['iVersionId'];
+            $sMsg = $oVersion->objectMakeUrl();
             $sMsg .= "\n\n";
             $sMsg .= "The following changed were made\n\n";
             $sMsg .= "$sWhatChanged\n\n";

@@ -48,7 +48,10 @@ if($aClean['sWhat'])
         if(!$oVersion->delete())
             util_show_error_page_and_exit();
         else
-            util_redirect_and_exit(BASE."appview.php?iAppId=".$aClean['iAppId']);
+        {
+            $oApp = new application($aClean['iAppId']);
+            util_redirect_and_exit($oApp->objectMakeUrl());
+        }
         break;
     }
 }

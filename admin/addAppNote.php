@@ -24,7 +24,8 @@ if(!$_SESSION['current']->hasPriv("admin") &&
 //set link for version
 if(is_numeric($aClean['iVersionId']) and !empty($aClean['iVersionId']))
 {
-    $sVersionLink = "iVersionId={$aClean['iVersionId']}";
+    $oVersion = new version($aClean['iVersionId']);
+    $sVersionLink = $oVersion->objectMakeUrl();
 }
 else 
     exit;
@@ -35,7 +36,7 @@ $oNote->GetOutputEditorValues($aClean);
 if($aClean['sSub'] == "Submit")
 {
     $oNote->create();
-    util_redirect_and_exit(apidb_fullurl("appview.php?".$sVersionLink));
+    util_redirect_and_exit($sVersionLink);
 }
 else if($aClean['sSub'] == 'Preview' OR empty($aClean['sSubmit']))
 {
@@ -54,7 +55,7 @@ else if($aClean['sSub'] == 'Preview' OR empty($aClean['sSubmit']))
     echo '<input type="submit" name="sSub" value="Submit"></td></tr>',"\n";
     echo '</center>';
     
-    echo html_back_link(1,BASE."appview.php?".$sVersionLink);
+    echo html_back_link(1,$sVersionLink);
     apidb_footer();
 }
 ?>

@@ -64,6 +64,7 @@ if ($aClean['sSub'])
         while($oRow = mysql_fetch_object($hResult))
         {
             $oUser = new User($oRow->userId);
+            $oApp = new application($oRow->appId);
             if ($c % 2 == 1) { $bgcolor = 'color0'; } else { $bgcolor = 'color1'; }
 
             /* if this is a new user we should print a header that has the aggregate of the applications */
@@ -105,14 +106,14 @@ if ($aClean['sSub'])
             echo "<tr class=$bgcolor>\n";
             echo "    <td>".print_date(mysqldatetime_to_unixtimestamp($oRow->submitTime))." &nbsp;</td>\n";
             echo "    <td><a href=\"mailto:".$oUser->sEmail."\">".$oUser->sRealname."</a></td>\n";
+            echo "    <td>".$oApp->objectMakeLink()."</td>\n";
             if($oRow->superMaintainer)
             {
-                echo "    <td><a href='".BASE."appview.php?iAppId=$oRow->appId'>".Application::lookup_name($oRow->appId)."</a></td>\n";
                 echo "    <td>*</td>\n";
             } else
             {
-                echo "    <td><a href='".BASE."appview.php?iAppId=$oRow->appId'>".Application::lookup_name($oRow->appId)."</a></td>\n";
-                echo "    <td><a href='".BASE."appview.php?iVersionId=$oRow->versionId'>".Version::lookup_name($oRow->versionId)."</a>&nbsp;</td>\n";
+                $oVersion = new version($oRow->versionId);
+                echo "    <td>".$oVersion->objectMakeLink()."</td>\n";
             }
             echo "    <td align=\"center\">[<a href='adminMaintainers.php?sSub=delete&iMaintainerId=$oRow->maintainerId'>delete</a>]</td>\n";
             echo "</tr>\n\n";
