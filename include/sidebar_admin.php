@@ -12,7 +12,7 @@ function global_admin_menu() {
     $g->add("View App Queue (".application::objectGetEntriesCount(true, false).")",
             BASE."objectManager.php?sClass=application&bIsQueue=true&sTitle=".
             "Application%20Queue");
-    $g->add("View Version Queue (".$_SESSION['current']->getQueuedVersionCount().")",
+    $g->add("View Version Queue (".version::objectGetEntriesCount(true, false).")",
             BASE."admin/adminAppQueue.php");
     $g->add("View Screenshot Queue (".appData::objectGetEntriesCount("true",
             false, "screenshot").")",
@@ -45,6 +45,8 @@ function global_admin_menu() {
             true).")",
             BASE."objectManager.php?sClass=application&bIsQueue=true&bIsRejected=true&".
             "sTitle=Rejected%20Applications");
+    $g->add("View Rejected Versions (".version::objectGetEntriesCount(true, true).")",
+            BASE."appsubmit.php");
     $g->add("View Rejected Test Results (".testData::objectGetEntriesCount(true,
             true).")",
             BASE."objectManager.php?sClass=testData&bIsQueue=true&bIsRejected=true&".

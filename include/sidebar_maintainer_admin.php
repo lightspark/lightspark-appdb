@@ -7,7 +7,7 @@ function global_maintainer_admin_menu() {
 
     $g = new htmlmenu("Maintainer Admin");
 
-    $g->add("View Version Queue (".$_SESSION['current']->getQueuedVersionCount().")",
+    $g->add("View Version Queue (".version::objectGetEntriesCount(true, false).")",
             BASE."admin/adminAppQueue.php");
     $g->add("View Screenshot Queue (".appData::objectGetEntriesCount("true",
             false, "screenshot").")",

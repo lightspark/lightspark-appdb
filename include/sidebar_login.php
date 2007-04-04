@@ -34,9 +34,11 @@ function global_sidebar_login() {
                     $g->addmisc(version::fullNameLink($versionId), "center");
             }
         }
-        $appsRejected = $_SESSION['current']->getAllRejectedApps();
-        if($appsRejected)
-            $g->addmisc("<a href='".BASE."appsubmit.php?'>Review Rejected Apps</a>", "center");
+        $iAppsRejected = application::objectGetEntriesCount(true, true) +
+                         version::objectGetEntriesCount(true, true);
+        if($iAppsRejected && !$_SESSION['current']->hasPriv("admin"))
+            $g->addmisc("<a href='".BASE."appsubmit.php?'>Review Rejected Apps ".
+            "($iAppsRejected)</a>", "center");
 
         $aMonitored = Monitor::getVersionsMonitored($_SESSION['current']);
         if($aMonitored)

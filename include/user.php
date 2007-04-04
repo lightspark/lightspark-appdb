@@ -265,40 +265,6 @@ class User {
         return Maintainer::isUserSuperMaintainer($this, $iAppId);
     }
 
-    /* get the number of queued applications */
-    function getQueuedAppCount()
-    {
-        /* return 0 because non-admins have no way to process new apps */
-        if(!$this->hasPriv("admin"))
-            return 0;
-
-        $sQuery = "SELECT count(*) as queued_apps FROM appFamily WHERE queued='true'";
-        $hResult = query_parameters($sQuery);
-        $oRow = mysql_fetch_object($hResult);
-        return $oRow->queued_apps;
-    }
-
-    function getQueuedVersionCount()
-    {
-        if($this->hasPriv("admin"))
-        {
-            $hResult = query_parameters("SELECT count(*) as queued_versions FROM appVersion WHERE queued='true'");
-        } else
-        {
-            /* find all queued versions of applications that the user is a super maintainer of */
-            $hResult = query_parameters("SELECT count(*) as queued_versions FROM appVersion, appMaintainers
-                        WHERE appVersion.queued='true' AND appMaintainers.superMaintainer ='1'
-                        AND appVersion.appId = appMaintainers.appId
-                        AND appMaintainers.userId ='?'", $this->iUserId);
-        }
-
-        $oRow = mysql_fetch_object($hResult);
-
-        /* we don't want to count the versions that are implicit in the applications */
-        /* that are in the queue */
-        return $oRow->queued_versions - $this->getQueuedAppCount();
-    }
-
     function addPriv($sPriv)
     {
         if(!$this->isLoggedIn() || !$sPriv)
@@ -498,29 +464,6 @@ class User {
          }
 
          return query_appdb($sQuery);
-     }
-
-     function getAllRejectedApps()
-     {
-         $hResult = query_parameters("SELECT appVersion.versionId, appFamily.appId 
-                               FROM appVersion, appFamily
-                               WHERE appFamily.appId = appVersion.appId 
-                               AND (appFamily.queued = 'rejected' OR appVersion.queued = 'rejected')
-                               AND appVersion.submitterId = '?'",
-                                     $this->iUserId);
-
-         if(!$hResult || mysql_num_rows($hResult) == 0)
-             return;
-
-         $retval = array();
-         $c = 0;
-         while($oRow = mysql_fetch_object($hResult))
-         {
-             $retval[$c] = array($oRow->appId, $oRow->versionId);
-             $c++;
-         }
-
-         return $retval;
      }
 
      function isAppSubmitter($iAppId)

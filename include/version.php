@@ -1152,6 +1152,74 @@ class Version {
                  $this->sName."</a>";
         return $sLink;
     }
+
+    function objectGetEntriesCount($bQueued, $bRejected)
+    {
+        $sQueued = objectManager::getQueueString($bQueued, $bRejected);
+
+        if($bQueued && !version::canEdit())
+        {
+            /* Users should see their own rejected entries */
+            if($bRejected)
+                $sIncludeUserSubmissions = "OR appVersion.submitterId = '".
+                        $_SESSION['current']->iUserId."'";
+
+            $sQuery = "SELECT COUNT(DISTINCT appVersion.versionId) as count FROM
+                    appVersion, appMaintainers, appFamily WHERE
+                    appFamily.appId = appVersion.appId
+                    AND
+                    appFamily.queued = 'false'
+                    AND
+                    (
+                        (
+                            (
+                                (
+                                    appMaintainers.appId = appVersion.appId
+                                    AND
+                                    superMaintainer = '1'
+                                )
+                                OR
+                                (
+                                    appMaintainers.versionId = appVersion.versionId
+                                    AND
+                                    superMaintainer = '0'
+                                )
+                            )
+                            AND
+                            appMaintainers.userId = '?'
+                            AND
+                            appMaintainers.queued = 'false'
+                        )
+                        $sIncludeUserSubmissions
+                    )
+                    AND
+                    appVersion.queued = '?'";
+            $hResult = query_parameters($sQuery, $_SESSION['current']->iUserId, $sQueued);
+        } else
+        {
+            $sQuery = "SELECT COUNT(DISTINCT versionId) as count
+                    FROM appVersion, appFamily WHERE
+                    appFamily.appId = appVersion.appId
+                    AND
+                    appFamily.queued = 'false'
+                    AND
+                    appVersion.queued = '?'";
+            $hResult = query_parameters($sQuery, $sQueued);
+        }
+
+        if(!$hResult)
+            return FALSE;
+
+        if(!$oRow = mysql_fetch_object($hResult))
+            return FALSE;
+
+        return $oRow->count;
+    }
+
+    function canEdit()
+    {
+        return $_SESSION['current']->hasPriv("admin");
+    }
 }
 
 ?>
