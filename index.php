@@ -68,7 +68,7 @@ If you have screenshots or links to contribute, please browse the database and u
     // don't mention the top application if there are no votes yet
     if($oRow->versionId)
     {
-       $sVoteAppLink = version::fullNameLink($oRow->versionId);
+       $shVoteAppLink = version::fullNameLink($oRow->versionId);
        echo "There are <b>$numApps</b> applications currently in the database with\n";
        echo "$shVoteAppLink being the\n";
        echo "top <a href='votestats.php'>voted</a> application.\n";
