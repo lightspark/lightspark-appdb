@@ -400,6 +400,7 @@ class ObjectManager
             echo "The following errors were found<br />\n";
             echo "<ul>$sErrors</ul>\n";
             echo "</font><br />";
+            return TRUE;
         } else
             return FALSE;
     }
