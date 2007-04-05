@@ -1159,41 +1159,45 @@ class Version {
 
         if($bQueued && !version::canEdit())
         {
-            /* Users should see their own rejected entries */
+            /* Users should see their own rejected entries, but maintainers should
+               not be able to see rejected entries for versions they maintain */
             if($bRejected)
-                $sIncludeUserSubmissions = "OR appVersion.submitterId = '".
-                        $_SESSION['current']->iUserId."'";
-
-            $sQuery = "SELECT COUNT(DISTINCT appVersion.versionId) as count FROM
-                    appVersion, appMaintainers, appFamily WHERE
-                    appFamily.appId = appVersion.appId
-                    AND
-                    appFamily.queued = 'false'
-                    AND
-                    (
+                $sQuery = "SELECT COUNT(DISTINCT appVersion.versionId) as count FROM
+                        appVersion, appFamily WHERE
+                        appFamily.appId = appVersion.appId
+                        AND
+                        appFamily.queued = 'false'
+                        AND
+                        appVersion.submitterId = '?'
+                        AND
+                        appVersion.queued = '?'";
+            else
+                $sQuery = "SELECT COUNT(DISTINCT appVersion.versionId) as count FROM
+                        appVersion, appMaintainers, appFamily WHERE
+                        appFamily.appId = appVersion.appId
+                        AND
+                        appFamily.queued = 'false'
+                        AND
                         (
                             (
-                                (
-                                    appMaintainers.appId = appVersion.appId
-                                    AND
-                                    superMaintainer = '1'
-                                )
-                                OR
-                                (
-                                    appMaintainers.versionId = appVersion.versionId
-                                    AND
-                                    superMaintainer = '0'
-                                )
+                                appMaintainers.appId = appVersion.appId
+                                AND
+                                superMaintainer = '1'
                             )
-                            AND
-                            appMaintainers.userId = '?'
-                            AND
-                            appMaintainers.queued = 'false'
+                            OR
+                            (
+                                appMaintainers.versionId = appVersion.versionId
+                                AND
+                                superMaintainer = '0'
+                            )
                         )
-                        $sIncludeUserSubmissions
-                    )
-                    AND
-                    appVersion.queued = '?'";
+                        AND
+                        appMaintainers.userId = '?'
+                        AND
+                        appMaintainers.queued = 'false'
+                        AND
+                        appVersion.queued = '?'";
+
             $hResult = query_parameters($sQuery, $_SESSION['current']->iUserId, $sQueued);
         } else
         {
