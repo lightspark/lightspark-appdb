@@ -57,7 +57,7 @@ If you have screenshots or links to contribute, please browse the database and u
 </p>
 <?php
 
-    $numApps = getNumberOfVersions();
+    $iNumApps = version::objectGetEntriesCount(false, false);
 
     $voteQuery = "SELECT appVotes.versionId, count(userId) as count ".
         "FROM appVotes ".
@@ -65,17 +65,18 @@ If you have screenshots or links to contribute, please browse the database and u
     $hResult = query_parameters($voteQuery);
     $oRow = mysql_fetch_object($hResult);
 
+    echo "There are <b>$iNumApps</b> applications currently in the database";
+
     // don't mention the top application if there are no votes yet
     if($oRow->versionId)
     {
        $shVoteAppLink = version::fullNameLink($oRow->versionId);
-       echo "There are <b>$numApps</b> applications currently in the database with\n";
-       echo "$shVoteAppLink being the\n";
+       echo " with $shVoteAppLink being the\n";
        echo "top <a href='votestats.php'>voted</a> application.\n";
     } else
     {
-       echo "There are <b>$numApps</b> applications currently in the database, please\n";
-       echo "<a href=\"".BASE."help/?sTopic=voting\" title=\"help on voting\" style=\"cursor: help\">vote</a> for your favourite application.\n";
+       echo " please <a href=\"".BASE."help/?sTopic=voting\" title=\"help on voting\"".
+               "style=\"cursor: help\">vote</a> for your favourite application.\n";
     }
 ?>
 

@@ -56,13 +56,13 @@ echo "</tr>\n\n";
 /* Display the number of application familes */
 echo "<tr class=color4>\n";
 echo "    <td>Application families:</td>\n";
-echo "    <td>".getNumberOfAppFamilies()."</td>\n";
+echo "    <td>".application::objectGetEntriesCount(false, false)."</td>\n";
 echo "</tr>\n\n";
 
 /* Display the number of versions */
 echo "<tr class=color4>\n";
 echo "    <td>Versions:</td>\n";
-echo "    <td>".getNumberOfVersions()."</td>\n";
+echo "    <td>".version::objectGetEntriesCount(false, false)."</td>\n";
 echo "</tr>\n\n";
 
 /* Display the number of application maintainers */

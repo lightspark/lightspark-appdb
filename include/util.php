@@ -205,37 +205,12 @@ function make_maintainer_rating_list($varname, $cvalue)
     echo "</select>\n";
 }
 
-/* get the total number of vendors from the vendor table */
-function getVendorCount()
-{
-    $sQuery = "SELECT count(*) as vendors FROM vendor";
-    $hResult = query_parameters($sQuery);
-    $oRow = mysql_fetch_object($hResult);
-    return $oRow->vendors;
-}
-
 /* Get the number of users in the database */
 function getNumberOfComments()
 {
     $hResult = query_parameters("SELECT count(*) as num_comments FROM appComments;");
     $oRow = mysql_fetch_object($hResult);
     return $oRow->num_comments;
-}
-
-/* Get the number of versions in the database */
-function getNumberOfVersions()
-{
-    $hResult = query_parameters("SELECT count(versionId) as num_versions FROM appVersion WHERE versionName != 'NONAME';");
-    $oRow = mysql_fetch_object($hResult);
-    return $oRow->num_versions;
-}
-
-/* Get the number of app familes in the database */
-function getNumberOfAppFamilies()
-{
-    $hResult = query_parameters("SELECT count(*) as num_appfamilies FROM appFamily;");
-    $oRow = mysql_fetch_object($hResult);
-    return $oRow->num_appfamilies;
 }
 
 /* Get the number of queued bug links in the database */
