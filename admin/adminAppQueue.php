@@ -145,8 +145,7 @@ if ($aClean['sSub'])
     } else
     {
         //error no Id!
-        addmsg("Application Not Found!", "red");
-        util_redirect_and_exit(apidb_fullurl("admin/adminAppQueue.php"));
+        util_show_error_page_and_exit("Application Not Found!");
     }
 
     // Get the Testing results if they exist
@@ -191,7 +190,14 @@ if ($aClean['sSub'])
 
         downloadurl::processFormSingle($oVersion->iVersionId, $aClean, TRUE);
 
-        util_redirect_and_exit($_SERVER['PHP_SELF']);
+        if($oVersion->sQueued == "rejected")
+            $sIsRejected = "true";
+        else
+            $sIsRejected = "false";
+
+        util_redirect_and_exit(BASE."objectManager.php?sClass=".$aClean['sAppType'].
+                              "&bIsQueue=true&bIsRejected=$sIsRejected&sTitle=".
+                              $aClean['sAppType']."%20Queue");
     }
     else if ($aClean['sSub'] == 'duplicate')
     {
@@ -208,7 +214,8 @@ if ($aClean['sSub'])
         }
 
         /* redirect back to the main page */
-        util_redirect_and_exit(apidb_fullurl("admin/adminAppQueue.php"));
+        util_redirect_and_exit(BASE."objectManager.php?sClass=application&".
+                              "bIsQueue=true&sTitle=Application%20Queue");
     }
     else if ($aClean['sSub'] == 'movetest')
     {
@@ -225,7 +232,8 @@ if ($aClean['sSub'])
         }
 
         // redirect back to the main page
-        util_redirect_and_exit(apidb_fullurl("admin/adminAppQueue.php"));
+        util_redirect_and_exit(BASE."objectManager.php?sClass=version&".
+                              "bIsQueue=true&sTitle=Version%20Queue");
     }
     else if ($aClean['sSub'] == 'Delete')
     {
@@ -244,7 +252,8 @@ if ($aClean['sSub'])
             $oVersion->delete();
         }
 
-        util_redirect_and_exit(apidb_fullurl("admin/adminAppQueue.php"));
+        util_redirect_and_exit(BASE."objectManager.php?sClass=".$aClean['sAppType'].
+                              "&bIsQueue=true&sTitle=".$aClean['sAppType']."%20Queue");
     }
     else if ($aClean['sSub'] == 'Reject')
     {
@@ -263,7 +272,8 @@ if ($aClean['sSub'])
         $oVersion->reject();
         $oTest->update(true);
         $oTest->reject();
-        util_redirect_and_exit($_SERVER['PHP_SELF']);
+        util_redirect_and_exit(BASE."objectManager.php?sClass=".$aClean['sAppType'].
+                              "&bIsQueue=true&sTitle=".$aClean['sAppType']."%20Queue");
     }
 
     //process according to sub flag
@@ -275,7 +285,13 @@ if ($aClean['sSub'])
         echo '<form name="sQform" action="adminAppQueue.php" method="post" enctype="multipart/form-data">',"\n";
         echo '<input type="hidden" name="sSub" value="add">',"\n"; 
 
-        echo html_back_link(1,'adminAppQueue.php');
+        if($oVersion->sQueued == "rejected")
+            $sIsRejected = "true";
+        else
+            $sIsRejected = "false";
+
+        echo html_back_link(1,BASE."objectManager.php?sClass=".$aClean['sAppType']."&bIsQueue=true&".
+                "bIsRejected=$sIsRejected&sTitle=".$aClean['sAppType']."%20Queue");
 
         if (!$oApp) //app version
         { 
@@ -401,44 +417,15 @@ if ($aClean['sSub'])
         echo '</table>',"\n";
         echo '</form>',"\n";
         echo html_frame_end();
-        echo html_back_link(1,'adminAppQueue.php');
+        echo html_back_link(1,BASE."objectManager.php?sClass=".$aClean['sAppType']."&bIsQueue=true&".
+                "bIsRejected=$sIsRejected&sTitle=".$aClean['sAppType']."%20Queue");
     }
     else
     {
         //error no sub!
-        addmsg("Internal Routine Not Found!!", "red");
-        util_redirect_and_exit(apidb_fullurl("admin/adminAppQueue.php"));
+        util_show_error_page_and_exit("Internal Routine Not Found!!");
     }
 }
-else /* if ($aClean['sSub']) is not defined, display the main app queue page */
-{
-    apidb_header("Admin App Queue");
 
-     // get queued versions (only versions where application are not queued already)
-     $hResult = $_SESSION['current']->getAppQueueQuery(false); /* query for the app version */
-
-     if(!$hResult || !mysql_num_rows($hResult))
-     {
-         //no apps in queue
-         echo html_frame_start("Version Queue","90%");
-         echo '<p><b>The Version Queue is empty.</b></p>',"\n";
-         echo html_frame_end("&nbsp;");         
-     }
-     else
-     {
-        //help
-        echo "<div align=center><table width='90%' border=0 cellpadding=3 cellspacing=0><tr><td>\n\n";
-        echo "<p>This is the list of versions waiting for your approval, or to be rejected.</p>\n";
-        echo "<p>To view a submission, click on its name. From that page you can edit, delete or approve it into \n";
-        echo "the AppDB .<br>\n";
-        echo "<p>Note that versions linked to application that have not been yet approved are not displayed in this list.</p>\n";
-        echo "the AppDB.<br>\n";
-        echo "</td></tr></table></div>\n\n";
-    
-        //show version list
-        Version::showList($hResult);
-
-    }
-}
 apidb_footer();       
 ?>

@@ -41,7 +41,7 @@ class Version {
     /**
      * constructor, fetches the data.
      */
-    function Version($iVersionId = null)
+    function Version($iVersionId = null, $oRow = null)
     {
         // we are working on an existing version
         if(is_numeric($iVersionId))
@@ -51,26 +51,28 @@ class Version {
              */
             if(!$this->iVersionId)
             {
-                $sQuery = "SELECT *
-                           FROM appVersion
-                           WHERE versionId = '?'";
-                if($hResult = query_parameters($sQuery, $iVersionId))
+                if(!$oRow)
                 {
-                    $oRow = mysql_fetch_object($hResult);
-                    if($oRow)
-                    {
-                        $this->iVersionId = $iVersionId;
-                        $this->iAppId = $oRow->appId;
-                        $this->iSubmitterId = $oRow->submitterId;
-                        $this->sSubmitTime = $oRow->submitTime;
-                        $this->sDate = $oRow->submitTime;
-                        $this->sName = $oRow->versionName;
-                        $this->sDescription = $oRow->description;
-                        $this->sTestedRelease = $oRow->maintainer_release;
-                        $this->sTestedRating = $oRow->maintainer_rating;
-                        $this->sQueued = $oRow->queued;
-                        $this->sLicense = $oRow->license;
-                    }
+                    $sQuery = "SELECT *
+                        FROM appVersion
+                        WHERE versionId = '?'";
+                    if($hResult = query_parameters($sQuery, $iVersionId))
+                        $oRow = mysql_fetch_object($hResult);
+                }
+
+                if($oRow)
+                {
+                    $this->iVersionId = $iVersionId;
+                    $this->iAppId = $oRow->appId;
+                    $this->iSubmitterId = $oRow->submitterId;
+                    $this->sSubmitTime = $oRow->submitTime;
+                    $this->sDate = $oRow->submitTime;
+                    $this->sName = $oRow->versionName;
+                    $this->sDescription = $oRow->description;
+                    $this->sTestedRelease = $oRow->maintainer_release;
+                    $this->sTestedRating = $oRow->maintainer_rating;
+                    $this->sQueued = $oRow->queued;
+                    $this->sLicense = $oRow->license;
                 }
             }
         }
@@ -1157,7 +1159,8 @@ class Version {
     {
         $sQueued = objectManager::getQueueString($bQueued, $bRejected);
 
-        if($bQueued && !version::canEdit())
+        $oVersion = new version();
+        if($bQueued && !$oVersion->canEdit())
         {
             /* Users should see their own rejected entries, but maintainers should
                not be able to see rejected entries for versions they maintain */
@@ -1222,7 +1225,120 @@ class Version {
 
     function canEdit()
     {
-        return $_SESSION['current']->hasPriv("admin");
+        if($_SESSION['current']->hasPriv("admin"))
+            return TRUE;
+        else if($this->iVersionId && 
+                maintainer::isUserMaintainer($_SESSION['current'], $this->iVersionId))
+            return TRUE;
+        else
+            return FALSE;
+    }
+
+    function objectGetHeader()
+    {
+        $aCells = array(
+                "Submission Date",
+                "Submitter",
+                "Vendor",
+                "Application",
+                "Version");
+        return $aCells;
+    }
+
+    function objectGetEntries($bQueued, $bRejected)
+    {
+        $sQueued = objectManager::getQueueString($bQueued, $bRejected);
+
+        if($bQueued && !$this->canEdit())
+        {
+            /* Users should see their own rejected entries, but maintainers should
+               not be able to see rejected entries for versions they maintain */
+            if($bRejected)
+                $sQuery = "SELECT appVersion.* FROM
+                        appVersion, appFamily WHERE
+                        appFamily.appId = appVersion.appId
+                        AND
+                        appFamily.queued = 'false'
+                        AND
+                        appVersion.submitterId = '?'
+                        AND
+                        appVersion.queued = '?'";
+            else
+                $sQuery = "SELECT appVersion.* FROM
+                        appVersion, appMaintainers, appFamily WHERE
+                        appFamily.appId = appVersion.appId
+                        AND
+                        appFamily.queued = 'false'
+                        AND
+                        (
+                            (
+                                appMaintainers.appId = appVersion.appId
+                                AND
+                                superMaintainer = '1'
+                            )
+                            OR
+                            (
+                                appMaintainers.versionId = appVersion.versionId
+                                AND
+                                superMaintainer = '0'
+                            )
+                        )
+                        AND
+                        appMaintainers.userId = '?'
+                        AND
+                        appMaintainers.queued = 'false'
+                        AND
+                        appVersion.queued = '?'";
+
+            $hResult = query_parameters($sQuery, $_SESSION['current']->iUserId, $sQueued);
+        } else
+        {
+            $sQuery = "SELECT appVersion.*
+                    FROM appVersion, appFamily WHERE
+                    appFamily.appId = appVersion.appId
+                    AND
+                    appFamily.queued = 'false'
+                    AND
+                    appVersion.queued = '?'";
+            $hResult = query_parameters($sQuery, $sQueued);
+        }
+
+        if(!$hResult)
+            return FALSE;
+
+        return $hResult;
+    }
+
+    function objectOutputTableRow($oObject, $sClass, $sEditLinkLabel)
+    {
+        $oUser = new user($this->iSubmitterId);
+        $oApp = new application($this->iAppId);
+        $oVendor = new vendor($oApp->iVendorId);
+        $aCells = array(
+                print_date(mysqltimestamp_to_unixtimestamp($this->sSubmitTime)),
+                $oUser->objectMakeLink(),
+                $oVendor->objectMakeLink(),
+                $oApp->objectMakeLink(),
+                $this->sName);
+
+        if($this->canEdit())
+            $aCells[] = "[ <a href=\"".BASE."admin/adminAppQueue.php?sAppType=".
+                    "version&sSub=view&iVersionId=$this->iVersionId\">$sEditLinkLabel</a> ]";
+
+        echo html_tr($aCells, $sClass);
+    }
+
+    function objectGetInstanceFromRow($oRow)
+    {
+        return new version($oRow->versionId, $oRow);
+    }
+
+    function objectDisplayQueueProcessingHelp()
+    {
+        echo "<p>This is the list of versions waiting for your approval, ".
+             "or to be rejected.</p>\n";
+        echo "<p>To view a submission, click on its name. ".
+             "From that page you can edit, delete or approve it into the AppDB.</p>\n";
     }
 }
 

@@ -389,48 +389,6 @@ class User {
          return false;
      }
 
-     /**
-      * Retrieve the list of applications in the app queue that this user can see
-      */
-     function getAppQueueQuery($queryAppFamily)
-     {
-         /* escape input as we can't easily use query_parameters() */
-         $queryAppFamily = mysql_real_escape_string($queryAppFamily);
-
-         if($this->hasPriv("admin"))
-         {
-             if($queryAppFamily)
-             {
-                 $sQuery = "SELECT appFamily.appId FROM appFamily WHERE queued = 'true' ORDER BY appId";
-             } else
-             {
-                 $sQuery = "SELECT appVersion.versionId FROM appVersion, appFamily
-                            WHERE appFamily.appId = appVersion.appId 
-                            AND appFamily.queued = 'false' AND appVersion.queued = 'true' ORDER BY versionId";
-             }
-         } else
-         {
-             if($queryAppFamily)
-             {
-                 $sQuery = "SELECT appFamily.appId FROM appFamily, appMaintainers
-                            WHERE appFamily.queued = 'true'
-                            AND appFamily.appId = appMaintainers.appId
-                            AND appMaintainers.superMaintainer = '1'
-                            AND appMaintainers.userId = '".mysql_real_escape_string($this->iUserId)."';";
-             } else
-             {
-                 $sQuery = "SELECT appVersion.versionId FROM appVersion, appFamily, appMaintainers
-                            WHERE appFamily.appId = appVersion.appId 
-                            AND appFamily.queued = 'false' AND appVersion.queued = 'true'
-                            AND appFamily.appId = appMaintainers.appId
-                            AND appMaintainers.superMaintainer = '1'
-                            AND appMaintainers.userId = '".mysql_real_escape_string($this->iUserId)."';";
-             }
-         }
-
-         return query_appdb($sQuery);
-     }
-
      function getAppRejectQueueQuery($queryAppFamily)
      {
          /* escape input as we can't easily use query_parameters() */
