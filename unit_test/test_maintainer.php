@@ -447,6 +447,115 @@ function test_maintainer_deleteMaintainersForVersion()
     return TRUE;
 }
 
+function test_maintainer_getMaintainersForAppIdVersionId()
+{
+    test_start(__FUNCTION__);
+
+    global $test_email, $test_password;
+    $oUser = new user();
+    if($oUser->login($test_email, $test_password) != SUCCESS)
+    {
+        echo "Failed to create and log in user!\n";
+        return FALSE;
+    }
+
+    $oUser->addPriv("admin");
+
+    $oApp = new application();
+    $oApp->create();
+    $oFirstVersion = new version();
+    $oFirstVersion->iAppId = $oApp->iAppId;
+    $oFirstVersion->create();
+    $oSecondVersion = new version();
+    $oSecondVersion->iAppid = $oApp->iAppId;
+    $oSecondVersion->create();
+
+    $oSuperMaintainer = new maintainer();
+    $oSuperMaintainer->bSuperMaintainer = TRUE;
+    $oSuperMaintainer->sMaintainReason = "Because";
+    $oSuperMaintainer->iAppId = $oApp->iAppId;
+    $oSuperMaintainer->iUserId = $oUser->iUserId;
+    $oSuperMaintainer->create();
+
+    if(!$hResult = maintainer::getMaintainersForAppIdVersionId($oApp->iAppId))
+    {
+        echo "Failed to get list of maintainers!\n";
+        return FALSE;
+    }
+
+    /* The application should have one maintainer */
+    $iExpected = 1;
+    $iReceived = mysql_num_rows($hResult);
+    if($iExpected != $iReceived)
+    {
+        echo "Got super maintainer count of $iReceived instead of $iExpected!\n";
+        return FALSE;
+    }
+
+    if(!$hResult = maintainer::getMaintainersForAppIdVersionId(null,
+       $oFirstVersion->iVersionId))
+    {
+        echo "Failed to get list of maintainers!\n";
+        return FALSE;
+    }
+
+    /* The version should have one maintainer */
+    $iExpected = 1;
+    $iReceived = mysql_num_rows($hResult);
+    if($iExpected != $iReceived)
+    {
+        echo "Got maintainer count of $iReceived instead of $iExpected!\n";
+        return FALSE;
+    }
+
+    $oSuperMaintainer->delete();
+
+    /* Become a maintainer for one of the versions only */
+    $oFirstVersionMaintainer = new maintainer();
+    $oFirstVersionMaintainer->sMaintainReason = "I need it";
+    $oFirstVersionMaintainer->iVersionId = $oFirstVersion->iVersionId;
+    $oFirstVersionMaintainer->iAppId = $oFirstVersion->iAppId;
+    $oFisrtVersionMaintainer->bSuperMaintainer = FALSE;
+    $oFirstVersionMaintainer->iUserId = $oUser->iUserId;
+    $oFirstVersionMaintainer->create();
+
+    if(!$hResult = maintainer::getMaintainersForAppIdVersionId(null,
+       $oFirstVersion->iVersionId))
+    {
+        echo "Failed to get list of maintainers!\n";
+        return FALSE;
+    }
+
+    /* The first version should have one maintainer */
+    $iExpected = 1;
+    $iReceived = mysql_num_rows($hResult);
+    if($iExpected != $iReceived)
+    {
+        echo "Got maintainer count of $iReceived instead of $iExpected!\n";
+        return FALSE;
+    }
+
+    if(!$hResult = maintainer::getMaintainersForAppIdVersionId(null,
+           $oSecondVersion->iVersionId))
+    {
+        echo "Failed to get list of maintainers!\n";
+        return FALSE;
+    }
+
+    /* The second version should not have any maintainers */
+    $iExpected = 0;
+    $iReceived = mysql_num_rows($hResult);
+    if($iExpected != $iReceived)
+    {
+        echo "Got maintainer count of $iReceived instead of $iExpected!\n";
+        return FALSE;
+    }
+
+    $oApp->delete();
+    $oUser->delete();
+
+    return TRUE;
+}
 if(!test_maintainer_getMaintainerCountForUser())
 {
     echo "test_maintainer_getMaintainerCountForUser() failed!\n";
@@ -492,6 +601,15 @@ if(!test_maintainer_deleteMaintainersForVersion())
 } else
 {
     echo "test_maintainer_deleteMaintianersForVersion() passed\n";
+}
+
+if(!test_maintainer_getMaintainersForAppIdVersionId())
+{
+    echo "test_maintainer_getMaintainersForAppIdVersionId() failed!\n";
+    $bTestSuccess = false;
+} else
+{
+    echo "test_maintainer_getMaintainersForAppIdVersionId() passed\n";
 }
 
 ?>
