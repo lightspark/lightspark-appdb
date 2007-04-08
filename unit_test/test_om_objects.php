@@ -142,8 +142,8 @@ function test_object_methods()
     if(!test_class("testData", $aTestMethods))
         return FALSE;
 
-/*    if(!test_class("version", $aTestMethods))
-        return FALSE; */
+    if(!test_class("version", $aTestMethods))
+        return FALSE;
 
     return true;
 }
