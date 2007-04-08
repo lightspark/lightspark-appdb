@@ -98,41 +98,35 @@ class Monitor {
 
     function SendNotificationMail($sAction="add",$sMsg=null)
     {
-        /* set $aAppName appropriately */
+        /* Set variables depending on whether it is an application or version monitor */
         if(isset($this->iVersionId))
-            $sAppName = Application::lookup_name($this->iAppId)." ".Version::lookup_name($this->iVersionId);
-        else
+        {
+            $oVersion = new version($this->iVersionId);
+            $sAppName = version::fullName($this->iVersionId);
+            $sUrl = $oVersion->objectMakeUrl();
+            $sVersion = " version";
+        } else
+        {
+            $oApp = new application($this->iAppId);
             $sAppName = Application::lookup_name($this->iAppId);
+            $sUrl = $oApp->objectMakeUrl();
+        }
 
         switch($sAction)
         {
             case "add":
-                if (isset($this->iVersionId))
-                {
-                    $sSubject = "Monitor for ".$sAppName;
-                    $sSubject .= " added: ".$_SESSION['current']->sRealname;
-                    $sMsg .= APPDB_ROOT."appview.php?iVersionId=".$this->iVersionId."\n";
-                    addmsg("You will now receive an email whenever changes are made to this Application version.", "green");
-                } else
-                {
-                    $sSubject = "Monitor for ".$sAppName." added: ".$_SESSION['current']->sRealname;
-                    $sMsg .= APPDB_ROOT."appview.php?iAppId=".$this->iAppid."\n";
-                    addmsg("You will now receive an email whenever changes are made to this Application.", "green");
-                } 
+                $sSubject = "Monitor for ".$sAppName;
+                $sSubject .= " added: ".$_SESSION['current']->sRealname;
+                $sMsg .= "$sUrl\n";
+                addmsg("You will now receive an email whenever changes are made ".
+                "to this application$sVersion.", "green");
             break;
             case "delete":
-                if (isset($this->iVersionId))
-                {
-                    $sSubject = "Monitor for ".$sAppName;
-                    $sSubject .= " removed: ".$_SESSION['current']->sRealname;
-                    $sMsg .= APPDB_ROOT."appview.php?iVersionId=".$this->iVersionId."\n";
-                    addmsg("You will no longer receive an email whenever changes are made to this Application version.", "green");
-                } else
-                {
-                    $sSubject = "Monitor for ".$sAppName." removed: ".$_SESSION['current']->sRealname;
-                    $sMsg .= APPDB_ROOT."appview.php?iAppId=".$this->iAppid."\n";
-                    addmsg("You will no longer receive an email whenever changes are made to this Application.", "green");
-                } 
+                $sSubject = "Monitor for ".$sAppName;
+                $sSubject .= " removed: ".$_SESSION['current']->sRealname;
+                $sMsg .= "$sUrl\n";
+                addmsg("You will no longer receive an email whenever changes ".
+                "are made to this application$sVersion.", "green");
             break;
         }
         $sEmail = User::get_notify_email_address_list(null, $this->iVersionId);

@@ -18,9 +18,10 @@ if(!empty($aClean['sAction']))
     $oVersion = new Version($aClean['iVersionId']);
     $oVersion->iAppId = $aClean['iAppId'];
     $oVersion->update();
+    $oApp = new application($aClean['iAppId']);
 
     /* redirect to the application we just moved this version to */
-    util_redirect_and_exit(apidb_fullurl("appview.php?iAppId=".$aClean['iAppId']));
+    util_redirect_and_exit($oApp->objectMakeUrl());
 } else /* or display the webform for making changes */
 {
 ?>
@@ -50,12 +51,13 @@ if(!empty($aClean['sAction']))
     {
         /* if the version ids differ then we should start a row with a new application */
         /* and the version that matches with it */
-        if($currentAppId != $oRow->appId)
+        if($iCurrentAppId != $oRow->appId)
         {
-            $currentAppId = $oRow->appId;
+            $oApp = new application($oRow->appId);
+            $iCurrentAppId = $oRow->appId;
             echo '<tr style="background: #CCDDFF; border: thin solid; font-weight:bold;"><td align="left" style="padding-left:20px;">';
-            $url = BASE."appview.php?iAppId=".$oRow->appId;
-            echo '<a href="'.$url.'">'.substr($oRow->appName, 0, 30).'</a></td><td> - '.$oRow->appId.'</td>';
+            $sUrl = $oApp->objectMakeUrl();
+            echo '<a href="'.$sUrl.'">'.substr($oRow->appName, 0, 30).'</a></td><td> - '.$oRow->appId.'</td>';
             echo "<td style='padding-left:20px;'><a href='moveAppVersion.php?sAction=move&iVersionId=$oVersion->iVersionId&iAppId=$oRow->appId'>Move here</a></td></tr>";
             echo '<tr style="border-left: thin solid; border-right:thin solid; background: #FAFBE2;"><td style="padding-left:40px;" colspan="3" align="left">'.$oRow->versionName.'</td></tr>';
         } else /* just add another version */
@@ -68,7 +70,7 @@ if(!empty($aClean['sAction']))
     echo html_table_end();
     echo html_frame_end();
     echo "</form>";
-    echo html_back_link(1, BASE."appview.php?iVersionId=".$oVersion->iVersionId);
+    echo html_back_link(1, $oVersion->objectMakeUrl());
     apidb_footer();
 }
 ?>

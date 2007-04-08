@@ -213,13 +213,25 @@ class Url {
  
     function SendNotificationMail($bDeleted=false)
     {
-        $sAppName = Application::lookup_name($this->iAppId)." ".Version::lookup_name($this->iVersionId);
+        /* Set variables depending on whether the url is for an app or version */
+        if($this->iVersionId)
+        {
+            $oVersion = new version($this->iVersionId);
+            $sAppName = version::fullName($this->iVersionId);
+            $sUrl = $oVersion->objectMakeUrl();
+        } else
+        {
+            $oApp = new application($this->iAppId);
+            $sAppName = $oApp->sName;
+            $sUrl = $oApp->objectMakeUrl();
+        }
+
         if(!$bDeleted)
         {
             if(!$this->bQueued)
             {
-                $sSubject = "Url for ".$sAppName." added by ".$_SESSION['current']->sRealname;
-                $sMsg  = APPDB_ROOT."appview.php?iVersionId=".$this->iVersionId."\n";
+                $sSubject = "Url for $sAppName added by ".$_SESSION['current']->sRealname;
+                $sMsg  = "$sUrl\n";
                 if($this->iSubmitterId)
                 {
                     $oSubmitter = new User($this->iSubmitterId);
@@ -229,16 +241,18 @@ class Url {
                 addmsg("The url was successfully added into the database.", "green");
             } else // Url queued.
             {
-                $sSubject = "Url for ".$sAppName." submitted by ".$_SESSION['current']->sRealname;
-                $sMsg  = APPDB_ROOT."appview.php?iVersionId=".$this->iVersionId."\n";
+                $sSubject = "Url for $sAppName submitted by ".
+                        $_SESSION['current']->sRealname;
+                $sMsg  = "$sUrl\n";
                 $sMsg .= "This url has been queued.";
                 $sMsg .= "\n";
-                addmsg("The url you submitted will be added to the database database after being reviewed.", "green");
+                addmsg("The url you submitted will be added to the database ".
+                        "database after being reviewed.", "green");
             }
         } else // Url deleted.
         {
-            $sSubject = "Url for ".$sAppName." deleted by ".$_SESSION['current']->sRealname;
-            $sMsg  = APPDB_ROOT."appview.php?iVersionId=".$this->iVersionId."\n";
+            $sSubject = "Url for $sAppName deleted by ".$_SESSION['current']->sRealname;
+            $sMsg  = "$sUrl\n";
             addmsg("Url deleted.", "green");
         }
 
@@ -425,8 +439,8 @@ class Url {
                         $_SESSION['current']->sRealname;
 
             $sMsg = $aValues["iVersionId"] ? 
-                APPDB_ROOT."appview.php?iVersionId=".$aValues['iVersionId'] :
-                APPDB_ROOT."appview.php?iAppId=".$avalues["iAppid"];
+                $oVersion->objectMakeUrl() :
+                $oApp->objectMakeUrl();
             $sMsg .= "\n\n";
             $sMsg .= "The following changed were made\n\n";
             $sMsg .= "$sWhatChanged\n\n";

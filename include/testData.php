@@ -255,28 +255,35 @@ class testData{
             /* Get the full app/version name to display */
             $sName = version::fullName($this->iVersionId);
 
+            $oVersion = new version($this->iVersionId);
+
             switch($sAction)
             {
             case "add":
                 $sSubject =  "Submitted testing data accepted";
-                $sMsg  = "The testing data you submitted for '$sName' has been accepted by ".$_SESSION['current']->sRealname.".";
-                $sMsg .= APPDB_ROOT."appview.php?iVersionId=".$this->iVersionId."&iTestingId=".$this->iTestingId."\n";
+                $sMsg  = "The testing data you submitted for '$sName' has been ".
+                        "accepted by ".$_SESSION['current']->sRealname.".";
+                $sMsg .= $oVersion->objectMakeUrl()."&iTestingId=".$this->iTestingId."\n";
                 $sMsg .= "Administrators Responce:\n";
             break;
             case "reject":
                 $sSubject =  "Submitted testing data rejected";
-                $sMsg  = "The testing data you submitted for '$sName' has been rejected by ".$_SESSION['current']->sRealname.".";
-                $sMsg .= APPDB_ROOT."testResults.php?sSub=view&iTestingId=".$this->iTestingId."\n";
+                $sMsg  = "The testing data you submitted for '$sName' has ".
+                        "been rejected by ".$_SESSION['current']->sRealname.".";
+                $sMsg .= APPDB_ROOT."testResults.php?sSub=view&iTestingId=".
+                        $this->iTestingId."\n";
                 $sMsg .= "Reason given:\n";
             break;
             case "delete":
                 $sSubject =  "Submitted testing data deleted";
-                $sMsg  = "The testing data you submitted for '$sName' has been deleted by ".$_SESSION['current']->sRealname.".";
+                $sMsg  = "The testing data you submitted for '$sName' has ".
+                        "been deleted by ".$_SESSION['current']->sRealname.".";
                 $sMsg .= "Reason given:\n";
             break;
             }
             $sMsg .= $aClean['sReplyText']."\n";
-            $sMsg .= "We appreciate your help in making the Application Database better for all users.";
+            $sMsg .= "We appreciate your help in making the Application ".
+                    "Database better for all users.";
 
             mail_appdb($oSubmitter->sEmail, $sSubject ,$sMsg);
         }
@@ -289,7 +296,7 @@ class testData{
 
         $oVersion = new Version($this->iVersionId);
         $oApp = new Application($oVersion->iAppId);
-        $sBacklink = APPDB_ROOT."appview.php?iVersionId=".$this->iVersionId."&iTestingId=".$this->iTestingId."\n";
+        $sBacklink = $oVersion->objectMakeUrl()."&iTestingId=".$this->iTestingId."\n";
 
         switch($sAction)
         {
@@ -666,7 +673,7 @@ class testData{
 
         for($i = 1; $oRow = mysql_fetch_object($hResult); $i++)
             $sReturn .= html_tr(array(
-                "<a href=\"".BASE."appview.php?iVersionId=$oRow->versionId\">$oRow->appName: $oRow->versionName</a>",
+                version::fullNameLink($oRow->versionId),
                 $oRow->testedRating,
                 $oRow->testedRelease,
                 print_date(mysqltimestamp_to_unixtimestamp($oRow->submitTime))),

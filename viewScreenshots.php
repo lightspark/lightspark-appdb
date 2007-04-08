@@ -72,14 +72,10 @@ while ($oRow = mysql_fetch_object($Ids))
     echo $img;
     echo "<div align=center>". substr($oRow->description,0,20). "\n";
 
-    echo "<br />[<a href='".apidb_fullurl("appview.php");
-    echo "?iAppId=".$oApp->iAppId."'>";
-    echo $oApp->sName."</a>]";    
+    echo "<br />[".$oApp->objectMakeLink()."]";
 
-    echo "<br />[<a href='".apidb_fullurl("appview.php");
-    echo "?iVersionId=".$oVersion->iVersionId."'>";
-    echo "Version: ".$oVersion->sName."</a>]";
-    
+    echo "<br />[".$oVersion->objectMakeLink()."]";
+
     echo "</div></td>\n";
    // end row if counter of 3
    if ($c % 3 == 0) echo "</tr><tr>\n";

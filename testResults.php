@@ -88,8 +88,7 @@ if ($aClean['sSub'])
     }
     if ($aClean['sSub'] == 'view')
     {
-        $oApp = new Application($oVersion->iAppId);
-        $sVersionInfo = $oApp->sName." ".$oVersion->sName;
+        $sVersionInfo = version::fullName($oVersion->iVersionId);
 
         switch($oTest->sQueued)
         {
@@ -127,7 +126,7 @@ if ($aClean['sSub'])
         // View Test Details
         $oTest->outputEditor($aClean['sDistribution'],true);
 
-        echo '<a href="'.BASE."appview.php?iVersionId=".$oTest->iVersionId.'">Back to Version</a>';
+        echo '<a href="'.$oVersion->objectMakeUrl().'">Back to Version</a>';
 
         echo '<tr valign=top><td class=color3 align=center colspan=2>',"\n";
 

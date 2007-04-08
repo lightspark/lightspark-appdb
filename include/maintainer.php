@@ -83,19 +83,24 @@ class maintainer
             {
                 $sStatusMessage = "<p>The maintainer was successfully added into the database</p>\n";
 
-                $oApp = new Application($this->iAppId);
-                $oVersion = new Version($this->iVersionId);
                 //Send Status Email
                 $sEmail = $oUser->sEmail;
                 if ($sEmail)
                 {
                     if($this->iVersionId)
-                        $sURL = APPDB_ROOT."appview.php?iVersionId=$this->iVersionId";
-                    else
-                        $sURL = APPDB_ROOT."appview.php?iAppId=$this->iAppId";
+                    {
+                        $oVersion = new Version($this->iVersionId);
+                        $sURL = $oVersion->objectMakeUrl();
+                        $sName = version::fullName($this->iVersionId);
+                    } else
+                    {
+                        $oApp = new Application($this->iAppId);
+                        $sURL = $oApp->objectMakeUrl();
+                        $sName = $oApp->sName;
+                    }
 
                     $sSubject =  "Application Maintainer Request Report";
-                    $sMsg  = "Your application to be the maintainer of ".$oApp->sName." ".$oVersion->sName." has been accepted.\n";
+                    $sMsg  = "Your application to be the maintainer of $sName has been accepted.\n";
                     $sMsg .= "$sURL\n";
                     $sMsg .= "$this->sReplyText\n";
                     $sMsg .= "We appreciate your help in making the Application Database better for all users.\n\n";

@@ -18,7 +18,8 @@ if(!empty($aClean['sSubmit']))
     process_app_version_changes(true);
     downloadurl::processForm($aClean);
     url::processForm($aClean);
-    util_redirect_and_exit(apidb_fullurl("appview.php?iVersionId=".$aClean['iVersionId']));
+    $oVersion = new version($aClean['iVersionId']);
+    util_redirect_and_exit($oVersion->objectMakeUrl());
 } else /* or display the webform for making changes */
 {
 
@@ -59,7 +60,7 @@ if(!empty($aClean['sSubmit']))
         echo html_frame_end();
     }
 
-    echo html_back_link(1,BASE."appview.php?iVersionId=".$oVersion->iVersionId);
+    echo html_back_link(1,$oVersion->objectMakeUrl());
     apidb_footer();
 }
 ?>

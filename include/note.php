@@ -137,21 +137,25 @@ class Note {
 
     function SendNotificationMail($sAction="add",$sMsg=null)
     {
-        $sAppName = Application::lookup_name($this->iAppId)." ".Version::lookup_name($this->iVersionId);
+        $oVersion = new version($this->iVersionId);
+        $sAppName = version::fullName($this->iVersionId);
+        $sMsg = $oVersion->objectMakeUrl()."\n";
         switch($sAction)
         {
             case "add":
-                $sSubject = "Note ".$this->sTitle." for ".$sAppName." added by ".$_SESSION['current']->sRealname;
-                $sMsg .= APPDB_ROOT."appview.php?iVersionId=".$this->iVersionId."\n";
+                $sSubject = "Note $this->sTitle for $sAppName added by ".
+                $_SESSION['current']->sRealname;
                 addmsg("The note was successfully added into the database.", "green");
             break;
             case "edit":
-                $sSubject =  "Note ".$this->sTitle." for ".$sAppName." has been modified by ".$_SESSION['current']->sRealname;
+                $sSubject =  "Note $this->sTitle for $sAppName has been modified by ".
+                $_SESSION['current']->sRealname;
                 addmsg("Note modified.", "green");
             break;
             case "delete":
                 $oSubmitter = new User($this->iSubmitterId);
-                $sSubject = "Note ".$this->sTitle." for ".$sAppName." has been deleted by ".$_SESSION['current']->sRealname;
+                $sSubject = "Note $this->sTitle for $sAppName has been deleted by ".
+                $_SESSION['current']->sRealname;
                 $sMsg .= "This note was made on ".print_date(mysqltimestamp_to_unixtimestamp($this->sSubmitTime))." by ".$oSubmitter->sRealname."\n";
                 $sMsg .= "\n";
                 $sMsg .= "Subject: ".$this->sTitle."\n";

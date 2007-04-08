@@ -12,6 +12,7 @@ if(!is_numeric($aClean['iNoteId']))
 
 /* Get note data */
 $oNote = new Note($aClean['iNoteId']);
+$oVersion = new version($oNote->iVersionId);
 
 /* Check for privs */
 if(!$_SESSION['current']->hasPriv("admin") && !$_SESSION['current']->isMaintainer($oNote->iVersionId) && !$_SESSION['current']->isSuperMaintainer($oNote->iAppId))
@@ -29,7 +30,7 @@ if(!empty($aClean['sSub']))
     {
         $oNote->update();
     }
-    util_redirect_and_exit(apidb_fullurl("appview.php?iVersionId={$oNote->iVersionId}"));
+    util_redirect_and_exit($oVersion->objectMakeUrl());
 } else /* display note */
 {
     // show form
@@ -53,7 +54,7 @@ if(!empty($aClean['sSub']))
     echo '<input type="submit" name=sSub value="Delete"></td></tr>',"\n";
     echo '</center>';
     
-    echo html_back_link(1,BASE."appview.php?iVersionId=".$oNote->iVersionId);
+    echo html_back_link(1,$oVersion->objectMakeUrl());
 }
 
 apidb_footer();

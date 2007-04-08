@@ -331,32 +331,37 @@ class Screenshot {
  
     function mailMaintainers($bDeleted=false)
     {
-        $sAppName = Application::lookup_name($this->iAppId)." ".Version::lookup_name($this->iVersionId);
+        $oVersion = new version($this->iVersionId);
+        $sAppName = version::fullName($this->iVersionId);
+        $sMsg = $oVersion->objectMakeUrl()."\n";
         if(!$bDeleted)
         {
             if(!$this->bQueued)
             {
-                $sSubject = "Screenshot for ".$sAppName." added by ".$_SESSION['current']->sRealname;
-                $sMsg  = APPDB_ROOT."appview.php?iVersionId=".$this->iVersionId."\n";
+                $sSubject = "Screenshot for $sAppName added by ".
+                $_SESSION['current']->sRealname;
                 if($this->iSubmitterId)
                 {
                     $oSubmitter = new User($this->iSubmitterId);
-                    $sMsg .= "This screenshot has been submitted by ".$oSubmitter->sRealname.".";
+                    $sMsg .= "This screenshot has been submitted by ".
+                            $oSubmitter->sRealname.".";
                     $sMsg .= "\n";
                 }
-                addmsg("The screenshot was successfully added into the database.", "green");
+                addmsg("The screenshot was successfully added into the database.",
+                       "green");
             } else // Screenshot queued.
             {
-                $sSubject = "Screenshot for ".$sAppName." submitted by ".$_SESSION['current']->sRealname;
-                $sMsg  = APPDB_ROOT."appview.php?iVersionId=".$this->iVersionId."\n";
+                $sSubject = "Screenshot for $sAppName submitted by ".
+                        $_SESSION['current']->sRealname;
                 $sMsg .= "This screenshot has been queued.";
                 $sMsg .= "\n";
-                addmsg("The screenshot you submitted will be added to the database database after being reviewed.", "green");
+                addmsg("The screenshot you submitted will be added to the ".
+                        "database after being reviewed.", "green");
             }
         } else // Screenshot deleted.
         {
-            $sSubject = "Screenshot for ".$sAppName." deleted by ".$_SESSION['current']->sRealname;
-            $sMsg  = APPDB_ROOT."appview.php?iVersionId=".$this->iVersionId."\n";
+            $sSubject = "Screenshot for $sAppName deleted by ".
+                    $_SESSION['current']->sRealname;
             addmsg("Screenshot deleted.", "green");
         }
 

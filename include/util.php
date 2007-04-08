@@ -243,10 +243,9 @@ function outputTopXRow($oRow)
     $oVersion = new Version($oRow->versionId);
     $oApp = new Application($oVersion->iAppId);
     $img = Screenshot::get_random_screenshot_img(null, $oRow->versionId, false); // image, disable extra formatting
-    html_tr_highlight_clickable('appview.php?iVersionId='.$oRow->versionId, "white", "#f0f6ff", "white");
+    html_tr_highlight_clickable($oVersion->objectMakeUrl(), "white", "#f0f6ff", "white");
     echo '
-      <td class="app_name">
-            <a href="appview.php?iVersionId='.$oRow->versionId.'">'.$oApp->sName.' '.$oVersion->sName.'</a></td>
+      <td class="app_name">'.version::fullNameLink($oVersion->iVersionId).'</td>
       <td>'.util_trim_description($oApp->sDescription).'</td>
       <td><center>'.$img.'</center></td>
     </tr>';
@@ -506,6 +505,7 @@ function outputSearchTableForhResult($search_words, $hResult)
         $c = 0;
         while($oRow = mysql_fetch_object($hResult))
         {
+            $oApp = new application($oRow->appId);
             //skip if a NONAME
             if ($oRow->appName == "NONAME") { continue; }
 		
@@ -519,7 +519,7 @@ function outputSearchTableForhResult($search_words, $hResult)
 		
             //display row
             echo "<tr class=$bgcolor>\n";
-            echo "    <td>".html_ahref($oRow->appName,BASE."appview.php?iAppId=$oRow->appId")."</td>\n";
+            echo "    <td>".html_ahref($oRow->appName,$oApp->objectMakeUrl())."</td>\n";
             echo "    <td>".util_trim_description($oRow->description)."</td>\n";
             echo "    <td>$y->versions &nbsp;</td>\n";
             echo "</tr>\n\n";

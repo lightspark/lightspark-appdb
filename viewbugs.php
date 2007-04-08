@@ -44,6 +44,8 @@ if(!is_numeric($aClean['iBugId']))
     {
         while($oRow = mysql_fetch_object($hResult))
         {
+            $oApp = new application($oRow->appId);
+            $oVersion = new version($oRow->versionId);
             $sDownloadUrls = "";
             if($hDownloadUrls = appData::getData($oRow->versionId, "downloadurl"))
             {
@@ -56,11 +58,11 @@ if(!is_numeric($aClean['iBugId']))
             $bgcolor = ($c % 2 == 0) ? "color0" : "color1";
             echo '<tr class='.$bgcolor.'>',"\n";
             echo '    <td>',"\n";
-            echo '    <a href="appview.php?iAppId='.$oRow->appId.'">'.$oRow->appName.'</a>',"\n";
+            echo "    ".$oApp->objectMakeLink()."\n";
             echo '    </td>',"\n";
             echo '    <td>'.$oRow->appDescription.'</td>',"\n";
             echo '    <td>',"\n";
-            echo '    <a href="appview.php?iVersionId='.$oRow->versionId.'">'.$oRow->versionName.'</a>',"\n";
+            echo "    ".$oVersion->objectMakeLink()."\n";
             echo '    </td>',"\n";
             echo "    <td>$sDownloadUrls</td>\n";
             echo '</tr>',"\n";

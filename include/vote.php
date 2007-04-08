@@ -148,17 +148,18 @@ function vote_update($vars)
     if(!$_SESSION['current']->isLoggedIn())
         util_show_error_page_and_exit("You must be logged in to vote");
 
+    $oVersion = new version($vars['iVersionId']);
+
     if( !is_numeric($vars['iVersionId']) OR !is_numeric($vars['iSlot']))
     {
         if(is_numeric($vars['iVersionId']))
-           util_redirect_and_exit(apidb_fullurl(
-               "appview.php?iVersionId=".$vars['iVersionId']));
+            util_redirect_and_exit($oVersion->objectMakeUrl());
         else
             util_redirect_and_exit(apidb_fullurl("index.php"));
 
         return;
     }
-    
+
     if($vars["sVote"])
     {
         addmsg("Registered vote for App #".$vars['iVersionId'], "green");
@@ -174,8 +175,7 @@ function vote_update($vars)
         }
     }
 
-    util_redirect_and_exit(apidb_fullurl(
-        "appview.php?iVersionId=".$vars['iVersionId']));
+    util_redirect_and_exit($oVersion->objectMakeUrl());
 }
 
 // tell us if there is a vote in a given slot so we don't

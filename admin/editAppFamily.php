@@ -19,7 +19,8 @@ if(!empty($aClean['sSubmit']))
 {
     process_app_version_changes(false);
     url::processForm($aClean);
-    util_redirect_and_exit(apidb_fullurl("appview.php?iAppId={$aClean['iAppId']}"));
+    $oApp = new application($aClean['iAppId']);
+    util_redirect_and_exit($oApp->objectMakeUrl());
 }
 else
 // Show the form for editing the Application Family 
@@ -52,7 +53,7 @@ else
     // URL editor
     echo url::outputEditor("editAppFamily.php", NULL, $oApp);
 
-    echo html_back_link(1,BASE."appview.php?iAppId=$oApp->iAppId");
+    echo html_back_link(1,$oApp->objectMakeUrl());
 }
 
 apidb_footer();

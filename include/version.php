@@ -500,7 +500,7 @@ class Version {
                 if($this->sQueued == "false")
                 {
                     $sSubject = "Version ".$this->sName." of ".$oApp->sName." added by ".$_SESSION['current']->sRealname;
-                    $sMsg  = APPDB_ROOT."appview.php?iVersionId=".$this->iVersionId."\n";
+                    $sMsg  = $this->objectMakeUrl()."\n";
                     if($this->iSubmitterId)
                     {
                         $oSubmitter = new User($this->iSubmitterId);
@@ -524,7 +524,7 @@ class Version {
             break;
             case "edit":
                 $sSubject =  "'".$oApp->sName." ".$this->sName."' has been modified by ".$_SESSION['current']->sRealname;
-                $sMsg  .= APPDB_ROOT."appview.php?iVersionId=".$this->iVersionId."\n";
+                $sMsg  .= $this->objectMakeUrl()."\n";
                 addmsg("Version modified.", "green");
             break;
             case "delete":
@@ -812,7 +812,8 @@ class Version {
                     $oMonitor->find($_SESSION['current']->iUserId, $this->iVersionId);
                     if(!$oMonitor->iMonitorId)
                     {
-                        echo '<form method=post name=sMessage action=appview.php?iVersionId='.$this->iVersionId.'&iAppId='.$oApp->iAppId.'>';
+                        echo '<form method="post" name="sMessage" action='.
+                                $this->objectMakeUrl().'&iAppId='.$oApp->iAppId.'>';
                         echo '<input type=hidden name="sSub" value="StartMonitoring" />';
                         echo '<input type=submit value="Monitor Changes" class="button" />';
                         echo "</form>";
@@ -862,7 +863,8 @@ class Version {
         {
             echo '<tr><td colspan="2" align="center">';
             echo '</form>';
-            echo '<form method=post name=sMessage action=appview.php?iVersionId='.$this->iVersionId.'>';
+            echo '<form method="post" name="sMessage" action='.
+                    $this->objectMakeUrl().'>';
             echo '<input type=hidden name="sSub" value="StopMonitoring" />';
             echo '<input type=submit value="Stop Monitoring Version" class="button" />';
             echo '</form>';
@@ -1091,7 +1093,7 @@ class Version {
 
         for($i = 1; $oRow = mysql_fetch_object($hResult); $i++)
             $sResult .= html_tr(array(
-                "<a href=\"".BASE."appview.php?iVersionId=$oRow->versionId\">$oRow->appName: $oRow->versionName</a>",
+                version::fullNameLink($oRow->versionId),
                 $oRow->description,
                 print_date(mysqltimestamp_to_unixtimestamp($oRow->submitTime))),
                 ($i % 2) ? "color0" : "color1");
@@ -1145,7 +1147,7 @@ class Version {
 
     function objectMakeUrl()
     {
-        return BASE."appview.php?iVersionId=$this->iVersionId";
+        return APPDB_ROOT."appview.php?iVersionId=$this->iVersionId";
     }
 
     function objectMakeLink()
