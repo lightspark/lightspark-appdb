@@ -826,7 +826,7 @@ class Application {
 
     function objectMakeUrl()
     {
-        $sUrl = BASE."appview.php?iAppId=$this->iAppId";
+        $sUrl = APPDB_ROOT."appview.php?iAppId=$this->iAppId";
         return $sUrl;
     }
 
