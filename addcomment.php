@@ -29,7 +29,8 @@ if(!empty($aClean['sBody']))
 {
     $oComment = new Comment();
     $oComment->create($aClean['sSubject'], $aClean['sBody'], $aClean['iThread'], $aClean['iVersionId']);
-    util_redirect_and_exit(apidb_fullurl("appview.php?iVersionId=".$oComment->iVersionId));
+    $oVersion = new version($oComment->iVersionId);
+    util_redirect_and_exit($oVersion->objectMakeUrl());
 // let's show the comment form
 } else
 {
