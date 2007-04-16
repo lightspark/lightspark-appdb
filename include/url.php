@@ -453,17 +453,18 @@ class Url {
 
     function canEdit($iVersionId, $iAppId = NULL)
     {
-        $oUser = new User($_SESSION['current']->iUserId);
-
-        if($oUser->hasPriv("admin") || ($iVersionId &&
-            maintainer::isUserMaintainer($oUser, $iVersionId)) || ($iAppId &&
-            maintainer::isSuperMaintainer($oUser, $iAppId)))
-        {
+        if($_SESSION['current']->hasPriv("admin"))
             return TRUE;
-        } else
+        else if($iVersionId)
         {
+            $oVersion = new version($iVersionId);
+            return $oVersion->canEdit();
+        } else if($iAppId)
+        {
+            $oApp = new application($iAppId);
+            return $oApp->canEdit();
+        } else
             return FALSE;
-        }
     }
 
     /* Display links for a given version/application */

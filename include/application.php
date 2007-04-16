@@ -903,6 +903,8 @@ class Application {
     {
         if($_SESSION['current']->hasPriv("admin"))
             return TRUE;
+        else if($this)
+            return maintainer::isUserSuperMaintainer($_SESSION['current'], $this->iAppId);
         else
             return FALSE;
     }
