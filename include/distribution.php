@@ -347,12 +347,16 @@ class distribution {
 
         // Name
         echo '<tr valign=top><td class="color1" width="20%"><b>Distribution Name</b></td>',"\n";
-        echo '<td class="color0"><input type=text name="sName" value="'.$this->sName.'" size="50"></td></tr>',"\n";
+        echo '<td class="color0"><input type=text name="sDistribution" value="'.$this->sName.'" size="50"></td></tr>',"\n";
         // Url
         echo '<tr valign=top><td class="color1"><b>Distribution Url</b></td>',"\n";
         echo '<td class="color0"><input type=text name="sUrl" value="'.$this->sUrl.'" size="50"></td></tr>',"\n";
 
-        echo  '<input type="hidden" name="iDistributionId" value="'.$this->iDistributionId.'">',"\n";
+        if($this->iDistributionId)
+        {
+            echo  '<input type="hidden" name="iDistributionId" '.
+                    'value="'.$this->iDistributionId.'">',"\n";
+        }
 
         echo "</table>\n";
     }
@@ -362,7 +366,7 @@ class distribution {
     function GetOutputEditorValues($aValues)
     {
         $this->iDistributionId = $aValues['iDistributionId'];
-        $this->sName = $aValues['sName'];
+        $this->sName = $aValues['sDistribution'];
         $this->sUrl = $aValues['sUrl'];
     }
 

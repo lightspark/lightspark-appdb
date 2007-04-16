@@ -897,7 +897,9 @@ class Version {
         }
         if($_SESSION['current']->isLoggedIn())
         {
-            echo '<form method=post name=sMessage action=testResults.php?sSub=view&iVersionId='.$this->iVersionId.'>';
+            echo '<form method=post name=sMessage action=objectManager.php?'.
+                    'sClass=testData_queue&sAction=add&iVersionId='.$this->iVersionId.
+                    '&sTitle=Add+Test+Data>';
             echo '<input type=submit value="Add Test Data" class="button" />';
             echo '</form>';
         } else

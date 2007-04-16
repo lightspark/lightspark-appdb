@@ -63,15 +63,6 @@ class testData{
     // Creates a new Test Results.
     function create()
     {
-        // Security, if we are not an administrator or a maintainer the test result must be queued.
-        $oVersion = new Version($this->iVersionId);
-        if(!$_SESSION['current']->hasPriv("admin") && 
-           !$_SESSION['current']->hasAppVersionModifyPermission($oVersion))
-            $this->sQueued = 'true';
-        else
-            $this->sQueued = 'false';
-
-
         $hResult = query_parameters("INSERT INTO testResults (versionId, whatWorks, whatDoesnt,".
                                     "whatNotTested, testedDate, distributionId, testedRelease,".
                                     "installs, runs, testedRating, comments, submitterId, queued)".
@@ -80,8 +71,9 @@ class testData{
                                     $this->iVersionId, $this->shWhatWorks, $this->shWhatDoesnt,
                                     $this->shWhatNotTested, $this->sTestedDate, $this->iDistributionId,
                                     $this->sTestedRelease, $this->sInstalls, $this->sRuns,
-                                    $this->sTestedRating, $this->sComments, $_SESSION['current']->iUserId,
-                                    $this->sQueued);
+                                    $this->sTestedRating, $this->sComments,
+                                    $_SESSION['current']->iUserId,
+                                    $this->canEdit() ? "false" : "true");
         if($hResult)
         {
             $this->iTestingId = mysql_insert_id();
@@ -489,8 +481,16 @@ class testData{
     }
 
     // show the fields for editing
-    function outputEditor($sDistribution="", $bNewDist=false)
+    function outputEditor()
     {
+        global $aClean;
+
+        /* Fill in some values */
+        if(!$this->iVersionId)
+            $this->iVersionId = $aClean['iVersionId'];
+        if(!$this->sTestedDate)
+            $this->sTestedDate = date('Y-m-d H:i:s');
+
         HtmlAreaLoaderScript(array("Test1", "Test2", "Test3"));
 
         $sName = version::fullName($this->iVersionId);
@@ -516,11 +516,11 @@ class testData{
         echo '<tr valign=top><td class="color1"></td><td class="color0"><p/>YYYY-MM-DD HH:MM:SS</td></tr>',"\n";
         // Distribution
         echo '<tr valign=top><td class="color0"><b>Distribution</b></td class="color0">',"\n";
-        if ($bNewDist)
-        {
-            echo '<td class="color0"><input type=text name="sDistribution" value="'.$sDistribution.'" size="20"></td></tr>',"\n";
-            echo '<tr><td class=color0><b></b></td>',"\n";
-        }
+
+        echo '<td class="color0">If yours is not on the list, please add it using the form '.
+                    'below</td></tr>',"\n";
+        echo '<tr><td class=color0><b></b></td>',"\n";
+
         echo '<td class=color0>',"\n";
         distribution::make_distribution_list("iDistributionId", $this->iDistributionId);
         echo '</td></tr>',"\n";
@@ -823,7 +823,7 @@ class testData{
     {
         if($_SESSION['current']->hasPriv("admin"))
             return TRUE;
-        else if($this->iTestingId)
+        else if($this->iVersionId)
         {
             $oVersion = new version($this->iVersionId);
             if($_SESSION['current']->hasAppVersionModifyPermission($oVersion))
