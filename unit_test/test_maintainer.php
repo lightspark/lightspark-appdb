@@ -461,6 +461,10 @@ function test_maintainer_getMaintainersForAppIdVersionId()
 
     $oUser->addPriv("admin");
 
+    $oSecondUser = new user();
+    $oSecondUser->iUserId = $oUser->iUserId + 1;
+    $oSecondUser->addPriv("admin");
+
     $oApp = new application();
     $oApp->create();
     $oFirstVersion = new version();
@@ -519,6 +523,15 @@ function test_maintainer_getMaintainersForAppIdVersionId()
     $oFirstVersionMaintainer->iUserId = $oUser->iUserId;
     $oFirstVersionMaintainer->create();
 
+    /* Become a maintainer for the other version */
+    $oSecondVersionMaintainer = new maintainer();
+    $oSecondVersionMaintainer->sMaintainReason = "I need it";
+    $oSecondVersionMaintainer->iVersionId = $oSecondVersion->iVersionId;
+    $oSecondVersionMaintainer->iAppId = $oFirstVersion->iAppId;
+    $oSecondVersionMaintainer->bSuperMaintainer = FALSE;
+    $oSecondVersionMaintainer->iUserId = $oSecondUser->iUserId;
+    $oSecondVersionMaintainer->create();
+
     if(!$hResult = maintainer::getMaintainersForAppIdVersionId(null,
        $oFirstVersion->iVersionId))
     {
@@ -542,8 +555,8 @@ function test_maintainer_getMaintainersForAppIdVersionId()
         return FALSE;
     }
 
-    /* The second version should not have any maintainers */
-    $iExpected = 0;
+    /* The second version should have 1 maintainer */
+    $iExpected = 1;
     $iReceived = mysql_num_rows($hResult);
     if($iExpected != $iReceived)
     {
