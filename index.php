@@ -38,7 +38,8 @@ if(!$_SESSION['current']->isLoggedIn())
 
     $str_benefits
 
-    <p>So what are you waiting for, [<a href=\"account.php?sCmd=login\">login now</a>]. Your help in
+    <p>So what are you waiting for, [<a href=\"account.php?sCmd=login\">log in</a>]
+    or [<a href=\"account.php?sCmd=new\">register</a>] now! Your help in
     stomping out Wine issues will be greatly appreciated.</p>";
 } else 
 {
