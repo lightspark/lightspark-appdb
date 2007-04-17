@@ -346,19 +346,27 @@ class distribution {
         echo "<table width='100%' border=0 cellpadding=2 cellspacing=0>\n";
 
         // Name
-        echo '<tr valign=top><td class="color1" width="20%"><b>Distribution Name</b></td>',"\n";
-        echo '<td class="color0"><input type=text name="sDistribution" value="'.$this->sName.'" size="50"></td></tr>',"\n";
-        // Url
-        echo '<tr valign=top><td class="color1"><b>Distribution Url</b></td>',"\n";
-        echo '<td class="color0"><input type=text name="sUrl" value="'.$this->sUrl.'" size="50"></td></tr>',"\n";
+        echo html_tr(array(
+                array("<b>Distribution Name</b>", 'class="color1"'),
+                array('<input type=text name="sDistribution" value="'.$this->sName.
+                        '" size="50" />', 'class="color0"')
+                    ));
+
+        // URL
+        echo html_tr(array(
+                array("<b>Distribution URL</b>", 'class="color1"'),
+                array('<input type=text name="sUrl" value="'.$this->sUrl.
+                        '" size="50" />', 'class="color0"')
+                    ));
+
+
+        echo "</table>\n";
 
         if($this->iDistributionId)
         {
             echo  '<input type="hidden" name="iDistributionId" '.
                     'value="'.$this->iDistributionId.'">',"\n";
         }
-
-        echo "</table>\n";
     }
 
     /* retrieves values from $_REQUEST that were output by outputEditor() */
