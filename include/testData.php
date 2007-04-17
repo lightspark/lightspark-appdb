@@ -100,6 +100,11 @@ class testData{
             return;
         }
 
+        $oOldTest = new testData($this->iTestingId);
+        /* Nothing changed */
+        if($this == $oOldTest)
+            return TRUE;
+
         if(query_parameters("UPDATE testResults SET 
                                         versionId       = '?',
                                         whatWorks       = '?',
@@ -127,7 +132,7 @@ class testData{
                             $this->iTestingId))
         {
             if(!$bSilent)
-                $this->SendNotificationMail();
+                $this->SendNotificationMail("edit");
             return true;
         }
         else
