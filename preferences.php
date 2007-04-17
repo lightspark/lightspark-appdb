@@ -11,10 +11,9 @@
  *  - sUserEmail, e-mail address
  *  - sUserRealname, user's real name
  *  - sWineRelease, user's Wine release
- *  - sHasAdmin, "on" if user is an administrator
+ *  - bIsAdmin, true if user is an administrator
  * 
  * TODO:
- *  - rename sHasAdmin with bIsAdmin
  *  - document iLimit and sOrderBy
  *  - replace sOrderBy with iOrderBy and use constants for each accepted value
  *  - add a field to prefs_list to flag the user level for the pref
@@ -46,7 +45,7 @@ function build_prefs_list($oUser)
                     if($r->name == "debug")
                         continue;
             }
-                
+
             $input = html_select("pref_$r->name", explode('|', $r->value_list), 
                                  $oUser->getpref($r->name, $r->def_value));
             echo html_tr(array("&nbsp; $r->description", $input));
@@ -59,11 +58,21 @@ function show_user_fields($oUser)
     $sUserEmail = $oUser->sEmail;
     $sWineRelease = $oUser->sWineRelease;
     if($oUser->hasPriv("admin"))
-        $sHasAdmin = 'checked="true"';
+        $sAdminChecked = 'checked="true"';
     else
-        $sHasAdmin = "";
-    
+        $sAdminChecked = "";
+
     include(BASE."include/form_edit.php");
+
+    // Edit admin privilege
+    if($_SESSION['current']->hasPriv("admin"))
+    {
+        echo html_tr(array(
+                "&nbsp; Administrator",
+                "<input type=\"checkbox\" name=\"bIsAdmin\" value=\"true\" ".
+                        "$sAdminChecked />"
+                        ));
+    }
 
     echo "<tr><td>&nbsp; Wine version </td><td>";
     make_bugzilla_version_list("sWineRelease", $sWineRelease);
@@ -79,7 +88,7 @@ if($_SESSION['current']->hasPriv("admin") &&
    is_numeric($aClean['iUserId']) &&
    is_numeric($aClean['iLimit']) &&
    in_array($aClean['sOrderBy'],array("email","realname","created"))
-) 
+)
 {
     $oUser = new User($aClean['iUserId']);
 } else
@@ -123,14 +132,18 @@ if($aClean['sSubmit'] == "Update")
     if ($oUser->update() == SUCCESS)
     {
         addmsg("Preferences Updated", "green");
-        // we were managing an user, let's go back to the admin after updating tha admin status
-        if($oUser->iUserId == $aClean['iUserId'] && $_SESSION['current']->hasPriv("admin"))
+        // we were managing an user, let's go back to the admin after
+        // updating tha admin status
+        if($oUser->iUserId == $aClean['iUserId'] &&
+                $_SESSION['current']->hasPriv("admin"))
         {
-            if($aClean['sHasAdmin']=="on") 
+            if($aClean['bIsAdmin'] == "true") 
                 $oUser->addPriv("admin");
             else 
                 $oUser->delPriv("admin");
-            util_redirect_and_exit(BASE."admin/adminUsers.php?iUserId=".$oUser->iUserId."&sSearch=".$aClean['sSearch']."&iLimit=".$aClean['iLimit']."&sOrderBy=".$aClean['sOrderBy']."&sSubmit=true");
+            util_redirect_and_exit(BASE."admin/adminUsers.php?iUserId=".$oUser->iUserId.
+                    "&sSearch=".$aClean['sSearch']."&iLimit=".$aClean['iLimit'].
+                    "&sOrderBy=".$aClean['sOrderBy']."&sSubmit=true");
         }
     }
     else
