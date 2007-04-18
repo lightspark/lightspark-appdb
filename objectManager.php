@@ -1,13 +1,27 @@
 <?php
+/**
+ * Code for displaying and processing objects that have object management
+ * methods.
+ *
+ * Required parameters
+ * sClass: The class that is to be handled
+ *
+ * Optional parameters
+ * sTitle: Set the title of the page
+ * iId: The object id when handling a specific entry
+ * bIsQueue: Whether we are handling a queue, set automatically if bIsRejected is true
+ * bIsRejected: Whether we are handling rejected entries, sets bIsQueue to true
+ *              if enabled
+ * sAction: What to do, defaults to viewing the item if iId is given and to
+ *          displaying a table of objects with the specified queue status otherwise
+ */
 
-/* code for displaying and processing objects that have object management
-   methods */
-
-require('path.php');
-require(BASE.'include/incl.php');
+require_once('path.php');
+require_once(BASE.'include/incl.php');
 require_once(BASE.'include/objectManager.php');
 /* require_once(BASE.'include/application_queue.php');
 require_once(BASE.'include/version_queue.php'); */
+require_once(BASE.'include/testData_queue.php');
 
 /* if we have no valid class name we should abort */
 if(!$aClean['sClass'])
