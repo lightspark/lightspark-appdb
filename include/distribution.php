@@ -400,7 +400,9 @@ class distribution {
     /* Make a dropdown list of distributions */
     function make_distribution_list($varname, $cvalue)
     {
-        $sQuery = "SELECT name, distributionId FROM distributions ORDER BY name";
+        $sQuery = "SELECT name, distributionId FROM distributions
+                WHERE queued = 'false'
+                ORDER BY name";
         $hResult = query_parameters($sQuery);
         if(!$hResult) return;
 
