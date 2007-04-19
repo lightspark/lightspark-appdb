@@ -29,11 +29,17 @@ function global_sidebar_login() {
             {
                 $oApp = new application($appId);
                 if($superMaintainer)
-                    $g->addmisc($oApp->objectMakeLink()."*", "center");
+                    $g->add($oApp->sName."*", $oApp->objectMakeUrl(),"center");
                 else
-                    $g->addmisc(version::fullNameLink($versionId), "center");
+                {
+                    $oVersion = new version($versionId);
+                    $g->add(version::fullName($versionId),
+                            $oVersion->objectMakeUrl(), "center");
+                }
             }
         }
+
+        /* Display the user's rejected applications/versions */
         $iAppsRejected = application::objectGetEntriesCount(true, true) +
                          version::objectGetEntriesCount(true, true);
         if($iAppsRejected && !$_SESSION['current']->hasPriv("admin"))
