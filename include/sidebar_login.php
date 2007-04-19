@@ -37,8 +37,9 @@ function global_sidebar_login() {
         $iAppsRejected = application::objectGetEntriesCount(true, true) +
                          version::objectGetEntriesCount(true, true);
         if($iAppsRejected && !$_SESSION['current']->hasPriv("admin"))
-            $g->addmisc("<a href='".BASE."appsubmit.php?'>Review Rejected Apps ".
-            "($iAppsRejected)</a>", "center");
+        {
+          $g->add("Review Rejected Apps ($iAppsRejected)", BASE."appsubmit.php", "center");
+        }
 
         $aMonitored = Monitor::getVersionsMonitored($_SESSION['current']);
         if($aMonitored)
@@ -47,7 +48,10 @@ function global_sidebar_login() {
             $g->addmisc("You monitor:\n");
 
             while(list($i, list($iAppId, $iVersionId)) = each($aMonitored))
-                $g->addmisc(version::fullNameLink($iVersionId),"center");
+            {
+              $oVersion = new version($iVersionId);
+              $g->add(version::fullName($iVersionId), $oVersion->objectMakeUrl(), "center");
+            }
         }
 
         /* Display a link to the user's queued items,
@@ -55,17 +59,16 @@ function global_sidebar_login() {
         if(!$_SESSION['current']->hasPriv("admin"))
         {
             $g->addmisc("");
-            $g->addmisc("<a href=\"".BASE."queueditems.php\">Your queued items</a>");
+            $g->add("Your queued items", BASE."queueditems.php");
         }
 
-    }
-    else
+    } else
     {
         $g->add("Log in", BASE."account.php?sCmd=login");
         $g->add("Register", BASE."account.php?sCmd=new");
     }
-    
-    $g->done();   
+
+    $g->done();
 
 }
 ?>

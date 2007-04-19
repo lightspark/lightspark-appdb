@@ -37,20 +37,24 @@ class htmlmenu {
     }
 
     /* add a table row */
-    function add($name, $url = null)
+    function add($sName, $shUrl = null, $sAlign = "left")
     {
-        if($url)
+        if($shUrl)
         {
-            echo "  <tr class=sideMenu><td width='100%'><span class=menuItem>&nbsp;<a href='$url' class=menuItem>$name</a></span></td></tr>\n";
-        } else 
+            // we have a valid url, make the entire table row clickable and provide some highlighting
+            // for visual feedback
+            html_tr_highlight_clickable($shUrl, "sideMenu", "#e0e6ff", "#ffffff");
+            echo "<td width='100%' align=$sAlign><span class=MenuItem>&nbsp;<u>$sName</u></span></td>";
+            echo "</tr>\n";
+        } else
         {
-            echo "  <tr class=sideMenu><td width='100%'><span class=menuItem>&nbsp;$name</span></td></tr>\n";
+            echo "  <tr class=sideMenu><td width='100%' align=$sAlign><span class=menuItem>&nbsp;$sName</span></td></tr>\n";
         }
     }
 
-    function addmisc($stuff, $align = "left")
+    function addmisc($sStuff, $sAlign = "left")
     {
-        echo " <tr class=sideMenu><td width='100%' align=$align><span class=menuItem>&nbsp;$stuff</span></td></tr>\n";
+        echo " <tr class=sideMenu><td width='100%' align=$sAlign><span class=menuItem>&nbsp;$sStuff</span></td></tr>\n";
     }
 
     function done($form = null)
