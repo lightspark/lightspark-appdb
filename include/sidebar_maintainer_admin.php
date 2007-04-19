@@ -8,7 +8,7 @@ function global_maintainer_admin_menu() {
     $g = new htmlmenu("Maintainer Admin");
 
     $g->add("View Version Queue (".version::objectGetEntriesCount(true, false).")",
-            BASE."objectManager.php?sClass=version&bIsQueue=true&sTitle=".
+            BASE."objectManager.php?sClass=version_queue&bIsQueue=true&sTitle=".
             "Version%20Queue");
     $g->add("View Screenshot Queue (".appData::objectGetEntriesCount("true",
             false, "screenshot").")",

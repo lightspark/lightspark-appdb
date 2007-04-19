@@ -697,7 +697,9 @@ class Application {
             }
             if($_SESSION['current']->isLoggedIn())
             {
-                echo '<form method="post" name="sMessage" action="appsubmit.php?iAppId='.$this->iAppId.'&amp;sAppType=version&amp;sub=view">';
+                echo '<form method="post" name="sMessage" action="'.
+                        'objectManager.php?sClass=version_queue&iAppId='.$this->iAppId
+                        .'&sTitle=Submit+New+Version&sAction=add">';
                 echo '<input type=submit value="Submit new version" class="button">';
                 echo '</form>';
             }

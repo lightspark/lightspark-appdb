@@ -583,7 +583,7 @@ class Version {
     /* if $editParentApplication is true that means we need to display fields */
     /* to let the user change the parent application of this version */
     /* otherwise, if $editParentAppliation is false, we leave them out */
-    function outputEditor($editParentApplication, $editRatingAndRelease)
+    function outputEditor()
     {
         HtmlAreaLoaderScript(array("version_editor"));
         echo html_frame_start("Version Form", "90%", "", 0);
@@ -591,7 +591,12 @@ class Version {
 
         echo '<input type="hidden" name="iVersionId" value="'.$this->iVersionId.'" />';
 
-        if($editParentApplication)
+        /* Fill in appId value */
+        global $aClean;
+        if(!$this->iAppId)
+            $this->iAppId = $aClean['iAppId'];
+
+        if($this->sQueued == "false" && $this->iVersionId)
         {
             // app parent
             $x = new TableVE("view");
@@ -619,26 +624,11 @@ class Version {
 
         echo $this->sDescription.'</textarea></p></td></tr>',"\n";
 
-        /* Allow the user to apply as maintainer if this is a new version.
-           If it is a new application as well, radio boxes will be displayed
-           by the application class instead. */
-        if(!$this->iVersionId && $_REQUEST['iAppId'])
-        {
-            if($this->iMaintainerRequest == MAINTAINER_REQUEST)
-                $sRequestMaintainerChecked = 'checked="checked"';
-            echo html_tr(array(
-                array("<b>Become maintainer?</b>", "class=\"color0\""),
-                "<input type=\"checkbox\" $sRequestMaintainerChecked".
-                "name=\"iMaintainerRequest\" value=\"".MAINTAINER_REQUEST."\" /> ".
-                "Check this box to request being a maintainer for this version"),
-                "","valign=\"top\"");
-        }
-
         echo '</table>',"\n";
 
         echo html_frame_end();
 
-        if($editRatingAndRelease)
+        if($this->sQueued == "false" && $this->iVersionId)
         {
             echo html_frame_start("Info", "90%", "", 0);
             echo "<table border=0 cellpadding=2 cellspacing=0>\n";
@@ -1326,8 +1316,10 @@ class Version {
                 $this->sName);
 
         if($this->canEdit())
-            $aCells[] = "[ <a href=\"".BASE."admin/adminAppQueue.php?sAppType=".
-                    "version&sSub=view&iVersionId=$this->iVersionId\">$sEditLinkLabel</a> ]";
+        {
+            $aCells[] = "[ <a href=\"".$oObject->makeUrl("edit",
+                $this->iVersionId)."\">$sEditLinkLabel</a> ]";
+        }
 
         echo html_tr($aCells, $sClass);
     }

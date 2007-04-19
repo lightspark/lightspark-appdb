@@ -13,7 +13,7 @@ function global_admin_menu() {
             BASE."objectManager.php?sClass=application&bIsQueue=true&sTitle=".
             "Application%20Queue");
     $g->add("View Version Queue (".version::objectGetEntriesCount(true, false).")",
-            BASE."objectManager.php?sClass=version&bIsQueue=true&sTitle=".
+            BASE."objectManager.php?sClass=version_queue&bIsQueue=true&sTitle=".
             "Version%20Queue");
     $g->add("View Screenshot Queue (".appData::objectGetEntriesCount("true",
             false, "screenshot").")",

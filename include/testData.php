@@ -73,7 +73,7 @@ class testData{
                                     $this->sTestedRelease, $this->sInstalls, $this->sRuns,
                                     $this->sTestedRating, $this->sComments,
                                     $_SESSION['current']->iUserId,
-                                    $this->canEdit() ? "false" : "true");
+                                    $this->mustBeQueued() ? "false" : "true");
         if($hResult)
         {
             $this->iTestingId = mysql_insert_id();
@@ -470,18 +470,19 @@ class testData{
     }
 
     /* retrieve the latest test result for a given version id */
-    function getNewestTestIdFromVersionId($iVersionId)
+    function getNewestTestIdFromVersionId($iVersionId, $bQueued = false)
     {
         $sQuery = "SELECT testingId FROM testResults WHERE
                 versionId = '?'
                 AND
-                queued = 'false'
+                queued = '?'
                      ORDER BY testedDate DESC limit 1";
-        $hResult = query_parameters($sQuery, $iVersionId);
+        $hResult = query_parameters($sQuery, $iVersionId, $bQueued ? "true" : "false");
         if(!$hResult)
             return 0;
 
         $oRow = mysql_fetch_object($hResult);
+
         return $oRow->testingId;
     }
 
@@ -875,6 +876,21 @@ class testData{
         echo "<p>If you cannot find your distribution in the list of existing ";
         echo "distributions, please add it in the \n";
         echo "provided field.</p>\n\n";
+    }
+
+    function mustBeQueued()
+    {
+        if($_SESSION['current']->hasPriv("admin"))
+            return TRUE;
+        else if($this->iVersionId)
+        {
+            $oVersion = new version($this->iVersionId);
+            if($oVersion->canEdit())
+                return TRUE;
+            else
+                return FALSE;
+        } else
+            return FALSE;
     }
 }
 

@@ -361,7 +361,12 @@ class ObjectManager
     function getIdFromInput($aClean)
     {
         $sId = "i".ucfirst($this->sClass)."Id";
-        return $aClean[$sId];
+        $iId = $aClean['sId'];
+
+        if(!$iId)
+            $iId = $aClean['iId'];
+
+        return $iId;
     }
 
     /* Output headers for a table */
