@@ -267,8 +267,7 @@ class testData{
                 $sSubject =  "Submitted testing data rejected";
                 $sMsg  = "The testing data you submitted for '$sName' has ".
                         "been rejected by ".$_SESSION['current']->sRealname.".";
-                $sMsg .= APPDB_ROOT."testResults.php?sSub=view&iTestingId=".
-                        $this->iTestingId."\n";
+                $sMsg .= $this->objectMakeUrl()."\n";
                 $sMsg .= "Reason given:\n";
             break;
             case "delete":
@@ -696,7 +695,18 @@ class testData{
         $sQueued = objectManager::getQueueString($bQueued, $bRejected);
         if($bQueued && !$oTest->canEdit())
         {
-            if($oTest->canEditSome())
+            if($bRejected)
+            {
+                $sQuery = "SELECT COUNT(testingId) AS count FROM
+                        testResults, appVersion WHERE
+                        appVersion.queued = 'false'
+                        AND
+                        appVersion.versionId = testResults.versionId
+                        AND
+                        testResults.submitterId = '?'
+                        AND
+                        testResults.queued = '?'";
+            } else
             {
                 $sQuery = "SELECT COUNT(testingId) AS count FROM
                         testResults, appVersion, appMaintainers WHERE
@@ -713,9 +723,10 @@ class testData{
                             )
                             AND
                             testResults.queued = '?'";
-                $hResult = query_parameters($sQuery, $_SESSION['current']->iUserId,
-                                            $sQueued);
             }
+
+            $hResult = query_parameters($sQuery, $_SESSION['current']->iUserId,
+                                        $sQueued);
         } else
         {
             $sQuery = "SELECT COUNT(testingId) as count FROM testResults,
@@ -743,7 +754,17 @@ class testData{
         $sQueued = objectManager::getQueueString($bQueued, $bRejected);
         if($bQueued && !$oTest->canEdit())
         {
-            if($oTest->canEditSome())
+            if($bRejected)
+            {
+                $sQuery = "SELECT testResults.* FROM testResults, appVersion WHERE
+                        appVersion.queued = 'false'
+                        AND
+                        appVersion.versionId = testResults.versionId
+                        AND
+                        testResults.submitterId = '?'
+                        AND
+                        testResults.queued = '?'";
+            } else
             {
                 $sQuery = "SELECT testResults.* FROM testResults, appVersion,
                             appMaintainers WHERE
@@ -760,9 +781,9 @@ class testData{
                             )
                             AND
                             testResults.queued = '?'";
-                $hResult = query_parameters($sQuery, $_SESSION['current']->iUserId,
-                                            $sQueued);
             }
+            $hResult = query_parameters($sQuery, $_SESSION['current']->iUserId,
+                                        $sQueued);
         } else
         {
             $sQuery = "SELECT testResults.* FROM testResults, appVersion WHERE
@@ -810,19 +831,11 @@ class testData{
                 $this->sTestedRelease,
                 $this->sTestedRating);
 
-        if($this->canEditSome())
+        if($this->canEdit() or $this->sQueued == "rejected")
             $aCells[] = "[ <a href=\"".$oObject->makeUrl("edit",
                 $this->iTestingId)."\">$sEditLinkLabel</a> ]";
 
         echo html_tr($aCells, $this->sTestedRating);
-    }
-
-    function canEditSome()
-    {
-        if($this->canEdit() || maintainer::isUserMaintainer($_SESSION['current']))
-            return TRUE;
-        else
-            return FALSE;
     }
 
     function canEdit()
