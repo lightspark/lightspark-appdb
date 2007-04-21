@@ -7,6 +7,8 @@ require_once("test_common.php");
 require_once(BASE.'include/objectManager.php');
 require_once(BASE.'include/application.php');
 require_once(BASE.'include/maintainer.php');
+require_once(BASE.'include/testData_queue.php');
+require_once(BASE.'include/version_queue.php');
 
 /* internal function */
 function test_class($sClassName, $aTestMethods)
@@ -119,31 +121,34 @@ function test_object_methods()
 {
     test_start(__FUNCTION__);
 
-    $aTestMethods = array("objectGetHeader", "objectOutputTableRow",
-                          "objectGetEntries", "display",
-                          "objectGetInstanceFromRow", "outputEditor", "canEdit",
-                          "getOutputEditorValues", "objectMakeUrl", "objectMakeLink");
+    $aTestMethods = array("canEdit",
+                          "display",
+                          "getOutputEditorValues",
+                          "objectGetEntries",
+                          "objectGetHeader",
+                          "objectGetInstanceFromRow",
+                          "objectOutputTableRow",
+                          "objectMakeLink",
+                          "objectMakeUrl",
+                          "outputEditor",
+                         );
 
-    if(!test_class("distribution", $aTestMethods))
-        return FALSE;
+    $aTestClasses = array("application",
+                          "distribution",
+                          "maintainer",
+                          "screenshot",
+                          "testData",
+                          "testData_queue",
+                          "vendor",
+                          "version",
+                          "version_queue"
+                         );
 
-    if(!test_class("vendor", $aTestMethods))
-        return FALSE; 
-
-    if(!test_class("maintainer", $aTestMethods))
-        return FALSE;
-
-    if(!test_class("screenshot", $aTestMethods))
-        return FALSE;
-
-    if(!test_class("application", $aTestMethods))
-        return FALSE;
-
-    if(!test_class("testData", $aTestMethods))
-        return FALSE;
-
-    if(!test_class("version", $aTestMethods))
-        return FALSE;
+    foreach($aTestClasses as $sTestClass)
+    {
+        if(!test_class($sTestClass, $aTestMethods))
+            return FALSE;
+    }
 
     return true;
 }
