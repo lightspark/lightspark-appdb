@@ -92,16 +92,11 @@ class distribution {
             return false;
         }
 
-        // Security, if we are not an administrator the Distributions must be queued.
-        if(!$_SESSION['current']->hasPriv("admin"))
-            $this->sQueued = 'true';
-        else
-            $this->sQueued = 'false';
-
         $hResult = query_parameters("INSERT INTO distributions (name, url, submitterId, queued) ".
                                     "VALUES ('?', '?', '?', '?')",
-                                    $this->sName, $this->sUrl, $_SESSION['current']->iUserId,
-                                    $this->sQueued);
+                                    $this->sName, $this->sUrl,
+                                    $_SESSION['current']->iUserId,
+                                    $this->mustBeQueued() ? "true" : "false");
         if($hResult)
         {
             $this->iDistributionId = mysql_insert_id();
@@ -486,6 +481,14 @@ class distribution {
             return TRUE;
 
         return FALSE;
+    }
+
+    function mustBeQueued()
+    {
+        if($_SESSION['current']->hasPriv("admin"))
+            return FALSE;
+        else
+            return TRUE;
     }
 
     function objectHideDelete()
