@@ -316,62 +316,6 @@ class User {
          return ($this->isLoggedIn() && $this->getPref("send_email","yes")=="yes");
      }
 
-     /**
-      * Return an app query based on the user permissions and an iAppDataId
-      * Used to display appropriate appdata entries based upon admin vs. maintainer
-      * as well as to determine if the maintainer has permission to delete an appdata entry
-      */
-     function getAppDataQuery($iAppDataId, $queryQueuedCount, $queryQueued)
-     {
-         /* escape all of the input variables */
-         /* code is too complex to easily use query_parameters() */
-         $iAppDataId = mysql_real_escape_string($iAppDataId);
-         $queryQueuedCount = mysql_real_escape_string($queryQueuedCount);
-         $queryQueued = mysql_real_escape_string($queryQueued);
-
-         /* either look for queued app data entries */
-         /* or ones that match the given id */
-         if($queryQueuedCount)
-         {
-             $selectTerms = "count(*) as queued_appdata";
-             $additionalTerms = "AND appData.queued='true'";
-         } else if($queryQueued)
-         {
-             $selectTerms = "appData.*, appVersion.appId AS appId";
-             $additionalTerms = "AND appData.queued='true'";
-         } else
-         {
-             $selectTerms = "appData.*, appVersion.appId AS appId";
-             $additionalTerms = "AND id='".$iAppDataId."'";
-         }
-
-         if($this->hasPriv("admin"))
-         {
-             $sQuery = "SELECT ".$selectTerms."
-               FROM appData,appVersion 
-               WHERE appVersion.versionId = appData.versionId 
-               ".$additionalTerms.";";
-         } else
-         {
-             /* select versions where we supermaintain the application or where */
-             /* we maintain the appliation, and where the versions we supermaintain */
-             /* or maintain are in the appData list */
-             /* then apply some additional terms */
-             $sQuery = "select ".$selectTerms." from appMaintainers, appVersion, appData where
-                        (
-                         ((appMaintainers.appId = appVersion.appId) AND
-                          (appMaintainers.superMaintainer = '1'))
-                         OR
-                          ((appMaintainers.versionId = appVersion.versionId)
-                           AND (appMaintainers.superMaintainer = '0'))
-                        )
-                        AND appData.versionId = appVersion.versionId
-                        AND appMaintainers.userId = '".mysql_real_escape_string($this->iUserId)."'
-                        ".$additionalTerms.";";
-         }
-
-         return query_appdb($sQuery);
-     }
 
      /**
       * Delete appData
@@ -679,31 +623,6 @@ class User {
             ($oScreenshot->bQueued && ($this->hasPriv("admin") ||
                                        $this->isMaintainer($oScreenshot->iVersionId) ||
                                        $this->isSuperMaintainer($oScreenshot->iAppId))))
-             return true;
-
-         return false;
-     }
-
-     function canDeleteAppDataId($iAppDataId)
-     {
-         /* admins can delete anything */
-         if($this->hasPriv("admin"))
-             return true;
-
-         $isMaintainer = false;
-
-         /* if we aren't an admin we should see if we can find any results */
-         /* for a query based on this appDataId, if we can then */
-         /* we have permission to delete the entry */
-         $hResult = $this->getAppDataQuery($iAppDataId, false, false);
-         if(!$hResult)
-             return false;
-
-         if(mysql_num_rows($hResult) > 0)
-             $isMaintainer = true;
-
-         /* if this user maintains the app data, they can delete it */
-         if($isMaintainer)
              return true;
 
          return false;
