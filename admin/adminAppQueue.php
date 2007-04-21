@@ -64,49 +64,6 @@ function outputSearchTableForDuplicateFlagging($currentAppId, $hResult)
     }
 }
 
-function display_move_test_to_versions_table($aVersionsIds,$icurrentVersionId)
-{
-    if ($aVersionsIds)
-    {
-        echo html_frame_start("","98%","",0);
-        echo "<table width=\"100%\" border=\"0\" cellpadding=\"3\" cellspacing=\"1\">\n\n";
-
-        echo "<tr class=color4>\n";
-        echo "    <td width=\"80\">Version</td>\n";
-        echo "    <td>Description</td>\n";
-        echo "    <td width=\"80\">Rating</td>\n";
-        echo "    <td width=\"80\">Wine version</td>\n";
-        echo "    <td width=\"40\">Comments</td>\n";
-        echo "</tr>\n\n";
-      
-        $c = 0;
-        foreach($aVersionsIds as $iVersionId)
-        {
-            $oVersion = new Version($iVersionId);
-            if ($oVersion->sQueued == 'false')
-            {
-                // set row color
-                $sBgColor = ($c % 2 == 0) ? "color0" : "color1";
-
-                //display row
-                echo "<tr class=$sBgColor>\n";
-                echo "    <td>".html_ahref($oVersion->sName,"adminAppQueue.php?sSub=movetest&sAppType=version&iVersionId=".$icurrentVersionId."&iVersionIdMergeTo=".$oVersion->iVersionId)."</td>\n";
-
-                echo "    <td>".util_trim_description($oVersion->sDescription)."</td>\n";
-                echo "    <td align=center>".$oVersion->sTestedRating."</td>\n";
-                echo "    <td align=center>".$oVersion->sTestedRelease."</td>\n";
-                echo "    <td align=center>".Comment::get_comment_count_for_versionid($oVersion->iVersionId)."</td>\n";
-                echo "</tr>\n\n";
-
-                $c++;   
-            }
-        }
-        echo "</table>\n";
-        echo html_frame_end("Click the Version Name to view the details of that Version");
-    }
-}
-
-
 //deny access if not logged in or not a super maintainer of any applications
 if(!$_SESSION['current']->hasPriv("admin") && !$_SESSION['current']->isSuperMaintainer())
     util_show_error_page_and_exit("Insufficient privileges.");
@@ -294,25 +251,9 @@ if ($aClean['sSub'])
                 "bIsRejected=$sIsRejected&sTitle=".$aClean['sAppType']."%20Queue");
 
         if (!$oApp) //app version
-        { 
-            echo html_frame_start("Potential duplicate versions in the database","90%","",0);
-            $oAppForVersion = new Application($oVersion->iAppId);
-            Version::display_approved($oAppForVersion->aVersionsIds);
-            echo html_frame_end("&nbsp;");
+        {
+            // Version handling moved to objectManager
 
-            echo html_frame_start("Move test to version","90%","",0);
-            display_move_test_to_versions_table($oAppForVersion->aVersionsIds,$oVersion->iVersionId);
-            echo html_frame_end("&nbsp;");
-
-            //help
-            echo "<div align=center><table width='90%' border=0 cellpadding=3 cellspacing=0><tr><td>\n\n";
-            echo "<p>This is the full view of the application version waiting to be approved. \n";
-            echo "If you approve this application version an email will be sent to the author of the submission.<p>\n";
-
-            echo "<b>App Version</b> This type of application will be nested under the selected application parent.\n";
-            echo "<p>Click delete to remove the selected item from the queue an email will automatically be sent to the\n";
-            echo "submitter to let him know the item was deleted.</p>\n\n";        
-            echo "</td></tr></table></div>\n\n";    
         } else // application
         {
             echo html_frame_start("Potential duplicate applications in the database", "90%", "", 0);

@@ -71,6 +71,7 @@ class version_queue
 
     function outputEditor()
     {
+        $this->displayMoveTestTable();
         $this->oVersion->outputEditor();
 
         /* Allow the user to apply as maintainer if this is a new version.
@@ -153,6 +154,58 @@ class version_queue
     function objectMakeLink()
     {
         return TRUE;
+    }
+
+    function displayMoveTestTable()
+    {
+        $oApp = new application($this->oVersion->iAppId);
+
+        echo html_frame_start("Move test to version","90%","",0);
+        echo "<table width=\"100%\" border=\"0\" cellpadding=\"3\" ".
+                "cellspacing=\"1\">\n\n";
+
+        echo html_tr(array(
+                array("Version", 'width="80"'),
+                "Description",
+                array("Rating", 'width="80"'),
+                array("Wine version", 'width="80"'),
+                array("Comments", 'width="40"'),
+                array("Move test results", 'width="80"')
+                          ),
+                "color4");
+
+        $i = 0;
+        foreach($oApp->aVersionsIds as $iVersionId)
+        {
+            $oVersion = new Version($iVersionId);
+            if ($oVersion->sQueued == 'false')
+            {
+                //display row
+                echo html_tr(array(
+                        $oVersion->objectMakeLink(),
+                        util_trim_description($oVersion->sDescription),
+                        array($oVersion->sTestedRating, 'align="center"'),
+                        array($oVersion->sTestedRelease, 'align="center"'),
+                        array(Comment::get_comment_count_for_versionid(
+                            $oVersion->iVersionId), 'align="center"'),
+                        html_ahref("Move here",
+                          "admin/adminAppQueue.php?sSub=movetest&sAppType=version&".
+                          "iVersionId="
+                          .$this->oVersion->iVersionId."&iVersionIdMergeTo=".
+                          $oVersion->iVersionId)
+                                  ),
+                            ($i % 2) ? "color0" : "color1");
+
+                $i++;
+            }
+        }
+        echo "</table>\n";
+        echo html_frame_end("&nbsp;");
+    }
+
+    function objectDisplayQueueProcessingHelp()
+    {
+        version::objectDisplayQueueProcessingHelp();
     }
 }
 
