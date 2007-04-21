@@ -340,6 +340,7 @@ class distribution {
     {
         echo "<table width='100%' border=0 cellpadding=2 cellspacing=0>\n";
 
+        $this->sName = str_replace('"', '&quot;', $this->sName);
         // Name
         echo html_tr(array(
                 array("<b>Distribution Name</b>", 'class="color1"'),
