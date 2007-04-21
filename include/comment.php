@@ -55,11 +55,14 @@ class Comment {
      * Informs interested people about the creation.
      * Returns true on success, false on failure
      */
-    function create($sSubject, $sBody, $iParentId=null, $iVersionId)
+    function create()
     {
-        $hResult = query_parameters("INSERT INTO appComments (parentId, versionId, subject, ".
-                                    "body, userId, time, hostname) VALUES ('?', '?', '?', '?', '?', ?, '?')",
-                                    $iParentId, $iVersionId, $sSubject, $sBody,
+        $hResult = query_parameters("INSERT INTO appComments
+                (parentId, versionId, subject, ".
+                                    "body, userId, time, hostname)
+                VALUES ('?', '?', '?', '?', '?', ?, '?')",
+                                    $this->iParentId, $this->iVersionId,
+                                    $this->sSubject, $this->sBody,
                                     $_SESSION['current']->iUserId,
                                     "NOW()", get_remote());
 
@@ -71,6 +74,7 @@ class Comment {
 
             // fetches e-mails from parent comments, all parents are notified that a
             // comment was added to the thread
+            $iParentId = $this->iParentId;
             while($iParentId)
             {
                 $oParent = new Comment($iParentId);
