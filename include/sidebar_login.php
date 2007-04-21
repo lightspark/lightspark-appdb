@@ -39,12 +39,21 @@ function global_sidebar_login() {
             }
         }
 
-        /* Display the user's rejected applications/versions */
-        $iAppsRejected = application::objectGetEntriesCount(true, true) +
-                         version::objectGetEntriesCount(true, true);
+        /* Display the user's rejected applications */
+        $iAppsRejected = application::objectGetEntriesCount(true, true);
         if($iAppsRejected && !$_SESSION['current']->hasPriv("admin"))
         {
-          $g->add("Review Rejected Apps ($iAppsRejected)", BASE."appsubmit.php", "center");
+          $g->add("Review Rejected Apps ($iAppsRejected)", BASE."appsubmit.php",
+                  "center");
+        }
+
+        /* Display the user's rejected versions */
+        $iVersionsRejected = version::objectGetEntriesCount(true, true);
+        if($iVersionsRejected && !$_SESSION['current']->hasPriv("admin"))
+        {
+            $g->add("Review Rejected Versiosn ($iVersionsRejected)",
+                    BASE."objectManager.php?sClass=version_queue&bIsRejected=true".
+                    "&bIsQueue=true&sTitle=Rejected+Versions", "center");
         }
 
         /* Display the user's rejected test results */

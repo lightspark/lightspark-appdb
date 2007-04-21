@@ -960,47 +960,6 @@ class Version {
         return $sLink;
     }
 
-    function showList($hResult)
-    {
-        //show applist
-        echo html_frame_start("","90%","",0);
-        echo "<table width=\"100%\" border=\"0\" cellpadding=\"3\" cellspacing=\"0\">
-               <tr class=color4>
-                  <td>Submission Date</td>
-                  <td>Submitter</td>
-                  <td>Vendor</td>
-                  <td>Application</td>
-                  <td>Version</td>
-                  <td align=\"center\">Action</td>
-               </tr>";
-        
-        $c = 1;
-        while($oRow = mysql_fetch_object($hResult))
-        {
-            $oVersion = new Version($oRow->versionId);
-            $oApp = new Application($oVersion->iAppId);
-            $oSubmitter = new User($oVersion->iSubmitterId);
-            $oVendor = new Vendor($oApp->iVendorId);
-            $sVendor = $oVendor->sName;
-            if ($c % 2 == 1) { $bgcolor = 'color0'; } else { $bgcolor = 'color1'; }
-            echo "<tr class=\"$bgcolor\">\n";
-            echo "    <td>".print_date(mysqltimestamp_to_unixtimestamp($oVersion->sSubmitTime))."</td>\n";
-            echo "    <td>\n";
-            echo $oSubmitter->sEmail ? "<a href=\"mailto:".$oSubmitter->sEmail."\">":"";
-            echo $oSubmitter->sRealname;
-            echo $oSubmitter->sEmail ? "</a>":"";
-            echo "    </td>\n";
-            echo "    <td>".$sVendor."</td>\n";
-            echo "    <td>".$oApp->sName."</td>\n";
-            echo "    <td>".$oVersion->sName."</td>\n";
-            echo "    <td align=\"center\">[<a href=".$_SERVER['PHP_SELF']."?sAppType=version&sSub=view&iVersionId=".$oVersion->iVersionId.">process</a>]</td>\n";
-            echo "</tr>\n\n";
-            $c++;
-        }
-        echo "</table>\n\n";
-        echo html_frame_end("&nbsp;");
-    }
-
     // display the versions
     function display_approved($aVersionsIds)
     {
@@ -1221,11 +1180,35 @@ class Version {
     {
         if($_SESSION['current']->hasPriv("admin"))
             return TRUE;
-        else if($this->iVersionId && 
-                maintainer::isUserMaintainer($_SESSION['current'], $this->iVersionId))
-            return TRUE;
+
+        else if($this->iVersionId)
+        {
+            if(maintainer::isUserMaintainer($_SESSION['current'], $this->iVersionId))
+                return TRUE;
+
+            if($this->iSubmitterId == $_SESSION['current']->iUserId)
+                return TRUE;
+
+            return FALSE;
+        }
         else
             return FALSE;
+    }
+
+    function mustBeQueued()
+    {
+        if($_SESSION['current']->hasPriv("admin"))
+            return FALSE;
+
+        else if($this->iVersionId)
+        {
+            if(maintainer::isUserMaintainer($_SESSION['current'], $this->iVersionId))
+                return FALSE;
+
+            return TRUE;
+        }
+        else
+            return TRUE;
     }
 
     function objectGetHeader()

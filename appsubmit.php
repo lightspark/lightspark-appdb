@@ -449,32 +449,6 @@ else // if ($aClean['sSub']) is not defined, display the main app queue page
         Application::showList($hResult);
     }
 
-     // get queued versions (only versions where application are not queued already)
-     $hResult = $_SESSION['current']->getAppRejectQueueQuery(false); // query for the app version 
-
-     if(!$hResult || !mysql_num_rows($hResult))
-     {
-         //no apps in queue
-         echo html_frame_start("Version Queue","90%");
-         echo '<p><b>The Resubmit Version Queue is empty.</b></p>',"\n";
-         echo html_frame_end("&nbsp;");         
-     }
-     else
-     {
-        //help
-        echo "<div align=center><table width='90%' border=0 cellpadding=3 cellspacing=0><tr><td>\n\n";
-        echo "<p>This is the list of versions waiting for re-submission or deletion.</p>\n";
-        echo "<p>To view a submission, click on its name. From that page you can delete or edit and re-submit it into \n";
-        echo "the AppDB .<br>\n";
-        echo "<p>Note that versions linked to application that have not been approved yet are not displayed in this list.</p>\n";
-        echo "the AppDB.<br>\n";
-        echo "</td></tr></table></div>\n\n";
-    
-        //show Version list
-        Version::showList($hResult);
-         
-
-    }
     apidb_footer();
 }
 
