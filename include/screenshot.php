@@ -14,11 +14,16 @@ $watermark = new Image("/images/watermark.png");
  */
 class Screenshot {
     var $iScreenshotId;
+
+    // parameters necessary for creating a new screenshot with
+    // Screenshot::create()
+    var $iVersionId;
+    var $hFile;
     var $sDescription;
+
     var $oScreenshotImage;
     var $oThumbnailImage;
     var $bQueued;
-    var $iVersionId;
     var $iAppId;
     var $sUrl;
     var $sSubmitTime;
@@ -50,6 +55,7 @@ class Screenshot {
                     $this->bQueued = ($oRow->queued=="true")?true:false;
                     $this->sSubmitTime = $oRow->submitTime;
                     $this->iSubmitterId = $oRow->submitterId;
+                    $this->hFile = null;
                 }
            }
         }
@@ -59,21 +65,14 @@ class Screenshot {
     /**
      * Creates a new screenshot.
      */
-    function create($iVersionId = null, $sDescription = null, $hFile = null)
+    function create()
     {
-        $oVersion = new Version($iVersionId);
-        // Security, if we are not an administrator or a maintainer, the screenshot must be queued.
-        if(!($_SESSION['current']->hasPriv("admin") || $_SESSION['current']->isMaintainer($oVersion->iVersionId) || $_SESSION['current']->isSuperMaintainer($oVersion->iAppId)))
-        {
-            $this->bQueued = true;
-        } else
-        {
-            $this->bQueued = false;
-        }
-
-        $hResult = query_parameters("INSERT INTO appData (versionId, type, description, queued, submitterId) ".
-                                    "VALUES('?', '?', '?', '?', '?')",
-                                    $iVersionId, "screenshot", $sDescription, $this->bQueued?"true":"false",
+        $hResult = query_parameters("INSERT INTO appData
+                (versionId, type, description, queued, submitterId)
+                                    VALUES('?', '?', '?', '?', '?')",
+                                    $this->iVersionId, "screenshot", 
+                                    $this->sDescription,
+                                    $this->mustBeQueued() ? "true" : "false",
                                     $_SESSION['current']->iUserId);
         if($hResult)
         {
@@ -81,10 +80,10 @@ class Screenshot {
 
             /* make sure we supply the full path to move_uploaded_file() */
             $moveToPath = appdb_fullpath("data/screenshots/originals/").$this->iScreenshotId;
-            if(!move_uploaded_file($hFile['tmp_name'], $moveToPath))
+            if(!move_uploaded_file($this->hFile['tmp_name'], $moveToPath))
             {
                 // whoops, moving failed, do something
-                addmsg("Unable to move screenshot from '".$hFile['tmp_name']."' to '".$moveToPath."'", "red");
+                addmsg("Unable to move screenshot from '".$this->hFile['tmp_name']."' to '".$moveToPath."'", "red");
                 $sQuery = "DELETE
                            FROM appData 
                            WHERE id = '?'";
@@ -531,11 +530,26 @@ class Screenshot {
 
     function canEdit()
     {
-        if($_SESSION['current']->hasPriv("admin") ||
-           maintainer::isUserMaintainer($_SESSION['current']))
-            return TRUE;
-        else
-            return FALSE;
+        if($this)
+        {
+            $oAppData = new appData();
+            $oAppData->iVersionId = $this->iVersionId;
+            $oAppData->iAppId = NULL;
+            return $oAppData->canEdit();
+        } else
+            return appData::canEdit();
+    }
+
+    function mustBeQueued()
+    {
+        if($this)
+        {
+            $oAppData = new appData();
+            $oAppData->iVersionId = $this->iVersionId;
+            $oAppData->iAppId = NULL;
+            return $oAppData->mustBeQueued();
+        } else
+            return appData::mustBeQueued();
     }
 
     function objectGetInstanceFromRow($oRow)

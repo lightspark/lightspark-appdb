@@ -38,7 +38,10 @@ if($aClean['sCmd'])
         } else
         {
             $oScreenshot = new Screenshot();
-            $oScreenshot->create($aClean['iVersionId'], $aClean['sScreenshotDesc'], $_FILES['sImageFile']);
+            $oScreenshot->iVersionId = $aClean['iVersionId'];
+            $oScreenshot->sScreenshotDesc = $aClean['sScreenshotDesc'];
+            $oScreenshot->hFile = $_FILES['sImageFile'];
+            $oScreenshot->create();
             $oScreenshot->free();
         }
     } elseif($aClean['sCmd'] == "delete" && is_numeric($aClean['iImageId'])) // process screenshot deletion

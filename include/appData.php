@@ -116,9 +116,6 @@ class appData
         if($sQueued === false)
             $sQueued = "false";
 
-        if(($sQueued == "true" || $sQueued == "all") && !appData::canEdit($sType))
-           return FALSE;
-
         if(($sQueued == "true" || $sQueued == "all") &&
             !$_SESSION['current']->hasPriv("admin"))
         {
@@ -226,9 +223,6 @@ class appData
         if($bRejected)
             return FALSE;
 
-        if($bQueued && !appData::canEdit($sType))
-            return FALSE;
-
         if($bQueued && !$_SESSION['current']->hasPriv("admin"))
         {
             $sQuery = "SELECT DISTINCT appData.* FROM appData, appMaintainers,
@@ -327,19 +321,53 @@ class appData
         return $hResult;
     }
 
-    function canEdit($sType = null)
+    function canEdit()
     {
-        if($sType)
+        if($_SESSION['current']->hasPriv("admin"))
+            return TRUE;
+        if($this)
         {
-            $oObject = new $sType();
-            return $oObject->canEdit();
-        } else
-        {
-            if($_SESSION['current']->hasPriv("admin") ||
-               maintainer::isUserMaintainer($_SESSION['current']))
-                return TRUE;
-            else
+            if($this->iVersionId)
+            {
+                $oVersion = new version($this->iVersionId);
+                if($oVersion->canEdit())
+                    return TRUE;
+                else
+                    return FALSE;
+            } else if($this->iAppId)
+            {
+                $oApp = new application($this->iAppId);
+                if($oApp->canEdit())
+                    return TRUE;
+                else
+                    return FALSE;
+            } else
                 return FALSE;
+        }
+    }
+
+    function mustBeQueued()
+    {
+        if($_SESSION['current']->hasPriv("admin"))
+            return FALSE;
+        if($this)
+        {
+            if($this->iVersionId)
+            {
+                $oVersion = new version($this->iVersionId);
+                if($oVersion->canEdit())
+                    return FALSE;
+                else
+                    return TRUE;
+            } else if($this->iAppId)
+            {
+                $oApp = new application($this->iAppId);
+                if($oApp->canEdit())
+                    return FALSE;
+                else
+                    return TRUE;
+            } else
+                return TRUE;
         }
     }
 
