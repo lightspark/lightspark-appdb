@@ -301,6 +301,12 @@ class downloadurl
     /* Process a form made only for submitting one URL */
     function processFormSingle($iVersionId, $aValues, $bUnQueue = FALSE)
     {
+        /* Calling this function without suitable input data is perfectly valid,
+           but in that case there is nothing to do here */
+        if(empty($aValues['sDownloadUrlDescription']) || 
+                empty($aValues['sDownloadUrlUrl']))
+            return;
+
         $iId = null;
         if($hResult = appData::getData($iVersionId, "downloadurl", TRUE, TRUE))
         {
