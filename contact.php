@@ -36,6 +36,15 @@ if(!$aClean['sSubmit'])
 
     echo $error;
     echo "<form action=\"".$_SERVER['PHP_SELF']."\" method=\"post\">";
+
+    /* User manager */
+    if($_SESSION['current']->hasPriv("admin"))
+    {
+        echo "<p><a href=\"".BASE."preferences.php?iUserId=".
+                $oRecipient->iUserId."&sSearch=Administrator&iLimit".
+                "=100&sOrderBy=email\">User manager</a></p>";
+    }
+
     echo "<p>E-mail $oRecipient->sRealname.</p>";
     echo html_table_begin("width\"100%\" border=\"0\" cellpadding=\"2\"".
     "cellspacing=\"2\"");
