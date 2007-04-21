@@ -128,9 +128,9 @@ class Screenshot {
      */
     function delete($bSilent=false)
     {
-        /* the user object should delete the app data entry */
-        /* we can perform better permissions checking there */
-        if($_SESSION['current']->deleteAppData($this->iScreenshotId))
+        /* appData has a universal function for removing database entries */
+        $oAppData = new appData($this->iScreenshotId);
+        if($oAppData->delete())
         {
             /* make sure the screenshot and thumbnail is loaded */
             /* up before we try to delete them */

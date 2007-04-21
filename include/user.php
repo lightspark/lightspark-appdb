@@ -316,23 +316,6 @@ class User {
          return ($this->isLoggedIn() && $this->getPref("send_email","yes")=="yes");
      }
 
-
-     /**
-      * Delete appData
-      */
-     function deleteAppData($iAppDataId)
-     {
-         if(!$_SESSION['current']->canDeleteAppDataId($iAppDataId))
-             return false;
-
-         $hResult = query_parameters("DELETE from appData where id = '?' LIMIT 1",
-                                 $iAppDataId);
-         if($hResult)
-             return true;
-
-         return false;
-     }
-
      function getAppRejectQueueQuery($queryAppFamily)
      {
          /* escape input as we can't easily use query_parameters() */

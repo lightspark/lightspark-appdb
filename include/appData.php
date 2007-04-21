@@ -37,6 +37,21 @@ class appData
         }
     }
 
+    function delete()
+    {
+        if(!$this->canEdit())
+            return FALSE;
+
+        $sQuery = "DELETE FROM appData WHERE id = '?'";
+
+        $hResult = query_parameters($sQuery, $this->iId);
+
+        if(!$hResult)
+            return FALSE;
+
+        return $hResult;
+    }
+
     function listSubmittedBy($iUserId, $bQueued = true)
     {
         $hResult = query_parameters("SELECT * FROM appData WHERE
