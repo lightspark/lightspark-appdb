@@ -721,15 +721,6 @@ class User {
          return $this->hasPriv("admin");
      }
 
-     /**
-      * Does the created application have to be queued for admin processing?
-      */
-     function appCreatedMustBeQueued()
-     {
-         return !$this->hasPriv("admin");
-     }
-
-
      /***********************/
      /* version permissions */
 

@@ -119,17 +119,13 @@ class Application {
         if(!$_SESSION['current']->canCreateApplication())
             return;
 
-        if($_SESSION['current']->appCreatedMustBeQueued())
-            $this->sQueued = 'true';
-        else
-            $this->sQueued = 'false';
-
         $hResult = query_parameters("INSERT INTO appFamily (appName, description, keywords, ".
                                     "webPage, vendorId, catId, submitterId, queued) VALUES (".
                                     "'?', '?', '?', '?', '?', '?', '?', '?')",
                                     $this->sName, $this->sDescription, $this->sKeywords,
                                     $this->sWebpage, $this->iVendorId, $this->iCatId,
-                                    $_SESSION['current']->iUserId, $this->sQueued);
+                                    $_SESSION['current']->iUserId,
+                                    $this->mustBeQueued() ? "true" : "false");
         if($hResult)
         {
             $this->iAppId = mysql_insert_id();
@@ -906,9 +902,18 @@ class Application {
         if($_SESSION['current']->hasPriv("admin"))
             return TRUE;
         else if($this)
-            return maintainer::isUserSuperMaintainer($_SESSION['current'], $this->iAppId);
+            return maintainer::isUserSuperMaintainer($_SESSION['current'],
+                $this->iAppId);
         else
             return FALSE;
+    }
+
+    function mustBeQueued()
+    {
+        if($_SESSION['current']->hasPriv("admin"))
+            return FALSE;
+        else
+            return TRUE;
     }
 
     function objectDisplayQueueProcessingHelp()
