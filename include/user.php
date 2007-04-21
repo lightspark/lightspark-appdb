@@ -760,18 +760,6 @@ class User {
          return $this->isLoggedIn();
      }
 
-     function versionCreatedMustBeQueued($oVersion)
-     {
-         if($this->hasPriv("admin"))
-             return false;
-
-         if($this->isSupermaintainer($oVersion->iAppId))
-             return false;
-
-         return true;
-     }
-
-
      /**
       * Returns 'true' if the current user has the permission to delete
       * this version, 'false' otherwise

@@ -87,10 +87,7 @@ class Version {
         if(!$_SESSION['current']->canCreateVersion())
             return;
 
-        if($_SESSION['current']->versionCreatedMustBeQueued($this))
-            $this->sQueued = 'true';
-        else
-            $this->sQueued = 'false';
+        $this->sQueued = $this->mustBeQueued() ? "true" : "false";
 
         $hResult = query_parameters("INSERT INTO appVersion
                    (versionName, description, maintainer_release,
@@ -98,7 +95,7 @@ class Version {
                        VALUES ('?', '?', '?', '?', '?', '?', '?', '?')",
                            $this->sName, $this->sDescription, $this->sTestedRelease,
                            $this->sTestedRating, $this->iAppId,
-                           $_SESSION['current']->iUserId, $this->sQueued, 
+                           $_SESSION['current']->iUserId, $this->sQueued,
                            $this->sLicense);
 
         if($hResult)
@@ -1200,7 +1197,7 @@ class Version {
         if($_SESSION['current']->hasPriv("admin"))
             return FALSE;
 
-        else if($this->iVersionId)
+        if($this->iVersionId)
         {
             if(maintainer::isUserMaintainer($_SESSION['current'], $this->iVersionId))
                 return FALSE;
