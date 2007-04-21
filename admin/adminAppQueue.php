@@ -189,7 +189,7 @@ if ($aClean['sSub'])
         }
 
         // redirect back to the main page
-        util_redirect_and_exit(BASE."objectManager.php?sClass=version&".
+        util_redirect_and_exit(BASE."objectManager.php?sClass=version_queue&".
                               "bIsQueue=true&sTitle=Version%20Queue");
     }
     else if ($aClean['sSub'] == 'Delete')
