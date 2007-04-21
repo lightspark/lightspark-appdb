@@ -506,6 +506,14 @@ class maintainer
         echo "<table width='100%' border=0 cellpadding=2 cellspacing=0>\n";
         echo "<input type=\"hidden\" name=\"iMaintainerId\" ".
              "value=\"$this->iMaintainerId\" />";
+
+        /* User name */
+        $oSubmitter = new user($this->iUserId);
+        echo html_tr(array(
+                array("<b>User name</b>", 'style="text-align:right" class="color0"'),
+                $oSubmitter->objectMakeLink()
+                          ));
+
         /**
           * Show the other maintainers of this application, if there are any
           */
