@@ -480,9 +480,10 @@ class User {
      }
 
      /**
-      * Get the number of users in the database 
+      * Get the number of users in the database
+      * The parameters are only included for compatibility; we don't queue users 
       */
-     function count()
+     function objectGetEntriesCount($bQueued = null, $bRejected = null)
      {
          $hResult = query_parameters("SELECT count(*) as num_users FROM user_list;");
          $oRow = mysql_fetch_object($hResult);

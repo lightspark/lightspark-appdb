@@ -14,7 +14,7 @@ echo "<table width='100%' border=1 cellpadding=3 cellspacing=0>\n\n";
 /* Display the number of users */
 echo "<tr class=color4>\n";
 echo "    <td>Users:</td>\n";
-echo "    <td>".User::count()."</td>\n";
+echo "    <td>".User::objectGetEntriesCount()."</td>\n";
 echo "</tr>\n\n";
 
 /* Display the active users in the last 30 days */
@@ -38,7 +38,8 @@ echo "</tr>\n\n";
 /* Display the inactive users */
 echo "<tr class=color4>\n";
 echo "    <td>Inactive users (not logged in since six months):</td>\n";
-echo "    <td>".(User::count()-User::active_users_within_days(183))."</td>\n";
+echo "    <td>".(User::objectGetEntriesCount()-
+        User::active_users_within_days(183))."</td>\n";
 echo "</tr>\n\n";
 
 /* Display the users who were warned and pending deletion */
