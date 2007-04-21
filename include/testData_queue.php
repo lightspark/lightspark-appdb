@@ -18,6 +18,7 @@ class testData_queue
             $this->oDistribution->create();
             $this->oTestData->iDistributionId = $this->oDistribution->iDistributionId;
         }
+
         return $this->oTestData->create();
     }
 
@@ -26,10 +27,22 @@ class testData_queue
         return $this->oTestData->delete();
     }
 
+    function reQueue()
+    {
+        $this->oTestData->reQueue();
+        if($this->oDistribution->sQueued == "rejected")
+            $this->oDistribution->reQueue();
+    }
+
     function unQueue()
     {
         $this->oTestData->unQueue();
         $this->oDistribution->unQueue();
+    }
+
+    function reject()
+    {
+        $this->oTestData->reject();
     }
 
     function update()
@@ -42,17 +55,20 @@ class testData_queue
     {
         $this->oTestData->outputEditor();
 
-        /* If we are processing queued test results with a queued distribution, we display
-           some additional help here */
+        /* If we are processing queued test results with a queued distribution,
+           we display some additional help here */
         if($this->oDistribution->sQueued != "false" && $this->canEdit())
         {
-            echo "The user submitted a new distribution, which will be un-queued together ".
-                 "with the test data unless you select an existing one from the list above.";
+            echo "The user submitted a new distribution, which will be un-queued ".
+                "together with the test data unless you select an existing one ".
+                "from the list above.";
         }
 
-        /* If the testData is already associated with a distribution and the distribution is
-           un-queued, there is no need to display the distribution form here */
-        if(!$this->oTestData->iDistributionId or $this->oDistribution->sQueued != "false")
+        /* If the testData is already associated with a distribution and the
+           distribution is un-queued, there is no need to display the
+           distribution form here */
+        if(!$this->oTestData->iDistributionId or 
+                $this->oDistribution->sQueued != "false")
             $this->oDistribution->outputEditor();
     }
 

@@ -305,6 +305,9 @@ class ObjectManager
                     if(!$oObject->canEdit())
                         return FALSE;
 
+                    if($this->bIsRejected)
+                        $oObject->ReQueue();
+
                     if($this->bIsQueue)
                         $oObject->unQueue();
 

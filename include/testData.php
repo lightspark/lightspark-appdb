@@ -68,12 +68,16 @@ class testData{
                                     "installs, runs, testedRating, comments, submitterId, queued)".
                                     " VALUES('?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?',".
                                     "'?', '?')",
-                                    $this->iVersionId, $this->shWhatWorks, $this->shWhatDoesnt,
-                                    $this->shWhatNotTested, $this->sTestedDate, $this->iDistributionId,
-                                    $this->sTestedRelease, $this->sInstalls, $this->sRuns,
+                                    $this->iVersionId, $this->shWhatWorks,
+                                    $this->shWhatDoesnt,
+                                    $this->shWhatNotTested, $this->sTestedDate,
+                                    $this->iDistributionId,
+                                    $this->sTestedRelease, $this->sInstalls,
+                                    $this->sRuns,
                                     $this->sTestedRating, $this->sComments,
                                     $_SESSION['current']->iUserId,
-                                    $this->mustBeQueued() ? "false" : "true");
+                                    $this->mustBeQueued() ? "true" : "false");
+
         if($hResult)
         {
             $this->iTestingId = mysql_insert_id();
@@ -469,14 +473,16 @@ class testData{
     }
 
     /* retrieve the latest test result for a given version id */
-    function getNewestTestIdFromVersionId($iVersionId, $bQueued = false)
+    function getNewestTestIdFromVersionId($iVersionId, $sQueued = "false")
     {
         $sQuery = "SELECT testingId FROM testResults WHERE
                 versionId = '?'
                 AND
                 queued = '?'
                      ORDER BY testedDate DESC limit 1";
-        $hResult = query_parameters($sQuery, $iVersionId, $bQueued ? "true" : "false");
+
+        $hResult = query_parameters($sQuery, $iVersionId, $sQueued);
+
         if(!$hResult)
             return 0;
 
@@ -717,9 +723,17 @@ class testData{
                             appMaintainers.userId = '?'
                             AND
                             (
-                            appMaintainers.appId = appVersion.appid
-                            OR
-                            appMaintainers.versionId = appVersion.versionId
+                                (
+                                    appMaintainers.superMaintainer = '1'
+                                    AND
+                                    appMaintainers.appId = appVersion.appid
+                                )
+                                OR
+                                (
+                                    appMaintainers.superMaintainer = '0'
+                                    AND
+                                    appMaintainers.versionId = appVersion.versionId
+                                )
                             )
                             AND
                             testResults.queued = '?'";
@@ -775,9 +789,17 @@ class testData{
                             appVersion.queued = 'false'
                             AND
                             (
-                            appMaintainers.appId = appVersion.appid
-                            OR
-                            appMaintainers.versionId = appVersion.versionId
+                                (
+                                    appMaintainers.superMaintainer = '1'
+                                    AND
+                                    appMaintainers.appId = appVersion.appid
+                                )
+                                OR
+                                (
+                                    appMaintainers.superMaintainer = '0'
+                                    AND
+                                    appMaintainers.versionId = appVersion.versionId
+                                )
                             )
                             AND
                             testResults.queued = '?'";
@@ -832,8 +854,10 @@ class testData{
                 $this->sTestedRating);
 
         if($this->canEdit() or $this->sQueued == "rejected")
+        {
             $aCells[] = "[ <a href=\"".$oObject->makeUrl("edit",
                 $this->iTestingId)."\">$sEditLinkLabel</a> ]";
+        }
 
         echo html_tr($aCells, $this->sTestedRating);
     }
@@ -844,6 +868,10 @@ class testData{
             return TRUE;
         else if($this->iVersionId)
         {
+            if($this->iSubmitterId == $_SESSION['current']->iUserId &&
+               $this->sQueued == "rejected")
+                return TRUE;
+
             $oVersion = new version($this->iVersionId);
             if($_SESSION['current']->hasAppVersionModifyPermission($oVersion))
                 return TRUE;
@@ -894,16 +922,16 @@ class testData{
     function mustBeQueued()
     {
         if($_SESSION['current']->hasPriv("admin"))
-            return TRUE;
+            return FALSE;
         else if($this->iVersionId)
         {
             $oVersion = new version($this->iVersionId);
             if($oVersion->canEdit())
-                return TRUE;
-            else
                 return FALSE;
+            else
+                return TRUE;
         } else
-            return FALSE;
+            return TRUE;
     }
 }
 

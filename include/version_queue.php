@@ -12,12 +12,8 @@ class version_queue
 
         if($iVersionId)
         {
-            if($this->oVersion->sQueued == "true")
-                $bQueued = TRUE;
-            if($this->oVersion->sQueued == "false")
-                $bQueued = FALSE;
             $iTestingId = testData::getNewestTestIdFromVersionId($iVersionId,
-                    $bQueued);
+                    $this->oVersion->sQueued);
         }
 
         $this->oTestDataQueue = new testData_queue($iTestingId);
@@ -37,6 +33,12 @@ class version_queue
                                                $this->oVersion->canEdit());
 
         return TRUE;
+    }
+
+    function reQueue()
+    {
+        $this->oVersion->reQueue();
+        $this->oTestDataQueue->reQueue();
     }
 
     function reject()

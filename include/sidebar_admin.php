@@ -23,7 +23,7 @@ function global_admin_menu() {
             BASE."objectManager.php?sClass=maintainer&bIsQueue=true&sTitle=".
             "Maintainer%20Queue");
     $g->add("View Test Results Queue (".testData::objectGetEntriesCount(true, false).")",
-            BASE."objectManager.php?sClass=testData&bIsQueue=true&sTitle=".
+            BASE."objectManager.php?sClass=testData_queue&bIsQueue=true&sTitle=".
             "Test%20Results%20Queue");
     $g->add("View Distribution Queue (".distribution::objectGetEntriesCount(true, 
             false).")",
@@ -47,12 +47,12 @@ function global_admin_menu() {
             BASE."objectManager.php?sClass=application&bIsQueue=true&bIsRejected=true&".
             "sTitle=Rejected%20Applications");
     $g->add("View Rejected Versions (".version::objectGetEntriesCount(true, true).")",
-            BASE."objectManager.php?sClass=version&bIsQueue=true&bIsRejected=true&".
-            "sTitle=Rejected%20Versions");
+            BASE."objectManager.php?sClass=version_queue&bIsQueue=true&".
+            "bIsRejected=true&sTitle=Rejected%20Versions");
     $g->add("View Rejected Test Results (".testData::objectGetEntriesCount(true,
             true).")",
-            BASE."objectManager.php?sClass=testData&bIsQueue=true&bIsRejected=true&".
-            "sTitle=Rejected%20Test%20Results");
+            BASE."objectManager.php?sClass=testData_queue&bIsQueue=true".
+            "&bIsRejected=true&sTitle=Rejected%20Test%20Results");
 
     $g->addmisc("&nbsp;");
 

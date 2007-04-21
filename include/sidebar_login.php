@@ -47,6 +47,14 @@ function global_sidebar_login() {
           $g->add("Review Rejected Apps ($iAppsRejected)", BASE."appsubmit.php", "center");
         }
 
+        /* Display the user's rejected test results */
+        $iTestDataRejected = testData::objectGetEntriesCount(true, true);
+        if($iTestDataRejected && !$_SESSION['current']->hasPriv("admin"))
+            $g->add("Review Rejected Test Results ($iTestDataRejected)",
+                    BASE."objectManager.php?sClass=testData_queue&".
+                    "sAction=view&bIsQueue=true&bIsRejected=true&sTitle=".
+                    "Rejected+Test+Results", "center");
+
         $aMonitored = Monitor::getVersionsMonitored($_SESSION['current']);
         if($aMonitored)
         {
