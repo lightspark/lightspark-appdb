@@ -37,7 +37,10 @@ class testData_queue
     function unQueue()
     {
         $this->oTestData->unQueue();
-        $this->oDistribution->unQueue();
+
+        /* Avoid a misguiding message about the distribution being unqueued */
+        if($this->oDistribution->sQueued != "false")
+            $this->oDistribution->unQueue();
     }
 
     function reject()
@@ -48,7 +51,13 @@ class testData_queue
     function update()
     {
         $this->oTestData->update();
-        $this->oDistribution->update();
+
+        /* If the distribution was already un-queued the form for editing it would
+           not have been displayed and getOutputEditorValues() wouldn't have
+           retrieved a valid sName for the distribution. If sName isn't valid
+           we shouldn't update the distribution */
+        if($this->oDistribution->sName)
+            $this->oDistribution->update();
     }
 
     function outputEditor()
