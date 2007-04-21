@@ -33,7 +33,7 @@ class htmlmenu {
     <tr class="topMenu"><td>
       <table width="100%" border="0" cellspacing="0" cellpadding="5">
 ';
-        
+
     }
 
     /* add a table row */
@@ -41,14 +41,16 @@ class htmlmenu {
     {
         if($shUrl)
         {
-            // we have a valid url, make the entire table row clickable and provide some highlighting
-            // for visual feedback
+            // we have a valid url, make the entire table row clickable and provide
+            // some highlighting for visual feedback
             html_tr_highlight_clickable($shUrl, "sideMenu", "#e0e6ff", "#ffffff");
-            echo "<td width='100%' align=$sAlign><span class=MenuItem>&nbsp;<u>$sName</u></span></td>";
+            echo "<td width='100%' align=$sAlign><span class=MenuItem>&nbsp;<u>".
+                    "<a href=\"$shUrl\">$sName</a></u></span></td>";
             echo "</tr>\n";
         } else
         {
-            echo "  <tr class=sideMenu><td width='100%' align=$sAlign><span class=menuItem>&nbsp;$sName</span></td></tr>\n";
+            echo "  <tr class=sideMenu><td width='100%' align=$sAlign><span ".
+                    "class=menuItem>&nbsp;$sName</span></td></tr>\n";
         }
     }
 
