@@ -9,11 +9,12 @@ class version_queue
     function version_queue($iVersionId = null)
     {
         $this->oVersion = new version($iVersionId);
+        $iTestingId = null;
 
         if($iVersionId)
         {
             $iTestingId = testData::getNewestTestIdFromVersionId($iVersionId,
-                    $this->oVersion->sQueued);
+                                                                 $this->oVersion->sQueued);
         }
 
         $this->oTestDataQueue = new testData_queue($iTestingId);

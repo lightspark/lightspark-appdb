@@ -301,6 +301,7 @@ class downloadurl
     /* Process a form made only for submitting one URL */
     function processFormSingle($iVersionId, $aValues, $bUnQueue = FALSE)
     {
+        $iId = null;
         if($hResult = appData::getData($iVersionId, "downloadurl", TRUE, TRUE))
         {
             $oObject = mysql_fetch_object($hResult);
