@@ -27,8 +27,14 @@ if(!$_SESSION['current']->isLoggedIn())
 // the user submitted his comment
 if(!empty($aClean['sBody']))
 {
+    // create a new comment
     $oComment = new Comment();
-    $oComment->create($aClean['sSubject'], $aClean['sBody'], $aClean['iThread'], $aClean['iVersionId']);
+    $oComment->sSubject = $aClean['sSubject'];
+    $oComment->sBody = $aClean['sBody'];
+    $oComment->iParentId = $aClean['iThread'];
+    $oComment->iVersionId = $aClean['iVersionId'];
+    $oComment->create();
+
     $oVersion = new version($oComment->iVersionId);
     util_redirect_and_exit($oVersion->objectMakeUrl());
 // let's show the comment form

@@ -9,6 +9,8 @@
  */
 class Monitor {
     var $iMonitorId;
+
+    // variables necessary for creating a monitor
     var $iAppId;
     var $iVersionId;
     var $iUserId;
@@ -58,17 +60,18 @@ class Monitor {
      * Informs interested people about the creation.
      * Returns true on success, false on failure
      */
-    function create($iUserId, $iAppId=0, $iVersionId=0)
+    function create()
     {
         /* Check for duplicate entries */
         $oMonitor = new monitor();
-        $oMonitor->find($iUserId, $iVersionId);
+        $oMonitor->find($this->iUserId, $this->iVersionId);
         if($oMonitor->iVersionId)
             return FALSE;
 
+        // create the new monitor entry
         $hResult = query_parameters("INSERT INTO appMonitors (versionId, appId, userId) ".
                                     "VALUES ('?', '?', '?')",
-                                    $iVersionId, $iAppId, $iUserId);
+                                    $this->iVersionId, $this->iAppId, $this->iUserId);
 
         if($hResult)
         {

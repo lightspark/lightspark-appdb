@@ -9,11 +9,15 @@ require_once(BASE."include/user.php");
  */
 class Comment {
     var $iCommentId;
+
+    // variables necessary for creating a comment
     var $iParentId;
-    var $iAppId;
-    var $iVersionId;
     var $sSubject;
     var $sBody;
+    var $iVersionId;
+
+
+    var $iAppId;
     var $sDateCreated;
     var $sHostname;
     var $oOwner;
@@ -55,7 +59,8 @@ class Comment {
     {
         $hResult = query_parameters("INSERT INTO appComments (parentId, versionId, subject, ".
                                     "body, userId, time, hostname) VALUES ('?', '?', '?', '?', '?', ?, '?')",
-                                    $iParentId, $iVersionId, $sSubject, $sBody, $_SESSION['current']->iUserId,
+                                    $iParentId, $iVersionId, $sSubject, $sBody,
+                                    $_SESSION['current']->iUserId,
                                     "NOW()", get_remote());
 
         if($hResult)

@@ -105,13 +105,18 @@ if ($aClean['sSub'])
     if(($aClean['sSub'] == 'Submit a new bug link.' ) && ($aClean['iBuglinkId']))
     {
         $oBuglink = new Bug();
-        $oBuglink->create($aClean['iVersionId'],$aClean['iBuglinkId']);
+        $oBuglink->iVersionId = $aClean['iVersionId'];
+        $oBuglink->iBug_id = $aClean['iBuglinkId']; 
+        $oBuglink->create();
         util_redirect_and_exit($oVersion->objectMakeUrl());
     }
     if($aClean['sSub'] == 'StartMonitoring')
     {
         $oMonitor = new Monitor();
-        $oMonitor->create($_SESSION['current']->iUserId,$aClean['iAppId'],$aClean['iVersionId']);
+        $oMonitor->iuserId = $_SESSION['current']->iUserId;
+        $oMonitor->iAppId = $aClean['iAppId'];
+        $oMonitor->iVersionId = $aClean['iVersionId'];
+        $oMonitor->create();
         util_redirect_and_exit($oVersion->objectMakeUrl());
     }
     if($aClean['sSub'] == 'StopMonitoring')

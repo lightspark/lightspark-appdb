@@ -11,11 +11,15 @@ require_once(BASE."include/application.php");
  */
 class Bug {
     var $iLinkId;
+
+    // parameters necessary to create a new Bug with Bug::create()
+    var $iVersionId;
     var $iBug_id;
+
+    // values retrieved from bugzilla
     var $sShort_desc;
     var $sBug_status;
     var $sResolution;
-    var $iVersionId;
     var $iAppId;
     var $sSubmitTime;
     var $iSubmitterId;
@@ -65,11 +69,13 @@ class Bug {
     /**
      * Creates a new Bug.
      */
-    function create($iVersionId = null, $iBug_id = null)
+    function create()
     {
-        $oVersion = new Version($iVersionId);
+        $oVersion = new Version($this->iVersionId);
         // Security, if we are not an administrator or a maintainer, the Bug must be queued.
-        if(!($_SESSION['current']->hasPriv("admin") || $_SESSION['current']->isMaintainer($oVersion->iVersionId) || $_SESSION['current']->isSuperMaintainer($oVersion->iAppId)))
+        if(!($_SESSION['current']->hasPriv("admin") ||
+             $_SESSION['current']->isMaintainer($oVersion->iVersionId) ||
+             $_SESSION['current']->isSuperMaintainer($oVersion->iAppId)))
         {
             $this->bQueued = true;
         } else
@@ -78,9 +84,9 @@ class Bug {
         }
         /* lets check for a valid bug id */
 
-        if(!is_numeric($iBug_id))
+        if(!is_numeric($this->iBug_id))
         {
-            addmsg($iBug_id." is not a valid bug number.", "red");
+            addmsg($this->iBug_id." is not a valid bug number.", "red");
             return false;
         }
 
@@ -88,7 +94,7 @@ class Bug {
 
         $sQuery = "SELECT *
                    FROM bugs 
-                   WHERE bug_id = ".$iBug_id;
+                   WHERE bug_id = ".$this->iBug_id;
         if(mysql_num_rows(query_bugzilladb($sQuery, "checking bugzilla")) == 0)
         {
             addmsg("There is no bug in Bugzilla with that bug number.", "red");
@@ -100,11 +106,11 @@ class Bug {
         $sQuery = "SELECT *
                    FROM buglinks 
                    WHERE versionId = '?'";
-        if($hResult = query_parameters($sQuery, $iVersionId))
+        if($hResult = query_parameters($sQuery, $this->iVersionId))
         {
             while($oRow = mysql_fetch_object($hResult))
             {
-                if($oRow->bug_id == $iBug_id)
+                if($oRow->bug_id == $this->iBug_id)
                 {
                    addmsg("The Bug link has already been submitted.", "red");
                    return false;
@@ -116,7 +122,8 @@ class Bug {
 
         $hResult = query_parameters("INSERT INTO buglinks (versionId, bug_id, queued, submitterId) ".
                                     "VALUES('?', '?', '?', '?')",
-                                    $iVersionId, $iBug_id, $this->bQueued?"true":"false",
+                                    $this->iVersionId, $this->iBug_id,
+                                    $this->bQueued ? "true":"false",
                                     $_SESSION['current']->iUserId);
         if($hResult)
         {
@@ -129,7 +136,7 @@ class Bug {
                        WHERE buglinks.versionId = appVersion.versionId 
                        AND buglinks.versionId = '?'
                        AND buglinks.bug_id = '?'";
-            if($hResult = query_parameters($sQuery, $iVersionId, $iBug_id))
+            if($hResult = query_parameters($sQuery, $this->iVersionId, $this->iBug_id))
             {
                 $oRow = mysql_fetch_object($hResult);
                 $this->bug($oRow->linkId);
@@ -138,7 +145,7 @@ class Bug {
 
             $this->SendNotificationMail();
             return true;
-        }else
+        } else
         {
             addmsg("Error while creating a new Bug link.", "red");
             return false;
