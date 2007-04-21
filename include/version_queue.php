@@ -71,7 +71,10 @@ class version_queue
 
     function outputEditor()
     {
-        $this->displayMoveTestTable();
+        /* Display duplicate list if this is a an existing version */
+        if($this->oVersion->iVersionId)
+            $this->displayMoveTestTable();
+
         $this->oVersion->outputEditor();
 
         /* Allow the user to apply as maintainer if this is a new version.
