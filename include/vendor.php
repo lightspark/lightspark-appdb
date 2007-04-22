@@ -61,12 +61,10 @@ class Vendor {
      */
     function create()
     {
-        if(!$this->canEdit())
-            return FALSE;
-
-        $hResult = query_parameters("INSERT INTO vendor (vendorName, vendorURL) ".
-                                    "VALUES ('?', '?')",
-                                        $this->sName, $this->sWebpage);
+        $hResult = query_parameters("INSERT INTO vendor (vendorName, vendorURL, queued) ".
+                                    "VALUES ('?', '?', '?')",
+                                        $this->sName, $this->sWebpage,
+                                        $this->mustBeQueued() ? "true" : "false");
         if($hResult)
         {
             $this->iVendorId = mysql_insert_id();
@@ -80,6 +78,23 @@ class Vendor {
         }
     }
 
+    /**
+     * Un-queue vendor
+     * Returns TRUE or FALSE
+     */
+    function unQueue()
+    {
+        if(!$this->canEdit())
+            return FALSE;
+
+        $hResult = query_parameters("UPDATE vendor SET queued = '?' WHERE vendorId = '?'",
+                                       'false', $this->iVendorId);
+
+        if(!$hResult)
+            return FALSE;
+
+        return TRUE;
+    }
 
     /**
      * Update vendor.

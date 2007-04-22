@@ -20,9 +20,10 @@ drop table if exists sessionMessages;
  * vendor information
  */
 create table vendor (
-       vendorId   int not null auto_increment,
-       vendorName	varchar(100) not null,
-       vendorURL  varchar(200),
+       vendorId         int not null auto_increment,
+       vendorName       varchar(100) not null,
+       vendorURL        varchar(200),
+       queued           enum('true','false') NOT NULL default 'false',
        key(vendorId)
 );
 
@@ -31,7 +32,7 @@ create table vendor (
  * application
  */
 create table appFamily (
-	appId	        int not null auto_increment,
+	appId	      int not null auto_increment,
 	appName       varchar(100) not null,
 	vendorId      int not null,
 	keywords      text,
