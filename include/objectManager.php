@@ -308,7 +308,7 @@ class ObjectManager
                     if($this->bIsRejected)
                         $oObject->ReQueue();
 
-                    if($this->bIsQueue)
+                    if($this->bIsQueue && !$oObject->mustBeQueued())
                         $oObject->unQueue();
 
                     $oObject->update();

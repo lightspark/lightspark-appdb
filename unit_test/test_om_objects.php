@@ -131,6 +131,7 @@ function test_object_methods()
                           "objectMakeLink",
                           "objectMakeUrl",
                           "outputEditor",
+                          "mustBeQueued"
                          );
 
     $aTestClasses = array("application",

@@ -97,6 +97,11 @@ class testData_queue
         return $this->oTestData->canEdit();
     }
 
+    function mustBeQueued()
+    {
+        return $this->oTestData->mustBeQueued();
+    }
+
     function objectDisplayAddItemHelp()
     {
         $this->oTestData->objectDisplayAddItemHelp();

@@ -217,6 +217,14 @@ class Vendor {
             return FALSE;
     }
 
+    function mustBeQueued()
+    {
+        if($_SESSION['current']->hasPriv("admin"))
+            return FALSE;
+        else
+            return TRUE;
+    }
+
     function getOutputEditorValues($aClean)
     {
         $this->sName = $aClean['sVendorName'];

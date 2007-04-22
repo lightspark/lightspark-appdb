@@ -119,6 +119,11 @@ class version_queue
         return $this->oVersion->canEdit();
     }
 
+    function mustBeQueued()
+    {
+        return $this->oVersion->mustBeQueued();
+    }
+
     function objectDisplayAddItemHelp()
     {
         /* $this->oVersion->displayAddItemHelp(); */
