@@ -370,14 +370,14 @@ class appData
             if($this->iVersionId)
             {
                 $oVersion = new version($this->iVersionId);
-                if($oVersion->canEdit())
+                if($oVersion->canEdit() && $oVersion->sQueued == "false")
                     return FALSE;
                 else
                     return TRUE;
             } else if($this->iAppId)
             {
                 $oApp = new application($this->iAppId);
-                if($oApp->canEdit())
+                if($oApp->canEdit() && $oApp->sQueued == "false")
                     return FALSE;
                 else
                     return TRUE;
