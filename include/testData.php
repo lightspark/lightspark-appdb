@@ -380,7 +380,7 @@ class testData{
         $link = mysql_real_escape_string($link);
         $iDisplayLimit = mysql_real_escape_string($iDisplayLimit);
 
-        $showAll = $aClean['showAll'];
+        $sShowAll = $aClean['sShowAll'];
 
         $sQuery = "SELECT * 
                    FROM testResults
@@ -389,7 +389,7 @@ class testData{
                    queued = '?'
                    ORDER BY testedDate DESC";
 	
-        if(!$showAll)
+        if(!$sShowAll)
             $sQuery.=" LIMIT 0,".$iDisplayLimit;
 
         $hResult = query_parameters($sQuery, $this->iVersionId, "false");
@@ -433,8 +433,8 @@ class testData{
                 html_tr_highlight_clickable($link.$oTest->iTestingId, $bgcolor, "", "color2", "underline"); 
                 echo '    <td align="center" class="color2">[<a href="'.$link.$oTest->iTestingId;
 
-                if(is_string($showAll))
-                    echo '&showAll='.$showAll.'">Show</a>]</td>',"\n";
+                if(is_string($sShowAll))
+                    echo '&sShowAll='.$sShowAll.'">Show</a>]</td>',"\n";
                 else
                     echo '">Show</a>]</td>',"\n";
             }
@@ -462,12 +462,12 @@ class testData{
 
         echo '<form method=get action="'.$PHP_SELF.'">';
         echo '<input name="iVersionId" type=hidden value="',$this->iVersionId,'" />';
-        if($rowsUsed >= $iDisplayLimit && !is_string($showAll))
-            echo '<input class="button" name="showAll" type=submit value="Show All Tests" />';
+        if($rowsUsed >= $iDisplayLimit && !is_string($sShowAll))
+            echo '<input class="button" name="sShowAll" type=submit value="Show All Tests" />';
 
-        if(is_string($showAll))
+        if(is_string($sShowAll))
         {
-            echo '<input class="button" name="hideAll" type=submit value="Limit to '.$iDisplayLimit.' Tests" />';
+            echo '<input class="button" name="sHideAll" type=submit value="Limit to '.$iDisplayLimit.' Tests" />';
         }
         echo '</form>';
     }
