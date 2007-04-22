@@ -923,15 +923,8 @@ class testData{
     {
         if($_SESSION['current']->hasPriv("admin"))
             return FALSE;
-        else if($this->iVersionId)
-        {
-            $oVersion = new version($this->iVersionId);
-            if($oVersion->canEdit())
-                return FALSE;
-            else
-                return TRUE;
-        } else
-            return TRUE;
+
+        return TRUE;
     }
 }
 
