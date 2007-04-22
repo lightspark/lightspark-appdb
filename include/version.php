@@ -1197,15 +1197,29 @@ class Version {
         if($_SESSION['current']->hasPriv("admin"))
             return FALSE;
 
-        if($this->iVersionId)
+        // if we have a valid iAppId or iVersionId we should
+        // check the status of these objects to determine whether
+        // we need to queue this version object
+        if($this->iVersionId or $this->iAppId)
         {
-            if(maintainer::isUserMaintainer($_SESSION['current'], $this->iVersionId))
+            // if the user is the super maintainer of the application then
+            // they are authorized to unqueue versions of this application
+            // so the version doesn't have to be queued
+            if($this->iAppId && 
+               maintainer::isUserSuperMaintainer($_SESSION['current'], $this->iAppId))
+                return FALSE;
+
+            // if the user is a maintainer of this version then
+            // this version doesn't have to be queued
+            if($this->iVersionId && 
+               maintainer::isUserMaintainer($_SESSION['current'], $this->iVersionId))
                 return FALSE;
 
             return TRUE;
-        }
-        else
+        } else
+        {
             return TRUE;
+        }
     }
 
     function objectGetHeader()

@@ -922,9 +922,22 @@ class testData{
     function mustBeQueued()
     {
         if($_SESSION['current']->hasPriv("admin"))
+        {
             return FALSE;
-
-        return TRUE;
+        } else if($this->iVersionId)
+        {
+            // if the user can edit the version and the version isn't queued then
+            // they can also submit test results without them being queued
+            // this is the case where they maintain the version and the version isn't queued
+            $oVersion = new version($this->iVersionId);
+            if($oVersion->canEdit() && $oVersion->sQueued == "false")
+                return FALSE;
+            else
+                return TRUE;
+        } else
+        {
+            return TRUE;
+        }
     }
 }
 
