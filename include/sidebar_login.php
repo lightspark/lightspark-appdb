@@ -43,8 +43,9 @@ function global_sidebar_login() {
         $iAppsRejected = application::objectGetEntriesCount(true, true);
         if($iAppsRejected && !$_SESSION['current']->hasPriv("admin"))
         {
-          $g->add("Review Rejected Apps ($iAppsRejected)", BASE."appsubmit.php",
-                  "center");
+          $g->add("Review Rejected Apps ($iAppsRejected)", BASE."objectManager.php?".
+                  "sClass=application&bIsQueue=true&bIsRejected=true&sTitle=".
+                  "Rejected+Applications", "center");
         }
 
         /* Display the user's rejected versions */

@@ -316,41 +316,6 @@ class User {
          return ($this->isLoggedIn() && $this->getPref("send_email","yes")=="yes");
      }
 
-     function getAppRejectQueueQuery($queryAppFamily)
-     {
-         /* escape input as we can't easily use query_parameters() */
-         $queryAppFamily = mysql_real_escape_string($queryAppFamily);
-
-         if($this->hasPriv("admin"))
-         {
-             if($queryAppFamily)
-             {
-                 $sQuery = "SELECT appFamily.appId FROM appFamily WHERE queued = 'rejected'";
-             } else
-             {
-                 $sQuery = "SELECT appVersion.versionId FROM appVersion, appFamily
-                            WHERE appFamily.appId = appVersion.appId 
-                            AND appFamily.queued = 'false' AND appVersion.queued = 'rejected'";
-             }
-         } else
-         {
-             if($queryAppFamily)
-             {
-                 $sQuery = "SELECT appFamily.appId FROM appFamily
-                            WHERE queued = 'rejected'
-                            AND appFamily.submitterId = '".mysql_real_escape_string($this->iUserId)."';";
-             } else
-             {
-                 $sQuery = "SELECT appVersion.versionId FROM appVersion, appFamily
-                            WHERE appFamily.appId = appVersion.appId 
-                            AND appFamily.queued = 'false' AND appVersion.queued = 'rejected'
-                            AND appVersion.submitterId = '".mysql_real_escape_string($this->iUserId)."';";
-             }
-         }
-
-         return query_appdb($sQuery);
-     }
-
      function isAppSubmitter($iAppId)
      {
          $hResult = query_parameters("SELECT appId FROM appFamily
