@@ -300,6 +300,8 @@ class ObjectManager
         switch($aClean['sSubmit'])
         {
             case "Submit":
+                // if we have a valid iId then we are displaying an existing entry
+                // otherwise we should create the entry in the 'else' case
                 if($this->iId)
                 {
                     if(!$oObject->canEdit())
@@ -312,9 +314,10 @@ class ObjectManager
                         $oObject->unQueue();
 
                     $oObject->update();
-                }
-                else
+                } else
+                {
                     $oObject->create();
+                }
             break;
 
             case "Reject":

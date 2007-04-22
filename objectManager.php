@@ -84,8 +84,9 @@ if($oObject->iId)
         break;
     }
 } else if ($aClean['sAction'] == "add")
+{
     $oObject->add_entry($REQUEST_URI, $sErrors);
-else
+} else
 {
     // if displaying a queue display the help for the given queue
     if($oObject->bIsQueue)
