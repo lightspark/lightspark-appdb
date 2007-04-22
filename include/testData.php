@@ -109,6 +109,65 @@ class testData{
         if($this == $oOldTest)
             return TRUE;
 
+        /* Provide some feedback as to what was changed.  Not all fields are
+           interesting */
+        $sWhatChanged = "";
+        if($this->shWhatWorks != $oOldTest->shWhatWorks)
+        {
+            $sWhatChanged .= "What works was changed from\n'$oOldTest->shWhatWorks'\n".
+                    "to\n'$this->shWhatWorks'.\n";
+        }
+
+        if($this->shWhatDoesnt != $oOldTest->shWhatDoesnt)
+        {
+            $sWhatChanged .= "What does not work was changed from\n'"
+                    .$oOldTest->shWhatDoesnt."'\n to\n'$this->shWhatDoesnt'.\n";
+        }
+
+        if($this->shWhatNotTested != $oOldTest->shWhatNotTested)
+        {
+            $sWhatChanged .= "What was not tested was changed from\n'".
+                    $oOldTest->shWhatNotTested."'\nto\n'$this->shWhatNotTested'.\n";
+        }
+
+        if($this->sComments != $oOldTest->sComments)
+        {
+            $sWhatChanged .= "Extra comments was changed from\n'".
+                    $oOldTest->sComments."'\nto\n'$this->sComments'.\n";
+        }
+
+        if($this->iDistributionId != $oOldTest->iDistributionId)
+        {
+            $oNewDist = new distribution($this->iDistributionId);
+            $oOldDist = new distribution($oOldTest->iDistributionId);
+            $sWhatChanged .= "Distribution was changed from $oOldDist->sName ".
+                    "to $oNewDist->sName.\n";
+        }
+
+        if($this->sInstalls != $oOldTest->sInstalls)
+        {
+            $sWhatChanged .= "Installs? was changed from $oOldTest->sInstalls to ".
+                    "$this->sInstalls.\n";
+        }
+
+        if($this->sRuns != $oOldTest->sRuns)
+        {
+            $sWhatChanged .= "Runs? was changed from $oOldTest->sRuns to ".
+                    "$this->sRuns.\n";
+        }
+
+        if($this->sTestedRating != $oOldTest->sTestedRating)
+        {
+            $sWhatChanged .= "Rating was changed from $oOldTest->sTestedRating ".
+                    "to $this->sTestedRating.\n";
+        }
+
+        if($this->sTestedRelease != $oOldTest->sTestedRelease)
+        {
+            $sWhatChanged .= "Tested release was changed from ".
+                    $oOldTest->sTestedRelease." to $this->stestedRelease.\n";
+        }
+
         if(query_parameters("UPDATE testResults SET 
                                         versionId       = '?',
                                         whatWorks       = '?',
@@ -136,7 +195,7 @@ class testData{
                             $this->iTestingId))
         {
             if(!$bSilent)
-                $this->SendNotificationMail("edit");
+                $this->SendNotificationMail("edit", $sWhatChanged);
             return true;
         }
         else
