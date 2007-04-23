@@ -852,7 +852,7 @@ class Version {
             echo '</form>'."\n";
             echo '<form method="post" name="sMessage" action='.
                     $this->objectMakeUrl().'>'."\n";
-            echo '<input type=hidden name="sSub" value="StopMonitoring" />."\n"';
+            echo '<input type=hidden name="sSub" value="StopMonitoring" />'."\n";
             echo '<input type=submit value="Stop Monitoring Version" class="button" />'."\n";
             echo "</form>\n";
             echo "</td></tr>\n";
