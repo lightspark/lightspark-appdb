@@ -127,23 +127,10 @@ class Bug {
                                     $_SESSION['current']->iUserId);
         if($hResult)
         {
-            /* The following should work but it does not! */
             $this->iLinkId = mysql_insert_id();
-            $this->bug($this->iLinkId);
-            /* Start of hack to get around the previous not working */
-            $sQuery = "SELECT buglinks.*, appVersion.appId AS appId
-                       FROM buglinks, appVersion 
-                       WHERE buglinks.versionId = appVersion.versionId 
-                       AND buglinks.versionId = '?'
-                       AND buglinks.bug_id = '?'";
-            if($hResult = query_parameters($sQuery, $this->iVersionId, $this->iBug_id))
-            {
-                $oRow = mysql_fetch_object($hResult);
-                $this->bug($oRow->linkId);
-            }
-            /*End of Hack */
 
             $this->SendNotificationMail();
+
             return true;
         } else
         {
