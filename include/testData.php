@@ -165,7 +165,7 @@ class testData{
         if($this->sTestedRelease != $oOldTest->sTestedRelease)
         {
             $sWhatChanged .= "Tested release was changed from ".
-                    $oOldTest->sTestedRelease." to $this->stestedRelease.\n";
+                    $oOldTest->sTestedRelease." to $this->sTestedRelease.\n";
         }
 
         if(query_parameters("UPDATE testResults SET 
