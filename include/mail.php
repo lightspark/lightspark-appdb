@@ -21,6 +21,17 @@ function mail_appdb($sEmailList,$sSubject,$sMsg)
     $sMsg .= "\n\nIf you don't want to receive any other e-mail, please change your preferences:\n";
     $sMsg .= APPDB_ROOT."preferences.php\n";
 
+    /* Print the message to the screen instead of sending it, if the PRINT_EMAIL
+       option is set.  Output in purple to distinguish it from other messages */
+    if(defined("PRINT_EMAIL"))
+    {
+        $sMsg = str_replace("\n", "<br />", $sMsg);
+        addmsg("This mail would have been sent<br /><br />".
+               "Subject: $sSubject<br /><br />".
+               "Body:<br />$sMsg", "purple");
+        return;
+    }
+
     $bResult = mail(str_replace(" ",",",$sEmailList), "[AppDB] ".$sSubject, $sMsg, $sHeaders, "-f".APPDB_OWNER_EMAIL);
     if($bResult)
         addmsg("Message sent to: ".$sEmailList, "green");

@@ -23,6 +23,12 @@ define("BUGZILLA_ROOT","http://bugs.winehq.org/"); // path to bugzilla
 //if(!defined("DISABLE_EMAIL"))
 // define("DISABLE_EMAIL", true); // disable email, see mail_appdb() in include/mail.php
 
+// AppDB developers: Use this define to print the contents of the e-mail instead
+// of sending it, useful for testing e-mail notifications.  Has no effect if
+// DISABLE_EMAIL is set
+//if(!defined("PRINT_EMAIL"))
+// define("PRINT_EMAIL", true); // print email, see mail_appdb() in include/mail.php
+
 /*
  * apps database info
  */
