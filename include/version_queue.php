@@ -197,10 +197,10 @@ class version_queue
                         array(Comment::get_comment_count_for_versionid(
                             $oVersion->iVersionId), 'align="center"'),
                         html_ahref("Move here",
-                          "admin/adminAppQueue.php?sSub=movetest&sAppType=version&".
-                          "iVersionId="
-                          .$this->oVersion->iVersionId."&iVersionIdMergeTo=".
-                          $oVersion->iVersionId)
+                          "objectManager.php?sClass=version_queue&bIsQueue=true&".
+                          "sAction=moveChildren&iId=".
+                          $this->oVersion->iVersionId."&iNewId=".
+                          $oVersion->iVersionId."&sTitle=Version+Queue"),
                                   ),
                             ($i % 2) ? "color0" : "color1");
 
@@ -214,6 +214,11 @@ class version_queue
     function objectDisplayQueueProcessingHelp()
     {
         version::objectDisplayQueueProcessingHelp();
+    }
+
+    function objectMoveChildren($iNewId)
+    {
+        return $this->oVersion->objectMoveChildren($iNewId);
     }
 }
 

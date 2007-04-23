@@ -220,6 +220,35 @@ class ObjectManager
             echo "Failure.\n";
     }
 
+    /* Move all the object's children to another object of the same type, and
+       delete the original object afterwards */
+    function move_children($iNewId)
+    {
+        $oObject = new $this->sClass($this->iId);
+        $oNewObject = new $this->sClass($iNewId);
+
+        /* The user needs to have edit rights to both the old and the new object
+           If you have edit rights to an object then you should have edit rights
+           to its child objects as well */
+        if(!$oObject->canEdit() || !$oNewObject->canEdit())
+            return FALSE;
+
+        $iAffected = $oObject->objectMoveChildren($iNewId);
+
+        if($iAffected)
+        {
+            $sPlural = ($iAffected == 1) ? "": "s";
+            addmsg("Moved $iAffected child object$sPlural", "green");
+        } else if($iAfffected === FALSE)
+        {
+            /* We don't want to delete this object if some children were not moved */
+            addmsg("Failed to move child objects", "red");
+            return FALSE;
+        }
+
+        $this->delete_entry();
+    }
+
     /* Display screen for submitting a new entry of given type */
     function add_entry($sBackLink, $sErrors = "")
     {

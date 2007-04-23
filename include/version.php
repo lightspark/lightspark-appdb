@@ -1366,6 +1366,49 @@ class Version {
         echo "<p>To view a submission, click on its name. ".
              "From that page you can edit, delete or approve it into the AppDB.</p>\n";
     }
+
+    function objectMoveChildren($iNewId)
+    {
+        /* Keep track of how many items we have updated */
+        $iCount = 0;
+
+        /* Move test results */
+        $sQuery = "SELECT * FROM testResults WHERE versionId = '?'";
+        $hResult = query_parameters($sQuery, $this->iVersionId);
+
+        if(!$hResult)
+            return FALSE;
+
+        while($oRow = mysql_fetch_object($hResult))
+        {
+            $oTestData = new testData($oRow->testingId);
+            $oTestData->iVersionId = $iNewId;
+            if($oTestData->update())
+                $iCount++;
+            else
+                return FALSE;
+        }
+
+        /* Move all app data */
+        $sQuery = "SELECT * FROM appData WHERE versionId = '?'";
+        $hResult = query_parameters($sQuery, $this->iVersionId);
+
+        if(!$hResult)
+            return FALSE;
+
+        while($oRow = mysql_fetch_object($hResult))
+        {
+            $oAppData = new appData($oRow->testingId);
+            $oAppData->iVersionId = $iNewId;
+            if($oAppData->update(TRUE))
+                $iCount++;
+            else
+                return FALSE;
+        }
+
+        /* Return the number of updated objects if everything was successful */
+        return $iCount;
+    }
 }
 
 ?>

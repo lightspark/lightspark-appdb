@@ -52,6 +52,29 @@ class appData
         return $hResult;
     }
 
+    function update($bSilent = FALSE)
+    {
+        if(!$this->canEdit())
+            return FALSE;
+
+        $sQuery = "UPDATE appData SET versionId = '?', appId = '?', sDescription = '?'
+                        WHERE id = '?'";
+        $hResult = query_parameters($this->iVersionId, $this->iAppId,
+                                    $this->sDescription, $this->iId);
+ 
+        if(!$hResult)
+        {
+            if(!$bResult)
+                addmsg("Failed to update add data", "red");
+            return FALSE;
+        }
+
+        if(!$bSilent)
+            addmsg("Updated app data successfully", "green");
+
+        return TRUE;
+    }
+
     function listSubmittedBy($iUserId, $bQueued = true)
     {
         $hResult = query_parameters("SELECT * FROM appData WHERE

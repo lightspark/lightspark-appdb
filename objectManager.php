@@ -64,6 +64,11 @@ if($sErrors === TRUE)
 if($oObject->iId && $aClean['sAction'] == "delete")
     $oObject->delete_entry();
 
+/* Provided the necessary values are present, an object's children may be moved
+   without any confirmation */
+if($oObject->iId && $aClean['sAction'] == "moveChildren" && $aClean['iNewId'])
+    $oObject->move_children($aClean['iNewId']);
+
 apidb_header($oObject->sTitle);
 
 /* display a particular element */
