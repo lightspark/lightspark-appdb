@@ -10,6 +10,7 @@ class Vendor {
     var $iVendorId;
     var $sName;
     var $sWebpage;
+    var $sQueued;
     var $aApplicationsIds;  // an array that contains the appId of every application linked to this vendor
 
     /**    
@@ -37,6 +38,7 @@ class Vendor {
                 $this->iVendorId = $iVendorId;
                 $this->sName = $oRow->vendorName;
                 $this->sWebpage = $oRow->vendorURL;
+                $this->sQueued = $oRow->queued;
             }
 
             /*
