@@ -716,9 +716,15 @@ class Application {
 
         // description
         echo "  <td class=color2 valign=top width='100%'>\n";
-        echo "    <table width='100%' border=0><tr><td width='100%' valign=top><span class=\"title\">Description</span>\n";
-        echo $this->sDescription;
-        echo "    </td></tr></table>\n";
+        echo "<div class='info_container'>\n";
+        echo "\t<div class='title_class'>\n";
+        echo "\t\tDescription\n";
+        echo "\t</div>\n";                      // close the 'title_class' div
+        echo "\t<div class='info_contents'>\n";
+        echo "\t\t".$this->sDescription."\n";
+        echo "\t</div>\n";                      // close the 'info_contents' div
+        echo "</div>\n";                        // close the 'info_container' div
+
         echo html_frame_end("For more details and user comments, view the versions of this application.");
 
         // display versions

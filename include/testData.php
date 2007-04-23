@@ -421,13 +421,13 @@ class testData{
     function ShowTestResult()
     {
         echo '<p><b>What works</b><br />',"\n";
-        echo $this->shWhatWorks;
-        echo '<p><b>What does not</b><br />',"\n";
-        echo $this->shWhatDoesnt;
-        echo '<p><b>What was not tested</b><br />',"\n";
-        echo $this->shWhatNotTested;
-        echo '<p><b>Additional Comments</b><br />',"\n";
-        echo $this->sComments;
+        echo $this->shWhatWorks,"\n";
+        echo '<p><br /><b>What does not</b><br />',"\n";
+        echo $this->shWhatDoesnt,"\n";
+        echo '<p><br /><b>What was not tested</b><br />',"\n";
+        echo $this->shWhatNotTested,"\n";
+        echo '<p><br /><b>Additional Comments</b><br />',"\n";
+        echo $this->sComments,"\n";
     }
 
     // Show the Test results for a application version
@@ -459,7 +459,9 @@ class testData{
 
         if($rowsUsed == 0)
              return;
-        echo '<p><span class="title">Test Results</span><br />',"\n";
+        echo '<div class="info_container">',"\n";
+        echo '<div class="title_class">Test Results</div>',"\n";
+        echo '<div class="info_contents">',"\n";
         echo '<table width="100%" border="1" class="historyTable">',"\n";
         echo '<thead class="historyHeader">',"\n";
         echo '<tr>',"\n";
@@ -486,11 +488,11 @@ class testData{
             if ($oTest->iTestingId == $this->iTestingId)
             {
                 echo '<tr class='.$bgcolor.'>',"\n";
-                echo '    <td align="center" class="color2"><b>Current</b></td>',"\n";
+                echo '    <td align="center"><b>Current</b></td>',"\n";
             } else /* make all non-current rows clickable so clicking on them selects the test as current */
             {
                 html_tr_highlight_clickable($link.$oTest->iTestingId, $bgcolor, "", "color2", "underline"); 
-                echo '    <td align="center" class="color2">[<a href="'.$link.$oTest->iTestingId;
+                echo '    <td align="center">[<a href="'.$link.$oTest->iTestingId;
 
                 if(is_string($sShowAll))
                     echo '&sShowAll='.$sShowAll.'">Show</a>]</td>',"\n";
@@ -519,16 +521,21 @@ class testData{
 
         echo '</table>',"\n";
 
-        echo '<form method=get action="'.$PHP_SELF.'">';
-        echo '<input name="iVersionId" type=hidden value="',$this->iVersionId,'" />';
+        echo '<br />',"\n"; // put a space after the test results table and the button
+
+        echo '<form method=get action="'.$PHP_SELF.'">'."\n";
+        echo "\t".'<input name="iVersionId" type=hidden value="',$this->iVersionId,'" />'."\n";
         if($rowsUsed >= $iDisplayLimit && !is_string($sShowAll))
-            echo '<input class="button" name="sShowAll" type=submit value="Show All Tests" />';
+            echo "\t".'<input class="button" name="sShowAll" type=submit value="Show All Tests" />'."\n";
 
         if(is_string($sShowAll))
         {
-            echo '<input class="button" name="sHideAll" type=submit value="Limit to '.$iDisplayLimit.' Tests" />';
+            echo "\t".'<input class="button" name="sHideAll" type=submit value="Limit to '.$iDisplayLimit.' Tests" />'."\n";
         }
-        echo '</form>';
+        echo '</form>'."\n";
+
+        echo '</div>',"\n"; // end of the 'info_contents' div
+        echo '</div>',"\n"; // end of the 'info_container' div
     }
 
     /* retrieve the latest test result for a given version id */

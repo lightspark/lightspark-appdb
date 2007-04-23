@@ -29,3 +29,10 @@ tr.gold             { background-color: #fff600; }
 tr.silver           { background-color: silver;  }
 tr.bronze           { background-color: #fcba0a; }
 tr.garbage          { background-color: #999966; }
+
+/* classes for the version info pane */
+/* version info pane is the right hand pane at the top of the version page */
+div.version_info_pane p { margin:0px; }
+div.info_container { margin:6px; border: 1px solid; }
+div.info_contents { padding:10px; background-color: #eee; }
+div.title_class { font-weight: bold; border-bottom: 1px solid; padding: 4px; font-size: 140%; background-color: #ddd; }
