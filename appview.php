@@ -113,7 +113,7 @@ if ($aClean['sSub'])
     if($aClean['sSub'] == 'StartMonitoring')
     {
         $oMonitor = new Monitor();
-        $oMonitor->iuserId = $_SESSION['current']->iUserId;
+        $oMonitor->iUserId = $_SESSION['current']->iUserId;
         $oMonitor->iAppId = $aClean['iAppId'];
         $oMonitor->iVersionId = $aClean['iVersionId'];
         $oMonitor->create();
