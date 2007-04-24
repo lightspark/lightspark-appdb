@@ -383,7 +383,7 @@ class Version {
         {
             $this->sQueued = 'false';
             // we send an e-mail to interested people
-            $this->mailSubmitter("unQueue");
+            $this->mailSubmitter("add");
             $this->SendNotificationMail();
 
             /* Unqueue matching maintainer request */
