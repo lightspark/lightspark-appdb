@@ -153,9 +153,13 @@ function vote_update($vars)
     if( !is_numeric($vars['iVersionId']) OR !is_numeric($vars['iSlot']))
     {
         if(is_numeric($vars['iVersionId']))
+        {
+            addmsg("You need to select a voting slot", "red");
             util_redirect_and_exit($oVersion->objectMakeUrl());
-        else
+        } else
+        {
             util_redirect_and_exit(apidb_fullurl("index.php"));
+        }
 
         return;
     }
