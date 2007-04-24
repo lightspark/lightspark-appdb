@@ -171,23 +171,29 @@ class TableVE {
         echo html_frame_end();
     }
 
-    function make_option_list($varname, $cvalue, $table, $idField, $nameField, $where = "")
+    function make_option_list($sVarname, $sCvalue, $sTable, $sIdField, $sNameField, $aWhere = null)
     {
-        $hResult = query_parameters("SELECT ?, ? FROM ? ? ORDER BY '?'",
-                                $idField, $nameField, $table, $where, $nameField);
+        /* We do not allow direct insertion into of SQL code, so the WHERE clause is
+           is accepted in an array form, where the first element is the variable
+           and the second is the value it must be equal to */
+        if($aWhere)
+            $sWhere = "WHERE ".$aWhere[0]." ='".$aWhere[1]."'";
+
+        $hResult = query_parameters("SELECT ?, ? FROM ? $sWhere ORDER BY '?'",
+                                $sIdField, $sNameField, $sTable, $sNameField);
         if(!$hResult)
             return; // Oops
 
-        echo "<select name='$varname'>\n";
+        echo "<select name='$sVarname'>\n";
         echo "<option value=0>Choose ...</option>\n";
-        while(list($id, $name) = mysql_fetch_row($hResult))
+        while(list($iId, $sName) = mysql_fetch_row($hResult))
         {
-            if ($name == "NONAME")
+            if ($sName == "NONAME")
                 continue;
-            if($id == $cvalue)
-                echo "<option value=$id selected>$name\n";
+            if($iId == $sCvalue)
+                echo "<option value=$iId selected>$sName\n";
             else
-                echo "<option value=$id>$name\n";
+                echo "<option value=$iId>$sName\n";
         }
         echo "</select>\n";
     }
