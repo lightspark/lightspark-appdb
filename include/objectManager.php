@@ -436,6 +436,13 @@ class ObjectManager
     {
         if($sErrors)
         {
+            /* A class's checkOutputEditorInput() may simply return TRUE if
+               it wants the editor to be displayed again, without any error
+               messages.  This is for example useful when gathering information
+               in several steps, such as with application submission */
+            if($sErrors === TRUE)
+                return TRUE;
+
             echo "<font color=\"red\">\n";
             echo "The following errors were found<br />\n";
             echo "<ul>$sErrors</ul>\n";

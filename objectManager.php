@@ -58,8 +58,6 @@ $oOtherObject = new $oObject->sClass($oObject->iId);
    processForm return TRUE on success, or a user-readable list of errors
    on failure */
 $sErrors = $oObject->processForm($aClean);
-if($sErrors === TRUE)
-    $sErrors = "";
 
 if($oObject->iId && $aClean['sAction'] == "delete")
     $oObject->delete_entry();
