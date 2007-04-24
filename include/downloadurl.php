@@ -224,7 +224,12 @@ class downloadurl
     /* Output an editor for a single new URL */
     function outputEditorSingle($iVersionId = NULL, $aValues = NULL)
     {
-        if($iVersionId)
+        if($aValues["sDownloadUrlUrl"] &&
+           $aValues["sDownloadUrlDescription"])
+        {
+            $sDownloadUrlUrl = $aValues["sDownloadUrlUrl"];
+            $sDownloadUrlDescription = $aValues["sDownloadUrlDescription"];
+        } else if($iVersionId)
         {
             if($hResult = appData::getData($iVersionId, "downloadurl",
                                            TRUE, TRUE))
@@ -233,11 +238,8 @@ class downloadurl
                 $sDownloadUrlUrl = $oRow->url;
                 $sDownloadUrlDescription = $oRow->description;
             }
-        } else
-        {
-            $sDownloadUrlUrl = $aValues["sDownloadUrlUrl"];
-            $sDownloadUrlDescription = $aValues["sDownloadUrlDescription"];
         }
+
 
         $sReturn .= html_frame_start("Download URL","90%");
         $sReturn .= html_table_begin("");

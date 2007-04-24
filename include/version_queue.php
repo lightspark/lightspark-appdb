@@ -71,6 +71,8 @@ class version_queue
 
     function outputEditor()
     {
+        global $aClean;
+
         /* Display duplicate list if this is a an existing version */
         if($this->oVersion->iVersionId)
             $this->displayMoveTestTable();
