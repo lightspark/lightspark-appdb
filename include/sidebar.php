@@ -25,7 +25,8 @@ function global_sidebar_menu()
     $g->add("Downloadable Apps", BASE."browse_downloadable.php");
     $g->add("Browse Apps by Rating", BASE."browse_by_rating.php");
     $g->add("Top 25", BASE."votestats.php");
-    $g->add("Submit Application", BASE."appsubmit.php?sSub=view&sAppType=application");
+    $g->add("Submit Application", BASE."objectManager.php?sClass=application_queue&".
+            "sTitle=Submit+Application&sAction=add");
     $g->add("Help &amp; Documentation", BASE."help/");
     $g->add("AppDB Stats", BASE."appdbStats.php");
     $g->add("View Distributions (".distribution::objectGetEntriesCount(false, false).")", BASE."objectManager.php?sClass=distribution&bIsQueue=false&sTitle=View%20Distributions");

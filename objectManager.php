@@ -19,7 +19,7 @@
 require_once('path.php');
 require_once(BASE.'include/incl.php');
 require_once(BASE.'include/objectManager.php');
-/* require_once(BASE.'include/application_queue.php'); */
+require_once(BASE.'include/application_queue.php');
 require_once(BASE.'include/version_queue.php');
 require_once(BASE.'include/testData_queue.php');
 

@@ -9,6 +9,7 @@ require_once(BASE.'include/application.php');
 require_once(BASE.'include/maintainer.php');
 require_once(BASE.'include/testData_queue.php');
 require_once(BASE.'include/version_queue.php');
+require_once(BASE.'include/application_queue.php');
 
 /* internal function */
 function test_class($sClassName, $aTestMethods)
@@ -135,6 +136,7 @@ function test_object_methods()
                          );
 
     $aTestClasses = array("application",
+                          "application_queue",
                           "distribution",
                           "maintainer",
                           "screenshot",

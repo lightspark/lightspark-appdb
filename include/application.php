@@ -10,6 +10,7 @@ require_once(BASE."include/url.php");
 require_once(BASE."include/util.php");
 require_once(BASE."include/mail.php");
 require_once(BASE."include/maintainer.php");
+require_once(BASE."include/tableve.php");
 
 define("PLATINUM_RATING", "Platinum");
 define("GOLD_RATING", "Gold");
@@ -377,7 +378,9 @@ class Application {
                 $sMsg  = "The application you submitted (".$this->sName.") has been rejected by ".$_SESSION['current']->sRealname.".";
                 $sMsg .= "Clicking on the link in this email will allow you to modify and resubmit the application. ";
                 $sMsg .= "A link to your queue of applications and versions will also show up on the left hand side of the Appdb site once you have logged in. ";
-                $sMsg .= APPDB_ROOT."appsubmit.php?sub=view&apptype=application&appId=".$this->iAppId."\n";
+                $sMsg .= APPDB_ROOT."objectManager.php?sClass=application_queue".
+                        "&bIsQueue=true&bIsRejected=true&iId=".$this->iAppId."&sTitle=".
+                        "Edit+Application\n";
                 $sMsg .= "Reason given:\n";
             break;
             case "delete":
@@ -480,7 +483,9 @@ class Application {
             break;
             case "reject":
                 $sSubject = $this->sName." has been rejected by ".$_SESSION['current']->sRealname;
-                $sMsg .= APPDB_ROOT."appsubmit.php?sAppType=application&sSub=view&iAppId=".$this->iAppId."\n";
+                $sMsg .= APPDB_ROOT."objectManager.php?sClass=application_queue".
+                        "&bIsQueue=true&bIsRejected=true&iId=".$this->iAppId."&sTitle=".
+                        "Edit+Application\n";
 
                 // if sReplyText is set we should report the reason the application was rejected 
                 if($aClean['sReplyText'])
@@ -499,11 +504,15 @@ class Application {
 
 
     /* output a html table and this applications values to the fields for editing */
-    function outputEditor($sVendorName)
+    function outputEditor($sVendorName = "")
     {
         HtmlAreaLoaderScript(array("app_editor"));
 
         echo '<input type="hidden" name="iAppId" value="'.$this->iAppId.'">';
+
+        /* Used to distinguish between the first step of entering an application
+           name and the full editor displayed here */
+        echo '<input type="hidden" name="bMainAppForm" value="true" />'."\n";
 
         echo html_frame_start("Application Form", "90%", "", 0);
         echo "<table width='100%' border=0 cellpadding=2 cellspacing=0>\n";
@@ -518,12 +527,14 @@ class Application {
 
         // vendor name
         echo '<tr valign=top><td class="color0"><b>Vendor</b></td>',"\n";
-        echo '<td><input size="20" type=text name="sVendorName" value="'.$sVendorName.'"></td></tr>',"\n";
+        echo '<td>If it is not on the list please add it using the form below</td></tr>',"\n";
 
         // alt vendor
         $x = new TableVE("view");
         echo '<tr valign=top><td class="color0">&nbsp;</td><td>',"\n";
-        $x->make_option_list("iAppVendorId", $this->iVendorId,"vendor","vendorId","vendorName");
+        $x->make_option_list("iAppVendorId",
+                  $this->iVendorId,"vendor","vendorId","vendorName",
+                  array("vendor.queued", "false"));
         echo '</td></tr>',"\n";
 
         // url
@@ -855,20 +866,11 @@ class Application {
                 $sVendor,
                 $this->sName);
 
-        /* If the user has global edit rights canEdit() will return true even if
-           the appId is not defined, in which case he should use adminAppQueue.
-           This will soon be replaced by a unified objectManager link */
-        $oApp = new application();
-        if($oApp->canEdit())
+        /* Display an edit link if the user has proper permissions */
+        if($this->canEdit())
         {
-            $aCells[] = "[ <a href=\"".BASE."admin/adminAppQueue.php?sAppType=".
-                    "application&sSub=view&iAppId=$this->iAppId\">".
-                    "$sEditLinkLabel</a> ]";
-        } else if($this->canEdit())
-        {
-            $aCells[] = "[ <a href=\"".BASE."appsubmit.php?sAppType=".
-                    "application&sSub=view&iAppId=$this->iAppId\">".
-                    "$sEditLinkLabel</a> ]";
+            $aCells[] = "[ <a href=\"".$oObject->makeUrl("edit", $this->iAppId,
+                    "Edit Application")."\">$sEditLinkLabel</a> ]";
         }
 
         echo html_tr($aCells, $sClass);
@@ -911,6 +913,38 @@ class Application {
              "From that page you can edit, delete or approve it into the AppDB.</p>\n";
     }
 
+    function objectDisplayAddItemHelp()
+    {
+        /* We don't display the full help on the page where you only input the app name */
+        if(!$this->sName)
+        {
+            echo "<p>First, please enter the name of the application you wish to add. ";
+            echo "This will allow you to determine whether there is already ";
+            echo "an entry for it in the database.</p>\n";
+        } else
+        {
+            echo "<p>This page is for submitting new applications to be added to the\n";
+            echo "database. The application will be reviewed by an AppDB Administrator,\n";
+            echo "and you will be notified via e-mail if it is added to the database or rejected.</p>\n";
+            echo "<p><h2>Before continuing, please ensure that you have</h2>\n";
+            echo "<ul>\n";
+            echo " <li>Entered a valid version for this application.  This is the application\n";
+            echo "   version, NOT the Wine version (which goes in the test results section of the template)</li>\n";
+            echo " <li>Tested this application under Wine.  There are tens of thousands of applications\n";
+            echo "   for Windows, we do not need placeholder entries in the database.  Please enter as complete \n";
+            echo "   as possible test results in the version template provided below</li>\n";
+            echo "</ul></p>";
+            echo "<p>Please do not forget to mention which Wine version you used, how well it worked\n";
+            echo "and if any workarounds were needed.  Having app descriptions just sponsoring the app\n";
+            echo "(yes, some vendors want to use the appdb for this) or saying &#8216;I haven&#8217;t tried this app with Wine&#8217; ";
+            echo "will not help Wine development or Wine users.</p>\n";
+            echo "<b><span style=\"color:red\">Please only submit applications/versions that you have tested.\n";
+            echo "Submissions without test information or not using the provided template will be rejected.\n";
+            echo "If you are unable to see the in-browser editors below, please try Firefox, Mozilla or Opera browsers.\n</span></b>";
+            echo "<p>After your application has been added, you will be able to submit screenshots for it, post";
+            echo " messages in its forums or become a maintainer to help others trying to run the application.</p>";
+        }
+    }
     function objectGetEntriesCount($bQueued, $bRejected)
     {
         $sQueued = objectManager::getQueueString($bQueued, $bRejected);
@@ -940,6 +974,25 @@ class Application {
             return FALSE;
 
         return $oRow->count;
+    }
+
+    function objectMoveChildren($iNewId)
+    {
+        /* Keep track of how many children we have moved */
+        $iCount = 0;
+
+        foreach($this->aVersionsIds as $iVersionId)
+        {
+            $oVersion = new version($iVersionId);
+            $oVersion->iAppId = $iNewId;
+            if($oVersion->update())
+                $iCount++;
+            else
+                return FALSE;
+        }
+
+        /* If no errors occured we return the number of moved children */
+        return $iCount;
     }
 }
 

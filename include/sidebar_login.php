@@ -44,7 +44,7 @@ function global_sidebar_login() {
         if($iAppsRejected && !$_SESSION['current']->hasPriv("admin"))
         {
           $g->add("Review Rejected Apps ($iAppsRejected)", BASE."objectManager.php?".
-                  "sClass=application&bIsQueue=true&bIsRejected=true&sTitle=".
+                  "sClass=application_queue&bIsQueue=true&bIsRejected=true&sTitle=".
                   "Rejected+Applications", "center");
         }
 

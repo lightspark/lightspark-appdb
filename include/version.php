@@ -465,8 +465,9 @@ class Version {
                 $sMsg  = "The version you submitted (".$oApp->sName." ".$this->sName.") has been rejected by ".$_SESSION['current']->sRealname.".";
                 $sMsg .= "Clicking on the link in this email will allow you to modify and resubmit the version. ";
                 $sMsg .= "A link to your queue of applications and versions will also show up on the left hand side of the Appdb site once you have logged in. ";
-                $sMsg .= APPDB_ROOT."appsubmit.php?sSub=view&sAppType=version&iVersionId=".$this->iVersionId."\n";
-                $sMsg .= "Reason given:\n";
+                $sMsg .= APPDB_ROOT."objectManager.php?sClass=version_queue".
+                        "&bIsQueue=true&bIsRejected=true&iId=".$this->iVersionId."&".
+                        "sTitle=Edit+Version\n";
             break;
             case "delete":
                 $sSubject = "Submitted version deleted";
@@ -538,7 +539,9 @@ class Version {
             break;
             case "reject":
                 $sSubject = "Version '".$this->sName."' of '".$oApp->sName."' has been rejected by ".$_SESSION['current']->sRealname;
-                $sMsg .= APPDB_ROOT."appsubmit.php?sAppType=application&sSub=view&iVersionId=".$this->iVersionId."\n";
+                $sMsg .= APPDB_ROOT."objectManager.php?sClass=version_queue".
+                        "&bIsQueue=true&bIsRejected=true&iId=".$this->iVersionId."&".
+                        "sTitle=Edit+Version\n";
 
                 // if sReplyText is set we should report the reason the version was rejected 
                 if($aClean['sReplyText'])
