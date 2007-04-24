@@ -258,16 +258,17 @@ class ObjectManager
 
         $oObject = new $this->sClass();
 
-        /* Display help if it is exists */
-        if(method_exists(new $this->sClass, "objectDisplayAddItemHelp"))
-            $oObject->objectDisplayAddItemHelp();
-
         /* Display errors, if any, and fetch form data */
         if($this->displayErrors($sErrors))
         {
             global $aClean;
             $oObject->getOutputEditorValues($aClean);
         }
+
+        /* Display help if it is exists */
+        if(method_exists(new $this->sClass, "objectDisplayAddItemHelp"))
+            $oObject->objectDisplayAddItemHelp();
+
         echo "<form method=\"post\">\n";
 
         $oObject->outputEditor();
