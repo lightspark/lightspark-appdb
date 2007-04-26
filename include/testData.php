@@ -719,7 +719,7 @@ class testData{
     {
         echo "<select name='$sVarname'>\n";
         echo "<option value=\"\">Choose ...</option>\n";
-        $aRating = array("Yes", "No", "Not Installable");
+        $aRating = array("Yes", "No", "Not installable");
         $iMax = count($aRating);
 
         for($i=0; $i < $iMax; $i++)
