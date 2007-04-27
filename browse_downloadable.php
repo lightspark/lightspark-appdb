@@ -49,7 +49,8 @@ $iLimitLower = ($aClean['iPage'] - 1) * $aClean['iNumVersions'];
 echo "<div align=\"center\">\n";
 echo "<b>Page ".$aClean['iPage']." of $iNumPages</b><br />\n";
 display_page_range($aClean['iPage'], $iPageRange, $iNumPages,
-    $_SERVER['PHP_SELF']."?iNumVersions=".$aClean['iNumVersions']);
+    $_SERVER['PHP_SELF']."?iNumVersions=".$aClean['iNumVersions']."&sLicense=".
+    $aClean['sLicense']);
 
 /* Selector for how many versions to display */
 echo "<form method=\"get\" action=\"".$_SERVER['PHP_SELF']."\">\n";
