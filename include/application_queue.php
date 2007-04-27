@@ -120,8 +120,14 @@ class application_queue
         if(!$this->oApp->delete())
             $bSuccess = FALSE;
 
-        if(!$this->oVersionQueue->delete())
-            $bSuccess = FALSE;
+        /* When deleting a duplicate app in the application queue, the version is moved
+           to another app and so when application_queue::delete() is called there is
+           no version child to delete, so check if the versionId is valid */
+        if($this->oVersionQueue->oVersion->iVersionId)
+        {
+            if(!$this->oVersionQueue->delete())
+                $bSuccess = FALSE;
+        }
 
         return $bSuccess;
     }
