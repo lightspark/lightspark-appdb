@@ -135,9 +135,11 @@ class distribution {
     // Delete Distributution.
     function delete($bSilent=false)
     {
-        // is the current user allowed to delete this Distribution? 
-        if(!$_SESSION['current']->hasPriv("admin") &&
-           !($_SESSION['current']->iUserId == $this->iSubmitterId))
+        /* Is the current user allowed to delete this distribution?  We allow
+           everyone to delete a queued, empty distribution, because it should be
+           deleted along with the last testData associated with it */
+        if(!($this->canEdit() || (!sizeof($this->aTestingIds) &&
+                $this->sQueued != "false")))
             return;
 
         /* Check for associated test results */
@@ -168,11 +170,9 @@ class distribution {
     // Move Distribution out of the queue.
     function unQueue()
     {
-        // is the current user allowed to move this Distribution? 
-        if(!$_SESSION['current']->hasPriv("admin"))
-        {
-            return false;
-        }
+        /* Check permissions */
+        if($this->mustBeQueued())
+            return FALSE;
 
         // If we are not in the queue, we can't move the Distribution out of the queue.
         if(!$this->sQueued == 'true')
@@ -481,12 +481,19 @@ class distribution {
         if($_SESSION['current']->hasPriv("admin"))
             return TRUE;
 
+        /* Maintainers are allowed to process queued test results and therefore also
+           queued distributions */
+        if(is_object($this) && $this->sQueued != "false" &&
+           maintainer::isUserMaintainer($_SESSION['current']))
+            return TRUE;
+
         return FALSE;
     }
 
     function mustBeQueued()
     {
-        if($_SESSION['current']->hasPriv("admin"))
+        if($_SESSION['current']->hasPriv("admin") ||
+          maintainer::isUserMaintainer($_SESSION['current']))
             return FALSE;
         else
             return TRUE;
