@@ -215,6 +215,10 @@ class Version {
      */
     function delete($bSilent=false)
     {
+        /* We need the versionId to continue */
+        if(!$this->iVersionId)
+            return;
+
         /* is the current user allowed to delete this version? */
         if(!$_SESSION['current']->canDeleteVersion($this))
             return false;
