@@ -45,6 +45,10 @@ if(!empty($aClean['sSubmit']))
     /* URL editor */
     echo url::outputEditor("editAppVersion.php", $oVersion);
 
+    /* Display some text about download url usage */
+    echo "A place where this version can be downloaded for free.  Other downloads, ";
+    echo "such as updates, should be added in the regular URL form\n";
+
     /* Download URL editor */
     echo downloadurl::outputEditor($oVersion, "editAppVersion.php");
 
