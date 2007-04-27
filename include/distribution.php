@@ -592,6 +592,29 @@ class distribution {
     {
         return "<a href=\"".$this->objectMakeUrl()."\">$this->sName</a>";
     }
+
+    function objectMoveChildren($iNewId)
+    {
+        /* Keep track of how many children we modified */
+        $iCount = 0;
+
+        foreach($this->aTestingIds as $iTestId)
+        {
+            $oTest = new testData($iTestId);
+            $oTest->iDistributionId = $iNewId;
+            if($oTest->update(TRUE))
+                $iCount++;
+            else
+                return FALSE;
+        }
+
+        return $iCount;
+    }
+
+    function objectGetid()
+    {
+        return $this->iDistributionId;
+    }
 }
 
 ?>

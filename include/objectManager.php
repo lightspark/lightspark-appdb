@@ -249,6 +249,52 @@ class ObjectManager
         $this->delete_entry();
     }
 
+    /* Display a page where the user can select which object the children of the current
+       object can be moved to */
+    function display_move_children()
+    {
+        $oObject = new $this->sClass($this->iId);
+        if(!$oObject->canEdit())
+        {
+            echo "Insufficient privileges.<br />\n";
+            return FALSE;
+        }
+
+        /* We only allow moving to non-queued objects */
+        if(!$hResult = $oObject->objectGetEntries(false, false))
+        {
+            echo "Failed to get list of objects.<br />\n";
+            return FALSE;
+        }
+
+        /* Display some help text */
+        echo "<p>Move all child objects of ".$oObject->objectMakeLink()." to the entry ";
+        echo "selected below, and delete ".$oObject->objectMakeLink()." afterwards.</p>\n";
+
+        echo "<table width=\"50%\" cellpadding=\"3\">\n";
+        echo html_tr(array(
+                "Name",
+                "Move here"),
+                    "color4");
+
+        for($i = 0; $oRow = mysql_fetch_object($hResult); $i++)
+        {
+            $oCandidate = $oObject->objectGetInstanceFromRow($oRow);
+            if($oCandidate->objectGetId() == $this->iId)
+            {
+                $i++;
+                continue;
+            }
+
+            echo html_tr(array(
+                    $oCandidate->objectMakeLink(),
+                    "<a href=\"".$this->makeUrl("moveChildren", $this->iId).
+                    "&iNewId=".$oCandidate->objectGetId()."\">Move here</a>"),
+                        ($i % 2) ? "color0" : "color1");
+        }
+        echo "</table>\n";
+    }
+
     /* Display screen for submitting a new entry of given type */
     function add_entry($sBackLink, $sErrors = "")
     {
@@ -290,6 +336,15 @@ class ObjectManager
         $this->checkMethods(array("display"));
 
         $oObject = new $this->sClass($this->iId);
+
+        /* Display a link to the move child objects page if the class has the necessary
+           functions and the user has edit rights.  Not all classes have child objects. */
+        if(method_exists($oObject, "objectMoveChildren") &&
+           method_exists($oObject, "objectGetId") && $oObject->canEdit())
+        {
+            echo "<a href=\"".$this->makeUrl("showMoveChildren", $this->iId,
+                 "Move Child Objects")."\">Move child objects</a><br /><br />\n";
+        }
 
         $oObject->display();
 

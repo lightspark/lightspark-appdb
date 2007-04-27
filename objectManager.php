@@ -82,6 +82,10 @@ if($oObject->iId)
         $oObject->display_entry_for_editing($REQUEST_URI, $sErrors);
         break;
 
+        case "showMoveChildren":
+        $oObject->display_move_children();
+        break;
+
         default:
         $oObject->view($REQUEST_URI);
         break;
