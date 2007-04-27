@@ -25,10 +25,6 @@ function global_admin_menu() {
     $g->add("View Test Results Queue (".testData::objectGetEntriesCount(true, false).")",
             BASE."objectManager.php?sClass=testData_queue&bIsQueue=true&sTitle=".
             "Test%20Results%20Queue");
-    $g->add("View Distribution Queue (".distribution::objectGetEntriesCount(true, 
-            false).")",
-            BASE."objectManager.php?sClass=distribution&bIsQueue=true&sTitle=".
-            "Distribution%20Queue");
 
     $g->addmisc("&nbsp;");
 

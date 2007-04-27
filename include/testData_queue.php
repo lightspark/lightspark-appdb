@@ -24,7 +24,17 @@ class testData_queue
 
     function delete()
     {
-        return $this->oTestData->delete();
+        $bSuccess = $this->oTestData->delete();
+
+        /* We delete the distribution if it has not been approved and is not associated
+           with any other testData.  Otherwise we would have to have a distribution
+           queue for admins to clean up unused, queued entries */
+        $this->oDistribution = new distribution($this->oDistribution->iDistributionId);
+        if(!sizeof($this->oDistribution->aTestingIds) &&
+           $this->oDistribution->sQueued != "false")
+            $this->oDistribution->delete();
+
+        return $bSuccess;
     }
 
     function reQueue()
