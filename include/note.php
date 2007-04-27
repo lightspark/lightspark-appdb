@@ -139,7 +139,7 @@ class Note {
     {
         $oVersion = new version($this->iVersionId);
         $sAppName = version::fullName($this->iVersionId);
-        $sMsg = $oVersion->objectMakeUrl()."\n";
+        $sMsg .= $oVersion->objectMakeUrl()."\n";
         switch($sAction)
         {
             case "add":
