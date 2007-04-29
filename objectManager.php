@@ -62,6 +62,9 @@ $sErrors = $oObject->processForm($aClean);
 if($oObject->iId && $aClean['sAction'] == "delete")
     $oObject->delete_entry();
 
+if($aClean['sAction'] == "add")
+    $oObject->handle_anonymous_submission();
+
 /* Provided the necessary values are present, an object's children may be moved
    without any confirmation */
 if($oObject->iId && $aClean['sAction'] == "moveChildren" && $aClean['iNewId'])

@@ -222,6 +222,11 @@ class version_queue
     {
         return $this->oVersion->objectMoveChildren($iNewId);
     }
+
+    function allowAnonymousSubmissions()
+    {
+        return version::allowAnonymousSubmissions();
+    }
 }
 
 ?>

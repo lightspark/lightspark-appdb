@@ -308,6 +308,11 @@ class Vendor {
 
         return $oRow->count;
     }
+
+    function allowAnonymousSubmissions()
+    {
+        return FALSE;
+    }
 }
 
 ?>

@@ -1416,6 +1416,11 @@ class Version {
         /* Return the number of updated objects if everything was successful */
         return $iCount;
     }
+
+    function allowAnonymousSubmissions()
+    {
+        return FALSE;
+    }
 }
 
 ?>

@@ -168,6 +168,11 @@ class testData_queue
     {
         return $this->oTest->objectMakeLink();
     }
+
+    function allowAnonymousSubmissions()
+    {
+        return testData::allowAnonymousSubmissions();
+    }
 }
 
 ?>

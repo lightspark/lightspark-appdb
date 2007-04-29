@@ -994,6 +994,11 @@ class Application {
         /* If no errors occured we return the number of moved children */
         return $iCount;
     }
+
+    function allowAnonymousSubmissions()
+    {
+        return FALSE;
+    }
 }
 
 function get_vendor_from_keywords($sKeywords)

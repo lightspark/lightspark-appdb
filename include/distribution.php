@@ -615,6 +615,11 @@ class distribution {
     {
         return $this->iDistributionId;
     }
+
+    function allowAnonymousSubmissions()
+    {
+        return FALSE;
+    }
 }
 
 ?>

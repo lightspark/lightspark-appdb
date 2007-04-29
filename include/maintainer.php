@@ -667,6 +667,11 @@ class maintainer
 
         return TRUE;
     }
+
+    function allowAnonymousSubmissions()
+    {
+        return FALSE;
+    }
 }
 
 ?>

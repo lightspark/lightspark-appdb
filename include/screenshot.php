@@ -639,6 +639,11 @@ class Screenshot {
         /* STUB */
         return TRUE;
     }
+
+    function allowAnonymousSubmissions()
+    {
+        return FALSE;
+    }
 }
 
 ?>

@@ -314,6 +314,11 @@ class application_queue
     {
         $this->oApp->objectDisplayAddItemHelp();
     }
+
+    function allowAnonymousSubmissions()
+    {
+        return application::allowAnonymousSubmissions();
+    }
 }
 
 ?>

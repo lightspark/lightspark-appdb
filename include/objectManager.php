@@ -330,6 +330,19 @@ class ObjectManager
         echo html_back_link(1, $sBackLink);
     }
 
+    function handle_anonymous_submission()
+    {
+        $oObject = new $this->sClass();
+        if($oObject->allowAnonymousSubmissions() || $_SESSION['current']->isLoggedIn())
+            return;
+
+        util_show_error_page_and_exit("You need to be <a href=\"".BASE.
+                "account.php?sCmd=login\">logged in</a>.  If you don&#8217;t have an ".
+                "account you can <a href=\"".BASE."account.php?sCmd=new\">register ".
+                "now</a>, it only takes a few seconds.");
+    }
+
+
     /* View an entry */
     function view($sBackLink)
     {
@@ -401,6 +414,8 @@ class ObjectManager
                     $oObject->update();
                 } else
                 {
+                    $this->handle_anonymous_submission();
+
                     $oObject->create();
                 }
             break;

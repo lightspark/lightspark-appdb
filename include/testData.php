@@ -1005,6 +1005,11 @@ class testData{
             return TRUE;
         }
     }
+
+    function allowAnonymousSubmissions()
+    {
+        return FALSE;
+    }
 }
 
 ?>

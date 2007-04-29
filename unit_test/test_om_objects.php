@@ -122,7 +122,8 @@ function test_object_methods()
 {
     test_start(__FUNCTION__);
 
-    $aTestMethods = array("canEdit",
+    $aTestMethods = array("allowAnonymousSubmissions",
+                          "canEdit",
                           "display",
                           "getOutputEditorValues",
                           "objectGetEntries",
