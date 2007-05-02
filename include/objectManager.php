@@ -121,6 +121,9 @@ class ObjectManager
         $this->checkMethods(array("outputEditor", "getOutputEditorValues",
                                   "update", "create"));
 
+        // open up the div for the default container
+        echo "<div class='default_container'>\n";
+
         // link back to the previous page
         echo html_back_link(1, $sBackLink);
 
@@ -190,6 +193,8 @@ class ObjectManager
         }
 
         echo '</form>';
+
+        echo "</div>\n";
 
     }
 
@@ -304,6 +309,8 @@ class ObjectManager
 
         $oObject = new $this->sClass();
 
+        echo "<div class='default_container'>\n";
+
         /* Display errors, if any, and fetch form data */
         if($this->displayErrors($sErrors))
         {
@@ -328,6 +335,8 @@ class ObjectManager
         echo "</div></form>\n";
 
         echo html_back_link(1, $sBackLink);
+
+        echo "</div>\n";
     }
 
     function handle_anonymous_submission()

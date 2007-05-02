@@ -138,9 +138,16 @@ class application_queue
            submissons; a list of potential duplicates is displayed on the next page */
         if(!$this->oApp->sName)
         {
-            echo "<input type=\"text\" name=\"sAppName\" size=\"60\" />\n";
+            echo "<div style='margin:auto; width: 500px; border:1px solid; background-color:#eee; padding:2px; '>\n";
+            echo "<div style='font-weight:bold; padding:3px;'>\n";
+            echo "Application name:\n";
+            echo "</div>\n";
+            echo "<div style='padding:5px;'>\n";
+            echo "<center><input type=\"text\" name=\"sAppName\" style='width:485px;' /></center>\n";
+            echo "</div>\n";
             echo "<input type=\"hidden\" name=\"sSub\" value=\"view\" />\n";
             echo "<input type=\"hidden\" name=\"sAppType\" value=\"application\" />\n";
+            echo "</div>\n";
         } else
         {
             /* Show potential duplicates */

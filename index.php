@@ -14,7 +14,8 @@ require(BASE."include/incl.php");
 apidb_header("Wine Application Database");
 ?>
     <img src="images/appdb_montage.jpg" width=391 height=266 align=right alt="Wine AppDB">
-    
+
+<div class='default_container'>    
 <h1>Welcome</h1>
 
 <p>This is the Wine Application Database (AppDB). From here you get info on application
@@ -129,6 +130,7 @@ If you have screenshots or links to contribute, please browse the database and u
 <a href="http://frankscorner.org"><b>Frank's Corner</b></a>:  Frank has a fantastic Wine
 application site, with tips and how-to's on getting listed apps to run.
 </p>
+</div>
 <?php
 apidb_footer();
 ?>

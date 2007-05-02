@@ -67,7 +67,7 @@ class downloadurl
 
         $sReturn .= html_frame_start("Download URL", "90%", "", 0);
         $sReturn .= "<form method=\"post\" action=\"$sFormAction\">\n";
-        $sReturn .= html_table_begin("width=100%");
+        $sReturn .= html_table_begin("border=0 cellpadding=5 cellspacing=0 width=100%");
         $sReturn .= html_tr(array(
             array("<b>Remove</b>", "width=\"90\""),
             "<b>Description</b>",
@@ -242,20 +242,20 @@ class downloadurl
 
 
         $sReturn .= html_frame_start("Download URL","90%");
-        $sReturn .= html_table_begin("");
+        $sReturn .= html_table_begin("width='100%' border=0 cellpadding=2 cellspacing=0");
 
         $sReturn .= "A place where this version can be downloaded for free".
                     " (if applicable). You can add more links later.<br />";
 
         $sReturn .= html_tr(array(
-            array("Download URL", "valign=\"top\""),
+            array("<b>Download URL:</b>", "align=right"),
             array("<input type=\"text\" name=\"sDownloadUrlUrl\" ".
             "value=\"$sDownloadUrlUrl\" size=\"60\" />",
             "class=\"color4\"")),
             "color0");
 
         $sReturn .= html_tr(array(
-            array("Download URL Description", "valign=\"top\""),
+            array("<b>Download URL Description:</b>", "align=right"),
             array("<input type=\"text\" name=\"sDownloadUrlDescription\" ".
             "value=\"$sDownloadUrlDescription\" size=\"60\" />",
             "class=\"color4\"")),

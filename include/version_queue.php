@@ -73,6 +73,8 @@ class version_queue
     {
         global $aClean;
 
+        echo "<div class='default_container'>\n";
+
         /* Display duplicate list if this is a an existing version */
         if($this->oVersion->iVersionId)
             $this->displayMoveTestTable();
@@ -85,22 +87,28 @@ class version_queue
         if(!$this->oVersion->iVersionId && $this->oVersion->iAppId)
         {
             echo html_frame_start("Become Maintainer", "90%");
-            echo "<table>";
+            echo "<div style='padding:5px;' class='color0'>\n";
+            echo "<table width='100%' cellpadding=0 cellspacing=0>";
             if($this->oVersion->iMaintainerRequest == MAINTAINER_REQUEST)
                 $sRequestMaintainerChecked = 'checked="checked"';
             echo html_tr(array(
-                array("<b>Become maintainer?</b>", "class=\"color0\""),
-                "<input type=\"checkbox\" $sRequestMaintainerChecked".
-                "name=\"iMaintainerRequest\" value=\"".MAINTAINER_REQUEST."\" /> ".
-                "Check this box to request being a maintainer for this version"),
-                "","valign=\"top\"");
+                               array("<b>Become maintainer?</b>", ""),
+                               array(
+                                     "<input type=\"checkbox\" $sRequestMaintainerChecked".
+                                     "name=\"iMaintainerRequest\" value=\"".MAINTAINER_REQUEST."\" /> ".
+                                     "Check this box to request being a maintainer for this version",
+                                     "")
+                               ));
             echo "</table>";
+            echo "</div\n";
             echo html_frame_end();
         }
 
         echo $this->oDownloadUrl->outputEditorSingle($this->oVersion->iVersionId,
                 $aClean);
         $this->oTestDataQueue->outputEditor();
+
+        echo "</div>\n";
     }
 
     function getOutputEditorValues($aClean)

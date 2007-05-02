@@ -11,6 +11,8 @@ require_once(BASE."include/application.php");
 
 apidb_header("Browse Applications by Rating");
 
+echo "<div class='default_container'>\n";
+
 $sPathtrail = "<a href=\"browse_by_rating.php\">Main</a>";
 
 echo html_frame_start("", '98%', '', 2);
@@ -175,6 +177,7 @@ if (empty($aClean['sRating']))
     echo "</center>";
 }
 
+echo "</div>\n";
 
 apidb_footer();
 

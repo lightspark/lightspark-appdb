@@ -27,6 +27,8 @@ if(!empty($aClean['sSubmit']))
 
     apidb_header("Edit Application Version");
 
+    echo "<div class='default_container'>\n";
+
     echo "<form method=post action='editAppVersion.php'>\n";
 
     if($_SESSION['current']->hasPriv("admin"))
@@ -65,6 +67,9 @@ if(!empty($aClean['sSubmit']))
     }
 
     echo html_back_link(1,$oVersion->objectMakeUrl());
+    
+    echo "</div>\n";
+
     apidb_footer();
 }
 ?>

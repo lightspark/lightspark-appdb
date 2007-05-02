@@ -20,6 +20,8 @@ if(empty($aClean['iCategoryId']))
 
 apidb_header("Vote Stats - Top ".$aClean['iTopNumber']." Applications");
 
+echo "<div class='default_container'>\n";
+
 /* display the selection for the top number of apps to view */
 echo "<form method=\"post\" name=\"sMessage\" action=\"".$_SERVER['PHP_SELF']."\">";
 echo "<b>Number of top apps to display:</b>";
@@ -186,6 +188,8 @@ if($hResult)
  
     echo '<p align="center"><a href="help/?sTopic=voting">What does this screen mean?</a></p>';
 }
+
+echo "</div>\n";
 
 apidb_footer();
 ?>

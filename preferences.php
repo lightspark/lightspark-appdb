@@ -154,6 +154,8 @@ if($aClean['sSubmit'] == "Update")
 
 apidb_header("User Preferences");
 
+echo "<div class='default_container'>\n";
+
 echo "<form method=\"post\" action=\"preferences.php\">\n";
 
 // if we manage another user we give the parameters to go back to the admin
@@ -177,6 +179,8 @@ echo html_table_end();
 echo html_frame_end();
 echo "<br /> <div align=center> <input type=\"submit\" name='sSubmit' value=\"Update\" /> </div> <br />\n";
 echo "</form>\n";
+
+echo "</div>\n";
 
 apidb_footer();
 ?>

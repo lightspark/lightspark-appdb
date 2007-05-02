@@ -160,7 +160,7 @@ function html_imagebutton($text, $url, $extra = "")
 }
 
 
-function html_frame_start($title = "", $width = "", $extra = "", $innerPad = 5)
+function html_frame_start($title = "", $width = "", $extra = "", $innerPad = 0)
 {
 
     if ($width) { $width = 'width="'.$width.'"'; }

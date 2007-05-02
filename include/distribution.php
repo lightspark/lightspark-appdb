@@ -343,16 +343,16 @@ class distribution {
         $this->sName = str_replace('"', '&quot;', $this->sName);
         // Name
         echo html_tr(array(
-                array("<b>Distribution Name</b>", 'class="color1"'),
+                array("<b>Distribution Name:</b>", 'align=right class="color0"'),
                 array('<input type=text name="sDistribution" value="'.$this->sName.
-                        '" size="50" />', 'class="color0"')
+                        '" size="60" />', 'class="color0"')
                     ));
 
         // URL
         echo html_tr(array(
-                array("<b>Distribution URL</b>", 'class="color1"'),
+                array("<b>Distribution URL:</b>", 'align=right class="color0"'),
                 array('<input type=text name="sUrl" value="'.$this->sUrl.
-                        '" size="50" />', 'class="color0"')
+                        '" size="60" />', 'class="color0"')
                     ));
 
 

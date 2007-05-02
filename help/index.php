@@ -21,6 +21,8 @@ function display_index ()
 
     apidb_header("Documentation Index");
 
+    echo "<div class='default_container'>\n";
+
     echo "<p><b>Providing all the help you need 24x7</b><p><hr noshade>\n";
 
     echo "<ul>\n";
@@ -52,7 +54,9 @@ function display_index ()
     echo "</ul><hr noshade>\n";
 
     echo "<p>Need more help? Contact us at <a href='mailto:".APPDB_OWNER_EMAIL."'>".APPDB_OWNER_EMAIL."</a><p>\n";
-        
+
+    echo "</div>\n";
+    
     apidb_footer();
 }
 
@@ -68,11 +72,13 @@ function display_help ($topic)
     }
     
     apidb_header($title);
+    echo "<div class='default_container'>\n";
     if(file_exists($file)) {
         include($file);  
     } else {
         echo "<p><b> No help available on that topic </b><p>\n";
     }
+    echo "</div>\n";
         
     apidb_footer();
 }

@@ -4,6 +4,7 @@ require_once(BASE."include/util.php");
 /**************/
 /* Login Form */
 /**************/
+echo "<div class='default_container'>\n";
 echo '<form method="post" name="sFlogin" action="account.php">',"\n";
 echo html_frame_start("Login to Application DB","400","",0)
 ?>
@@ -42,6 +43,7 @@ echo html_frame_end("&nbsp;");
 echo '<input type="hidden" name="sCmd" value="do_login">',"\n";
 echo '<input type="hidden" name="sExtReferer" value="'.$_SERVER['HTTP_REFERER'].'">',"\n";
 echo '</form>',"\n";
+echo "</div>\n";
 
 ?>
    

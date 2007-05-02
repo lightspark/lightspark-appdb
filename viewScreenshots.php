@@ -10,6 +10,9 @@ require_once(BASE."include/screenshot.php");
 require_once(BASE."include/application.php");
 
 apidb_header("View Screenshots");
+
+echo "<div class='default_container'>\n";
+
 /* display a range of 10 pages */
 $pageRange = 10;
 
@@ -89,6 +92,8 @@ echo "<center>";
 display_page_range($currentPage, $pageRange, $totalPages,
                    $_SERVER['PHP_SELF']."?iItemsPerPage=".$ItemsPerPage);
 echo "</center>";
+
+echo "</div>\n";
 
 apidb_footer();
 

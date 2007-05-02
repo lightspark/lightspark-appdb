@@ -515,7 +515,7 @@ class Application {
         echo '<input type="hidden" name="bMainAppForm" value="true" />'."\n";
 
         echo html_frame_start("Application Form", "90%", "", 0);
-        echo "<table width='100%' border=0 cellpadding=2 cellspacing=0>\n";
+        echo "<table class='color0' width='100%' border=0 cellpadding=2 cellspacing=0>\n";
         echo '<tr valign=top><td class="color0"><b>Application name</b></td>',"\n";
         echo '<td><input size="20" type="text" name="sAppName" value="'.$this->sName.'"></td></tr>',"\n";
 
@@ -542,7 +542,7 @@ class Application {
         echo '<td><input size="20" type=text name="sAppWebpage" value="'.$this->sWebpage.'"></td></tr>',"\n";
 
         echo '<tr valign=top><td class="color0"><b>Keywords</b></td>',"\n";
-        echo '<td><input size="90%" type="text" name="sAppKeywords" value="'.$this->sKeywords.'"></td></tr>',"\n";
+        echo '<td><input size="75%" type="text" name="sAppKeywords" value="'.$this->sKeywords.'"></td></tr>',"\n";
 
         echo '<tr valign=top><td class="color0"><b>Application description</b></td>',"\n";
         echo '<td><p><textarea cols="80" rows="20" id="app_editor" name="shAppDescription">';

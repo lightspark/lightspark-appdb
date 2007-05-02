@@ -8,7 +8,10 @@ require(BASE."include/incl.php");
 require_once(BASE."include/user.php");
 
 apidb_header("Appdb Statistics");
-echo html_frame_start("","60%","",0);
+
+echo "<div class='default_container'>\n";
+
+echo html_frame_start("","60%","");
 echo "<table width='100%' border=1 cellpadding=3 cellspacing=0>\n\n";
 
 /* Display the number of users */
@@ -85,6 +88,9 @@ echo "    <td>".appData::objectGetEntriesCount("false", false, "screenshot")."</
 echo "</tr>\n\n";
 	
 echo "</table>\n\n";
+
+echo "</div>\n";
+
 echo html_frame_end("&nbsp;");
 apidb_footer();
 ?>

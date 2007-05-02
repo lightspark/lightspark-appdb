@@ -220,6 +220,9 @@ TD.app_name { width: 150px }
 /* Note box */
 .note { padding: 7px; }
 
+/* Default div style */
+div.default_container { padding: 5px; }
+
 /*******************************************************************/
 /* Specific elements                                               */
 /*******************************************************************/

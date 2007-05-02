@@ -9,6 +9,8 @@ require(BASE."include/incl.php");
 
 apidb_header("Browse Downloadable Applications");
 
+echo "<div class='default_container'>\n";
+
 /* Match specific license? */
 $sLicense = version::checkLicense($aClean['sLicense']);
 
@@ -128,5 +130,7 @@ if($hResult && mysql_num_rows($hResult))
     echo html_table_end();
     echo html_frame_end("&nbsp;");
 }
+
+echo "</div>\n";
 
 ?>

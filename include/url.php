@@ -276,7 +276,7 @@ class Url {
 
         $sReturn .= html_frame_start("URLs", "90%", "", 0);
         $sReturn .= "<form method=\"post\" action=\"$sFormAction\">\n";
-        $sReturn .= html_table_begin("width=100%");
+        $sReturn .= html_table_begin("border=0 cellpadding=5 cellspacing=0 width=100%");
         $sReturn .= html_tr(array(
             array("<b>Remove</b>", "width=\"90\""),
             "<b>Description</b>",

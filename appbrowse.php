@@ -36,6 +36,8 @@ if($_SESSION['current']->hasPriv("admin") && $aClean['iCatId'] != 0)
 //output header
 apidb_header("Browse Applications");
 
+echo "<div class='default_container'>\n";
+
 if($subs)
 {
     echo html_frame_start("",'98%','',2);
@@ -124,6 +126,8 @@ if($apps)
 //}
 
 echo p();
+
+echo "</div>\n";
 
 apidb_footer();
 

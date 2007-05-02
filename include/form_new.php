@@ -5,6 +5,7 @@ require_once(BASE."include/util.php");
 /* New Account Form */
 /********************/
 
+echo "<div class='default_container'>\n";
 echo '<form method="post" action="account.php">',"\n";
 echo html_frame_start("Create New Application DB Account","400","",0)
 ?>
@@ -48,6 +49,7 @@ echo html_frame_start("Create New Application DB Account","400","",0)
 echo html_frame_end("&nbsp;");
 echo '<input type="hidden" name="sCmd" value="do_new">',"\n";
 echo '</form>',"\n";
+echo "</div>\n";
 
 echo p(),p(),p();
 

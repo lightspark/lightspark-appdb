@@ -591,7 +591,7 @@ class Version {
     {
         HtmlAreaLoaderScript(array("version_editor"));
         echo html_frame_start("Version Form", "90%", "", 0);
-        echo "<table width='100%' border=0 cellpadding=2 cellspacing=0>\n";
+        echo "<table class='color0' width='100%' border=0 cellpadding=2 cellspacing=0>\n";
 
         echo '<input type="hidden" name="iVersionId" value="'.$this->iVersionId.'" />';
 

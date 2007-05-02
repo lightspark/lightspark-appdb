@@ -154,11 +154,15 @@ class Vendor {
         echo "<table width='100%' border=0 cellpadding=2 cellspacing=0>\n";
 
         // Name
-        echo '<tr valign=top><td class="color1" width="20%"><b>Vendor Name</b></td>',"\n";
-        echo '<td class="color0"><input type=text name="sVendorName" value="'.$this->sName.'" size="50"></td></tr>',"\n";
+        echo html_tr(array(
+                           array("<b>Vendor Name:</b>", 'align=right class="color0"'),
+                           array('<input type=text name="sVendorName" value="'.$this->sName.'" size="60">', 'class="color0"')
+                           ));
         // Url
-        echo '<tr valign=top><td class="color1"><b>Vendor Url</b></td>',"\n";
-        echo '<td class="color0"><input type=text name="sVendorWebpage" value="'.$this->sWebpage.'" size="50"></td></tr>',"\n";
+        echo html_tr(array(
+                           array("<b>Vendor URL:</b>", 'align=right class="color0"'),
+                           array('<input type=text name="sVendorWebpage" value="'.$this->sWebpage.'" size="60">', 'class="color0"')
+                           ));
 
         echo  '<input type="hidden" name="iVendorId" value="'.$this->iVendorId.'">',"\n";
 
