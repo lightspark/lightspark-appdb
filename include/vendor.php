@@ -317,6 +317,29 @@ class Vendor {
     {
         return FALSE;
     }
+
+    function objectMoveChildren($iNewId)
+    {
+        /* Keep track of how many children we have modified */
+        $iCount = 0;
+
+        foreach($this->aApplicationsIds as $iAppId)
+        {
+            $oApp = new application($iAppId);
+            $oApp->iVendorId = $iNewId;
+            if($oApp->update(TRUE))
+                $iCount++;
+            else
+                return FALSE;
+        }
+
+        return $iCount;
+    }
+
+    function objectGetId()
+    {
+        return $this->iVendorId;
+    }
 }
 
 ?>
