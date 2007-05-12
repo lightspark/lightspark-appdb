@@ -60,9 +60,29 @@ class Vendor {
 
     /**
      * Creates a new vendor.
+     *
+     * NOTE: If creating a vendor with the same name as an existing vendor
+     *       we retrieve the existing vendors information and return true,
+     *       even though we didn't create the vendor, this makes it easier
+     *       for the user of the vendor class.
      */
     function create()
     {
+        /* Check for duplicates */
+        $hResult = query_parameters("SELECT * FROM vendor WHERE vendorName = '?'",
+                                   $this->sName);
+        if($hResult && $oRow = mysql_fetch_object($hResult))
+        {
+            if(mysql_num_rows($hResult))
+            {
+                $this->vendor($oRow->vendorId);
+
+                /* Even though we did not create a new vendor, the caller is provided
+                with an id and can proceed as normal, so we return TRUE */
+                return TRUE;
+            }
+        }
+
         $hResult = query_parameters("INSERT INTO vendor (vendorName, vendorURL, queued) ".
                                     "VALUES ('?', '?', '?')",
                                         $this->sName, $this->sWebpage,
