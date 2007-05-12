@@ -17,6 +17,7 @@ define("APPDB_ROOT", "http://appdb.winehq.org/");  // path to AppDB
 define("APPDB_OWNER","WineHQ"); // with what product/company is this AppDB related ?
 define("APPDB_OWNER_URL","http://www.winehq.org/"); // website of this product/company
 define("APPDB_OWNER_EMAIL","appdb@winehq.org"); // e-mail of this product/company
+define("APPDB_SENDER_EMAIL","appdb-noreply@winehq.org"); // The e-mail address which appears as the sender in mails sent by the AppDB
 define("BUGZILLA_ROOT","http://bugs.winehq.org/"); // path to bugzilla
 
 // AppDB developers: Use this define to disable email from being sent from the appdb during testing

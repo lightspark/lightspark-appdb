@@ -9,8 +9,8 @@ function mail_appdb($sEmailList,$sSubject,$sMsg)
         return;
 
     $sHeaders  = "MIME-Version: 1.0\r\n";
-    $sHeaders .= "From: AppDB <".APPDB_OWNER_EMAIL.">\r\n";
-    $sHeaders .= "Reply-to: AppDB <".APPDB_OWNER_EMAIL.">\r\n";
+    $sHeaders .= "From: AppDB <".APPDB_SENDER_EMAIL.">\r\n";
+    $sHeaders .= "Reply-to: AppDB <".APPDB_SENDER_EMAIL.">\r\n";
     $sHeaders .= "X-Priority: 3\r\n";
     $sHeaders .= "X-Mailer: ".APPDB_OWNER." mailer\r\n";
     $sMsg  = trim(ereg_replace("\r\n","\n",$sMsg));
@@ -32,7 +32,7 @@ function mail_appdb($sEmailList,$sSubject,$sMsg)
         return;
     }
 
-    $bResult = mail(str_replace(" ",",",$sEmailList), "[AppDB] ".$sSubject, $sMsg, $sHeaders, "-f".APPDB_OWNER_EMAIL);
+    $bResult = mail(str_replace(" ",",",$sEmailList), "[AppDB] ".$sSubject, $sMsg, $sHeaders, "-f".APPDB_SENDER_EMAIL);
     if($bResult)
         addmsg("Message sent to: ".$sEmailList, "green");
     else 
