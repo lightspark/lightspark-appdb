@@ -537,7 +537,12 @@ class maintainer
             while(list($index, $iUserId) = each($aOtherMaintainers))
             {
                 $oUser = new User($iUserId);
-                echo "$oUser->sRealname<br />\n";
+
+                // because Version::getMaintainersUserIds() includes super maintainers
+                // we need to exclude these from the list of maintainers that we are
+                // building
+                if(!maintainer::isUserSuperMaintainer($oUser, $oVersion->iAppId))
+                    echo "$oUser->sRealname<br />\n";
             }
         }
 
