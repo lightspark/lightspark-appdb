@@ -81,6 +81,8 @@ orphanSessionListCheck();
 /* report error log entries to admins and flush the error log after doing so */
 reportErrorLogEntries();
 
+/* remove screenshots that are missing their screenshot and thumbnail files */
+removeScreenshotsWithMissingFiles();
 
 /* Users that are unwarned and inactive since $iMonths */
 function unwarnedAndInactiveSince($iMonths)
@@ -236,4 +238,59 @@ function reportErrorLogEntries()
     error_log::flush();
 }
 
+// returns an array of iScreenshotIds of screenshots that are
+// missing their files
+function getMissingScreenshotArray()
+{
+  $aMissingScreenshotIds = array();
+
+  // retrieve all screenshots, not queued, not rejected
+  $hResult = Screenshot::objectGetEntries(false, false);
+
+  // go through each screenshot
+  while($oRow = mysql_fetch_object($hResult))
+  {
+    $iScreenshotId = $oRow->id;
+    $oScreenshot = new Screenshot($iScreenshotId);
+
+    // load the screenshot and thumbnail
+    $oScreenshot->load_image(true);
+    $oScreenshot->load_image(false);
+
+    // are the screenshot and thumbnail images not loaded? if so
+    // add this screenshot id to the array
+    if(!$oScreenshot->oScreenshotImage->isLoaded() &&
+       !$oScreenshot->oThumbnailImage->isLoaded())
+    {
+      // add the screenshot id to the array
+      $aMissingScreenshotIds[] = $iScreenshotId;
+    }
+  }
+
+  return $aMissingScreenshotIds;
+}
+
+function removeScreenshotsWithMissingFiles()
+{
+    $aMissingScreenshotIds = getMissingScreenshotArray();
+
+    // build the email to admins about what we are doing
+    $sMsg = "Found ".count($aMissingScreenshotIds)." screenshots with missing files.\r\n";
+    //FIXME: uncomment the below line when we uncomment the below lines in the script
+    //    $sMsg.= "Deleting these screenshots.\r\n";
+
+    $sSubject = "Screenshots deleted\r\n";
+
+    $sEmail = User::get_notify_email_address_list(null, null); /* get list admins */
+    if($sEmail)
+        mail_appdb($sEmail, $sSubject, $sMsg);
+
+    //FIXME: activate this after we see the results from the nightly cron script email
+    // remove the screenshots with missing files
+    //    foreach($aMissingScreenshotIds as $iScreenshotId)
+    //    {
+    //      $oScreenshot = new Screenshot($iScreenshotId);
+    //      $oScreenshot->delete(true); // delete the screenshot silently
+    //    }
+}
 ?>
