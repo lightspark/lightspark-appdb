@@ -105,4 +105,6 @@ if($oObject->iId)
     $oObject->display_table();
 }
 
+apidb_footer();
+
 ?>
