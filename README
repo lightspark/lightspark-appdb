@@ -20,12 +20,16 @@ To install locally for testing/hacking:
 # Edit include/config.php as you see fit, the default name of the database 
   used in the table creation step below is "apidb", you'll have to modify 
   these files if you change this in config.php
+  
+  # NOTE: You must update the APPDB_ROOT entry to be YOUR url to the application database
+          If this the APPDB_ROOT isn't correct your urls will point to the wrong pages.
 
-# NOTE: if you've changed the name of the database by changing the define of
-  'APPS_DB' in include/config.php you'll have to modify the 'create database' and 'use'
-  entries in pretty much every file in the /tables/ directory. The recommendation is to
-  leave the default value of APPS_DB to keep things simple
-# cd tables, run ./create_tables to create the database tables
+  # NOTE: if you've changed the name of the database by changing the define of
+    'APPS_DB' in include/config.php you'll have to modify the 'create database' and 'use'
+    entries in pretty much every file in the /tables/ directory. The recommendation is to
+    leave the default value of APPS_DB to keep things simple
+
+# 'cd tables', run './create_tables' to create the database tables
 
 # Look in include/config.php at the 'APPS_DBUSER' and 'APPS_DBPASS' defines. 
   Ensure that this user and password exist in your mysql users list and that this user
