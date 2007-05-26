@@ -376,7 +376,7 @@ class Screenshot {
         /* skip it for IE */
         if(strpos($_SERVER['HTTP_USER_AGENT'], "MSIE") === false)
         {
-            $sZoomIcon = '<img class="zoom_overlay" src="'.BASE.'images/xmag_32.png">';
+            $sZoomIcon = '<img class="zoom_overlay" src="'.BASE.'images/xmag_32.png" alt="" />';
         }
         else
             $sZoomIcon = "";
