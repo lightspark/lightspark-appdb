@@ -82,14 +82,21 @@ class distribution {
         //Let's not create a duplicate 
         $sQuery = "SELECT *
                    FROM distributions
-                   WHERE name LIKE '?'";
-        $hDuplicate = query_parameters($sQuery, $this->sName);
-        if(!mysql_num_rows($hDuplicate) == 0)
+                   WHERE name = '?'";
+        $hResult = query_parameters($sQuery, $this->sName);
+
+        if($hResult && $oRow = mysql_fetch_object($hResult))
         {
-            addmsg("There was an existing Distribution called ".$this->sName.".", "red");
-            $oRow = mysql_fetch_object($hDuplicate);
-            $this->iDistributionId = $oRow->distributionId;
-            return false;
+            if(mysql_num_rows($hResult))
+            {
+                addmsg("There was an existing distribution called ".$this->sName.".", "red");
+                $this->distribution($oRow->distributionId);
+
+                /* Even though we did not create a new distribution, the caller is provided
+                with a valid distribution object.  Thus no special handling is necessary,
+                so we return TRUE */
+                return TRUE;
+            }
         }
 
         $hResult = query_parameters("INSERT INTO distributions (name, url, submitterId, queued) ".
