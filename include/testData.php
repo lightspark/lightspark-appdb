@@ -978,8 +978,12 @@ class testData{
     {
         echo "<p>This is the screen for inputing test information so that others ";
         echo "looking at the database will know \n";
-        echo "what was working on a particular release of Wine.</p>\n";
-        echo "<p>Please be as detailed as you can.</p>\n";
+        echo "what was working on a particular release of Wine. Although be \n";
+        echo "aware that this is not the bug-tracker and that \n";
+        echo "this is not where the developers check for bugs.</p>\n";
+        echo "<p>Please be as detailed as you can but do not paste large \n";
+        echo "chunks of output from the terminal. Type out your report \n";
+        echo "clearly and in proper English so that it is easily readable.</p>\n";
         echo "<p>If you cannot find your distribution in the list of existing ";
         echo "distributions, please add it in the \n";
         echo "provided field.</p>\n\n";
