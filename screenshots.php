@@ -113,6 +113,9 @@ if($hResult && mysql_num_rows($hResult))
 // let's show the screenshot uploading box
 if($aClean['iVersionId'])
 {
+    echo "<p align=\"center\">When submitting screenshots please ensure that the focus is on the application running inside Wine.";
+    echo "<br />This means if the application is running in a window then please crop the image so that only the application is shown and not your desktop.</p>";
+
     echo '<form enctype="multipart/form-data" action="screenshots.php" name="sImageForm" method="post">',"\n";
     echo html_frame_start("Upload Screenshot","400","",0);
     echo '<table border=0 cellpadding=6 cellspacing=0 width="100%">',"\n";
