@@ -9,65 +9,7 @@ require("path.php");
 require(BASE."include/incl.php");
 require_once(BASE."include/mail.php");
 
-/*
- * Warn users that have been inactive for some number of months
- * If it has been some period of time since the user was warned
- *   the user is deleted if they don't have any pending appdb data
- */
-
-$usersWarned = 0;
-$usersUnwarnedWithData = 0; /* users we would normally warn but who have data */
-$usersDeleted = 0;
-$usersWithData = 0; /* users marked for deletion that have data */
-
-notifyAdminsOfCleanupStart();
-
-/* users inactive for 6 months that haven't been warned already */
-$hUsersToWarn = unwarnedAndInactiveSince(6);
-if($hUsersToWarn)
-{
-    while($oRow = mysql_fetch_object($hUsersToWarn))
-    {
-        $oUser = new User($oRow->userid);
-
-        /* if we get back true the user was warned and flagged as being warned */
-        /* if we get back false we didn't warn the user and didn't flag the user as warned */
-        /*  because they have data associated with their account */
-        if($oUser->warnForInactivity())
-        {
-            $usersWarned++;
-        } else
-        {
-            $usersUnwarnedWithData++;
-        }
-    }
-}
-
-/* warned >= 1 month ago */
-$hUsersToDelete = warnedSince(1);
-if($hUsersToDelete)
-{
-    while($oRow = mysql_fetch_object($hUsersToDelete))
-    {
-        $oUser = new User($oRow->userid);
-        if(!$oUser->hasDataAssociated())
-        {
-            $usersDeleted++;
-            deleteUser($oRow->userid);
-        } else
-        {
-            /* is the user a maintainer?  if so remove their maintainer privileges */
-            if($oUser->isMaintainer())
-            {
-                Maintainer::deleteMaintainer($oUser);
-            }
-
-            $usersWithData++;
-        }
-    }
-}
-
-notifyAdminsOfCleanupExecution($usersWarned, $usersUnwarnedWithData, $usersDeleted, $usersWithData);
+inactiveUserCheck();
 
 /* check to see if there are orphaned versions in the database */
 orphanVersionCheck();
@@ -83,6 +25,71 @@ reportErrorLogEntries();
 
 /* remove screenshots that are missing their screenshot and thumbnail files */
 removeScreenshotsWithMissingFiles();
+
+
+
+
+/*
+ * Warn users that have been inactive for some number of months
+ * If it has been some period of time since the user was warned
+ *   the user is deleted if they don't have any pending appdb data
+ */
+function inactiveUserCheck()
+{
+  $usersWarned = 0;
+  $usersUnwarnedWithData = 0; /* users we would normally warn but who have data */
+  $usersDeleted = 0;
+  $usersWithData = 0; /* users marked for deletion that have data */
+
+  notifyAdminsOfCleanupStart();
+
+  /* users inactive for 6 months that haven't been warned already */
+  $hUsersToWarn = unwarnedAndInactiveSince(6);
+  if($hUsersToWarn)
+  {
+    while($oRow = mysql_fetch_object($hUsersToWarn))
+    {
+      $oUser = new User($oRow->userid);
+
+      /* if we get back true the user was warned and flagged as being warned */
+      /* if we get back false we didn't warn the user and didn't flag the user as warned */
+      /*  because they have data associated with their account */
+      if($oUser->warnForInactivity())
+      {
+        $usersWarned++;
+      } else
+      {
+        $usersUnwarnedWithData++;
+      }
+    }
+  }
+
+  /* warned >= 1 month ago */
+  $hUsersToDelete = warnedSince(1);
+  if($hUsersToDelete)
+  {
+    while($oRow = mysql_fetch_object($hUsersToDelete))
+    {
+      $oUser = new User($oRow->userid);
+      if(!$oUser->hasDataAssociated())
+      {
+        $usersDeleted++;
+        deleteUser($oRow->userid);
+      } else
+      {
+        /* is the user a maintainer?  if so remove their maintainer privileges */
+        if($oUser->isMaintainer())
+        {
+          Maintainer::deleteMaintainer($oUser);
+        }
+
+        $usersWithData++;
+      }
+    }
+  }
+
+  notifyAdminsOfCleanupExecution($usersWarned, $usersUnwarnedWithData, $usersDeleted, $usersWithData);
+}
 
 /* Users that are unwarned and inactive since $iMonths */
 function unwarnedAndInactiveSince($iMonths)
