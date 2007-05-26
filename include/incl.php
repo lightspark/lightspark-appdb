@@ -127,6 +127,12 @@ function apidb_header($title = 0)
     if ($title)
          $title = " - $title";
 
+    // grab the starting time
+    global $sPageGeneratingStartTime;
+    $sPageGeneratingStartTime = microtime();
+    $aStartarray = explode(" ", $sPageGeneratingStartTime);
+    $sPageGeneratingStartTime = $aStartarray[1] + $aStartarray[0]; 
+
     // Display Header
     include(BASE."include/header.php");
 
@@ -154,7 +160,16 @@ function apidb_footer()
 
     //Close Sidebar and Content Well
     echo "<br></td></tr></table>\n";
-    
+
+    // grab the end of the page generating time
+    global $sPageGeneratingStartTime;
+    $sPageGeneratingEndTime = microtime();
+    $aEndarray = explode(" ", $sPageGeneratingEndTime);
+    $sPageGeneratingEndTime = $aEndarray[1] + $aEndarray[0];
+    $sTotaltime = $sPageGeneratingEndTime - $sPageGeneratingStartTime;
+    $sTotaltime = round($sTotaltime,5);
+    echo "<center>Page loaded in <b>$sTotaltime</b> seconds.</center>";
+
     // Display Footer
     if(!isset($header_disabled))
     include(BASE."include/"."footer.php");
