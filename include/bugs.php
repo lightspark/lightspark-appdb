@@ -197,11 +197,13 @@ class Bug {
             if(!$bRejected)
             {
                 $sSubject =  "Submitted Bug Link accepted";
-                $sMsg  = "The Bug Link you submitted for ".$sAppName." has been accepted.";
+                $sMsg  = "The bug link you submitted between Bug ".$this->iBug_id." and ".  
+                        $sAppName." has been accepted.";
             } else
             {
                  $sSubject =  "Submitted Bug Link rejected";
-                 $sMsg  = "The Bug Link you submitted for ".$sAppName." has been rejected.";
+                 $sMsg  = "The bug link you submitted between Bug ".$this->iBug_id." and ".  
+                        $sAppName." has been deleted.";
             }
             $sMsg .= $aClean['sReplyText']."\n";
             $sMsg .= "We appreciate your help in making the Application Database better for all users.";
