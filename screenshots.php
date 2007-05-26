@@ -39,7 +39,7 @@ if($aClean['sCmd'])
         {
             $oScreenshot = new Screenshot();
             $oScreenshot->iVersionId = $aClean['iVersionId'];
-            $oScreenshot->sScreenshotDesc = $aClean['sScreenshotDesc'];
+            $oScreenshot->sDescription = $aClean['sScreenshotDesc'];
             $oScreenshot->hFile = $_FILES['sImageFile'];
             $oScreenshot->create();
             $oScreenshot->free();
