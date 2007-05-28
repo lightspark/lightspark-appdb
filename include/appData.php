@@ -203,45 +203,55 @@ class appData
                 $sQuery .= " AND type = '?'";
                 $hResult = query_parameters($sQuery, $_SESSION['current']->iUserId, 
                                             $sType);
-            } else {
+            } else
+            {
                 $hResult = query_parameters($sQuery, $_SESSION['current']->iUserId);
             }
         } else
         {
-            $sQuery = "SELECT COUNT(DISTINCT appData.id) as count FROM appData,
+            if($sQueued == "true" || $sQueued == "false")
+                $sAppDataQueued = " AND appData.queued = '$sQueued'";
+
+            if($sType)
+                $sSelectType = " AND type = '?'";
+
+            $sQuery = "(SELECT COUNT(DISTINCT appData.id) as count FROM appData,
                 appFamily, appVersion WHERE
                     appFamily.appId = appVersion.appId
                     AND
                     (
                         appData.appId = appFamily.appId
-                        OR
+                    )
+                    AND
+                    appVersion.queued = 'false'
+                    AND
+                    appFamily.queued = 'false'$sAppDataQueued$sSelectType) UNION
+                    (
+                    SELECT COUNT(DISTINCT appData.id) as count FROM appData,
+                appFamily, appVersion WHERE
+                    appFamily.appId = appVersion.appId
+                    AND
+                    (
                         appData.versionId = appVersion.versionId
                     )
                     AND
                     appVersion.queued = 'false'
                     AND
-                    appFamily.queued = 'false'";
-
-            if($sQueued == "true" || $sQueued == "false")
-                $sQuery .= " AND appData.queued = '$sQueued'";
-
+                    appFamily.queued = 'false'$sAppDataQueued$sSelectType)";
 
             if($sType)
-            {
-                $sQuery .= " AND type = '?'";
-                $hResult = query_parameters($sQuery, $sType);
-            } else
+                $hResult = query_parameters($sQuery, $sType, $sType);
+            else
                 $hResult = query_parameters($sQuery);
         }
 
         if(!$hResult)
             return FALSE;
 
-        if(!$oRow = mysql_fetch_object($hResult))
-            return FALSE;
+        for($iCount = 0; $oRow = mysql_fetch_object($hResult);)
+            $iCount += $oRow->count;
 
-        return $oRow->count;
-
+        return $iCount;
     }
 
     function objectGetHeader($sType)
