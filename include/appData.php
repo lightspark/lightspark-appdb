@@ -332,13 +332,30 @@ class appData
             }
         } else
         {
-            $sQuery = "SELECT DISTINCT appData.* FROM appData, appFamily, appVersion
-                    WHERE
-                    appVersion.appId = appFamily.appId
+            if($iStart || $iRows)
+                $sLimit = " LIMIT ?,?";
+
+            $sQuery = "(SELECT DISTINCT appData.* FROM appData,
+                appFamily, appVersion WHERE
+                    appFamily.appId = appVersion.appId
                     AND
                     (
                         appData.appId = appFamily.appId
-                        OR
+                    )
+                    AND
+                    appVersion.queued = 'false'
+                    AND
+                    appFamily.queued = 'false'
+                    AND
+                    appData.queued = '?'
+                    AND
+                    appData.type = '?'$sLimit) UNION
+                    (
+                    SELECT DISTINCT appData.* FROM appData,
+                appFamily, appVersion WHERE
+                    appFamily.appId = appVersion.appId
+                    AND
+                    (
                         appData.versionId = appVersion.versionId
                     )
                     AND
@@ -348,17 +365,19 @@ class appData
                     AND
                     appData.queued = '?'
                     AND
-                    appData.type = '?'";
+                    appData.type = '?'$sLimit)";
             if(!$iRows && !$iStart)
             {
-                $hResult = query_parameters($sQuery, $bQueued ? "true" : "false", $sType);
+                $hResult = query_parameters($sQuery, $bQueued ? "true" : "false", $sType,
+                                           $bQueued ? "true" : "false", $sType);
             } else
             {
                 if(!$iRows)
                     $iRows = appData::objectGetEntriesCount($bQueued ? "true" : "false",
                                                             $bRejected, $sType);
-                $sQuery .= " LIMIT ?,?";
                 $hResult = query_parameters($sQuery, $bQueued ? "true" : "false", $sType,
+                                            $iStart, $iRows,
+                                            $bQueued ? "true" : "false", $sType,
                                             $iStart, $iRows);
             }
         }
