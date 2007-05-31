@@ -10,15 +10,21 @@ class version_queue
     {
         $this->oVersion = new version($iVersionId);
         $iTestingId = null;
+        $iDownloadUrlId = null;
 
         if($iVersionId)
         {
             $iTestingId = testData::getNewestTestIdFromVersionId($iVersionId,
                                                                  $this->oVersion->sQueued);
+            if($hResult = appData::getData($iVersionId, "downloadurl", TRUE, TRUE))
+            {
+                if($oRow = mysql_fetch_object($hResult))
+                    $iDownloadUrlId = $oRow->id;
+            }
         }
 
         $this->oTestDataQueue = new testData_queue($iTestingId);
-        $this->oDownloadUrl = new downloadurl();
+        $this->oDownloadUrl = new downloadurl($iDownloadUrlId);
     }
 
     function create()
@@ -67,6 +73,7 @@ class version_queue
     {
         $this->oVersion->unQueue();
         $this->oTestDataQueue->unQueue();
+        $this->oDownloadUrl->unQueue();
     }
 
     function outputEditor()
