@@ -1,89 +1,106 @@
-// Charcounter for HTMLArea-3.0
-// (c) Udo Schmal & L.N.Schaffrath NeueMedien 
-// Distributed under the same terms as HTMLArea itself.
-// This notice MUST stay intact for use (see license.txt).
-
-function CharCounter(editor) {
-    this.editor = editor;
+function CharCounter(_1){
+this.editor=_1;
+this._Chars=0;
+this._Words=0;
+this._HTML=0;
+this.onKeyPress=this.__onKeyPress;
 }
-
-CharCounter._pluginInfo = {
-    name : "CharCounter",
-    version : "1.0",
-    developer : "Udo Schmal",
-    developer_url : "http://www.schaffrath-neuemedien.de",
-    sponsor       : "L.N.Schaffrath NeueMedien",
-    sponsor_url   : "http://www.schaffrath-neuemedien.de",
-    c_owner : "Udo Schmal & L.N.Schaffrath NeueMedien",
-    license : "htmlArea"
+HTMLArea.Config.prototype.CharCounter={"showChar":true,"showWord":true,"showHtml":true,"separator":" | ","maxHTML":-1};
+CharCounter._pluginInfo={name:"CharCounter",version:"1.31",developer:"Udo Schmal",developer_url:"http://www.schaffrath-neuemedien.de",sponsor:"L.N.Schaffrath NeueMedien",sponsor_url:"http://www.schaffrath-neuemedien.de",c_owner:"Udo Schmal & L.N.Schaffrath NeueMedien",license:"htmlArea"};
+CharCounter.prototype._lc=function(_2){
+return HTMLArea._lc(_2,"CharCounter");
+};
+CharCounter.prototype.onGenerateOnce=function(){
+var _3=this;
+if(this.charCount==null){
+var _4=document.createElement("span");
+_4.style.padding="2px 5px";
+if(HTMLArea.is_ie){
+_4.style.styleFloat="right";
+}else{
+_4.style.cssFloat="right";
+}
+var _5=document.createElement("div");
+_5.style.height=_5.style.width=_5.style.lineHeight=_5.style.fontSize="1px";
+_5.style.clear="both";
+if(HTMLArea.is_ie){
+this.editor._statusBarTree.style.styleFloat="left";
+}else{
+this.editor._statusBarTree.style.cssFloat="left";
+}
+this.editor._statusBar.appendChild(_4);
+this.editor._statusBar.appendChild(_5);
+this.charCount=_4;
+}
+};
+CharCounter.prototype.__onKeyPress=function(ev){
+if((ev.keyCode!=8)&&(ev.keyCode!=46)){
+if(this.editor.config.CharCounter.maxHTML!=-1){
+var _7=this.editor.getHTML();
+if(_7.length>=this.editor.config.CharCounter.maxHTML){
+HTMLArea._stopEvent(ev);
+return true;
+}
+}
+}
+};
+CharCounter.prototype._updateCharCount=function(){
+var _8=this.editor;
+var _9=_8.config;
+var _a=_8.getHTML();
+var _b=new Array();
+if(_9.CharCounter.showHtml){
+_b[_b.length]=this._lc("HTML")+": "+_a.length;
+}
+this._HTML=_a.length;
+if(_9.CharCounter.showWord||_9.CharCounter.showChar){
+_a=_a.replace(/<\/?\s*!--[^-->]*-->/gi,"");
+_a=_a.replace(/<(.+?)>/g,"");
+_a=_a.replace(/&nbsp;/gi," ");
+_a=_a.replace(/([\n\r\t])/g," ");
+_a=_a.replace(/(  +)/g," ");
+_a=_a.replace(/&(.*);/g," ");
+_a=_a.replace(/^\s*|\s*$/g,"");
+}
+if(_9.CharCounter.showWord){
+this._Words=0;
+for(var x=0;x<_a.length;x++){
+if(_a.charAt(x)==" "){
+this._Words++;
+}
+}
+if(this._Words>=1){
+this._Words++;
+}
+_b[_b.length]=this._lc("Words")+": "+this._Words;
+}
+if(_9.CharCounter.showChar){
+_b[_b.length]=this._lc("Chars")+": "+_a.length;
+this._Chars=_a.length;
+}
+this.charCount.innerHTML=_b.join(_9.CharCounter.separator);
+};
+CharCounter.prototype.onUpdateToolbar=function(){
+this.charCount.innerHTML=this._lc("... in progress");
+if(this._timeoutID){
+window.clearTimeout(this._timeoutID);
+}
+var e=this;
+this._timeoutID=window.setTimeout(function(){
+e._updateCharCount();
+},1000);
+};
+CharCounter.prototype.onMode=function(_e){
+switch(_e){
+case "textmode":
+this.charCount.style.display="none";
+break;
+case "wysiwyg":
+this.charCount.style.display="";
+break;
+default:
+alert("Mode <"+_e+"> not defined!");
+return false;
+}
 };
 
-CharCounter.prototype._lc = function(string) {
-    return HTMLArea._lc(string, "CharCounter");
-};
-
-
-CharCounter.prototype.onGenerate = function() {
-  var self = this;
-  if (this.charCount==null) {
-    var charCount = document.createElement("span");
-    charCount.style.padding = "2px 5px";
-    if(HTMLArea.is_ie) {
-      charCount.style.styleFloat = "right";
-    } else {
-      charCount.style.cssFloat = "right";
-    }
-    var brk = document.createElement('div');
-    brk.style.height =
-    brk.style.width =
-    brk.style.lineHeight =
-    brk.style.fontSize = '1px';
-    brk.style.clear = 'both';
-    if(HTMLArea.is_ie) {
-      this.editor._statusBarTree.style.styleFloat = "left";
-    } else {
-      this.editor._statusBarTree.style.cssFloat = "left";
-    }
-    this.editor._statusBar.appendChild(charCount);
-    this.editor._statusBar.appendChild(brk);
-    this.charCount = charCount;
-  }
-};
-
-CharCounter.prototype.onUpdateToolbar = function() {
-    this.updateCharCount();
-};
-
-CharCounter.prototype.onMode = function (mode)
-{
-  //Hide Chars in statusbar when switching into textmode
-  switch (mode)
-  {
-    case "textmode":
-      this.charCount.style.display = "none";
-      break;
-    case "wysiwyg":
-      this.charCount.style.display = "";
-      break;
-    default:
-      alert("Mode <" + mode + "> not defined!");
-      return false;
-  }
-};
-
-CharCounter.prototype.updateCharCount = function(ev) {
-    editor = this.editor;
-    var contents = editor.getHTML();
-    contents = contents.replace(/<(.+?)>/g, '');//Don't count HTML tags
-    contents = contents.replace(/([\n\r\t])/g, ' ');//convert newlines and tabs into space
-    contents = contents.replace(/(  +)/g, ' ');//count spaces only once
-    contents = contents.replace(/&(.*);/g, ' ');//Count htmlentities as one keystroke
-    contents = contents.replace(/^\s*|\s*$/g, '');//trim
-//    var words=0;
-//    for (var x=0;x<contents.length;x++) {
-//      if (contents.charAt(x) == " " )  {words++}
-//    }
-//    this.charCount.innerHTML = this._lc("Words") + ": " + words + " | " + this._lc("Chars") + ": " + contents.length;
-    this.charCount.innerHTML = this._lc("Chars") + ": " + contents.length;
-    return(contents.length);
-};

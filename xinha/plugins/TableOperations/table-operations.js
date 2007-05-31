@@ -1,1180 +1,893 @@
-// Table Operations Plugin for HTMLArea-3.0
-// Implementation by Mihai Bazon.  Sponsored by http://www.bloki.com
-//
-// htmlArea v3.0 - Copyright (c) 2002 interactivetools.com, inc.
-// This notice MUST stay intact for use (see license.txt).
-//
-// A free WYSIWYG editor replacement for <textarea> fields.
-// For full source code and docs, visit http://www.interactivetools.com/
-//
-// Version 3.0 developed by Mihai Bazon for InteractiveTools.
-//   http://dynarch.com/mishoo
-//
-// $Id$
-
-// Object that will encapsulate all the table operations provided by
-// HTMLArea-3.0 (except "insert table" which is included in the main file)
-function TableOperations(editor) {
-	this.editor = editor;
-
-	var cfg = editor.config;
-	var bl = TableOperations.btnList;
-	var self = this;
-
-	// register the toolbar buttons provided by this plugin
-
-    
-	var toolbar = ["linebreak"];
-	for (var i = 0; i < bl.length; ++i) {
-		var btn = bl[i];
-		if (!btn) {
-			toolbar.push("separator");
-		} else {
-			var id = "TO-" + btn[0];
-			cfg.registerButton(id, HTMLArea._lc(btn[2], "TableOperations"), editor.imgURL(btn[0] + ".gif", "TableOperations"), false,
-					   function(editor, id) {
-						   // dispatch button press event
-						   self.buttonPress(editor, id);
-					   }, btn[1]);
-			toolbar.push(id);
-		}
-	}
-
-	// add a new line in the toolbar
-	cfg.toolbar.push(toolbar);
+function TableOperations(_1){
+this.editor=_1;
+var _2=_1.config;
+var bl=TableOperations.btnList;
+var _4=this;
+_2.removeToolbarElement(" inserttable toggleborders ");
+var _5=["linebreak","inserttable","toggleborders"];
+for(var i=0;i<bl.length;++i){
+var _7=bl[i];
+if(!_7){
+_5.push("separator");
+}else{
+var id="TO-"+_7[0];
+_2.registerButton(id,HTMLArea._lc(_7[2],"TableOperations"),_1.imgURL(_7[0]+".gif","TableOperations"),false,function(_9,id){
+_4.buttonPress(_9,id);
+},_7[1]);
+_5.push(id);
 }
-
-TableOperations._pluginInfo = {
-	name          : "TableOperations",
-	version       : "1.0",
-	developer     : "Mihai Bazon",
-	developer_url : "http://dynarch.com/mishoo/",
-	c_owner       : "Mihai Bazon",
-	sponsor       : "Zapatec Inc.",
-	sponsor_url   : "http://www.bloki.com",
-	license       : "htmlArea"
+}
+_2.toolbar.push(_5);
+if(typeof PopupWin=="undefined"){
+Xinha._loadback(_editor_url+"modules/Dialogs/popupwin.js");
+}
+}
+TableOperations._pluginInfo={name:"TableOperations",version:"1.0",developer:"Mihai Bazon",developer_url:"http://dynarch.com/mishoo/",c_owner:"Mihai Bazon",sponsor:"Zapatec Inc.",sponsor_url:"http://www.bloki.com",license:"htmlArea"};
+TableOperations.prototype._lc=function(_b){
+return HTMLArea._lc(_b,"TableOperations");
+};
+TableOperations.prototype.getClosest=function(_c){
+var _d=this.editor;
+var _e=_d.getAllAncestors();
+var _f=null;
+_c=(""+_c).toLowerCase();
+for(var i=0;i<_e.length;++i){
+var el=_e[i];
+if(el.tagName.toLowerCase()==_c){
+_f=el;
+break;
+}
+}
+return _f;
+};
+TableOperations.prototype.dialogTableProperties=function(){
+var _12=this.getClosest("table");
+var _13=new PopupWin(this.editor,HTMLArea._lc("Table Properties","TableOperations"),function(_14,_15){
+TableOperations.processStyle(_15,_12);
+for(var i in _15){
+if(typeof _15[i]=="function"){
+continue;
+}
+var val=_15[i];
+switch(i){
+case "f_caption":
+if(/\S/.test(val)){
+var _18=_12.getElementsByTagName("caption")[0];
+if(!_18){
+_18=_14.editor._doc.createElement("caption");
+_12.insertBefore(_18,_12.firstChild);
+}
+_18.innerHTML=val;
+}else{
+var _18=_12.getElementsByTagName("caption")[0];
+if(_18){
+_18.parentNode.removeChild(_18);
+}
+}
+break;
+case "f_summary":
+_12.summary=val;
+break;
+case "f_width":
+_12.style.width=(""+val)+_15.f_unit;
+break;
+case "f_align":
+_12.align=val;
+break;
+case "f_spacing":
+_12.cellSpacing=val;
+break;
+case "f_padding":
+_12.cellPadding=val;
+break;
+case "f_borders":
+_12.border=val;
+break;
+case "f_frames":
+_12.frame=val;
+break;
+case "f_rules":
+_12.rules=val;
+break;
+}
+}
+_14.editor.forceRedraw();
+_14.editor.focusEditor();
+_14.editor.updateToolbar();
+var _19=_12.style.borderCollapse;
+_12.style.borderCollapse="collapse";
+_12.style.borderCollapse="separate";
+_12.style.borderCollapse=_19;
+},function(_1a){
+var _1b="";
+var _1c=_12.getElementsByTagName("caption")[0];
+if(_1c){
+_1b=_1c.innerHTML;
+}
+var _1d=_12.summary;
+var _1e=parseInt(_12.style.width);
+isNaN(_1e)&&(_1e="");
+var _1f=/%/.test(_12.style.width)?"percent":"pixels";
+var _20=_12.align;
+var _21=_12.cellSpacing;
+var _22=_12.cellPadding;
+var _23=_12.border;
+var _24=_12.frame;
+var _25=_12.rules;
+function selected(val){
+return val?" selected":"";
+}
+_1a.content.style.width="400px";
+_1a.content.innerHTML=" <div class='title'>"+HTMLArea._lc("Table Properties","TableOperations")+"</div> <table style='width:100%'>   <tr>     <td>       <fieldset><legend>"+HTMLArea._lc("Description","TableOperations")+"</legend>        <table style='width:100%'>         <tr>           <td class='label'>"+HTMLArea._lc("Caption","TableOperations")+":</td>           <td class='value'><input type='text' name='f_caption' value='"+_1b+"'/></td>         </tr><tr>           <td class='label'>"+HTMLArea._lc("Summary","TableOperations")+":</td>           <td class='value'><input type='text' name='f_summary' value='"+_1d+"'/></td>         </tr>        </table>       </fieldset>     </td>   </tr>   <tr><td id='--HA-layout'></td></tr>   <tr>     <td>       <fieldset><legend>"+HTMLArea._lc("Spacing and padding","TableOperations")+"</legend>        <table style='width:100%'> "+"        <tr>           <td class='label'>"+HTMLArea._lc("Spacing","TableOperations")+":</td>           <td><input type='text' name='f_spacing' size='5' value='"+_21+"' /> &nbsp;"+HTMLArea._lc("Padding","TableOperations")+":            <input type='text' name='f_padding' size='5' value='"+_22+"' /> &nbsp;&nbsp;"+HTMLArea._lc("pixels","TableOperations")+"          </td>         </tr>        </table>       </fieldset>     </td>   </tr>   <tr>     <td>       <fieldset><legend>"+HTMLArea._lc("Frame and borders","TableOperations")+"</legend>         <table width='100%'>           <tr>             <td class='label'>"+HTMLArea._lc("Borders","TableOperations")+":</td>             <td><input name='f_borders' type='text' size='5' value='"+_23+"' /> &nbsp;&nbsp;"+HTMLArea._lc("pixels","TableOperations")+"</td>           </tr>           <tr>             <td class='label'>"+HTMLArea._lc("Frames","TableOperations")+":</td>             <td>               <select name='f_frames'>                 <option value='void'"+selected(_24=="void")+">"+HTMLArea._lc("No sides","TableOperations")+"</option>                 <option value='above'"+selected(_24=="above")+">"+HTMLArea._lc("The top side only","TableOperations")+"</option>                 <option value='below'"+selected(_24=="below")+">"+HTMLArea._lc("The bottom side only","TableOperations")+"</option>                 <option value='hsides'"+selected(_24=="hsides")+">"+HTMLArea._lc("The top and bottom sides only","TableOperations")+"</option>                 <option value='vsides'"+selected(_24=="vsides")+">"+HTMLArea._lc("The right and left sides only","TableOperations")+"</option>                 <option value='lhs'"+selected(_24=="lhs")+">"+HTMLArea._lc("The left-hand side only","TableOperations")+"</option>                 <option value='rhs'"+selected(_24=="rhs")+">"+HTMLArea._lc("The right-hand side only","TableOperations")+"</option>                 <option value='box'"+selected(_24=="box")+">"+HTMLArea._lc("All four sides","TableOperations")+"</option>               </select>             </td>           </tr>           <tr>             <td class='label'>"+HTMLArea._lc("Rules","TableOperations")+":</td>             <td>               <select name='f_rules'>                 <option value='none'"+selected(_25=="none")+">"+HTMLArea._lc("No rules","TableOperations")+"</option>                 <option value='rows'"+selected(_25=="rows")+">"+HTMLArea._lc("Rules will appear between rows only","TableOperations")+"</option>                 <option value='cols'"+selected(_25=="cols")+">"+HTMLArea._lc("Rules will appear between columns only","TableOperations")+"</option>                 <option value='all'"+selected(_25=="all")+">"+HTMLArea._lc("Rules will appear between all rows and columns","TableOperations")+"</option>               </select>             </td>           </tr>         </table>       </fieldset>     </td>   </tr>   <tr>     <td id='--HA-style'></td>   </tr> </table> ";
+var _27=TableOperations.createStyleFieldset(_1a.doc,_1a.editor,_12);
+var p=_1a.doc.getElementById("--HA-style");
+p.appendChild(_27);
+var _29=TableOperations.createStyleLayoutFieldset(_1a.doc,_1a.editor,_12);
+p=_1a.doc.getElementById("--HA-layout");
+p.appendChild(_29);
+_1a.modal=true;
+_1a.addButtons("OK","Cancel");
+_1a.showAtElement(_1a.editor._iframe,"c");
+});
+};
+TableOperations.prototype.dialogRowCellProperties=function(_2a){
+var _2b=this.getClosest(_2a?"td":"tr");
+var _2c=this.getClosest("table");
+var _2d=new PopupWin(this.editor,_2a?HTMLArea._lc("Cell Properties","TableOperations"):HTMLArea._lc("Row Properties","TableOperations"),function(_2e,_2f){
+TableOperations.processStyle(_2f,_2b);
+for(var i in _2f){
+if(typeof _2f[i]=="function"){
+continue;
+}
+var val=_2f[i];
+switch(i){
+case "f_align":
+_2b.align=val;
+break;
+case "f_char":
+_2b.ch=val;
+break;
+case "f_valign":
+_2b.vAlign=val;
+break;
+}
+}
+_2e.editor.forceRedraw();
+_2e.editor.focusEditor();
+_2e.editor.updateToolbar();
+var _32=_2c.style.borderCollapse;
+_2c.style.borderCollapse="collapse";
+_2c.style.borderCollapse="separate";
+_2c.style.borderCollapse=_32;
+},function(_33){
+var _34=_2b.align;
+var _35=_2b.vAlign;
+var _36=_2b.ch;
+function selected(val){
+return val?" selected":"";
+}
+_33.content.style.width="400px";
+_33.content.innerHTML=" <div class='title'>"+HTMLArea._lc(_2a?"Cell Properties":"Row Properties","TableOperations")+"</div> <table style='width:100%'>   <tr>     <td id='--HA-layout'> "+"    </td>   </tr>   <tr>     <td id='--HA-style'></td>   </tr> </table> ";
+var _38=TableOperations.createStyleFieldset(_33.doc,_33.editor,_2b);
+var p=_33.doc.getElementById("--HA-style");
+p.appendChild(_38);
+var _3a=TableOperations.createStyleLayoutFieldset(_33.doc,_33.editor,_2b);
+p=_33.doc.getElementById("--HA-layout");
+p.appendChild(_3a);
+_33.modal=true;
+_33.addButtons("OK","Cancel");
+_33.showAtElement(_33.editor._iframe,"c");
+});
+};
+TableOperations.prototype.buttonPress=function(_3b,_3c){
+this.editor=_3b;
+var _3d=HTMLArea.is_gecko?"<br />":"";
+function clearRow(tr){
+var tds=tr.getElementsByTagName("td");
+for(var i=tds.length;--i>=0;){
+var td=tds[i];
+td.rowSpan=1;
+td.innerHTML=_3d;
+}
+}
+function splitRow(td){
+var n=parseInt(""+td.rowSpan);
+var nc=parseInt(""+td.colSpan);
+td.rowSpan=1;
+tr=td.parentNode;
+var itr=tr.rowIndex;
+var trs=tr.parentNode.rows;
+var _47=td.cellIndex;
+while(--n>0){
+tr=trs[++itr];
+var otd=_3b._doc.createElement("td");
+otd.colSpan=td.colSpan;
+otd.innerHTML=_3d;
+tr.insertBefore(otd,tr.cells[_47]);
+}
+_3b.forceRedraw();
+_3b.updateToolbar();
+}
+function splitCol(td){
+var nc=parseInt(""+td.colSpan);
+td.colSpan=1;
+tr=td.parentNode;
+var ref=td.nextSibling;
+while(--nc>0){
+var otd=_3b._doc.createElement("td");
+otd.rowSpan=td.rowSpan;
+otd.innerHTML=_3d;
+tr.insertBefore(otd,ref);
+}
+_3b.forceRedraw();
+_3b.updateToolbar();
+}
+function splitCell(td){
+var nc=parseInt(""+td.colSpan);
+splitCol(td);
+var _4f=td.parentNode.cells;
+var _50=td.cellIndex;
+while(nc-->0){
+splitRow(_4f[_50++]);
+}
+}
+function selectNextNode(el){
+var _52=el.nextSibling;
+while(_52&&_52.nodeType!=1){
+_52=_52.nextSibling;
+}
+if(!_52){
+_52=el.previousSibling;
+while(_52&&_52.nodeType!=1){
+_52=_52.previousSibling;
+}
+}
+if(!_52){
+_52=el.parentNode;
+}
+_3b.selectNodeContents(_52);
+}
+function cellMerge(_53,_54,_55,_56,_57){
+var _58=[];
+var _59=[];
+try{
+for(i=_55;i<_55+_57;i++){
+var row=_53.rows[i];
+for(j=_54;j<_54+_56;j++){
+if(row.cells[j].colSpan>1||row.cells[j].rowSpan>1){
+splitCell(row.cells[j]);
+}
+_59.push(row.cells[j]);
+}
+if(_59.length>0){
+_58.push(_59);
+_59=[];
+}
+}
+}
+catch(e){
+alert("Invalid selection");
+return false;
+}
+var _5b=_58[0][0].parentNode.rowIndex;
+var _5c=_58[_58.length-1][0].parentNode.rowIndex;
+var _5d=_58[_58.length-1][0].rowSpan;
+var _5e="";
+for(i=0;i<_58.length;++i){
+var _59=_58[i];
+for(var j=0;j<_59.length;++j){
+var _60=_59[j];
+_5e+=_60.innerHTML;
+(i||j)&&(_60.parentNode.removeChild(_60));
+}
+}
+var td=_58[0][0];
+td.innerHTML=_5e;
+td.rowSpan=_5c-_5b+_5d;
+var _62=0;
+for(j=0;j<_58[0].length;j++){
+_62+=_58[0][j].colSpan;
+}
+td.colSpan=_62;
+_3b.selectNodeContents(td);
+_3b.forceRedraw();
+_3b.focusEditor();
+}
+switch(_3c){
+case "TO-row-insert-above":
+case "TO-row-insert-under":
+var tr=this.getClosest("tr");
+if(!tr){
+break;
+}
+var otr=tr.cloneNode(true);
+clearRow(otr);
+tr.parentNode.insertBefore(otr,/under/.test(_3c)?tr.nextSibling:tr);
+_3b.forceRedraw();
+_3b.focusEditor();
+break;
+case "TO-row-delete":
+var tr=this.getClosest("tr");
+if(!tr){
+break;
+}
+var par=tr.parentNode;
+if(par.rows.length==1){
+alert(HTMLArea._lc("HTMLArea cowardly refuses to delete the last row in table.","TableOperations"));
+break;
+}
+selectNextNode(tr);
+par.removeChild(tr);
+_3b.forceRedraw();
+_3b.focusEditor();
+_3b.updateToolbar();
+break;
+case "TO-row-split":
+var td=this.getClosest("td");
+if(!td){
+break;
+}
+splitRow(td);
+break;
+case "TO-col-insert-before":
+case "TO-col-insert-after":
+var td=this.getClosest("td");
+if(!td){
+break;
+}
+var _67=td.parentNode.parentNode.rows;
+var _68=td.cellIndex;
+var _69=(td.parentNode.cells.length==_68+1);
+for(var i=_67.length;--i>=0;){
+var tr=_67[i];
+var otd=_3b._doc.createElement("td");
+otd.innerHTML=_3d;
+if(_69&&HTMLArea.is_ie){
+tr.insertBefore(otd);
+}else{
+var ref=tr.cells[_68+(/after/.test(_3c)?1:0)];
+tr.insertBefore(otd,ref);
+}
+}
+_3b.focusEditor();
+break;
+case "TO-col-split":
+var td=this.getClosest("td");
+if(!td){
+break;
+}
+splitCol(td);
+break;
+case "TO-col-delete":
+var td=this.getClosest("td");
+if(!td){
+break;
+}
+var _68=td.cellIndex;
+if(td.parentNode.cells.length==1){
+alert(HTMLArea._lc("HTMLArea cowardly refuses to delete the last column in table.","TableOperations"));
+break;
+}
+selectNextNode(td);
+var _67=td.parentNode.parentNode.rows;
+for(var i=_67.length;--i>=0;){
+var tr=_67[i];
+tr.removeChild(tr.cells[_68]);
+}
+_3b.forceRedraw();
+_3b.focusEditor();
+_3b.updateToolbar();
+break;
+case "TO-cell-split":
+var td=this.getClosest("td");
+if(!td){
+break;
+}
+splitCell(td);
+break;
+case "TO-cell-insert-before":
+case "TO-cell-insert-after":
+var td=this.getClosest("td");
+if(!td){
+break;
+}
+var tr=td.parentNode;
+var otd=_3b._doc.createElement("td");
+otd.innerHTML=_3d;
+tr.insertBefore(otd,/after/.test(_3c)?td.nextSibling:td);
+_3b.forceRedraw();
+_3b.focusEditor();
+break;
+case "TO-cell-delete":
+var td=this.getClosest("td");
+if(!td){
+break;
+}
+if(td.parentNode.cells.length==1){
+alert(HTMLArea._lc("HTMLArea cowardly refuses to delete the last cell in row.","TableOperations"));
+break;
+}
+selectNextNode(td);
+td.parentNode.removeChild(td);
+_3b.forceRedraw();
+_3b.updateToolbar();
+break;
+case "TO-cell-merge":
+var sel=_3b._getSelection();
+if(!HTMLArea.is_ie&&sel.rangeCount>1){
+var _6e=sel.getRangeAt(0);
+var td=_6e.startContainer.childNodes[_6e.startOffset];
+var tr=td.parentNode;
+var _6f=td.cellIndex;
+var _70=tr.rowIndex;
+var _71=0;
+var _72=_70;
+var _73=0;
+var _74=0;
+var td2,tr2;
+for(i=0;i<sel.rangeCount;i++){
+_6e=sel.getRangeAt(i);
+td2=_6e.startContainer.childNodes[_6e.startOffset];
+tr2=td2.parentNode;
+if(tr2.rowIndex!=_72){
+_72=tr2.rowIndex;
+_74=0;
+}
+_74+=td2.colSpan;
+if(_74>_73){
+_73=_74;
+}
+if(tr2.rowIndex+td2.rowSpan-1>_71){
+_71=tr2.rowIndex+td2.rowSpan-1;
+}
+}
+var _76=_71-_70+1;
+var _77=tr.parentNode;
+cellMerge(_77,_6f,_70,_73,_76);
+}else{
+var td=this.getClosest("td");
+if(!td){
+alert(HTMLArea._lc("Please click into some cell","TableOperations"));
+break;
+}
+_3b._popupDialog("plugin://TableOperations/merge_cells.html",function(_78){
+if(!_78){
+return false;
+}
+_73=parseInt(_78["f_cols"],10)+1;
+_76=parseInt(_78["f_rows"],10)+1;
+var tr=td.parentNode;
+var _7a=td.cellIndex;
+var _7b=tr.rowIndex;
+var _7c=tr.parentNode;
+cellMerge(_7c,_7a,_7b,_73,_76);
+},null);
+}
+break;
+case "TO-table-prop":
+this.dialogTableProperties();
+break;
+case "TO-row-prop":
+this.dialogRowCellProperties(false);
+break;
+case "TO-cell-prop":
+this.dialogRowCellProperties(true);
+break;
+default:
+alert("Button ["+_3c+"] not yet implemented");
+}
+};
+TableOperations.btnList=[["table-prop","table","Table properties"],null,["row-prop","tr","Row properties"],["row-insert-above","tr","Insert row before"],["row-insert-under","tr","Insert row after"],["row-delete","tr","Delete row"],["row-split","td[rowSpan!=1]","Split row"],null,["col-insert-before","td","Insert column before"],["col-insert-after","td","Insert column after"],["col-delete","td","Delete column"],["col-split","td[colSpan!=1]","Split column"],null,["cell-prop","td","Cell properties"],["cell-insert-before","td","Insert cell before"],["cell-insert-after","td","Insert cell after"],["cell-delete","td","Delete cell"],["cell-merge","tr","Merge cells"],["cell-split","td[colSpan!=1,rowSpan!=1]","Split cell"]];
+TableOperations.getLength=function(_7d){
+var len=parseInt(_7d);
+if(isNaN(len)){
+len="";
+}
+return len;
+};
+TableOperations.processStyle=function(_7f,_80){
+var _81=_80.style;
+for(var i in _7f){
+if(typeof _7f[i]=="function"){
+continue;
+}
+var val=_7f[i];
+switch(i){
+case "f_st_backgroundColor":
+_81.backgroundColor=val;
+break;
+case "f_st_color":
+_81.color=val;
+break;
+case "f_st_backgroundImage":
+if(/\S/.test(val)){
+_81.backgroundImage="url("+val+")";
+}else{
+_81.backgroundImage="none";
+}
+break;
+case "f_st_borderWidth":
+_81.borderWidth=val;
+break;
+case "f_st_borderStyle":
+_81.borderStyle=val;
+break;
+case "f_st_borderColor":
+_81.borderColor=val;
+break;
+case "f_st_borderCollapse":
+_81.borderCollapse=val?"collapse":"";
+break;
+case "f_st_width":
+if(/\S/.test(val)){
+_81.width=val+_7f["f_st_widthUnit"];
+}else{
+_81.width="";
+}
+break;
+case "f_st_height":
+if(/\S/.test(val)){
+_81.height=val+_7f["f_st_heightUnit"];
+}else{
+_81.height="";
+}
+break;
+case "f_st_textAlign":
+if(val=="char"){
+var ch=_7f["f_st_textAlignChar"];
+if(ch=="\""){
+ch="\\\"";
+}
+_81.textAlign="\""+ch+"\"";
+}else{
+if(val=="-"){
+_81.textAlign="";
+}else{
+_81.textAlign=val;
+}
+}
+break;
+case "f_st_verticalAlign":
+_80.vAlign="";
+if(val=="-"){
+_81.verticalAlign="";
+}else{
+_81.verticalAlign=val;
+}
+break;
+case "f_st_float":
+_81.cssFloat=val;
+break;
+}
+}
+};
+TableOperations.createColorButton=function(doc,_86,_87,_88){
+if(!_87){
+_87="";
+}else{
+if(!/#/.test(_87)){
+_87=HTMLArea._colorToRgb(_87);
+}
+}
+var df=doc.createElement("span");
+var _8a=doc.createElement("input");
+_8a.type="hidden";
+df.appendChild(_8a);
+_8a.name="f_st_"+_88;
+_8a.value=_87;
+var _8b=doc.createElement("span");
+_8b.className="buttonColor";
+df.appendChild(_8b);
+var _8c=doc.createElement("span");
+_8c.className="chooser";
+_8c.style.backgroundColor=_87;
+_8b.appendChild(_8c);
+_8b.onmouseover=function(){
+if(!this.disabled){
+this.className+=" buttonColor-hilite";
+}
+};
+_8b.onmouseout=function(){
+if(!this.disabled){
+this.className="buttonColor";
+}
+};
+_8c.onclick=function(){
+if(this.parentNode.disabled){
+return false;
+}
+_86._popupDialog("select_color.html",function(_8d){
+if(_8d){
+_8c.style.backgroundColor="#"+_8d;
+_8a.value="#"+_8d;
+}
+},_87);
+};
+var _8e=doc.createElement("span");
+_8e.innerHTML="&#x00d7;";
+_8e.className="nocolor";
+_8e.title=HTMLArea._lc("Unset color","TableOperations");
+_8b.appendChild(_8e);
+_8e.onmouseover=function(){
+if(!this.parentNode.disabled){
+this.className+=" nocolor-hilite";
+}
+};
+_8e.onmouseout=function(){
+if(!this.parentNode.disabled){
+this.className="nocolor";
+}
+};
+_8e.onclick=function(){
+_8c.style.backgroundColor="";
+_8a.value="";
+};
+return df;
+};
+TableOperations.createStyleLayoutFieldset=function(doc,_90,el){
+var _92=doc.createElement("fieldset");
+var _93=doc.createElement("legend");
+_92.appendChild(_93);
+_93.innerHTML=HTMLArea._lc("Layout","TableOperations");
+var _94=doc.createElement("table");
+_92.appendChild(_94);
+_94.style.width="100%";
+var _95=doc.createElement("tbody");
+_94.appendChild(_95);
+var _96=el.tagName.toLowerCase();
+var tr,td,input,select,option,options,i;
+if(_96!="td"&&_96!="tr"&&_96!="th"){
+tr=doc.createElement("tr");
+_95.appendChild(tr);
+td=doc.createElement("td");
+td.className="label";
+tr.appendChild(td);
+td.innerHTML=HTMLArea._lc("Float","TableOperations")+":";
+td=doc.createElement("td");
+tr.appendChild(td);
+select=doc.createElement("select");
+td.appendChild(select);
+select.name="f_st_float";
+options=["None","Left","Right"];
+for(var i=0;i<options.length;++i){
+var Val=options[i];
+var val=options[i].toLowerCase();
+option=doc.createElement("option");
+option.innerHTML=HTMLArea._lc(Val,"TableOperations");
+option.value=val;
+option.selected=((""+el.style.cssFloat).toLowerCase()==val);
+select.appendChild(option);
+}
+}
+tr=doc.createElement("tr");
+_95.appendChild(tr);
+td=doc.createElement("td");
+td.className="label";
+tr.appendChild(td);
+td.innerHTML=HTMLArea._lc("Width","TableOperations")+":";
+td=doc.createElement("td");
+tr.appendChild(td);
+input=doc.createElement("input");
+input.type="text";
+input.value=TableOperations.getLength(el.style.width);
+input.size="5";
+input.name="f_st_width";
+input.style.marginRight="0.5em";
+td.appendChild(input);
+select=doc.createElement("select");
+select.name="f_st_widthUnit";
+option=doc.createElement("option");
+option.innerHTML=HTMLArea._lc("percent","TableOperations");
+option.value="%";
+option.selected=/%/.test(el.style.width);
+select.appendChild(option);
+option=doc.createElement("option");
+option.innerHTML=HTMLArea._lc("pixels","TableOperations");
+option.value="px";
+option.selected=/px/.test(el.style.width);
+select.appendChild(option);
+td.appendChild(select);
+select.style.marginRight="0.5em";
+td.appendChild(doc.createTextNode(HTMLArea._lc("Text align","TableOperations")+":"));
+select=doc.createElement("select");
+select.style.marginLeft=select.style.marginRight="0.5em";
+td.appendChild(select);
+select.name="f_st_textAlign";
+options=["Left","Center","Right","Justify","-"];
+if(_96=="td"){
+options.push("Char");
+}
+input=doc.createElement("input");
+input.name="f_st_textAlignChar";
+input.size="1";
+input.style.fontFamily="monospace";
+td.appendChild(input);
+for(var i=0;i<options.length;++i){
+var Val=options[i];
+var val=Val.toLowerCase();
+option=doc.createElement("option");
+option.value=val;
+option.innerHTML=HTMLArea._lc(Val,"TableOperations");
+option.selected=((el.style.textAlign.toLowerCase()==val)||(el.style.textAlign==""&&Val=="-"));
+select.appendChild(option);
+}
+function setCharVisibility(_9b){
+input.style.visibility=_9b?"visible":"hidden";
+if(_9b){
+input.focus();
+input.select();
+}
+}
+select.onchange=function(){
+setCharVisibility(this.value=="char");
+};
+setCharVisibility(select.value=="char");
+tr=doc.createElement("tr");
+_95.appendChild(tr);
+td=doc.createElement("td");
+td.className="label";
+tr.appendChild(td);
+td.innerHTML=HTMLArea._lc("Height","TableOperations")+":";
+td=doc.createElement("td");
+tr.appendChild(td);
+input=doc.createElement("input");
+input.type="text";
+input.value=TableOperations.getLength(el.style.height);
+input.size="5";
+input.name="f_st_height";
+input.style.marginRight="0.5em";
+td.appendChild(input);
+select=doc.createElement("select");
+select.name="f_st_heightUnit";
+option=doc.createElement("option");
+option.innerHTML=HTMLArea._lc("percent","TableOperations");
+option.value="%";
+option.selected=/%/.test(el.style.height);
+select.appendChild(option);
+option=doc.createElement("option");
+option.innerHTML=HTMLArea._lc("pixels","TableOperations");
+option.value="px";
+option.selected=/px/.test(el.style.height);
+select.appendChild(option);
+td.appendChild(select);
+select.style.marginRight="0.5em";
+td.appendChild(doc.createTextNode(HTMLArea._lc("Vertical align","TableOperations")+":"));
+select=doc.createElement("select");
+select.name="f_st_verticalAlign";
+select.style.marginLeft="0.5em";
+td.appendChild(select);
+options=["Top","Middle","Bottom","Baseline","-"];
+for(var i=0;i<options.length;++i){
+var Val=options[i];
+var val=Val.toLowerCase();
+option=doc.createElement("option");
+option.value=val;
+option.innerHTML=HTMLArea._lc(Val,"TableOperations");
+option.selected=((el.style.verticalAlign.toLowerCase()==val)||(el.style.verticalAlign==""&&Val=="-"));
+select.appendChild(option);
+}
+return _92;
+};
+TableOperations.createStyleFieldset=function(doc,_9d,el){
+var _9f=doc.createElement("fieldset");
+var _a0=doc.createElement("legend");
+_9f.appendChild(_a0);
+_a0.innerHTML=HTMLArea._lc("CSS Style","TableOperations");
+var _a1=doc.createElement("table");
+_9f.appendChild(_a1);
+_a1.style.width="100%";
+var _a2=doc.createElement("tbody");
+_a1.appendChild(_a2);
+var tr,td,input,select,option,options,i;
+tr=doc.createElement("tr");
+_a2.appendChild(tr);
+td=doc.createElement("td");
+tr.appendChild(td);
+td.className="label";
+td.innerHTML=HTMLArea._lc("Background","TableOperations")+":";
+td=doc.createElement("td");
+tr.appendChild(td);
+var df=TableOperations.createColorButton(doc,_9d,el.style.backgroundColor,"backgroundColor");
+df.firstChild.nextSibling.style.marginRight="0.5em";
+td.appendChild(df);
+td.appendChild(doc.createTextNode(HTMLArea._lc("Image URL","TableOperations")+": "));
+input=doc.createElement("input");
+input.type="text";
+input.name="f_st_backgroundImage";
+if(el.style.backgroundImage.match(/url\(\s*(.*?)\s*\)/)){
+input.value=RegExp.$1;
+}
+td.appendChild(input);
+tr=doc.createElement("tr");
+_a2.appendChild(tr);
+td=doc.createElement("td");
+tr.appendChild(td);
+td.className="label";
+td.innerHTML=HTMLArea._lc("FG Color","TableOperations")+":";
+td=doc.createElement("td");
+tr.appendChild(td);
+td.appendChild(TableOperations.createColorButton(doc,_9d,el.style.color,"color"));
+input=doc.createElement("input");
+input.style.visibility="hidden";
+input.type="text";
+td.appendChild(input);
+tr=doc.createElement("tr");
+_a2.appendChild(tr);
+td=doc.createElement("td");
+tr.appendChild(td);
+td.className="label";
+td.innerHTML=HTMLArea._lc("Border","TableOperations")+":";
+td=doc.createElement("td");
+tr.appendChild(td);
+var _a5=TableOperations.createColorButton(doc,_9d,el.style.borderColor,"borderColor");
+var btn=_a5.firstChild.nextSibling;
+td.appendChild(_a5);
+btn.style.marginRight="0.5em";
+select=doc.createElement("select");
+var _a7=[];
+td.appendChild(select);
+select.name="f_st_borderStyle";
+options=["none","dotted","dashed","solid","double","groove","ridge","inset","outset"];
+var _a8=el.style.borderStyle;
+(_a8.match(/([^\s]*)\s/))&&(_a8=RegExp.$1);
+for(var i in options){
+if(typeof options[i]=="function"){
+continue;
+}
+var val=options[i];
+option=doc.createElement("option");
+option.value=val;
+option.innerHTML=val;
+(val==_a8)&&(option.selected=true);
+select.appendChild(option);
+}
+select.style.marginRight="0.5em";
+function setBorderFieldsStatus(_ab){
+for(var i=0;i<_a7.length;++i){
+var el=_a7[i];
+el.style.visibility=_ab?"hidden":"visible";
+if(!_ab&&(el.tagName.toLowerCase()=="input")){
+el.focus();
+el.select();
+}
+}
+}
+select.onchange=function(){
+setBorderFieldsStatus(this.value=="none");
+};
+input=doc.createElement("input");
+_a7.push(input);
+input.type="text";
+input.name="f_st_borderWidth";
+input.value=TableOperations.getLength(el.style.borderWidth);
+input.size="5";
+td.appendChild(input);
+input.style.marginRight="0.5em";
+var _ae=doc.createElement("span");
+_ae.innerHTML=HTMLArea._lc("pixels","TableOperations");
+td.appendChild(_ae);
+_a7.push(_ae);
+setBorderFieldsStatus(select.value=="none");
+if(el.tagName.toLowerCase()=="table"){
+tr=doc.createElement("tr");
+_a2.appendChild(tr);
+td=doc.createElement("td");
+td.className="label";
+tr.appendChild(td);
+input=doc.createElement("input");
+input.type="checkbox";
+input.name="f_st_borderCollapse";
+input.id="f_st_borderCollapse";
+var val=(/collapse/i.test(el.style.borderCollapse));
+input.checked=val?1:0;
+td.appendChild(input);
+td=doc.createElement("td");
+tr.appendChild(td);
+var _af=doc.createElement("label");
+_af.htmlFor="f_st_borderCollapse";
+_af.innerHTML=HTMLArea._lc("Collapsed borders","TableOperations");
+td.appendChild(_af);
+}
+return _9f;
 };
 
-TableOperations.prototype._lc = function(string) {
-    return HTMLArea._lc(string, 'TableOperations');
-};
-
-/************************
- * UTILITIES
- ************************/
-
-// retrieves the closest element having the specified tagName in the list of
-// ancestors of the current selection/caret.
-TableOperations.prototype.getClosest = function(tagName) {
-	var editor = this.editor;
-	var ancestors = editor.getAllAncestors();
-	var ret = null;
-	tagName = ("" + tagName).toLowerCase();
-	for (var i = 0; i < ancestors.length; ++i) {
-		var el = ancestors[i];
-		if (el.tagName.toLowerCase() == tagName) {
-			ret = el;
-			break;
-		}
-	}
-	return ret;
-};
-
-// this function requires the file PopupDiv/PopupWin to be loaded from browser
-TableOperations.prototype.dialogTableProperties = function() {
-	// retrieve existing values
-	var table = this.getClosest("table");
-	// this.editor.selectNodeContents(table);
-	// this.editor.updateToolbar();
-
-	var dialog = new PopupWin(this.editor, HTMLArea._lc("Table Properties", "TableOperations"), function(dialog, params) {
-		TableOperations.processStyle(params, table);
-		for (var i in params) {
-      if(typeof params[i] == 'function') continue;
-			var val = params[i];
-			switch (i) {
-			    case "f_caption":
-				if (/\S/.test(val)) {
-					// contains non white-space characters
-					var caption = table.getElementsByTagName("caption")[0];
-					if (!caption) {
-						caption = dialog.editor._doc.createElement("caption");
-						table.insertBefore(caption, table.firstChild);
-					}
-					caption.innerHTML = val;
-				} else {
-					// search for caption and delete it if found
-					var caption = table.getElementsByTagName("caption")[0];
-					if (caption) {
-						caption.parentNode.removeChild(caption);
-					}
-				}
-				break;
-			    case "f_summary":
-				table.summary = val;
-				break;
-			    case "f_width":
-				table.style.width = ("" + val) + params.f_unit;
-				break;
-			    case "f_align":
-				table.align = val;
-				break;
-			    case "f_spacing":
-				table.cellSpacing = val;
-				break;
-			    case "f_padding":
-				table.cellPadding = val;
-				break;
-			    case "f_borders":
-				table.border = val;
-				break;
-			    case "f_frames":
-				table.frame = val;
-				break;
-			    case "f_rules":
-				table.rules = val;
-				break;
-			}
-		}
-		// various workarounds to refresh the table display (Gecko,
-		// what's going on?! do not disappoint me!)
-		dialog.editor.forceRedraw();
-		dialog.editor.focusEditor();
-		dialog.editor.updateToolbar();
-		var save_collapse = table.style.borderCollapse;
-		table.style.borderCollapse = "collapse";
-		table.style.borderCollapse = "separate";
-		table.style.borderCollapse = save_collapse;
-	},
-
-	// this function gets called when the dialog needs to be initialized
-	function (dialog) {
-
-		var f_caption = "";
-		var capel = table.getElementsByTagName("caption")[0];
-		if (capel) {
-			f_caption = capel.innerHTML;
-		}
-		var f_summary = table.summary;
-		var f_width = parseInt(table.style.width);
-		isNaN(f_width) && (f_width = "");
-		var f_unit = /%/.test(table.style.width) ? 'percent' : 'pixels';
-		var f_align = table.align;
-		var f_spacing = table.cellSpacing;
-		var f_padding = table.cellPadding;
-		var f_borders = table.border;
-		var f_frames = table.frame;
-		var f_rules = table.rules;
-
-		function selected(val) {
-			return val ? " selected" : "";
-		}
-
-		// dialog contents
-		dialog.content.style.width = "400px";
-		dialog.content.innerHTML = " \
-<div class='title'\
- style='background: url(" + dialog.baseURL + dialog.editor.imgURL("table-prop.gif", "TableOperations") + ") #fff 98% 50% no-repeat'>" + HTMLArea._lc("Table Properties", "TableOperations") + "\
-</div> \
-<table style='width:100%'> \
-  <tr> \
-    <td> \
-      <fieldset><legend>" + HTMLArea._lc("Description", "TableOperations") + "</legend> \
-       <table style='width:100%'> \
-        <tr> \
-          <td class='label'>" + HTMLArea._lc("Caption", "TableOperations") + ":</td> \
-          <td class='value'><input type='text' name='f_caption' value='" + f_caption + "'/></td> \
-        </tr><tr> \
-          <td class='label'>" + HTMLArea._lc("Summary", "TableOperations") + ":</td> \
-          <td class='value'><input type='text' name='f_summary' value='" + f_summary + "'/></td> \
-        </tr> \
-       </table> \
-      </fieldset> \
-    </td> \
-  </tr> \
-  <tr><td id='--HA-layout'></td></tr> \
-  <tr> \
-    <td> \
-      <fieldset><legend>" + HTMLArea._lc("Spacing and padding", "TableOperations") + "</legend> \
-       <table style='width:100%'> \
-"+//        <tr> \
-//           <td class='label'>" + HTMLArea._lc("Width", "TableOperations") + ":</td> \
-//           <td><input type='text' name='f_width' value='" + f_width + "' size='5' /> \
-//             <select name='f_unit'> \
-//               <option value='%'" + selected(f_unit == "percent") + ">" + HTMLArea._lc("percent", "TableOperations") + "</option> \
-//               <option value='px'" + selected(f_unit == "pixels") + ">" + HTMLArea._lc("pixels", "TableOperations") + "</option> \
-//             </select> &nbsp;&nbsp;" + HTMLArea._lc("Align", "TableOperations") + ": \
-//             <select name='f_align'> \
-//               <option value='left'" + selected(f_align == "left") + ">" + HTMLArea._lc("Left", "TableOperations") + "</option> \
-//               <option value='center'" + selected(f_align == "center") + ">" + HTMLArea._lc("Center", "TableOperations") + "</option> \
-//               <option value='right'" + selected(f_align == "right") + ">" + HTMLArea._lc("Right", "TableOperations") + "</option> \
-//             </select> \
-//           </td> \
-//         </tr> \
-"        <tr> \
-          <td class='label'>" + HTMLArea._lc("Spacing", "TableOperations") + ":</td> \
-          <td><input type='text' name='f_spacing' size='5' value='" + f_spacing + "' /> &nbsp;" + HTMLArea._lc("Padding", "TableOperations") + ":\
-            <input type='text' name='f_padding' size='5' value='" + f_padding + "' /> &nbsp;&nbsp;" + HTMLArea._lc("pixels", "TableOperations") + "\
-          </td> \
-        </tr> \
-       </table> \
-      </fieldset> \
-    </td> \
-  </tr> \
-  <tr> \
-    <td> \
-      <fieldset><legend>" + HTMLArea._lc("Frame and borders", "TableOperations") + "</legend> \
-        <table width='100%'> \
-          <tr> \
-            <td class='label'>" + HTMLArea._lc("Borders", "TableOperations") + ":</td> \
-            <td><input name='f_borders' type='text' size='5' value='" + f_borders + "' /> &nbsp;&nbsp;" + HTMLArea._lc("pixels", "TableOperations") + "</td> \
-          </tr> \
-          <tr> \
-            <td class='label'>" + HTMLArea._lc("Frames", "TableOperations") + ":</td> \
-            <td> \
-              <select name='f_frames'> \
-                <option value='void'" + selected(f_frames == "void") + ">" + HTMLArea._lc("No sides", "TableOperations") + "</option> \
-                <option value='above'" + selected(f_frames == "above") + ">" + HTMLArea._lc("The top side only", "TableOperations") + "</option> \
-                <option value='below'" + selected(f_frames == "below") + ">" + HTMLArea._lc("The bottom side only", "TableOperations") + "</option> \
-                <option value='hsides'" + selected(f_frames == "hsides") + ">" + HTMLArea._lc("The top and bottom sides only", "TableOperations") + "</option> \
-                <option value='vsides'" + selected(f_frames == "vsides") + ">" + HTMLArea._lc("The right and left sides only", "TableOperations") + "</option> \
-                <option value='lhs'" + selected(f_frames == "lhs") + ">" + HTMLArea._lc("The left-hand side only", "TableOperations") + "</option> \
-                <option value='rhs'" + selected(f_frames == "rhs") + ">" + HTMLArea._lc("The right-hand side only", "TableOperations") + "</option> \
-                <option value='box'" + selected(f_frames == "box") + ">" + HTMLArea._lc("All four sides", "TableOperations") + "</option> \
-              </select> \
-            </td> \
-          </tr> \
-          <tr> \
-            <td class='label'>" + HTMLArea._lc("Rules", "TableOperations") + ":</td> \
-            <td> \
-              <select name='f_rules'> \
-                <option value='none'" + selected(f_rules == "none") + ">" + HTMLArea._lc("No rules", "TableOperations") + "</option> \
-                <option value='rows'" + selected(f_rules == "rows") + ">" + HTMLArea._lc("Rules will appear between rows only", "TableOperations") + "</option> \
-                <option value='cols'" + selected(f_rules == "cols") + ">" + HTMLArea._lc("Rules will appear between columns only", "TableOperations") + "</option> \
-                <option value='all'" + selected(f_rules == "all") + ">" + HTMLArea._lc("Rules will appear between all rows and columns", "TableOperations") + "</option> \
-              </select> \
-            </td> \
-          </tr> \
-        </table> \
-      </fieldset> \
-    </td> \
-  </tr> \
-  <tr> \
-    <td id='--HA-style'></td> \
-  </tr> \
-</table> \
-";
-		var st_prop = TableOperations.createStyleFieldset(dialog.doc, dialog.editor, table);
-		var p = dialog.doc.getElementById("--HA-style");
-		p.appendChild(st_prop);
-		var st_layout = TableOperations.createStyleLayoutFieldset(dialog.doc, dialog.editor, table);
-		p = dialog.doc.getElementById("--HA-layout");
-		p.appendChild(st_layout);
-		dialog.modal = true;
-		dialog.addButtons("OK", "Cancel");
-		dialog.showAtElement(dialog.editor._iframe, "c");
-	});
-};
-
-// this function requires the file PopupDiv/PopupWin to be loaded from browser
-TableOperations.prototype.dialogRowCellProperties = function(cell) {
-	// retrieve existing values
-	var element = this.getClosest(cell ? "td" : "tr");
-	var table = this.getClosest("table");
-	// this.editor.selectNodeContents(element);
-	// this.editor.updateToolbar();
-
-	var dialog = new PopupWin(this.editor, cell ? HTMLArea._lc("Cell Properties", "TableOperations") : HTMLArea._lc("Row Properties", "TableOperations"), function(dialog, params) {
-		TableOperations.processStyle(params, element);
-		for (var i in params) {
-      if(typeof params[i] == 'function') continue;
-			var val = params[i];
-			switch (i) {
-			    case "f_align":
-				element.align = val;
-				break;
-			    case "f_char":
-				element.ch = val;
-				break;
-			    case "f_valign":
-				element.vAlign = val;
-				break;
-			}
-		}
-		// various workarounds to refresh the table display (Gecko,
-		// what's going on?! do not disappoint me!)
-		dialog.editor.forceRedraw();
-		dialog.editor.focusEditor();
-		dialog.editor.updateToolbar();
-		var save_collapse = table.style.borderCollapse;
-		table.style.borderCollapse = "collapse";
-		table.style.borderCollapse = "separate";
-		table.style.borderCollapse = save_collapse;
-	},
-
-	// this function gets called when the dialog needs to be initialized
-	function (dialog) {
-
-		var f_align = element.align;
-		var f_valign = element.vAlign;
-		var f_char = element.ch;
-
-		function selected(val) {
-			return val ? " selected" : "";
-		}
-
-		// dialog contents
-		dialog.content.style.width = "400px";
-		dialog.content.innerHTML = " \
-<div class='title'\
- style='background: url(" + dialog.baseURL + dialog.editor.imgURL(cell ? "cell-prop.gif" : "row-prop.gif", "TableOperations") + ") #fff 98% 50% no-repeat'>" + HTMLArea._lc(cell ? "Cell Properties" : "Row Properties", "TableOperations") + "</div> \
-<table style='width:100%'> \
-  <tr> \
-    <td id='--HA-layout'> \
-"+//      <fieldset><legend>" + HTMLArea._lc("Layout", "TableOperations") + "</legend> \
-//        <table style='width:100%'> \
-//         <tr> \
-//           <td class='label'>" + HTMLArea._lc("Align", "TableOperations") + ":</td> \
-//           <td> \
-//             <select name='f_align'> \
-//               <option value='left'" + selected(f_align == "left") + ">" + HTMLArea._lc("Left", "TableOperations") + "</option> \
-//               <option value='center'" + selected(f_align == "center") + ">" + HTMLArea._lc("Center", "TableOperations") + "</option> \
-//               <option value='right'" + selected(f_align == "right") + ">" + HTMLArea._lc("Right", "TableOperations") + "</option> \
-//               <option value='char'" + selected(f_align == "char") + ">" + HTMLArea._lc("Char", "TableOperations") + "</option> \
-//             </select> \
-//             &nbsp;&nbsp;" + HTMLArea._lc("Char", "TableOperations") + ": \
-//             <input type='text' style='font-family: monospace; text-align: center' name='f_char' size='1' value='" + f_char + "' /> \
-//           </td> \
-//         </tr><tr> \
-//           <td class='label'>" + HTMLArea._lc("Vertical align", "TableOperations") + ":</td> \
-//           <td> \
-//             <select name='f_valign'> \
-//               <option value='top'" + selected(f_valign == "top") + ">" + HTMLArea._lc("Top", "TableOperations") + "</option> \
-//               <option value='middle'" + selected(f_valign == "middle") + ">" + HTMLArea._lc("Middle", "TableOperations") + "</option> \
-//               <option value='bottom'" + selected(f_valign == "bottom") + ">" + HTMLArea._lc("Bottom", "TableOperations") + "</option> \
-//               <option value='baseline'" + selected(f_valign == "baseline") + ">" + HTMLArea._lc("Baseline", "TableOperations") + "</option> \
-//             </select> \
-//           </td> \
-//         </tr> \
-//        </table> \
-//       </fieldset> \
-"    </td> \
-  </tr> \
-  <tr> \
-    <td id='--HA-style'></td> \
-  </tr> \
-</table> \
-";
-		var st_prop = TableOperations.createStyleFieldset(dialog.doc, dialog.editor, element);
-		var p = dialog.doc.getElementById("--HA-style");
-		p.appendChild(st_prop);
-		var st_layout = TableOperations.createStyleLayoutFieldset(dialog.doc, dialog.editor, element);
-		p = dialog.doc.getElementById("--HA-layout");
-		p.appendChild(st_layout);
-		dialog.modal = true;
-		dialog.addButtons("OK", "Cancel");
-		dialog.showAtElement(dialog.editor._iframe, "c");
-	});
-};
-
-// this function gets called when some button from the TableOperations toolbar
-// was pressed.
-TableOperations.prototype.buttonPress = function(editor, button_id) {
-	this.editor = editor;
-	var mozbr = HTMLArea.is_gecko ? "<br />" : "";
-
-	// helper function that clears the content in a table row
-	function clearRow(tr) {
-		var tds = tr.getElementsByTagName("td");
-		for (var i = tds.length; --i >= 0;) {
-			var td = tds[i];
-			td.rowSpan = 1;
-			td.innerHTML = mozbr;
-		}
-	}
-
-	function splitRow(td) {
-		var n = parseInt("" + td.rowSpan);
-		var nc = parseInt("" + td.colSpan);
-		td.rowSpan = 1;
-		tr = td.parentNode;
-		var itr = tr.rowIndex;
-		var trs = tr.parentNode.rows;
-		var index = td.cellIndex;
-		while (--n > 0) {
-			tr = trs[++itr];
-			var otd = editor._doc.createElement("td");
-			otd.colSpan = td.colSpan;
-			otd.innerHTML = mozbr;
-			tr.insertBefore(otd, tr.cells[index]);
-		}
-		editor.forceRedraw();
-		editor.updateToolbar();
-	}
-
-	function splitCol(td) {
-		var nc = parseInt("" + td.colSpan);
-		td.colSpan = 1;
-		tr = td.parentNode;
-		var ref = td.nextSibling;
-		while (--nc > 0) {
-			var otd = editor._doc.createElement("td");
-			otd.rowSpan = td.rowSpan;
-			otd.innerHTML = mozbr;
-			tr.insertBefore(otd, ref);
-		}
-		editor.forceRedraw();
-		editor.updateToolbar();
-	}
-
-	function splitCell(td) {
-		var nc = parseInt("" + td.colSpan);
-		splitCol(td);
-		var items = td.parentNode.cells;
-		var index = td.cellIndex;
-		while (nc-- > 0) {
-			splitRow(items[index++]);
-		}
-	}
-
-	function selectNextNode(el) {
-		var node = el.nextSibling;
-		while (node && node.nodeType != 1) {
-			node = node.nextSibling;
-		}
-		if (!node) {
-			node = el.previousSibling;
-			while (node && node.nodeType != 1) {
-				node = node.previousSibling;
-			}
-		}
-		if (!node) {
-			node = el.parentNode;
-		}
-		editor.selectNodeContents(node);
-	}
-
-	switch (button_id) {
-		// ROWS
-
-	    case "TO-row-insert-above":
-	    case "TO-row-insert-under":
-		var tr = this.getClosest("tr");
-		if (!tr) {
-			break;
-		}
-		var otr = tr.cloneNode(true);
-		clearRow(otr);
-		tr.parentNode.insertBefore(otr, /under/.test(button_id) ? tr.nextSibling : tr);
-		editor.forceRedraw();
-		editor.focusEditor();
-		break;
-	    case "TO-row-delete":
-		var tr = this.getClosest("tr");
-		if (!tr) {
-			break;
-		}
-		var par = tr.parentNode;
-		if (par.rows.length == 1) {
-			alert(HTMLArea._lc("HTMLArea cowardly refuses to delete the last row in table.", "TableOperations"));
-			break;
-		}
-		// set the caret first to a position that doesn't
-		// disappear.
-		selectNextNode(tr);
-		par.removeChild(tr);
-		editor.forceRedraw();
-		editor.focusEditor();
-		editor.updateToolbar();
-		break;
-	    case "TO-row-split":
-		var td = this.getClosest("td");
-		if (!td) {
-			break;
-		}
-		splitRow(td);
-		break;
-
-		// COLUMNS
-
-	    case "TO-col-insert-before":
-	    case "TO-col-insert-after":
-		var td = this.getClosest("td");
-		if (!td) {
-			break;
-		}
-		var rows = td.parentNode.parentNode.rows;
-		var index = td.cellIndex;
-    var lastColumn = (td.parentNode.cells.length == index + 1);
-		for (var i = rows.length; --i >= 0;) {
-			var tr = rows[i];			
-			var otd = editor._doc.createElement("td");
-			otd.innerHTML = mozbr;
-      if (lastColumn && HTMLArea.is_ie) 
-      {
-        tr.insertBefore(otd);
-      } 
-      else 
-      {
-        var ref = tr.cells[index + (/after/.test(button_id) ? 1 : 0)];
-        tr.insertBefore(otd, ref);
-      }
-		}
-		editor.focusEditor();
-		break;
-	    case "TO-col-split":
-		var td = this.getClosest("td");
-		if (!td) {
-			break;
-		}
-		splitCol(td);
-		break;
-	    case "TO-col-delete":
-		var td = this.getClosest("td");
-		if (!td) {
-			break;
-		}
-		var index = td.cellIndex;
-		if (td.parentNode.cells.length == 1) {
-			alert(HTMLArea._lc("HTMLArea cowardly refuses to delete the last column in table.", "TableOperations"));
-			break;
-		}
-		// set the caret first to a position that doesn't disappear
-		selectNextNode(td);
-		var rows = td.parentNode.parentNode.rows;
-		for (var i = rows.length; --i >= 0;) {
-			var tr = rows[i];
-			tr.removeChild(tr.cells[index]);
-		}
-		editor.forceRedraw();
-		editor.focusEditor();
-		editor.updateToolbar();
-		break;
-
-		// CELLS
-
-	    case "TO-cell-split":
-		var td = this.getClosest("td");
-		if (!td) {
-			break;
-		}
-		splitCell(td);
-		break;
-	    case "TO-cell-insert-before":
-	    case "TO-cell-insert-after":
-		var td = this.getClosest("td");
-		if (!td) {
-			break;
-		}
-		var tr = td.parentNode;
-		var otd = editor._doc.createElement("td");
-		otd.innerHTML = mozbr;
-		tr.insertBefore(otd, /after/.test(button_id) ? td.nextSibling : td);
-		editor.forceRedraw();
-		editor.focusEditor();
-		break;
-	    case "TO-cell-delete":
-		var td = this.getClosest("td");
-		if (!td) {
-			break;
-		}
-		if (td.parentNode.cells.length == 1) {
-			alert(HTMLArea._lc("HTMLArea cowardly refuses to delete the last cell in row.", "TableOperations"));
-			break;
-		}
-		// set the caret first to a position that doesn't disappear
-		selectNextNode(td);
-		td.parentNode.removeChild(td);
-		editor.forceRedraw();
-		editor.updateToolbar();
-		break;
-	    case "TO-cell-merge":
-		// !! FIXME: Mozilla specific !!
-		var sel = editor._getSelection();
-		var range, i = 0;
-		var rows = [];
-		var row = null;
-		var cells = null;
-		if (!HTMLArea.is_ie) {
-			try {
-				while (range = sel.getRangeAt(i++)) {
-					var td = range.startContainer.childNodes[range.startOffset];
-					if (td.parentNode != row) {
-						row = td.parentNode;
-						(cells) && rows.push(cells);
-						cells = [];
-					}
-					cells.push(td);
-				}
-			} catch(e) {/* finished walking through selection */}
-			rows.push(cells);
-		} else {
-			// Internet Explorer "browser"
-			var td = this.getClosest("td");
-			if (!td) {
-				alert(HTMLArea._lc("Please click into some cell", "TableOperations"));
-				break;
-			}
-			var tr = td.parentElement;
-			var no_cols = prompt(HTMLArea._lc("How many columns would you like to merge?", "TableOperations"), 2);
-			if (!no_cols) {
-				// cancelled
-				break;
-			}
-			var no_rows = prompt(HTMLArea._lc("How many rows would you like to merge?", "TableOperations"), 2);
-			if (!no_rows) {
-				// cancelled
-				break;
-			}
-			var cell_index = td.cellIndex;
-			while (no_rows-- > 0) {
-				td = tr.cells[cell_index];
-				cells = [td];
-				for (var i = 1; i < no_cols; ++i) {
-					td = td.nextSibling;
-					if (!td) {
-						break;
-					}
-					cells.push(td);
-				}
-				rows.push(cells);
-				tr = tr.nextSibling;
-				if (!tr) {
-					break;
-				}
-			}
-		}
-		var HTML = "";
-		for (i = 0; i < rows.length; ++i) {
-			// i && (HTML += "<br />");
-			var cells = rows[i];
-			for (var j = 0; j < cells.length; ++j) {
-				// j && (HTML += "&nbsp;");
-				var cell = cells[j];
-				HTML += cell.innerHTML;
-				(i || j) && (cell.parentNode.removeChild(cell));
-			}
-		}
-		var td = rows[0][0];
-		td.innerHTML = HTML;
-		td.rowSpan = rows.length;
-		td.colSpan = rows[0].length;
-		editor.selectNodeContents(td);
-		editor.forceRedraw();
-		editor.focusEditor();
-		break;
-
-		// PROPERTIES
-
-	    case "TO-table-prop":
-		this.dialogTableProperties();
-		break;
-
-	    case "TO-row-prop":
-		this.dialogRowCellProperties(false);
-		break;
-
-	    case "TO-cell-prop":
-		this.dialogRowCellProperties(true);
-		break;
-
-	    default:
-		alert("Button [" + button_id + "] not yet implemented");
-	}
-};
-
-// the list of buttons added by this plugin
-TableOperations.btnList = [
-	// table properties button
-    ["table-prop",       "table", "Table properties"],
-	null,			// separator
-
-	// ROWS
-	["row-prop",         "tr", "Row properties"],
-	["row-insert-above", "tr", "Insert row before"],
-	["row-insert-under", "tr", "Insert row after"],
-	["row-delete",       "tr", "Delete row"],
-	["row-split",        "td[rowSpan!=1]", "Split row"],
-	null,
-
-	// COLS
-	["col-insert-before", "td", "Insert column before"],
-	["col-insert-after",  "td", "Insert column after"],
-	["col-delete",        "td", "Delete column"],
-	["col-split",         "td[colSpan!=1]", "Split column"],
-	null,
-
-	// CELLS
-	["cell-prop",          "td", "Cell properties"],
-	["cell-insert-before", "td", "Insert cell before"],
-	["cell-insert-after",  "td", "Insert cell after"],
-	["cell-delete",        "td", "Delete cell"],
-	["cell-merge",         "tr", "Merge cells"],
-	["cell-split",         "td[colSpan!=1,rowSpan!=1]", "Split cell"]
-	];
-
-
-
-//// GENERIC CODE [style of any element; this should be moved into a separate
-//// file as it'll be very useful]
-//// BEGIN GENERIC CODE -----------------------------------------------------
-
-TableOperations.getLength = function(value) {
-	var len = parseInt(value);
-	if (isNaN(len)) {
-		len = "";
-	}
-	return len;
-};
-
-// Applies the style found in "params" to the given element.
-TableOperations.processStyle = function(params, element) {
-	var style = element.style;
-	for (var i in params) {
-    if(typeof params[i] == 'function') continue;
-		var val = params[i];
-		switch (i) {
-		    case "f_st_backgroundColor":
-			style.backgroundColor = val;
-			break;
-		    case "f_st_color":
-			style.color = val;
-			break;
-		    case "f_st_backgroundImage":
-			if (/\S/.test(val)) {
-				style.backgroundImage = "url(" + val + ")";
-			} else {
-				style.backgroundImage = "none";
-			}
-			break;
-		    case "f_st_borderWidth":
-			style.borderWidth = val;
-			break;
-		    case "f_st_borderStyle":
-			style.borderStyle = val;
-			break;
-		    case "f_st_borderColor":
-			style.borderColor = val;
-			break;
-		    case "f_st_borderCollapse":
-			style.borderCollapse = val ? "collapse" : "";
-			break;
-		    case "f_st_width":
-			if (/\S/.test(val)) {
-				style.width = val + params["f_st_widthUnit"];
-			} else {
-				style.width = "";
-			}
-			break;
-		    case "f_st_height":
-			if (/\S/.test(val)) {
-				style.height = val + params["f_st_heightUnit"];
-			} else {
-				style.height = "";
-			}
-			break;
-		    case "f_st_textAlign":
-			if (val == "char") {
-				var ch = params["f_st_textAlignChar"];
-				if (ch == '"') {
-					ch = '\\"';
-				}
-				style.textAlign = '"' + ch + '"';
-			} else if (val == "-") {
-			    style.textAlign = "";
-			} else {
-				style.textAlign = val;
-			}
-			break;
-		    case "f_st_verticalAlign":
-		    element.vAlign = "";
-			if (val == "-") {
-			    style.verticalAlign = "";
-			    
-		    } else {
-			    style.verticalAlign = val;
-			}
-			break;
-		    case "f_st_float":
-			style.cssFloat = val;
-			break;
-// 		    case "f_st_margin":
-// 			style.margin = val + "px";
-// 			break;
-// 		    case "f_st_padding":
-// 			style.padding = val + "px";
-// 			break;
-		}
-	}
-};
-
-// Returns an HTML element for a widget that allows color selection.  That is,
-// a button that contains the given color, if any, and when pressed will popup
-// the sooner-or-later-to-be-rewritten select_color.html dialog allowing user
-// to select some color.  If a color is selected, an input field with the name
-// "f_st_"+name will be updated with the color value in #123456 format.
-TableOperations.createColorButton = function(doc, editor, color, name) {
-	if (!color) {
-		color = "";
-	} else if (!/#/.test(color)) {
-		color = HTMLArea._colorToRgb(color);
-	}
-
-	var df = doc.createElement("span");
- 	var field = doc.createElement("input");
-	field.type = "hidden";
-	df.appendChild(field);
- 	field.name = "f_st_" + name;
-	field.value = color;
-	var button = doc.createElement("span");
-	button.className = "buttonColor";
-	df.appendChild(button);
-	var span = doc.createElement("span");
-	span.className = "chooser";
-	// span.innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-	span.style.backgroundColor = color;
-	button.appendChild(span);
-	button.onmouseover = function() { if (!this.disabled) { this.className += " buttonColor-hilite"; }};
-	button.onmouseout = function() { if (!this.disabled) { this.className = "buttonColor"; }};
-	span.onclick = function() {
-		if (this.parentNode.disabled) {
-			return false;
-		}
-		editor._popupDialog("select_color.html", function(color) {
-			if (color) {
-				span.style.backgroundColor = "#" + color;
-				field.value = "#" + color;
-			}
-		}, color);
-	};
-	var span2 = doc.createElement("span");
-	span2.innerHTML = "&#x00d7;";
-	span2.className = "nocolor";
-	span2.title = HTMLArea._lc("Unset color", "TableOperations");
-	button.appendChild(span2);
-	span2.onmouseover = function() { if (!this.parentNode.disabled) { this.className += " nocolor-hilite"; }};
-	span2.onmouseout = function() { if (!this.parentNode.disabled) { this.className = "nocolor"; }};
-	span2.onclick = function() {
-		span.style.backgroundColor = "";
-		field.value = "";
-	};
-	return df;
-};
-
-TableOperations.createStyleLayoutFieldset = function(doc, editor, el) {
-	var fieldset = doc.createElement("fieldset");
-	var legend = doc.createElement("legend");
-	fieldset.appendChild(legend);
-	legend.innerHTML = HTMLArea._lc("Layout", "TableOperations");
-	var table = doc.createElement("table");
-	fieldset.appendChild(table);
-	table.style.width = "100%";
-	var tbody = doc.createElement("tbody");
-	table.appendChild(tbody);
-
-	var tagname = el.tagName.toLowerCase();
-	var tr, td, input, select, option, options, i;
-
-	if (tagname != "td" && tagname != "tr" && tagname != "th") {
-		tr = doc.createElement("tr");
-		tbody.appendChild(tr);
-		td = doc.createElement("td");
-		td.className = "label";
-		tr.appendChild(td);
-		td.innerHTML = HTMLArea._lc("Float", "TableOperations") + ":";
-		td = doc.createElement("td");
-		tr.appendChild(td);
-		select = doc.createElement("select");
-		td.appendChild(select);
-		select.name = "f_st_float";
-		options = ["None", "Left", "Right"];
-		for (var i = 0; i < options.length; ++i) {
-			var Val = options[i];
-			var val = options[i].toLowerCase();
-			option = doc.createElement("option");
-			option.innerHTML = HTMLArea._lc(Val, "TableOperations");
-			option.value = val;
-			option.selected = (("" + el.style.cssFloat).toLowerCase() == val);
-			select.appendChild(option);
-		}
-	}
-
-	tr = doc.createElement("tr");
-	tbody.appendChild(tr);
-	td = doc.createElement("td");
-	td.className = "label";
-	tr.appendChild(td);
-	td.innerHTML = HTMLArea._lc("Width", "TableOperations") + ":";
-	td = doc.createElement("td");
-	tr.appendChild(td);
-	input = doc.createElement("input");
-	input.type = "text";
-	input.value = TableOperations.getLength(el.style.width);
-	input.size = "5";
-	input.name = "f_st_width";
-	input.style.marginRight = "0.5em";
-	td.appendChild(input);
-	select = doc.createElement("select");
-	select.name = "f_st_widthUnit";
-	option = doc.createElement("option");
-	option.innerHTML = HTMLArea._lc("percent", "TableOperations");
-	option.value = "%";
-	option.selected = /%/.test(el.style.width);
-	select.appendChild(option);
-	option = doc.createElement("option");
-	option.innerHTML = HTMLArea._lc("pixels", "TableOperations");
-	option.value = "px";
-	option.selected = /px/.test(el.style.width);
-	select.appendChild(option);
-	td.appendChild(select);
-
-	select.style.marginRight = "0.5em";
-	td.appendChild(doc.createTextNode(HTMLArea._lc("Text align", "TableOperations") + ":"));
-	select = doc.createElement("select");
-	select.style.marginLeft = select.style.marginRight = "0.5em";
-	td.appendChild(select);
-	select.name = "f_st_textAlign";
-	options = ["Left", "Center", "Right", "Justify", "-"];
-	if (tagname == "td") {
-		options.push("Char");
-	}
-	input = doc.createElement("input");
-	input.name = "f_st_textAlignChar";
-	input.size = "1";
-	input.style.fontFamily = "monospace";
-	td.appendChild(input);
-	for (var i = 0; i < options.length; ++i) {
-		var Val = options[i];
-		var val = Val.toLowerCase();
-		option = doc.createElement("option");
-		option.value = val;
-		option.innerHTML = HTMLArea._lc(Val, "TableOperations");
-		option.selected = ((el.style.textAlign.toLowerCase() == val) || (el.style.textAlign == "" && Val == "-"));
-		select.appendChild(option);
-	}
-	function setCharVisibility(value) {
-		input.style.visibility = value ? "visible" : "hidden";
-		if (value) {
-			input.focus();
-			input.select();
-		}
-	}
-	select.onchange = function() { setCharVisibility(this.value == "char"); };
-	setCharVisibility(select.value == "char");
-
-	tr = doc.createElement("tr");
-	tbody.appendChild(tr);
-	td = doc.createElement("td");
-	td.className = "label";
-	tr.appendChild(td);
-	td.innerHTML = HTMLArea._lc("Height", "TableOperations") + ":";
-	td = doc.createElement("td");
-	tr.appendChild(td);
-	input = doc.createElement("input");
-	input.type = "text";
-	input.value = TableOperations.getLength(el.style.height);
-	input.size = "5";
-	input.name = "f_st_height";
-	input.style.marginRight = "0.5em";
-	td.appendChild(input);
-	select = doc.createElement("select");
-	select.name = "f_st_heightUnit";
-	option = doc.createElement("option");
-	option.innerHTML = HTMLArea._lc("percent", "TableOperations");
-	option.value = "%";
-	option.selected = /%/.test(el.style.height);
-	select.appendChild(option);
-	option = doc.createElement("option");
-	option.innerHTML = HTMLArea._lc("pixels", "TableOperations");
-	option.value = "px";
-	option.selected = /px/.test(el.style.height);
-	select.appendChild(option);
-	td.appendChild(select);
-
-	select.style.marginRight = "0.5em";
-	td.appendChild(doc.createTextNode(HTMLArea._lc("Vertical align", "TableOperations") + ":"));
-	select = doc.createElement("select");
-	select.name = "f_st_verticalAlign";
-	select.style.marginLeft = "0.5em";
-	td.appendChild(select);
-	options = ["Top", "Middle", "Bottom", "Baseline", "-"];
-	for (var i = 0; i < options.length; ++i) {
-		var Val = options[i];
-		var val = Val.toLowerCase();
-		option = doc.createElement("option");
-		option.value = val;
-		option.innerHTML = HTMLArea._lc(Val, "TableOperations");
-		option.selected = ((el.style.verticalAlign.toLowerCase() == val) || (el.style.verticalAlign == "" && Val == "-"));
-		select.appendChild(option);
-	}
-
-	return fieldset;
-};
-
-// Returns an HTML element containing the style attributes for the given
-// element.  This can be easily embedded into any dialog; the functionality is
-// also provided.
-TableOperations.createStyleFieldset = function(doc, editor, el) {
-	var fieldset = doc.createElement("fieldset");
-	var legend = doc.createElement("legend");
-	fieldset.appendChild(legend);
-	legend.innerHTML = HTMLArea._lc("CSS Style", "TableOperations");
-	var table = doc.createElement("table");
-	fieldset.appendChild(table);
-	table.style.width = "100%";
-	var tbody = doc.createElement("tbody");
-	table.appendChild(tbody);
-
-	var tr, td, input, select, option, options, i;
-
-	tr = doc.createElement("tr");
-	tbody.appendChild(tr);
-	td = doc.createElement("td");
-	tr.appendChild(td);
-	td.className = "label";
-	td.innerHTML = HTMLArea._lc("Background", "TableOperations") + ":";
-	td = doc.createElement("td");
-	tr.appendChild(td);
-	var df = TableOperations.createColorButton(doc, editor, el.style.backgroundColor, "backgroundColor");
-	df.firstChild.nextSibling.style.marginRight = "0.5em";
-	td.appendChild(df);
-	td.appendChild(doc.createTextNode(HTMLArea._lc("Image URL", "TableOperations") + ": "));
-	input = doc.createElement("input");
-	input.type = "text";
-	input.name = "f_st_backgroundImage";
-	if (el.style.backgroundImage.match(/url\(\s*(.*?)\s*\)/)) {
-		input.value = RegExp.$1;
-	}
-	// input.style.width = "100%";
-	td.appendChild(input);
-
-	tr = doc.createElement("tr");
-	tbody.appendChild(tr);
-	td = doc.createElement("td");
-	tr.appendChild(td);
-	td.className = "label";
-	td.innerHTML = HTMLArea._lc("FG Color", "TableOperations") + ":";
-	td = doc.createElement("td");
-	tr.appendChild(td);
-	td.appendChild(TableOperations.createColorButton(doc, editor, el.style.color, "color"));
-
-	// for better alignment we include an invisible field.
-	input = doc.createElement("input");
-	input.style.visibility = "hidden";
-	input.type = "text";
-	td.appendChild(input);
-
-	tr = doc.createElement("tr");
-	tbody.appendChild(tr);
-	td = doc.createElement("td");
-	tr.appendChild(td);
-	td.className = "label";
-	td.innerHTML = HTMLArea._lc("Border", "TableOperations") + ":";
-	td = doc.createElement("td");
-	tr.appendChild(td);
-
-	var colorButton = TableOperations.createColorButton(doc, editor, el.style.borderColor, "borderColor");
-	var btn = colorButton.firstChild.nextSibling;
-	td.appendChild(colorButton);
-	// borderFields.push(btn);
-	btn.style.marginRight = "0.5em";
-
-	select = doc.createElement("select");
-	var borderFields = [];
-	td.appendChild(select);
-	select.name = "f_st_borderStyle";
-	options = ["none", "dotted", "dashed", "solid", "double", "groove", "ridge", "inset", "outset"];
-	var currentBorderStyle = el.style.borderStyle;
-	// Gecko reports "solid solid solid solid" for "border-style: solid".
-	// That is, "top right bottom left" -- we only consider the first
-	// value.
-	(currentBorderStyle.match(/([^\s]*)\s/)) && (currentBorderStyle = RegExp.$1);
-	for (var i in options) {
-    if(typeof options[i] == 'function') continue;
-		var val = options[i];
-		option = doc.createElement("option");
-		option.value = val;
-		option.innerHTML = val;
-		(val == currentBorderStyle) && (option.selected = true);
-		select.appendChild(option);
-	}
-	select.style.marginRight = "0.5em";
-	function setBorderFieldsStatus(value) {
-		for (var i = 0; i < borderFields.length; ++i) {
-			var el = borderFields[i];
-			el.style.visibility = value ? "hidden" : "visible";
-			if (!value && (el.tagName.toLowerCase() == "input")) {
-				el.focus();
-				el.select();
-			}
-		}
-	}
-	select.onchange = function() { setBorderFieldsStatus(this.value == "none"); };
-
-	input = doc.createElement("input");
-	borderFields.push(input);
-	input.type = "text";
-	input.name = "f_st_borderWidth";
-	input.value = TableOperations.getLength(el.style.borderWidth);
-	input.size = "5";
-	td.appendChild(input);
-	input.style.marginRight = "0.5em";
-	var span = doc.createElement("span");
-	span.innerHTML = HTMLArea._lc("pixels", "TableOperations");
-	td.appendChild(span);
-	borderFields.push(span);
-
-	setBorderFieldsStatus(select.value == "none");
-
-	if (el.tagName.toLowerCase() == "table") {
-		// the border-collapse style is only for tables
-		tr = doc.createElement("tr");
-		tbody.appendChild(tr);
-		td = doc.createElement("td");
-		td.className = "label";
-		tr.appendChild(td);
-		input = doc.createElement("input");
-		input.type = "checkbox";
-		input.name = "f_st_borderCollapse";
-		input.id = "f_st_borderCollapse";
-		var val = (/collapse/i.test(el.style.borderCollapse));
-		input.checked = val ? 1 : 0;
-		td.appendChild(input);
-
-		td = doc.createElement("td");
-		tr.appendChild(td);
-		var label = doc.createElement("label");
-		label.htmlFor = "f_st_borderCollapse";
-		label.innerHTML = HTMLArea._lc("Collapsed borders", "TableOperations");
-		td.appendChild(label);
-	}
-
-// 	tr = doc.createElement("tr");
-// 	tbody.appendChild(tr);
-// 	td = doc.createElement("td");
-// 	td.className = "label";
-// 	tr.appendChild(td);
-// 	td.innerHTML = HTMLArea._lc("Margin", "TableOperations") + ":";
-// 	td = doc.createElement("td");
-// 	tr.appendChild(td);
-// 	input = doc.createElement("input");
-// 	input.type = "text";
-// 	input.size = "5";
-// 	input.name = "f_st_margin";
-// 	td.appendChild(input);
-// 	input.style.marginRight = "0.5em";
-// 	td.appendChild(doc.createTextNode(HTMLArea._lc("Padding", "TableOperations") + ":"));
-
-// 	input = doc.createElement("input");
-// 	input.type = "text";
-// 	input.size = "5";
-// 	input.name = "f_st_padding";
-// 	td.appendChild(input);
-// 	input.style.marginLeft = "0.5em";
-// 	input.style.marginRight = "0.5em";
-// 	td.appendChild(doc.createTextNode(HTMLArea._lc("pixels", "TableOperations")));
-
-	return fieldset;
-};
-
-//// END GENERIC CODE -------------------------------------------------------

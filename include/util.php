@@ -693,7 +693,7 @@ function HtmlAreaLoaderScript($aTextareas)
 
     echo '
   <!-- Load up the actual editor core -->
-  <script type="text/javascript" src="'.BASE.'xinha/htmlarea.js"></script>
+  <script type="text/javascript" src="'.BASE.'xinha/XinhaCore.js"></script>
 
   <script type="text/javascript">
     xinha_editors_'.$outputIndex.' = null;
