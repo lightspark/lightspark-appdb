@@ -794,12 +794,18 @@ class User {
 
      function objectMakeUrl()
      {
+         if(!$this->iUserId)
+             return;
+
          $sUrl = BASE."contact.php?iRecipientId=$this->iUserId";
          return $sUrl;
      }
 
      function objectMakeLink()
      {
+         if(!$this->iUserId)
+             return $this->sRealname;
+
          $sLink = "<a href=\"".$this->objectMakeUrl()."\">$this->sRealname</a>";
          return $sLink;
      }
