@@ -180,7 +180,7 @@ class application_queue
             global $aClean;
 
             echo $this->oVersionQueue->oDownloadUrl->outputEditorSingle(
-                    $this->oVersionQueue->Oversion->iVersionId, $aClean);
+                    $this->oVersionQueue->oVersion->iVersionId, $aClean);
 
             $this->oVersionQueue->oTestDataQueue->outputEditor();
         }
