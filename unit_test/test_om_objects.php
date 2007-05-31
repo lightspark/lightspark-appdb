@@ -49,6 +49,10 @@ function test_class($sClassName, $aTestMethods)
                         $oTestObject->sName = "Silly test distribution";
                         $oTestObject->sUrl = "http://appdb.winehq.org/";
                     break;
+                    case "downloadurl":
+                        $oTestObject->sUrl = "http://appdb.winehq.org/";
+                        $oTestObject->sDescription = "DANGER";
+                        $oTestObject->iVersionId = 65000; // Just needs to be != 0 
                     case "maintainer":
                         $iAppId = 65555;
                         $oApp = new application();
@@ -139,6 +143,7 @@ function test_object_methods()
     $aTestClasses = array("application",
                           "application_queue",
                           "distribution",
+                          "downloadurl",
                           "maintainer",
                           "screenshot",
                           "testData",

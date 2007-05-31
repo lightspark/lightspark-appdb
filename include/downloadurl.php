@@ -57,8 +57,21 @@ class downloadurl
     }
 
     /* Output an editor for Download URL fields */
-    function outputEditor($oVersion, $sFormAction)
+    function outputEditor($oVersion = null, $sFormAction = null)
     {
+        /* If we do not get any parameters we try to behave like a proper objectManager
+           object, by only showing an editor for one entry instead of several.  This
+           code is sort of hacky, and should be fixed once the rest of the downloadurl
+           code is fully adapted to the objectManager */
+        if(!$oVersion && !$sFormAction)
+        {
+            global $aClean;
+            echo downloadurl::outputEditorSingle($this->iVersionId);
+        }
+
+        if(!$oVersion || !$sFormAction)
+            return FALSE;
+
         /* Check for correct permissions */
         if(!downloadurl::canEdit($oVersion->iVersionId))
             return FALSE;
@@ -354,6 +367,64 @@ class downloadurl
         if(!query_parameters("DELETE FROM appData WHERE id = '?'", $this->iId))
             return FALSE;
 
+        return TRUE;
+    }
+
+    function objectGetEntries($bQueued, $bRejected, $iRows = 0, $iStart = 0)
+    {
+        return appData::objectGetEntries($bQueued, $bRejected, $iRows, $iStart,
+                                         "downloadurl");
+    }
+
+    function objectGetHeader()
+    {
+        return appData::objectGetHeader("downloadurl");
+    }
+
+    /* arg1 = OM object, arg2 = CSS style, arg3 = text for edit link */
+    function objectOutputTableRow($oObject, $sClass, $sEditLinkLabel)
+    {
+        $oAppData = new AppData();
+        $oAppData->objectOutputTableRow($oObject, $sClass, $sEditLinkLabel);
+    }
+
+    function objectGetInstanceFromRow($oRow)
+    {
+        return new appData($oRow->id, $oRow);
+    }
+
+    function getOutputEditorValues($aClean)
+    {
+        $this->sUrl = $aClean['sDownloadUrlUrl'];
+        $this->sDescription = $aClean['sDownloadUrlDescription'];
+    }
+
+    function mustBeQueued()
+    {
+        if($this)
+        {
+            $oAppData = new appData();
+            $oAppData->iVersionId = $this->iVersionId;
+            $oAppData->iAppId = NULL;
+            return $oAppData->mustBeQueued();
+        } else
+            return appData::mustBeQueued();
+    }
+
+    function allowAnonymousSubmissions()
+    {
+        return FALSE;
+    }
+
+    function objectMakeLink()
+    {
+        /* FIXME: not implemented */
+        return TRUE;
+    }
+
+    function objectMakeUrl()
+    {
+        /* FIXME: not implemented */
         return TRUE;
     }
 }
