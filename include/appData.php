@@ -154,6 +154,9 @@ class appData
         if($sQueued === false)
             $sQueued = "false";
 
+        $sSelectType = "";
+        $sLimit = "";
+
         if(($sQueued == "true" || $sQueued == "all") &&
             !$_SESSION['current']->hasPriv("admin"))
         {
@@ -270,6 +273,9 @@ class appData
         /* Not implemented for appData */
         if($bRejected)
             return FALSE;
+
+        $sSelectType = "";
+        $sLimit = "";
 
         if($bQueued && !$_SESSION['current']->hasPriv("admin"))
         {
