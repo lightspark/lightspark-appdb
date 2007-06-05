@@ -978,9 +978,12 @@ class testData{
     {
         echo "<p>This is the screen for inputing test information so that others ";
         echo "looking at the database will know \n";
-        echo "what was working on a particular release of Wine. Although be \n";
-        echo "aware that this is not the bug-tracker and that \n";
-        echo "this is not where the developers check for bugs.</p>\n";
+        echo "what was working on a particular release of Wine.</p>\n";
+        echo "<p><b>Please DO NOT include crash or Wine debug output.\n";
+        echo " Instead report the crash as a bug in the Wine bugzilla at \n";
+        echo "<a href=\"http://bugs.winehq.org\">http://bugs.winehq.org</a>.\n";
+        echo "We ask that you use bugzilla because developers do not monitor the AppDB \n";
+        echo "for bugs.</b></p>\n"; 
         echo "<p>Please be as detailed as you can but do not paste large \n";
         echo "chunks of output from the terminal. Type out your report \n";
         echo "clearly and in proper English so that it is easily readable.</p>\n";
