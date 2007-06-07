@@ -164,25 +164,52 @@ function make_bugzilla_version_list($varname, $cvalue)
 {
     $table = BUGZILLA_DB.".versions";
     $where = "WHERE product_id=".BUGZILLA_PRODUCT_ID;
-    $sQuery = "SELECT value FROM $table $where ORDER BY value";
+    $sQuery = "SELECT value FROM $table $where";
 
     $hResult = query_bugzilladb($sQuery);
     if(!$hResult) return;
 
-    echo "<select name='$varname'>\n";
-    echo "<option value=\"\">Choose ...</option>\n";
+    // NOTE: perform some version list pruning
+    //       - Reverse the order, we want the newest entries first
+    //         and we can't use 'order by' since we have no column
+    //         to order by, but the entries should come out in the
+    //         order they were added
+    //       - Trim the list, we don't want every version of wine ever released
+    //       - Add 'CVS' explicitly since we trim it out
+    //
+    // TODO: if we ever get a reasonable way to order the list replace this code
+    //       with that
+    $aVersions = array();
     while(list($value) = mysql_fetch_row($hResult))
     {
-        if($value == "unspecified")
-        {
-            // We do not unspecified versions!!!
-        } else
-        {
-            if($value == $cvalue)
-                echo "<option value=$value selected>$value\n";
-            else
-                echo "<option value=$value>$value\n";
-        }
+      // exclude unspecified versions
+      if($value != "unspecified")
+        $aVersions[] = $value;
+    }
+
+    // now reverse the array order
+    $aVersions = array_reverse($aVersions);
+
+    // now trim off all but the last X versions
+    $iVersionsToKeep = 6;
+    $aVersions = array_slice($aVersions, 0, $iVersionsToKeep);
+
+    // explicitly add 'CVS' since we are eliminating that above
+    $aVersions[] = "CVS";
+
+    // DONE TRIMMING VERSIONS
+    /////////////////////////
+
+
+    // build the selection array
+    echo "<select name='$varname'>\n";
+    echo "<option value=\"\">Choose ...</option>\n";
+    foreach($aVersions as $sKey => $sValue)
+    {
+      if($sValue == $cvalue)
+        echo "<option value=$sValue selected>$sValue\n";
+      else
+        echo "<option value=$sValue>$sValue\n";
     }
     echo "</select>\n";
 }
