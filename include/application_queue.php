@@ -253,7 +253,7 @@ class application_queue
             $bCanMove = FALSE;
         }
 
-        echo "<table>";
+        echo "<table cellpadding='5px'>";
         echo html_tr($aHeader, "color4");
 
         for($i = 0; $oRow = mysql_fetch_object($hResult); $i++)
