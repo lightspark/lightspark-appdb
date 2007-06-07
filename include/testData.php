@@ -897,6 +897,7 @@ class testData{
                 "Application",
                 "Version",
                 "Release",
+                "Has maintainer",
                 "Rating");
         return $aCells;
     }
@@ -911,12 +912,18 @@ class testData{
         $oVersion = new version($this->iVersionId);
         $oApp = new application($oVersion->iAppId);
         $oUser = new user($this->iSubmitterId);
+
+        // 
+        $hMaintainers = maintainer::getMaintainersForAppIdVersionId(null, $this->iVersionId);
+        $bHasMaintainer = (mysql_num_rows($hMaintainers) == 0) ? false : true;
+
         $aCells = array(
                 print_date(mysqltimestamp_to_unixtimestamp($this->sSubmitTime)),
                 $oUser->objectMakeLink(),
                 $oApp->objectMakeLink(),
                 $oVersion->objectMakeLink(),
                 $this->sTestedRelease,
+                ($bHasMaintainer ? "YES" : "no"),
                 $this->sTestedRating);
 
         if($this->canEdit() or $this->sQueued == "rejected")
