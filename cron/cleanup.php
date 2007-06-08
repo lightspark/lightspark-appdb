@@ -283,8 +283,7 @@ function removeScreenshotsWithMissingFiles()
 
     // build the email to admins about what we are doing
     $sMsg = "Found ".count($aMissingScreenshotIds)." screenshots with missing files.\r\n";
-    //FIXME: uncomment the below line when we uncomment the below lines in the script
-    //    $sMsg.= "Deleting these screenshots.\r\n";
+    $sMsg.= "Deleting these screenshots.\r\n";
 
     $sSubject = "Screenshots deleted\r\n";
 
@@ -292,12 +291,11 @@ function removeScreenshotsWithMissingFiles()
     if($sEmail)
         mail_appdb($sEmail, $sSubject, $sMsg);
 
-    //FIXME: activate this after we see the results from the nightly cron script email
     // remove the screenshots with missing files
-    //    foreach($aMissingScreenshotIds as $iScreenshotId)
-    //    {
-    //      $oScreenshot = new Screenshot($iScreenshotId);
-    //      $oScreenshot->delete(true); // delete the screenshot silently
-    //    }
+    foreach($aMissingScreenshotIds as $iScreenshotId)
+    {
+        $oScreenshot = new Screenshot($iScreenshotId);
+        $oScreenshot->delete(true); // delete the screenshot silently
+    }
 }
 ?>
