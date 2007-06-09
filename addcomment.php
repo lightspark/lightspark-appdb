@@ -58,6 +58,9 @@ if(!empty($aClean['sBody']))
     }
   }
 
+  echo "<p align=\"center\">Enter your comment in the box below.";
+  echo "</br>Please do not paste large terminal or debug outputs here.</p>";
+
   echo "<form method=\"post\" action=\"addcomment.php\">\n";
 
   echo html_frame_start($mesTitle,500,"",0);
