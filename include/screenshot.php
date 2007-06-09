@@ -139,7 +139,12 @@ class Screenshot {
 
             $this->oScreenshotImage->delete();
             $this->oThumbnailImage->delete();
-            unlink(appdb_fullpath("/data/screenshots/originals/".$this->iScreenshotId));
+
+            // if the original file exists, delete it
+            $sOriginalFilename = appdb_fullpath("/data/screenshots/originals/".$this->iScreenshotId);
+            if(is_file($sOriginalFilename))
+              unlink($sOriginalFilename);
+
             if(!$bSilent)
                 $this->mailMaintainers(true);
         }

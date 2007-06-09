@@ -391,7 +391,9 @@ class Image {
      */
     function delete()
     {
-        unlink($this->sFile);
+        // if the file exists, delete it
+        if(is_file($this->sFile))
+            unlink($this->sFile);
     }
 
     
