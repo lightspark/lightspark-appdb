@@ -140,7 +140,7 @@ create table appData (
 	url	          varchar(255) default NULL,
 	submitTime    timestamp(14) NOT NULL,
 	submitterId   int(11) NOT NULL default '0',
-	queued        enum('true','false') NOT NULL default 'false',
+	queued        enum('true','false','rejected') NOT NULL default 'false',
 	KEY id (id),
 	KEY versionId (versionId)
 );

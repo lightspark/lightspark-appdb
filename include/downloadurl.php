@@ -244,8 +244,13 @@ class downloadurl
             $sDownloadUrlDescription = $aValues["sDownloadUrlDescription"];
         } else if($iVersionId)
         {
-            if($hResult = appData::getData($iVersionId, "downloadurl",
-                                           TRUE, TRUE))
+            /* This illustrates the importance of converting downloadurl completely
+               to the objectManager model.  If we don't get  a match searching for
+               a queued entry, try finding a rejected one. */
+            if(($hResult = appData::getData($iVersionId, "downloadurl",
+                                           TRUE, TRUE, FALSE)) ||
+               $hResult = appData::getData($iVersionId, "downloadurl",
+                                           TRUE, TRUE, TRUE))
             {
                 $oRow = mysql_fetch_object($hResult);
                 $sDownloadUrlUrl = $oRow->url;
@@ -368,6 +373,20 @@ class downloadurl
             return FALSE;
 
         return TRUE;
+    }
+
+    function reQueue()
+    {
+        $oAppData = new AppData($this->iId);
+
+        return $oAppData->reQueue();
+    }
+
+    function reject()
+    {
+        $oAppData = new AppData($this->iId);
+
+        return $oAppData->reject();
     }
 
     function objectGetEntries($bQueued, $bRejected, $iRows = 0, $iStart = 0)

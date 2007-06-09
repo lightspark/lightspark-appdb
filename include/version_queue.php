@@ -16,7 +16,13 @@ class version_queue
         {
             $iTestingId = testData::getNewestTestIdFromVersionId($iVersionId,
                                                                  $this->oVersion->sQueued);
-            if($hResult = appData::getData($iVersionId, "downloadurl", TRUE, TRUE))
+            /* This illustrates the importance of converting downloadurl completely
+               to the objectManager model.  If we don't get  a match searching for
+               a queued entry, try finding a rejected one. */
+            if(($hResult = appData::getData($iVersionId, "downloadurl",
+                                           TRUE, TRUE, FALSE)) ||
+               $hResult = appData::getData($iVersionId, "downloadurl",
+                                           TRUE, TRUE, TRUE))
             {
                 if($oRow = mysql_fetch_object($hResult))
                     $iDownloadUrlId = $oRow->id;
@@ -46,6 +52,7 @@ class version_queue
     {
         $this->oVersion->reQueue();
         $this->oTestDataQueue->reQueue();
+        $this->oDownloadUrl->reQueue();
     }
 
     function reject()

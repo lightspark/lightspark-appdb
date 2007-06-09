@@ -52,6 +52,34 @@ class appData
         return $hResult;
     }
 
+    function reQueue()
+    {
+        if(!$this->canEdit())
+            return FALSE;
+
+        $sQuery = "UPDATE appData SET queued = '?' WHERE id = '?'";
+        $hResult = query_parameters($sQuery, "true", $this->iId);
+
+        if(!$hResult)
+            return FALSE;
+        else
+            return TRUE;
+    }
+
+    function reject()
+    {
+        if(!$this->canEdit())
+            return FALSE;
+
+        $sQuery = "UPDATE appData SET queued = '?' WHERE id = '?'";
+        $hResult = query_parameters($sQuery, "rejected", $this->iId);
+
+        if(!$hResult)
+            return FALSE;
+        else
+            return TRUE;
+    }
+
     function update($bSilent = FALSE)
     {
         if(!$this->canEdit())
@@ -122,7 +150,7 @@ class appData
     }
 
     /* Get appData for a given version/application, optionally filter by type */
-    function getData($iId, $sType, $bIsVersion = TRUE, $bQueued = FALSE)
+    function getData($iId, $sType, $bIsVersion = TRUE, $bQueued = FALSE, $bRejected = FALSE)
     {
         $iAppId = 0;
         $iVersionId = 0;
@@ -132,9 +160,11 @@ class appData
         else
             $iAppId = $iId;
 
+        $sQueued = objectManager::getQueueString($bQueued, $bRejected);
+
         $hResult = query_parameters("SELECT * FROM appData WHERE appId = '?' AND
             versionId = '?' AND TYPE = '?' AND queued = '?'",
-                $iAppId, $iVersionId, $sType, $bQueued ? "true" : "false");
+                $iAppId, $iVersionId, $sType, $sQueued);
 
         if(!$hResult || !mysql_num_rows($hResult))
             return FALSE;
