@@ -78,7 +78,7 @@ if($oObject->iId)
     switch($aClean['sAction'])
     {
         case "cancel":
-        $oObject->display_table(); /* go back to the queue */
+        $oObject->display_table($aClean); /* go back to the queue */
         break;
 
         case "edit":
@@ -102,7 +102,7 @@ if($oObject->iId)
     if($oObject->bIsQueue)
         $oObject->display_queue_processing_help();
 
-    $oObject->display_table();
+    $oObject->display_table($aClean);
 }
 
 apidb_footer();

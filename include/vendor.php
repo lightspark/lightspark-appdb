@@ -360,6 +360,13 @@ class Vendor {
     {
         return $this->iVendorId;
     }
+
+    function objectGetItemsPerPage()
+    {
+        $aItemsPerPage = array(25, 50, 100, 200);
+        $iDefaultPerPage = 25;
+        return array($aItemsPerPage, $iDefaultPerPage);
+    }
 }
 
 ?>

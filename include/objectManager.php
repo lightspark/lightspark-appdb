@@ -10,12 +10,14 @@ class ObjectManager
     var $sTitle;
     var $iId;
     var $bIsRejected;
+    var $oMultiPage;
 
     function ObjectManager($sClass, $sTitle = "list", $iId = false)
     {
         $this->sClass = $sClass;
         $this->sTitle = $sTitle;
         $this->iId = $iId;
+        $this->oMultiPage = new MultiPage(FALSE);
     }
 
     /* Check whether the associated class has the given method */
@@ -54,17 +56,26 @@ class ObjectManager
     }
 
     /* displays the list of entries */
-    function display_table()
+    function display_table($aClean)
     {
         $this->checkMethods(array("ObjectGetEntries", "ObjectGetHeader",
              "ObjectGetInstanceFromRow", "ObjectOutputTableRow", "canEdit"));
 
         $oObject = new $this->sClass();
+
+        /* Display selectors for items per page and current page, if applicable.  The function
+           returns FALSE or an array of arguments to be passed to objectGetEntries() */
+        $this->handleMultiPageControls($aClean, TRUE);
+
         /* query the class for its entries */
         /* We pass in $this->bIsQueue to tell the object */
         /* if we are requesting a list of its queued objects or */
         /* all of its objects */
-        $hResult = $oObject->objectGetEntries($this->bIsQueue, $this->bIsRejected);
+        if($this->oMultiPage->bEnabled)
+            $hResult = $oObject->objectGetEntries($this->bIsQueue, $this->bIsRejected,
+            $this->oMultiPage->iItemsPerPage, $this->oMultiPage->iLowerLimit);
+        else
+            $hResult = $oObject->objectGetEntries($this->bIsQueue, $this->bIsRejected);
 
         /* did we get any entries? */
         if(mysql_num_rows($hResult) == 0)
@@ -472,6 +483,20 @@ class ObjectManager
                "&sTitle=$sTitle$sId$sAction&bIsRejected=$sIsRejected";
     }
 
+    /* Inserts the information in an objectManager object as form data, so that it
+       is preserved when submitting forms */
+    function makeUrlFormData()
+    {
+        $sIsQueue = $this->bIsQueue ? "true" : "false";
+        $sIsRejected = $this->bIsRejected ? "true" : "false";
+
+        $sReturn = "<input type=\"hidden\" name=\"bIsQueue\" value=\"$sIsQueue\" />\n";
+        $sReturn .= "<input type=\"hidden\" name=\"bIsRejected\" value=\"$sIsRejected\" />\n";
+        $sReturn .= "<input type=\"hidden\" name=\"sClass\" value=\"".$this->sClass."\" />\n";
+        $sReturn .= "<input type=\"hidden\" name=\"sTitle\" value=\"".$this->sTitle."\" />\n";
+
+        return $sReturn;
+    }
     /* Get id from form data */
     function getIdFromInput($aClean)
     {
@@ -496,6 +521,74 @@ class ObjectManager
             $aCells[] = "Action";
 
         echo html_tr($aCells, $sClass);
+    }
+
+    function handleMultiPageControls($aClean, $bItemsPerPageSelector = TRUE)
+    {
+        /* Display multi-page browsing controls (prev, next etc.) if applicable.
+           objectGetItemsPerPage returns FALSE if no multi-page display should be used,
+           or an array of options, where the first element contains an array of items
+           per page values and the second contains the default value.
+           If the function does not exist we assume no multi-page behaviour */
+        $oObject = new $this->sClass();
+
+        if(!method_exists($oObject, "objectGetItemsPerPage") ||
+          $oObject->objectGetItemsPerPage() === FALSE)
+        {
+            /* Do not enable the MultiPage controls */
+            $this->oMultiPage->MultiPage(FALSE);
+            return;
+        }
+
+        $aReturn = $oObject->objectGetItemsPerPage();
+        $aItemsPerPage = $aReturn[0];
+        $iDefaultPerPage = $aReturn[1];
+
+        $iItemsPerPage = $iDefaultPerPage;
+        foreach($aItemsPerPage as $iNum)
+        {
+            if($iNum == $aClean['iItemsPerPage'])
+                $iItemsPerPage = $aClean['iItemsPerPage'];
+        }
+
+        $sControls = "<form action=\"".$this->makeUrl()."\" method=\"get\">";
+
+        /* Fill in form data for the objectManager URL */
+        $sControls .= $this->makeUrlFormData();
+        $sControls .= "<p><b>&nbsp;Items per page</b>";
+        $sControls .= "<select name=\"iItemsPerPage\" />";
+
+        foreach($aItemsPerPage as $iNum)
+        {
+            $sSelected = ($iNum == $iItemsPerPage) ? ' selected="selected"' : "";
+            $sControls .= "<option$sSelected>$iNum</option>";
+        }
+        $sControls .= "</select>";
+        $sControls .= " &nbsp; <input type=\"submit\" value=\"Update\" />";
+        $sControls .= "</form></p>";
+
+        $iTotalEntries = $oObject->objectGetEntriesCount($this->bIsQueued, $this->bIsRejected);
+        $iNumPages = ceil($iTotalEntries / $iItemsPerPage);
+
+        /* Check current page value */
+        $iPage = $aClean['iPage'];
+        if(!$iPage)
+            $iPage = 1;
+        $iCurrentPage = min($iPage, $iNumPages);
+
+        /* Display selectors and info */
+        echo '<div align="center">';
+        echo "<b>Page $iPage of $iNumPages</b><br />";
+
+        /* Page controls */
+        display_page_range($iPage, $iPageRange, $iNumPages, $this->makeUrl()."&iItemsPerPage=".
+                "$iItemsPerPage");
+
+        echo $sControls;
+
+        /* Fill the MultiPage object with the LIMIT related values */
+        $iLowerLimit = ($iPage - 1) * $iItemsPerPage;
+        $this->oMultiPage->MultiPage(TRUE, $iItemsPerPage, $iLowerLimit);
     }
 
     function getQueueString($bQueued, $bRejected)
@@ -530,6 +623,20 @@ class ObjectManager
             return TRUE;
         } else
             return FALSE;
+    }
+}
+
+class MultiPage
+{
+    var $iItemsPerPage;
+    var $iLowerLimit;
+    var $bEnabled;
+
+    function MultiPage($bEnabled = FALSE, $iItemsPerPage = 0, $iLowerLimit = 0)
+    {
+        $this->bEnabled = $bEnabled;
+        $this->iItemsPerPage = $iItemsPerPage;
+        $this->iLowerLimit = $iLowerLimit;
     }
 }
 
