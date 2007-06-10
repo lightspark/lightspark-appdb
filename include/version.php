@@ -50,31 +50,28 @@ class Version {
         /*
         * We fetch the data related to this version.
         */
-        if(!$this->iVersionId)
+        if(!$oRow)
         {
-            if(!$oRow)
-            {
-                $sQuery = "SELECT *
+            $sQuery = "SELECT *
                     FROM appVersion
                     WHERE versionId = '?'";
-                if($hResult = query_parameters($sQuery, $iVersionId))
-                    $oRow = mysql_fetch_object($hResult);
-            }
+            if($hResult = query_parameters($sQuery, $iVersionId))
+              $oRow = mysql_fetch_object($hResult);
+        }
 
-            if($oRow)
-            {
-                $this->iVersionId = $oRow->versionId;
-                $this->iAppId = $oRow->appId;
-                $this->iSubmitterId = $oRow->submitterId;
-                $this->sSubmitTime = $oRow->submitTime;
-                $this->sDate = $oRow->submitTime;
-                $this->sName = $oRow->versionName;
-                $this->sDescription = $oRow->description;
-                $this->sTestedRelease = $oRow->maintainer_release;
-                $this->sTestedRating = $oRow->maintainer_rating;
-                $this->sQueued = $oRow->queued;
-                $this->sLicense = $oRow->license;
-            }
+        if($oRow)
+        {
+            $this->iVersionId = $oRow->versionId;
+            $this->iAppId = $oRow->appId;
+            $this->iSubmitterId = $oRow->submitterId;
+            $this->sSubmitTime = $oRow->submitTime;
+            $this->sDate = $oRow->submitTime;
+            $this->sName = $oRow->versionName;
+            $this->sDescription = $oRow->description;
+            $this->sTestedRelease = $oRow->maintainer_release;
+            $this->sTestedRating = $oRow->maintainer_rating;
+            $this->sQueued = $oRow->queued;
+            $this->sLicense = $oRow->license;
         }
     }
 
@@ -736,7 +733,9 @@ class Version {
 
         // URLs
         if($sUrls = url::display($this->iVersionId))
+        {
             echo $sUrls;
+        }
 
         // rating Area
         echo "<tr class=\"$sMaintainerColor\" valign=\"top\"><td><b>Maintainer&#8217;s Rating</b></td><td>".$this->sTestedRating."</td></tr>\n";
