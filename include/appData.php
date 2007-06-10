@@ -17,7 +17,7 @@ class appData
 
     function appData($iId = null, $oRow = null)
     {
-        if(!$iId)
+        if(!$iId && !$oRow)
             return;
 
         if(!$oRow)

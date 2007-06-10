@@ -19,40 +19,40 @@ class Vendor {
     function Vendor($iVendorId = null, $oRow = null)
     {
         // we are working on an existing vendor
-        if(is_numeric($iVendorId))
+        if(!$iVendorId && !$oRow)
+            return;
+
+        if(!$oRow)
         {
-            if(!$oRow)
-            {
-                /*
-                 * We fetch the data related to this vendor.
-                 */
-                $sQuery = "SELECT *
-                           FROM vendor
-                           WHERE vendorId = '?'";
-                if($hResult = query_parameters($sQuery, $iVendorId))
-                    $oRow = mysql_fetch_object($hResult);
-            }
-
-            if($oRow)
-            {
-                $this->iVendorId = $iVendorId;
-                $this->sName = $oRow->vendorName;
-                $this->sWebpage = $oRow->vendorURL;
-                $this->sQueued = $oRow->queued;
-            }
-
             /*
-             * We fetch applicationsIds. 
-             */
-            $sQuery = "SELECT appId
-                       FROM appFamily
-                       WHERE vendorId = '?'";
+                * We fetch the data related to this vendor.
+                */
+            $sQuery = "SELECT *
+                        FROM vendor
+                        WHERE vendorId = '?'";
             if($hResult = query_parameters($sQuery, $iVendorId))
+                $oRow = mysql_fetch_object($hResult);
+        }
+
+        if($oRow)
+        {
+            $this->iVendorId = $oRow->vendorId;
+            $this->sName = $oRow->vendorName;
+            $this->sWebpage = $oRow->vendorURL;
+            $this->sQueued = $oRow->queued;
+        }
+
+        /*
+            * We fetch applicationsIds. 
+            */
+        $sQuery = "SELECT appId
+                    FROM appFamily
+                    WHERE vendorId = '?'";
+        if($hResult = query_parameters($sQuery, $this->iVendorId))
+        {
+            while($oRow = mysql_fetch_object($hResult))
             {
-                while($oRow = mysql_fetch_object($hResult))
-                {
-                    $this->aApplicationsIds[] = $oRow->appId;
-                }
+                $this->aApplicationsIds[] = $oRow->appId;
             }
         }
     }
@@ -220,11 +220,6 @@ class Vendor {
             array("Linked apps", "align=\"right\""));
 
         return $aCells;
-    }
-
-    function objectGetInstanceFromRow($oRow)
-    {
-        return new vendor($oRow->vendorId, $oRow);
     }
 
     /* arg1 = OM object, arg2 = CSS style, arg3 = text for edit link */

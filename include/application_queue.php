@@ -10,13 +10,13 @@ class application_queue
     var $oApp;
     var $oVendor;
 
-    function application_queue($iAppId = null)
+    function application_queue($iAppId = null, $oRow = null)
     {
-        $this->oApp = new application($iAppId);
+        $this->oApp = new application($iAppId, $oRow);
 
         /* If this is an existing application then there must be a version
            accompanying it */
-        if($iAppId)
+        if($this->oApp->iAppId)
         {
             /* Normal users do not get a aVersionsIds property, so we have to fetch
                the versionId manually.  Normal users only have access to rejected
@@ -300,11 +300,6 @@ class application_queue
     function objectGetHeader()
     {
         return $this->oApp->objectGetHeader();
-    }
-
-    function objectGetInstanceFromRow($oRow)
-    {
-        return application::objectGetInstanceFromRow($oRow);
     }
 
     function objectOutputTableRow($oObject, $sClass, $sEditLinkLabel)

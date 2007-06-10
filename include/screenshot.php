@@ -32,32 +32,34 @@ class Screenshot {
     /**    
      * Constructor, fetches the data and image objects if $iScreenshotId is given.
      */
-    function Screenshot($iScreenshotId = null)
+    function Screenshot($iScreenshotId = null, $oRow = null)
     {
         // we are working on an existing screenshot
-        if(is_numeric($iScreenshotId))
+        if(!$iScreenshotId && !$oRow)
+            return;
+
+        if(!$oRow)
         {
             $hResult = query_parameters("SELECT appData.*, appVersion.appId AS appId
-                       FROM appData, appVersion 
-                       WHERE appData.versionId = appVersion.versionId 
-                       AND id = '?'
-                       AND type = 'screenshot'", $iScreenshotId);
+                    FROM appData, appVersion 
+                    WHERE appData.versionId = appVersion.versionId 
+                    AND id = '?'
+                    AND type = 'screenshot'", $iScreenshotId);
             if($hResult)
-            {
                 $oRow = mysql_fetch_object($hResult);
-                if($oRow)
-                {
-                    $this->iScreenshotId = $iScreenshotId;
-                    $this->sDescription = $oRow->description;
-                    $this->iAppId = $oRow->appId;
-                    $this->iVersionId = $oRow->versionId;
-                    $this->sUrl = $oRow->url;
-                    $this->bQueued = ($oRow->queued=="true")?true:false;
-                    $this->sSubmitTime = $oRow->submitTime;
-                    $this->iSubmitterId = $oRow->submitterId;
-                    $this->hFile = null;
-                }
-           }
+        }
+
+        if($oRow)
+        {
+            $this->iScreenshotId = $oRow->id;
+            $this->sDescription = $oRow->description;
+            $this->iAppId = $oRow->appId;
+            $this->iVersionId = $oRow->versionId;
+            $this->sUrl = $oRow->url;
+            $this->bQueued = ($oRow->queued=="true")?true:false;
+            $this->sSubmitTime = $oRow->submitTime;
+            $this->iSubmitterId = $oRow->submitterId;
+            $this->hFile = null;
         }
     }
  
@@ -555,11 +557,6 @@ class Screenshot {
             return $oAppData->mustBeQueued();
         } else
             return appData::mustBeQueued();
-    }
-
-    function objectGetInstanceFromRow($oRow)
-    {
-        return new appData($oRow->id, $oRow);
     }
 
     /* arg1 = OM object, arg2 = CSS style, arg3 = text for edit link */

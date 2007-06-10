@@ -17,25 +17,30 @@ class downloadurl
     var $bQueued;
 
     /* Fetch the data if id is given */
-    function downloadurl($iId = NULL)
+    function downloadurl($iId = NULL, $oRow = NULL)
     {
-        $hResult = query_parameters("SELECT id, versionId, description, url,
-            submitTime, submitterId, queued FROM appData WHERE id = '?'",
-                $iId);
+        if(!$iId && !$oRow)
+            return;
 
-        if($hResult && mysql_num_rows($hResult))
+        if(!$oRow)
         {
-            $oRow = mysql_fetch_object($hResult);
-            if($oRow)
-            {
-                $this->iId = $oRow->id;
-                $this->iVersionId = $oRow->versionId;
-                $this->sDescription = $oRow->description;
-                $this->sUrl = $oRow->url;
-                $this->sSubmitTime = $oRow->submitTime;
-                $this->iSubmitterId = $oRow->submitterId;
-                $this->bQueued = ($oRow->queued == "true") ? TRUE : FALSE;
-            }
+            $hResult = query_parameters("SELECT id, versionId, description, url,
+                submitTime, submitterId, queued FROM appData WHERE id = '?'",
+                    $iId);
+
+            if($hResult && mysql_num_rows($hResult))
+                $oRow = mysql_fetch_object($hResult);
+        }
+
+        if($oRow)
+        {
+            $this->iId = $oRow->id;
+            $this->iVersionId = $oRow->versionId;
+            $this->sDescription = $oRow->description;
+            $this->sUrl = $oRow->url;
+            $this->sSubmitTime = $oRow->submitTime;
+            $this->iSubmitterId = $oRow->submitterId;
+            $this->bQueued = ($oRow->queued == "true") ? TRUE : FALSE;
         }
     }
 
@@ -405,11 +410,6 @@ class downloadurl
     {
         $oAppData = new AppData();
         $oAppData->objectOutputTableRow($oObject, $sClass, $sEditLinkLabel);
-    }
-
-    function objectGetInstanceFromRow($oRow)
-    {
-        return new appData($oRow->id, $oRow);
     }
 
     function getOutputEditorValues($aClean)

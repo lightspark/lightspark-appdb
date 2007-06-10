@@ -18,24 +18,29 @@ class maintainer
     var $bQueued;
     var $sReplyText;
 
-    function maintainer($iMaintainerId = "")
+    function maintainer($iMaintainerId = null, $oRow = null)
     {
-        $sQuery = "SELECT * FROM appMaintainers WHERE maintainerId = '?'";
-        $hResult = query_parameters($sQuery, $iMaintainerId);
-        if($hResult)
+        if(!$iMaintainerId && !$oRow)
+            return;
+
+        if(!$oRow)
         {
-            $oRow = mysql_fetch_object($hResult);
-            if($oRow)
-            {
-                $this->iMaintainerId = $oRow->maintainerId;
-                $this->iAppId = $oRow->appId;
-                $this->iVersionId = $oRow->versionId;
-                $this->iUserId = $oRow->userId;
-                $this->sMaintainReason = $oRow->maintainReason;
-                $this->bSuperMaintainer = $oRow->superMaintainer;
-                $this->aSubmitTime = $oRow->submitTime;
-                $this->bQueued = $oRow->queued;
-            }
+            $sQuery = "SELECT * FROM appMaintainers WHERE maintainerId = '?'";
+            $hResult = query_parameters($sQuery, $iMaintainerId);
+            if($hResult)
+                $oRow = mysql_fetch_object($hResult);
+        }
+
+        if($oRow)
+        {
+            $this->iMaintainerId = $oRow->maintainerId;
+            $this->iAppId = $oRow->appId;
+            $this->iVersionId = $oRow->versionId;
+            $this->iUserId = $oRow->userId;
+            $this->sMaintainReason = $oRow->maintainReason;
+            $this->bSuperMaintainer = $oRow->superMaintainer;
+            $this->aSubmitTime = $oRow->submitTime;
+            $this->bQueued = $oRow->queued;
         }
     }
 
@@ -218,7 +223,7 @@ class maintainer
 
         /* Excluding requests for queued apps and versions, as these will be
            handled automatically */
-        $sQuery = "SELECT DISTINCT maintainerId, appMaintainers.submitTime FROM 
+        $sQuery = "SELECT DISTINCT appMaintainers.* FROM 
             appMaintainers, appFamily, appVersion WHERE
             appMaintainers.queued = '?'
             AND
@@ -484,11 +489,6 @@ class maintainer
         echo "Please enter an accurate and personalized reply anytime a maintainer request is rejected.\n";
         echo "Its not polite to reject someones attempt at trying to help out without explaining why.\n";
         echo "</td></tr></table></div>\n\n";    
-    }
-
-    function objectGetInstanceFromRow($oRow)
-    {
-        return new maintainer($oRow->maintainerId, $oRow);
     }
 
     function canEdit()

@@ -46,51 +46,51 @@ class Application {
     function Application($iAppId = null, $oRow = null)
     {
         // we are working on an existing application
-        if(is_numeric($iAppId))
+        if(!$iAppId && !$oRow)
+            return;
+
+        if(!$oRow)
         {
-            if(!$oRow)
-            {
-                /* fetch this applications information */
-                $sQuery = "SELECT *
-                        FROM appFamily 
-                        WHERE appId = '?'";
-                if($hResult = query_parameters($sQuery, $iAppId))
-                    $oRow = mysql_fetch_object($hResult);
-            }
+            /* fetch this applications information */
+            $sQuery = "SELECT *
+                    FROM appFamily 
+                    WHERE appId = '?'";
+            if($hResult = query_parameters($sQuery, $iAppId))
+                $oRow = mysql_fetch_object($hResult);
+        }
 
-            if($oRow)
-            {
-                $this->iAppId = $iAppId;
-                $this->iVendorId = $oRow->vendorId;
-                $this->iCatId = $oRow->catId;
-                $this->iSubmitterId = $oRow->submitterId;
-                $this->sSubmitTime = $oRow->submitTime;
-                $this->sDate = $oRow->submitTime;
-                $this->sName = $oRow->appName;
-                $this->sKeywords = $oRow->keywords;
-                $this->sDescription = $oRow->description;
-                $this->sWebpage = $oRow->webPage;
-                $this->sQueued = $oRow->queued;
-            }
+        if($oRow)
+        {
+            $this->iAppId = $oRow->appId;
+            $this->iVendorId = $oRow->vendorId;
+            $this->iCatId = $oRow->catId;
+            $this->iSubmitterId = $oRow->submitterId;
+            $this->sSubmitTime = $oRow->submitTime;
+            $this->sDate = $oRow->submitTime;
+            $this->sName = $oRow->appName;
+            $this->sKeywords = $oRow->keywords;
+            $this->sDescription = $oRow->description;
+            $this->sWebpage = $oRow->webPage;
+            $this->sQueued = $oRow->queued;
+        }
 
-            /* fetch versions of this application, if there are any */
-            $this->aVersionsIds = array();
+        /* fetch versions of this application, if there are any */
+        $this->aVersionsIds = array();
 
-            /* only admins can view all versions */
-            //FIXME: it would be nice to move this permission into the user class as well as keep it generic
-            if($_SESSION['current']->hasPriv("admin"))
+        /* only admins can view all versions */
+        //FIXME: it would be nice to move this permission into the user class as well as keep it generic
+        if($_SESSION['current']->hasPriv("admin"))
+        {
+            $hResult = $this->_internal_retrieve_all_versions();
+        } else
+        {
+            $hResult = $this->_internal_retrieve_unqueued_versions();
+        }
+        if($hResult)
+        {
+            while($oRow = mysql_fetch_object($hResult))
             {
-                $hResult = $this->_internal_retrieve_all_versions();
-            } else
-            {
-                $hResult = $this->_internal_retrieve_unqueued_versions();
-            }
-            if($hResult)
-            {
-                while($oRow = mysql_fetch_object($hResult))
-                {
-                    $this->aVersionsIds[] = $oRow->versionId;
-                }
+                $this->aVersionsIds[] = $oRow->versionId;
             }
         }
     }
@@ -845,11 +845,6 @@ class Application {
                 "Application");
 
         return $aCells;
-    }
-
-    function objectGetInstanceFromRow($oRow)
-    {
-        return new application($oRow->appId, $oRow);
     }
 
     function objectOutputTableRow($oObject, $sClass, $sEditLinkLabel)

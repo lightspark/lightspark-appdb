@@ -59,7 +59,7 @@ class ObjectManager
     function display_table($aClean)
     {
         $this->checkMethods(array("ObjectGetEntries", "ObjectGetHeader",
-             "ObjectGetInstanceFromRow", "ObjectOutputTableRow", "canEdit"));
+             "ObjectOutputTableRow", "canEdit"));
 
         $oObject = new $this->sClass();
 
@@ -108,8 +108,7 @@ class ObjectManager
         /* output each entry */
         for($iCount = 0; $oRow = mysql_fetch_object($hResult); $iCount++)
         {
-            $oObject = call_user_func(array($this->sClass,
-                                            "objectGetInstanceFromRow"), $oRow);
+            $oObject = new $this->sClass(null, $oRow);
 
             /* arg1 = OM object, arg2 = CSS style, arg3 = text for edit link */
             $oObject->objectOutputTableRow($this, ($iCount % 2) ? "color0" : "color1",
@@ -295,7 +294,7 @@ class ObjectManager
 
         for($i = 0; $oRow = mysql_fetch_object($hResult); $i++)
         {
-            $oCandidate = $oObject->objectGetInstanceFromRow($oRow);
+            $oCandidate = new $this->sClass(null, $oRow);
             if($oCandidate->objectGetId() == $this->iId)
             {
                 $i++;

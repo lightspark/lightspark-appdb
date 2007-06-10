@@ -27,36 +27,36 @@ class testData{
     function testData($iTestingId = null, $oRow = null)
     {
         // we are working on an existing test
-        if($iTestingId)
-        {
-            // We fetch the data related to this test.
-            if(!$oRow)
-            {
-                $sQuery = "SELECT *
-                           FROM testResults
-                           WHERE testingId = '?'";
-                if($hResult = query_parameters($sQuery, $iTestingId))
-                    $oRow = mysql_fetch_object($hResult);
-            }
+        if(!$iTestingId && !$oRow)
+            return;
 
-            if($oRow)
-            {
-                $this->iTestingId = $oRow->testingId;
-                $this->iVersionId = $oRow->versionId;
-                $this->shWhatWorks = $oRow->whatWorks;
-                $this->shWhatDoesnt = $oRow->whatDoesnt;
-                $this->shWhatNotTested = $oRow->whatNotTested;
-                $this->sTestedDate = $oRow->testedDate;
-                $this->iDistributionId = $oRow->distributionId;
-                $this->sTestedRelease = $oRow->testedRelease;
-                $this->sInstalls = $oRow->installs;
-                $this->sRuns = $oRow->runs;
-                $this->sTestedRating = $oRow->testedRating;
-                $this->sComments = $oRow->comments;
-                $this->sSubmitTime = $oRow->submitTime;
-                $this->iSubmitterId = $oRow->submitterId;
-                $this->sQueued = $oRow->queued;
-            }
+        // We fetch the data related to this test.
+        if(!$oRow)
+        {
+            $sQuery = "SELECT *
+                        FROM testResults
+                        WHERE testingId = '?'";
+            if($hResult = query_parameters($sQuery, $iTestingId))
+                $oRow = mysql_fetch_object($hResult);
+        }
+
+        if($oRow)
+        {
+            $this->iTestingId = $oRow->testingId;
+            $this->iVersionId = $oRow->versionId;
+            $this->shWhatWorks = $oRow->whatWorks;
+            $this->shWhatDoesnt = $oRow->whatDoesnt;
+            $this->shWhatNotTested = $oRow->whatNotTested;
+            $this->sTestedDate = $oRow->testedDate;
+            $this->iDistributionId = $oRow->distributionId;
+            $this->sTestedRelease = $oRow->testedRelease;
+            $this->sInstalls = $oRow->installs;
+            $this->sRuns = $oRow->runs;
+            $this->sTestedRating = $oRow->testedRating;
+            $this->sComments = $oRow->comments;
+            $this->sSubmitTime = $oRow->submitTime;
+            $this->iSubmitterId = $oRow->submitterId;
+            $this->sQueued = $oRow->queued;
         }
     }
 
@@ -552,7 +552,8 @@ class testData{
         if(!$hResult)
             return 0;
 
-        $oRow = mysql_fetch_object($hResult);
+        if(!$oRow = mysql_fetch_object($hResult))
+            return 0;
 
         return $oRow->testingId;
     }
@@ -900,11 +901,6 @@ class testData{
                 "Has maintainer",
                 "Rating");
         return $aCells;
-    }
-
-    function objectGetInstanceFromRow($oRow)
-    {
-        return new testData($oRow->testingId, $oRow);
     }
 
     function objectOutputTableRow($oObject, $sClass, $sEditLinkLabel)

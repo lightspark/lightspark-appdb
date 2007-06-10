@@ -5,9 +5,9 @@ class testData_queue
     var $oTestData;
     var $oDistribution;
 
-    function testData_queue($iTestId = null)
+    function testData_queue($iTestId = null, $oRow = null)
     {
-        $this->oTestData = new testData($iTestId);
+        $this->oTestData = new testData($iTestId, $oRow);
         $this->oDistribution = new distribution($this->oTestData->iDistributionId);
     }
 
@@ -130,11 +130,6 @@ class testData_queue
     function objectGetHeader()
     {
         return $this->oTestData->objectGetHeader();
-    }
-
-    function objectGetInstanceFromRow($oRow)
-    {
-        return testData::objectGetInstanceFromRow($oRow);
     }
 
     function objectOutputTableRow($oObject, $sClass, $sEditLinkLabel)

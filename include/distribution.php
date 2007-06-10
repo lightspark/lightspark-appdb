@@ -20,58 +20,58 @@ class distribution {
     function distribution($iDistributionId = null, $oRow = null)
     {
         // we are working on an existing distribution.
-        if(is_numeric($iDistributionId))
+        if(!$iDistributionId && !$oRow)
+            return;
+
+        // We fetch the data related to this distribution.
+        if(!$oRow)
         {
-            // We fetch the data related to this distribution.
-            if(!$oRow)
-            {
-                $sQuery = "SELECT *
-                           FROM distributions
-                           WHERE distributionId = '?'";
-                if($hResult = query_parameters($sQuery, $iDistributionId))
-                    $oRow = mysql_fetch_object($hResult);
-            }
-
-            if($oRow)
-            {
-                $this->iDistributionId = $iDistributionId;
-                $this->sName = $oRow->name;
-                $this->sUrl = $oRow->url;
-                $this->sSubmitTime = $oRow->submitTime;
-                $this->iSubmitterId = $oRow->submitterId;
-                $this->sQueued = $oRow->queued;
-            }
-
-            /*
-             * We fetch Test Result Ids. 
-             */
-
-            if($_SESSION['current']->hasPriv("admin"))
-            {
-                $sQuery = "SELECT testingId
-                             FROM testResults
-                             WHERE distributionId = '?' 
-                             ORDER BY testedRating;" ;
-            } else /* only let users view test results that aren't queued and for apps that */
-                   /* aren't queued or versions that aren't queued */
-            {
-                $sQuery = "SELECT testingId
-                             FROM testResults, appFamily, appVersion
-                             WHERE testResults.queued = 'false' AND
-                                    testResults.versionId = appVersion.versionId AND
-                                    appFamily.appId = appVersion.appId AND
-                                    appFamily.queued = 'false' AND
-                                    appVersion.queued = 'false' AND
-                                    distributionId = '?'
-                             ORDER BY testedRating;";
-            }
-
+            $sQuery = "SELECT *
+                        FROM distributions
+                        WHERE distributionId = '?'";
             if($hResult = query_parameters($sQuery, $iDistributionId))
+                $oRow = mysql_fetch_object($hResult);
+        }
+
+        if($oRow)
+        {
+            $this->iDistributionId = $oRow->distributionId;
+            $this->sName = $oRow->name;
+            $this->sUrl = $oRow->url;
+            $this->sSubmitTime = $oRow->submitTime;
+            $this->iSubmitterId = $oRow->submitterId;
+            $this->sQueued = $oRow->queued;
+        }
+
+        /*
+            * We fetch Test Result Ids. 
+            */
+
+        if($_SESSION['current']->hasPriv("admin"))
+        {
+            $sQuery = "SELECT testingId
+                            FROM testResults
+                            WHERE distributionId = '?' 
+                            ORDER BY testedRating;" ;
+        } else /* only let users view test results that aren't queued and for apps that */
+                /* aren't queued or versions that aren't queued */
+        {
+            $sQuery = "SELECT testingId
+                            FROM testResults, appFamily, appVersion
+                            WHERE testResults.queued = 'false' AND
+                                testResults.versionId = appVersion.versionId AND
+                                appFamily.appId = appVersion.appId AND
+                                appFamily.queued = 'false' AND
+                                appVersion.queued = 'false' AND
+                                distributionId = '?'
+                            ORDER BY testedRating;";
+        }
+
+        if($hResult = query_parameters($sQuery, $iDistributionId))
+        {
+            while($oRow = mysql_fetch_object($hResult))
             {
-                while($oRow = mysql_fetch_object($hResult))
-                {
-                    $this->aTestingIds[] = $oRow->testingId;
-                }
+                $this->aTestingIds[] = $oRow->testingId;
             }
         }
     }
@@ -451,11 +451,6 @@ class distribution {
 
         return query_parameters($sQuery, $bQueued ? "true" : "false",
                                 $iStart, $iRows);
-    }
-
-    function objectGetInstanceFromRow($oRow)
-    {
-        return new distribution($oRow->distributionId, $oRow);
     }
 
     /* arg1 = OM object, arg2 = CSS style, arg3 = text for edit link */

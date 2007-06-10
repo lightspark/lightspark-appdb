@@ -6,11 +6,14 @@ class version_queue
     var $oVersion;
     var $oDownloadUrl;
 
-    function version_queue($iVersionId = null)
+    function version_queue($iVersionId = null, $oRow = null)
     {
-        $this->oVersion = new version($iVersionId);
+        $this->oVersion = new version($iVersionId, $oRow);
         $iTestingId = null;
         $iDownloadUrlId = null;
+
+        if(!$iVersionId)
+            $iVersionId = $this->oVersion->iVersionId;
 
         if($iVersionId)
         {
@@ -161,11 +164,6 @@ class version_queue
     function objectGetHeader()
     {
         return $this->oVersion->objectGetHeader();
-    }
-
-    function objectGetInstanceFromRow($oRow)
-    {
-        return version::objectGetInstanceFromRow($oRow);
     }
 
     function objectOutputTableRow($oObject, $sClass, $sEditLinkLabel)

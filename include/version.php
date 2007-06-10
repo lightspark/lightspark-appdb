@@ -44,36 +44,36 @@ class Version {
     function Version($iVersionId = null, $oRow = null)
     {
         // we are working on an existing version
-        if(is_numeric($iVersionId))
-        {
-            /*
-             * We fetch the data related to this version.
-             */
-            if(!$this->iVersionId)
-            {
-                if(!$oRow)
-                {
-                    $sQuery = "SELECT *
-                        FROM appVersion
-                        WHERE versionId = '?'";
-                    if($hResult = query_parameters($sQuery, $iVersionId))
-                        $oRow = mysql_fetch_object($hResult);
-                }
+        if(!$iVersionId && !$oRow)
+            return;
 
-                if($oRow)
-                {
-                    $this->iVersionId = $iVersionId;
-                    $this->iAppId = $oRow->appId;
-                    $this->iSubmitterId = $oRow->submitterId;
-                    $this->sSubmitTime = $oRow->submitTime;
-                    $this->sDate = $oRow->submitTime;
-                    $this->sName = $oRow->versionName;
-                    $this->sDescription = $oRow->description;
-                    $this->sTestedRelease = $oRow->maintainer_release;
-                    $this->sTestedRating = $oRow->maintainer_rating;
-                    $this->sQueued = $oRow->queued;
-                    $this->sLicense = $oRow->license;
-                }
+        /*
+        * We fetch the data related to this version.
+        */
+        if(!$this->iVersionId)
+        {
+            if(!$oRow)
+            {
+                $sQuery = "SELECT *
+                    FROM appVersion
+                    WHERE versionId = '?'";
+                if($hResult = query_parameters($sQuery, $iVersionId))
+                    $oRow = mysql_fetch_object($hResult);
+            }
+
+            if($oRow)
+            {
+                $this->iVersionId = $oRow->versionId;
+                $this->iAppId = $oRow->appId;
+                $this->iSubmitterId = $oRow->submitterId;
+                $this->sSubmitTime = $oRow->submitTime;
+                $this->sDate = $oRow->submitTime;
+                $this->sName = $oRow->versionName;
+                $this->sDescription = $oRow->description;
+                $this->sTestedRelease = $oRow->maintainer_release;
+                $this->sTestedRating = $oRow->maintainer_rating;
+                $this->sQueued = $oRow->queued;
+                $this->sLicense = $oRow->license;
             }
         }
     }
@@ -1360,11 +1360,6 @@ class Version {
         }
 
         echo html_tr($aCells, $sClass);
-    }
-
-    function objectGetInstanceFromRow($oRow)
-    {
-        return new version($oRow->versionId, $oRow);
     }
 
     function objectDisplayQueueProcessingHelp()
