@@ -935,10 +935,15 @@ class Application {
             echo "   for Windows, we do not need placeholder entries in the database.  Please enter as complete \n";
             echo "   as possible test results in the version template provided below</li>\n";
             echo "</ul></p>";
-            echo "<p>Please do not forget to mention which Wine version you used, how well it worked\n";
-            echo "and if any workarounds were needed.  Having app descriptions just sponsoring the app\n";
+            echo "<p>Having app descriptions just sponsoring the app\n";
             echo "(yes, some vendors want to use the appdb for this) or saying &#8216;I haven&#8217;t tried this app with Wine&#8217; ";
-            echo "will not help Wine development or Wine users.</p>\n";
+            echo "will not help Wine development or Wine users. Application descriptions should be exactly that and only that, \n";
+            echo "they should not contain any information about how well the app works, just what the app is. The same applies to the \n";
+            echo "version information, it should be only information on what is unique or different about that version of the application, \n";
+            echo "not how well that version works or how great you think a new feature is.</p>\n";
+            echo "<p>When you reach the \"Test Form\" part (What works, What doesn't work, etc) please be detailed \n";
+            echo "about how well it worked and if any workarounds were needed but do NOT paste chunks of terminal output.</p>\n";
+            echo "<p>Please write information in proper English with correct grammar and punctuation!</p>\n";            
             echo "<b><span style=\"color:red\">Please only submit applications/versions that you have tested.\n";
             echo "Submissions without test information or not using the provided template will be rejected.\n";
             echo "If you are unable to see the in-browser editors below, please try Firefox, Mozilla or Opera browsers.\n</span></b>";
