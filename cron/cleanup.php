@@ -285,6 +285,15 @@ function removeScreenshotsWithMissingFiles()
     $sMsg = "Found ".count($aMissingScreenshotIds)." screenshots with missing files.\r\n";
     $sMsg.= "Deleting these screenshots.\r\n";
 
+    // add the screenshot ids to the email so we can see which screenshots are
+    // going to be deleted
+    $sMsg.="\r\n";
+    $sMsg.="Screenshot IDs:\r\n";
+    foreach($aMissingScreenshotIds as $iScreenshotId)
+    {
+        $sMsg.=$iScreenshotId."\r\n";
+    }
+
     $sSubject = "Screenshots deleted\r\n";
 
     $sEmail = User::get_notify_email_address_list(null, null); /* get list admins */
@@ -292,10 +301,10 @@ function removeScreenshotsWithMissingFiles()
         mail_appdb($sEmail, $sSubject, $sMsg);
 
     // remove the screenshots with missing files
-    foreach($aMissingScreenshotIds as $iScreenshotId)
-    {
-        $oScreenshot = new Screenshot($iScreenshotId);
-        $oScreenshot->delete(true); // delete the screenshot silently
-    }
+//    foreach($aMissingScreenshotIds as $iScreenshotId)
+//    {
+//        $oScreenshot = new Screenshot($iScreenshotId);
+//        $oScreenshot->delete(); // delete the screenshot
+//    }
 }
 ?>
