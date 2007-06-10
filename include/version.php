@@ -1276,7 +1276,7 @@ class Version {
         return $aCells;
     }
 
-    function objectGetEntries($bQueued, $bRejected)
+    function objectGetEntries($bQueued, $bRejected, $sOrderBy = "versionId")
     {
         $sQueued = objectManager::getQueueString($bQueued, $bRejected);
 
@@ -1293,7 +1293,7 @@ class Version {
                         AND
                         appVersion.submitterId = '?'
                         AND
-                        appVersion.queued = '?'";
+                        appVersion.queued = '?' ORDER BY '?'";
             else
                 $sQuery = "SELECT appVersion.* FROM
                         appVersion, appMaintainers, appFamily WHERE
@@ -1319,9 +1319,10 @@ class Version {
                         AND
                         appMaintainers.queued = 'false'
                         AND
-                        appVersion.queued = '?'";
+                        appVersion.queued = '?' ORDER BY '?'";
 
-            $hResult = query_parameters($sQuery, $_SESSION['current']->iUserId, $sQueued);
+            $hResult = query_parameters($sQuery, $_SESSION['current']->iUserId, $sQueued,
+                                       $sOrderBy);
         } else
         {
             $sQuery = "SELECT appVersion.*
@@ -1330,8 +1331,8 @@ class Version {
                     AND
                     appFamily.queued = 'false'
                     AND
-                    appVersion.queued = '?'";
-            $hResult = query_parameters($sQuery, $sQueued);
+                    appVersion.queued = '?' ORDER BY '?'";
+            $hResult = query_parameters($sQuery, $sQueued, $sOrderBy);
         }
 
         if(!$hResult)
