@@ -21,27 +21,32 @@ class Url {
     /**    
      * Constructor, fetches the url $iUrlId is given.
      */
-    function Url($iUrlId = null)
+    function Url($iUrlId = null, $oRow = null)
     {
-        // we are working on an existing url
-        if($iUrlId)
+        if(!$iUrlId && !$oRow)
+            return;
+
+        if(!$oRow)
         {
             $sQuery = "SELECT appData.*
                        FROM appData
                        WHERE type = 'url'
                        AND id = '?'";
-            if($hResult = query_parameters($sQuery, $iUrlId))
-            {
-                $oRow = mysql_fetch_object($hResult);
-                $this->iUrlId = $iUrlId;
-                $this->sDescription = $oRow->description;
-                $this->iAppId = $oRow->appId;
-                $this->iVersionId = $oRow->versionId;
-                $this->sUrl = $oRow->url;
-                $this->bQueued = $oRow->queued;
-                $this->sSubmitTime = $oRow->submitTime;
-                $this->iSubmitterId = $oRow->submitterId;
-           }
+            $hResult = query_parameters($sQuery, $iUrlId);
+            $oRow = mysql_fetch_object($hResult);
+        }
+
+        // we are working on an existing url
+        if($oRow)
+        {
+            $this->iUrlId = $iUrlId;
+            $this->sDescription = $oRow->description;
+            $this->iAppId = $oRow->appId;
+            $this->iVersionId = $oRow->versionId;
+            $this->sUrl = Url::normalize($oRow->url);
+            $this->bQueued = $oRow->queued;
+            $this->sSubmitTime = $oRow->submitTime;
+            $this->iSubmitterId = $oRow->submitterId;
         }
     }
  
@@ -423,8 +428,7 @@ class Url {
         if($aValues["iVersionId"])
             $sEmail = User::get_notify_email_address_list($aValues['iVersionId']);
         else
-            $sEmail = User::get_notify_email_address_list($aValues['iAppId'])
-;
+            $sEmail = User::get_notify_email_address_list($aValues['iAppId']);
         if($sWhatChanged && $sEmail)
         {
             $oApp = new Application($aValues["iAppId"]);
@@ -482,13 +486,33 @@ class Url {
 
         for($i = 0; $oRow = mysql_fetch_object($hResult); $i++)
         {
+            // create a url object
+            $oUrl = new Url(null, $oRow);
+
             $sReturn .= html_tr(array(
                 "<b>Link</b>",
-                "<a href=\"$oRow->url\">$oRow->description</a>"),
+                "<a href=\"$oUrl->sUrl\">$oUrl->sDescription</a>"),
                 "color1");
         }
 
         return $sReturn;
+    }
+
+    // if a url lacks "://" assume the url is an http one
+    // and prepend "http://"
+    function normalize($sTheUrl)
+    {
+        // if we already have "://" in the url
+        // we can leave the url alone
+        if(strpos($sTheUrl, "://") === false)
+        {
+            // assume this is a website and prepend "http://"
+            return "http://".$sTheUrl;
+        } else
+        {
+            // leave the url alone
+            return $sTheUrl;
+        }
     }
 }
 ?>

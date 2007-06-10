@@ -70,7 +70,9 @@ class Application {
             $this->sName = $oRow->appName;
             $this->sKeywords = $oRow->keywords;
             $this->sDescription = $oRow->description;
-            $this->sWebpage = $oRow->webPage;
+            //TODO: we should move the url to the appData table
+            // and return an id into the appData table here
+            $this->sWebpage = Url::normalize($oRow->webPage);
             $this->sQueued = $oRow->queued;
         }
 
