@@ -808,7 +808,7 @@ class Application {
         return $sLink;
     }
 
-    function objectGetEntries($bQueued, $bRejected)
+    function objectGetEntries($bQueued, $bRejected, $sOrderBy = "appId")
     {
         $sQuery = "SELECT * FROM appFamily WHERE
                      appFamily.queued = '?'";
@@ -821,12 +821,13 @@ class Application {
             if(!$bRejected)
                 return FALSE;
 
-            $sQuery .= " AND appFamily.submitterId = '?'";
+            $sQuery .= " AND appFamily.submitterId = '?' ORDER BY '?'";
             $hResult = query_parameters($sQuery, $sQueued,
-                                        $_SESSION['current']->iUserId);
+                                        $_SESSION['current']->iUserId, $sOrderBy);
         } else
         {
-            $hResult = query_parameters($sQuery, $sQueued);
+            $sQuery .= " ORDER BY '?'";
+            $hResult = query_parameters($sQuery, $sQueued, $sOrderBy);
         }
 
         if(!$hResult)
