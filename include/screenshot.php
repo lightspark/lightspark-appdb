@@ -131,7 +131,7 @@ class Screenshot {
     function delete($bSilent=false)
     {
         /* appData has a universal function for removing database entries */
-        $oAppData = new appData($this->iScreenshotId);
+        $oAppData = new appData($this->iScreenshotId, null, $this);
         if($oAppData->delete())
         {
             /* make sure the screenshot and thumbnail is loaded */
@@ -562,7 +562,7 @@ class Screenshot {
     /* arg1 = OM object, arg2 = CSS style, arg3 = text for edit link */
     function objectOutputTableRow($oObject, $sClass, $sEditLinkLabel)
     {
-        $oAppData = new AppData();
+        $oAppData = new AppData($this->iScreenshotId, null, $this);
         $oAppData->objectOutputTableRow($oObject, $sClass, $sEditLinkLabel);
     }
 
@@ -573,7 +573,7 @@ class Screenshot {
 
     function outputEditor()
     {
-        $oAppData = new appData($this->iScreenshotId);
+        $oAppData = new appData($this->iScreenshotId, null, $this);
         $oAppData->outputEditorGeneric();
 
         echo '<tr valign=top><td class=color0><b>Submited screenshot</b></td>',"\n";

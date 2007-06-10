@@ -15,10 +15,24 @@ class appData
     var $sSubmitTime;
     var $sDescription;
 
-    function appData($iId = null, $oRow = null)
+    function appData($iId = null, $oRow = null, $oObject = null)
     {
         if(!$iId && !$oRow)
             return;
+
+        /* Since all objects stored in the appData table have a number of common
+           members, we can import such an object into an appData one without
+           making an SQL query */
+        if($oObject && $iId)
+        {
+            $this->iSubmitterId = $oObject->iSubmitterId;
+            $this->sDescription = $oObject->sDescription;
+            $this->iAppId = $oObject->iAppId;
+            $this->iVersionId = $oObject->iVersionId;
+            $this->sSubmitTime = $oObject->sSubmitTime;
+            $this->iId = $iId;
+            return;
+        }
 
         if(!$oRow)
         {
