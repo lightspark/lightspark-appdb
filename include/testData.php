@@ -828,7 +828,7 @@ class testData{
         return $oRow->count;
     }
 
-    function objectGetEntries($bQueued, $bRejected)
+    function objectGetEntries($bQueued, $bRejected, $sOrderBy = "testingId")
     {
         $oTest = new testData();
         $sQueued = objectManager::getQueueString($bQueued, $bRejected);
@@ -843,7 +843,7 @@ class testData{
                         AND
                         testResults.submitterId = '?'
                         AND
-                        testResults.queued = '?'";
+                        testResults.queued = '?' ORDER BY '?'";
             } else
             {
                 $sQuery = "SELECT testResults.* FROM testResults, appVersion,
@@ -868,10 +868,10 @@ class testData{
                                 )
                             )
                             AND
-                            testResults.queued = '?'";
+                            testResults.queued = '?' ORDER BY '?'";
             }
             $hResult = query_parameters($sQuery, $_SESSION['current']->iUserId,
-                                        $sQueued);
+                                        $sQueued, $sOrderBy);
         } else
         {
             $sQuery = "SELECT testResults.* FROM testResults, appVersion WHERE
@@ -879,8 +879,8 @@ class testData{
                     AND
                     appVersion.queued = 'false'
                     AND
-                    testResults.queued = '?' ORDER by testingId";
-            $hResult = query_parameters($sQuery, $sQueued);
+                    testResults.queued = '?' ORDER by '?'";
+            $hResult = query_parameters($sQuery, $sQueued, $sOrderBy);
         }
 
         if(!$hResult)
