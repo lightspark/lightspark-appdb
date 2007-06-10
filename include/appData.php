@@ -163,8 +163,8 @@ class appData
         $sQueued = objectManager::getQueueString($bQueued, $bRejected);
 
         $hResult = query_parameters("SELECT * FROM appData WHERE appId = '?' AND
-            versionId = '?' AND TYPE = '?' AND queued = '?'",
-                $iAppId, $iVersionId, $sType, $sQueued);
+                                     versionId = '?' AND TYPE = '?' AND queued = '?'",
+                                    $iAppId, $iVersionId, $sType, $sQueued);
 
         if(!$hResult || !mysql_num_rows($hResult))
             return FALSE;
