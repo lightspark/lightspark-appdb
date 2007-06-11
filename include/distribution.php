@@ -462,11 +462,15 @@ class distribution {
              "<a href=\"$this->sUrl\">$this->sUrl</a>",
              array(sizeof($this->aTestingIds), "align=\"right\""));
 
+        // add actions if the current user has permission to edit this object
         if($this->canEdit())
         {
+            // enable the 'delete' action if this distribution has no testing results
             if(!sizeof($this->aTestingIds))
+            {
                 $shDeleteLink = " &nbsp; [<a href='".$oManager->makeUrl("delete",
                     $this->iDistributionId)."'>delete</a>]";
+            }
 
             $aCells[] = array(
                 "[<a href='".$oManager->makeUrl("edit",
