@@ -39,7 +39,7 @@ class Url {
         // we are working on an existing url
         if($oRow)
         {
-            $this->iUrlId = $iUrlId;
+            $this->iUrlId = $oRow->id;
             $this->sDescription = $oRow->description;
             $this->iAppId = $oRow->appId;
             $this->iVersionId = $oRow->versionId;
