@@ -936,8 +936,13 @@ class testData{
 
         if($this->canEdit() or $this->sQueued == "rejected")
         {
+            $shDeleteLink = "[ <a href=\"".$oObject->makeUrl("delete",
+                                                             $this->iTestingId).
+              "\"> delete</a> ]";
+            
             $aCells[] = "[ <a href=\"".$oObject->makeUrl("edit",
-                $this->iTestingId)."\">$sEditLinkLabel</a> ]";
+                $this->iTestingId)."\">$sEditLinkLabel</a> ]".
+              $shDeleteLink;
         }
 
         echo html_tr($aCells, $this->sTestedRating);

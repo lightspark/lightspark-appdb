@@ -32,6 +32,9 @@ function global_admin_menu() {
             BASE."admin/adminMaintainers.php");
     $g->add("View Bug Links (".getNumberOfQueuedBugLinks()."/".getNumberOfBugLinks().")",
             BASE."admin/adminBugs.php");
+    $g->add("View Test Results (".testData::objectGetEntriesCount(false, false).")",
+            BASE."objectManager.php?sClass=testData&bIsQueue=false&sTitle=".
+            "View%20Test%20Results");
     $g->add("Users Management", BASE."admin/adminUsers.php");
     $g->add("Comments Management", BASE."admin/adminCommentView.php");
     $g->add("Screenshots Management", BASE."admin/adminScreenshots.php");
