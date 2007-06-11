@@ -366,7 +366,7 @@ class appData
                 appData.queued = '?'
                 AND
                 appData.type = '?'";
-            if(!$iRows && !$iStarts)
+            if(!$iRows && !$iStart)
             {
                 $hResult = query_parameters($sQuery, $_SESSION['current']->iUserId,
                                         $bQueued ? "true" : "false", $sType);
