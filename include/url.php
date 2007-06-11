@@ -502,6 +502,10 @@ class Url {
     // and prepend "http://"
     function normalize($sTheUrl)
     {
+        // return if we have an empty string
+        if($sTheUrl == "")
+            return $sTheUrl;
+
         // if we already have "://" in the url
         // we can leave the url alone
         if(strpos($sTheUrl, "://") === false)
