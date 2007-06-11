@@ -168,28 +168,27 @@ function make_bugzilla_version_list($varname, $cvalue)
     //         and we can't use 'order by' since we have no column
     //         to order by, but the entries should come out in the
     //         order they were added
-    //       - Trim the list, we don't want every version of wine ever released
-    //       - Add 'CVS' explicitly since we trim it out
+    //       - Trim the list, we don't want every version of wine ever released and
+    //         we don't want the "CVS" version included since we can never figure out
+    //         what version of Wine any given "CVS" version is
     //
     // TODO: if we ever get a reasonable way to order the list replace this code
     //       with that
     $aVersions = array();
-    while(list($value) = mysql_fetch_row($hResult))
+    while(list($sValue) = mysql_fetch_row($hResult))
     {
-      // exclude unspecified versions
-      if($value != "unspecified")
-        $aVersions[] = $value;
+      // exclude unspecified versions and the "CVS" version
+      if(($sValue != "unspecified") && ($sValue != "CVS"))
+        $aVersions[] = $sValue;
     }
 
-    // now reverse the array order
+    // now reverse the array order since the oldest
+    // versions were added first
     $aVersions = array_reverse($aVersions);
 
     // now trim off all but the last X versions
     $iVersionsToKeep = 6;
     $aVersions = array_slice($aVersions, 0, $iVersionsToKeep);
-
-    // explicitly add 'CVS' since we are eliminating that above
-    $aVersions[] = "CVS";
 
     // DONE TRIMMING VERSIONS
     /////////////////////////
