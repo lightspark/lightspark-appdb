@@ -37,15 +37,16 @@ function build_urlarg($vars)
     while(list($key, $val) = each($vars))
     {
         if(is_array($val))
-		    {
+        {
             while(list($idx, $value) = each($val))
             {
                 //echo "Encoding $key / $value<br>";
                 $arr[] = rawurlencode($key."[]")."=".rawurlencode($value);
             }
-		    }
-        else
+        } else
+        {
             $arr[] = $key."=".rawurlencode($val);
+        }
     }
     return implode("&", $arr);
 }
