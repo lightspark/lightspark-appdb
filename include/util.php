@@ -24,13 +24,6 @@ function util_redirect_and_exit($url)
     exit;
 }
 
-function makeSafe($var)
-{
-/* Disable addslashes() until we can use more finely grained filtering on user input */
-/*    $var = trim(addslashes($var)); */
-    return $var;
-}
-
 function build_urlarg($vars)
 {
     $arr = array();
