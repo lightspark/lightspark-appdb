@@ -1064,9 +1064,6 @@ class testData{
 
     function objectGetItemsPerPage($bQueued = false)
     {
-        if($bQueued)
-            return FALSE;
-
         $aItemsPerPage = array(25, 50, 100, 200);
         $iDefaultPerPage = 25;
         return array($aItemsPerPage, $iDefaultPerPage);
