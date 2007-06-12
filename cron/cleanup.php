@@ -9,6 +9,8 @@ require("path.php");
 require(BASE."include/incl.php");
 require_once(BASE."include/mail.php");
 
+$sEmailSubject = "[Cron maintenance] - ";
+
 inactiveUserCheck();
 
 /* check to see if there are orphaned versions in the database */
@@ -128,7 +130,7 @@ function warnUserDeleted($sEmail)
 
 function notifyAdminsOfCleanupStart()
 {
-    $sSubject  = "Cleanup script starting\r\n";
+    $sSubject  = $sEmailSubject."Cleanup script starting\r\n";
     $sMsg  = "Appdb cleanup cron script started.\r\n";
     $sEmail = User::get_notify_email_address_list(null, null); /* get list admins */
     if($sEmail)
@@ -142,8 +144,8 @@ function notifyAdminsOfCleanupExecution($usersWarned, $usersUnwarnedWithData, $u
 {
     $warnedUsers = User::get_inactive_users_pending_deletion();
 
-    $sSubject  = "Cleanup script summary\r\n";
-    $sMsg  = "Appdb cleanup cron script executed.\r\n";
+    $sSubject  = $sEmailSubject."Inactive users\r\n";
+    $sMsg  = "Appdb inactive users cleanup executed.\r\n";
     $sMsg .= "Status\r\n";
     $sMsg .= "--------------------------\r\n";
     $sMsg .= "Users warned:".$usersWarned."\r\n";
@@ -177,7 +179,7 @@ function orphanVersionCheck()
         $sMsg .= $oRow->versionId."/".$oRow->versionName."\r\n";
     }
 
-    $sSubject = "Versions orphaned in the database\r\n";
+    $sSubject = $sEmailSubject."Orphan version cleanup\r\n";
 
     $sEmail = User::get_notify_email_address_list(null, null); /* get list admins */
     if($sEmail)
@@ -202,7 +204,7 @@ function orphanSessionMessagesCheck()
     $sMsg = "Found ".$iMessages." that have been orphaned in the sessionMessages table for longer than ".$iSessionMessageDayLimit." days\r\n";
     $sMsg.= " Purging these messages.\r\n";
 
-    $sSubject = "Messages orphaned in sessionMessages\r\n";
+    $sSubject = $sEmailSubject."Orphaned session messages cleanup\r\n";
 
     $sEmail = User::get_notify_email_address_list(null, null); /* get list admins */
     if($sEmail)
@@ -228,7 +230,7 @@ function orphanSessionListCheck()
     $sMsg = "Found ".$iMessages." sessions that have expired after ".(SESSION_DAYS_TO_EXPIRE + 2)." days\r\n";
     $sMsg.= " Purging these sessions.\r\n";
 
-    $sSubject = "Sessions expired\r\n";
+    $sSubject = $sEmailSubject."Orphan sessions being expired\r\n";
 
     $sEmail = User::get_notify_email_address_list(null, null); /* get list admins */
     if($sEmail)
@@ -294,7 +296,7 @@ function removeScreenshotsWithMissingFiles()
         $sMsg.=$iScreenshotId."\r\n";
     }
 
-    $sSubject = "Screenshots deleted\r\n";
+    $sSubject = $sEmailSubject."Missing screenshot cleanup\r\n";
 
     $sEmail = User::get_notify_email_address_list(null, null); /* get list admins */
     if($sEmail)
