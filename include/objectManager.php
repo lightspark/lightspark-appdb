@@ -566,7 +566,7 @@ class ObjectManager
         $sControls .= " &nbsp; <input type=\"submit\" value=\"Update\" />";
         $sControls .= "</form></p>";
 
-        $iTotalEntries = $oObject->objectGetEntriesCount($this->bIsQueued, $this->bIsRejected);
+        $iTotalEntries = $oObject->objectGetEntriesCount($this->bIsQueue, $this->bIsRejected);
         $iNumPages = ceil($iTotalEntries / $iItemsPerPage);
 
         /* Check current page value */
@@ -581,8 +581,8 @@ class ObjectManager
 
         /* Page controls */
         $iPageRange = 7; // the number of page links we want to display
-        display_page_range($iPage, $iPageRange, $iNumPages, $this->makeUrl()."&iItemsPerPage=".
-                "$iItemsPerPage");
+        display_page_range($iPage, $iPageRange, $iNumPages,
+                           $this->makeUrl()."&iItemsPerPage=$iItemsPerPage");
 
         echo $sControls;
 
