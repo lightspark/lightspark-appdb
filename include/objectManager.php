@@ -532,14 +532,14 @@ class ObjectManager
         $oObject = new $this->sClass();
 
         if(!method_exists($oObject, "objectGetItemsPerPage") ||
-          $oObject->objectGetItemsPerPage() === FALSE)
+          $oObject->objectGetItemsPerPage($this->bIsQueue) === FALSE)
         {
             /* Do not enable the MultiPage controls */
             $this->oMultiPage->MultiPage(FALSE);
             return;
         }
 
-        $aReturn = $oObject->objectGetItemsPerPage();
+        $aReturn = $oObject->objectGetItemsPerPage($this->bIsQueue);
         $aItemsPerPage = $aReturn[0];
         $iDefaultPerPage = $aReturn[1];
 

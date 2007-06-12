@@ -122,9 +122,14 @@ class testData_queue
         $this->oTestData->objectDisplayAddItemHelp();
     }
 
-    function objectGetEntries($bQueued, $bRejected)
+    function objectGetEntries($bQueued, $bRejected, $iRows = 0, $iStart = 0, $sOrderBy = "testingId")
     {
-        return $this->oTestData->objectGetEntries($bQueued, $bRejected);
+        return $this->oTestData->objectGetEntries($bQueued, $bRejected, $iRows, $iStart, $sOrderBy);
+    }
+
+    function objectGetEntriesCount($bQueued, $bRejected)
+    {
+        return testData::objectGetEntriesCount($bQueued, $bRejected);
     }
 
     function objectGetHeader()
@@ -167,6 +172,11 @@ class testData_queue
     function allowAnonymousSubmissions()
     {
         return testData::allowAnonymousSubmissions();
+    }
+
+    function objectGetItemsPerPage($bQueued = false)
+    {
+        return testData::objectGetItemsPerPage($bQueued);
     }
 }
 
