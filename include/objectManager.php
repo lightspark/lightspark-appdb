@@ -580,6 +580,7 @@ class ObjectManager
         echo "<b>Page $iPage of $iNumPages</b><br />";
 
         /* Page controls */
+        $iPageRange = 7; // the number of page links we want to display
         display_page_range($iPage, $iPageRange, $iNumPages, $this->makeUrl()."&iItemsPerPage=".
                 "$iItemsPerPage");
 
