@@ -388,9 +388,9 @@ class distribution {
         if($bRejected)
             return FALSE;
 
-            $hResult = query_parameters("SELECT count(distributionId) as num_dists FROM
-                                        distributions WHERE queued='?'",
-                                        $bQueued ? "true" : "false");
+        $hResult = query_parameters("SELECT count(distributionId) as num_dists FROM
+                                     distributions WHERE queued='?'",
+                                    $bQueued ? "true" : "false");
 
         if($hResult)
         {
