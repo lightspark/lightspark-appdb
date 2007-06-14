@@ -461,8 +461,7 @@ class maintainer
         return $aCells;
     }
 
-    /* arg1 = OM object, arg2 = CSS style, arg3 = text for edit link */
-    function ObjectOutputTableRow($oObject, $sClass, $sEditLinkLabel)
+    function ObjectGetTableRow()
     {
         $oUser = new User($this->iUserId);
         $oApp = new Application($this->iAppId);
@@ -475,12 +474,7 @@ class maintainer
             ($this->bSuperMaintainer) ? "Yes" : "No",
             $oUser->objectMakeLink());
 
-        if(maintainer::canEdit())
-            $aCells[sizeof($aCells)] = "[ <a href=\"".$oObject->makeUrl("edit",
-            $this->iMaintainerId)."\">$sEditLinkLabel</a> ]";
-
-        echo html_tr($aCells,
-            $sClass);
+        return array($aCells, null, false, null);
     }
 
     function ObjectDisplayQueueProcessingHelp()

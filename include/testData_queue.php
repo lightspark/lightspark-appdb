@@ -137,36 +137,30 @@ class testData_queue
         return $this->oTestData->objectGetHeader();
     }
 
-    function objectOutputTableRow($oObject, $sClass, $sEditLinkLabel)
+    function objectGetTableRow()
     {
-        return $this->oTestData->objectOutputTableRow($oObject, $sClass, $sEditLinkLabel);
+        return $this->oTestData->objectGetTableRow();
     }
 
     function objectDisplayQueueProcessingHelp()
     {
         $oTest = new testData();
-        echo "<p>";
-        if($oTest->canEdit)
-            echo "This is the list of rejected test results, waiting to be resubmitted or deleted.";
-        else
-            echo "This is the list of your rejected test results.  Here you can make changes to ".
-                 "them and resubmit them into the database.";
-        echo "</p>\n";
+        $oTest->objectDisplayQueueProcessingHelp();
     }
 
     function display()
     {
-        return $this->oTest->display();
+        return $this->oTestData->display();
     }
 
     function objectMakeUrl()
     {
-        return $this->oTest->objectMakeUrl();
+        return $this->oTestData->objectMakeUrl();
     }
 
     function objectMakeLink()
     {
-        return $this->oTest->objectMakeLink();
+        return $this->oTestData->objectMakeLink();
     }
 
     function allowAnonymousSubmissions()
@@ -177,6 +171,11 @@ class testData_queue
     function objectGetItemsPerPage($bQueued = false)
     {
         return testData::objectGetItemsPerPage($bQueued);
+    }
+
+    function objectGetId()
+    {
+        return $this->oTestData->objectGetId();
     }
 }
 

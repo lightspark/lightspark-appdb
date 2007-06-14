@@ -67,7 +67,7 @@ class distribution {
                             ORDER BY testedRating;";
         }
 
-        if($hResult = query_parameters($sQuery, $iDistributionId))
+        if($hResult = query_parameters($sQuery, $this->iDistributionId))
         {
             while($oRow = mysql_fetch_object($hResult))
             {
@@ -453,32 +453,17 @@ class distribution {
                                 $iStart, $iRows);
     }
 
-    /* arg1 = OM object, arg2 = CSS style, arg3 = text for edit link */
-    function objectOutputTableRow($oManager, $sClass, $sEditLinkLabel)
+    function objectGetTableRow()
     {
         $aCells = array(
-             "<a href=\"".$oManager->makeUrl("view", $this->iDistributionId,
-             "View distribution")."\">$this->sName.</a>",
+             $this->objectMakeLink(),
              "<a href=\"$this->sUrl\">$this->sUrl</a>",
              array(sizeof($this->aTestingIds), "align=\"right\""));
 
-        // add actions if the current user has permission to edit this object
-        if($this->canEdit())
-        {
             // enable the 'delete' action if this distribution has no testing results
-            if(!sizeof($this->aTestingIds))
-            {
-                $shDeleteLink = " &nbsp; [<a href='".$oManager->makeUrl("delete",
-                    $this->iDistributionId)."'>delete</a>]";
-            }
+            $bDeleteLink = sizeof($this->aTestingIds) ? FALSE : TRUE;
 
-            $aCells[] = array(
-                "[<a href='".$oManager->makeUrl("edit",
-                $this->iDistributionId)."'>$sEditLinkLabel</a>]$shDeleteLink",
-                "align=\"center\"");
-        }
-
-        echo html_tr($aCells, $sClass);
+        return array($aCells, null, $bDeleteLink, null);
     }
 
     // Whether the user has permission to edit distributions

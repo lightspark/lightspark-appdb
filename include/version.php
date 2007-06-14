@@ -1340,7 +1340,7 @@ class Version {
         return $hResult;
     }
 
-    function objectOutputTableRow($oObject, $sClass, $sEditLinkLabel)
+    function objectGetTableRow()
     {
         $oUser = new user($this->iSubmitterId);
         $oApp = new application($this->iAppId);
@@ -1352,13 +1352,7 @@ class Version {
                 $oApp->objectMakeLink(),
                 $this->sName);
 
-        if($this->canEdit())
-        {
-            $aCells[] = "[ <a href=\"".$oObject->makeUrl("edit",
-                $this->iVersionId)."\">$sEditLinkLabel</a> ]";
-        }
-
-        echo html_tr($aCells, $sClass);
+        return array($aCells, null, false, null);
     }
 
     function objectDisplayQueueProcessingHelp()
@@ -1415,6 +1409,11 @@ class Version {
     function allowAnonymousSubmissions()
     {
         return FALSE;
+    }
+
+    function objectGetId()
+    {
+        return $this->iVersionId;
     }
 }
 

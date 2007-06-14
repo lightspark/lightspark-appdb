@@ -559,11 +559,10 @@ class Screenshot {
             return appData::mustBeQueued();
     }
 
-    /* arg1 = OM object, arg2 = CSS style, arg3 = text for edit link */
-    function objectOutputTableRow($oObject, $sClass, $sEditLinkLabel)
+    function objectGetTableRow()
     {
         $oAppData = new AppData($this->iScreenshotId, null, $this);
-        $oAppData->objectOutputTableRow($oObject, $sClass, $sEditLinkLabel);
+        return $oAppData->objectGetTableRow();
     }
 
     function objectDisplayQueueProcessingHelp()
@@ -645,6 +644,11 @@ class Screenshot {
     function allowAnonymousSubmissions()
     {
         return FALSE;
+    }
+
+    function objectGetId()
+    {
+        return $this->iScreenshotId;
     }
 }
 

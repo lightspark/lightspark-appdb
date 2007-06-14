@@ -302,9 +302,9 @@ class application_queue
         return $this->oApp->objectGetHeader();
     }
 
-    function objectOutputTableRow($oObject, $sClass, $sEditLinkLabel)
+    function objectGetTableRow()
     {
-        return $this->oApp->objectOutputTableRow($oObject, $sClass, $sEditLinkLabel);
+        return $this->oApp->objectGetTableRow();
     }
 
     function objectMoveChildren($iNewId)
@@ -320,6 +320,11 @@ class application_queue
     function allowAnonymousSubmissions()
     {
         return application::allowAnonymousSubmissions();
+    }
+
+    function objectGetId()
+    {
+        return $this->oApp->objectGetId();
     }
 }
 

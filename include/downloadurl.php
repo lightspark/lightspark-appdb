@@ -405,11 +405,10 @@ class downloadurl
         return appData::objectGetHeader("downloadurl");
     }
 
-    /* arg1 = OM object, arg2 = CSS style, arg3 = text for edit link */
-    function objectOutputTableRow($oObject, $sClass, $sEditLinkLabel)
+    function objectGetTableRow()
     {
         $oAppData = new AppData();
-        $oAppData->objectOutputTableRow($oObject, $sClass, $sEditLinkLabel);
+        return $oAppData->objectGetTableRow();
     }
 
     function getOutputEditorValues($aClean)
@@ -445,6 +444,11 @@ class downloadurl
     {
         /* FIXME: not implemented */
         return TRUE;
+    }
+
+    function objectGetId()
+    {
+        return $this->iId;
     }
 }
 

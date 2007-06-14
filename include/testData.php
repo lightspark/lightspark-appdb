@@ -939,13 +939,12 @@ class testData{
         return $aCells;
     }
 
-    function objectOutputTableRow($oObject, $sClass, $sEditLinkLabel)
+    function objectGetTableRow()
     {
         $oVersion = new version($this->iVersionId);
         $oApp = new application($oVersion->iAppId);
         $oUser = new user($this->iSubmitterId);
 
-        // 
         $hMaintainers = maintainer::getMaintainersForAppIdVersionId(null, $this->iVersionId);
         $bHasMaintainer = (mysql_num_rows($hMaintainers) == 0) ? false : true;
 
@@ -958,18 +957,7 @@ class testData{
                 ($bHasMaintainer ? "YES" : "no"),
                 $this->sTestedRating);
 
-        if($this->canEdit() or $this->sQueued == "rejected")
-        {
-            $shDeleteLink = "[ <a href=\"".$oObject->makeUrl("delete",
-                                                             $this->iTestingId).
-              "\"> delete</a> ]";
-            
-            $aCells[] = "[ <a href=\"".$oObject->makeUrl("edit",
-                $this->iTestingId)."\">$sEditLinkLabel</a> ]".
-              $shDeleteLink;
-        }
-
-        echo html_tr($aCells, $this->sTestedRating);
+        return array($aCells, $this->sTestedRating, true, null);
     }
 
     function canEdit()
@@ -1067,6 +1055,11 @@ class testData{
         $aItemsPerPage = array(25, 50, 100, 200);
         $iDefaultPerPage = 25;
         return array($aItemsPerPage, $iDefaultPerPage);
+    }
+
+    function objectGetId()
+    {
+        return $this->iTestingId;
     }
 }
 

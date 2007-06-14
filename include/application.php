@@ -849,7 +849,7 @@ class Application {
         return $aCells;
     }
 
-    function objectOutputTableRow($oObject, $sClass, $sEditLinkLabel)
+    function objectGetTableRow()
     {
         $oUser = new user($this->iSubmitterId);
         $oVendor = new vendor($this->iVendorId);
@@ -864,14 +864,7 @@ class Application {
                 $sVendor,
                 $this->sName);
 
-        /* Display an edit link if the user has proper permissions */
-        if($this->canEdit())
-        {
-            $aCells[] = "[ <a href=\"".$oObject->makeUrl("edit", $this->iAppId,
-                    "Edit Application")."\">$sEditLinkLabel</a> ]";
-        }
-
-        echo html_tr($aCells, $sClass);
+        return array($aCells, null, false, null);
     }
 
     function canEdit()
@@ -1001,6 +994,11 @@ class Application {
     function allowAnonymousSubmissions()
     {
         return FALSE;
+    }
+
+    function objectGetId()
+    {
+        return $this->iAppId;
     }
 }
 

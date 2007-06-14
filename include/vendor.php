@@ -222,27 +222,16 @@ class Vendor {
         return $aCells;
     }
 
-    /* arg1 = OM object, arg2 = CSS style, arg3 = text for edit link */
-    function objectOutputTableRow($oObject, $sClass = "", $sEditLinkLabel)
+    function objectGetTableRow()
     {
         $aCells = array(
-            "<a href=\"".$oObject->makeUrl("view", $this->iVendorId,
-            "View Vendor")."\">$this->sName</a>",
+            $this->objectMakeLink(),
             "<a href=\"$this->sWebpage\">$this->sWebpage</a>",
             array(sizeof($this->aApplicationsIds), "align=\"right\""));
 
-        if($this->canEdit())
-        {
-            if(!sizeof($this->aApplicationsIds))
-                $shDeleteLink = " &nbsp; [<a href=\"".$oObject->makeUrl("delete",
-                $this->iVendorId, "View Vendors")."\">".
-                "delete</a>]";
+        $bDeleteLink = sizeof($this->aApplicationsIds) ? FALSE : TRUE;
 
-            $aCells[sizeof($aCells)] = "[<a href=\"".$oObject->makeUrl("edit",
-            $this->iVendorId, "Edit Vendor")."\">$sEditLinkLabel</a>]$shDeleteLink";
-        }
-
-        echo html_tr($aCells, $sClass);
+        return array($aCells, null, $bDeleteLink, null);
     }
 
     function canEdit()

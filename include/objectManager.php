@@ -11,6 +11,7 @@ class ObjectManager
     var $iId;
     var $bIsRejected;
     var $oMultiPage;
+    var $oTableRow;
 
     function ObjectManager($sClass, $sTitle = "list", $iId = false)
     {
@@ -18,6 +19,7 @@ class ObjectManager
         $this->sTitle = $sTitle;
         $this->iId = $iId;
         $this->oMultiPage = new MultiPage(FALSE);
+        $this->oTableRow = new TableRow(null);
     }
 
     /* Check whether the associated class has the given method */
@@ -59,7 +61,7 @@ class ObjectManager
     function display_table($aClean)
     {
         $this->checkMethods(array("ObjectGetEntries", "ObjectGetHeader",
-             "ObjectOutputTableRow", "canEdit"));
+             "objectGetTableRow", "objectGetId", "canEdit"));
 
         $oObject = new $this->sClass();
 
@@ -110,9 +112,28 @@ class ObjectManager
         {
             $oObject = new $this->sClass(null, $oRow);
 
-            /* arg1 = OM object, arg2 = CSS style, arg3 = text for edit link */
-            $oObject->objectOutputTableRow($this, ($iCount % 2) ? "color0" : "color1",
-                $this->bIsQueue ? "process" : "edit");
+            $this->oTableRow->TableRow($oObject->objectGetTableRow());
+
+            if(!$this->oTableRow->sStyle)
+                $this->oTableRow->sStyle = ($iCount % 2) ? "color0" : "color1";
+
+            $sEditLinkLabel = $this->bIsQueue ? "process" : "edit";
+
+            /* We add some action links */
+            if($oObject->canEdit())
+            {
+                $shDeleteLink = "";
+                if($this->oTableRow->bDeleteLink)
+                {
+                    $shDeleteLink = ' [ <a href="'.$this->makeUrl("delete", $oObject->objectGetid()).
+                            '">delete</a> ]';
+                }
+
+                $this->oTableRow->aCells[] = '[ <a href="'.$this->makeUrl("edit",
+                        $oObject->objectGetId()).'">'.$sEditLinkLabel.'</a> ]'.$shDeleteLink;
+            }
+
+            echo html_tr($this->oTableRow->aCells, $this->oTableRow->sStyle);
         }
 
         echo "</table>";
@@ -637,6 +658,35 @@ class MultiPage
         $this->bEnabled = $bEnabled;
         $this->iItemsPerPage = $iItemsPerPage;
         $this->iLowerLimit = $iLowerLimit;
+    }
+}
+
+class TableRow
+{
+    var $aCells;
+    var $sStyle;
+    var $sEditLinkLabel;
+    var $bDeleteLink;
+    var $aRowClickable;
+    var $bCanEdit;
+    var $iId;
+
+    function TableRow($aInput)
+    {
+        if(!$aInput)
+            return;
+
+        /* aInput is returned from objectGetTableRow(); an array with the following members
+            0: an array with the contents of the table row
+            1: CSS style to be used.  If it is null we use the default
+            2: Is TRUE if we should display a delete link with the edit link
+            3: Contains an array with info if we should make the entrie table row clickable,
+                null otherwise */
+
+        $this->aCells = $aInput[0];
+        $this->sStyle = $aInput[1];
+        $this->bDeleteLink = $aInput[2];
+        $this->aRowClickable = $aInput[3];
     }
 }
 

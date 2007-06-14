@@ -488,8 +488,7 @@ class appData
         }
     }
 
-    /* arg1 = OM object, arg2 = CSS style, arg3 = text for edit link */
-    function objectOutputTableRow($oObject, $sClass, $sEditLinkLabel)
+    function objectGetTableRow()
     {
         $oVersion = new Version($this->iVersionId);
 
@@ -504,11 +503,7 @@ class appData
                 $oApp->objectMakeLink(),
                 $this->iVersionId ? $oVersion->objectMakeLink() : "N/A");
 
-        if(appData::canEdit($oObject->sClass))
-            $aCells[] = "[ <a href=\"".$oObject->makeUrl("edit",
-                        $this->iId)."\">$sEditLinkLabel</a> ]";
-
-        echo html_tr($aCells, $sClass);
+        return array($aCells, null, false, null);
     }
 
     function objectDisplayQueueProcessingHelp()
@@ -554,6 +549,11 @@ class appData
         $sReplyText = "Enter a personalized reason for acceptance or rejection of the".
                       " submitted application data here";
         return $sReplyText;
+    }
+
+    function objectGetId()
+    {
+        return $this->iId;
     }
 }
 

@@ -166,9 +166,9 @@ class version_queue
         return $this->oVersion->objectGetHeader();
     }
 
-    function objectOutputTableRow($oObject, $sClass, $sEditLinkLabel)
+    function objectGetTableRow()
     {
-        return $this->oVersion->objectOutputTableRow($oObject, $sClass, $sEditLinkLabel);
+        return $this->oVersion->objectGetTableRow();
     }
 
     function display()
@@ -246,6 +246,11 @@ class version_queue
     function allowAnonymousSubmissions()
     {
         return version::allowAnonymousSubmissions();
+    }
+
+    function objectGetId()
+    {
+        return $this->oVersion->objectGetId();
     }
 }
 
