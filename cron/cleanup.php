@@ -130,6 +130,8 @@ function warnUserDeleted($sEmail)
 
 function notifyAdminsOfCleanupStart()
 {
+    global $sEmailSubject;
+
     $sSubject  = $sEmailSubject."Cleanup script starting\r\n";
     $sMsg  = "Appdb cleanup cron script started.\r\n";
     $sEmail = User::get_notify_email_address_list(null, null); /* get list admins */
@@ -142,6 +144,8 @@ function notifyAdminsOfCleanupStart()
 /* events of the appdb */
 function notifyAdminsOfCleanupExecution($usersWarned, $usersUnwarnedWithData, $usersDeleted, $usersWithData)
 {
+    global $sEmailSubject;
+
     $warnedUsers = User::get_inactive_users_pending_deletion();
 
     $sSubject  = $sEmailSubject."Inactive users\r\n";
@@ -162,6 +166,8 @@ function notifyAdminsOfCleanupExecution($usersWarned, $usersUnwarnedWithData, $u
 /* we don't report anything if no orphans are found */
 function orphanVersionCheck()
 {
+    global $sEmailSubject;
+
     $sQuery = "select versionId, versionName from appVersion where appId = 0";
     $hResult = query_appdb($sQuery);
     $found_orphans = false;
@@ -192,6 +198,8 @@ function orphanVersionCheck()
 /* so we'll want to purge them here after reporting how many we have */
 function orphanSessionMessagesCheck()
 {
+    global $sEmailSubject;
+
     $iSessionMessageDayLimit = 1; /* the number of days a session message must be stuck before being purges */
 
     /* get a count of the messages older than $iSessionMessageDayLimit */
@@ -220,6 +228,8 @@ function orphanSessionMessagesCheck()
 /* by one row each time a user logs */
 function orphanSessionListCheck()
 {
+    global $sEmailSubject;
+
     /* get a count of the messages older than $iSessionListDayLimit */
     $sQuery = "SELECT count(*) as cnt from session_list where TO_DAYS(NOW()) - TO_DAYS(stamp) > ?";
     $hResult = query_parameters($sQuery, SESSION_DAYS_TO_EXPIRE + 2);
@@ -281,6 +291,8 @@ function getMissingScreenshotArray()
 
 function removeScreenshotsWithMissingFiles()
 {
+    global $sEmailSubject;
+
     $aMissingScreenshotIds = getMissingScreenshotArray();
 
     // build the email to admins about what we are doing
