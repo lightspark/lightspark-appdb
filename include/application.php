@@ -372,7 +372,7 @@ class Application {
             {
             case "add":
                 $sSubject =  "Submitted application accepted";
-                $sMsg  = "The application you submitted (".$this->sName.") has been accepted by ".$_SESSION['current']->sRealname.".";
+                $sMsg  = "The application you submitted (".$this->sName.") has been accepted by ".$_SESSION['current']->sRealname.".\n";
                 $sMsg .= "Administrator's Response:\n";
             break;
             case "reject":
@@ -390,10 +390,11 @@ class Application {
                 $sMsg  = "The application you submitted (".$this->sName.") has been deleted by ".$_SESSION['current']->sRealname.".";
                 $sMsg .= "Reason given:\n";
             break;
+            }
 
             $sMsg .= $aClean['sReplyText']."\n";
             $sMsg .= "We appreciate your help in making the Application Database better for all users.";
-            }
+
             mail_appdb($oSubmitter->sEmail, $sSubject ,$sMsg);
         }
     }
