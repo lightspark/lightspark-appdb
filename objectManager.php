@@ -54,8 +54,8 @@ if($aClean['bIsRejected'] == 'true')
 
 $oOtherObject = new $oObject->sClass($oObject->iId);
 
-/* Certain actions must be performed before the header is set
-   processForm return TRUE on success, or a user-readable list of errors
+/* Certain actions must be performed before the header is set. */
+/* processForm returns TRUE on success, or a user-readable list of errors
    on failure */
 $sErrors = $oObject->processForm($aClean);
 
