@@ -312,6 +312,11 @@ class application_queue
         return $this->oApp->objectMoveChildren($iNewId);
     }
 
+    function objectDisplayQueueProcessingHelp()
+    {
+        return application::objectDisplayQueueProcessingHelp();
+    }
+
     function objectDisplayAddItemHelp()
     {
         $this->oApp->objectDisplayAddItemHelp();
