@@ -328,6 +328,6 @@ function removeScreenshotsWithMissingFiles()
     }
 
     // log out as user
-    $oUser->logout()
+    $oUser->logout();
 }
 ?>
