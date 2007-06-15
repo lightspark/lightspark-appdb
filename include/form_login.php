@@ -6,7 +6,10 @@ require_once(BASE."include/util.php");
 /**************/
 echo "<div class='default_container'>\n";
 echo '<form method="post" name="sFlogin" action="account.php">',"\n";
-echo html_frame_start("Login to Application DB","400","",0)
+echo html_frame_start("Login to Application DB","400","",0);
+/* Pass on the URL we should return to after log-in */
+global $aClean;
+echo '<input type="hidden" name="sReturnTo" value="'.$aClean['sReturnTo'].'" />';
 ?>
 
 <!-- start of login form -->

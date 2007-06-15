@@ -209,8 +209,11 @@ function cmd_do_login()
 
     if($iResult == SUCCESS)
     {
+        $sReturnUrl = $aClean['sReturnTo'];
+        if(!$sReturnUrl)
+            $sReturnUrl = apidb_fullurl("index.php");
         addmsg("You are successfully logged in as '$oUser->sRealname'.", "green");
-        util_redirect_and_exit(apidb_fullurl("index.php"));    	    
+        util_redirect_and_exit($sReturnUrl);
     } else
     {
         retry("login","Login failed ".$shNote);

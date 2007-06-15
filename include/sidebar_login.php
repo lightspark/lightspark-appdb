@@ -88,7 +88,7 @@ function global_sidebar_login() {
 
     } else
     {
-        $g->add("Log in", BASE."account.php?sCmd=login");
+        $g->add("Log in", login_url());
         $g->add("Register", BASE."account.php?sCmd=new");
     }
 

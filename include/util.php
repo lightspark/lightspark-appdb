@@ -903,4 +903,20 @@ function util_trim_description($sDescription)
     return trim(strip_tags($aDesc[0]));
 }
 
+/* This allows us to pass on the current URL to the login form so that the user is returned
+   to the current page once he has logged in */
+function login_url()
+{
+    $sCurrentUrl = $_SERVER['REQUEST_URI'];
+    $sLoginUrl = BASE."account.php?sCmd=login";
+
+    /* If we are on the login page that means the URL already contains an sReturnTo value,
+       and we don't want two.  Besides, there is little point in redirecting to the login page
+       after login. */
+    if(!strpos($sCurrentUrl, "sReturnTo") && !strpos($sCurrentUrl, "account.php"))
+        $sLoginUrl .= "&sReturnTo=".$sCurrentUrl;
+
+    return $sLoginUrl;
+}
+
 ?>
