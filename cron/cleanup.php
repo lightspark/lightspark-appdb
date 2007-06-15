@@ -315,10 +315,10 @@ function removeScreenshotsWithMissingFiles()
         mail_appdb($sEmail, $sSubject, $sMsg);
 
     // remove the screenshots with missing files
-//    foreach($aMissingScreenshotIds as $iScreenshotId)
-//    {
-//        $oScreenshot = new Screenshot($iScreenshotId);
-//        $oScreenshot->delete(); // delete the screenshot
-//    }
+    foreach($aMissingScreenshotIds as $iScreenshotId)
+    {
+        $oScreenshot = new Screenshot($iScreenshotId);
+        $oScreenshot->delete(); // delete the screenshot
+    }
 }
 ?>
