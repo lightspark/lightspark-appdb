@@ -101,7 +101,8 @@ class version_queue
         /* Allow the user to apply as maintainer if this is a new version.
         If it is a new application as well, radio boxes will be displayed
         by the application class instead. */
-        if(!$this->oVersion->iVersionId && $this->oVersion->iAppId)
+        if(!$this->oVersion->iVersionId && $this->oVersion->iAppId &&
+           !$_SESSION['current']->isSuperMaintainer($this->oVersion->iAppId))
         {
             echo html_frame_start("Become Maintainer", "90%");
             echo "<div style='padding:5px;' class='color0'>\n";
