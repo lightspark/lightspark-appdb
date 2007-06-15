@@ -314,11 +314,20 @@ function removeScreenshotsWithMissingFiles()
     if($sEmail)
         mail_appdb($sEmail, $sSubject, $sMsg);
 
+    // log in as admin user with user id 1000
+    // NOTE: this is a bit of a hack but we need admin
+    //       access to delete these screenshots
+    $oUser = new User();
+    $oUser->iUserId = 1000;
+
     // remove the screenshots with missing files
     foreach($aMissingScreenshotIds as $iScreenshotId)
     {
         $oScreenshot = new Screenshot($iScreenshotId);
         $oScreenshot->delete(); // delete the screenshot
     }
+
+    // log out as user
+    $oUser->logout()
 }
 ?>
