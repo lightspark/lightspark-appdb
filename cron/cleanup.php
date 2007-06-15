@@ -319,6 +319,7 @@ function removeScreenshotsWithMissingFiles()
     //       access to delete these screenshots
     $oUser = new User();
     $oUser->iUserId = 1000;
+    $_SESSION['current'] = $oUser;
 
     // remove the screenshots with missing files
     foreach($aMissingScreenshotIds as $iScreenshotId)
