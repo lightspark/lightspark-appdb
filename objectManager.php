@@ -52,6 +52,8 @@ if($aClean['bIsRejected'] == 'true')
 } else
     $oObject->bIsRejected = false;
 
+$oObject->oMultiPage->getDataFromInput($aClean);
+
 $oOtherObject = new $oObject->sClass($oObject->iId);
 
 /* Certain actions must be performed before the header is set. */

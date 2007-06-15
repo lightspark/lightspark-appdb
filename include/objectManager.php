@@ -544,22 +544,34 @@ class ObjectManager
     /* Make an objectManager URL based on the object and optional parameters */
     function makeUrl($sAction = false, $iId = false, $sTitle = false)
     {
-        if($iId)
-            $sId = "&iId=$iId";
-
-        if($sAction)
-            $sAction = "&sAction=$sAction";
+        $sUrl = APPDB_ROOT."objectManager.php?";
 
         $sIsQueue = $this->bIsQueue ? "true" : "false";
+        $sUrl .= "bIsQueue=$sIsQueue";
         $sIsRejected = $this->bIsRejected ? "true" : "false";
+        $sUrl .= "&bIsRejected=$sIsRejected";
+
+        $sUrl .= "&sClass=".$this->sClass;
+        if($iId)
+            $sUrl .= "&iId=$iId";
+
+        if($sAction)
+            $sUrl .= "&sAction=$sAction";
+
+
 
         if(!$sTitle)
             $sTitle = $this->sTitle;
 
-        $sTitle = urlencode($sTitle);
+        $sUrl .= "&sTitle=".urlencode($sTitle);
 
-        return APPDB_ROOT."objectManager.php?bIsQueue=$sIsQueue&sClass=$this->sClass".
-               "&sTitle=$sTitle$sId$sAction&bIsRejected=$sIsRejected";
+        if($this->oMultiPage->bEnabled)
+        {
+            $sUrl .= "&iItemsPerPage=".$this->oMultiPage->iItemsPerPage;
+            $sUrl .= "&iPage=".$this->oMultiPage->iPage;
+        }
+
+        return $sUrl;
     }
 
     /* Inserts the information in an objectManager object as form data, so that it
@@ -573,6 +585,14 @@ class ObjectManager
         $sReturn .= "<input type=\"hidden\" name=\"bIsRejected\" value=\"$sIsRejected\" />\n";
         $sReturn .= "<input type=\"hidden\" name=\"sClass\" value=\"".$this->sClass."\" />\n";
         $sReturn .= "<input type=\"hidden\" name=\"sTitle\" value=\"".$this->sTitle."\" />\n";
+
+        if($this->oMultiPage->bEnabled)
+        {
+            $sReturn .= "<input type=\"hidden\" name=\"iItemsPerPage\" value=\"".
+                    $this->oMultiPage->iItemsPerPage."\" />\n";
+            $sReturn .= "<input type=\"hidden\" name=\"iPage\" value=\"".
+                    $this->oMultiPage->iPage."\" />\n";
+        }
 
         return $sReturn;
     }
@@ -709,7 +729,8 @@ class ObjectManager
 class MultiPage
 {
     var $iItemsPerPage;
-    var $iLowerLimit;
+    var $iLowerLimit; /* Internal; set by handleMultiPageControls.  We use iPage in the URls */
+    var $iPage;
     var $bEnabled;
 
     function MultiPage($bEnabled = FALSE, $iItemsPerPage = 0, $iLowerLimit = 0)
@@ -717,6 +738,17 @@ class MultiPage
         $this->bEnabled = $bEnabled;
         $this->iItemsPerPage = $iItemsPerPage;
         $this->iLowerLimit = $iLowerLimit;
+    }
+
+    function getDataFromInput($aClean)
+    {
+        if($aClean['iItemsPerPage'] && $aClean['iPage'])
+            $this->bEnabled = TRUE;
+        else
+            return;
+
+        $this->iItemsPerPage = $aClean['iItemsPerPage'];
+        $this->iPage = $aClean['iPage'];
     }
 }
 
