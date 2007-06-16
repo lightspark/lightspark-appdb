@@ -251,9 +251,10 @@ function orphanSessionListCheck()
     $hResult = query_parameters($sQuery, SESSION_DAYS_TO_EXPIRE + 2);
 }
 
+// report the database error log entries to the mailing list
 function reportErrorLogEntries()
 {
-    error_log::mail_admins_error_log();
+    error_log::mail_admins_error_log($sEmailSubject);
     error_log::flush();
 }
 

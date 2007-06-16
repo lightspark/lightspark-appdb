@@ -60,9 +60,9 @@ class error_log
         else return false;
     }
     
-    function mail_admins_error_log()
+    function mail_admins_error_log($sSubject = "")
     {
-        $sSubject = "Appdb error log\r\n";
+        $sSubject .= "Database Error log\r\n";
         $sEmail = User::get_notify_email_address_list(null, null); /* get list admins */
 
         $sQuery = "SELECT * from error_log WHERE deleted='0' ORDER BY submitTime";
