@@ -69,6 +69,9 @@ if($hResult && mysql_num_rows($hResult))
     echo "<div align=center><table><tr>\n";
     while($oRow = mysql_fetch_object($hResult))
     {
+        // if the current version changed then update the current version
+        // and close the previous html frame if this isn't the
+        // first frame
         if(!$aClean['iVersionId'] && $oRow->versionId != $currentVersionId)
         {
             if($currentVersionId)
@@ -77,7 +80,7 @@ if($hResult && mysql_num_rows($hResult))
                 echo html_frame_end();
                 $c=1;
             }
-            $currentVersionId=$oRow->versionId;
+            $currentVersionId = $oRow->versionId;
             echo html_frame_start("Version ".Version::lookup_name($currentVersionId));
             echo "<div align=center><table><tr>\n";
         }
@@ -104,7 +107,8 @@ if($hResult && mysql_num_rows($hResult))
     }
     echo "</tr></table></div><br />\n";
 
-    echo html_frame_end("Click thumbnail to view image in new window.");
+    echo html_frame_end(); // close the current version we are displaying
+    echo html_frame_end(); // close the "Screenshot Gallary..." html frame
 } else {
  echo "<p align=\"center\">There are currently no screenshots for the selected version of this application.";
  echo "<br />Please consider submitting a screenshot for the selected version yourself.</p>";
