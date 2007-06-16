@@ -66,7 +66,6 @@ class Application {
             $this->iCatId = $oRow->catId;
             $this->iSubmitterId = $oRow->submitterId;
             $this->sSubmitTime = $oRow->submitTime;
-            $this->sDate = $oRow->submitTime;
             $this->sName = $oRow->appName;
             $this->sKeywords = $oRow->keywords;
             $this->sDescription = $oRow->description;

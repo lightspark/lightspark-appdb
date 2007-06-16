@@ -30,7 +30,6 @@ class Version {
     var $sTestedRating;
     var $sSubmitTime;
     var $iSubmitterId;
-    var $sDate;
     var $sQueued;
     var $sLicense;
     var $iMaintainerRequest; /* Temporary variable for version submisson.
@@ -65,7 +64,6 @@ class Version {
             $this->iAppId = $oRow->appId;
             $this->iSubmitterId = $oRow->submitterId;
             $this->sSubmitTime = $oRow->submitTime;
-            $this->sDate = $oRow->submitTime;
             $this->sName = $oRow->versionName;
             $this->sDescription = $oRow->description;
             $this->sTestedRelease = $oRow->maintainer_release;
