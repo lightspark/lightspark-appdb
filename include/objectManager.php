@@ -689,6 +689,7 @@ class ObjectManager
         /* Fill the MultiPage object with the LIMIT related values */
         $iLowerLimit = ($iPage - 1) * $iItemsPerPage;
         $this->oMultiPage->MultiPage(TRUE, $iItemsPerPage, $iLowerLimit);
+        $this->oMultiPage->iPage = $iPage;
     }
 
     function getQueueString($bQueued, $bRejected)
