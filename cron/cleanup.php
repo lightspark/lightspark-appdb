@@ -254,6 +254,7 @@ function orphanSessionListCheck()
 // report the database error log entries to the mailing list
 function reportErrorLogEntries()
 {
+    global $sEmailSubject;
     error_log::mail_admins_error_log($sEmailSubject);
     error_log::flush();
 }
