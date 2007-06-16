@@ -32,7 +32,7 @@ class ObjectManager
           " in Wine's Bugzilla at http://bugs.winehq.org and resubmit.";
         $this->aCommonResponses[] = "We appreciate your submission but it".
           " needs to be more detailed before it will be most useful to other users of".
-          " the Application Datbase.".
+          " the Application Database.".
           " Please try to improve the entry and resubmit.";
         $this->aCommonResponses[] = "We appreciate your submission but it".
           " requires improvement to its grammar and/or spelling".
