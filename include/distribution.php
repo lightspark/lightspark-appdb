@@ -190,7 +190,7 @@ class distribution {
         {
             $this->sQueued = 'false';
             // we send an e-mail to interested people
-            $this->mailSubmitter("unQueue");
+            $this->mailSubmitter("add");
             $this->SendNotificationMail();
             return true;
         } else
@@ -258,7 +258,7 @@ class distribution {
             case "add":
                {
                    $sSubject =  "Submitted Distribution accepted";
-                   $sMsg  = "The Distribution you submitted (".$this->sName.") has been accepted.";
+                   $sMsg  = "The Distribution you submitted (".$this->sName.") has been accepted.\n";
                }
             break;
             case "delete":
