@@ -63,10 +63,10 @@ p.indent            { padding-left: 1em; padding-right: 1em;}
 .menuTitle	        { font-size: 12px; color: #ffffff; font-weight: bold; text-decoration: none; }
 .menuTitle:visited  { font-size: 12px; color: #ffffff; font-weight: bold; text-decoration: none; }
 .menuTitle:hover    { font-size: 12px; color: #ffffff; font-weight: bold; text-decoration: none; }
-.menuLink           { font-size: 10px; color: #ffffff; font-weight: bold; }
-.menuItem           { font-size: 10px; color: #000000; }
-.menuItem:visited   { font-size: 10px; color: #000000; }
-.menuItem:hover     { font-size: 10px; color: #A50D0D; } 
+.menuLink           { font-size: 11px; color: #ffffff; font-weight: bold; }
+.menuItem           { font-size: 11px; color: #000000; }
+.menuItem:visited   { font-size: 11px; color: #000000; }
+.menuItem:hover     { font-size: 11px; color: #A50D0D; } 
 
 .topMenu            { background-color: #601919; }
 .sideMenu           { background-color: #FFFFFF; }
