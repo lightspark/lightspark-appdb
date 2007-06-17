@@ -154,11 +154,14 @@ function get_xml_tag ($file, $mode = null)
 }
 
 /* bugzilla functions */
-function make_bugzilla_version_list($varname, $cvalue)
+// $sVarname - name of the selection array that this function will output
+//             this is the name to use to retrieve the selection on the form postback
+// $sSelectedValue - the currently selected entry
+function make_bugzilla_version_list($sVarname, $sSelectedValue)
 {
-    $table = BUGZILLA_DB.".versions";
-    $where = "WHERE product_id=".BUGZILLA_PRODUCT_ID;
-    $sQuery = "SELECT value FROM $table $where";
+    $sTable = BUGZILLA_DB.".versions";
+    $sWhere = "WHERE product_id=".BUGZILLA_PRODUCT_ID;
+    $sQuery = "SELECT value FROM $sTable $sWhere";
 
     $hResult = query_bugzilladb($sQuery);
     if(!$hResult) return;
@@ -195,15 +198,29 @@ function make_bugzilla_version_list($varname, $cvalue)
 
 
     // build the selection array
-    echo "<select name='$varname'>\n";
+    echo "<select name='$sVarname'>\n";
     echo "<option value=\"\">Choose ...</option>\n";
+    $bFoundSelectedValue = false;
     foreach($aVersions as $sKey => $sValue)
     {
-      if($sValue == $cvalue)
+      if($sValue == $sSelectedValue)
+      {
         echo "<option value=$sValue selected>$sValue\n";
-      else
+        $bFoundSelectedValue = true;
+      } else
+      {
         echo "<option value=$sValue>$sValue\n";
+      }
     }
+
+    // if we didn't find the selected value and the selected value isn't empty
+    // then we should add the selected value to the list because we could have pruned
+    // the version that is to be selected
+    if(!$bFoundSelectedValue && $sSelectedValue)
+    {
+      echo "<option value=$sSelectedValue selected>$sSelectedValue\n";
+    }
+
     echo "</select>\n";
 }
 
