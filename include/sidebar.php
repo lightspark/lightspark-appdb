@@ -18,7 +18,6 @@ function global_sidebar_menu()
     $g->done();
 
     $g = new htmlmenu("AppDB");
-    $g->add("AppDB Home", BASE);
     $g->add("Screenshots", BASE."viewScreenshots.php");
     $g->add("Browse Apps", BASE."appbrowse.php");
     $g->add("Browse Newest Apps", BASE."browse_newest_apps.php");
@@ -28,9 +27,9 @@ function global_sidebar_menu()
     $g->add("Submit Application", BASE."objectManager.php?sClass=application_queue&".
             "sTitle=Submit+Application&sAction=add");
     $g->add("Help &amp; Documentation", BASE."help/");
-    $g->add("AppDB Stats", BASE."appdbStats.php");
-    $g->add("View Distributions (".distribution::objectGetEntriesCount(false, false).")", BASE."objectManager.php?sClass=distribution&bIsQueue=false&sTitle=View%20Distributions");
-    $g->add("View Vendors (".vendor::objectGetEntriesCount(false, false).")", BASE."objectManager.php?sClass=vendor&bIsQueue=false&sTitle=View%20Vendors");
+    $g->add("Statistics", BASE."appdbStats.php");
+    $g->add("Distributions (".distribution::objectGetEntriesCount(false, false).")", BASE."objectManager.php?sClass=distribution&bIsQueue=false&sTitle=View%20Distributions");
+    $g->add("Vendors (".vendor::objectGetEntriesCount(false, false).")", BASE."objectManager.php?sClass=vendor&bIsQueue=false&sTitle=View%20Vendors");
     $g->add("Email your suggestions for improving the AppDB", "mailto:appdb@winehq.org");
     $g->done();    
 
