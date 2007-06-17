@@ -209,7 +209,7 @@ function cmd_do_login()
 
     if($iResult == SUCCESS)
     {
-        $sReturnUrl = $aClean['sReturnTo'];
+        $sReturnUrl = urldecode($aClean['sReturnTo']);
         if(!$sReturnUrl)
             $sReturnUrl = apidb_fullurl("index.php");
         addmsg("You are successfully logged in as '$oUser->sRealname'.", "green");

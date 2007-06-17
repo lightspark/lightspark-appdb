@@ -907,7 +907,7 @@ function util_trim_description($sDescription)
    to the current page once he has logged in */
 function login_url()
 {
-    $sCurrentUrl = $_SERVER['REQUEST_URI'];
+    $sCurrentUrl = urlencode($_SERVER['REQUEST_URI']);
     $sLoginUrl = BASE."account.php?sCmd=login";
 
     /* If we are on the login page that means the URL already contains an sReturnTo value,
