@@ -21,7 +21,7 @@ define("LICENSE_RETAIL", "Retail");
 /**
  * Version class for handling versions.
  */
-class Version {
+class version {
     var $iVersionId;
     var $iAppId;
     var $sName;

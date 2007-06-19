@@ -302,6 +302,7 @@ class downloadurl
                     $this->sUrl, downloadurl::canEdit($this->iVersionId) ?
                     "false" : "true", $_SESSION['current']->iUserId);
 
+        $this->iId = mysql_insert_id();
         if(!$hResult)
             return FALSE;
 

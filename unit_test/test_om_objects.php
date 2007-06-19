@@ -17,8 +17,6 @@ function test_class($sClassName, $aTestMethods)
     $oObject = new ObjectManager("");
     $oObject->sClass = $sClassName;
 
-    $iAppId = 65555;
-
     /* Check whether the required methods are present */
     if(!$oObject->checkMethods($aTestMethods, false))
     {
@@ -36,7 +34,7 @@ function test_class($sClassName, $aTestMethods)
     }
 
     /* Test the class constructor */
-    if(!$oTestObject = create_object($sClassName, $oUser, $iAppId))
+    if(!$oTestObject = create_object($sClassName, $oUser))
         return FALSE;
 
     /* Should return 1 or more, since there may be entries present already */
@@ -106,9 +104,8 @@ function test_class($sClassName, $aTestMethods)
 
     echo "PASSED\t\t$sClassName::$sClassName\n";
 
+    cleanup($oTestObject);
     $oTestObject->delete();
-
-    cleanup($sClassName, $iAppId);
 
     /* Test the methods' functionality */
     foreach($aTestMethods as $sMethod)
@@ -118,14 +115,13 @@ function test_class($sClassName, $aTestMethods)
             /* Should also test for queued entries, but vendor does not support
                queueing yet */
             case "objectGetEntries":
-                if(!$oTestObject = create_object($sClassName, $oUser, $iAppId))
+                if(!$oTestObject = create_object($sClassName, $oUser))
                     return FALSE;
 
                 /* Should return 1 or more, since there may be entries present already */
                 $iExpected = 1;
                 $hResult = $oTestObject->objectGetEntries(false, false);
                 $iReceived = mysql_num_rows($hResult);
-                $oTestObject->delete();
                 if($iExpected > $iReceived)
                 {
                     echo "Got $iReceived instead of >= $iExpected\n";
@@ -135,7 +131,8 @@ function test_class($sClassName, $aTestMethods)
                 }
 
                 /* Class specific clean-up */
-                cleanup($sClassName, $iAppId);
+                cleanup($oTestObject);
+                $oTestObject->delete();
 
                 echo "PASSED\t\t$sClassName::$sMethod\n";
             break;
@@ -148,18 +145,50 @@ function test_class($sClassName, $aTestMethods)
     return TRUE;
 }
 
-function cleanup($sClassName, $iAppId)
+function cleanup($oObject)
 {
-    switch($sClassName)
+    switch(get_class($oObject))
     {
+        case "downloadurl":
         case "maintainer":
-            $oApp = new application($iAppId);
+        case "screenshot":
+        case "testData":
+            delete_parent($oObject->iVersionId);
+        break;
+        case "testData_queue":
+            delete_parent($oObject->oTestData->iVersionId);
+        break;
+        case "version":
+            $oApp = new application($oObject->iAppId);
+            $oApp->delete();
+        break;
+        case "version_queue":
+            $oApp = new application($oObject->oVersion->iAppId);
             $oApp->delete();
         break;
     }
 }
 
-function create_object($sClassName, $oUser, $iAppId)
+function create_version()
+{
+    $oApp = new application();
+    $oApp->sName = "OM App";
+    $oApp->create();
+    $oVersion = new version();
+    $oVersion->sName = "OM version";
+    $oVersion->iAppId = $oApp->iAppId;
+    $oVersion->create();
+    return $oVersion->iVersionId;
+}
+
+function delete_parent($iVersionId)
+{
+    $oVersion = new version($iVersionId);
+    $oApp = new application($oVersion->iAppId);
+    $oApp->delete();
+}
+
+function create_object($sClassName, $oUser)
 {
     $oUser->addPriv("admin");
     $oTestObject = new $sClassName();
@@ -173,21 +202,33 @@ function create_object($sClassName, $oUser, $iAppId)
         case "downloadurl":
             $oTestObject->sUrl = "http://appdb.winehq.org/";
             $oTestObject->sDescription = "DANGER";
-            $oTestObject->iVersionId = 65000; // Just needs to be != 0 
+            $oTestObject->iVersionId = create_version();
         break;
         case "maintainer":
-            $oApp = new application();
-
-            if(!$oApp->create())
-            {
-                echo "Failed to create application";
-                return FALSE;
-            }
-            $oApp->iAppId = $iAppId;
-            $oApp->update();
+            $oVersion = new version(create_version());
             $oTestObject->iUserId = $oUser->iUserId;
-            $oTestObject->iAppId = $iAppId;
+            $oTestObject->iAppId = $oVersion->iAppId;
+            $oTestObject->iVersionId = $oVersion->iVersionId;
             $oTestObject->sMaintainReason = "I need it";
+        break;
+        case "screenshot":
+        case "testData":
+            $oTestObject->iVersionId = create_version();
+        break;
+        case "testData_queue":
+            $oTestObject->oTestData->iVersionId = create_version();
+        break;
+        case "version":
+            $oApp = new application();
+            $oApp->create();
+            $oTestObject->iAppId = $oApp->iAppId;
+            $oTestObject->sName = "OM Version";
+        break;
+        case "version_queue":
+            $oApp = new application();
+            $oApp->create();
+            $oTestObject->oVersion->iAppId = $oApp->iAppId;
+            $oTestObject->oVersion->sName = "OM Version";
         break;
     }
 
@@ -204,7 +245,7 @@ function create_object($sClassName, $oUser, $iAppId)
         $sQuery = "INSERT INTO appData
                 (versionId, type, description, queued, submitterId)
                 VALUES('?','?','?','?','?')";
-        $hResult = query_parameters($sQuery, 0, "screenshot", "", "false",
+        $hResult = query_parameters($sQuery, $oTestObject->iVersionId, "screenshot", "", "false",
                                     $oUser->iUserId);
         if(!$hResult)
         {

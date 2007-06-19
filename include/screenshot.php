@@ -12,7 +12,7 @@ $watermark = new Image("/images/watermark.png");
 /**
  * Screenshot class for handling screenshots and thumbnails
  */
-class Screenshot {
+class screenshot {
     var $iScreenshotId;
 
     // parameters necessary for creating a new screenshot with
