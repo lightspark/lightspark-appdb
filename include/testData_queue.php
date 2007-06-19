@@ -31,7 +31,7 @@ class testData_queue
            queue for admins to clean up unused, queued entries */
         $this->oDistribution = new distribution($this->oDistribution->iDistributionId);
         if(!sizeof($this->oDistribution->aTestingIds) &&
-           $this->oDistribution->sQueued != "false")
+           $this->oDistribution->canEdit())
             $this->oDistribution->delete();
 
         return $bSuccess;
