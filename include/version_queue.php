@@ -76,7 +76,18 @@ class version_queue
 
     function delete()
     {
-        return $this->oVersion->delete();
+        $bSuccess = TRUE;
+
+        if(!$this->oVersion->delete())
+            $bSuccess = FALSE;
+
+        if(!$this->oTestDataQueue->delete())
+            $bSuccess = FALSE;
+
+        if($this->oDownloadUrl->iId && !$this->oDownloadUrl->delete())
+            $bSuccess = FALSE;
+
+        return $bSuccess;
     }
 
     function unQueue()
