@@ -181,6 +181,14 @@ class ObjectManager
 
         $oObject = new $this->sClass($this->iId);
 
+        /* The entry does not exist */
+        if(!$oObject->objectGetId())
+        {
+            echo "<font color=\"red\">There is no entry with that id in the database</font>.\n";
+            echo "</div>";
+            return;
+        }
+
         /* Display errors, if any, and fetch form data */
         if($this->displayErrors($sErrors))
         {
