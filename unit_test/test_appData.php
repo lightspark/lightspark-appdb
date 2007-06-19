@@ -27,12 +27,17 @@ function test_appData_listSubmittedBy()
 
     $shReturn = appData::listSubmittedBy($oUser->iUserId, true);
 
+    /* This is needed for deleting the entry */
+    $oUser->addPriv("admin");
+
     /* There should be two lines; one header and one for the downloadurl */
     $iExpected = 2;
     $iReceived = substr_count($shReturn, "</tr>");
     if($iExpected != $iReceived)
     {
         echo "Got $iReceived rows instead of $iExpected.\n";
+        $oDownloadUrl->delete();
+        $oUser->delete();
         return FALSE;
     }
 
