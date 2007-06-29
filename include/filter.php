@@ -34,7 +34,8 @@ function filter_gpc()
         // NOTE: we must use === when comparing the return value of strpos
         //       against a value, otherwise if strpos() returns false indicating that
         //       the value wasn't found strpos(something) == 0 will still be true
-        if(strpos($aKeys[$i], "Dialog") === 0) // Xinha variables
+        if((strpos($aKeys[$i], "Dialog") === 0) ||
+           (strpos($aKeys[$i], "XinhaColorPicker") === 0)) // Xinha variables
         {
             // copy the key over to the clean array
             // NOTE: we do not strip html tags or trim any Xinha variables
