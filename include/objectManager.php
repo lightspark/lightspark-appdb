@@ -84,6 +84,15 @@ class ObjectManager
         $this->checkMethods(array("ObjectGetEntries", "ObjectGetHeader",
              "objectGetTableRow", "objectGetId", "canEdit"));
 
+        /* We cannot process a queue if we are not logged in */
+        if(!$_SESSION['current']->isLoggedIn())
+        {
+            $sQueueText = $this->bIsRejected ? "rejected" : "queued";
+            echo '<div align="center">You need to <a href="'.login_url().'">';
+            echo "log in</a> in order to process $sQueueText entries</div>\n";
+            return;
+        }
+
         $oObject = new $this->sClass();
 
         /* Display selectors for items per page and current page, if applicable.  The function
