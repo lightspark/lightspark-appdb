@@ -460,10 +460,12 @@ class distribution {
              "<a href=\"$this->sUrl\">$this->sUrl</a>",
              array(sizeof($this->aTestingIds), "align=\"right\""));
 
-            // enable the 'delete' action if this distribution has no testing results
-            $bDeleteLink = sizeof($this->aTestingIds) ? FALSE : TRUE;
+        // enable the 'delete' action if this distribution has no testing results
+        $bDeleteLink = sizeof($this->aTestingIds) ? FALSE : TRUE;
 
-        return array($aCells, null, $bDeleteLink, null);
+        $oTableRow = new TableRow($aCells);
+        $oTableRow->SetRowHasDeleteLink($bDeleteLink);
+        return $oTableRow;
     }
 
     // Whether the user has permission to edit distributions

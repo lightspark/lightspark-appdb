@@ -1350,7 +1350,8 @@ class version {
                 $oApp->objectMakeLink(),
                 $this->sName);
 
-        return array($aCells, null, false, null);
+        $oTableRow = new TableRow($aCells);
+        return $oTableRow;
     }
 
     function objectDisplayQueueProcessingHelp()

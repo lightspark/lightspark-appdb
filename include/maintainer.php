@@ -474,7 +474,8 @@ class maintainer
             ($this->bSuperMaintainer) ? "Yes" : "No",
             $oUser->objectMakeLink());
 
-        return array($aCells, null, false, null);
+        $oTableRow = new TableRow($aCells);
+        return $oTableRow;
     }
 
     function ObjectDisplayQueueProcessingHelp()

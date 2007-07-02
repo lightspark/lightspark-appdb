@@ -864,7 +864,8 @@ class Application {
                 $sVendor,
                 $this->sName);
 
-        return array($aCells, null, false, null);
+        $oTableRow = new TableRow($aCells);
+        return $oTableRow;
     }
 
     function canEdit()

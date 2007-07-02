@@ -957,7 +957,11 @@ class testData{
                 ($bHasMaintainer ? "YES" : "no"),
                 $this->sTestedRating);
 
-        return array($aCells, $this->sTestedRating, true, null);
+        $oTableRow = new TableRow($aCells);
+        $oTableRow->SetStyle($this->sTestedRating);
+        $oTableRow->SetRowHasDeleteLink(true);
+
+        return $oTableRow;
     }
 
     function canEdit()

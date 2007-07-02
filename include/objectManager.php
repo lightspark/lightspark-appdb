@@ -133,7 +133,7 @@ class ObjectManager
         {
             $oObject = new $this->sClass(null, $oRow);
 
-            $this->oTableRow->TableRow($oObject->objectGetTableRow());
+            $this->oTableRow = $oObject->objectGetTableRow();
 
             if(!$this->oTableRow->sStyle)
                 $this->oTableRow->sStyle = ($iCount % 2) ? "color0" : "color1";
@@ -144,7 +144,7 @@ class ObjectManager
             if($oObject->canEdit())
             {
                 $shDeleteLink = "";
-                if($this->oTableRow->bDeleteLink)
+                if($this->oTableRow->bHasDeleteLink)
                 {
                     $shDeleteLink = ' [ <a href="'.$this->makeUrl("delete", $oObject->objectGetid()).
                             '">delete</a> ]';
@@ -763,30 +763,38 @@ class MultiPage
 
 class TableRow
 {
-    var $aCells;
-    var $sStyle;
-    var $sEditLinkLabel;
-    var $bDeleteLink;
-    var $aRowClickable;
+    var $aCells; // array that contains the columns for a table row
+    var $sStyle; // CSS style to be used
+    var $bHasDeleteLink;
+    var $aRowClickable; //FIXME: we should describe the entries required here by creating a class for a clickable row entry or something
     var $bCanEdit;
-    var $iId;
 
-    function TableRow($aInput)
+    function TableRow($aCells)
     {
-        if(!$aInput)
+        if(!$aCells)
             return;
 
-        /* aInput is returned from objectGetTableRow(); an array with the following members
-            0: an array with the contents of the table row
-            1: CSS style to be used.  If it is null we use the default
-            2: Is TRUE if we should display a delete link with the edit link
-            3: Contains an array with info if we should make the entrie table row clickable,
-                null otherwise */
+        $this->aCells = $aCells;
 
-        $this->aCells = $aInput[0];
-        $this->sStyle = $aInput[1];
-        $this->bDeleteLink = $aInput[2];
-        $this->aRowClickable = $aInput[3];
+        // initialize the rest of the variables
+        $this->sStyle = null;
+        $this->bHasDeleteLink = false;
+        $this->aRowClickable = null;
+    }
+
+    function SetStyle($sStyle)
+    {
+      $this->sStyle = $sStyle;
+    }
+
+    function SetRowHasDeleteLink($bHasDeleteLink)
+    {
+      $this->bHasDeleteLink = $bHasDeleteLink;
+    }
+
+    function SetRowClickable($aRowClickableInfo)
+    {
+      $this->aRowClickable = $aRowClickableInfo;
     }
 }
 

@@ -503,7 +503,8 @@ class appData
                 $oApp->objectMakeLink(),
                 $this->iVersionId ? $oVersion->objectMakeLink() : "N/A");
 
-        return array($aCells, null, false, null);
+        $oTableRow = new TableRow($aCells);
+        return $oTableRow;
     }
 
     function objectDisplayQueueProcessingHelp()

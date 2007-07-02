@@ -231,7 +231,10 @@ class Vendor {
 
         $bDeleteLink = sizeof($this->aApplicationsIds) ? FALSE : TRUE;
 
-        return array($aCells, null, $bDeleteLink, null);
+        $oTableRow = new TableRow($aCells);
+        $oTableRow->SetRowHasDeleteLink($bDeleteLink);
+
+        return $oTableRow;
     }
 
     function canEdit()
