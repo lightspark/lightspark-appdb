@@ -101,7 +101,7 @@ class ObjectManager
             $hResult = $oObject->objectGetEntries($this->bIsQueue, $this->bIsRejected);
 
         /* did we get any entries? */
-        if(mysql_num_rows($hResult) == 0)
+        if(!$hResult || mysql_num_rows($hResult) == 0)
         {
             switch($this->getQueueString($this->bIsQueue, $this->bIsRejected))
             {
