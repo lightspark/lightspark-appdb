@@ -20,6 +20,8 @@ function filter_perform_filtering()
 function filter_gpc()
 {
     global $aClean;
+    $sErrorSuggestion = " Please try clearing out your cookies. If the problem continues ". 
+                        " please email ".APPDB_OWNER_EMAIL." with the error text.";
 
     $aKeys = array_keys($_REQUEST);
     for($i=0; $i < sizeof($aKeys); $i++)
@@ -61,13 +63,15 @@ function filter_gpc()
                 else if(empty($_REQUEST[$aKeys[$i]]))
                     $aClean[$aKeys[$i]] = 0;
                 else
-                    return "Fatal error: ".$aKeys[$i]." should be a numeric value.";
+                    return "Fatal error: ".$aKeys[$i]." should be a numeric value. ".
+                           $sErrorSuggestion;
             break;
             case "b": // boolean
                 if($_REQUEST[$aKeys[$i]]=="true" || $_REQUEST[$aKeys[$i]]=="false")
                     $aClean[$aKeys[$i]] = $_REQUEST[$aKeys[$i]];
                 else
-                    return "Fatal error: ".$aKeys[$i]." should be a boolean value.";
+                    return "Fatal error: ".$aKeys[$i]." should be a boolean value. ".
+                           $sErrorSuggestion;
             break;
             case "s": // string
                 switch($aKeys[$i][1])
@@ -85,10 +89,12 @@ function filter_gpc()
             break;
             case "a": // array
                  if(!is_array($_REQUEST[$aKeys[$i]]))
-                     return "Fatal error: ".$aKeys[$i]." should be an array.";
+                     return "Fatal error: ".$aKeys[$i]." should be an array. ".
+                            $sErrorSuggestion;
             break;
             default:
-                return "Fatal error: type of variable ".$aKeys[$i]." is not recognized.";
+                return "Fatal error: type of variable ".$aKeys[$i]." is not recognized.".
+                       $sErrorSuggestion;
                 break;
         }
     }
