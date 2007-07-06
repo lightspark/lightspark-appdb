@@ -8,12 +8,12 @@ function mail_appdb($sEmailList,$sSubject,$sMsg)
     if(defined("DISABLE_EMAIL"))
         return;
 
-    $sEmailList = str_replace(" ",",",$sEmailList);
+    $sEmailListComma = str_replace(" ",",",$sEmailList);
 
     $sHeaders  = "MIME-Version: 1.0\r\n";
     $sHeaders .= "From: AppDB <".APPDB_SENDER_EMAIL.">\r\n";
     $sHeaders .= "Reply-to: AppDB <".APPDB_SENDER_EMAIL.">\r\n";
-    $sHeaders .= "Bcc: $sEmailList\r\n";
+    $sHeaders .= "Bcc: $sEmailListComma\r\n";
     $sHeaders .= "X-Priority: 3\r\n";
     $sHeaders .= "X-Mailer: ".APPDB_OWNER." mailer\r\n";
     $sMsg  = trim(ereg_replace("\r\n","\n",$sMsg));
