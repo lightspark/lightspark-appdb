@@ -514,7 +514,10 @@ class testData{
                 $oObject = new objectManager("testData");
                 echo '<td><a href="'.$oObject->makeUrl("edit", $oTest->iTestingId,
                         "Edit Test Results").'">',"\n";
-                echo 'Edit</a></td>',"\n";
+                echo 'Edit</a> &nbsp; ',"\n";
+                echo '<a href="objectManager.php?sClass=testData&bIsQueue=false&sAction='.
+                        'delete&iId='.$oTest->iTestingId.'&sTitle=Delete+Test+Results'.
+                        '">Delete</a></td>',"\n";
             }
             echo '</tr>',"\n";
         }
