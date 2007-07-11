@@ -124,7 +124,7 @@ if(!$_SESSION['current']->isLoggedIn())
 <div class="topx_style silver">
   <div class="rating_header">
     <div class="rating_title">
-      Top-10 <a href="browse_by_rating.php?sRating=Silver">Silver List</a>
+      Top-10 <a href="browse_by_rating.php?sRating=Silver">Silver</a> List
     </div>
     Applications with minor issues that do not affect typical usage
   </div>
