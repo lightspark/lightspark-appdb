@@ -54,9 +54,6 @@ if(!$_SESSION['current']->isLoggedIn())
 
 }
 ?>
-<p>
-If you have screenshots or links to contribute, please browse the database and use the AppDB interface to send us your contributions (any member can send screenshots; if you want to send how-to's or other information, you can either enroll to be a maintainer or post this information as a comment for the application of interest).
-</p>
 <?php
 
     $iNumApps = version::objectGetEntriesCount(false, false);
@@ -84,44 +81,64 @@ If you have screenshots or links to contribute, please browse the database and u
 
 <br /><br />
 
-<h2>Top Voted Applications</h2>
-
-<p>This is a list of applications that are known to be working well and for which many users have voted.</p>
-
-<h3>The Top-10 <a href="browse_by_rating.php?sRating=Platinum">Platinum</a> List</h3> 
-<p>Only applications which install and run flawlessly on an out-of-the-box Wine installation make it to the Platinum list.</p>
-<table class="platinum">
-    <tr class="rowtitle">
-    <th>Application</th><th>Description</th><th>Screenshot</th>
-    </tr>
-<?php
-  outputTopXRowAppsFromRating('Platinum', 10);
-?>
-</table>
+<div class="topx_style platinum">
+  <div class="rating_header">
+    <div class="rating_title">
+      Top-10 <a href="browse_by_rating.php?sRating=Platinum">Platinum</a> List
+    </div>
+    Applications which install and run flawlessly on an out-of-the-box Wine installation
+  </div>
+  <div>
+    <table class="platinum">
+      <tr class="rowtitle">
+        <th>Application</th><th>Description</th><th>Screenshot</th>
+      </tr>
+      <?php
+      outputTopXRowAppsFromRating('Platinum', 10);
+      ?>
+    </table>
+  </div>
+</div>
 <br />
 
-<h3>The Top-10 <a href="browse_by_rating.php?sRating=Gold">Gold</a> List</h3> 
-<p>Applications that work flawlessly with some DLL overrides or other settings, crack etc. make it to the Gold list.</p>
-<table class="gold">
-    <tr class="rowtitle">
-    <th>Application</th><th>Description</th><th>Screenshot</th>
-    </tr>
-<?php
-  outputTopXRowAppsFromRating('Gold', 10);
-?>
-</table>
+<div class="topx_style gold">
+  <div class="rating_header">
+    <div class="rating_title">
+      Top-10 <a href="browse_by_rating.php?sRating=Gold">Gold</a> List
+    </div>
+    Applications that work flawlessly with some special configuration
+  </div>
+  <div>
+    <table class="gold">
+      <tr class="rowtitle">
+        <th>Application</th><th>Description</th><th>Screenshot</th>
+      </tr>
+      <?php
+      outputTopXRowAppsFromRating('Gold', 10);
+      ?>
+    </table>
+  </div>
+</div>
 <br />
 
-<h3>The Top-10 <a href="browse_by_rating.php?sRating=Silver">Silver List</a></h3> 
-<p>The Silver list contains apps which we hope we can easily fix so they make it to Gold status.</p>
-<table class=silver>
-    <tr class=rowtitle>
-      <th>Application</th><th>Description</th><th>Screenshot</th>
-    </tr>
-<?php
-  outputTopXRowAppsFromRating('Silver', 10);
-?>
-</table>
+<div class="topx_style silver">
+  <div class="rating_header">
+    <div class="rating_title">
+      Top-10 <a href="browse_by_rating.php?sRating=Silver">Silver List</a>
+    </div>
+    Applications with minor issues that do not affect typical usage
+  </div>
+  <div>
+    <table class="silver">
+      <tr class="rowtitle">
+        <th>Application</th><th>Description</th><th>Screenshot</th>
+      </tr>
+      <?php
+      outputTopXRowAppsFromRating('Silver', 10);
+      ?>
+    </table>
+  </div>
+</div>
 
 <br /><br />
 
