@@ -777,6 +777,21 @@ class testData{
         return $sReturn;
     }
 
+    // return the number of test data entries for a particular version id
+    function get_testdata_count_for_versionid($iVersionId)
+    {
+        $sQuery = "SELECT count(*) as cnt
+                   FROM testResults
+                   WHERE versionId = '?'
+                   AND
+                   queued = '?';";
+
+        $hResult = query_parameters($sQuery, $iVersionId, 'false');
+
+        $oRow = mysql_fetch_object($hResult);
+        return $oRow->cnt;
+    }
+
     function objectGetEntriesCount($bQueued, $bRejected)
     {
         $oTest = new testData();

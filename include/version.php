@@ -1010,6 +1010,7 @@ class version {
             echo "    <td>Description</td>\n";
             echo "    <td width=\"80\">Rating</td>\n";
             echo "    <td width=\"80\">Wine version</td>\n";
+            echo "    <td width=\"80\">Test results</td>\n";
             echo "    <td width=\"40\">Comments</td>\n";
             echo "</tr>\n\n";
       
@@ -1033,6 +1034,7 @@ class version {
                     echo "    <td>".util_trim_description($oVersion->sDescription)."</td>\n";
                     echo "    <td $sRatingColor align=center>".$oVersion->sTestedRating."</td>\n";
                     echo "    <td $sRatingColor align=center>".$oVersion->sTestedRelease."</td>\n";
+                    echo "    <td align=center>".testData::get_testdata_count_for_versionid($oVersion->iVersionId)."</td>\n";
                     echo "    <td align=center>".Comment::get_comment_count_for_versionid($oVersion->iVersionId)."</td>\n";
                     echo "</tr>\n\n";
 
