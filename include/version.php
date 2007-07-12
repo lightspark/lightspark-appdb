@@ -1023,17 +1023,46 @@ class version {
                     // set row color
                     $bgcolor = ($c % 2 == 0) ? "color0" : "color1";
 
+                    // if we have a valid tested rating
                     if($oVersion->sTestedRating && $oVersion->sTestedRating != "/")
+                    {
                         $sRatingColor = "class=\"$oVersion->sTestedRating\"";
-                    else
+                        $sClass = $oVersion->sTestedRating;
+
+                        $oColor = new Color();
+                        $oColor->setColorByName($oVersion->sTestedRating);
+                        $sInactiveColor = $oColor->getHexString();
+
+                        // increase the brightness of the color to create the
+                        // value used for the highlight color
+                        $oColor->add(50);
+                        $sHighlightColor = $oColor->getHexString();
+                    } else
+                    {
                         $sRatingColor = "class=\"$bgcolor\"";
+                        $sClass = $bgcolor;
+
+                        // convert color values to hex values for the row highlighting
+                        if($bgcolor == "color0")
+                        {
+                          $sHighlightColor = "#E0E0E0";
+                          $sInactiveColor = $sHighlightColor;
+                        } else
+                        {
+                          $sHighlightColor = "#C0C0C0";
+                          $sInactiveColor = $sHighlightColor;
+                        }
+                    }
 
                     //display row
-                    echo "<tr class=$bgcolor>\n";
+                    html_tr_highlight_clickable($oVersion->objectMakeUrl(),
+                                                $sClass, // class
+                                                $sHighlightColor, // highlight color
+                                                $sInactiveColor);// inactive color
                     echo "    <td>".$oVersion->objectMakeLink()."</td>\n";
                     echo "    <td>".util_trim_description($oVersion->sDescription)."</td>\n";
-                    echo "    <td $sRatingColor align=center>".$oVersion->sTestedRating."</td>\n";
-                    echo "    <td $sRatingColor align=center>".$oVersion->sTestedRelease."</td>\n";
+                    echo "    <td align=center>".$oVersion->sTestedRating."</td>\n";
+                    echo "    <td align=center>".$oVersion->sTestedRelease."</td>\n";
                     echo "    <td align=center>".testData::get_testdata_count_for_versionid($oVersion->iVersionId)."</td>\n";
                     echo "    <td align=center>".Comment::get_comment_count_for_versionid($oVersion->iVersionId)."</td>\n";
                     echo "</tr>\n\n";

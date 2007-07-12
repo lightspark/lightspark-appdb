@@ -70,7 +70,8 @@ function html_tr($arr, $class = "", $extra = "")
 }
 
 function html_tr_highlight_clickable($sUrl, $sClass, $sHighlightColor, $sInactiveColor,
-                                     $sTextDecorationHighlight = "none", $sTextDecorationInactive = "none")
+                                     $sTextDecorationHighlight = "none",
+                                     $sTextDecorationInactive = "none")
 {
     echo '<tr class='.$sClass.' '.
         'onmouseover="ChangeTr(this, true, \''.$sHighlightColor.'\', \''.$sInactiveColor.'\', \''.$sTextDecorationHighlight.'\', \''.$sTextDecorationInactive.'\');"'.

@@ -936,4 +936,79 @@ function login_url()
     return $sLoginUrl;
 }
 
+// representation of an html color value
+class color
+{
+  var $iRed;
+  var $iGreen;
+  var $iBlue;
+
+  function color($iRed = 0, $iGreen = 0, $iBlue = 0)
+  {
+    $this->iRed = $iRed;
+    $this->iGreen = $iGreen;
+    $this->iBlue = $iBlue;
+  }
+
+  function setColorByName($sColorName)
+  {
+    switch($sColorName)
+    {
+    case "Platinum":
+      $this->iRed = 0xEC;
+      $this->iGreen = 0xEC;
+      $this->iBlue = 0xEC;
+      break;
+    case "Gold":
+      $this->iRed = 0xFF;
+      $this->iGreen = 0xF6;
+      $this->iBlue = 0x00;
+      break;
+    case "Silver":
+      $this->iRed = 0xC0;
+      $this->iGreen = 0xC0;
+      $this->iBlue = 0xC0;
+      break;
+    case "Bronze":
+      $this->iRed = 0xFC;
+      $this->iGreen = 0xBA;
+      $this->iBlue = 0x0A;
+      break;
+    case "Garbage":
+      $this->iRed = 0x99;
+      $this->iGreen = 0x96;
+      $this->iBlue = 0x66;
+      break;
+    default:
+      break;
+    }
+  }
+
+  // convert the color value into a html rgb hex string
+  function getHexString()
+  {
+    return sprintf("#%02X%02X%02X", $this->iRed, $this->iGreen, $this->iBlue);
+  }
+
+  // add $iAmount to each color value, maxing out at 0xFF, the largest
+  // color value allowed
+  function add($iAmount)
+  {
+    if($this->iRed + $iAmount > 0xFF)
+      $this->iRed = 0xFF;
+    else
+      $this->iRed += $iAmount;
+
+    if($this->iGreen + $iAmount > 0xFF)
+      $this->iGreen = 0xFF;
+    else
+      $this->iGreen += $iAmount;
+
+    if($this->iBlue + $iAmount > 0xFF)
+      $this->iBlue = 0xFF;
+    else
+      $this->iBlue += $iAmount;
+  }
+};
+
 ?>

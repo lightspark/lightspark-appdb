@@ -137,8 +137,7 @@ p.indent            { padding-left: 1em; padding-right: 1em;}
 .gold               { background-color: #fff600; }
 .silver             { background-color: silver;  }
 .bronze             { background-color: #fcba0a; }
-.Garbage            { background-color: #999966; }
-
+.garbage            { background-color: #999966; }
 
 /*******************************************************************/
 /* The following styles are used exclusively in appdb              */
