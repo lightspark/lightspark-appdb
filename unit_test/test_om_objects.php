@@ -10,6 +10,7 @@ require_once(BASE.'include/maintainer.php');
 require_once(BASE.'include/testData_queue.php');
 require_once(BASE.'include/version_queue.php');
 require_once(BASE.'include/application_queue.php');
+require_once(BASE.'include/browse_newest_apps.php');
 
 /* internal function */
 function test_class($sClassName, $aTestMethods)
@@ -24,6 +25,11 @@ function test_class($sClassName, $aTestMethods)
              " the object manager\n";
         return false;
     }
+
+    // TODO: work around for 'browse_newest_apps' class
+    // since we can't create a new database object of browse_newest_apps
+    if($sClassName == "browse_newest_apps")
+      return true;
 
     /* Set up test user */
     global $test_email, $test_password;
@@ -278,6 +284,7 @@ function test_object_methods()
 
     $aTestClasses = array("application",
                           "application_queue",
+                          "browse_newest_apps",
                           "distribution",
                           "downloadurl",
                           "maintainer",

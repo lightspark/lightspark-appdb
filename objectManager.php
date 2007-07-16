@@ -22,6 +22,7 @@ require_once(BASE.'include/objectManager.php');
 require_once(BASE.'include/application_queue.php');
 require_once(BASE.'include/version_queue.php');
 require_once(BASE.'include/testData_queue.php');
+require_once(BASE.'include/browse_newest_apps.php');
 
 /* if we have no valid class name we should abort */
 if(!$aClean['sClass'])
