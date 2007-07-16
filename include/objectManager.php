@@ -85,7 +85,7 @@ class ObjectManager
              "objectGetTableRow", "objectGetId", "canEdit"));
 
         /* We cannot process a queue if we are not logged in */
-        if(!$_SESSION['current']->isLoggedIn())
+        if(!$_SESSION['current']->isLoggedIn() && $this->bIsQueue)
         {
             $sQueueText = $this->bIsRejected ? "rejected" : "queued";
             echo '<div align="center">You need to <a href="'.login_url().'">';
