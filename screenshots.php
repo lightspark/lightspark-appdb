@@ -55,7 +55,7 @@ if($aClean['sCmd'])
 
 
 // we didn't issued any command
-$hResult = Screenshot::get_screenshots($aClean['iAppId'], $aClean['iVersionId']);   
+$hResult = Screenshot::get_screenshots($aClean['iAppId'], $aClean['iVersionId']);
 apidb_header("Screenshots");
 $oApp = new Application($aClean['iAppId']);
 $oVersion = new Version($aClean['iVersionId']);
@@ -66,22 +66,29 @@ if($hResult && mysql_num_rows($hResult))
 
     // display thumbnails
     $c = 1;
+
+    // optimization so we don't have to perform as many database queries
+    // only update this variable when $iCurrentVersionId changes
+    $bUserIsMaintainerOfVersion = false;
+
     echo "<div align=center><table><tr>\n";
     while($oRow = mysql_fetch_object($hResult))
     {
         // if the current version changed then update the current version
         // and close the previous html frame if this isn't the
         // first frame
-        if(!$aClean['iVersionId'] && $oRow->versionId != $currentVersionId)
+        if(!$aClean['iVersionId'] && $oRow->versionId != $iCurrentVersionId)
         {
-            if($currentVersionId)
+            if($iCurrentVersionId)
             {
                 echo "</tr></table></div>\n";
                 echo html_frame_end();
                 $c=1;
             }
-            $currentVersionId = $oRow->versionId;
-            echo html_frame_start("Version ".Version::lookup_name($currentVersionId));
+            $iCurrentVersionId = $oRow->versionId;
+            $bUserIsMaintainerOfVersion = $_SESSION['current']->isMaintainer($iCurrentVersionId); 
+
+            echo html_frame_start("Version ".Version::lookup_name($iCurrentVersionId));
             echo "<div align=center><table><tr>\n";
         }
         $oScreenshot = new Screenshot($oRow->id);
@@ -92,8 +99,12 @@ if($hResult && mysql_num_rows($hResult))
         echo "<div align=center>". substr($oRow->description,0,20). "\n";
         
         //show admin delete link
-        if($_SESSION['current']->isLoggedIn() && ($_SESSION['current']->hasPriv("admin") || 
-               $_SESSION['current']->isMaintainer($aClean['iVersionId'])))
+        if($_SESSION['current']->isLoggedIn() &&
+            (
+              $_SESSION['current']->hasPriv("admin") ||
+              $bUserIsMaintainerOfVersion
+            )
+          )
         {
             echo "<br />[<a href='screenshots.php?sCmd=delete&iImageId=$oRow->id&iAppId=".$aClean['iAppId']."&iVersionId=".$aClean['iVersionId']."'>Delete Image</a>]";
         }
