@@ -6,6 +6,136 @@ require_once(BASE."include/application.php");
 require_once(BASE."include/version.php");
 require_once(BASE."include/user.php");
 
+//FIXME: when we have php5 move this into the maintainer class as a constant var
+define('iNotificationIntervalDays', 7); // days between each notification level
+
+// class that can retrieve the queued entries for a given maintainer instance
+class queuedEntries
+{
+  var $aVersionIds;
+  var $aScreenshotIds;
+  var $aTestDataIds;
+
+  var $oMaintainer; // the maintainer we are retrieving entries for
+
+  function queuedEntries($oMaintainer)
+  {
+    $this->oMaintainer = $oMaintainer;
+
+    $this->aVersionIds = array();
+    $this->aScreenshotIds = array();
+    $this->aTestDataIds = array();
+  }
+
+  // returns true if none of the arrays have any entries in them
+  function isEmpty()
+  {
+    if((count($this->aVersionIds) == 0) &&
+       (count($this->aScreenshotIds) == 0) &&
+       (count($this->aTestDataIds) == 0))
+      {
+        return true;
+      }
+
+    return false;
+  }
+
+  function retrieveQueuedEntries()
+  {
+    $bDebugOutputEnabled = false;
+
+    if($bDebugOutputEnabled)
+      echo "retrieveQueuedEntries() starting\n";
+
+    ////////////////////////////////////
+    // retrieve a list of versions to check for queued data
+    $aVersionsToCheck = array();
+    if($this->oMaintainer->bSuperMaintainer)
+    {
+      if($bDebugOutputEnabled)
+        echo "maintainer is super maintainer\n";
+
+      $oApp = new Application($this->oMaintainer->iAppId);
+
+      //TODO: would like to rely on the constructor but we might be a user with 'admin'
+      // privileges and that would mean we would end up retrieved queued versions for
+      // this application or unqueued versions depending on which user we were
+      $hResult = $oApp->_internal_retrieve_all_versions();
+
+      while($oVersionRow = mysql_fetch_object($hResult))
+      {
+        if($bDebugOutputEnabled)
+        {
+          echo "oVersionRow is: ";
+          print_r($oVersionRow);
+        }
+
+        $oVersion = new Version($oVersionRow->versionId);
+
+        if($bDebugOutputEnabled)
+        {
+          echo "Processing version: ";
+          print_r($oVersion);
+        }
+
+        if($oVersion->sQueued == "true")
+        {
+          $this->aVersions[] = $oVersion->objectGetId();
+        } else // version isn't queued
+        {
+          // add the unqueued version to the list of versions to check for queued data
+          $aVersionsToCheck[] = $oVersion->iVersionId;
+        }
+      }
+    } else // just a normal maintainer
+    {
+      $aVersionsToCheck[] = $this->oMaintainer->iVersionId;
+      if($bDebugOutputEnabled)
+        echo "Normal maintainer of version ".$this->oMaintainer->iVersionId."\n";
+    }
+
+    // go through all of the verions to see what queued data they have
+    foreach($aVersionsToCheck as $iVersionId)
+    {
+      if($bDebugOutputEnabled)
+        echo "Processing iVersionId of ".$iVersionId."\n";
+        
+      //////////////////
+      // queued testdata
+
+      // retrieve queued testdata for this version
+      $sQuery = "select * from testResults where versionId = '?' and queued = '?'";
+      $hResult = query_parameters($sQuery, $iVersionId, "true");
+
+      // go through the test results looking for the oldest queued data
+      while($oTestingRow = mysql_fetch_object($hResult))
+      {
+        if($bDebugOutputEnabled)
+          echo "\tQueued TestData found\n";
+        $oTestData = new TestData(null, $oTestingRow);
+
+        $this->aTestDataIds[] = $oTestData->objectGetId();
+      }
+      // queued testdata
+      //////////////////
+
+
+      ////////////////////
+      // queued screenshots
+      $sQuery = "select * from appData where type = 'screenshot' and versionId = '?' and queued = '?'";
+      $hResult = query_parameters($sQuery, $iVersionId, "true");
+      while($oScreenshotRow = mysql_fetch_object($hResult))
+      {
+        $oScreenshot = new Screenshot(null, $oScreenshotRow);
+
+        $this->aScreenshotIds[] = $oScreenshot->objectGetId();
+      }
+      // queued screenshots
+      //////////////////////
+    }
+  }
+}
+
 class maintainer
 {
     var $iMaintainerId;
@@ -14,12 +144,21 @@ class maintainer
     var $iUserId;
     var $sMaintainReason;
     var $bSuperMaintainer;
-    var $aSubmitTime;
+    var $aSubmitTime; //FIXME: should be 'sSubmitTime'
     var $bQueued;
     var $sReplyText;
 
+    // parameters used in the queued data notification system
+    // that lets maintainers know that their applications/versions have
+    // queued data for them to process
+    var $iNotificationLevel; // the current warning level of this maintainer
+    var $sNotificationTime; // the time when we last warned this maintainer
+
     function maintainer($iMaintainerId = null, $oRow = null)
     {
+        // set a default notification level of 0
+        $this->iNotificationLevel = 0;
+      
         if(!$iMaintainerId && !$oRow)
             return;
 
@@ -41,6 +180,9 @@ class maintainer
             $this->bSuperMaintainer = $oRow->superMaintainer;
             $this->aSubmitTime = $oRow->submitTime;
             $this->bQueued = $oRow->queued;
+
+            $this->iNotificationLevel = $oRow->notificationLevel;
+            $this->sNotificationTime = $oRow->notificationTime;
         }
     }
 
@@ -264,6 +406,7 @@ class maintainer
         return new maintainer($oRow->maintainerId);
     }
 
+    // returns the number of applications/versions a particular user maintains
     function getMaintainerCountForUser($oUser, $bSuperMaintainer)
     {
         $sQuery = "SELECT count(*) as cnt from appMaintainers WHERE userid = '?' AND superMaintainer = '?'".
@@ -671,6 +814,301 @@ class maintainer
     function allowAnonymousSubmissions()
     {
         return FALSE;
+    }
+
+    // level 0 is from 0 to iNotificationIntervalDays
+    // level 1 is from (iNotificationIntervalDays + 1) to (iNotificationIntervalDays * 2)
+    // level 2 is from (iNotificationIntervalDays * 2 + 1) to (iNotificationIntervalDays * 3)
+    // level 3 is beyond (iNotificationIntervalDays * 3)
+    function notifyMaintainerOfQueuedData()
+    {
+      $bDebugOutputEnabled = false;
+
+      if($bDebugOutputEnabled)
+        echo "notifyMaintainerOfQueuedData()\n";
+
+      // if a maintainer has an non-zero warning level
+      // has it been enough days since we last warned them to warrent
+      // checking to see if we should warn them again?
+      if($this->iNotificationLevel != 0)
+      {
+        $iLastWarnTime = strtotime($this->sNotificationTime);
+        $iLastWarnAgeInSeconds = strtotime("now") - $iLastWarnTime;
+                                                                        
+        if($bDebugOutputEnabled)
+          echo "iLastWarnAgeInSeconds: ".$iLastWarnAgeInSeconds."\n";
+ 
+        // if it hasn't been at least $iNotificationIntervalDays since the last
+        // warning we can skip even checking the user
+        if($iLastWarnAgeInSeconds < (iNotificationIntervalDays * 24 * 60 * 60))
+        {
+          if($bDebugOutputEnabled)
+            echo "iNotificationIntervalDays has not elapsed, skipping checking the user\n";
+          return null;
+        }
+      }
+
+      if($bDebugOutputEnabled)
+        echo "notification level is: ".$this->iNotificationLevel."\n";
+
+      // instantiate the user so we can retrieve particular values
+      $oUser = new User($this->iUserId);
+
+      if($bDebugOutputEnabled)
+      {
+        echo "this->iUserId: ".$this->iUserId."\n";
+        print_r($oUser);
+      }
+
+      // get the time the user signed up
+      // if queued entries have been queued since before the user signed up
+      // we can't punish them for this fact
+      $iMaintainerSignupTime = strtotime($this->aSubmitTime);
+
+      if($bDebugOutputEnabled)
+        echo "iMaintainerSignupTime: ".$iMaintainerSignupTime."\n";
+
+      // store the oldest queued entry
+      $iOldestQueuedEntryTime = strtotime("now");
+
+      // construct the subject of the notification email that we may send
+      $sSubject = "Notification of queued data for ";
+      $sMsg = "You are receiving this email to notify you that there is queued data";
+      $sMsg.=" for the ";
+      if($this->bSuperMaintainer)
+      {
+        $oApp = new Application($this->iAppId);
+        $sSubject.= $oApp->sName;
+        $sMsg.='application, '.$oApp->objectMakeLink().', that you maintain.'."\n";
+      } else
+      {
+        $sFullname = version::fullName($this->iVersionId);
+        $oVersion = new Version($this->iVersionId);
+        $sSubject.= $sFullname;
+        $sMsg.='version, <a href="'.$oVersion->objectMakeUrl().'">'.$sFullname.
+          '</a>, that you maintain.'."\n";
+      }
+      $sSubject.=" ready for your processing";
+
+      // retrieve the queued entries
+      $oQueuedEntries = new queuedEntries($this);
+      $oQueuedEntries->retrieveQueuedEntries();
+      if($oQueuedEntries->isEmpty())
+      {
+        if($bDebugOutputEnabled)
+          echo "No entries, returning\n";
+
+        //no entries, we might as well return here
+        return;
+      }
+
+      // process each of the queued versions
+      foreach($oQueuedEntries->aVersionIds as $iVersionId)
+      {
+        $oVersion = new Version($iVersionId);
+          
+        $sMsg .= 'Version <a href="'.$oVersion->objectMakeUrl().'">'.$sFullname.
+          '</a> is queued and ready for processing.';
+
+        $iSubmitTime = strtotime($oVersion->sSubmitTime);
+
+        // is this submission time older than the oldest queued time?
+        // if so this is the new oldest time
+        if($iSubmitTime < $iOldestQueuedEntryTime)
+        {
+          $iOldestQueuedEntryTime = $iSubmitTime;
+        }
+      }
+
+      if(count($oQueuedEntries->aVersionIds) != 0)
+      {
+        // FIXME: should use a function to generate these urls and use it here and
+        // in sidebar_maintainer.php and sidebar_admin.php
+        $sMsg = 'Please visit <a href="'.BASE."objectManager.php?sClass=version_queue&bIsQueue=true&sTitle=".
+          "Version%20Queue".'">AppDB Version queue</a> to process queued versions for applications you maintain.\n';
+      }
+
+      //////////////////
+      // queued testdata
+
+      // go through the test results looking for the oldest queued data
+      foreach($oQueuedEntries->aTestDataIds as $iTestDataId)
+      {
+        if($bDebugOutputEnabled)
+          echo "Testresult found\n";
+        $oTestData = new TestData($iTestDataId);
+
+        $iSubmitTime = strtotime($oTestData->sSubmitTime);
+        if($bDebugOutputEnabled)
+          echo "iSubmitTime is ".$iSubmitTime."\n";
+
+        // is this submission time older than the oldest queued time?
+        // if so this is the new oldest time
+        if($iSubmitTime < $iOldestQueuedEntryTime)
+        {
+          if($bDebugOutputEnabled)
+            echo "setting new oldest time\n";
+
+          $iOldestQueuedEntryTime = $iSubmitTime;
+        }
+      }
+
+      $iTestResultCount = count($oQueuedEntries->aTestDataIds);
+      if($iTestResultCount != 0)
+      {
+        // grammar is slightly different for singular vs. plural
+        if($iTestResultCount == 1)
+          $sMsg.="There is $iTestResultCount queued test result. ";
+        else
+          $sMsg.="There are $iTestResultCount queued test results. ";
+
+        // FIXME: should use a function to generate these urls and use it here and
+        // in sidebar_maintainer.php and sidebar_admin.php
+        $sMsg .= 'Please visit <a href="'.BASE."objectManager.php?sClass=testData_queue&bIsQueue=true&sTitle=".
+          "Test%20Results%20Queue".'">AppDB Test Data queue</a> to process queued test data for versions you maintain.\r\n';
+      }
+      // queued testdata
+      //////////////////
+
+
+      ////////////////////
+      // queued screenshots
+      foreach($oQueuedEntries->aScreenshotIds as $iScreenshotId)
+      {
+        $oScreenshot = new Screenshot($iScreenshotId);
+
+        $iSubmitTime = strtotime($oScreenshot->sSubmitTime);
+
+        // is this submission time older than the oldest queued time?
+        // if so this is the new oldest time
+        if($iSubmitTime < $iOldestQueuedEntryTime)
+        {
+          $iOldestQueuedEntryTime = $iSubmitTime;
+        }
+      }
+
+      // if the oldest queue entry time is older than the time the maintainer
+      // signed up, use the maintainer signup time as the oldest time
+      if($iOldestQueuedEntryTime < $iMaintainerSignupTime)
+        $iOldestQueuedEntryTime = $iMaintainerSignupTime;
+
+
+      // if we found any queued screenshots add the screenshot queue processing link
+      // to the email
+      if(count($oQueuedEntries->aScreenshotIds) != 0)
+      {
+        // FIXME: should use a function to generate these urls and use it here and
+        // in sidebar_maintainer.php and sidebar_admin.php
+        $sMsg .= 'Please visit <a href="'.BASE."objectManager.php?sClass=screenshot_queue&bIsQueue=true&sTitle=".
+          "Screenshot%20Queue".'">Screenshot queue</a> to process queued screenshots for versions you maintain.\r\n';
+      }
+        
+      // queued screenshots
+      //////////////////////
+
+      // compute the age in seconds of the oldest entry
+      $iAgeInSeconds = strtotime("now") - $iOldestQueuedEntryTime;
+
+      // compute the target warning level based on the age and the notification interval
+      // we divide the age by the number of seconds in a day multiplied by the days per notification interval
+      $iTargetLevel = (integer)($iAgeInSeconds / (iNotificationIntervalDays * 24 * 60 * 60));
+
+      if($bDebugOutputEnabled)
+      {
+        echo "iOldestQueuedEntryTime is $iOldestQueuedEntryTime\n";
+        echo "iAgeInSeconds is $iAgeInSeconds\n";
+        echo "iNotificationIntervalDays is ".iNotificationIntervalDays."\n";
+        echo "strtotime(now) is ".strtotime("now")."\n";
+        echo "iTargetLevel is ".$iTargetLevel."\n";
+      }
+
+      // if the target level is less than the current level, adjust the current level
+      // This takes into account the entries in the users queue that may have been processed
+      if($iTargetLevel < $this->iNotificationLevel)
+      {
+        if($bDebugOutputEnabled)
+          echo "Using iTargetLevel of $iTargetLevel\n";
+        $this->iNotificationLevel = $iTargetLevel;
+      }
+
+      // if the target level is higher than the current level then adjust the
+      // current level up by 1
+      // NOTE: we adjust up by one because we want to ensure that we go through
+      //       notification levels one at a time
+      if($iTargetLevel > $this->iNotificationLevel)
+      {
+        if($bDebugOutputEnabled)
+          echo "Increasing notification level of $this->iNotificationLevel by 1\n";
+        $this->iNotificationLevel++;
+      }
+
+      switch($this->iNotificationLevel)
+      {
+      case 0: // lowest level, no notification
+        // nothing to do here
+        break;
+      case 1: // send the first notification
+        // nothing to do here, the first notification is just a reminder
+        $sMsg.= "\n\nThanks,\n";
+        $sMsg.= "Appdb Admins";
+        break;
+      case 2: // send the second notification, notify them that if the queued entries aren't
+              // processed after another $iNotificationIntervalDays that
+              // we'll have to remove their maintainership for this application/version
+              // so a more active person can fill the spot
+        $sMsg.= "\nThis your second notification of queued entries. If the queued entries are";
+        $sMsg.= " not processed within the next ".iNotificationIntervalDays. "we will remove";
+        $sMsg.= " your maintainership for this application/version so a more active person";
+        $sMsg.= " can fill the spot.";
+        $sMsg.= "\n\nThanks,\n";
+        $sMsg.= "Appdb Admins";
+        break;
+      case 3: // remove their maintainership
+        $this->delete(); // delete ourselves from the database
+        break;
+      }
+
+      // save the notification level and notification time back into the database
+      $sQuery = "update appMaintainers set notificationLevel = '?', notificationTime = ?".
+                " where maintainerId = '?'";
+      query_parameters($sQuery, $this->iNotificationLevel, "NOW()", $this->iMaintainerId);
+
+      //TODO: we probably want to copy the mailing list on each of these emails
+      $sEmail = $oUser->sEmail;
+      $sEmail.=" cmorgan@alum.wpi.edu"; // FIXME: for debug append my email address
+
+      if($this->iNotificationLevel == 0)
+      {
+        if($bDebugOutputEnabled)
+          echo "At level 0, no warning issued to ".$oUser->sEmail."\n";
+      } else
+      {
+        if($bDebugOutputEnabled)
+        {
+          echo "Email: ".$sEmail."\n";
+          echo "Subject: ".$sSubject."\n";
+          echo "Msg: ".$sMsg."\n\n";
+        }
+
+        mail_appdb($sEmail, $sSubject, $sMsg);
+      }
+    }
+
+    // static method called by the cron maintenance script to notify
+    // maintainers of data pending for their applications and versions
+    function notifyMaintainersOfQueuedData()
+    {
+      // retrieve all of the maintainers
+      $hResult = maintainer::objectGetEntries(false, false);
+
+      //      echo "Processing ".mysql_num_rows($hResult)." maintainers\n";
+
+      while($oRow = mysql_fetch_object($hResult))
+      {
+        // notify this user, the maintainer, of queued data, if any exists
+        $oMaintainer = new maintainer(null, $oRow);
+        $oMaintainer->notifyMaintainerOfQueuedData($this);
+      }
     }
 }
 

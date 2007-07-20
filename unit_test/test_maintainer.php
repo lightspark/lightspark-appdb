@@ -3,6 +3,12 @@
 require_once("path.php");
 require_once(BASE.'include/maintainer.php');
 
+// the maintainer notification system tests have been split out
+// into another file
+include_once("test_maintainer_notify.php");
+
+
+
 /* unit tests for maintainer class */
 
 // test that the maintainer count for a given user is accurate for both
@@ -569,6 +575,7 @@ function test_maintainer_getMaintainersForAppIdVersionId()
 
     return TRUE;
 }
+
 if(!test_maintainer_getMaintainerCountForUser())
 {
     echo "test_maintainer_getMaintainerCountForUser() failed!\n";
@@ -623,6 +630,15 @@ if(!test_maintainer_getMaintainersForAppIdVersionId())
 } else
 {
     echo "test_maintainer_getMaintainersForAppIdVersionId() passed\n";
+}
+
+if(!test_maintainer_notifyMaintainersOfQueuedData())
+{
+  echo "test_maintainer_notifyMaintainersOfQueuedData() failed!\n";
+  $bTestSuccess = false;
+} else
+{
+  echo "test_maintainer_notifyMaintainersOfQueuedData() passed\n";
 }
 
 ?>

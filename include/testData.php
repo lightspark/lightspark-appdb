@@ -243,7 +243,7 @@ class testData{
         if(!$_SESSION['current']->hasPriv("admin") &&
            !$_SESSION['current']->hasAppVersionModifyPermission($oVersion))
         {
-            return;
+            return false;
         }
 
         // If we are not in the queue, we can't move the test data out of the queue.
@@ -257,7 +257,12 @@ class testData{
             // we send an e-mail to interested people
             $this->mailSubmitter("add");
             $this->SendNotificationMail();
+        } else
+        {
+          return false;
         }
+
+        return true;
     }
 
     function Reject()

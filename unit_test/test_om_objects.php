@@ -159,10 +159,10 @@ function cleanup($oObject)
         case "maintainer":
         case "screenshot":
         case "testData":
-            delete_parent($oObject->iVersionId);
+            delete_version_and_parent_app($oObject->iVersionId);
         break;
         case "testData_queue":
-            delete_parent($oObject->oTestData->iVersionId);
+            delete_version_and_parent_app($oObject->oTestData->iVersionId);
         break;
         case "version":
             $oApp = new application($oObject->iAppId);
@@ -173,25 +173,6 @@ function cleanup($oObject)
             $oApp->delete();
         break;
     }
-}
-
-function create_version()
-{
-    $oApp = new application();
-    $oApp->sName = "OM App";
-    $oApp->create();
-    $oVersion = new version();
-    $oVersion->sName = "OM version";
-    $oVersion->iAppId = $oApp->iAppId;
-    $oVersion->create();
-    return $oVersion->iVersionId;
-}
-
-function delete_parent($iVersionId)
-{
-    $oVersion = new version($iVersionId);
-    $oApp = new application($oVersion->iAppId);
-    $oApp->delete();
 }
 
 function create_object($sClassName, $oUser)
@@ -208,10 +189,10 @@ function create_object($sClassName, $oUser)
         case "downloadurl":
             $oTestObject->sUrl = "http://appdb.winehq.org/";
             $oTestObject->sDescription = "DANGER";
-            $oTestObject->iVersionId = create_version();
+            $oTestObject->iVersionId = create_version_and_parent_app();
         break;
         case "maintainer":
-            $oVersion = new version(create_version());
+            $oVersion = new version(create_version_and_parent_app());
             $oTestObject->iUserId = $oUser->iUserId;
             $oTestObject->iAppId = $oVersion->iAppId;
             $oTestObject->iVersionId = $oVersion->iVersionId;
@@ -219,10 +200,10 @@ function create_object($sClassName, $oUser)
         break;
         case "screenshot":
         case "testData":
-            $oTestObject->iVersionId = create_version();
+            $oTestObject->iVersionId = create_version_and_parent_app();
         break;
         case "testData_queue":
-            $oTestObject->oTestData->iVersionId = create_version();
+            $oTestObject->oTestData->iVersionId = create_version_and_parent_app();
         break;
         case "version":
             $oApp = new application();

@@ -16,6 +16,7 @@ $bTestSuccess = true;
 
 include_once("test_user.php");
 echo "\n";
+
 include_once("test_query.php");
 echo "\n";
 include_once("test_image.php");

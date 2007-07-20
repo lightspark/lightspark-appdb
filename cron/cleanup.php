@@ -28,7 +28,10 @@ reportErrorLogEntries();
 /* remove screenshots that are missing their screenshot and thumbnail files */
 removeScreenshotsWithMissingFiles();
 
-
+/* check and notify maintainers about data they have pending in their queues */
+/* if they don't process the data soon enough we'll strip them of their maintainer */
+/* status since they aren't really maintaining the application/version */
+maintainerCheck();
 
 
 /*
@@ -333,4 +336,13 @@ function removeScreenshotsWithMissingFiles()
     // log out as user
     $oUser->logout();
 }
+
+/* check and notify maintainers about data they have pending in their queues */
+/* if they don't process the data soon enough we'll strip them of their maintainer */
+/* status since they aren't really maintaining the application/version */
+function maintainerCheck()
+{
+  maintainer::notifyMaintainersOfQueuedData();
+}
+
 ?>
