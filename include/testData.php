@@ -918,6 +918,8 @@ class testData{
                                 )
                             )
                             AND
+                            appMaintainers.queued = 'false'
+                            AND
                             testResults.queued = '?' ORDER BY '?'$sLimit";
             }
             if($sLimit)
