@@ -335,44 +335,65 @@ function view_version_bugs($iVersionId = null, $aBuglinkIds)
     {
         $oBuglink = new Bug($iBuglinkId);
 
-        // set row color
-        $bgcolor = ($c % 2 == 0) ? "color0" : "color1";
-
-        //display row
-        echo "<tr class=$bgcolor>\n";
-        echo "<td align=center><a href='".BUGZILLA_ROOT."show_bug.cgi?id=".$oBuglink->iBug_id."'>".$oBuglink->iBug_id."</a></td>\n";
-        echo "<td>".$oBuglink->sShort_desc."</td>\n";
-        echo "<td align=center>".$oBuglink->sBug_status."</td>","\n";
-        echo "<td align=center>".$oBuglink->sResolution."</td>","\n";
-        echo "<td align=center><a href='viewbugs.php?bug_id=".$oBuglink->iBug_id."'>View</a></td>\n";
- 
-        
-        if($bCanEdit == true)
+        if ( (!isset($aClean['sAllBugs']) && $oBuglink->sBug_status != 'RESOLVED')
+             || isset($aClean['sAllBugs']) )
         {
-            echo "<td align=center>[<a href='".$oVersion->objectMakeUrl()."&sSub=delete&iBuglinkId=".$oBuglink->iLinkId."'>delete</a>]</td>\n";
-            if ($oBuglink->bQueued)
-            {
-                echo "<td align=center>[<a href='".$oVersion->objectMakeUrl()."&sSub=unqueue&iBuglinkId=".$oBuglink->iLinkId."'>OK</a>]</td>\n";
-            } else
-            {
-                echo "<td align=center>Yes</td>\n";
-            }
-               
-        }
-        echo "</tr>\n\n";
- 
+            // set row color
+            $bgcolor = ($c % 2 == 0) ? "color0" : "color1";
 
-        $c++;   
+            //display row
+            echo "<tr class=$bgcolor>\n";
+            echo "<td align=center><a href='".BUGZILLA_ROOT."show_bug.cgi?id=".$oBuglink->iBug_id."'>".$oBuglink->iBug_id."</a></td>\n";
+            echo "<td>".$oBuglink->sShort_desc."</td>\n";
+            echo "<td align=center>".$oBuglink->sBug_status."</td>","\n";
+            echo "<td align=center>".$oBuglink->sResolution."</td>","\n";
+            echo "<td align=center><a href='viewbugs.php?bug_id=".$oBuglink->iBug_id."'>View</a></td>\n";
+    
+            
+            if($bCanEdit == true)
+            {
+                echo "<td align=center>[<a href='".$oVersion->objectMakeUrl()."&sSub=delete&iBuglinkId=".$oBuglink->iLinkId."'>delete</a>]</td>\n";
+                if ($oBuglink->bQueued)
+                {
+                    echo "<td align=center>[<a href='".$oVersion->objectMakeUrl()."&sSub=unqueue&iBuglinkId=".$oBuglink->iLinkId."'>OK</a>]</td>\n";
+                } else
+                {
+                    echo "<td align=center>Yes</td>\n";
+                }
+                
+            }
+            echo "</tr>\n\n";
+    
+
+            $c++;
+        }
     }
+
     if($_SESSION['current']->isLoggedIn())
     {
         echo '<input type="hidden" name="iVersionId" value="'.$iVersionId.'">',"\n";
         echo '<tr class=color3><td align=center>',"\n";
-        echo '<input type="text" name="iBuglinkId" value="'.$aClean['buglinkId'].'" size="8"></td>',"\n";
+        $sBuglinkId = isset($aClean['buglinkId']) ? $aClean['buglinkId'] : '';
+        echo '<input type="text" name="iBuglinkId" value="'.$sBuglinkId.'" size="8"></td>',"\n";
         echo '<td><input type="submit" name="sSub" value="Submit a new bug link."></td>',"\n";
         echo '<td colspan=6></td></tr></form>',"\n";
     }
     echo '</table>',"\n";
+
+    // show only open link
+    if ( isset( $aClean['sAllBugs'] ) )
+    {
+        $sURL = str_replace( '&sAllBugs', '', $_SERVER['REQUEST_URI'] );
+        $sLink = '<a href="' . $sURL . '">Show Open Bugs</a>';
+    }
+    // show all link
+    else
+    {
+        $sURL = $_SERVER['REQUEST_URI'] . '&sAllBugs';
+        $sLink = '<a href="' . $sURL . '">Show All Bugs</a>';
+    }
+    
+    echo '<div style="text-align:right;">' . $sLink .'</div>';
     echo html_frame_end();
 }
 
