@@ -136,6 +136,26 @@ class queuedEntries
   }
 }
 
+// contains the results of a notification update so other logic
+// can act on these results
+class notificationUpdate
+{
+  var $sEmail;
+  var $sSubject;
+  var $sMsg; // contents of the email we will send to the maintainer
+  var $iTargetLevel; // the target notification level based upon the
+                     // maintiners queued entries
+
+  function notificationUpdate($sEmail, $sSubject, $sMsg, $iTargetLevel)
+  {
+    $this->sEmail = $sEmail;
+    $this->sSubject = $sSubject;
+    $this->sMsg = $sMsg;
+    $this->iTargetLevel = $iTargetLevel;
+  }
+}
+
+
 class maintainer
 {
     var $iMaintainerId;
@@ -816,11 +836,7 @@ class maintainer
         return FALSE;
     }
 
-    // level 0 is from 0 to iNotificationIntervalDays
-    // level 1 is from (iNotificationIntervalDays + 1) to (iNotificationIntervalDays * 2)
-    // level 2 is from (iNotificationIntervalDays * 2 + 1) to (iNotificationIntervalDays * 3)
-    // level 3 is beyond (iNotificationIntervalDays * 3)
-    function notifyMaintainerOfQueuedData()
+    function fetchNotificationUpdate()
     {
       $bDebugOutputEnabled = false;
 
@@ -1022,20 +1038,34 @@ class maintainer
         echo "iTargetLevel is ".$iTargetLevel."\n";
       }
 
+      $oNotificationUpdate = new notificationUpdate($oUser->sEmail, $sSubject,
+                                                    $sMsg, $iTargetLevel);
+
+      return $oNotificationUpdate;
+    }
+
+    // level 0 is from 0 to iNotificationIntervalDays
+    // level 1 is from (iNotificationIntervalDays + 1) to (iNotificationIntervalDays * 2)
+    // level 2 is from (iNotificationIntervalDays * 2 + 1) to (iNotificationIntervalDays * 3)
+    // level 3 is beyond (iNotificationIntervalDays * 3)
+    function processNotificationUpdate($oNotificationUpdate)
+    {
+      $bDebugOutputEnabled = false;
+
       // if the target level is less than the current level, adjust the current level
       // This takes into account the entries in the users queue that may have been processed
-      if($iTargetLevel < $this->iNotificationLevel)
+      if($oNotificationUpdate->iTargetLevel < $this->iNotificationLevel)
       {
         if($bDebugOutputEnabled)
-          echo "Using iTargetLevel of $iTargetLevel\n";
-        $this->iNotificationLevel = $iTargetLevel;
+          echo "Using iTargetLevel of $oNotificationUpdate->iTargetLevel\n";
+        $this->iNotificationLevel = $oNotificationUpdate->iTargetLevel;
       }
 
       // if the target level is higher than the current level then adjust the
       // current level up by 1
       // NOTE: we adjust up by one because we want to ensure that we go through
       //       notification levels one at a time
-      if($iTargetLevel > $this->iNotificationLevel)
+      if($oNotificationUpdate->iTargetLevel > $this->iNotificationLevel)
       {
         if($bDebugOutputEnabled)
           echo "Increasing notification level of $this->iNotificationLevel by 1\n";
@@ -1049,19 +1079,19 @@ class maintainer
         break;
       case 1: // send the first notification
         // nothing to do here, the first notification is just a reminder
-        $sMsg.= "\n\nThanks,\n";
-        $sMsg.= "Appdb Admins";
+        $oNotificationUpdate->sMsg.= "\n\nThanks,\n";
+        $oNotificationUpdate->sMsg.= "Appdb Admins";
         break;
       case 2: // send the second notification, notify them that if the queued entries aren't
               // processed after another $iNotificationIntervalDays that
               // we'll have to remove their maintainership for this application/version
               // so a more active person can fill the spot
-        $sMsg.= "\nThis your second notification of queued entries. If the queued entries are";
-        $sMsg.= " not processed within the next ".iNotificationIntervalDays. "we will remove";
-        $sMsg.= " your maintainership for this application/version so a more active person";
-        $sMsg.= " can fill the spot.";
-        $sMsg.= "\n\nThanks,\n";
-        $sMsg.= "Appdb Admins";
+        $oNotificationUpdate->sMsg.= "\nThis your second notification of queued entries. If the queued entries are";
+        $oNotificationUpdate->sMsg.= " not processed within the next ".iNotificationIntervalDays. "we will remove";
+        $oNotificationUpdate->sMsg.= " your maintainership for this application/version so a more active person";
+        $oNotificationUpdate->sMsg.= " can fill the spot.";
+        $oNotificationUpdate->sMsg.= "\n\nThanks,\n";
+        $oNotificationUpdate->sMsg.= "Appdb Admins";
         break;
       case 3: // remove their maintainership
         $this->delete(); // delete ourselves from the database
@@ -1070,12 +1100,11 @@ class maintainer
 
       // save the notification level and notification time back into the database
       $sQuery = "update appMaintainers set notificationLevel = '?', notificationTime = ?".
-                " where maintainerId = '?'";
+        " where maintainerId = '?'";
       query_parameters($sQuery, $this->iNotificationLevel, "NOW()", $this->iMaintainerId);
 
       //TODO: we probably want to copy the mailing list on each of these emails
-      $sEmail = $oUser->sEmail;
-      $sEmail.=" cmorgan@alum.wpi.edu"; // FIXME: for debug append my email address
+      $oNotificationUpdate->sEmail.=" cmorgan@alum.wpi.edu"; // FIXME: for debug append my email address
 
       if($this->iNotificationLevel == 0)
       {
@@ -1085,17 +1114,27 @@ class maintainer
       {
         if($bDebugOutputEnabled)
         {
-          echo "Email: ".$sEmail."\n";
-          echo "Subject: ".$sSubject."\n";
-          echo "Msg: ".$sMsg."\n\n";
+          echo "Email: ".$oNotificationUpdate->sEmail."\n";
+          echo "Subject: ".$oNotificationUpdate->sSubject."\n";
+          echo "Msg: ".$oNotificationUpdate->sMsg."\n\n";
         }
 
-        mail_appdb($sEmail, $sSubject, $sMsg);
+        mail_appdb($oNotificationUpdate->sEmail, $oNotificationUpdate->sSubject, $oNotificationUpdate->sMsg);
       }
+    }
+
+    function notifyMaintainerOfQueuedData()
+    {
+      $oNotificationUpdate = $this->fetchNotificationUpdate();
+
+      // if we have a valid notificationUpdate then process it, otherwise skip it
+      if($oNotificationUpdate != NULL)
+        $this->processNotificationUpdate($oNotificationUpdate);
     }
 
     // static method called by the cron maintenance script to notify
     // maintainers of data pending for their applications and versions
+    //TODO: php5 make this static when we have php5
     function notifyMaintainersOfQueuedData()
     {
       // retrieve all of the maintainers
@@ -1103,11 +1142,11 @@ class maintainer
 
       //      echo "Processing ".mysql_num_rows($hResult)." maintainers\n";
 
+      // notify this user, the maintainer, of queued data, if any exists
       while($oRow = mysql_fetch_object($hResult))
       {
-        // notify this user, the maintainer, of queued data, if any exists
         $oMaintainer = new maintainer(null, $oRow);
-        $oMaintainer->notifyMaintainerOfQueuedData($this);
+        $oMaintainer->notifyMaintainerOfQueuedData();
       }
     }
 }
