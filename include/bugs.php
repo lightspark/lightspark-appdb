@@ -287,6 +287,11 @@ class Bug {
 
         return $sReturn;
     }
+
+    function isOpen()
+    {
+        return ($this->sBug_status != 'RESOLVED' && $this->sBug_status != 'CLOSED');
+    }
 }
 
 
@@ -335,8 +340,11 @@ function view_version_bugs($iVersionId = null, $aBuglinkIds)
     {
         $oBuglink = new Bug($iBuglinkId);
 
-        if ( (!isset($aClean['sAllBugs']) && $oBuglink->sBug_status != 'RESOLVED')
-             || isset($aClean['sAllBugs']) )
+        if (
+                (!isset($aClean['sAllBugs']) && $oBuglink->isOpen() )
+                ||
+                isset($aClean['sAllBugs'])
+            )
         {
             // set row color
             $bgcolor = ($c % 2 == 0) ? "color0" : "color1";
