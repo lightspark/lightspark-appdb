@@ -649,7 +649,7 @@ class testData{
 
         // Version List
         echo '<tr><td class=color1><b>Tested release</b></td><td class=color0>',"\n";
-        make_bugzilla_version_list("sTestedRelease", $this->sTestedRelease);
+        echo make_bugzilla_version_list("sTestedRelease", $this->sTestedRelease);
         // Give the user some information about our available versions
         echo "<ul>\n";
         echo "<li>If you are testing with a newer release than listed please";
