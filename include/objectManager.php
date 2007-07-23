@@ -23,7 +23,7 @@ class ObjectManager
         $this->sTitle = $sTitle;
         $this->iId = $iId;
         $this->oMultiPage = new MultiPage(FALSE);
-        $this->oTableRow = new TableRow(null);
+        $this->oTableRow = new OMTableRow(null);
 
         // initialize the common responses array
         $this->aCommonResponses = array();
@@ -104,10 +104,14 @@ class ObjectManager
         /* if we are requesting a list of its queued objects or */
         /* all of its objects */
         if($this->oMultiPage->bEnabled)
+        {
             $hResult = $oObject->objectGetEntries($this->bIsQueue, $this->bIsRejected,
-            $this->oMultiPage->iItemsPerPage, $this->oMultiPage->iLowerLimit);
-        else
+                                                  $this->oMultiPage->iItemsPerPage,
+                                                  $this->oMultiPage->iLowerLimit);
+        } else
+        {
             $hResult = $oObject->objectGetEntries($this->bIsQueue, $this->bIsRejected);
+        }
 
         /* did we get any entries? */
         if(!$hResult || mysql_num_rows($hResult) == 0)
@@ -144,8 +148,21 @@ class ObjectManager
 
             $this->oTableRow = $oObject->objectGetTableRow();
 
-            if(!$this->oTableRow->sStyle)
-                $this->oTableRow->sStyle = ($iCount % 2) ? "color0" : "color1";
+            $sColor = ($iCount % 2) ? "color0" : "color1";
+
+            //TODO: we shouldn't access this method directly, should make an accessor for it
+            if(!$this->oTableRow->oTableRow->sClass)
+            {
+                $this->oTableRow->oTableRow->sClass = $sColor;
+            }
+
+            // if this row is clickable, make it highlight appropirately
+            $oTableRowClick = $this->oTableRow->oTableRow->oTableRowClick;
+            if($oTableRowClick)
+            {
+              $oTableRowHighlight = GetStandardRowHighlight($iCount);
+              $oTableRowClick->SetHighlight($oTableRowHighlight);
+            }
 
             $sEditLinkLabel = $this->bIsQueue ? "process" : "edit";
 
@@ -155,15 +172,16 @@ class ObjectManager
                 $shDeleteLink = "";
                 if($this->oTableRow->bHasDeleteLink)
                 {
-                    $shDeleteLink = ' [ <a href="'.$this->makeUrl("delete", $oObject->objectGetid()).
-                            '">delete</a> ]';
+                  $shDeleteLink = ' [ <a href="'.$this->makeUrl("delete", $oObject->objectGetid()).
+                    '">delete</a> ]';
                 }
 
-                $this->oTableRow->aCells[] = '[ <a href="'.$this->makeUrl("edit",
-                        $oObject->objectGetId()).'">'.$sEditLinkLabel.'</a> ]'.$shDeleteLink;
+                $oTableCell = new TableCell('[ <a href="'.$this->makeUrl("edit",
+                                   $oObject->objectGetId()).'">'.$sEditLinkLabel.'</a> ]'.$shDeleteLink);
+                $this->oTableRow->AddCell($oTableCell);
             }
 
-            echo html_tr($this->oTableRow->aCells, $this->oTableRow->sStyle);
+            echo $this->oTableRow->GetString();
         }
 
         echo "</table>";
@@ -767,43 +785,6 @@ class MultiPage
 
         $this->iItemsPerPage = $aClean['iItemsPerPage'];
         $this->iPage = $aClean['iPage'];
-    }
-}
-
-class TableRow
-{
-    var $aCells; // array that contains the columns for a table row
-    var $sStyle; // CSS style to be used
-    var $bHasDeleteLink;
-    var $aRowClickable; //FIXME: we should describe the entries required here by creating a class for a clickable row entry or something
-    var $bCanEdit;
-
-    function TableRow($aCells)
-    {
-        if(!$aCells)
-            return;
-
-        $this->aCells = $aCells;
-
-        // initialize the rest of the variables
-        $this->sStyle = null;
-        $this->bHasDeleteLink = false;
-        $this->aRowClickable = null;
-    }
-
-    function SetStyle($sStyle)
-    {
-      $this->sStyle = $sStyle;
-    }
-
-    function SetRowHasDeleteLink($bHasDeleteLink)
-    {
-      $this->bHasDeleteLink = $bHasDeleteLink;
-    }
-
-    function SetRowClickable($aRowClickableInfo)
-    {
-      $this->aRowClickable = $aRowClickableInfo;
     }
 }
 

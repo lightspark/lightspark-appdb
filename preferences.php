@@ -23,9 +23,14 @@
 // application environment
 require("path.php");
 require(BASE."include/incl.php");
+require(BASE."include/form_edit.php");
 
+
+// returns an array of TableRow instances
 function build_prefs_list($oUser)
 {
+    $aTableRows = array();
+
     $hResult = query_parameters("SELECT * FROM prefs_list ORDER BY id");
     while($hResult && $r = mysql_fetch_object($hResult))
     {
@@ -48,35 +53,53 @@ function build_prefs_list($oUser)
 
             $input = html_select("pref_$r->name", explode('|', $r->value_list), 
                                  $oUser->getpref($r->name, $r->def_value));
-            echo html_tr(array("&nbsp; $r->description", $input));
+
+            $oTableRow = new TableRow();
+            $oTableCell = new TableCell("&nbsp; $r->description");
+            $oTableRow->AddCell($oTableCell);
+            $oTableCell = new TableCell($input);
+            $oTableRow->AddCell($oTableCell);
+
+            $aTableRows[] = $oTableRow;
     }
+
+    return $aTableRows;
 }
 
+// returns an array of TableRow instances
 function show_user_fields($oUser)
 {
-    $sUserRealname = $oUser->sRealname;
-    $sUserEmail = $oUser->sEmail;
+    $aTableRows = array();
+
     $sWineRelease = $oUser->sWineRelease;
     if($oUser->hasPriv("admin"))
         $sAdminChecked = 'checked="true"';
     else
         $sAdminChecked = "";
 
-    include(BASE."include/form_edit.php");
-
     // Edit admin privilege
     if($_SESSION['current']->hasPriv("admin"))
     {
-        echo html_tr(array(
-                "&nbsp; Administrator",
-                "<input type=\"checkbox\" name=\"bIsAdmin\" value=\"true\" ".
-                        "$sAdminChecked />"
-                        ));
+      $oTableRow = new TableRow();
+      $oTableRow->AddTextCell("&nbsp; Administrator");
+      $oTableRow->AddTextCell("<input type=\"checkbox\"".
+                              " name=\"bIsAdmin\" value=\"true\" ".
+                              "$sAdminChecked />");
+
+      $aTableRows[] = $oTableRow;
     }
 
-    echo "<tr><td>&nbsp; Wine version </td><td>";
-    make_bugzilla_version_list("sWineRelease", $sWineRelease);
-    echo "</td></tr>";
+
+    $oTableRow = new TableRow();
+    $oTableRow->AddTextCell("&nbsp; Wine version");
+    
+    $sBugzillaVersionList = make_bugzilla_version_list("sWineRelease",
+                                                       $sWineRelease);
+    $oTableRow->AddCell(new TableCell($sBugzillaVersionList));
+    $aTableRows[] = $oTableRow;
+
+    // return the table rows
+    return $aTableRows;
 }
 
 
@@ -168,14 +191,35 @@ if($oUser->iUserId == $aClean['iUserId'])
 }
 
 echo html_frame_start("Preferences for ".$oUser->sRealname, "80%");
-echo html_table_begin("width='100%' border=0 align=left cellspacing=0 class='box-body'");
 
-show_user_fields($oUser);
+// build a table
+$oTable = new Table();
+$oTable->SetWidth("100%");
+$oTable->SetAlign("left");
+$oTable->SetCellSpacing(0);
+$oTable->SetClass("box-body");
+
+// retrieve the form editing rows
+$aTableRows = GetEditAccountFormRows($oUser->sEmail);
+foreach($aTableRows as $oTableRow)
+  $oTable->AddRow($oTableRow);
+
+// retrieve the user fields
+$aTableRows = show_user_fields($oUser);
+foreach($aTableRows as $oTableRow)
+  $oTable->AddRow($oTableRow);
 
 // if we don't manage another user
-if($oUser->iUserId != $aClean['iUserId']) build_prefs_list($oUser);
+if($oUser->iUserId != $aClean['iUserId'])
+{
+  $aTableRows = build_prefs_list($oUser);
+  foreach($aTableRows as $oTableRow)
+  {
+    $oTable->AddRow($oTableRow);
+  }
+}
+echo $oTable->GetString();
 
-echo html_table_end();
 echo html_frame_end();
 echo "<br /> <div align=center> <input type=\"submit\" name='sSubmit' value=\"Update\" /> </div> <br />\n";
 echo "</form>\n";

@@ -171,22 +171,45 @@ class Vendor {
 
     function outputEditor()
     {
-        echo "<table width='100%' border=0 cellpadding=2 cellspacing=0>\n";
+      $oTable = new Table();
+      $oTable->SetWidth("100%");
+      $oTable->SetBorder(0);
+      $oTable->SetCellPadding(2);
+      $oTable->SetCellSpacing(0);
 
-        // Name
-        echo html_tr(array(
-                           array("<b>Vendor Name:</b>", 'align=right class="color0"'),
-                           array('<input type=text name="sVendorName" value="'.$this->sName.'" size="60">', 'class="color0"')
-                           ));
-        // Url
-        echo html_tr(array(
-                           array("<b>Vendor URL:</b>", 'align=right class="color0"'),
-                           array('<input type=text name="sVendorWebpage" value="'.$this->sWebpage.'" size="60">', 'class="color0"')
-                           ));
+      // name
+      $oTableRow = new TableRow();
 
-        echo  '<input type="hidden" name="iVendorId" value="'.$this->iVendorId.'">',"\n";
+      $oTableCell = new TableCell("Vendor Name:");
+      $oTableCell->SetAlign("right");
+      $oTableCell->SetClass("color0");
+      $oTableCell->SetBold(true);
+      $oTableRow->AddCell($oTableCell);
 
-        echo "</table>\n";
+      $oTableCell = new TableCell('<input type=text name="sVendorName" value="'.$this->sName.'" size="60">');
+      $oTableCell->SetClass("color0");
+      $oTableRow->AddCell($oTableCell);
+
+      $oTable->AddRow($oTableRow);
+
+      // Url
+      $oTableRow = new TableRow();
+
+      $oTableCell = new TableCell("Vendor URL:");
+      $oTableCell->SetAlign("right");
+      $oTableCell->SetClass("color0");
+      $oTableCell->SetBold(true);
+      $oTableRow->AddCell($oTableCell);
+
+      $oTableCell = new TableCell('<input type=text name="sVendorWebpage" value="'.$this->sWebpage.'" size="60">');
+      $oTableCell->SetClass("color0");
+      $oTableRow->AddCell($oTableCell);
+
+      $oTable->AddRow($oTableRow);
+
+      echo $oTable->GetString();
+
+      echo  '<input type="hidden" name="iVendorId" value="'.$this->iVendorId.'">',"\n";
     }
 
     function objectGetEntries($bQueued, $bRejected, $iRows = 0, $iStart = 0)
@@ -222,19 +245,28 @@ class Vendor {
         return $aCells;
     }
 
+    // returns an OMTableRow instance
     function objectGetTableRow()
     {
-        $aCells = array(
-            $this->objectMakeLink(),
-            "<a href=\"$this->sWebpage\">$this->sWebpage</a>",
-            array(sizeof($this->aApplicationsIds), "align=\"right\""));
-
         $bDeleteLink = sizeof($this->aApplicationsIds) ? FALSE : TRUE;
 
-        $oTableRow = new TableRow($aCells);
-        $oTableRow->SetRowHasDeleteLink($bDeleteLink);
+        // create the html table row
+        $oTableRow = new TableRow();
+        $oTableRow->AddTextCell($this->objectMakeLink());
 
-        return $oTableRow;
+        $oTableCell = new TableCell($this->sWebpage);
+        $oTableCell->SetCellLink($this->sWebpage);
+        $oTableRow->AddCell($oTableCell);
+
+        $oTableCell = new TableCell(sizeof($this->aApplicationsIds));
+        $oTableCell->SetAlign("right");
+        $oTableRow->AddCell($oTableCell);
+
+        // create the object manager specific row
+        $oOMTableRow = new OMTableRow($oTableRow);
+        $oOMTableRow->SetRowHasDeleteLink($bDeleteLink);
+
+        return $oOMTableRow;
     }
 
     function canEdit()
@@ -270,8 +302,10 @@ class Vendor {
 
         echo '<br />',"\n";
         if ($this->sWebpage)
+        {
             echo 'Vendor URL:  <a href="'.$this->sWebpage.'">'.
                  $this->sWebpage.'</a> <br />',"\n";
+        }
 
 
         if($this->aApplicationsIds)

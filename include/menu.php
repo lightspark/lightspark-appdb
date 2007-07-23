@@ -39,19 +39,32 @@ class htmlmenu {
     /* add a table row */
     function add($sName, $shUrl = null, $sAlign = "left")
     {
+      $oTableRow = new TableRow();
+
         if($shUrl)
         {
-            // we have a valid url, make the entire table row clickable and provide
-            // some highlighting for visual feedback
-            html_tr_highlight_clickable($shUrl, "sideMenu", "#e0e6ff", "#ffffff");
-            echo "<td width='100%' align=$sAlign><span class=MenuItem>&nbsp;<u>".
-                    "<a href=\"$shUrl\">$sName</a></u></span></td>";
-            echo "</tr>\n";
+            $oTableCell = new TableCell("<span class=MenuItem>&nbsp;<u>".
+                                        "<a href=\"$shUrl\">$sName</a></u></span>");
+
+            $oHighlightColor = new Color(0xe0, 0xe6, 0xff);
+            $oInactiveColor = new Color(0xff, 0xff, 0xff);
+            $oTableRowHighlight = new TableRowHighlight($oHighlightColor, $oInactiveColor);
+
+            $oTableRowClick = new TableRowClick($shUrl);
+            $oTableRowClick->SetHighlight($oTableRowHighlight);
+
+            $oTableRow->SetRowClick($oTableRowClick);
         } else
         {
-            echo "  <tr class=sideMenu><td width='100%' align=$sAlign><span ".
-                    "class=menuItem>&nbsp;$sName</span></td></tr>\n";
+          $oTableCell = new TableCell("<span class=menuItem>&nbsp;$sName</span></td></tr>");
         }
+        $oTableCell->SetAlign($sAlign);
+        $oTableCell->SetWidth("100%");
+
+        $oTableRow->SetClass("sidemenu");
+        $oTableRow->AddCell($oTableCell);
+
+        echo $oTableRow->GetString();
     }
 
     function addmisc($sStuff, $sAlign = "left")

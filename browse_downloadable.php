@@ -108,29 +108,53 @@ if(!$sLicense)
 if($hResult && mysql_num_rows($hResult))
 {
     echo html_frame_start("", "90%");
-    echo html_table_begin("width=\"100%\" align=\"center\"");
-    echo html_tr(array(
-        "<b>Name</b>",
-        "<b>Description</b>"),
-        "color4");
+    
+    $oTable = new Table();
+    $oTable->SetWidth("100%");
+    $oTable->SetAlign("center");
 
-    for($i = 1; $oRow = mysql_fetch_object($hResult); $i++)
+    $oTableRow = new TableRow();
+    $oTableCell = new TableCell("Name");
+    $oTableCell->SetBold(true);
+    $oTableRow->AddCell($oTableCell);
+    $oTableCell = new TableCell("Description");
+    $oTableCell->SetBold(true);
+    $oTableRow->AddCell($oTableCell);
+
+    $oTableRow->SetClass("color4");
+    $oTable->AddRow($oTableRow);
+
+    for($iIndex = 1; $oRow = mysql_fetch_object($hResult); $iIndex++)
     {
         $oVersion = new version($oRow->versionId);
-        echo html_tr_highlight_clickable(
-            $oVersion->objectMakeUrl(),
-            ($i % 2) ? "color1" : "color0",
-            ($i % 2) ? "color1" : "color0",
-            ($i % 2) ? "color1" : "color0");
-        echo "<td>".version::fullNameLink($oVersion->iVersionId)."</td>\n";
-        echo "<td>$oRow->description</td>\n";
-        echo "</tr>\n";
+
+        $oTableRow = new TableRow();
+        if($iIndex % 2)
+          $sColor = "color1";
+        else
+          $sColor = "color0";
+
+        $oTableRow->SetClass($sColor);
+
+        $oTableRowHighlight = GetStandardRowHighlight($iIndex);
+
+        $oTableRowClick = new TableRowClick($oVersion->objectMakeUrl());
+        $oTableRowClick->SetHighlight($oTableRowHighlight);
+
+        $oTableRow->SetRowClick($oTableRowClick);
+
+        $oTableRow->AddCell(new TableCell(version::fullNameLink($oVersion->iVersionId)));
+        $oTableRow->AddCell(new TableCell($oRow->description));
+        $oTable->AddRow($oTableRow);
     }
 
-    echo html_table_end();
+    echo $oTable->GetString();
+
     echo html_frame_end("&nbsp;");
 }
 
 echo "</div>\n";
+
+apidb_footer();
 
 ?>

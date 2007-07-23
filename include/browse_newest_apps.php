@@ -68,15 +68,21 @@ class browse_newest_apps
   function objectGetTableRow()
   {
     $oApp = new application($this->iAppId);
-    $aCells = array(
-                    array(print_short_date(mysqltimestamp_to_unixtimestamp($oApp->sSubmitTime)),
-                          "width=\"20%\""),
-                    $oApp->objectMakeLink(),
-                    util_trim_description($oApp->sDescription));
 
+    $oTableRow = new TableRow();
 
-    $oTableRow = new TableRow($aCells);
-    return $oTableRow;
+    $oTableCell = new TableCell(print_short_date(mysqltimestamp_to_unixtimestamp($oApp->sSubmitTime)));
+    $oTableCell->SetWidth("20%");
+    $oTableRow->AddCell($oTableCell);
+    $oTableRow->AddTextCell($oApp->objectMakeLink());
+    $oTableRow->AddTextCell(util_trim_description($oApp->sDescription));
+
+    // make the row clickable
+    $oTableRowClick = new TableRowClick($oApp->objectMakeUrl());
+    $oTableRow->SetRowClick($oTableRowClick);
+
+    $oOMTableRow = new OMTableRow($oTableRow);
+    return $oOMTableRow;
   }
 
   function objectGetItemsPerPage($bQueued = false)

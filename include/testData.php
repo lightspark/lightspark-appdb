@@ -436,7 +436,7 @@ class testData{
     }
 
     // Show the Test results for a application version
-    function ShowVersionsTestingTable($link, $iDisplayLimit)
+    function ShowVersionsTestingTable($sLink, $iDisplayLimit)
     {
         global $aClean;
 
@@ -467,18 +467,27 @@ class testData{
         echo '<div class="info_container">',"\n";
         echo '<div class="title_class">Test Results</div>',"\n";
         echo '<div class="info_contents">',"\n";
-        echo '<table width="100%" border="1" class="historyTable">',"\n";
-        echo '<thead class="historyHeader">',"\n";
-        echo '<tr>',"\n";
-        echo '<td></td>',"\n";
-        echo '<td>Distribution</td>',"\n";
-        echo '<td>Test date</td>',"\n";
-        echo '<td>Wine version</td>',"\n";
-        echo '<td>Installs?</td>',"\n";
-        echo '<td>Runs?</td>',"\n";
-        echo '<td>Rating</td>',"\n";
-        echo '<td>Submitter</td>',"\n";
-        echo '</tr></thead>',"\n";
+
+        // create the table
+        $oTable = new Table();
+        $oTable->SetClass("historyTable");
+        $oTable->SetBorder(1);
+        $oTable->SetWidth("100%");
+
+        // setup the table header
+        $oTableRowHeader = new TableRow();
+        $oTableRowHeader->SetClass("historyHeader");
+        $oTableRowHeader->AddTextCell("");
+        $oTableRowHeader->AddTextCell("Distribution");
+        $oTableRowHeader->AddTextCell("Test date");
+        $oTableRowHeader->AddTextCell("Wine version");
+        $oTableRowHeader->AddTextCell("Installs?");
+        $oTableRowHeader->AddTextCell("Runs?");
+        $oTableRowHeader->AddTextCell("Rating");
+        $oTableRowHeader->AddTextCell("Submitter");
+        $oTable->SetHeader($oTableRowHeader);
+
+        $iIndex = 0;
         while($oRow = mysql_fetch_object($hResult))
         {
             $oTest = new testData($oRow->testingId);
@@ -488,46 +497,73 @@ class testData{
             $oDistribution = new distribution($oTest->iDistributionId);
             $bgcolor = $oTest->sTestedRating;
 
+            // initialize the array ech time we loop
+            $oTableRowClick = null;
+
+            $oTableRow = new TableRow();
+
             /* if the test we are displaying is this test then */
             /* mark it as the current test */
             if ($oTest->iTestingId == $this->iTestingId)
             {
-                echo '<tr class='.$bgcolor.'>',"\n";
-                echo '    <td align="center"><b>Current</b></td>',"\n";
+              $sTRClass = $bgcolor;
+
+              $oTableCell = new TableCell("<b>Current</b>");
+              $oTableCell->SetAlign("center");
             } else /* make all non-current rows clickable so clicking on them selects the test as current */
             {
-                html_tr_highlight_clickable($link.$oTest->iTestingId, $bgcolor, "", "color2", "underline"); 
-                echo '    <td align="center">[<a href="'.$link.$oTest->iTestingId;
+              $sTRClass = $bgcolor;
 
-                if(is_string($sShowAll))
-                    echo '&sShowAll='.$sShowAll.'">Show</a>]</td>',"\n";
-                else
-                    echo '">Show</a>]</td>',"\n";
+              $oInactiveColor = new color();
+              $oInactiveColor->SetColorByName($oTest->sTestedRating);
+
+              $oHighlightColor = GetHighlightColorFromInactiveColor($oInactiveColor);
+
+              $oTableRowHighlight = new TableRowHighlight($oHighlightColor, $oInactiveColor);
+
+              $sUrl = $sLink.$oTest->iTestingId;
+
+              $oTableRowClick = new TableRowClick($sUrl);
+              $oTableRowClick->SetHighlight($oTableRowHighlight);
+
+              // add the table element indicating that the user can show the row by clicking on it
+              $oTableCell = new TableCell("Show");
+              $oTableCell->SetCellLink($sUrl);
+              $oTableCell->SetAlign("center");
             }
 
-            echo '    <td>',"\n";
-            echo $oDistribution->objectMakeLink()."\n";
-            echo '    </td>',"\n";
-            echo '    <td>'.date("M d Y", mysqldatetime_to_unixtimestamp($oTest->sTestedDate)).'</td>',"\n";
-            echo '    <td>'.$oTest->sTestedRelease.'&nbsp</td>',"\n";
-            echo '    <td>'.$oTest->sInstalls.'&nbsp</td>',"\n";
-            echo '    <td>'.$oTest->sRuns.'&nbsp</td>',"\n";
-            echo '    <td>'.$oTest->sTestedRating.'&nbsp</td>',"\n";
-            echo '    <td>'.$oSubmitter->objectMakeLink().'&nbsp</td>',"\n";
+            $oTableRow->AddCell($oTableCell);
+            $oTableRow->SetClass($sTRClass);
+
+            $oTableRow->AddTextCell($oDistribution->objectMakeLink());
+            $oTableRow->AddTextCell(date("M d Y", mysqldatetime_to_unixtimestamp($oTest->sTestedDate)));
+            $oTableRow->AddTextCell($oTest->sTestedRelease.'&nbsp');
+            $oTableRow->AddTextCell($oTest->sInstalls.'&nbsp');
+            $oTableRow->AddTextCell($oTest->sRuns.'&nbsp');
+            $oTableRow->AddTextCell($oTest->sTestedRating.'&nbsp');
+            $oTableRow->AddTextCell($oSubmitter->objectMakeLink().'&nbsp');
             if ($_SESSION['current']->hasAppVersionModifyPermission($oVersion))
             {
                 $oObject = new objectManager("testData");
-                echo '<td><a href="'.$oObject->makeUrl("edit", $oTest->iTestingId,
-                        "Edit Test Results").'">',"\n";
-                echo 'Edit</a> &nbsp; ',"\n";
-                echo '<a href="objectManager.php?sClass=testData&bIsQueue=false&sAction='.
-                        'delete&iId='.$oTest->iTestingId.'&sTitle=Delete+Test+Results'.
-                        '">Delete</a></td>',"\n";
+                $oTableRow->AddTextCell('<a href="'.$oObject->makeUrl("edit", $oTest->iTestingId,
+                                        "Edit Test Results").'">'.
+                                        'Edit</a> &nbsp; ',"\n".
+                                        '<a href="objectManager.php?sClass=testData&bIsQueue=false&sAction='.
+                                        'delete&iId='.$oTest->iTestingId.'&sTitle=Delete+Test+Results'.
+                                        '">Delete</a></td>',"\n");
             }
-            echo '</tr>',"\n";
+
+            // if this is a clickable row, set the appropriate property
+            if($oTableRowClick)
+              $oTableRow->SetRowClick($oTableRowClick);
+
+            // add the row to the table
+            $oTable->AddRow($oTableRow);
+
+            $iIndex++;
         }
 
-        echo '</table>',"\n";
+        echo $oTable->GetString();
 
         echo '<br />',"\n"; // put a space after the test results table and the button
 
@@ -973,20 +1009,21 @@ class testData{
         $hMaintainers = maintainer::getMaintainersForAppIdVersionId(null, $this->iVersionId);
         $bHasMaintainer = (mysql_num_rows($hMaintainers) == 0) ? false : true;
 
-        $aCells = array(
-                print_date(mysqltimestamp_to_unixtimestamp($this->sSubmitTime)),
-                $oUser->objectMakeLink(),
-                $oApp->objectMakeLink(),
-                $oVersion->objectMakeLink(),
-                $this->sTestedRelease,
-                ($bHasMaintainer ? "YES" : "no"),
-                $this->sTestedRating);
+        $oTableRow = new TableRow();
+        $oTableRow->AddCell(new TableCell(print_date(mysqltimestamp_to_unixtimestamp($this->sSubmitTime))));
+        $oTableRow->AddCell(new TableCell($oUser->objectMakeLink()));
+        $oTableRow->AddCell(new TableCell($oApp->objectMakeLink()));
+        $oTableRow->AddCell(new TableCell($oVersion->objectMakeLink()));
+        $oTableRow->AddCell(new TableCell($this->sTestedRelease));
+        $oTableRow->AddCell(new TableCell($bHasMaintainer ? "YES" : "no"));
+        $oTableRow->AddCell(new TableCell($this->sTestedRating));
 
-        $oTableRow = new TableRow($aCells);
         $oTableRow->SetStyle($this->sTestedRating);
-        $oTableRow->SetRowHasDeleteLink(true);
 
-        return $oTableRow;
+        $oOMTableRow = new OMTableRow($oTableRow);
+        $oOMTableRow->SetRowHasDeleteLink(true);
+
+        return $oOMTableRow;
     }
 
     function canEdit()

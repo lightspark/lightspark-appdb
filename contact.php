@@ -46,25 +46,40 @@ if(!$aClean['sSubmit'])
     }
 
     echo "<p>E-mail $oRecipient->sRealname.</p>";
-    echo html_table_begin("width\"100%\" border=\"0\" cellpadding=\"2\"".
-    "cellspacing=\"2\"");
-    echo html_tr(array(
-        array("Subject", ""),
-        "<input type=\"text\" name=\"sSubject\" size=\"71\" />"),
-        "color4");
-    echo html_tr(array(
-        array("Message", "valign=\"top\""),
-        "<textarea name=\"sMessage\" rows=\"15\" cols=\"60\"></textarea>"),
-        "color4");
-    echo html_tr(array(
-        "",
-        "<input type=\"submit\" value=\"Submit\" name=\"sSubmit\" />")
-        );
+    
+    $oTable = new Table();
+    $oTable->SetWidth("100%");
+    $oTable->SetBorder(0);
+    $oTable->SetCellPadding(2);
+    $oTable->SetCellSpacing(2);
+    
+    $oTableRow = new TableRow();
+    $oTableRow->SetClass("color4");
+    $oTableRow->AddTextCell("Subject");
+    $oTableCell = new TableCell("<input type=\"text\" name=\"sSubject\" size=\"71\" />");
+    $oTableRow->AddCell($oTableCell);
+    $oTable->AddRow($oTableRow);
+
+    $oTableRow = new TableRow();
+    $oTableRow->SetClass("color4");
+    $oTableCell = new TableCell("Message");
+    $oTableCell->SetValign("top");
+    $oTableRow->AddCell($oTableCell);
+    $oTableCell = new TableCell("<textarea name=\"sMessage\" rows=\"15\" cols=\"60\"></textarea>");
+    $oTableRow->AddCell($oTableCell);
+    $oTable->AddRow($oTableRow);
+
+    $oTableRow = new TableRow();
+    $oTableRow->AddTextCell("");
+    $oTableRow->AddTextCell("<input type=\"submit\" value=\"Submit\" name=\"sSubmit\" />");
+    $oTable->AddRow($oTableRow);
+
+    // output the table
+    echo $oTable->GetString();
 
     echo "<input type=\"hidden\" name=\"iRecipientId\" ".
     "value=\"$oRecipient->iUserId\" />";
 
-    echo html_table_end();
     echo "</form>\n";
 
     echo html_frame_end("&nbsp;");

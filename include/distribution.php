@@ -455,17 +455,24 @@ class distribution {
 
     function objectGetTableRow()
     {
-        $aCells = array(
-             $this->objectMakeLink(),
-             "<a href=\"$this->sUrl\">$this->sUrl</a>",
-             array(sizeof($this->aTestingIds), "align=\"right\""));
+        $oTableRow = new TableRow();
+
+        $oTableRow->AddTextCell($this->objectMakeLink());
+
+        $oTableCell = new TableCell("$this->sUrl");
+        $oTableCell->SetCellLink($this->sUrl);
+        $oTableRow->AddCell($oTableCell);
+
+        $oTableCell = new TableCell(sizeof($this->aTestingIds));
+        $oTableCell->SetAlign("right");
+        $oTableRow->AddCell($oTableCell);
 
         // enable the 'delete' action if this distribution has no testing results
         $bDeleteLink = sizeof($this->aTestingIds) ? FALSE : TRUE;
 
-        $oTableRow = new TableRow($aCells);
-        $oTableRow->SetRowHasDeleteLink($bDeleteLink);
-        return $oTableRow;
+        $oOMTableRow = new OMTableRow($oTableRow);
+        $oOMTableRow->SetRowHasDeleteLink($bDeleteLink);
+        return $oOMTableRow;
     }
 
     // Whether the user has permission to edit distributions

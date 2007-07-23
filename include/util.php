@@ -157,8 +157,11 @@ function get_xml_tag ($file, $mode = null)
 // $sVarname - name of the selection array that this function will output
 //             this is the name to use to retrieve the selection on the form postback
 // $sSelectedValue - the currently selected entry
+// returns a string that contains the version list output
 function make_bugzilla_version_list($sVarname, $sSelectedValue)
 {
+    $sStr = "";
+
     $sTable = BUGZILLA_DB.".versions";
     $sWhere = "WHERE product_id=".BUGZILLA_PRODUCT_ID;
     $sQuery = "SELECT value FROM $sTable $sWhere";
@@ -198,18 +201,18 @@ function make_bugzilla_version_list($sVarname, $sSelectedValue)
 
 
     // build the selection array
-    echo "<select name='$sVarname'>\n";
-    echo "<option value=\"\">Choose ...</option>\n";
+    $sStr.= "<select name='$sVarname'>\n";
+    $sStr.= "<option value=\"\">Choose ...</option>\n";
     $bFoundSelectedValue = false;
     foreach($aVersions as $sKey => $sValue)
     {
       if($sValue == $sSelectedValue)
       {
-        echo "<option value=$sValue selected>$sValue\n";
+        $sStr.= "<option value=$sValue selected>$sValue\n";
         $bFoundSelectedValue = true;
       } else
       {
-        echo "<option value=$sValue>$sValue\n";
+        $sStr.= "<option value=$sValue>$sValue\n";
       }
     }
 
@@ -218,10 +221,12 @@ function make_bugzilla_version_list($sVarname, $sSelectedValue)
     // the version that is to be selected
     if(!$bFoundSelectedValue && $sSelectedValue)
     {
-      echo "<option value=$sSelectedValue selected>$sSelectedValue\n";
+      $sStr.= "<option value=$sSelectedValue selected>$sSelectedValue\n";
     }
 
-    echo "</select>\n";
+    $sStr.= "</select>\n";
+
+    return $sStr;
 }
 
 function make_maintainer_rating_list($varname, $cvalue)
@@ -280,12 +285,36 @@ function outputTopXRow($oRow)
     $oVersion = new Version($oRow->versionId);
     $oApp = new Application($oVersion->iAppId);
     $img = Screenshot::get_random_screenshot_img(null, $oRow->versionId, false); // image, disable extra formatting
-    html_tr_highlight_clickable($oVersion->objectMakeUrl(), "white", "#f0f6ff", "white");
-    echo '
-      <td class="app_name">'.version::fullNameLink($oVersion->iVersionId).'</td>
-      <td>'.util_trim_description($oApp->sDescription).'</td>
-      <td><center>'.$img.'</center></td>
-    </tr>';
+
+    // create the table row
+    $oTableRow = new TableRow();
+    $oTableRow->SetClass("white");
+
+    // create the cells that represent the row
+    $oTableCell = new TableCell(version::fullNameLink($oVersion->iVersionId));
+    $oTableCell->SetClass("app_name");
+    $oTableRow->AddCell($oTableCell);
+    $oTableRow->AddTextCell(util_trim_description($oApp->sDescription));
+    $oTableCell = new TableCell($img);
+    $oTableCell->SetStyle("text-align:center;");
+    $oTableRow->AddCell($oTableCell);
+
+    // create a new TableRowHighlight instance
+    $oHighlightColor = new color(0xf0, 0xf6, 0xff);
+    $oInactiveColor = new color();
+    $oInactiveColor->SetColorByName("White");
+    $oTableRowHighlight = new TableRowHighlight($oHighlightColor, $oInactiveColor);
+
+    // create a new TableRowclick
+    $oTableRowClick = new TableRowClick($oVersion->objectMakeUrl());
+    $oTableRowClick->SetHighlight($oTableRowHighlight);
+
+    // set the click property of the html table row
+    $oTableRow->SetRowClick($oTableRowClick);
+
+    // output the entire table row
+    echo $oTableRow->GetString();
+    echo "\n";
 }
 
 /* Output the rows for the Top-X tables on the main page */
@@ -950,34 +979,49 @@ class color
     $this->iBlue = $iBlue;
   }
 
-  function setColorByName($sColorName)
+  function SetColorByName($sColorName)
   {
-    switch($sColorName)
+    switch(strtolower($sColorName))
     {
-    case "Platinum":
+    case "platinum":
       $this->iRed = 0xEC;
       $this->iGreen = 0xEC;
       $this->iBlue = 0xEC;
       break;
-    case "Gold":
+    case "gold":
       $this->iRed = 0xFF;
       $this->iGreen = 0xF6;
       $this->iBlue = 0x00;
       break;
-    case "Silver":
+    case "silver":
       $this->iRed = 0xC0;
       $this->iGreen = 0xC0;
       $this->iBlue = 0xC0;
       break;
-    case "Bronze":
+    case "bronze":
       $this->iRed = 0xFC;
       $this->iGreen = 0xBA;
       $this->iBlue = 0x0A;
       break;
-    case "Garbage":
+    case "garbage":
       $this->iRed = 0x99;
       $this->iGreen = 0x96;
       $this->iBlue = 0x66;
+      break;
+    case "white":
+      $this->iRed = 0xff;
+      $this->iGreen = 0xff;
+      $this->iBlue = 0xff;
+      break;
+    case "color0":
+      $this->iRed = 0xe0;
+      $this->iGreen = 0xe0;
+      $this->iBlue = 0xe0;
+      break;
+    case "color1":
+      $this->iRed = 0xc0;
+      $this->iGreen = 0xc0;
+      $this->iBlue = 0xc0;
       break;
     default:
       break;
@@ -985,14 +1029,14 @@ class color
   }
 
   // convert the color value into a html rgb hex string
-  function getHexString()
+  function GetHexString()
   {
     return sprintf("#%02X%02X%02X", $this->iRed, $this->iGreen, $this->iBlue);
   }
 
   // add $iAmount to each color value, maxing out at 0xFF, the largest
   // color value allowed
-  function add($iAmount)
+  function Add($iAmount)
   {
     if($this->iRed + $iAmount > 0xFF)
       $this->iRed = 0xFF;
@@ -1009,6 +1053,6 @@ class color
     else
       $this->iBlue += $iAmount;
   }
-};
+}
 
 ?>

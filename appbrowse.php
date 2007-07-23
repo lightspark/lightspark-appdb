@@ -45,36 +45,57 @@ if($subs)
     echo html_frame_end();
     
     echo html_frame_start("","98%","",0);
-    echo "<table width='100%' border=0 cellpadding=3 cellspacing=1>\n\n";
-    
-    echo "<tr class=color4>\n";
-    echo "    <td>Sub Category</td>\n";
-    echo "    <td>Description</td>\n";
-    echo "    <td>No. Apps</td>\n";
-    echo "</tr>\n\n";
+
+    $oTable = new Table();
+    $oTable->SetWidth("100%");
+    $oTable->SetBorder(0);
+    $oTable->SetCellPadding(3);
+    $oTable->SetCellSpacing(1);
+
+    $oTableRow = new TableRow();
+    $oTableRow->SetClass("color4");
+    $oTableRow->AddTextCell("Sub Category");
+    $oTableRow->AddTextCell("Description");
+    $oTableRow->AddTextCell("No. Apps");
+    $oTable->SetHeader($oTableRow);
     
     while(list($i,$iSubcatId) = each($subs))
     {
         $oSubCat= new Category($iSubcatId);
 
         //set row color
-        $bgcolor = ($i % 2) ? "color0" : "color1"; 
-	
+        $sColor = ($i % 2) ? "color0" : "color1"; 
+
+        $oTableRowHighlight = GetStandardRowHighlight($i);
+
+        $sUrl = "appbrowse.php?iCatId=$iSubcatId";
+
+        $oTableRowClick = new TableRowClick($sUrl);
+        $oTableRowClick->SetHighlight($oTableRowHighlight);
+
         //get number of apps in this sub-category
-        $appcount = $oSubCat->getApplicationCount();
+        $iAppcount = $oSubCat->getApplicationCount();
 
         //format desc
-        $desc = substr(stripslashes($oSubCat->sDescription),0,70);
+        $sDesc = substr(stripslashes($oSubCat->sDescription),0,70);
 
         //display row
-        echo "<tr class=$bgcolor>\n";
-        echo "    <td><a href='appbrowse.php?iCatId=$iSubcatId'>".$oSubCat->sName."</a></td>\n";
-        echo "    <td>$desc &nbsp;</td>\n";
-        echo "    <td>$appcount &nbsp;</td>\n";
-        echo "</tr>\n\n";
+        $oTableRow = new TableRow();
+        $oTableRow->SetClass($sColor);
+        $oTableRow->SetRowClick($oTableRowClick);
+
+        $oTableCell = new TableCell($oSubCat->sName);
+        $oTableCell->SetCellLink($sUrl);
+        $oTableRow->AddCell($oTableCell);
+        $oTableRow->AddTextCell("$sDesc &nbsp;");
+        $oTableRow->AddTextCell("$iAppcount &nbsp;");
+
+        $oTable->AddRow($oTableRow);
     }
     
-    echo "</table>\n\n";
+    // output the table
+    echo $oTable->GetString();
+
     echo html_frame_end("$c categories");
 }
 
@@ -89,33 +110,52 @@ if($apps)
     echo html_frame_end();
     
     echo html_frame_start("","98%","",0);
-    echo "<table width='100%' border=0 cellpadding=3 cellspacing=1>\n\n";
-    
-    echo "<tr class=color4>\n";
-    echo "    <td>Application Name</td>\n";
-    echo "    <td>Description</td>\n";
-    echo "    <td>No. Versions</td>\n";
-    echo "</tr>\n\n";
+
+    $oTable = new Table();
+    $oTable->SetWidth("100%");
+    $oTable->SetBorder(0);
+    $oTable->SetCellPadding(3);
+    $oTable->SetCellSpacing(1);
+
+    $oTableRow = new TableRow();
+    $oTableRow->SetClass("color4");
+    $oTableRow->AddTextCell("Application name");
+    $oTableRow->AddTextCell("Description");
+    $oTableRow->AddTextCell("No. Versions");
+
+    $oTable->SetHeader($oTableRow);
 	    
     while(list($i, $iAppId) = each($apps))
     {
         $oApp = new Application($iAppId);
 
         //set row color
-        $bgcolor = ($i % 2) ? "color0" : "color1";
+        $sColor = ($i % 2) ? "color0" : "color1";
+
+        $oTableRowHighlight = GetStandardRowHighlight($i);
+
+        $sUrl = $oApp->objectMakeUrl();
+
+        $oTableRowClick = new TableRowClick($sUrl);
+        $oTableRowClick->SetHighlight($oTableRowHighlight);
         
         //format desc
-        $desc = util_trim_description($oApp->sDescription);
+        $sDesc = util_trim_description($oApp->sDescription);
 	
         //display row
-        echo "<tr class=$bgcolor>\n";
-        echo "    <td>".$oApp->objectMakeLink()."</td>\n";
-        echo "    <td>$desc &nbsp;</td>\n";
-        echo "    <td>".sizeof($oApp->aVersionsIds)."</td>\n";
-        echo "</tr>\n\n";
+        $oTableRow = new TableRow();
+        $oTableRow->SetRowClick($oTableRowClick);
+        $oTableRow->SetClass($sColor);
+        $oTableRow->AddTextCell($oApp->objectMakeLink());
+        $oTableRow->AddTextCell("$sDesc &nbsp;");
+        $oTableRow->AddTextCell(sizeof($oApp->aVersionsIds));
+
+        $oTable->AddRow($oTableRow);
     }
     
-    echo "</table>\n\n";
+    // output table
+    echo $oTable->GetString();
+
     echo html_frame_end("$c applications in this category");
 }
 

@@ -162,21 +162,47 @@ if(empty($aClean['iCategoryId']))
 if($hResult)
 {
     echo html_frame_start("", "90%", '', 0);
-    echo html_table_begin("width='100%' align=center");
-    echo "<tr class=color4><td><font color=white>Application Name</font></td>\n";
-    echo "<td><font color=white>Votes</font></td></tr>\n";
+    
+    $oTable = new Table();
+    $oTable->SetWidth("100%");
+    $oTable->SetAlign("center");
+
+    $oTableRow = new TableRow();
+    $oTableRow->SetClass("color4");
+    $oTableRow->AddTextCell("<font color=white>Application Name</font>");
+    $oTableRow->AddTextCell("<font color=white>Votes</font>");
+    $oTable->AddRow($oTableRow);
 
     $c = 1;
-    while($row = mysql_fetch_object($hResult))
+    while($oRow = mysql_fetch_object($hResult))
     {
-        $bgcolor = ($c % 2) ? "color0" : "color1";
-        $link = version::fullNameLink($row->versionId);
-        echo "<tr class=$bgcolor><td width='90%'>$c. $link </td> <td> $row->count ".
-            "</td></tr>\n";
+        $sColor = ($c % 2) ? "color0" : "color1";
+
+        $oTableRowHighlight = GetStandardRowHighlight($c);
+
+        $shLink = version::fullNameLink($oRow->versionId);
+
+        $oVersion = new Version($oRow->versionId);
+
+        $oTableRowClick = new TableRowClick($oVersion->objectMakeUrl());
+        $oTableRowClick->SetHighlight($oTableRowHighlight);
+
+        $oTableRow = new TableRow();
+        $oTableRow->SetRowClick($oTableRowClick);
+        $oTableRow->SetClass($sColor);
+        $oTableCell = new TableCell("$c.".$shLink);
+        $oTableCell->SetWidth("90%");
+        $oTableRow->AddCell($oTableCell);
+        $oTableRow->AddTextCell($oRow->count);
+
+        $oTable->AddRow($oTableRow);
+
         $c++;
     }
 
-    echo html_table_end();
+    // output the table
+    echo $oTable->GetString();
+
     echo html_frame_end();
 
     /* Make sure we tell the user here are no apps, otherwise they might */

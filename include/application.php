@@ -524,7 +524,7 @@ class Application {
         // app Category
         $w = new TableVE("view");
         echo '<tr valign=top><td class="color0"><b>Category</b></td><td>',"\n";
-        $w->make_option_list("iAppCatId", $this->iCatId,"appCategory","catId","catName");
+        echo $w->make_option_list("iAppCatId", $this->iCatId,"appCategory","catId","catName");
         echo '</td></tr>',"\n";
 
         // vendor name
@@ -534,9 +534,9 @@ class Application {
         // alt vendor
         $x = new TableVE("view");
         echo '<tr valign=top><td class="color0">&nbsp;</td><td>',"\n";
-        $x->make_option_list("iAppVendorId",
-                  $this->iVendorId,"vendor","vendorId","vendorName",
-                  array("vendor.queued", "false"));
+        echo $x->make_option_list("iAppVendorId",
+                                  $this->iVendorId,"vendor","vendorId","vendorName",
+                                  array("vendor.queued", "false"));
         echo '</td></tr>',"\n";
 
         // url
@@ -772,29 +772,35 @@ class Application {
         if(!$hResult || !mysql_num_rows($hResult))
             return false;
 
-        $sResult = html_table_begin("width=\"100%\" align=\"center\"");
-        $sResult .= html_tr(array(
-            "Application",
-            "Description",
-            "Vendor",
-            "Submission Date"),
-            "color4");
+        $oTable = new Table();
+        $oTable->SetWidth("100%");
+        $oTable->SetAlign("center");
+
+        $oTableRow = new TableRow();
+        $oTableRow->AddTextCell("Application");
+        $oTableRow->AddTextCell("Description");
+        $oTableRow->AddTextCell("Vendor");
+        $oTableRow->AddTextCell("Submission Date");
+        $oTableRow->SetClass("color4");
+        $oTable->SetHeader($oTableRow);
 
         for($i = 1; $oRow = mysql_fetch_object($hResult); $i++)
         {
+          
             $oVendor = new vendor($oRow->vendorId);
             $oApp = new application($oRow->appId);
-            $sResult .= html_tr(array(
-                $oApp->objectMakeLink(),
-                $oRow->description,
-                $oVendor->objectMakeLink(),
-                print_date(mysqltimestamp_to_unixtimestamp($oRow->submitTime))),
-                ($i % 2) ? "color0" : "color1");
+            
+            $oTableRow = new TableRow();
+            $oTableRow->AddTextCell($oApp->objectMakeLink());
+            $oTableRow->AddTextCell($oRow->description);
+            $oTableRow->AddTextCell($oVendor->objectMakeLink());
+            $oTableRow->AddTextCell(print_date(mysqltimestamp_to_unixtimestamp($oRow->submitTime)));
+            $oTableRow->SetClass(($i % 2) ? "color0" : "color1");
+
+            $oTable->AddRow($oTableRow);
         }
 
-        $sResult .= html_table_end();
-
-        return $sResult;
+        return $oTable->GetString();
     }
 
     function objectMakeUrl()
@@ -858,14 +864,14 @@ class Application {
         else
             $sVendor = $oVendor->objectMakeLink();
 
-        $aCells = array(
-                print_date(mysqltimestamp_to_unixtimestamp($this->sSubmitTime)),
-                $oUser->objectMakeLink(),
-                $sVendor,
-                $this->sName);
+        $oTableRow = new TableRow();
+        $oTableRow->AddTextCell(print_date(mysqltimestamp_to_unixtimestamp($this->sSubmitTime)));
+        $oTableRow->AddTextCell($oUser->objectMakeLink());
+        $oTableRow->AddTextCell($sVendor);
+        $oTableRow->AddTextCell($this->sName);
 
-        $oTableRow = new TableRow($aCells);
-        return $oTableRow;
+        $oOMTableRow = new OMTableRow($oTableRow);
+        return $oOMTableRow;
     }
 
     function canEdit()
@@ -942,6 +948,7 @@ class Application {
             echo " messages in its forums or become a maintainer to help others trying to run the application.</p>";
         }
     }
+
     function objectGetEntriesCount($bQueued, $bRejected)
     {
         $sQueued = objectManager::getQueueString($bQueued, $bRejected);

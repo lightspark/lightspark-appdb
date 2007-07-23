@@ -630,15 +630,16 @@ class maintainer
         $oApp = new Application($this->iAppId);
         $oVersion = new Version($this->iVersionId);
 
-        $aCells = array(
-            print_date(mysqldatetime_to_unixtimestamp($this->aSubmitTime)),
-            $oApp->objectMakeLink(),
-            ($this->bSuperMaintainer) ? "N/A" : $oVersion->objectMakeLink(),
-            ($this->bSuperMaintainer) ? "Yes" : "No",
-            $oUser->objectMakeLink());
+        $oTableRow = new TableRow();
 
-        $oTableRow = new TableRow($aCells);
-        return $oTableRow;
+        $oTableRow->AddTextCell(print_date(mysqldatetime_to_unixtimestamp($this->aSubmitTime)));
+        $oTableRow->AddTextCell($oApp->objectMakeLink());
+        $oTableRow->AddTextCell(($this->bSuperMaintainer) ? "N/A" : $oVersion->objectMakeLink());
+        $oTableRow->AddTextCell(($this->bSuperMaintainer) ? "Yes" : "No");
+        $oTableRow->AddTextCell($oUser->objectMakeLink());
+
+        $oOMTableRow = new OMTableRow($oTableRow);
+        return $oOMTableRow;
     }
 
     function ObjectDisplayQueueProcessingHelp()

@@ -481,7 +481,6 @@ class version {
         }
     }
 
- 
     function SendNotificationMail($sAction="add",$sMsg=null)
     {
         global $aClean;
@@ -586,9 +585,15 @@ class version {
     {
         HtmlAreaLoaderScript(array("version_editor"));
         echo html_frame_start("Version Form", "90%", "", 0);
-        echo "<table class='color0' width='100%' border=0 cellpadding=2 cellspacing=0>\n";
 
         echo '<input type="hidden" name="iVersionId" value="'.$this->iVersionId.'" />';
+
+        $oTable = new Table();
+        $oTable->SetClass("color0");
+        $oTable->SetWidth("100%");
+        $oTable->SetBorder(0);
+        $oTable->SetCellPadding(2);
+        $oTable->SetCellSpacing(0);
 
         /* Fill in appId value */
         global $aClean;
@@ -599,45 +604,103 @@ class version {
         {
             // app parent
             $x = new TableVE("view");
-            echo '<tr valign=top><td class=color0><b>Application</b></td>', "\n";
-            echo '<td>',"\n";
-            $x->make_option_list("iAppId",$this->iAppId,"appFamily","appId","appName");
-            echo '</td></tr>',"\n";
+            $oTableRow = new TableRow();
+            $oTableRow->SetValign("top");
+
+            $sOptionList = $x->make_option_list("iAppId", $this->iAppId,
+                                                "appFamily", "appId", "appName");
+            $oTableCell = new TableCell("Application".$sOptionList);
+            $oTableCell->SetBold(true);
+            $oTableCell->SetClass("color0");
+            
+            $oTableRow->AddCell($oTableCell);
+
+            $oTable->AddRow($oTableRow);
         } else
         {
             echo '<input type="hidden" name="iAppId" value="'.$this->iAppId.'" />';
         }
 
         // version name
-        echo '<tr valign=top><td class="color0"><b>Version name</b></td>',"\n";
-        echo '<td><input size="20" type="text" name="sVersionName" value="'.$this->sName.'"></td></tr>',"\n";
+        $oTableRow = new TableRow();
+        $oTableRow->SetValign("top");
+
+        $oTableCell = new TableCell("Version Name");
+        $oTableCell->SetBold(true);
+        $oTableCell->SetClass("color0");
+        $oTableRow->AddCell($oTableCell);
+
+        $oTableRow->AddTextCell('<input size="20" type="text" name="sVersionName" value="'.$this->sName.'">');
+        
+        $oTable->AddRow($oTableRow);
 
         // version license
-        echo html_tr(array(
-            array("<b>License</b>", "class=\"color0\""),
-            $this->makeLicenseList()));
+        $oTableCell = new TableCell("License");
+        $oTableCell->SetBold(true);
+        $oTableCell->SetClass("color0");
+        $oTableRow->AddCell($oTableCell);
+
+        $oTableRow->AddTextCell($this->makeLicenseList());
+
+        $oTable->AddRow($oTableRow);
 
         // version description
-        echo '<tr valign=top><td class=color0><b>Version description</b></td>',"\n";
-        echo '<td><p><textarea cols="80" rows="20" id="version_editor" name="shVersionDescription">',"\n";
+        $oTableRow = new TableRow();
+        $oTableRow->SetValign("top");
+        
+        $oTableCell = new TableCell("Version description");
+        $oTableCell->SetBold(true);
+        $oTableCell->SetClass("color0");
+        $oTableRow->AddCell($oTableCell);
 
-        echo $this->sDescription.'</textarea></p></td></tr>',"\n";
+        $oTableRow->AddTextCell('<p><textarea cols="80" rows="20" id="version_editor" name="shVersionDescription">'.
+                                $this->sDescription.'</textarea></p>');
 
-        echo '</table>',"\n";
+        $oTable->AddRow($oTableRow);
+
+        // output the table
+        echo $oTable->GetString();
 
         echo html_frame_end();
 
         if($this->sQueued == "false" && $this->iVersionId)
         {
             echo html_frame_start("Info", "90%", "", 0);
-            echo "<table border=0 cellpadding=2 cellspacing=0>\n";
-            echo '<tr><td class="color4">Rating</td><td class="color0">',"\n";
-            make_maintainer_rating_list("sMaintainerRating", $this->sTestedRating);
-            echo '</td></tr>',"\n";
-            echo '<tr><td class=color1>Release</td><td class=color0>',"\n";
-            make_bugzilla_version_list("sMaintainerRelease", $this->sTestedRelease);
-            echo '</td></tr>',"\n";
-            echo html_table_end();
+
+            $oTable = new Table();
+            $oTable->SetBorder(0);
+            $oTable->SetCellPadding(2);
+            $oTable->SetCellSpacing(0);
+
+            $oTableRow = new TableRow();
+            
+            $oTableCell = new TableCell("Rating");
+            $oTableCell->SetClass("color4");
+            $oTableRow->AddCell($oTableCell);
+
+            $oTableCell = new TableCell(make_maintainer_rating_list("sMaintainerRating",
+                                                                    $this->sTestedRating));
+            $oTableCell->SetClass("color0");
+            $oTableRow->AddCell($oTableCell);
+
+            
+            $oTableRow = new TableRow();
+            
+            $oTableCell = new TableCell("Release");
+            $oTableCell->SetClass("color1");
+            $oTableRow->AddCell($oTableCell);
+            
+
+            $oTableCell = new TableCell(make_bugzilla_version_list("sMaintainerRelease", $this->sTestedRelease));
+            $oTableCell->SetClass("color0");
+
+            $oTableRow->AddCell($oTableCell);
+            
+            $oTable->AddRow($oTableRow);
+
+            // output the table
+            echo $oTable->GetString();
+
             echo html_frame_end();
         } else
         {
@@ -1003,17 +1066,40 @@ class version {
         if ($aVersionsIds)
         {
             echo html_frame_start("","98%","",0);
-            echo "<table width=\"100%\" border=\"0\" cellpadding=\"3\" cellspacing=\"1\">\n\n";
 
-            echo "<tr class=color4>\n";
-            echo "    <td width=\"80\">Version</td>\n";
-            echo "    <td>Description</td>\n";
-            echo "    <td width=\"80\">Rating</td>\n";
-            echo "    <td width=\"80\">Wine version</td>\n";
-            echo "    <td width=\"80\">Test results</td>\n";
-            echo "    <td width=\"40\">Comments</td>\n";
-            echo "</tr>\n\n";
-      
+            $oTable = new Table();
+            $oTable->SetWidth("100%");
+            $oTable->SetBorder(0);
+            $oTable->SetCellPadding(3);
+            $oTable->SetCellSpacing(1);
+
+            $oTableRow = new TableRow();
+            $oTableRow->SetClass("color4");
+
+            $oTableCell = new TableCell("Version");
+            $oTableCell->SetWidth("80");
+            $oTableRow->AddCell($oTableCell);
+
+            $oTableRow->AddTextCell("Description");
+
+            $oTableCell = new TableCell("Rating");
+            $oTableCell->SetWidth("80");
+            $oTableRow->AddCell($oTableCell);
+
+            $oTableCell = new TableCell("Wine version");
+            $oTableCell->SetWidth("80");
+            $oTableRow->AddCell($oTableCell);
+
+            $oTableCell = new TableCell("Test results");
+            $oTableCell->SetWidth("80");
+            $oTableRow->AddCell($oTableCell);
+
+            $oTableCell = new TableCell("Comments");
+            $oTableCell->SetWidth("40");
+            $oTableRow->AddCell($oTableCell);
+
+            $oTable->SetHeader($oTableRow);
+
             $c = 0;
             foreach($aVersionsIds as $iVersionId)
             {
@@ -1023,54 +1109,60 @@ class version {
                     // set row color
                     $bgcolor = ($c % 2 == 0) ? "color0" : "color1";
 
+                    $oTableRowHighlight = null;
+
                     // if we have a valid tested rating
                     if($oVersion->sTestedRating && $oVersion->sTestedRating != "/")
                     {
                         $sRatingColor = "class=\"$oVersion->sTestedRating\"";
                         $sClass = $oVersion->sTestedRating;
 
-                        $oColor = new Color();
-                        $oColor->setColorByName($oVersion->sTestedRating);
-                        $sInactiveColor = $oColor->getHexString();
+                        $oInactiveColor = new Color();
+                        $oInactiveColor->setColorByName($oVersion->sTestedRating);
 
-                        // increase the brightness of the color to create the
-                        // value used for the highlight color
-                        $oColor->add(50);
-                        $sHighlightColor = $oColor->getHexString();
+                        $oHighlightColor = GetHighlightColorFromInactiveColor($oInactiveColor);
+
+                        $oTableRowHighlight = new TableRowHighlight($oHighlightColor, $oInactiveColor);
                     } else
                     {
                         $sRatingColor = "class=\"$bgcolor\"";
                         $sClass = $bgcolor;
 
-                        // convert color values to hex values for the row highlighting
-                        if($bgcolor == "color0")
-                        {
-                          $sHighlightColor = "#E0E0E0";
-                          $sInactiveColor = $sHighlightColor;
-                        } else
-                        {
-                          $sHighlightColor = "#C0C0C0";
-                          $sInactiveColor = $sHighlightColor;
-                        }
+                        $oTableRowHighlight = GetStandardRowHighlight($c);
                     }
 
                     //display row
-                    html_tr_highlight_clickable($oVersion->objectMakeUrl(),
-                                                $sClass, // class
-                                                $sHighlightColor, // highlight color
-                                                $sInactiveColor);// inactive color
-                    echo "    <td>".$oVersion->objectMakeLink()."</td>\n";
-                    echo "    <td>".util_trim_description($oVersion->sDescription)."</td>\n";
-                    echo "    <td align=center>".$oVersion->sTestedRating."</td>\n";
-                    echo "    <td align=center>".$oVersion->sTestedRelease."</td>\n";
-                    echo "    <td align=center>".testData::get_testdata_count_for_versionid($oVersion->iVersionId)."</td>\n";
-                    echo "    <td align=center>".Comment::get_comment_count_for_versionid($oVersion->iVersionId)."</td>\n";
-                    echo "</tr>\n\n";
+                    $oTableRowClick = new TableRowClick($oVersion->objectMakeUrl());
+                    $oTableRowClick->SetHighlight($oTableRowHighlight);
+
+                    $oTableRow = new TableRow();
+                    $oTableRow->SetRowClick($oTableRowClick); // make the row clickable
+                    $oTableRow->AddTextCell($oVersion->objectMakeLink());
+                    $oTableRow->SetClass($sClass);
+                    $oTableRow->AddTextCell(util_trim_description($oVersion->sDescription));
+
+                    $oTableCell = new TableCell($oVersion->sTestedRating);
+                    $oTableCell->SetAlign("center");
+                    $oTableRow->AddCell($oTableCell);
+
+                    $oTableCell = new TableCell(testData::get_testdata_count_for_versionid($oVersion->iVersionId));
+                    $oTableCell->SetAlign("center");
+                    $oTableRow->AddCell($oTableCell);
+
+                    $oTableCell = new TableCell(Comment::get_comment_count_for_versionid($oVersion->iVersionId));
+                    $oTableCell->SetAlign("center");
+                    $oTableRow->AddCell($oTableCell);
+
+                    // add the row to the table
+                    $oTable->AddRow($oTableRow);
 
                     $c++;   
                 }
             }
-            echo "</table>\n";
+
+            // output the table
+            echo $oTable->GetString();
+
             echo html_frame_end("Click the Version Name to view the details of that Version");
         }
     }
@@ -1103,25 +1195,33 @@ class version {
         if(!$hResult || !mysql_num_rows($hResult))
             return false;
 
-        $sResult = html_table_begin("width=\"100%\" align=\"center\"");
-        $sResult .= html_tr(array(
-            "Name",
-            "Description",
-            "Submission Date"),
-            "color4");
+        $oTable = new Table();
+        $oTable->SetWidth("100%");
+        $oTable->SetAlign("center");
+
+        // setup the table header
+        $oTableRow = new TableRow();
+        $oTableRow->AddTextCell("Name");
+        $oTableRow->AddTextCell("Description");
+        $oTableRow->AddTextCell("Submission Date");
+        $oTableRow->SetClass("color4");
+        $oTable->SetHeader($oTableRow);
 
         for($i = 1; $oRow = mysql_fetch_object($hResult); $i++)
-            $sResult .= html_tr(array(
-                version::fullNameLink($oRow->versionId),
-                $oRow->description,
-                print_date(mysqltimestamp_to_unixtimestamp($oRow->submitTime))),
-                ($i % 2) ? "color0" : "color1");
+        {
+          $oTableRow = new TableRow();
+          $oTableRow->AddTextCell(version::fullNameLink($oRow->versionId));
+          $oTableRow->AddTextCell($oRow->description);
+          $oTableRow->AddTextCell(print_date(mysqltimestamp_to_unixtimestamp($oRow->submitTime)));
+          $oTableRow->SetClass(($i % 2) ? "color0" : "color1");
 
-        $sResult .= html_table_end();
+          $oTable->AddRow($oTableRow);
+        }
 
-        return $sResult;
+        return $oTable->GetString();
     }
 
+    // returns a string containing the html for a selection list
     function makeLicenseList($sLicense = NULL)
     {
         if(!$sLicense)
@@ -1140,8 +1240,8 @@ class version {
             else
                 $sSelected = "";
 
-                $sReturn .= "<option value=\"$aLicense[$i]\"$sSelected>".
-                            "$aLicense[$i]</option>\n";
+            $sReturn .= "<option value=\"$aLicense[$i]\"$sSelected>".
+              "$aLicense[$i]</option>\n";
         }
 
         $sReturn .= "</select>\n";
@@ -1374,15 +1474,16 @@ class version {
         $oUser = new user($this->iSubmitterId);
         $oApp = new application($this->iAppId);
         $oVendor = new vendor($oApp->iVendorId);
-        $aCells = array(
-                print_date(mysqltimestamp_to_unixtimestamp($this->sSubmitTime)),
-                $oUser->objectMakeLink(),
-                $oVendor->objectMakeLink(),
-                $oApp->objectMakeLink(),
-                $this->sName);
 
-        $oTableRow = new TableRow($aCells);
-        return $oTableRow;
+        $oTableRow = new TableRow();
+        $oTableRow->AddTextCell(print_date(mysqltimestamp_to_unixtimestamp($this->sSubmitTime)));
+        $oTableRow->AddTextCell($oUser->objectMakeLink());
+        $oTableRow->AddTextCell($oVendor->objectMakeLink());
+        $oTableRow->AddTextCell($oApp->objectMakeLink());
+        $oTableRow->AddTextCell($this->sName);
+
+        $oOMTableRow = new OMTableRow($oTableRow);
+        return $oOMTableRow;
     }
 
     function objectDisplayQueueProcessingHelp()

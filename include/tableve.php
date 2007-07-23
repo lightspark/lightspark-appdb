@@ -171,8 +171,11 @@ class TableVE {
         echo html_frame_end();
     }
 
+    // returns a string that contains the option list
     function make_option_list($sVarname, $sCvalue, $sTable, $sIdField, $sNameField, $aWhere = null)
     {
+        $sStr = "";
+
         /* We do not allow direct insertion into of SQL code, so the WHERE clause is
            is accepted in an array form, where the first element is the variable
            and the second is the value it must be equal to */
@@ -182,20 +185,22 @@ class TableVE {
         $hResult = query_parameters("SELECT ?, ? FROM ? $sWhere ORDER BY '?'",
                                 $sIdField, $sNameField, $sTable, $sNameField);
         if(!$hResult)
-            return; // Oops
+            return $sStr; // Oops
 
-        echo "<select name='$sVarname'>\n";
-        echo "<option value=0>Choose ...</option>\n";
+        $sStr.= "<select name='$sVarname'>\n";
+        $sStr.= "<option value=0>Choose ...</option>\n";
         while(list($iId, $sName) = mysql_fetch_row($hResult))
         {
             if ($sName == "NONAME")
                 continue;
             if($iId == $sCvalue)
-                echo "<option value=$iId selected>$sName\n";
+                $sStr.= "<option value=$iId selected>$sName\n";
             else
-                echo "<option value=$iId>$sName\n";
+                $sStr.= "<option value=$iId>$sName\n";
         }
-        echo "</select>\n";
+        $sStr.= "</select>\n";
+
+        return $sStr;
     }
 
 
@@ -212,25 +217,25 @@ class TableVE {
 
         if($field->name == "appId" && $field->table != "appFamily")
         {
-            $this->make_option_list($varname, $value, "appFamily", "appId", "appName");
+            echo $this->make_option_list($varname, $value, "appFamily", "appId", "appName");
             return;
         }
 
         if($field->name == "vendorId" && $field->table != "vendor")
         {
-            $this->make_option_list($varname, $value, "vendor", "vendorId", "vendorName");
+            echo $this->make_option_list($varname, $value, "vendor", "vendorId", "vendorName");
             return;
         }
 
         if($field->name == "catId" && $field->table != "appCategory")
         {
-            $this->make_option_list($varname, $value, "appCategory", "catId", "catName");
+            echo $this->make_option_list($varname, $value, "appCategory", "catId", "catName");
             return;
         }
 
         if($field->name == "catParent")
         {
-            $this->make_option_list($varname, $value, "appCategory", "catId", "catName");
+            echo $this->make_option_list($varname, $value, "appCategory", "catId", "catName");
             return;
         }
 	
