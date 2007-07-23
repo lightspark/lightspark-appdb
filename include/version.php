@@ -635,6 +635,7 @@ class version {
         $oTable->AddRow($oTableRow);
 
         // version license
+        $oTableRow = new TableRow();
         $oTableCell = new TableCell("License");
         $oTableCell->SetBold(true);
         $oTableCell->SetClass("color0");
