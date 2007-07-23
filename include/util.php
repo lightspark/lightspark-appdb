@@ -466,15 +466,17 @@ function searchForApplication($search_words)
         }
     }
 
+    $search_words = str_replace(' ', '%', mysql_real_escape_string($search_words));
+
     /* base query */
     $sQuery = "SELECT *
            FROM appFamily, vendor
            WHERE appName != 'NONAME'
            AND appFamily.vendorId = vendor.vendorId
            AND appFamily.queued = 'false'
-           AND (appName LIKE '%".mysql_real_escape_string($search_words)."%'
-           OR keywords LIKE '%".mysql_real_escape_string($search_words)."%'";
-
+           AND (appName LIKE '%" . $search_words . "%'
+           OR keywords LIKE '%" . $search_words . "%'";
+    
     /* append to the query any vendors that we matched with */
     foreach($vendorIdArray as $key=>$value)
     {
