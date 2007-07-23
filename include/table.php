@@ -190,7 +190,7 @@ class TableRow
     var $aTableCells; // array that contains the cells for the table row
     var $sStyle; // CSS style to be used
     var $sClass; // CSS class to be used
-    var $sExtra; // extra things to put into the table row
+    var $sValign; // valign="$sValign" - if this variable is set
 
     var $oTableRowClick; // information about whether the table row is clickable etc
 
@@ -199,7 +199,7 @@ class TableRow
       $this->aTableCells = array();
       $this->sStyle = null;
       $this->sClass = null;
-      $this->sExtra = null;
+      $this->sValign = null;
       $this->oTableRowClick = null;
     }
 
@@ -233,6 +233,11 @@ class TableRow
       $this->sClass = $sClass;
     }
 
+    function SetValign($sValign)
+    {
+      $this->sValign = $sValign;
+    }
+
     function SetRowClick($oTableRowClick)
     {
       $this->oTableRowClick = $oTableRowClick;
@@ -251,8 +256,8 @@ class TableRow
       if($this->sStyle)
         $sStr.= " style=\"$this->sStyle\"";
 
-      if($this->sExtra)
-        $sStr.= " $this->sExtra";
+      if($this->sValign)
+        $sStr.= " valign=\"$this->sValign\"";
 
       if($this->oTableRowClick)
         $sStr.= " ".$this->oTableRowClick->GetString();
