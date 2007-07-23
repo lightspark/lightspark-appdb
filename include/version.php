@@ -1112,20 +1112,19 @@ class version {
                     $oTableRowHighlight = null;
 
                     // if we have a valid tested rating
-                    if($oVersion->sTestedRating && $oVersion->sTestedRating != "/")
+                    if($oVersion->sTestedRating && ($oVersion->sTestedRating != "/") &&
+                       ($oVersion->sTestedRating != " "))
                     {
-                        $sRatingColor = "class=\"$oVersion->sTestedRating\"";
                         $sClass = $oVersion->sTestedRating;
 
                         $oInactiveColor = new Color();
-                        $oInactiveColor->setColorByName($oVersion->sTestedRating);
+                        $oInactiveColor->SetColorByName($oVersion->sTestedRating);
 
                         $oHighlightColor = GetHighlightColorFromInactiveColor($oInactiveColor);
 
                         $oTableRowHighlight = new TableRowHighlight($oHighlightColor, $oInactiveColor);
                     } else
                     {
-                        $sRatingColor = "class=\"$bgcolor\"";
                         $sClass = $bgcolor;
 
                         $oTableRowHighlight = GetStandardRowHighlight($c);
