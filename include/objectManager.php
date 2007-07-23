@@ -153,7 +153,7 @@ class ObjectManager
             //TODO: we shouldn't access this method directly, should make an accessor for it
             if(!$this->oTableRow->oTableRow->sClass)
             {
-                $this->oTableRow->oTableRow->sClass = $sColor;
+                $this->oTableRow->oTableRow->SetClass($sColor);
             }
 
             // if this row is clickable, make it highlight appropirately

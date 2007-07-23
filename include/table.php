@@ -199,6 +199,7 @@ class TableRow
       $this->aTableCells = array();
       $this->sStyle = null;
       $this->sClass = null;
+      $this->sExtra = null;
       $this->oTableRowClick = null;
     }
 

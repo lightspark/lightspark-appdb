@@ -497,14 +497,17 @@ class appData
 
         $oApp = new Application($this->iAppId);
         $oUser = new User($this->iSubmitterId);
-        $aCells = array(
-                print_date(mysqltimestamp_to_unixtimestamp($this->sSubmitTime)),
-                $oUser->objectMakeLink(),
-                $oApp->objectMakeLink(),
-                $this->iVersionId ? $oVersion->objectMakeLink() : "N/A");
 
-        $oTableRow = new TableRow($aCells);
-        return $oTableRow;
+        $oTableRow = new TableRow();
+        $oTableRow->AddTextCell(print_date(mysqltimestamp_to_unixtimestamp($this->sSubmitTime)));
+        $oTableRow->AddTextCell($oUser->objectMakeLink());
+        $oTableRow->AddTextCell($oApp->objectMakeLink());
+        $oTableRow->AddTextCell($this->iVersionId ? $oVersion->objectMakeLink() : "N/A");
+
+        // create the object manager specific row
+        $oOMTableRow = new OMTableRow($oTableRow);
+
+        return $oOMTableRow;
     }
 
     function objectDisplayQueueProcessingHelp()
