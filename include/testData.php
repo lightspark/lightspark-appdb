@@ -860,6 +860,8 @@ class testData{
                             AND
                             appMaintainers.userId = '?'
                             AND
+                            appMaintainers.queued = 'false'
+                            AND
                             (
                                 (
                                     appMaintainers.superMaintainer = '1'
