@@ -667,9 +667,9 @@ function display_page_range($iCurrentPage=1, $iPageRange=1, $iTotalPages=1, $sLi
 
     if($iCurrentPage != 1)
     {
-        echo "<a href='".$sLinkurl."&iPage=1'>|&lt</a>&nbsp";
+        echo "<a href='".$sLinkurl."&iPage=1'>|&lt</a>&nbsp;";
         $iPreviousPage = $iCurrentPage - 1;
-        echo "<a href='".$sLinkurl."&iPage=$iPreviousPage'>&lt</a>&nbsp";
+        echo "<a href='".$sLinkurl."&iPage=$iPreviousPage'>&lt</a>&nbsp;";
     } else
     {
         echo "|&lt &lt ";
