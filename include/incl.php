@@ -264,8 +264,8 @@ function addmsg($text, $color = "black")
     if($color)
         $text = "<font color='$color'> $text </font>\n";
 
-    $sQuery = "INSERT INTO sessionMessages VALUES (null, null, '?', '?')";
-    if (!query_parameters($sQuery, session_id(), $text))
+    $sQuery = "INSERT INTO sessionMessages VALUES (null, ?, '?', '?')";
+    if (!query_parameters($sQuery, "NOW()", session_id(), $text))
     {
         echo "An error has occurred in addmsg()";
         echo $text;
