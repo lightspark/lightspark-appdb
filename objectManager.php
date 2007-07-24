@@ -85,7 +85,7 @@ if($oObject->iId)
         break;
 
         case "edit":
-        $oObject->display_entry_for_editing($REQUEST_URI, $sErrors);
+        $oObject->display_entry_for_editing($_SERVER['REQUEST_URI'], $sErrors);
         break;
 
         case "showMoveChildren":
@@ -93,12 +93,12 @@ if($oObject->iId)
         break;
 
         default:
-        $oObject->view($REQUEST_URI);
+        $oObject->view($_SERVER['REQUEST_URI']);
         break;
     }
 } else if ($aClean['sAction'] == "add")
 {
-    $oObject->add_entry($REQUEST_URI, $sErrors);
+    $oObject->add_entry($_SERVER['REQUEST_URI'], $sErrors);
 } else
 {
     // if displaying a queue display the help for the given queue

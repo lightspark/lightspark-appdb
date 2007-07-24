@@ -567,7 +567,7 @@ class testData{
 
         echo '<br />',"\n"; // put a space after the test results table and the button
 
-        echo '<form method=get action="'.$PHP_SELF.'">'."\n";
+        echo '<form method=get action="'.$_SERVER['PHP_SELF'].'">'."\n";
         echo "\t".'<input name="iVersionId" type=hidden value="',$this->iVersionId,'" />'."\n";
         if($rowsUsed >= $iDisplayLimit && !is_string($sShowAll))
             echo "\t".'<input class="button" name="sShowAll" type=submit value="Show All Tests" />'."\n";
