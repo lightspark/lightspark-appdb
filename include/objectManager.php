@@ -455,8 +455,8 @@ class ObjectManager
         if($oObject->allowAnonymousSubmissions() || $_SESSION['current']->isLoggedIn())
             return;
 
-        util_show_error_page_and_exit("You need to be <a href=\"".BASE.
-                "account.php?sCmd=login\">logged in</a>.  If you don&#8217;t have an ".
+        util_show_error_page_and_exit("You need to be <a href=\"".login_url().
+                "\">logged in</a>.  If you don&#8217;t have an ".
                 "account you can <a href=\"".BASE."account.php?sCmd=new\">register ".
                 "now</a>, it only takes a few seconds.");
     }
