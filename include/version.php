@@ -1145,6 +1145,10 @@ class version {
                     $oTableCell->SetAlign("center");
                     $oTableRow->AddCell($oTableCell);
 
+                    $oTableCell = new TableCell($oVersion->sTestedRelease);
+                    $oTableCell->SetAlign("center");
+                    $oTableRow->AddCell($oTableCell);
+
                     $oTableCell = new TableCell(testData::get_testdata_count_for_versionid($oVersion->iVersionId));
                     $oTableCell->SetAlign("center");
                     $oTableRow->AddCell($oTableCell);
