@@ -1,40 +1,12 @@
 #! /bin/sh
 
-echo Creating appdb tables
-mysql -p -u root < appdb_tables.sql
+echo Create the base user
+mysql -p -u root < create_user.sql
 
-echo Creating preferences list
-mysql -p -u root < prefs_list.sql
-
-echo Creating user list
-mysql -p -u root < user_list.sql
-
-echo Creating user preferences
-mysql -p -u root < user_prefs.sql
-
-echo Creating user privileges
-mysql -p -u root < user_privs.sql
-
-echo Creating session table
-mysql -p -u root < session_list.sql
-
-echo Adding categories
-mysql -p -u root < app_category.sql
-
-echo Adding maintainers
-mysql -p -u root < maintainers.sql
-
-echo Adding bug links
-mysql -p -u root < buglinks.sql
-
-echo Adding monitors
-mysql -p -u root < monitors.sql
-
-echo Creating error logging tables
-mysql -p -u root < error_log.sql
-
-echo Adding distributions
-mysql -p -u root < distributions.sql
-
-echo Adding test data tables
-mysql -p -u root < testResults.sql
+echo Create the apidb database, and tables
+cat create_apidb_base.sql appdb_tables.sql \
+    prefs_list.sql user_list.sql user_prefs.sql \
+    user_privs.sql session_list.sql app_category.sql \
+    maintainers.sql buglinks.sql monitors.sql \
+    error_log.sql distributions.sql testResults.sql \
+ | mysql -p -u root

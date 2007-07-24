@@ -1,1 +1,1 @@
-php -f run_tests.php
+php -dmagic_quotes_gpc=0 -f run_tests.php
