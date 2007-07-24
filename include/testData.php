@@ -1020,7 +1020,7 @@ class testData{
         $oTableRow->AddCell(new TableCell($bHasMaintainer ? "YES" : "no"));
         $oTableRow->AddCell(new TableCell($this->sTestedRating));
 
-        $oTableRow->SetStyle($this->sTestedRating);
+        $oTableRow->SetClass($this->sTestedRating);
 
         $oOMTableRow = new OMTableRow($oTableRow);
         $oOMTableRow->SetRowHasDeleteLink(true);
