@@ -24,13 +24,14 @@ function admin_menu()
     $m->done();
 }
 
+$iCatId = isset($aClean['iCatId']) ? $aClean['iCatId'] : 0;
 // list sub categories
-$oCat = new Category($aClean['iCatId']?$aClean['iCatId']:"0");
+$oCat = new Category( $iCatId );
 $sCatFullPath = Category::make_cat_path($oCat->getCategoryPath());
 $subs = $oCat->aSubcatsIds;
 
 //display admin box
-if($_SESSION['current']->hasPriv("admin") && $aClean['iCatId'] != 0)
+if($_SESSION['current']->hasPriv("admin") && isset($aClean['iCatId']) && $aClean['iCatId'] != 0 )
     apidb_sidebar_add("admin_menu");
 
 //output header
@@ -92,11 +93,11 @@ if($subs)
 
         $oTable->AddRow($oTableRow);
     }
-    
+
     // output the table
     echo $oTable->GetString();
 
-    echo html_frame_end("$c categories");
+    echo html_frame_end( count($subs) . ' categories');
 }
 
 
@@ -156,7 +157,7 @@ if($apps)
     // output table
     echo $oTable->GetString();
 
-    echo html_frame_end("$c applications in this category");
+    echo html_frame_end( count($apps) . " applications in this category");
 }
 
 // Disabled for now

@@ -22,9 +22,10 @@ class error_log
 
         $sQuery = 'INSERT INTO error_log (submitTime, userid, type, log_text, request_text, deleted) '.
             "VALUES(?, '?', '?', '?', '?', '?')";
+        $iUser = (isset($_SESSION['current']) ? $_SESSION['current']->iUserId : 0);
         $hResult = query_parameters($sQuery,
                                     "NOW()",
-                                    $_SESSION['current']->iUserId,
+                                    $iUser,
                                     $sErrorType,
                                     $sLogText,
                                     $sRequestText,

@@ -67,15 +67,18 @@ if(!$_SESSION['current']->isLoggedIn())
     echo "There are <b>$iNumApps</b> applications currently in the database";
 
     // don't mention the top application if there are no votes yet
-    if($oRow->versionId)
+    if( !empty($oRow) )
     {
-       $shVoteAppLink = version::fullNameLink($oRow->versionId);
-       echo " with $shVoteAppLink being the\n";
-       echo "top <a href='votestats.php'>voted</a> application.\n";
-    } else
-    {
-       echo " please <a href=\"".BASE."help/?sTopic=voting\" title=\"help on voting\"".
-               "style=\"cursor: help\">vote</a> for your favourite application.\n";
+        if($oRow->versionId)
+        {
+            $shVoteAppLink = version::fullNameLink($oRow->versionId);
+            echo " with $shVoteAppLink being the\n";
+            echo "top <a href='votestats.php'>voted</a> application.\n";
+        } else
+        {
+            echo " please <a href=\"".BASE."help/?sTopic=voting\" title=\"help on voting\"".
+                "style=\"cursor: help\">vote</a> for your favourite application.\n";
+        }
     }
 ?>
 

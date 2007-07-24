@@ -435,7 +435,7 @@ class Comment {
         else
             $mode = "threaded"; /* default non-logged in users to threaded comment display mode */
 
-        if ($aClean['sMode']=="nested")
+        if ( isset($aClean['sMode']) && $aClean['sMode']=="nested")
             $mode = "nested";
 
         switch ($mode)

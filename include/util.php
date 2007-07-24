@@ -402,6 +402,8 @@ function cleanupSearchWords($search_words)
 
     /* search each word in $search_words */
     $split_words = split(" ", $search_words);
+
+    $removed_words = '';
     foreach($split_words as $key=>$value)
     {
         /* see if this word is in the ignore list */
@@ -413,7 +415,7 @@ function cleanupSearchWords($search_words)
         /* remove all single letters */
         if((strlen($value) == 1) && !is_numeric($value))
             $found = true;
-
+        
         /* if we didn't find this word, keep it */
         if($found == false)
         {

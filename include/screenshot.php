@@ -401,6 +401,9 @@ class screenshot
     function get_random_screenshot_img($iAppId = null, $iVersionId = null,
                                        $bFormatting = true) 
     {
+        // initialize variables to avoid notices when appending to them
+        $sImgFile = '';
+        $sImg = '';
         // we want a random screenshots for this app
         if($iAppId && !$iVersionId)
         {

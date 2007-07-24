@@ -13,28 +13,70 @@ if(!$_SESSION['current']->hasPriv("admin"))
 
 
 // we want to delete a user
-if($aClean['sAction'] == "delete" && is_numeric($aClean['iUserId']))
+if(isset($aClean['sAction']) && $aClean['sAction'] == "delete" &&
+    is_numeric($aClean['iUserId']))
 {
     $oUser = new User($aClean['iUserId']);
     $oUser->delete();
 }
 
+
 // search form
-echo html_frame_start("Users Management","400","",0)
+echo html_frame_start("Users Management","400","",0);
+
+$aClean['sSearch'] = isset($aClean['sSearch']) ? $aClean['sSearch'] : '';
+
+$sLimit100 = $sLimit200 = $sLimit500 = '';
+if ( isset($aClean['iLimit']) )
+{
+    switch ($aClean['iLimit'])
+    {
+        case '100':
+            $sLimit100 = 'selected';
+            break;
+        case '200':
+            $sLimit200 = 'selected';
+            break;
+        case '500':
+            $sLimit500 = 'selected';
+            break;
+    }
+}
+
+$sOrder1 = $sOrder2 = $sOrder3 = '';
+if ( isset($aClean['sOrderBy']) )
+{
+    switch ($aClean['sOrderBy'])
+    {
+        case 'email':
+            $sOrder1 = 'selected';
+            break;
+        case 'realname':
+            $sOrder2 = 'selected';
+            break;
+        case 'created':
+            $sOrder3 = 'selected';
+            break;
+    }
+}
+
 ?>
     <form action="<?php echo $_SERVER['PHP_SELF'];?>" method="post">
     <table width="100%" border=0 cellpadding=0 cellspacing=0>
         <tr>
             <td class="color1">Pattern</td>
-            <td><input type="text" name="sSearch" value="<?php echo $aClean['sSearch'];?>"/><br /><small>(leave blank to match all)</small></td>
+            <td>
+            <input type="text" name="sSearch" value="<?php echo $aClean['sSearch'];?>"/>
+            <br /><small>(leave blank to match all)</small>
+            </td>
         </tr>
         <tr>
             <td class="color1">Show first</td>
             <td>
                 <select name="iLimit">
-                    <option value="100"<?php if($aClean['iLimit']=="100")echo" SELECTED";?>>100 results</option>
-                    <option value="200"<?php if($aClean['iLimit']=="200")echo" SELECTED";?>>200 results</option>
-                    <option value="500"<?php if($aClean['iLimit']=="500")echo" SELECTED";?>>500 result</option>
+                    <option value="100" <?php echo $sLimit100; ?>>100 results</option>
+                    <option value="200" <?php echo $sLimit200; ?>>200 results</option>
+                    <option value="500" <?php echo $sLimit500; ?>>500 results</option>
                 </select>
             </td>
         </tr>
@@ -42,9 +84,9 @@ echo html_frame_start("Users Management","400","",0)
             <td class="color1">Order by</td>
             <td>
                 <select name="sOrderBy">
-                    <option value="email"<?php if($aClean['sOrderBy']=="email")echo" SELECTED";?>>e-mail</option>
-                    <option value="realname"<?php if($aClean['sOrderBy']=="realname")echo" SELECTED";?>>real name</option>
-                    <option value="created"<?php if($aClean['sOrderBy']=="created")echo" SELECTED";?>>creation date</option>
+                    <option value="email" <?php echo $sOrder1;?>>e-mail</option>
+                    <option value="realname" <?php echo $sOrder2;?>>real name</option>
+                    <option value="created" <?php echo $sOrder3;?>>creation date</option>
                 </select>
             </td>
         </tr>
@@ -57,7 +99,7 @@ echo html_frame_start("Users Management","400","",0)
 echo html_frame_end();
 
 // if the search form was submitted
-if($aClean['sSubmit'])
+if(isset($aClean['sSubmit']))
 {
     echo html_frame_start("Query Results","90%","",0);
     echo "<table width='100%' border=0 cellpadding=3 cellspacing=0>\n\n";

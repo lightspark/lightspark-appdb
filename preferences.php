@@ -107,10 +107,11 @@ if(!$_SESSION['current']->isLoggedIn())
     util_show_error_page_and_exit("You must be logged in to edit preferences");
 
 // we come from the administration to edit an user
-if($_SESSION['current']->hasPriv("admin") && 
-   is_numeric($aClean['iUserId']) &&
-   is_numeric($aClean['iLimit']) &&
-   in_array($aClean['sOrderBy'],array("email","realname","created"))
+if($_SESSION['current']->hasPriv("admin") &&
+    isset($aClean['iUserId']) &&
+    isset($aClean['iLimit']) &&
+    isset($aClean['sOrderBy']) &&
+    in_array($aClean['sOrderBy'],array("email","realname","created"))
 )
 {
     $oUser = new User($aClean['iUserId']);
@@ -119,7 +120,7 @@ if($_SESSION['current']->hasPriv("admin") &&
     $oUser = &$_SESSION['current'];
 }
 
-if($aClean['sSubmit'] == "Update")
+if(isset($aClean['sSubmit']) && $aClean['sSubmit'] == "Update")
 {
     while(list($sKey, $sValue) = each($aClean))
     {
@@ -182,7 +183,7 @@ echo "<div class='default_container'>\n";
 echo "<form method=\"post\" action=\"preferences.php\">\n";
 
 // if we manage another user we give the parameters to go back to the admin
-if($oUser->iUserId == $aClean['iUserId'])
+if( isset($aClean['iUserId']) && $oUser->iUserId == $aClean['iUserId'])
 {
     echo "<input type=\"hidden\" name=\"iLimit\" value=\"".$aClean['iLimit']."\">\n";
     echo "<input type=\"hidden\" name=\"sOrderBy\" value=\"".$aClean['sOrderBy']."\">\n";
@@ -210,7 +211,7 @@ foreach($aTableRows as $oTableRow)
   $oTable->AddRow($oTableRow);
 
 // if we don't manage another user
-if($oUser->iUserId != $aClean['iUserId'])
+if( !isset($aClean['iUserId']) || $oUser->iUserId != $aClean['iUserId'])
 {
   $aTableRows = build_prefs_list($oUser);
   foreach($aTableRows as $oTableRow)

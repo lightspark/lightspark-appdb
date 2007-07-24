@@ -12,13 +12,8 @@ apidb_header("Comments");
 /* display a range of 10 pages */
 $pageRange = 10;
 
-$ItemsPerPage = 10;
-$currentPage = 1;
-
-if($aClean['iItemsPerPage'])
-    $ItemsPerPage = $aClean['iItemsPerPage'];
-if($aClean['iPage'])
-    $currentPage = $aClean['iPage'];
+$ItemsPerPage = isset($aClean['iItemsPerPage']) ? $aClean['iItemsPerPage'] : 10;
+$currentPage = isset($aClean['iPage']) ? $aClean['iPage'] : 1;
 
 $totalPages = ceil(getNumberOfComments()/$ItemsPerPage);
 

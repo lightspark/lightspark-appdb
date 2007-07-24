@@ -50,6 +50,8 @@ class downloadurl
         if(!($hResult = appData::getData($iVersionId, "downloadurl")))
             return FALSE;
 
+        // we're appending, so initialize it
+        $sReturn = '';
         for($i = 0; $oRow = mysql_fetch_object($hResult); $i++)
         {
             $sReturn .= html_tr(array(

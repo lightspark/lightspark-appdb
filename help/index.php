@@ -8,7 +8,7 @@ require(BASE."include/"."incl.php");
 
 $help_path = BASE."/help";
 
-if($aClean['sTopic'])
+if(isset($aClean['sTopic']))
 {
     display_help($aClean['sTopic']);
 } else {

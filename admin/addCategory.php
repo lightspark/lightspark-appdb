@@ -6,8 +6,9 @@ require_once(BASE."include/category.php");
 if(!$_SESSION['current']->hasPriv("admin"))
     util_show_error_page_and_exit();
 
-$oCat = new Category($aClean['iCatId']);
-if($aClean['sSubmit'])
+$aClean['iCatId'] = (isset($aClean['iCatId']) ? $aClean['iCatId'] : '');
+$oCat = new Category( $aClean['iCatId'] );
+if(isset($aClean['sSubmit']))
 {
     $oCat->update($aClean['sName'],$aClean['sDescription'],$aClean['iParentId']);
     util_redirect_and_exit(apidb_fullurl("appbrowse.php?iCatId=".$oCat->iCatId));

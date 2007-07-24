@@ -16,13 +16,8 @@ echo "<div class='default_container'>\n";
 /* display a range of 10 pages */
 $pageRange = 10;
 
-$ItemsPerPage = 6;
-$currentPage = 1;
-
-if($aClean['iItemsPerPage'])
-    $ItemsPerPage = $aClean['iItemsPerPage'];
-if($aClean['iPage'])
-    $currentPage = $aClean['iPage'];
+$ItemsPerPage = isset($aClean['iItemsPerPage']) ? $aClean['iItemsPerPage'] : 6;
+$currentPage = isset($aClean['iPage']) ? $aClean['iPage'] : 1;
 
 $ItemsPerPage = min($ItemsPerPage,100);
 $totalPages = ceil(appData::objectGetEntriesCount("false", false,

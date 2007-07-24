@@ -878,8 +878,8 @@ class Application {
     {
         if($_SESSION['current']->hasPriv("admin"))
             return TRUE;
-
-        if(is_object($this) && $this->iAppId)
+        
+        if(isset($this) && is_object($this) && $this->iAppId)
         {
             if(maintainer::isUserSuperMaintainer($_SESSION['current'],
                 $this->iAppId))

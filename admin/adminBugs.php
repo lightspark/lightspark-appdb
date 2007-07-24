@@ -14,7 +14,7 @@ require_once(BASE."include/bugs.php");
 if(!$_SESSION['current']->hasPriv("admin"))
     util_show_error_page_and_exit("Insufficient privileges.");
 
-if ($aClean['sSub'])
+if (isset($aClean['sSub']))
 {
     if(($aClean['sSub'] == 'delete' ) && ($aClean['iBuglinkId']))
     {
@@ -34,15 +34,12 @@ if ($aClean['sSub'])
     apidb_header("Administer Bugs");
 
     $pageRange = 10;
-    $ItemsPerPage = 10;
-    $currentPage = 1;
+    
     $QueuedOnly = empty($aClean['sQueuedOnly'])? NULL: $aClean['sQueuedOnly'];
     $BugLinks = ($QueuedOnly == 'on')?getNumberOfQueuedBugLinks():getNumberOfBugLinks();
-    if($aClean['iItemsPerPage'])
-        $ItemsPerPage = $aClean['iItemsPerPage'];
 
-    if($aClean['iPage'])
-        $currentPage = $aClean['iPage'];
+    $ItemsPerPage = isset($aClean['iItemsPerPage']) ? $aClean['iItemsPerPage'] : 10;
+    $currentPage = isset($aClean['iPage']) ? $aClean['iPage'] : 1;
 
     $ItemsPerPage = min($ItemsPerPage,100);
     $totalPages = max(ceil($BugLinks/$ItemsPerPage),1);

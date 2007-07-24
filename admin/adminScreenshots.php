@@ -16,7 +16,7 @@ if(!$_SESSION['current']->hasPriv("admin"))
 /*
  * We issued a delete command.
  */ 
-if($aClean['sCmd'])
+if(isset($aClean['sCmd']))
 {
     // process screenshot deletion
     if($aClean['sCmd'] == "delete" && is_numeric($aClean['iImageId']))
@@ -33,7 +33,7 @@ if($aClean['sCmd'])
 
 apidb_header("Screenshots");
 // regenerate all screenshots
-if($aClean['sRegenerate'])
+if(isset($aClean['sRegenerate']))
 {
     $sQuery = "SELECT id FROM appData WHERE type = 'screenshot'";
     $hResult = query_parameters($sQuery);
@@ -55,13 +55,8 @@ echo "</center>";
 /* display a range of 10 pages */
 $pageRange = 10;
 
-$ItemsPerPage = 6;
-$currentPage = 1;
-
-if($aClean['iItemsPerPage'])
-    $ItemsPerPage = $aClean['iItemsPerPage'];
-if($aClean['iPage'])
-    $currentPage = $aClean['iPage'];
+$ItemsPerPage = isset($aClean['iItemsPerPage']) ? $aClean['iItemsPerPage'] : 6;
+$currentPage = isset($aClean['iPage']) ? $aClean['iPage'] : 1;
 
 $ItemsPerPage = min($ItemsPerPage,100);
 $totalPages = ceil(appData::objectGetEntriesCount("all", false,

@@ -27,8 +27,6 @@ require_once(BASE."include/category.php");
 require_once(BASE."include/maintainer.php");
 require_once(BASE."include/monitor.php");
 
-$oApp = new Application($aClean['iAppId']);
-$oVersion = new Version($aClean['iVersionId']);
 
 /**
  * Displays the SUB apps that belong to this application.
@@ -76,7 +74,7 @@ function display_bundle($iAppId)
 if(empty($aClean['iAppId']) && empty($aClean['iVersionId']))
     util_show_error_page_and_exit("Something went wrong with the application or version id");
 
-if ($aClean['sSub'])
+if (isset($aClean['sSub']))
 {
     if(($aClean['sSub'] == 'delete' ) && ($aClean['iBuglinkId']))
     {
@@ -135,14 +133,15 @@ if ($aClean['sSub'])
 /**
  * We want to see an application family (=no version).
  */
-if($aClean['iAppId'])
+if( isset($aClean['iAppId']) )
 {
     $oApp = new Application($aClean['iAppId']);
     $oApp->display();
-} else if($aClean['iVersionId']) // We want to see a particular version.
+} else if( isset($aClean['iVersionId']) ) // We want to see a particular version.
 {
     $oVersion = new Version($aClean['iVersionId']);
-    $oVersion->display($aClean['iTestingId']);
+    $iTestingId = isset($aClean['iTestingId']) ? $aClean['iTestingId'] : null;
+    $oVersion->display($iTestingId);
 } else
 {
     // Oops! Called with no params, bad llamah!

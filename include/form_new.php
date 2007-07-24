@@ -31,7 +31,7 @@ echo html_frame_start("Create New Application DB Account","400","",0)
 <?php
 
         echo "<tr><td class=color1>&nbsp; Wine version </td><td class=color0>";
-        make_bugzilla_version_list("sWineRelease", $aClean['sWineRelease']);
+        echo make_bugzilla_version_list("sWineRelease", isset($aClean['sWineRelease']) ? $aClean['sWineRelease'] : '');
         echo "</td></tr>";
 
 ?>

@@ -258,6 +258,8 @@ class appData
         {
             if($sQueued == "true" || $sQueued == "false")
                 $sAppDataQueued = " AND appData.queued = '$sQueued'";
+            else
+                $sAppDataQueued = '';
 
             if($sType)
                 $sSelectType = " AND type = '?'";

@@ -12,13 +12,14 @@ apidb_header("Browse Downloadable Applications");
 echo "<div class='default_container'>\n";
 
 /* Match specific license? */
-$sLicense = version::checkLicense($aClean['sLicense']);
+$sLicenseString = isset($aClean['sLicense']) ? $aClean['sLicense'] : '';
+$sLicense = version::checkLicense( $sLicenseString );
 
 /* Set default values */
-if(!$aClean['iNumVersions'] || $aClean['iNumVersions'] > 200 || $aClean['iNumVersions'] < 0)
+if(!isset($aClean['iNumVersions']) || $aClean['iNumVersions'] > 200 || $aClean['iNumVersions'] < 0)
     $aClean['iNumVersions'] = 25;
 
-if(!$aClean['iPage'])
+if( !isset($aClean['iPage']) )
     $aClean['iPage'] = 1;
 
 /* Count the possible matches */
@@ -39,7 +40,7 @@ else
 if($hResult && mysql_num_rows($hResult))
     $num = mysql_num_rows($hResult);
 
-$iNumPages = ceil($num / $aClean['iNumVersions']);
+$iNumPages = isset($num) ? ceil($num/$aClean['iNumVersions']) : 0;
 
 /* Check page logic */
 $aClean['iPage'] = min($aClean['iPage'], $iNumPages);
@@ -50,9 +51,11 @@ $iLimitLower = ($aClean['iPage'] - 1) * $aClean['iNumVersions'];
 /* Page selection */
 echo "<div align=\"center\">\n";
 echo "<b>Page ".$aClean['iPage']." of $iNumPages</b><br />\n";
+// $iPageRange is non-existent here? creating it
+$iPageRange = 10;
 display_page_range($aClean['iPage'], $iPageRange, $iNumPages,
     $_SERVER['PHP_SELF']."?iNumVersions=".$aClean['iNumVersions']."&sLicense=".
-    $aClean['sLicense']);
+    $sLicenseString);
 
 /* Selector for how many versions to display */
 echo "<form method=\"get\" action=\"".$_SERVER['PHP_SELF']."\">\n";
@@ -78,7 +81,7 @@ echo $oVersion->makeLicenseList($sLicense);
 echo " <input type=\"submit\" value=\"Refresh\" />\n";
 echo "</form></div>\n<br />\n";
 
-if(!$num)
+if(!isset($num))
 {
     echo "<div align=\"center\"><font color=\"red\">No matches found</font></div>\n";
     echo html_frame_end("&nbsp;");

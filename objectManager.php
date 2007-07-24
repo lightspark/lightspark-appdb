@@ -25,7 +25,7 @@ require_once(BASE.'include/testData_queue.php');
 require_once(BASE.'include/browse_newest_apps.php');
 
 /* if we have no valid class name we should abort */
-if(!$aClean['sClass'])
+if(!isset($aClean['sClass']))
 {
     echo "No class defined.\n";
     exit;
@@ -38,13 +38,16 @@ if(!class_exists($aClean['sClass']))
     exit;
 }
 
+$aClean['iId'] = isset($aClean['iId']) ? $aClean['iId'] : 0;
+
 $oObject = new objectManager($aClean['sClass'], $aClean['sTitle'], $aClean['iId']);
 
-if($aClean['bIsQueue'] == 'true')
+if(isset($aClean['bIsQueue']) && $aClean['bIsQueue'] == 'true')
     $oObject->bIsQueue = true;
 else
     $oObject->bIsQueue = false;
 
+$aClean['bIsRejected'] = isset($aClean['bIsRejected']) ? $aClean['bIsRejected'] : false;
 /* If it is rejected it is defined as queued */
 if($aClean['bIsRejected'] == 'true')
 {
@@ -65,7 +68,7 @@ $sErrors = $oObject->processForm($aClean);
 if($oObject->iId && $aClean['sAction'] == "delete")
     $oObject->delete_entry();
 
-if($aClean['sAction'] == "add")
+if(isset($aClean['sAction']) && $aClean['sAction'] == "add")
     $oObject->handle_anonymous_submission();
 
 /* Provided the necessary values are present, an object's children may be moved
@@ -96,7 +99,7 @@ if($oObject->iId)
         $oObject->view($_SERVER['REQUEST_URI']);
         break;
     }
-} else if ($aClean['sAction'] == "add")
+} else if (isset($aClean['sAction']) && $aClean['sAction'] == "add")
 {
     $oObject->add_entry($_SERVER['REQUEST_URI'], $sErrors);
 } else

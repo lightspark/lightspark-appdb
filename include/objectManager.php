@@ -492,7 +492,7 @@ class ObjectManager
         // is the value we modify and we'll be passing that into methods in the future
         global $aClean;
 
-        if(!$aClean['sSubmit'])
+        if(!isset($aClean['sSubmit']))
             return;
 
         $this->checkMethods(array("getOutputEditorValues", "update", "create",
@@ -513,11 +513,10 @@ class ObjectManager
         // handle the common response radio button value
         // if sReplyText is empty, if sOMCommonReply was set because
         // the user selected a radio button then use that text instead
-        if(($aClean['sReplyText'] == "") && isset($aClean['sOMCommonReply']))
+        if( isset($aClean['sReplyText']) && $aClean['sReplyText'] == "" && isset($aClean['sOMCommonReply']))
         {
           $aClean['sReplyText'] = $aClean['sOMCommonReply'];
         }
-
 
         $oObject->getOutputEditorValues($aClean);
 
@@ -635,10 +634,7 @@ class ObjectManager
     function getIdFromInput($aClean)
     {
         $sId = "i".ucfirst($this->sClass)."Id";
-        $iId = $aClean['sId'];
-
-        if(!$iId)
-            $iId = $aClean['iId'];
+        $iId = isset($aClean['sId']) ? $aClean['sId'] : $aClean['iId'];
 
         return $iId;
     }
@@ -678,13 +674,12 @@ class ObjectManager
         $aItemsPerPage = $aReturn[0];
         $iDefaultPerPage = $aReturn[1];
 
-        $iItemsPerPage = $iDefaultPerPage;
-        foreach($aItemsPerPage as $iNum)
-        {
-            if($iNum == $aClean['iItemsPerPage'])
-                $iItemsPerPage = $aClean['iItemsPerPage'];
-        }
 
+        $iItemsPerPage = $iDefaultPerPage;
+
+        if ( isset($aClean['iItemsPerPage']) && in_array($aClean['iItemsPerPage'], $aItemsPerPage) )
+            $iItemsPerPage = $aClean['iItemsPerPage'];
+        
         $sControls = "<form action=\"".$this->makeUrl()."\" method=\"get\">";
 
         /* Fill in form data for the objectManager URL */
@@ -705,9 +700,7 @@ class ObjectManager
         $iNumPages = ceil($iTotalEntries / $iItemsPerPage);
 
         /* Check current page value */
-        $iPage = $aClean['iPage'];
-        if(!$iPage)
-            $iPage = 1;
+        $iPage = isset($aClean['iPage']) ? $aClean['iPage'] : 1;
         $iCurrentPage = min($iPage, $iNumPages);
 
         /* Display selectors and info */
@@ -778,7 +771,7 @@ class MultiPage
 
     function getDataFromInput($aClean)
     {
-        if($aClean['iItemsPerPage'] && $aClean['iPage'])
+        if(isset($aClean['iItemsPerPage']) && isset($aClean['iPage']))
             $this->bEnabled = TRUE;
         else
             return;

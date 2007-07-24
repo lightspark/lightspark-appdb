@@ -16,7 +16,7 @@ if(!$_SESSION['current']->hasPriv("admin"))
 apidb_header("Admin Maintainers");
 echo '<form name="sQform" action="adminMaintainers.php" method="post" enctype="multipart/form-data">',"\n";
 
-if ($aClean['sSub'])
+if (isset($aClean['sSub']))
 {
     if($aClean['sSub'] == 'delete')
     {

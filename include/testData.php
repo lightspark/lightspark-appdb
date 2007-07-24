@@ -444,7 +444,7 @@ class testData{
         $link = mysql_real_escape_string($link);
         $iDisplayLimit = mysql_real_escape_string($iDisplayLimit);
 
-        $sShowAll = $aClean['sShowAll'];
+        $sShowAll = isset($aClean['sShowAll']) ? $aClean['sShowAll'] : false;
 
         $sQuery = "SELECT * 
                    FROM testResults
