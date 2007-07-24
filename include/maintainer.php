@@ -330,7 +330,12 @@ class maintainer
     function delete()
     {
         $sQuery = "DELETE from appMaintainers where maintainerId = '?'";
-        query_parameters($sQuery, $this->iMaintainerId);
+        $hResult = query_parameters($sQuery, $this->iMaintainerId);
+
+        if(!$hResult)
+            return FALSE;
+
+        return TRUE;
     }
 
     function deleteMaintainer($oUser, $iAppId = null, $iVersionId = null)
