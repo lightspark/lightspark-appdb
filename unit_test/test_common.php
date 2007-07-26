@@ -55,7 +55,9 @@ function create_and_login_user($sTestEmail, $sTestPassword)
         $oUser = new User();
     }
 
-    /* create the user */
+    // create the user
+    // NOTE: user::create() will call user::login() to login the user
+    //       if the user creation is successful
     $retval = $oUser->create($sTestEmail, $sTestPassword, "Test user", "20051020");
     if($retval != SUCCESS)
     {
@@ -69,14 +71,6 @@ function create_and_login_user($sTestEmail, $sTestPassword)
         return false;
     }
 
-    /* login the user */
-    $retval = $oUser->login($sTestEmail, $sTestPassword);
-    if($retval != SUCCESS)
-    {
-        error("Got '".$retval."' instead of SUCCESS(".SUCCESS.")");
-        return false;
-    }
-     
     return $oUser;
 }
 
