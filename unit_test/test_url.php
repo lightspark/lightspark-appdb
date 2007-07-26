@@ -9,14 +9,14 @@ function test_url_update()
 {
     test_start(__FUNCTION__);
 
-    global $test_email, $test_password;
-
     $bSuccess = true; // default to success until we detect failure
 
     /* Log in */
-    if(!$oUser = create_and_login_user())
+    $sTestUser = __FUNCTION__."@localhost.com";
+    $sTestPassword = "password";
+    if(!$oUser = create_and_login_user($sTestUser, $sTestPassword))
     {
-        echo "Received '$retval' instead of SUCCESS('".SUCCESS."').";
+        error("Received '$retval' instead of SUCCESS('".SUCCESS."').");
         return FALSE;
     }
 
@@ -37,25 +37,25 @@ function test_url_update()
 
     if($oUrl->sDescription != $sDescriptionNew)
     {
-        echo "Description is '$oUrl->sDescription' instead of '$sDescriptionNew'\n";
+        error("Description is '$oUrl->sDescription' instead of '$sDescriptionNew'");
         $bSuccess = false;
     }
 
     if($oUrl->sUrl != $sUrlNew)
     {
-        echo "Url is '$oUrl->sUrl' instead of '$sUrlNew'\n";
+        error("Url is '$oUrl->sUrl' instead of '$sUrlNew'");
         $bSuccess = false;
     }
 
     if($oUrl->iVersionId != $iVersionIdNew)
     {
-        echo "VersionId is '$oUrl->iVersionId' instead of '$iVersionIdNew'\n";
+        error("VersionId is '$oUrl->iVersionId' instead of '$iVersionIdNew'");
         $bSuccess = false;
     }
 
     if($oUrl->iAppId != $iAppIdNew)
     {
-        echo "AppId is '$oUrl->iAppId' instead of '$iAppIdNew'\n";
+        error("AppId is '$oUrl->iAppId' instead of '$iAppIdNew'");
         $bSuccess = false;
     }
 

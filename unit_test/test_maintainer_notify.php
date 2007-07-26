@@ -55,7 +55,7 @@ class notifyContainer
     $_SESSION['current'] = $this->oUser;
 
     // create a fake version
-    $this->iVersionId = create_version_and_parent_app();
+    $this->iVersionId = create_version_and_parent_app("test_maintainer_notify");
 
     // create a queued entry for the user we just created
     $this->oTestData = new testData();
@@ -595,7 +595,7 @@ function _test_maintainer_notifyMaintainersOfQueuedData($bTestAsMaintainer)
 {
   $bSuccess = true;  // default to success
 
-  echo __FUNCTION__."\n";
+  test_start(__FUNCTION__);
 
   $sFunction = "test_maintainer_notifyLevel_0_to_1";
   if(!$sFunction($bTestAsMaintainer))
@@ -678,7 +678,9 @@ function test_maintainer_notifyMaintainersOfQueuedData()
 {
   $bSuccess = true;
 
-  echo "Testing as maintainer\n";
+  test_start(__FUNCTION__);
+
+  echo "\nTesting as maintainer\n";
   if(!_test_maintainer_notifyMaintainersOfQueuedData(true))
   {
     echo "Maintainer test failed!\n";

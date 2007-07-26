@@ -229,10 +229,9 @@ class downloadurl
 
     function canEdit($iVersionId = NULL)
     {
-        $oUser = new User($_SESSION['current']->iUserId);
-
-        if($oUser->hasPriv("admin") || ($iVersionId &&
-           maintainer::isUserMaintainer($oUser, $iVersionId)))
+        if($_SESSION['current']->hasPriv("admin") ||
+           ($iVersionId &&
+            maintainer::isUserMaintainer($_SESSION['current'], $iVersionId)))
         {
             return TRUE;
         } else

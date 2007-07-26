@@ -22,21 +22,21 @@ function test_image_constructor()
 
     if(!$oImage->isLoaded())
     {
-        echo "Error, unable to load image filename of ".$sImageFilename."\n";
-        echo "Internal filename is: ".$oImage->sFile."\n";
+        error("Error, unable to load image filename of ".$sImageFilename);
+        error("Internal filename is: ".$oImage->sFile);
         return false;
     }
 
     /* make sure the image size is correct */
     if($oImage->get_width() != TEST_IMAGE_WIDTH)
     {
-        echo "Expected width of ".TEST_IMAGE_WIDTH.", got ".$oImage->get_width()."\n";
+        error("Expected width of ".TEST_IMAGE_WIDTH.", got ".$oImage->get_width());
         return false;
     }
 
     if($oImage->get_height() != TEST_IMAGE_HEIGHT)
     {
-        echo "Expected width of ".TEST_IMAGE_HEIGHT.", got ".$oImage->get_height()."\n";
+        error("Expected width of ".TEST_IMAGE_HEIGHT.", got ".$oImage->get_height());
         return false;
     }
 
@@ -45,7 +45,7 @@ function test_image_constructor()
     $oImage = new Image("somefilethatdoesntexist.png");
     if($oImage->isLoaded())
     {
-        echo "Error, isLoaded() returned true for a image that doesn't exist, expected false!\n";
+        error("Error, isLoaded() returned true for a image that doesn't exist, expected false!");
         return false;
     }
     
@@ -63,8 +63,8 @@ function test_image_make_thumbnail()
 
     if(!$oImage->isLoaded())
     {
-        echo "Error, unable to load image filename of ".$sImageFilename."\n";
-        echo "Internal filename is: ".$oImage->sFile."\n";
+        error("Error, unable to load image filename of ".$sImageFilename);
+        error("Internal filename is: ".$oImage->sFile);
         return false;
     }
 
@@ -79,16 +79,16 @@ function test_image_make_thumbnail()
     $iActualWidth = $oImage->get_width();
     if($iActualWidth != $iWidth)
     {
-        echo "Expected width of $iWidth, got ".$iActualWidth."\n";
-        echo $oImage->get_debuglog(false);
+        error("Expected width of $iWidth, got ".$iActualWidth);
+        error($oImage->get_debuglog(false));
         return false;
     }
 
     $iActualHeight = $oImage->get_height();
     if($iActualHeight != $iHeight)
     {
-        echo "Expected height of $iHeight, got ".$iActualHeight."\n";
-        echo $oImage->get_debuglog(false);
+        error("Expected height of $iHeight, got ".$iActualHeight);
+        error($oImage->get_debuglog(false));
         return false;
     }
 
@@ -106,8 +106,8 @@ function test_image_make_full()
 
     if(!$oImage->isLoaded())
     {
-        echo "Error, unable to load image filename of ".$sImageFilename."\n";
-        echo "Internal filename is: ".$oImage->sFile."\n";
+        error("Error, unable to load image filename of ".$sImageFilename);
+        error("Internal filename is: ".$oImage->sFile);
         return false;
     }
 
@@ -123,16 +123,16 @@ function test_image_make_full()
     $iActualWidth = $oImage->get_width();
     if($iActualWidth != $iWidth)
     {
-        echo "Expected width of $iWidth, got ".$iActualWidth."\n";
-        echo $oImage->get_debuglog(false);
+        error("Expected width of $iWidth, got ".$iActualWidth);
+        error($oImage->get_debuglog(false));
         return false;
     }
 
     $iActualHeight = $oImage->get_height();
     if($iActualHeight != $iHeight)
     {
-        echo "Expected height of $iHeight, got ".$iActualHeight."\n";
-        echo $oImage->get_debuglog(false);
+        error("Expected height of $iHeight, got ".$iActualHeight);
+        error($oImage->get_debuglog(false));
         return false;
     }
 
@@ -150,15 +150,15 @@ function test_image_output_to_file()
 
     if(!$oImage->isLoaded())
     {
-        echo "Error, unable to load image filename of ".$sImageFilename."\n";
-        echo "Internal filename is: ".$oImage->sFile."\n";
+        error("Error, unable to load image filename of ".$sImageFilename);
+        error("Internal filename is: ".$oImage->sFile);
         return false;
     }
 
     /* write the file to disk */
     if(!$oImage->output_to_file(TEST_IMAGE_OUTPUT_FILENAME))
     {
-        echo "image::output_to_file failed to output to filename of ".TEST_IMAGE_OUTPUT_FILENAME."\n";
+        error("image::output_to_file failed to output to filename of ".TEST_IMAGE_OUTPUT_FILENAME);
         return false;
     }
 
@@ -166,8 +166,8 @@ function test_image_output_to_file()
     $oImage2 = new Image(TEST_IMAGE_OUTPUT_FILENAME, true);
     if(!$oImage2->isLoaded())
     {
-        echo "Error, unable to load newly output image filename of ".TEST_IMAGE_OUTPUT_FILENAME."\n";
-        echo "Internal filename is: ".$oImage2->sFile."\n";
+        error("Error, unable to load newly output image filename of ".TEST_IMAGE_OUTPUT_FILENAME);
+        error("Internal filename is: ".$oImage2->sFile);
         return false;
     }
 
@@ -178,9 +178,9 @@ function test_image_output_to_file()
     $oImage2 = new Image(TEST_IMAGE_OUTPUT_FILENAME, true);
     if($oImage2->isLoaded())
     {
-        echo "Error, unlinking filename of ".TEST_IMAGE_OUTPUT_FILENAME." failed, we are able to\n";
-        echo "  open up a file that should have been deleted.\n";
-        echo "Internal filename is: ".$oImage2->sFile."\n";
+        error("Error, unlinking filename of ".TEST_IMAGE_OUTPUT_FILENAME." failed, we are able to");
+        error("  open up a file that should have been deleted.");
+        error("Internal filename is: ".$oImage2->sFile);
         return false;
     }
 
@@ -198,8 +198,8 @@ function test_image_add_watermark()
 
     if(!$oImage->isLoaded())
     {
-        echo "Error, unable to load image filename of ".$sImageFilename."\n";
-        echo "Internal filename is: ".$oImage->sFile."\n";
+        error("Error, unable to load image filename of ".$sImageFilename);
+        error("Internal filename is: ".$oImage->sFile);
         return false;
     }
 
@@ -207,8 +207,8 @@ function test_image_add_watermark()
     $oWatermark = new Image(TEST_IMAGE_WATERMARK);
     if(!$oWatermark->isLoaded())
     {
-        echo "Error, unable to load image filename of ".TEST_IMAGE_WATERMARK."\n";
-        echo "Internal filename is: ".$oWatermark->sFile."\n";
+        error("Error, unable to load image filename of ".TEST_IMAGE_WATERMARK);
+        error("Internal filename is: ".$oWatermark->sFile);
         return false;
     }
 

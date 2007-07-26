@@ -32,11 +32,16 @@ function test_class($sClassName, $aTestMethods)
       return true;
 
     /* Set up test user */
-    global $test_email, $test_password;
-    if(!$oUser = create_and_login_user())
+    $sTestEmail = __FUNCTION__."@localhost.com";
+    $sTestPassword = "password";
+    if(!$oUser = create_and_login_user($sTestEmail, $sTestPassword))
     {
-        echo "Failed to create and log in user.\n";
+        error("Failed to create and log in user.");
         return FALSE;
+    } else
+    {
+      // assign the session variable that makes this user the current user
+      $_SESSION['current'] = $oUser;
     }
 
     /* Test the class constructor */
@@ -48,16 +53,16 @@ function test_class($sClassName, $aTestMethods)
 
     if(!$hResult)
     {
-        echo "Got '$hResult' instead of a valid MySQL handle\n";
-        echo "FAILED\t\t$sClassName::$sClassName\n";
+        error("Got '$hResult' instead of a valid MySQL handle");
+        error("FAILED\t\t$sClassName::$sClassName");
         $oTestObject->delete();
         return FALSE;
     }
 
     if(!($oRow = mysql_fetch_object($hResult)))
     {
-        echo "Failed to fetch MySQL object\n";
-        echo "FAILED\t\t$sClassName::$sClassName\n";
+        error("Failed to fetch MySQL object");
+        error("FAILED\t\t$sClassName::$sClassName");
         $oTestObject->delete();
         return FALSE;
     }
@@ -102,16 +107,29 @@ function test_class($sClassName, $aTestMethods)
 
     if(!$iReceived || !is_numeric($iReceived))
     {
-        echo "Got '$iReceived' instead of a valid id\n";
-        echo "FAILED\t\t$sClassName::$sClassName()\n";
+        error("Got '$iReceived' instead of a valid id");
+        error("FAILED\t\t$sClassName::$sClassName()");
         $oTestObject->delete();
         return FALSE;
     }
 
     echo "PASSED\t\t$sClassName::$sClassName\n";
 
+    //////////////////////////
+    // cleanup after the test
     cleanup($oTestObject);
-    $oTestObject->delete();
+
+    if(!$oUser->addPriv("admin"))
+        error("oUser->addPriv('admin') failed");
+
+    if(!$oTestObject->delete())
+    {
+        error("sClassName of $sClassName oTestObject->delete() failed!");
+        $oUser->delete();
+        return false;
+    }
+
+    ////////////////////////////////
 
     /* Test the methods' functionality */
     foreach($aTestMethods as $sMethod)
@@ -130,8 +148,8 @@ function test_class($sClassName, $aTestMethods)
                 $iReceived = mysql_num_rows($hResult);
                 if($iExpected > $iReceived)
                 {
-                    echo "Got $iReceived instead of >= $iExpected\n";
-                    echo "FAILED\t\t$sClassName::$sMethod\n";
+                    error("Got $iReceived instead of >= $iExpected");
+                    error("FAILED\t\t$sClassName::$sMethod");
                     $oTestObject->delete();
                     return FALSE;
                 }
@@ -224,7 +242,7 @@ function create_object($sClassName, $oUser)
     {
         if(!$oTestObject->create())
         {
-            echo "FAILED\t\t$sClassName::create()\n";
+            error("FAILED\t\t$sClassName::create()");
             return FALSE;
         }
     } else
@@ -236,7 +254,7 @@ function create_object($sClassName, $oUser)
                                     $oUser->iUserId);
         if(!$hResult)
         {
-            echo "FAILED\t\t$sClassName to create screenshot entry";
+            error("FAILED\t\t$sClassName to create screenshot entry");
             return FALSE;
         }
         $oTestObject->iScreenshotId = mysql_insert_id();

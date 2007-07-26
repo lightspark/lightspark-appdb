@@ -18,15 +18,12 @@ function test_maintainer_getMaintainerCountForUser()
 {
     test_start(__FUNCTION__);
 
-    global $test_email, $test_password;
-
-    /* login the user */
-    $oUser = new User();
-    $retval = $oUser->login($test_email, $test_password);
-    if($retval != SUCCESS)
+    $sTestEmail = __FUNCTION__."@localhost.com";
+    $sTestPassword = "password";
+    if(!($oUser = create_and_login_user($sTestEmail, $sTestPassword)))
     {
-        echo "Got '".$retval."' instead of SUCCESS(".SUCCESS.")\n";
-        return false;
+        error("Failed to create and log in user!");
+        return FALSE;
     }
 
     /**
@@ -52,7 +49,8 @@ function test_maintainer_getMaintainerCountForUser()
     $iSuperMaintainerCount = Maintainer::getMaintainerCountForUser($oUser, TRUE);
     if($iSuperMaintainerCount != $iExpected)
     {
-        echo "Got super maintainer count of '".$iSuperMaintainerCount."' instead of '".$iExpected."'\n";
+        error("Got super maintainer count of '".$iSuperMaintainerCount."' instead of '".$iExpected."'");
+        $oUser->delete();
         return false;
     }
 
@@ -61,7 +59,8 @@ function test_maintainer_getMaintainerCountForUser()
     $iMaintainerCount = Maintainer::getMaintainerCountForUser($oUser, FALSE);
     if($iMaintainerCount != $iExpected)
     {
-        echo "Got maintainer count of '".$iMaintainerCount."' instead of '".$iExpected."'\n";
+        error("Got maintainer count of '".$iMaintainerCount."' instead of '".$iExpected."'");
+        $oUser->delete();
         return false;
     }
 
@@ -89,7 +88,8 @@ function test_maintainer_getMaintainerCountForUser()
     $iSuperMaintainerCount = Maintainer::getMaintainerCountForUser($oUser, TRUE);
     if($iSuperMaintainerCount != $iExpected)
     {
-        echo "Got super maintainer count of '".$iSuperMaintainerCount."' instead of '".$iExpected."'\n";
+        error("Got super maintainer count of '".$iSuperMaintainerCount."' instead of '".$iExpected."'");
+        $oUser->delete();
         return false;
     }
 
@@ -98,13 +98,15 @@ function test_maintainer_getMaintainerCountForUser()
     $iMaintainerCount = Maintainer::getMaintainerCountForUser($oUser, FALSE);
     if($iMaintainerCount != $iExpected)
     {
-        echo "Got maintainer count of '".$iMaintainerCount."' instead of '".$iExpected."'\n";
+        error("Got maintainer count of '".$iMaintainerCount."' instead of '".$iExpected."'");
+        $oUser->delete();
         return false;
     }
 
     /* remove maintainership for this user */
     Maintainer::deleteMaintainer($oUser, $iAppId, $iVersionId);
 
+    $oUser->delete();
     return true;
 }
 
@@ -114,15 +116,12 @@ function test_maintainer_getAppsMaintained()
 {
     test_start(__FUNCTION__);
 
-    global $test_email, $test_password;
-
-    /* login the user */
-    $oUser = new User();
-    $retval = $oUser->login($test_email, $test_password);
-    if($retval != SUCCESS)
+    $sTestEmail = __FUNCTION__."@localhost.com";
+    $sTestPassword = "password";
+    if(!($oUser = create_and_login_user($sTestEmail, $sTestPassword)))
     {
-        echo "Got '".$retval."' instead of SUCCESS(".SUCCESS.")\n";
-        return false;
+        error("Failed to create and log in user!");
+        return FALSE;
     }
 
     /* make this user an admin so we can create applications without having them queued */
@@ -136,7 +135,8 @@ function test_maintainer_getAppsMaintained()
     $oApp->submitterId = $oUser->iUserId;
     if(!$oApp->create())
     {
-        echo "Failed to create application!\n";
+        error("Failed to create application!");
+        $oUser->delete();
         return false;
     }
 
@@ -164,7 +164,8 @@ function test_maintainer_getAppsMaintained()
 
     if(!$aAppsMaintained)
     {
-        echo "aAppsMaintained is null, we expected a non-null return value!\n";
+        error("aAppsMaintained is null, we expected a non-null return value!");
+        $oUser->delete();
         return false;
     }
 
@@ -175,19 +176,22 @@ function test_maintainer_getAppsMaintained()
     /* make sure all parameters match what we added as maintainer information */
     if($iAppId1 != $iAppId)
     {
-        echo "Expected iAppid of ".$iAppId." but got ".$iAppId1."\n";
+        error("Expected iAppid of ".$iAppId." but got ".$iAppId1);
+        $oUser->delete();
         return false;
     }
 
     if($iVersionId1 != $iVersionId)
     {
-        echo "Expected iVersionId of ".$iVersionId." but got ".$iVersionId1."\n";
+        error("Expected iVersionId of ".$iVersionId." but got ".$iVersionId1);
+        $oUser->delete();
         return false;
     }
 
     if($bSuperMaintainer1 != $bSuperMaintainer)
     {
-        echo "Expected bSuperMaintainer of ".$bSuperMaintainer." but got ".$bSuperMaintainer1."\n";
+        error("Expected bSuperMaintainer of ".$bSuperMaintainer." but got ".$bSuperMaintainer1);
+        $oUser->delete();
         return false;
     }
 
@@ -198,6 +202,8 @@ function test_maintainer_getAppsMaintained()
     $oApp = new Application($iAppId);
     $oApp->delete();
 
+    $oUser->delete();
+
     return true;
 }
 
@@ -206,16 +212,30 @@ function test_maintainer_unQueue()
 {
     test_start(__FUNCTION__);
 
-    global $test_email, $test_password;
-
-    /* login the user */
-    $oFirstUser = new User();
-    $retval = $oFirstUser->login($test_email, $test_password);
-    if($retval != SUCCESS)
+    $sTestEmail = __FUNCTION__."@localhost.com";
+    $sTestPassword = "password";
+    if(!($oFirstUser = create_and_login_user($sTestEmail, $sTestPassword)))
     {
-        echo "Got '".$retval."' instead of SUCCESS(".SUCCESS.")\n";
-        return false;
+        error("Failed to create and log in first user!");
+        return FALSE;
     }
+
+    // create a second user
+    $sTestEmail = __FUNCTION__."2nd@localhost.com";
+    $sTestPassword = "password";
+    if(!($oSecondUser = create_and_login_user($sTestEmail, $sTestPassword)))
+    {
+        error("Failed to create and log in second user!");
+        $oFirstUser->delete();
+        return FALSE;
+    }
+
+    // make the first user the current user
+    // because create_and_login_user() calls user::login()
+    // and this sets $_SESSION['current'] so we need
+    // to override the create_and_login_user() for the second user
+    $_SESSION['current'] = $oFirstUser;
+
 
     $iAppId = 655000;
     $iVersionId = 655200;
@@ -224,8 +244,7 @@ function test_maintainer_unQueue()
     $oVersion = new Version();
     $oApp->iAppId = $iAppId;
     $oVersion->iVersionId = $iVersionId;
-    $oSecondUser = new User();
-    $oSecondUser->iUserId = $_SESSION['current']->iUserId + 1;
+
     /* Create a non-super maintainer for a different userId; it should not be affected
        by the other user first becoming a maintainer and then a super maintainer of
        the same application */
@@ -235,7 +254,10 @@ function test_maintainer_unQueue()
     $oSecondUserMaintainer->iUserId = $oSecondUser->iUserId;
     $oSecondUserMaintainer->sMaintainReason = "I need it";
     $oSecondUserMaintainer->bSuperMaintainer = FALSE;
-    $oSecondUserMaintainer->create();
+    if(!$oSecondUserMaintainer->create())
+        error("oSecondUserMaintainer->create() failed");
+
+    $oSecondUserMaintainer->unQueue();
 
     /* Create a super maintainer for a different userId; it should not be affected
        by the other user first becoming a maintainer and then a super maintainer of
@@ -247,9 +269,13 @@ function test_maintainer_unQueue()
     $oSecondUserSuperMaintainer->sMaintainReason = "I need it";
     $oSecondUserSuperMaintainer->bSuperMaintainer = TRUE;
 
+    // disable admin permissions around the creation of the second maintainer
+    // so the maintainer object remains queued
     $oFirstUser->delPriv("admin");
-    $oSecondUserSuperMaintainer->create();
+    if(!$oSecondUserSuperMaintainer->create())
+        error("oSecondUserSuperMaintainer->create() failed");
     $oFirstUser->addPriv("admin");
+
 
     /* Create a non-super maintainer
        It should be removed later because a super maintainer entry for the same
@@ -260,18 +286,22 @@ function test_maintainer_unQueue()
     $oFirstUserMaintainer->iUserId = $_SESSION['current']->iUserId;
     $oFirstUserMaintainer->sMaintainReason = "The most stupid reason";
     $oFirstUserMaintainer->bSuperMaintainer = FALSE;
-    $oFirstUserMaintainer->create();
+    if(!$oFirstUserMaintainer->create())
+        error("oFirstUserMaintainer->create() failed");
 
-    $oFirstUserMaintainer->unQueue("");
+    $sStatus = $oFirstUserMaintainer->unQueue("");
 
     /* There should now be 1 maintainer and 0 super maintainers */
     $iExpected = 1;
     $iReceived = maintainer::getMaintainerCountForUser($oFirstUser, FALSE);
     if($iExpected != $iReceived)
     {
-        echo "Got maintainer count of $iReceived instead of $iExpected\n";
+        error("Got maintainer count of $iReceived instead of $iExpected");
+        error("sStatus is $sStatus");
         maintainer::deleteMaintainersForApplication($oApp);
         maintainer::deleteMaintainersForVersion($oVersion);
+        $oFirstUser->delete();
+        $oSecondUser->delete();
         return FALSE;
     }
 
@@ -279,9 +309,11 @@ function test_maintainer_unQueue()
     $iReceived = maintainer::getMaintainerCountForUser($oFirstUser, TRUE);
     if($iExpected != $iReceived)
     {
-        echo "Got super maintainer count of $iReceived instead of $iExpected\n";
+        error("Got super maintainer count of $iReceived instead of $iExpected");
         maintainer::deleteMaintainersForApplication($oApp);
         maintainer::deleteMaintainersForVersion($oVersion);
+        $oFirstUser->delete();
+        $oSecondUser->delete();
         return FALSE;
     }
 
@@ -295,7 +327,8 @@ function test_maintainer_unQueue()
     $oFirstUserSuperMaintainer->iUserId = $_SESSION['current']->iUserId;
     $oFirstUserSuperMaintainer->sMaintainReason = "Some crazy reason";
     $oFirstUserSuperMaintainer->bSuperMaintainer = TRUE;
-    $oFirstUserSuperMaintainer->create();
+    if(!$oFirstUserSuperMaintainer->create())
+        error("oFirstUserSuperMaintainer->create() failed");
 
     /* and unqueue it to accept the user as a maintainer */
     $oFirstUserSuperMaintainer->unQueue("Some reply text");
@@ -309,9 +342,12 @@ function test_maintainer_unQueue()
     $iSuperMaintainerCount = maintainer::getMaintainerCountForUser($oFirstUser, TRUE);
     if($iSuperMaintainerCount != $iExpected)
     {
-        echo "Got super maintainer count of '".$iSuperMaintainerCount."' instead of '".$iExpected."'\n";
+        error("Got super maintainer count of '".$iSuperMaintainerCount.
+              "' instead of '".$iExpected."'");
         maintainer::deleteMaintainersForApplication($oApp);
         maintainer::deleteMaintainersForVersion($oVersion);
+        $oFirstUser->delete();
+        $oSecondUser->delete();
         return false;
     }
 
@@ -321,50 +357,62 @@ function test_maintainer_unQueue()
     $iMaintainerCount = maintainer::getMaintainerCountForUser($oFirstUser, FALSE);
     if($iMaintainerCount != $iExpected)
     {
-        echo "Got maintainer count of '".$iMaintainerCount."' instead of '".$iExpected."'\n";
+        error("Got maintainer count of '".$iMaintainerCount.
+              "' instead of '".$iExpected."'");
         maintainer::deleteMaintainersForApplication($oApp);
         maintainer::deleteMaintainersForVersion($oVersion);
+        $oFirstUser->delete();
+        $oSecondUser->delete();
         return false;
     }
 
-    /* Now the maintainer request for the other user should still be present */
+    /* Now the maintainer entry for the second user should still be present */
     $iExpected = 1;
-    $iReceived = maintainer::getmaintainerCountForUser($oSecondUser, FALSE);
+    $iReceived = maintainer::getMaintainerCountForUser($oSecondUser, FALSE);
     if($iExpected != $iReceived)
     {
-        echo "Got maintainer count of $iReceived instead of $iExpected\n";
+        error("Got maintainer count of $iReceived instead of $iExpected");
         maintainer::deleteMaintainersForApplication($oApp);
         maintainer::deleteMaintainersForVersion($oVersion);
+        $oFirstUser->delete();
+        $oSecondUser->delete();
         return FALSE;
     }
 
-    /* Now the super maintainer request for the other user should still be present */
+    // Now the super maintainer request for the second user should still be present
     $oSecondUserSuperMaintainer->unQueue();
     $iExpected = 1;
-    $iReceived = maintainer::getmaintainerCountForUser($oSecondUser, TRUE);
+    $iReceived = maintainer::getMaintainerCountForUser($oSecondUser, TRUE);
     if($iExpected != $iReceived)
     {
-        echo "Got super maintainer count of $iReceived instead of $iExpected\n";
+        error("Got super maintainer count of $iReceived instead of $iExpected");
         maintainer::deleteMaintainersForApplication($oApp);
         maintainer::deleteMaintainersForVersion($oVersion);
+        $oFirstUser->delete();
+        $oSecondUser->delete();
         return FALSE;
     }
 
-    /* Now the maintainer request of the other user should be gone */
-    $oSecondUserMaintainer->unQueue();
+    // Now that the super maintainer entry was unqueued the the maintainer
+    // entry should have been deleted
     $iExpected = 0;
-    $iReceived = maintainer::getmaintainerCountForUser($oSecondUser, FALSE);
+    $iReceived = maintainer::getMaintainerCountForUser($oSecondUser, FALSE);
     if($iExpected != $iReceived)
     {
-        echo "Got maintainer count of $iReceived instead of $iExpected\n";
+        error("Got maintainer count of $iReceived instead of $iExpected");
         maintainer::deleteMaintainersForApplication($oApp);
         maintainer::deleteMaintainersForVersion($oVersion);
+        $oFirstUser->delete();
+        $oSecondUser->delete();
         return FALSE;
     }
 
     /* remove maintainership for this user */
     maintainer::deleteMaintainersForApplication($oApp);
     maintainer::deleteMaintainersForVersion($oVersion);
+
+    $oFirstUser->delete();
+    $oSecondUser->delete();
 
     return true;
 }
@@ -374,13 +422,11 @@ function test_superMaintainerOnAppSubmit()
 {
     test_start(__FUNCTION__);
 
-    global $test_email, $test_password;
-
-    /* Log in */
-    $oUser = new User();
-    if($retval = $oUser->login($test_email, $test_password) != SUCCESS)
+    $sTestEmail = __FUNCTION__."@localhost.com";
+    $sTestPassword = "password";
+    if(!($oUser = create_and_login_user($sTestEmail, $sTestPassword)))
     {
-        echo "Received '$retval' instead of SUCCESS('".SUCCESS."').";
+        error("Failed to create and log in user!");
         return FALSE;
     }
 
@@ -408,13 +454,15 @@ function test_superMaintainerOnAppSubmit()
 
     if($iGot != $iExpected)
     {
-        echo "Got maintainer count of '$iGot' instead of '$iExpected'";
+        error("Got maintainer count of '$iGot' instead of '$iExpected'");
+        $oUser->delete();
         return false;
     }
 
     Maintainer::deleteMaintainer($oUser, $iAppId);
 
     $oApp->delete();
+    $oUser->delete();
 
     return true;
 }
@@ -425,10 +473,13 @@ function test_maintainer_deleteMaintainersForVersion()
 {
     test_start(__FUNCTION__);
 
-    global $test_email, $test_password;
-
-    $oUser = new user();
-    $oUser->login($test_email, $test_password);
+    $sTestEmail = __FUNCTION__."@localhost.com";
+    $sTestPassword = "password";
+    if(!($oUser = create_and_login_user($sTestEmail, $sTestPassword)))
+    {
+        error("Failed to create and log in user!");
+        return FALSE;
+    }
 
     $oMaintainer = new maintainer();
     $oMaintainer->iAppId = 655000;
@@ -444,11 +495,13 @@ function test_maintainer_deleteMaintainersForVersion()
 
     if(maintainer::deleteMaintainersForVersion($oVersion) !== FALSE)
     {
-        echo "Got success, but this should fail.\n";
+        error("Got success, but this should fail.");
+        $oUser->delete();
         return FALSE;
     }
 
     $oMaintainer->delete();
+    $oUser->delete();
 
     return TRUE;
 }
@@ -457,15 +510,18 @@ function test_maintainer_getMaintainersForAppIdVersionId()
 {
     test_start(__FUNCTION__);
 
-    global $test_email, $test_password;
-    $oUser = new user();
-    if($oUser->login($test_email, $test_password) != SUCCESS)
+    $sTestEmail = __FUNCTION__."@localhost.com";
+    $sTestPassword = "password";
+    if(!($oUser = create_and_login_user($sTestEmail, $sTestPassword)))
     {
-        echo "Failed to create and log in user!\n";
+        error("Failed to create and log in user!");
         return FALSE;
     }
 
     $oUser->addPriv("admin");
+
+    // assign the user with admin permissions as the current user
+    $_SESSION['current'] = $oUser;
 
     $oSecondUser = new user();
     $oSecondUser->iUserId = $oUser->iUserId + 1;
@@ -474,10 +530,12 @@ function test_maintainer_getMaintainersForAppIdVersionId()
     $oApp = new application();
     $oApp->create();
     $oFirstVersion = new version();
-    $oFirstVersion->iAppId = $oApp->iAppId;
+    $oFirstVersion->sName = __FUNCTION__." first version";
+    $oFirstVersion->iAppId = $oApp->iAppId; // $oApp is the parent
     $oFirstVersion->create();
     $oSecondVersion = new version();
-    $oSecondVersion->iAppid = $oApp->iAppId;
+    $oSecondVersion->sName = __FUNCTION__." first version";
+    $oSecondVersion->iAppId = $oApp->iAppId; // $oApp is the parent
     $oSecondVersion->create();
 
     $oSuperMaintainer = new maintainer();
@@ -489,7 +547,9 @@ function test_maintainer_getMaintainersForAppIdVersionId()
 
     if(!$hResult = maintainer::getMaintainersForAppIdVersionId($oApp->iAppId))
     {
-        echo "Failed to get list of maintainers!\n";
+        error("Failed to get list of maintainers!");
+        $oUser->delete(); // delete the user
+        $oApp->delete(); // cleanup the application and its versions we created
         return FALSE;
     }
 
@@ -498,14 +558,18 @@ function test_maintainer_getMaintainersForAppIdVersionId()
     $iReceived = mysql_num_rows($hResult);
     if($iExpected != $iReceived)
     {
-        echo "Got super maintainer count of $iReceived instead of $iExpected!\n";
+        error("Got super maintainer count of $iReceived instead of $iExpected!");
+        $oUser->delete(); // delete the user
+        $oApp->delete(); // cleanup the application and its versions we created
         return FALSE;
     }
 
     if(!$hResult = maintainer::getMaintainersForAppIdVersionId(null,
        $oFirstVersion->iVersionId))
     {
-        echo "Failed to get list of maintainers!\n";
+        error("Failed to get list of maintainers!");
+        $oUser->delete(); // delete the user
+        $oApp->delete(); // cleanup the application and its versions we created
         return FALSE;
     }
 
@@ -514,11 +578,12 @@ function test_maintainer_getMaintainersForAppIdVersionId()
     $iReceived = mysql_num_rows($hResult);
     if($iExpected != $iReceived)
     {
-        echo "Got maintainer count of $iReceived instead of $iExpected!\n";
+        error("Got maintainer count of $iReceived instead of $iExpected!");
+        $oUser->delete(); // delete the user
         return FALSE;
     }
 
-    $oSuperMaintainer->delete();
+    $oSuperMaintainer->delete(); // cleanup the super maintainer we created
 
     /* Become a maintainer for one of the versions only */
     $oFirstVersionMaintainer = new maintainer();
@@ -541,7 +606,9 @@ function test_maintainer_getMaintainersForAppIdVersionId()
     if(!$hResult = maintainer::getMaintainersForAppIdVersionId(null,
        $oFirstVersion->iVersionId))
     {
-        echo "Failed to get list of maintainers!\n";
+        error("Failed to get list of maintainers!");
+        $oUser->delete(); // delete the user
+        $oApp->delete(); // cleanup the application and its versions we created
         return FALSE;
     }
 
@@ -550,14 +617,18 @@ function test_maintainer_getMaintainersForAppIdVersionId()
     $iReceived = mysql_num_rows($hResult);
     if($iExpected != $iReceived)
     {
-        echo "Got maintainer count of $iReceived instead of $iExpected!\n";
+        error("Got maintainer count of $iReceived instead of $iExpected!");
+        $oUser->delete(); // delete the user
+        $oApp->delete(); // cleanup the application and its versions we created
         return FALSE;
     }
 
     if(!$hResult = maintainer::getMaintainersForAppIdVersionId(null,
            $oSecondVersion->iVersionId))
     {
-        echo "Failed to get list of maintainers!\n";
+        error("Failed to get list of maintainers!");
+        $oUser->delete(); // delete the user
+        $oApp->delete(); // cleanup the application and its versions we created
         return FALSE;
     }
 
@@ -566,12 +637,16 @@ function test_maintainer_getMaintainersForAppIdVersionId()
     $iReceived = mysql_num_rows($hResult);
     if($iExpected != $iReceived)
     {
-        echo "Got maintainer count of $iReceived instead of $iExpected!\n";
+        error("Got maintainer count of $iReceived instead of $iExpected!");
+        $oUser->delete(); // clean up the user
+        $oApp->delete(); // cleanup the application and its versions we created
         return FALSE;
     }
 
-    $oApp->delete();
-    $oUser->delete();
+    if(!$oApp->delete())
+      echo __FUNCTION__." oApp->delete() failed\n";
+
+    $oUser->delete(); // clean up the user
 
     return TRUE;
 }

@@ -9,13 +9,13 @@ function test_start($sFunctionName)
 
 // create an application and a version of that application
 // return the iVersionId of the created version
-function create_version_and_parent_app()
+function create_version_and_parent_app($sId = "")
 {
     $oApp = new application();
-    $oApp->sName = "OM App";
+    $oApp->sName = "OM App ".$sId;
     $oApp->create();
     $oVersion = new version();
-    $oVersion->sName = "OM version";
+    $oVersion->sName = "OM version ".$sId;
     $oVersion->iAppId = $oApp->iAppId;
     $oVersion->create();
     return $oVersion->iVersionId;
@@ -23,11 +23,80 @@ function create_version_and_parent_app()
 
 // delete a version based on the $iVersionId parameter
 // and delete its parent application
+// NOTE: we enable admin permissions here to ensure that
+//       the application and version are deleted
 function delete_version_and_parent_app($iVersionId)
 {
+    $bWasAdmin = $_SESSION['current']->hasPriv("admin");
+  
+    $_SESSION['current']->addPriv("admin");
+
     $oVersion = new version($iVersionId);
     $oApp = new application($oVersion->iAppId);
-    $oApp->delete();
+    if(!$oApp->delete())
+    {
+        echo __FUNCTION__."() oApp->delete() failed, returned false!\n";
+    }
+
+    // remove the admin privleges only if the user didn't
+    // have them to begin with
+    if(!$bWasAdmin)
+        $_SESSION['current']->delPriv("admin");
+}
+
+function create_and_login_user($sTestEmail, $sTestPassword)
+{
+    $oUser = new User();
+
+    /* delete the user if they already exist */
+    if($oUser->login($sTestEmail, $sTestPassword) == SUCCESS)
+    {
+        $oUser->delete();
+        $oUser = new User();
+    }
+
+    /* create the user */
+    $retval = $oUser->create($sTestEmail, $sTestPassword, "Test user", "20051020");
+    if($retval != SUCCESS)
+    {
+        if($retval == USER_CREATE_EXISTS)
+            error("The user already exists!");
+        else if($retval == USER_LOGIN_FAILED)
+            error("User login failed!");
+        else
+            error("ERROR: UNKNOWN ERROR!!");
+            
+        return false;
+    }
+
+    /* login the user */
+    $retval = $oUser->login($sTestEmail, $sTestPassword);
+    if($retval != SUCCESS)
+    {
+        error("Got '".$retval."' instead of SUCCESS(".SUCCESS.")");
+        return false;
+    }
+     
+    return $oUser;
+}
+
+function error($sMsg)
+{
+    $aBT = debug_backtrace();
+
+    // get class, function called by caller of caller of caller
+    if(isset($aBT[1]['class']))
+        $sClass = $aBT[1]['class'];
+    else
+        $sClass = "";
+    $sFunction = $aBT[1]['function'];
+       
+    // get file, line where call to caller of caller was made
+    $sFile = $aBT[0]['file'];
+    $sLine = $aBT[0]['line'];
+       
+    // build & return the message
+    echo "$sClass::$sFunction:$sFile:$sLine $sMsg\n";
 }
 
 ?>

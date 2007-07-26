@@ -5,9 +5,7 @@ require_once(BASE.'include/maintainer.php');
 require_once(BASE.'include/user.php');
 require_once(BASE.'include/version.php');
 require_once(BASE.'include/application.php');
-
-$test_email = "testemail@somesite.com";
-$test_password = "password";
+require_once("test_common.php");
 
 /* test that Application::delete() properly deletes data dependent on */
 /* having an application */
@@ -17,7 +15,10 @@ function test_application_delete()
 {
     test_start(__FUNCTION__);
 
-    if(!$oUser = create_and_login_user())
+    $sTestEmail = "test_application_delete@somesite.com";
+    $sTestPassword = "password";
+
+    if(!$oUser = create_and_login_user($sTestEmail, $sTestPassword))
         return false;
     
     /* make this user an admin so we can create applications without having them queued */
@@ -31,7 +32,7 @@ function test_application_delete()
     if(!$oApp->create())
     {
         $oUser->delete(); /* clean up the user we created prior to exiting */
-        echo "Failed to create application!\n";
+        error("Failed to create application!");
         return false;
     }
 
@@ -78,7 +79,10 @@ function test_application_getWithRating()
 {
     test_start(__FUNCTION__);
 
-    if(!$oUser = create_and_login_user())
+    $sTestEmail = "test_application_getwithrating@somesite.com";
+    $sTestPassword = "password";
+
+    if(!$oUser = create_and_login_user($sTestEmail, $sTestPassword))
         return false;
 
     /* make this user an admin so we can create applications without having them queued */
@@ -92,7 +96,7 @@ function test_application_getWithRating()
     if(!$oApp->create())
     {
         $oUser->delete();
-        echo "Failed to create application!\n";
+        error("Failed to create application!");
         return false;
     }
 
@@ -126,7 +130,7 @@ function test_application_getWithRating()
         if(!$oVersion->create())
         {
             delete_app_and_user($oApp, $oUser);  
-            echo "Failed to create version!\n";
+            error("Failed to create version!");
             return false;
         }
     }
@@ -142,7 +146,7 @@ function test_application_getWithRating()
         if ( in_array($iId, $aTest) ) //if the appId is already in our test results fail unique test
         {
             delete_app_and_user($oApp, $oUser);  
-            echo "getWithRating failed to return a unique result set\n";   
+            error("getWithRating failed to return a unique result set");
             return false;
         }
            
@@ -156,8 +160,9 @@ function test_application_getWithRating()
     
     //test to ensure getWithRating doesn't return applications that are queued
     
-    if(!$oUser = create_and_login_user()) //create user without admin priveliges
-    return false;
+    //create user without admin priveliges
+    if(!$oUser = create_and_login_user($sTestEmail, $sTestPassword))
+        return false;
     
     
     $oApp = new Application();
@@ -167,7 +172,7 @@ function test_application_getWithRating()
     if(!$oApp->create())
     {
         $oUser->delete(); /* clean up the user we created prior to exiting */
-        echo "Failed to create application!\n";
+        error("Failed to create application!");
         return false;
     }
 
@@ -183,7 +188,7 @@ function test_application_getWithRating()
     if(!$oVersion->create())
     {
         delete_app_and_user($oApp, $oUser);  
-        echo "Failed to create version!\n";
+        error("Failed to create version!");
         return false;
     }        
     
@@ -193,7 +198,7 @@ function test_application_getWithRating()
     if ( in_array($iAppId, $aApps )) //if the appId is in our test results fail queued test
     {
         delete_app_and_user($oApp, $oUser);  
-        echo "getWithRating failed to return a unique result set\n";   
+        error("getWithRating failed to return a unique result set");
         return false;
     }
     
@@ -202,50 +207,22 @@ function test_application_getWithRating()
     return true;
 } 
 
-
 function delete_app_and_user($oApp, $oUser)
 {
-    $oApp->delete();
-    $oUser->delete();
-}
-
-function create_and_login_user()
-{
-    global $test_email, $test_password;
-    
-    $oUser = new User();
-
-    /* delete the user if they already exist */
-    if($oUser->login($test_email, $test_password) == SUCCESS)
+    $bSuccess = true;
+    if(!$oApp->delete())
     {
-        $oUser->delete();
-        $oUser = new User();
+        echo __FUNCTION__."() oApp->delete() failed\n";
+        $bSuccess = false;
     }
 
-    /* create the user */
-    $retval = $oUser->create("$test_email", "$test_password", "Test user", "20051020");
-    if($retval != SUCCESS)
+    if(!$oUser->delete())
     {
-        if($retval == USER_CREATE_EXISTS)
-            echo "The user already exists!\n";
-        else if($retval == USER_LOGIN_FAILED)
-            echo "User login failed!\n";
-        else
-            echo "ERROR: UNKNOWN ERROR!!\n";
-            
-        return false;
+        echo __FUNCTION__."() oUser->delete() failed\n";
+        $bSuccess = false;
     }
 
-    /* login the user */
-    $retval = $oUser->login($test_email, $test_password);
-    if($retval != SUCCESS)
-    {
-        echo "Got '".$retval."' instead of SUCCESS(".SUCCESS.")\n";
-        return false;
-    }
-     
-    return $oUser;
-
+    return $bSuccess;
 }
 
 if(!test_application_delete())

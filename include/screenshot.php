@@ -128,6 +128,8 @@ class screenshot
     /**    
      * Deletes the screenshot from the database. 
      * and request its deletion from the filesystem (including the thumbnail).
+     *
+     * Returns: true if deletion was success, false if otherwise
      */
     function delete($bSilent=false)
     {
@@ -155,6 +157,8 @@ class screenshot
         {
             $this->mailSubmitter(true);
         }
+
+        return true;
     }
 
     function reject()

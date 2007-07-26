@@ -6,8 +6,9 @@ require_once(BASE."include/version.php");
 function test_testData_getNewestTestidFromVersionId()
 {
     test_start(__FUNCTION__);
-    global $test_email, $test_password;
-    if(!$oUser = create_and_login_user())
+    $sTestEmail = __FUNCTION__."@localhost.com";
+    $sTestPassword = "password";
+    if(!$oUser = create_and_login_user($sTestEmail, $sTestPassword))
     {
         echo "Failed to create and log in user\n";
         return FALSE;
@@ -30,14 +31,16 @@ function test_testData_getNewestTestidFromVersionId()
     $iReceived = testData::getNewestTestidFromVersionId($iVersionId);
     if($iExpected != $iReceived)
     {
-        echo "Got testData id of $iReceived instead of $iExpected!\n";
+        error("Got testData id of $iReceived instead of $iExpected!");
         $oOldTestData->delete();
         $oNewTestData->delete();
+        $oUser->delete();
         return FALSE;
     }
 
     $oOldTestData->delete();
     $oNewTestData->delete();
+    $oUser->delete();
 
     return TRUE;
 }

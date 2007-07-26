@@ -21,29 +21,8 @@ function test_user_create()
 
     global $test_email, $test_password;
 
-    $oUser = new User();
-
-    /* delete the user if they already exist */
-    if($oUser->login($test_email, $test_password) == SUCCESS)
+    if(!($oUser = create_and_login_user($test_email, $test_password)))
     {
-        $oUser->delete();
-        $oUser = new User();
-    } else
-    {
-        echo "User doesn't already exist\n";
-    }
-
-    /* create the user */
-    $retval = $oUser->create($test_email, $test_password, "Test user", "20051020");
-    if($retval != SUCCESS)
-    {
-        if($retval == USER_CREATE_EXISTS)
-            echo "The user already exists!\n";
-        else if($retval == USER_LOGIN_FAILED)
-            echo "User login failed!\n";
-        else
-            echo "ERROR: UNKNOWN ERROR!!\n";
-            
         return false;
     }
 

@@ -26,7 +26,7 @@ function test_filter()
     $sResult = filter_gpc();
     if(!$sResult)
     {
-        echo "filter_gpc() succeeded when it should have failed due to invalid input!\n";
+        error("filter_gpc() succeeded when it should have failed due to invalid input!");
         return false;
     }
 
@@ -44,20 +44,20 @@ function test_filter()
     $sResult = filter_gpc();
     if($sResult)
     {
-        echo "sResult is '$sResult' but we expected success and no return value\n";
+        error("sResult is '$sResult' but we expected success and no return value");
         return false;
     }
 
     // make sure the values match what we expect
     if($aClean['sString'] != $sString)
     {
-        echo "Expected aClean['sString'] to be '".$sString."' but instead it was '".$aClean['sString']."'\n";
+        error("Expected aClean['sString'] to be '".$sString."' but instead it was '".$aClean['sString']."'");
         return false;
     }
 
     if($aClean['iInteger'] != $iInteger)
     {
-        echo "Expected aClean['iInteger'] to be '".$iInteger."' but instead it was '".$aClean['iInteger']."'\n";
+        error("Expected aClean['iInteger'] to be '".$iInteger."' but instead it was '".$aClean['iInteger']."'");
         return false;
     }
 
@@ -73,14 +73,14 @@ function test_filter()
     $sResult = filter_gpc();
     if($sResult)
     {
-        echo "sResult is '$sResult' but we expected success and no return value\n";
+        error("sResult is '$sResult' but we expected success and no return value");
         return false;
     }
 
     // expect that the filtered value will be equal
     if($aClean['shHtml'] != $shHtml)
     {
-        echo "Expected aClean['shHtml'] to be '".$shHtml."' but instead it was '".$aClean['shHtml']."'\n";
+        error("Expected aClean['shHtml'] to be '".$shHtml."' but instead it was '".$aClean['shHtml']."'");
         return false;
     }
 
@@ -96,7 +96,7 @@ function test_filter()
     $sResult = filter_gpc();
     if($sResult)
     {
-        echo "sResult is '$sResult' but we expected success and no return value\n";
+        error("sResult is '$sResult' but we expected success and no return value");
         return false;
     }
 
@@ -104,18 +104,17 @@ function test_filter()
     // shouldn't be equal unless something has failed
     if($aClean['sHtml'] == $sHtml)
     {
-        echo "Expected aClean['shHtml'] to be '".$sHtml."' but instead it was '".$aClean['sHtml']."'\n";
+        error("Expected aClean['shHtml'] to be '".$sHtml."' but instead it was '".$aClean['sHtml']."'");
         return false;
     }
 
     // make sure all html has been stripped
     if(strip_tags($aClean['sHtml']) != $aClean['sHtml'])
     {
-        echo "Expected all html to be stripped already but we were able to strip this '".$aClean['sHtml']
-            ."' into '".strip_tags($aClean['sHtml'])."'\n";
+        error("Expected all html to be stripped already but we were able to strip this '".$aClean['sHtml']
+              ."' into '".strip_tags($aClean['sHtml'])."'");
         return false;
     }
-    
 
     return true;
 }

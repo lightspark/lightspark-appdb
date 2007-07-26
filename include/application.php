@@ -231,6 +231,8 @@ class Application {
      */
     function delete($bSilent=false)
     {
+        $bSuccess = true;
+
         /* make sure the current user has the appropriate permission to delete
            this application */
         if(!$_SESSION['current']->canDeleteApplication($this))
@@ -246,9 +248,9 @@ class Application {
         {
             $iVersionId = $oRow->versionId;
             $oVersion = new Version($iVersionId);
-            $oVersion->delete($bSilent);
+            if(!$oVersion->delete($bSilent))
+                $bSuccess = false; // return false, deleting the version failed
         }
-
 
         /* fetch urlsIds */
         $aUrlsIds = array();
@@ -289,7 +291,7 @@ class Application {
         if(!$bSilent)
             $this->SendNotificationMail("delete");
 
-        return true;
+        return $bSuccess;
     }
 
 

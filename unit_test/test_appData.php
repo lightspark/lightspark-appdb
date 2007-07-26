@@ -7,12 +7,15 @@ require_once(BASE."include/downloadurl.php");
 
 function test_appData_listSubmittedBy()
 {
+    $bSuccess = true;
+
     test_start(__FUNCTION__);
 
-    global $test_email, $test_password;
-    if(!$oUser = create_and_login_user())
+    $sTestEmail = __FUNCTION__."@localhost.com";
+    $sTestPassword = "password";
+    if(!$oUser = create_and_login_user($sTestEmail, $sTestPassword))
     {
-        echo "Failed to create and log in user\n";
+        error("Failed to create and log in user");
         return FALSE;
     }
 
@@ -35,17 +38,20 @@ function test_appData_listSubmittedBy()
     $iReceived = substr_count($shReturn, "</tr>");
     if($iExpected != $iReceived)
     {
-        echo "Got $iReceived rows instead of $iExpected.\n";
-        $oDownloadUrl->delete();
-        $oUser->delete();
-        return FALSE;
+        error("Got $iReceived rows instead of $iExpected.");
+        $bSuccess = false;
     }
 
     /* Clean up */
-    $oDownloadUrl->delete();
+    if(!$oDownloadUrl->delete())
+    {
+        $bSuccess = false;
+        error("Failed to delete oDownloadUrl!");
+    }
+
     $oUser->delete();
 
-    return TRUE;
+    return $bSuccess;
 }
 
 if(!test_appData_listSubmittedBy())

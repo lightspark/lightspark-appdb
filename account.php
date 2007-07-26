@@ -165,7 +165,7 @@ function cmd_send_passwd()
     $oUser = new User($iUserId);
     if ($iUserId)
     {
-        if ($oUser->update_password($sPasswd))
+    	if ($oUser->update_password($sPasswd))
         {
             $sSubject =  "Application DB Lost Password";
             $sMsg  = "We have received a request that you lost your password.\r\n";
