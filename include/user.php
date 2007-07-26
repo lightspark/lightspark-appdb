@@ -63,11 +63,55 @@ class User {
     {
         $sQuery = "SELECT *
                    FROM user_list
-                   WHERE email = '?'
-                   AND password = password('?')";
-        $hResult = query_parameters($sQuery, $sEmail, $sPassword);
+                   WHERE email = '?' AND password = ";
 
-        $oRow = mysql_fetch_object($hResult);
+        $sMysqlSHAPasswordPart = "SHA1('?');";
+        $sMysqlPasswordPart = "password('?');";
+        $sMysql40xPasswordPart = "old_password('?');";
+
+        // if true we used an old style password and we need to
+        // update the users password to the new style
+        $bUsedOldStylePassword = false;
+
+        $oRow = null; // null out the row object
+
+        // if we aren't logged in yet
+        // try to login with the mysql sha1() value of the password
+        if(!$oRow)
+        {
+            $hResult = query_parameters($sQuery.$sMysqlSHAPasswordPart,
+                                      $sEmail, $sPassword);
+            $oRow = mysql_fetch_object($hResult);
+        }
+
+        // if we aren't logged in yet
+        // try to login with the mysql password() value of the password
+        if(!$oRow)
+        {
+            $hResult = query_parameters($sQuery.$sMysqlPasswordPart,
+                                        $sEmail, $sPassword);
+            $oRow = mysql_fetch_object($hResult);
+            if($oRow) $bUsedOldStylePassword = true;
+        }
+
+        // if we aren't logged in yet
+        // try to login with the mysql old_password() value of the password
+        if(!$oRow)
+        {
+            // make sure we have a newer version, older versions may not
+            $sResult = mysql_get_server_info();
+            $fVersion = substr($sResult, 0, 3);
+
+            // if we have a newer version of mysql, try with the 'old_password()' function
+            if($fVersion >= 4.1)
+            {
+                $hResult = query_parameters($sQuery.$sMysql40xPasswordPart,
+                                            $sEmail, $sPassword);
+                $oRow = mysql_fetch_object($hResult);
+                if($oRow) $bUsedOldStylePassword = true;
+            }
+        }
+
         if($oRow)
         {
             $this->iUserId = $oRow->userid;
@@ -76,6 +120,12 @@ class User {
             $this->sStamp = $oRow->stamp;
             $this->sDateCreated = $oRow->created;
             $this->sWineRelease = $oRow->CVSrelease;
+
+            // if we used an old style password, update the users password
+            if($bUsedOldStylePassword)
+            {
+                $this->update_password($sPassword);
+            }
         }
 
         if($this->isLoggedIn())
@@ -115,7 +165,7 @@ class User {
         } else
         {
             $hResult = query_parameters("INSERT INTO user_list (realname, email, CVSrelease, password, stamp,".
-                                        "created) VALUES ('?', '?', '?', password('?'), ?, ?)",
+                                        "created) VALUES ('?', '?', '?', SHA1('?'), ?, ?)",
                                         $sRealname, $sEmail, $sWineRelease, $sPassword, "NOW()", "NOW()");
 
             if(!$hResult) return USER_CREATE_FAILED;
@@ -180,7 +230,8 @@ class User {
     {
         if($sPassword)
         {
-            if (query_parameters("UPDATE user_list SET password = password('?') WHERE userid = '?'",
+            if (query_parameters("UPDATE user_list SET password = SHA1('?') ".
+                                 "WHERE userid = '?'",
                                  $sPassword, $this->iUserId))
                 return true;
         }

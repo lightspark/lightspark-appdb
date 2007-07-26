@@ -319,12 +319,15 @@ if(!test_user_update_password())
     echo "test_user_update_password() passed\n";
 }
 
+// perform tests related to user password migration
+include_once("test_user_password_migration.php");
+
 /* Perform the maintainer tests here because they require that a user we can log into */
 /* and we want to save on having to clean up the user by duplicating the cleanup code below */
 include_once("test_maintainer.php");
 
-/* TODO: the rest of the user member functions we don't currently test */
 
+/* TODO: the rest of the user member functions we don't currently test */
 
 /* clean up the user we created during the tests */
 /* so the unit test leaves no trace that it ran */
