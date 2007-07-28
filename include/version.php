@@ -1408,9 +1408,29 @@ class version {
         return $aCells;
     }
 
-    function objectGetEntries($bQueued, $bRejected, $sOrderBy = "versionId")
+    function objectGetItemsPerPage($bQueued = false)
+    {
+        $aItemsPerPage = array(25, 50, 100, 200);
+        $iDefaultPerPage = 25;
+        return array($aItemsPerPage, $iDefaultPerPage);
+    }
+
+    function objectGetEntries($bQueued, $bRejected, $iRows = 0, $iStart = 0, $sOrderBy = "versionId")
     {
         $sQueued = objectManager::getQueueString($bQueued, $bRejected);
+
+        $sLimit = "";
+
+        /* Should we add a limit clause to the query? */
+        if($iRows || $iStart)
+        {
+            $sLimit = " LIMIT ?,?";
+
+            /* Selecting 0 rows makes no sense, so we assume the user wants to select all of them
+               after an offset given by iStart */
+            if(!$iRows)
+                $iRows = maintainer::objectGetEntriesCount($bQueued, $bRejected);
+        }
 
         if($bQueued && !$this->canEdit())
         {
@@ -1425,7 +1445,7 @@ class version {
                         AND
                         appVersion.submitterId = '?'
                         AND
-                        appVersion.queued = '?' ORDER BY '?'";
+                        appVersion.queued = '?' ORDER BY '?'$sLimit";
             else
                 $sQuery = "SELECT appVersion.* FROM
                         appVersion, appMaintainers, appFamily WHERE
@@ -1451,10 +1471,17 @@ class version {
                         AND
                         appMaintainers.queued = 'false'
                         AND
-                        appVersion.queued = '?' ORDER BY '?'";
+                        appVersion.queued = '?' ORDER BY '?'$sLimit";
 
-            $hResult = query_parameters($sQuery, $_SESSION['current']->iUserId, $sQueued,
-                                       $sOrderBy);
+            if($sLimit)
+            {
+                $hResult = query_parameters($sQuery, $_SESSION['current']->iUserId,
+                                            $sQueued, $sOrderBy, $iStart, $iRows);
+            } else
+            {
+                $hResult = query_parameters($sQuery, $_SESSION['current']->iUserId,
+                                            $sQueued, $sOrderBy);
+            }
         } else
         {
             $sQuery = "SELECT appVersion.*
@@ -1463,8 +1490,16 @@ class version {
                     AND
                     appFamily.queued = 'false'
                     AND
-                    appVersion.queued = '?' ORDER BY '?'";
-            $hResult = query_parameters($sQuery, $sQueued, $sOrderBy);
+                    appVersion.queued = '?' ORDER BY '?'$sLimit";
+
+            if($sLimit)
+            {
+                $hResult = query_parameters($sQuery, $sQueued, $sOrderBy,
+                                            $iStart, $iRows);
+            } else
+            {
+                $hResult = query_parameters($sQuery, $sQueued, $sOrderBy);
+            }
         }
 
         if(!$hResult)

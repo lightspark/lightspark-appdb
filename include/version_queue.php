@@ -168,9 +168,20 @@ class version_queue
         /* $this->oVersion->displayAddItemHelp(); */
     }
 
-    function objectGetEntries($bQueued, $bRejected)
+    function objectGetItemsPerPage($bQueued = false)
     {
-        return $this->oVersion->objectGetEntries($bQueued, $bRejected);
+        return $this->oVersion->objectGetItemsPerPage($bQueued);
+    }
+
+    function objectGetEntriesCount($bQueued, $bRejected)
+    {
+        return $this->oVersion->objectGetEntriesCount($bQueued, $bRejected);
+    }
+
+    function objectGetEntries($bQueued, $bRejected, $iRows = 0, $iStart = 0, $sOrderBy = "versionId")
+    {
+        return $this->oVersion->objectGetEntries($bQueued, $bRejected, $iRows, $iStart,
+                                                 $sOrderBy);
     }
  
     function objectGetHeader()
