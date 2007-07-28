@@ -292,9 +292,20 @@ class application_queue
         return TRUE;
     }
 
-    function objectGetEntries($bQueued, $bRejected)
+    function objectGetItemsPerPage($bQueued = false)
     {
-        return $this->oApp->objectGetEntries($bQueued, $bRejected);
+        return $this->oApp->objectGetItemsPerPage($bQueued);
+    }
+
+    function objectGetEntriesCount($bQueued, $bRejected)
+    {
+        return $this->oApp->objectGetEntriesCount($bQueued, $bRejected);
+    }
+
+    function objectGetEntries($bQueued, $bRejected, $iRows = 0, $iStart = 0, $sOrderBy = "appId")
+    {
+        return $this->oApp->objectGetEntries($bQueued, $bRejected, $iRows, $iStart,
+                                             $sOrderBy);
     }
  
     function objectGetHeader()
