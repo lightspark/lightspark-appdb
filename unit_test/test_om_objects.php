@@ -68,42 +68,7 @@ function test_class($sClassName, $aTestMethods)
     }
 
     $oNewTestObject = new $sClassName(null, $oRow);
-    switch($sClassName)
-    {
-        case "application":
-            $iReceived = $oNewTestObject->iAppId;
-        break;
-        case "application_queue":
-            $iReceived = $oNewTestObject->oApp->iAppId;
-        break;
-        case "distribution":
-            $iReceived = $oNewTestObject->iDistributionId;
-        break;
-        case "downloadurl":
-            $iReceived = $oNewTestObject->iId;
-        break;
-        case "maintainer":
-            $iReceived = $oNewTestObject->iMaintainerId;
-        break;
-        case "testData":
-            $iReceived = $oNewTestObject->iTestingId;
-        break;
-        case "testData_queue":
-            $iReceived = $oNewTestObject->oTestData->iTestingId;
-        break;
-        case "vendor":
-            $iReceived = $oNewTestObject->iVendorId;
-        break;
-        case "version":
-            $iReceived = $oNewTestObject->iVersionId;
-        break;
-        case "version_queue":
-            $iReceived = $oNewTestObject->oVersion->iVersionId;
-        break;
-        case "screenshot":
-            $iReceived = $oNewTestObject->iScreenshotId;
-        break;
-    }
+    $iReceived = $oNewTestObject->objectGetId();
 
     if(!$iReceived || !is_numeric($iReceived))
     {
