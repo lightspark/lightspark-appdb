@@ -698,6 +698,8 @@ class ObjectManager
 
         $iTotalEntries = $oObject->objectGetEntriesCount($this->bIsQueue, $this->bIsRejected);
         $iNumPages = ceil($iTotalEntries / $iItemsPerPage);
+        if($iNumPages == 0)
+            $iNumPages = 1;
 
         /* Check current page value */
         $iPage = isset($aClean['iPage']) ? $aClean['iPage'] : 1;
