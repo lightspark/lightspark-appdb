@@ -19,22 +19,26 @@ class Monitor {
      * Constructor.
      * If $iMonitorId is provided, fetches Monitor.
      */
-    function Monitor($iMonitorId="")
+    function Monitor($iMonitorId="", $oRow = null)
     {
-        if($iMonitorId)
+        if(!$iMonitorId && !$oRow)
+            return;
+
+        if(!$oRow)
         {
             $sQuery = "SELECT *
                        FROM appMonitors
                        WHERE monitorId = '".$iMonitorId."'";
             $hResult = query_appdb($sQuery);
             $oRow = mysql_fetch_object($hResult);
-            if($oRow)
-            {
-                $this->iMonitorId = $oRow->monitorId;
-                $this->iAppId = $oRow->appId;
-                $this->iVersionId = $oRow->versionId;
-                $this->iUserId = $oRow->userId;
-            }
+        }
+
+        if($oRow)
+        {
+            $this->iMonitorId = $oRow->monitorId;
+            $this->iAppId = $oRow->appId;
+            $this->iVersionId = $oRow->versionId;
+            $this->iUserId = $oRow->userId;
         }
     }
 
@@ -98,8 +102,12 @@ class Monitor {
         $hResult = query_parameters("DELETE FROM appMonitors WHERE monitorId = '?'", $this->iMonitorId);
         if(!$bSilent)
             $this->SendNotificationMail("delete");
-    }
 
+        if(!$hResult)
+            return FALSE;
+
+        return TRUE;
+    }
 
     function SendNotificationMail($sAction="add",$sMsg=null)
     {
@@ -137,6 +145,99 @@ class Monitor {
         $sEmail = User::get_notify_email_address_list(null, $this->iVersionId);
         if($sEmail)
             mail_appdb($sEmail, $sSubject ,$sMsg);
+    }
+
+    function canEdit()
+    {
+        if($_SESSION['current']->hasPriv("admin") ||
+           ($this->iUserId == $_SESSION['current']->iUserId))
+            return TRUE;
+
+        return FALSE;
+    }
+
+    function mustBeQueued()
+    {
+        return FALSE;
+    }
+
+    /* Stub */
+    function display()
+    {
+        return "";
+    }
+
+    /* Stub */
+    function getOutputEditorValues()
+    {
+        return FALSE;
+    }
+
+    /* Stub */
+    function objectGetHeader()
+    {
+        return null;
+    }
+
+    function objectGetId()
+    {
+        return $this->iMonitorId;
+    }
+
+        /* Stub */
+    function objectGetTableRow()
+    {
+        return null;
+    }
+
+    /* Stub */
+    function objectMakeLink()
+    {
+        return "";
+    }
+
+    /* Stub */
+    function objectMakeUrl()
+    {
+        return "";
+    }
+
+    /* Stub */
+    function outputEditor()
+    {
+        return "";
+    }
+
+    function objectGetEntries($bQueued, $bRejected)
+    {
+        $hResult = query_parameters("SELECT * FROM appMonitors");
+
+        if(!$hResult)
+            return FALSE;
+
+        return $hResult;
+    }
+
+    function objectGetEntriesCount($bQueued, $bRejected)
+    {
+        $hResult = query_parameters("SELECT COUNT(DISTINCT monitorId) as count
+                                    FROM appMonitors");
+
+        if(!$hResult)
+            return FALSE;
+
+        $oRow = mysql_fetch_object($hResult);
+
+        if(!$oRow)
+            return FALSE;
+
+        return $oRow->count;
+    }
+
+    function allowAnonymousSubmissions()
+    {
+        /* That makes no sense */
+        return FALSE;
     }
 
     /* Retrieve the user's monitored versions */

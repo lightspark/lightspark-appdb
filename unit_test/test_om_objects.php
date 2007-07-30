@@ -11,6 +11,7 @@ require_once(BASE.'include/testData_queue.php');
 require_once(BASE.'include/version_queue.php');
 require_once(BASE.'include/application_queue.php');
 require_once(BASE.'include/browse_newest_apps.php');
+require_once(BASE.'include/monitor.php');
 
 /* internal function */
 function test_class($sClassName, $aTestMethods)
@@ -252,6 +253,7 @@ function test_object_methods()
                           "distribution",
                           "downloadurl",
                           "maintainer",
+                          "monitor",
                           "note",
                           "screenshot",
                           "testData",
