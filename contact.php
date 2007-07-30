@@ -57,7 +57,8 @@ if(!$aClean['sSubmit'])
     $oTableRow = new TableRow();
     $oTableRow->SetClass("color4");
     $oTableRow->AddTextCell("Subject");
-    $oTableCell = new TableCell("<input type=\"text\" name=\"sSubject\" size=\"71\" />");
+    $oTableCell = new TableCell("<input type=\"text\" name=\"sSubject\" size=\"71\"".
+                                " value=\"".$aClean['sSubject']."\" />");
     $oTableRow->AddCell($oTableCell);
     $oTable->AddRow($oTableRow);
 
@@ -66,7 +67,8 @@ if(!$aClean['sSubmit'])
     $oTableCell = new TableCell("Message");
     $oTableCell->SetValign("top");
     $oTableRow->AddCell($oTableCell);
-    $oTableCell = new TableCell("<textarea name=\"sMessage\" rows=\"15\" cols=\"60\"></textarea>");
+    $oTableCell = new TableCell("<textarea name=\"sMessage\" rows=\"15\" cols=\"60\">"
+                                .$aClean['sMessage']."</textarea>");
     $oTableRow->AddCell($oTableCell);
     $oTable->AddRow($oTableRow);
 
@@ -87,9 +89,16 @@ if(!$aClean['sSubmit'])
 
 } else if ($aClean['sSubject'] && $aClean['sMessage'])
 {
+    $sSubjectRe = $aClean['sSubject'];
+    if(substr($sSubjectRe, 0, 4) != "Re: ")
+        $sSubjectRe = "Re: $sSubjectRe";
+
+    $sSubjectRe = urlencode($sSubjectRe);
+
     $sMsg = "The following message was sent to you from $oUser->sRealname ";
     $sMsg .= "through the Wine AppDB contact form.\nTo Reply, visit ";
-    $sMsg .= APPDB_ROOT."contact.php?iRecipientId=$oUser->iUserId\n\n";
+    $sMsg .= APPDB_ROOT."contact.php?iRecipientId=$oUser->iUserId&sSubject=";
+    $sMsg .= $sSubjectRe."\n\n";
     $sMsg .= $aClean['sMessage'];
 
     mail_appdb($oRecipient->sEmail, $aClean['sSubject'], $sMsg);
