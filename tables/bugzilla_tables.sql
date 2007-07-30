@@ -2,6 +2,9 @@ create database if not exists bugs;
 
 use bugs;
 
+/* make sure the wineowner user has access to the bugs database */
+grant all on bugs.* to wineowner;
+
 drop table if exists versions;
 
 
