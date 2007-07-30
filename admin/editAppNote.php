@@ -15,7 +15,7 @@ $oNote = new Note($aClean['iNoteId']);
 $oVersion = new version($oNote->iVersionId);
 
 /* Check for privs */
-if(!$_SESSION['current']->hasPriv("admin") && !$_SESSION['current']->isMaintainer($oNote->iVersionId) && !$_SESSION['current']->isSuperMaintainer($oNote->iAppId))
+if(!$oNote->canEdit())
     util_show_error_page_and_exit("Insufficient Privileges!");
 
 if(!empty($aClean['sSub']))
@@ -40,7 +40,7 @@ if(!empty($aClean['sSub']))
     if($aClean['sPreview'])
     {
         $oNote->GetOutputEditorValues($aClean); /* retrieve the updated values */
-        $oNote->show(true);
+        $oNote->display(true);
     }
 
     echo "<form method=post action='editAppNote.php'>\n";

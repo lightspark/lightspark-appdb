@@ -1016,7 +1016,7 @@ class version {
         while( $oRow = mysql_fetch_object($hNotes) )
         {
             $oNote = new Note($oRow->noteId);
-            $oNote->show();
+            $oNote->display();
         }
     
         // Comments Section

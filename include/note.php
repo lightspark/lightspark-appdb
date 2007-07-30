@@ -12,7 +12,6 @@ require_once(BASE."include/version.php");
  */
 class Note {
     var $iNoteId;
-    var $iAppId;
     var $iVersionId;
     var $sTitle;
     var $shDescription;
@@ -23,26 +22,26 @@ class Note {
      * Constructor.
      * If $iNoteId is provided, fetches note.
      */
-    function Note($iNoteId="")
+    function Note($iNoteId = null, $oRow = null)
     {
-        if($iNoteId)
+        if(!$iNoteId && !$oRow)
+          return;
+
+        if(!$oRow)
         {
-            $sQuery = "SELECT appNotes.*, appVersion.appId AS appId
-                       FROM appNotes, appVersion
-                       WHERE appNotes.versionId = appVersion.versionId 
-                       AND noteId = '?'";
-            $hResult = query_parameters($sQuery, $iNoteId);
-            $oRow = mysql_fetch_object($hResult);
-            if($oRow)
-            {
-                $this->iNoteId = $oRow->noteId;
-                $this->iAppId = $oRow->appId;
-                $this->iVersionId = $oRow->versionId;
-                $this->sTitle = $oRow->noteTitle;
-                $this->shDescription = $oRow->noteDesc;
-                $this->sSubmitTime = $oRow->submitTime;
-                $this->iSubmitterId = $oRow->submitterId;
-            }
+            $sQuery = "SELECT * FROM appNotes WHERE noteId = '?'";
+            if($hResult = query_parameters($sQuery, $iNoteId))
+              $oRow = mysql_fetch_object($hResult);
+        }
+
+        if($oRow)
+        {
+            $this->iNoteId = $oRow->noteId;
+            $this->iVersionId = $oRow->versionId;
+            $this->sTitle = $oRow->noteTitle;
+            $this->shDescription = $oRow->noteDesc;
+            $this->sSubmitTime = $oRow->submitTime;
+            $this->iSubmitterId = $oRow->submitterId;
         }
     }
 
@@ -56,7 +55,9 @@ class Note {
     {
         $hResult = query_parameters("INSERT INTO appNotes (versionId, noteTitle, noteDesc, submitterId) ".
                                     "VALUES('?', '?', '?', '?')",
-                                    $this->iVersionId, $this->sTitle, $this->shDescription, $_SESSION['current']->iUserId);
+                                    $this->iVersionId, $this->sTitle,
+                                    $this->shDescription,
+                                    $_SESSION['current']->iUserId);
 
         if($hResult)
         {
@@ -109,13 +110,6 @@ class Note {
             $sVersionAfter = Version::lookup_name($this->iVersionId);
             $sWhatChanged .= "Version was changed from ".$sVersionBefore." to ".$sVersionAfter.".\n\n";
             $this->iVersionId = $iVersionId;
-
-            //TODO: iAppId isn't in the appNotes table
-            // and we only use it for permissions checking in showNote() and in SendNotificationEmail
-            // we may be able to look it up on the fly if we had a more efficient way of doing so
-            // instead of having to construct a version object each time
-            $oVersionAfter = new Version($this->iVersionId);
-            $this->iAppId = $oVersionAfter->iAppId;
         }
         if($sWhatChanged)
             $this->SendNotificationMail("edit",$sWhatChanged);       
@@ -126,12 +120,16 @@ class Note {
     /**
      * Removes the current note from the database.
      * Informs interested people about the deletion.
+     *
+     * Returns: true if successful, false if not
      */
     function delete($bSilent=false)
     {
         $hResult = query_parameters("DELETE FROM appNotes WHERE noteId = '?'", $this->iNoteId);
         if(!$bSilent)
             $this->SendNotificationMail("delete");
+
+        return true;
     }
 
 
@@ -164,7 +162,7 @@ class Note {
                 $sMsg .= $this->shDescription."\n";
                 $sMsg .= "\n";
                 $sMsg .= "Because:\n";
-                if($aClean['sReplyText'])
+                if(isset($aClean['sReplyText']) && $aClean['sReplyText'])
                     $sMsg .= $aClean['sReplyText']."\n";
                 else
                     $sMsg .= "No reason given.\n";
@@ -180,7 +178,7 @@ class Note {
     /* Show note */
     /* $bDisplayOnly means we should not display any editing controls, even if */
     /*   the user has the ability to edit this note */
-    function show($bDisplayOnly = false)
+    function display($bDisplayOnly = false)
     {
         switch($this->sTitle)
         {
@@ -213,9 +211,7 @@ class Note {
 
         if(!$bDisplayOnly)
         {
-            if ($_SESSION['current']->hasPriv("admin") ||
-                $_SESSION['current']->isMaintainer($this->iVersionId) ||
-                $_SESSION['current']->isSuperMaintainer($this->iAppId))
+            if ($this->canEdit())
             {
                 $shOutput .= "<tr class=\"color1\" align=\"center\" valign=\"top\"><td>";
                 $shOutput .= "<form method=\"post\" name=\"message\" action=\"admin/editAppNote.php?iNoteId={$this->iNoteId}\">";
@@ -239,7 +235,6 @@ class Note {
         echo html_table_begin("width='100%' border=0 align=left cellpadding=6 cellspacing=0 class='box-body'");
 
         echo '<input type="hidden" name="iNoteId" value="'.$this->iNoteId.'" />';
-        echo '<input type="hidden" name="iAppId" value="'.$this->iAppId.'" />';
         echo '<input type="hidden" name="iVersionId" value="'.$this->iVersionId.'" />';
 
         echo '<tr><td class=color1>Title</td>'."\n";
@@ -260,9 +255,85 @@ class Note {
     function GetOutputEditorValues($aValues)
     {
         $this->iVersionId = $aValues['iVersionId'];
-        $this->iAppId = $aValues['iAppId'];
         $this->sTitle = $aValues['sNoteTitle'];
         $this->shDescription = $aValues['shNoteDesc'];
+    }
+
+    function allowAnonymousSubmissions()
+    {
+        return false;
+    }
+
+    // NOTE: notes can not be queued at this point
+    function mustBeQueued()
+    {
+        return false;
+    }
+
+    function objectGetId()
+    {
+        return $this->iNoteId;
+    }
+
+    // TODO: we ignore $bQueued and $bRejected as notes
+    //       do not support queuing at this point
+    // TODO: we have no permissions scope on retrieving entries
+    //       as notes are typically only added to unqueued versions
+    function objectGetEntries($bQueued, $bRejected)
+    {
+        $sQuery = "select * from appNotes";
+        $hResult = query_parameters($sQuery);
+        return $hResult;
+    }
+
+    //TODO: not sure how to best let users view a table of notes
+    //      since the note contents could be very long we would only
+    //      want to show a small amount of the text. Implement this
+    //      routine when we need it
+    function objectGetHeader()
+    {
+        return null;
+    }
+
+    //TODO: implement this when we implement objectGetHeader()
+    function objectGetTableRow()
+    {
+        return null;
+    }
+
+    function objectMakeUrl()
+    {
+        $oManager = new objectManager("note", "View Note");
+        return $oManager->makeUrl("view", $this->objectGetId());
+    }
+
+    //TODO: not sure if we want to use sTitle here or what
+    function objectMakeLink()
+    {
+        $sLink = "<a href=\"".$this->objectMakeUrl()."\">".
+                 $this->sTitle."</a>";
+        return $sLink;
+    }
+
+    // users can edit the note if they:
+    //  - have "admin" privileges
+    //  - maintain the version, or supermaintain the application that
+    //    this version is under
+    function canEdit()
+    {
+        if($_SESSION['current']->hasPriv("admin"))
+        {
+          return true;
+        } else if($this->iVersionId)
+        {
+          if(maintainer::isUserMaintainer($_SESSION['current'],
+                                          $this->iVersionId))
+          {
+            return true;
+          }
+        }
+
+        return false;
     }
 }
 ?>

@@ -252,6 +252,7 @@ function test_object_methods()
                           "distribution",
                           "downloadurl",
                           "maintainer",
+                          "note",
                           "screenshot",
                           "testData",
                           "testData_queue",
