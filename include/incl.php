@@ -273,6 +273,12 @@ function addmsg($text, $color = "black")
 }
 
 
+function purgeSessionMessages()
+{
+  $sQuery = "truncate sessionMessages";
+  query_parameters($sQuery);
+}
+
 
 /**
  * output msg_buffer and clear it.

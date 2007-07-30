@@ -17,10 +17,12 @@ if(!defined("DISABLE_EMAIL"))
 // default to the tests being successful
 $bTestSuccess = true;
 
+// purge any session messages currently in the database
+purgeSessionMessages();
+
 // retrieve counts of each of the tables so we can check again
 // at the end of the
 $oStartingTableCounts = new table_counts();
-
 
 include_once("test_user.php");
 echo "\n";
@@ -42,6 +44,9 @@ echo "\n";
 include_once("test_appData.php");
 echo "\n";
 include_once("test_testData.php");
+
+// purge any session messages we generated during the test
+purgeSessionMessages();
 
 // retrieve counts of each of the tables after our tests
 $oEndingTableCounts = new table_counts();
@@ -97,6 +102,7 @@ class table_counts
                                       'testResults',
                                       'user_list',
                                       'user_privs',
+                                      'sessionMessages',
                                       'vendor');
 
         $this->update_counts();
