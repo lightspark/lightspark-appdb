@@ -12,7 +12,8 @@ $oUser = new User($_SESSION['current']->iUserId);
 
 /* Restrict error to logged-in users */
 if(!$oUser->isLoggedIn())
-    util_show_error_page_and_exit("You need to be logged in.");
+    util_show_error_page_and_exit("You need to be <a href=\"".login_url().
+                                  "\">logged in</a>.");
 
 
 $oRecipient = new User($aClean['iRecipientId']);
