@@ -167,6 +167,8 @@ class Vendor {
 
             return FALSE;
         }
+
+        return false;
     }
 
     function outputEditor()
