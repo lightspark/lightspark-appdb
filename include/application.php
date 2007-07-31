@@ -884,13 +884,12 @@ class Application {
 
     function objectGetHeader()
     {
-        $aCells = array(
-                "Submission Date",
-                "Submitter",
-                "Vendor",
-                "Application");
-
-        return $aCells;
+        $oTableRow = new TableRow();
+        $oTableRow->AddTextCell("Submission Date");
+        $oTableRow->AddTextCell("Submitter");
+        $oTableRow->AddTextCell("Vendor");
+        $oTableRow->AddTextCell("Application");
+        return $oTableRow;
     }
 
     function objectGetTableRow()

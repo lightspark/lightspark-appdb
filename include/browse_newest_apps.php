@@ -57,12 +57,18 @@ class browse_newest_apps
 
   function objectGetHeader()
   {
-    $aCells = array(
-                    array("Submission Date", "color=\"white\""),
-                    array("Application", "color=\"white\""),
-                    array("Description", "color=\"white\""));
+      $oTableRow = new TableRow();
 
-    return $aCells;
+      $oTableCell = new TableCell("Submission Date");
+      $oTableRow->AddCell($oTableCell);
+
+      $oTableCell = new TableCell("Application");
+      $oTableRow->AddCell($oTableCell);
+
+      $oTableCell = new TableCell("Description");
+      $oTableRow->AddCell($oTableCell);
+
+      return $oTableRow;
   }
 
   function objectGetTableRow()

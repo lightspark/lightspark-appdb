@@ -305,13 +305,12 @@ class appData
 
     function objectGetHeader($sType)
     {
-        $aCells = array(
-            "Submission Date",
-            "Submitter",
-            "Application",
-            "Version");
-
-        return $aCells;
+        $oTableRow = new TableRow();
+        $oTableRow->AddTextCell("Submission Date");
+        $oTableRow->AddTextCell("Submitter");
+        $oTableRow->AddTextCell("Application");
+        $oTableRow->AddTextCell("Version");
+        return $oTableRow;
     }
 
     function objectGetEntries($bQueued, $bRejected, $iRows = 0, $iStart = 0, $sType)

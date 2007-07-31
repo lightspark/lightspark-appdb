@@ -991,15 +991,15 @@ class testData{
 
     function objectGetHeader()
     {
-        $aCells = array(
-                "Submission Date",
-                "Submitter",
-                "Application",
-                "Version",
-                "Release",
-                "Has maintainer",
-                "Rating");
-        return $aCells;
+        $oTableRow = new TableRow();
+        $oTableRow->AddTextCell("Submission Date");
+        $oTableRow->AddTextCell("Submitter");
+        $oTableRow->AddTextCell("Application");
+        $oTableRow->AddTextCell("Version");
+        $oTableRow->AddTextCell("Release");
+        $oTableRow->AddTextCell("Has maintainer");
+        $oTableRow->AddTextCell("Rating");
+        return $oTableRow;
     }
 
     function objectGetTableRow()

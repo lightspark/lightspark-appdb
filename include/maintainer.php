@@ -648,14 +648,13 @@ class maintainer
 
     function ObjectGetHeader()
     {
-        $aCells = array(
-            "Submission Date",
-            "Application Name",
-            "Version",
-            "Super maintainer?",
-            "Submitter");
-
-        return $aCells;
+        $oTableRow = new TableRow();
+        $oTableRow->AddTextCell("Submission Date");
+        $oTableRow->AddTextCell("Application Name");
+        $oTableRow->AddTextCell("Version");
+        $oTableRow->AddTextCell("Super maintainer?");
+        $oTableRow->AddTextCell("Submitter");
+        return $oTableRow;
     }
 
     function ObjectGetTableRow()

@@ -423,12 +423,17 @@ class distribution {
 
     function objectGetHeader()
     {
-        $aCells = array(
-            "Distribution name",
-            "Distribution url",
-            array("Linked Tests", "align=\"right\""));
+        $oTableRow = new TableRow();
 
-        return $aCells;
+        $oTableRow->AddTextCell("Distribution name");
+
+        $oTableRow->AddTextCell("Distribution url");
+
+        $oTableCell = new TableCell("Linked Tests");
+        $oTableCell->SetAlign("right");
+        $oTableRow->AddCell($oTableCell);
+
+        return $oTableRow;
     }
 
     function objectGetEntries($bQueued, $bRejected, $iRows = 0, $iStart = 0)

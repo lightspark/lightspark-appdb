@@ -237,12 +237,17 @@ class Vendor {
 
     function objectGetHeader()
     {
-        $aCells = array(
-            "Name",
-            "Website",
-            array("Linked apps", "align=\"right\""));
+        $oTableRow = new TableRow();
+        
+        $oTableRow->AddTextCell("Name");
 
-        return $aCells;
+        $oTableRow->AddTextCell("Website");
+
+        $oTableCell = new TableCell("Linked apps");
+        $oTableCell->SetAlign("right");
+        $oTableRow->AddCell($oTableCell);
+
+        return $oTableRow;
     }
 
     // returns an OMTableRow instance

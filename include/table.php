@@ -68,7 +68,7 @@ class TableRowClick
 
     $sStr.= ' onclick="DoNav(\''.$this->shUrl.'\');"';
 
-    return $sStr;    
+    return $sStr;
   }
 }
 

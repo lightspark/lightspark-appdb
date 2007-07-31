@@ -643,14 +643,18 @@ class ObjectManager
     function outputHeader($sClass)
     {
         $oObject = new $this->sClass();
-        $aCells = $oObject->objectGetHeader();
+        $oTableRow = $oObject->objectGetHeader();
 
         /* Add an action column if the user can edit this class, or if it is a queue.
            Even though a user annot process items, he can edit his queued submissions */
         if($oObject->canEdit() || $this->bIsQueue)
-            $aCells[] = "Action";
+        {
+            $oTableRow->AddTextCell("Action");
+        }
 
-        echo html_tr($aCells, $sClass);
+        $oTableRow->SetClass($sClass);
+
+        echo $oTableRow->GetString();
     }
 
     function handleMultiPageControls($aClean, $bItemsPerPageSelector = TRUE)
