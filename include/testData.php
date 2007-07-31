@@ -214,8 +214,9 @@ class testData{
            !$_SESSION['current']->hasAppVersionModifyPermission($oVersion) &&
            !(($_SESSION['current']->iUserId == $this->iSubmitterId) && !($this->sQueued == 'false')))
         {
-            return;
+            return false;
         }
+
         // now delete the test data 
         $sQuery = "DELETE FROM testResults
                    WHERE testingId = '?' 
@@ -223,6 +224,7 @@ class testData{
         if(!($hResult = query_parameters($sQuery, $this->iTestingId)))
         {
             addmsg("Error removing the deleted test data!", "red");
+            return false;
         }
 
         if(!$bSilent)
@@ -231,7 +233,7 @@ class testData{
         if($this->iSubmitterId && ($this->iSubmitterId != $_SESSION['current']->iUserId))
             $this->mailSubmitter("delete");
 
-        return TRUE;
+        return true;
     }
 
 
