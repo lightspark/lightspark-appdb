@@ -77,7 +77,7 @@ class browse_newest_apps
 
     $oTableRow = new TableRow();
 
-    $oTableCell = new TableCell(print_short_date(mysqltimestamp_to_unixtimestamp($oApp->sSubmitTime)));
+    $oTableCell = new TableCell(print_short_date(mysqldatetime_to_unixtimestamp($oApp->sSubmitTime)));
     $oTableCell->SetWidth("20%");
     $oTableRow->AddCell($oTableCell);
     $oTableRow->AddTextCell($oApp->objectMakeLink());

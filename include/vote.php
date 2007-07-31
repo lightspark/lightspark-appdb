@@ -68,7 +68,7 @@ function vote_add($iVersionId, $iSlot, $iUserId = null)
     vote_remove($iSlot, $iUserId);
 
     query_parameters("INSERT INTO appVotes (id, time, versionId, userId, slot)
-                      VALUES (?, ?, '?', '?', '?')", "null", "null",
+                      VALUES (?, ?, '?', '?', '?')", "null", "NOW()",
                           $iVersionId, $iUserId, $iSlot);
 }
 

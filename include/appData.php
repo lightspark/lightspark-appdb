@@ -153,7 +153,7 @@ class appData
                 $sLink,
                 $oRow->type,
                 $oRow->description,
-                print_date(mysqltimestamp_to_unixtimestamp($oRow->submitTime))),
+                print_date(mysqldatetime_to_unixtimestamp($oRow->submitTime))),
                 ($i % 2) ? "color0" : "color1");
         }
 
@@ -500,7 +500,7 @@ class appData
         $oUser = new User($this->iSubmitterId);
 
         $oTableRow = new TableRow();
-        $oTableRow->AddTextCell(print_date(mysqltimestamp_to_unixtimestamp($this->sSubmitTime)));
+        $oTableRow->AddTextCell(print_date(mysqldatetime_to_unixtimestamp($this->sSubmitTime)));
         $oTableRow->AddTextCell($oUser->objectMakeLink());
         $oTableRow->AddTextCell($oApp->objectMakeLink());
         $oTableRow->AddTextCell($this->iVersionId ? $oVersion->objectMakeLink() : "N/A");

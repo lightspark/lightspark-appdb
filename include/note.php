@@ -53,11 +53,14 @@ class Note {
      */
     function create()
     {
-        $hResult = query_parameters("INSERT INTO appNotes (versionId, noteTitle, noteDesc, submitterId) ".
-                                    "VALUES('?', '?', '?', '?')",
+        $hResult = query_parameters("INSERT INTO appNotes (versionId, ".
+                                    "noteTitle, noteDesc, submitterId, ".
+                                    "submitTime) ".
+                                    "VALUES('?', '?', '?', '?', ?)",
                                     $this->iVersionId, $this->sTitle,
                                     $this->shDescription,
-                                    $_SESSION['current']->iUserId);
+                                    $_SESSION['current']->iUserId,
+                                    "NOW()");
 
         if($hResult)
         {
@@ -154,7 +157,8 @@ class Note {
                 $oSubmitter = new User($this->iSubmitterId);
                 $sSubject = "Note $this->sTitle for $sAppName has been deleted by ".
                 $_SESSION['current']->sRealname;
-                $sMsg .= "This note was made on ".print_date(mysqltimestamp_to_unixtimestamp($this->sSubmitTime))." by ".$oSubmitter->sRealname."\n";
+                $sMsg .= "This note was made on ".print_date(mysqldatetime_to_unixtimestamp($this->sSubmitTime)).
+                         " by ".$oSubmitter->sRealname."\n";
                 $sMsg .= "\n";
                 $sMsg .= "Subject: ".$this->sTitle."\n";
                 $sMsg .= "\n";

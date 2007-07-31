@@ -6,7 +6,7 @@ CREATE TABLE banner (
 	alt		varchar(255),
 	imp		int not null,
 	clk		int not null,
-	lastmod		timestamp,
+	lastmod		datetime,
 
 	primary key(id)
 )

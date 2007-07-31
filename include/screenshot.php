@@ -71,11 +71,12 @@ class screenshot
     function create()
     {
         $hResult = query_parameters("INSERT INTO appData
-                (versionId, type, description, queued, submitterId)
-                                    VALUES('?', '?', '?', '?', '?')",
+                (versionId, type, description, queued, submitTime, submitterId)
+                                    VALUES('?', '?', '?', '?', ?, '?')",
                                     $this->iVersionId, "screenshot", 
                                     $this->sDescription,
                                     $this->mustBeQueued() ? "true" : "false",
+                                    "NOW()",
                                     $_SESSION['current']->iUserId);
         if($hResult)
         {

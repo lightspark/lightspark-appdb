@@ -44,7 +44,6 @@ function build_urlarg($vars)
     return implode("&", $arr);
 }
 
-
 /*
  * return all values of a mapping as an array
  */
@@ -55,7 +54,6 @@ function values($arr)
         $res[] = $v;
     return $res;
 }
-
 
 // print the month, day, year, hour, minute, second
 function print_date($sTimestamp)
@@ -99,10 +97,7 @@ function mysqltimestamp_to_unixtimestamp($sTimestamp)
 
 function mysqldatetime_to_unixtimestamp($sDatetime)
 {
-    sscanf($sDatetime, "%4s-%2s-%2s %2s:%2s:%2s",
-           &$y, &$m, &$d,
-           &$hours, &$minutes, &$seconds);
-    return mktime($hours,$minutes,$seconds,$m, $d, $y);
+    return strtotime($sDatetime);
 }
 
 function get_remote()

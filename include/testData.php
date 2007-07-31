@@ -65,9 +65,11 @@ class testData{
     {
         $hResult = query_parameters("INSERT INTO testResults (versionId, whatWorks, whatDoesnt,".
                                     "whatNotTested, testedDate, distributionId, testedRelease,".
-                                    "installs, runs, testedRating, comments, submitterId, queued)".
-                                    " VALUES('?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?',".
-                                    "'?', '?')",
+                                    "installs, runs, testedRating, comments,".
+                                    "submitTime, submitterId, queued)".
+                                    "VALUES('?', '?', '?', '?', '?', '?', '?',".
+                                    "'?', '?', '?', '?',".
+                                    "?, '?', '?')",
                                     $this->iVersionId, $this->shWhatWorks,
                                     $this->shWhatDoesnt,
                                     $this->shWhatNotTested, $this->sTestedDate,
@@ -75,6 +77,7 @@ class testData{
                                     $this->sTestedRelease, $this->sInstalls,
                                     $this->sRuns,
                                     $this->sTestedRating, $this->sComments,
+                                    "NOW()",
                                     $_SESSION['current']->iUserId,
                                     $this->mustBeQueued() ? "true" : "false");
 
@@ -812,7 +815,7 @@ class testData{
                 version::fullNameLink($oRow->versionId),
                 $oRow->testedRating,
                 $oRow->testedRelease,
-                print_date(mysqltimestamp_to_unixtimestamp($oRow->submitTime))),
+                print_date(mysqldatetime_to_unixtimestamp($oRow->submitTime))),
                 $oRow->testedRating);
 
         $sReturn .= html_table_end();
@@ -1014,7 +1017,7 @@ class testData{
         $bHasMaintainer = (mysql_num_rows($hMaintainers) == 0) ? false : true;
 
         $oTableRow = new TableRow();
-        $oTableRow->AddCell(new TableCell(print_date(mysqltimestamp_to_unixtimestamp($this->sSubmitTime))));
+        $oTableRow->AddCell(new TableCell(print_date(mysqldatetime_to_unixtimestamp($this->sSubmitTime))));
         $oTableRow->AddCell(new TableCell($oUser->objectMakeLink()));
         $oTableRow->AddCell(new TableCell($oApp->objectMakeLink()));
         $oTableRow->AddCell(new TableCell($oVersion->objectMakeLink()));

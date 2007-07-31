@@ -120,11 +120,13 @@ class Bug {
 
         /* passed the checks so lets insert the puppy! */
 
-        $hResult = query_parameters("INSERT INTO buglinks (versionId, bug_id, queued, submitterId) ".
-                                    "VALUES('?', '?', '?', '?')",
+        $hResult = query_parameters("INSERT INTO buglinks (versionId, bug_id, ".
+                                    "submitTime, submitterId, queued) ".
+                                    "VALUES('?', '?', ?, '?', '?')",
                                     $this->iVersionId, $this->iBug_id,
-                                    $this->bQueued ? "true":"false",
-                                    $_SESSION['current']->iUserId);
+                                    "NOW()",
+                                    $_SESSION['current']->iUserId,
+                                    $this->bQueued ? "true":"false");
         if($hResult)
         {
             $this->iLinkId = mysql_insert_id();
@@ -279,7 +281,7 @@ class Bug {
                 $oBug->sBug_status,
                 $oBug->sResolution,
                 $oBug->sShort_desc,
-                print_date(mysqltimestamp_to_unixtimestamp($oRow->submitTime))),
+                print_date(mysqldatetime_to_unixtimestamp($oRow->submitTime))),
                 ($i % 2) ? "color0" : "color1");
         }
 

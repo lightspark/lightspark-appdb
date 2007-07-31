@@ -121,12 +121,14 @@ class Application {
         if(!$_SESSION['current']->canCreateApplication())
             return;
 
-        $hResult = query_parameters("INSERT INTO appFamily (appName, description, keywords, ".
-                                    "webPage, vendorId, catId, submitterId, queued) VALUES (".
-                                    "'?', '?', '?', '?', '?', '?', '?', '?')",
+        $hResult = query_parameters("INSERT INTO appFamily (appName, description, ".
+                                    "keywords, webPage, vendorId, catId, ".
+                                    "submitTime, submitterId, ".
+                                    "queued) VALUES (".
+                                    "'?', '?', '?', '?', '?', '?', ?, '?', '?')",
                                     $this->sName, $this->sDescription, $this->sKeywords,
                                     $this->sWebpage, $this->iVendorId, $this->iCatId,
-                                    $_SESSION['current']->iUserId,
+                                    "NOW()", $_SESSION['current']->iUserId,
                                     $this->mustBeQueued() ? "true" : "false");
         if($hResult)
         {
@@ -804,7 +806,7 @@ class Application {
             $oTableRow->AddTextCell($oApp->objectMakeLink());
             $oTableRow->AddTextCell($oRow->description);
             $oTableRow->AddTextCell($oVendor->objectMakeLink());
-            $oTableRow->AddTextCell(print_date(mysqltimestamp_to_unixtimestamp($oRow->submitTime)));
+            $oTableRow->AddTextCell(print_date(mysqldatetime_to_unixtimestamp($oRow->submitTime)));
             $oTableRow->SetClass(($i % 2) ? "color0" : "color1");
 
             $oTable->AddRow($oTableRow);
@@ -902,7 +904,7 @@ class Application {
             $sVendor = $oVendor->objectMakeLink();
 
         $oTableRow = new TableRow();
-        $oTableRow->AddTextCell(print_date(mysqltimestamp_to_unixtimestamp($this->sSubmitTime)));
+        $oTableRow->AddTextCell(print_date(mysqldatetime_to_unixtimestamp($this->sSubmitTime)));
         $oTableRow->AddTextCell($oUser->objectMakeLink());
         $oTableRow->AddTextCell($sVendor);
         $oTableRow->AddTextCell($this->sName);

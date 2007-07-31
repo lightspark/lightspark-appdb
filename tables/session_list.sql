@@ -8,6 +8,6 @@ CREATE TABLE session_list (
  ip varchar(64) default NULL,
  data text,
  messages text,
- stamp timestamp(14) NOT NULL,
+ stamp datetime NOT NULL,
  PRIMARY KEY (session_id)
 ) TYPE=MyISAM;

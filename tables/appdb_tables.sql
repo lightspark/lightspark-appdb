@@ -39,7 +39,7 @@ create table appFamily (
 	description   text,
 	webPage       varchar(100),
 	catId         int,
-	submitTime    timestamp(14) NOT NULL,
+	submitTime    datetime NOT NULL,
 	submitterId   int(11) NOT NULL default '0',
 	queued        enum('true','false','rejected') NOT NULL default 'false',
 	key(appId)
@@ -56,7 +56,7 @@ create table appVersion (
   description           text,
   maintainer_rating     text,
   maintainer_release    text,
-  submitTime            timestamp(14) NOT NULL,
+  submitTime            datetime NOT NULL,
   submitterId           int(11) NOT NULL default '0',
   queued                enum('true','false','rejected') NOT NULL default 'false',
   license		enum('Retail','Open Source','Freeware','Demo','Shareware'),
@@ -93,7 +93,7 @@ create table appBundle (
  */
 create table appHitStats (
   appHitId  int not null auto_increment,
-  time      timestamp,
+  time      datetime,
   ip        varchar(16),
   appId     int not null,	
   count     int,
@@ -102,7 +102,7 @@ create table appHitStats (
 
 create table catHitStats (
   catHitId  int not null auto_increment,
-  time      timestamp,
+  time      datetime,
   ip        varchar(16),
   catId     int not null,
   count     int,
@@ -132,15 +132,15 @@ create table appComments (
  * links to screenshots and other stuff
  */
 create table appData (
-	id            int not null auto_increment,
-	appId         int not null,
-	versionId	    int default 0,
-	type          enum('screenshot', 'url', 'bug','downloadurl'),
-	description	  text,
-	url	          varchar(255) default NULL,
-	submitTime    timestamp(14) NOT NULL,
-	submitterId   int(11) NOT NULL default '0',
-	queued        enum('true','false','rejected') NOT NULL default 'false',
+	id              int not null auto_increment,
+	appId           int not null,
+	versionId       int default 0,
+	type            enum('screenshot', 'url', 'bug','downloadurl'),
+	description     text,
+	url             varchar(255) default NULL,
+	submitTime      datetime NOT NULL,
+	submitterId     int(11) NOT NULL default '0',
+	queued          enum('true','false','rejected') NOT NULL default 'false',
 	KEY id (id),
 	KEY versionId (versionId)
 );
@@ -152,7 +152,7 @@ create table appData (
  */
 create table appVotes (
 	id		int not null auto_increment,
-	time		timestamp,
+	time		datetime,
 	versionId	int not null,
 	userId		int not null,
 	slot		int not null,
@@ -171,7 +171,7 @@ create table appNotes (
 	noteDesc        text,
 	versionId       int not null,
 	submitterId	int not null,
-	submitTime	timestamp not null,
+	submitTime	datetime not null,
 	key(noteId)
 );
 
@@ -181,7 +181,7 @@ create table appNotes (
  */
 create table sessionMessages (
 	id		int not null auto_increment,
-	time		timestamp,
+	time		datetime,
 	sessionId	varchar(32),
 	message		text,
 	key(id),

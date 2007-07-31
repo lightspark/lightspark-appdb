@@ -86,10 +86,11 @@ class version {
 
         $hResult = query_parameters("INSERT INTO appVersion
                    (versionName, description, maintainer_release,
-                   maintainer_rating, appId, submitterId, queued, license)
-                       VALUES ('?', '?', '?', '?', '?', '?', '?', '?')",
+                   maintainer_rating, appId, submitTime, submitterId,
+                   queued, license)
+                       VALUES ('?', '?', '?', '?', '?', ?, '?', '?', '?')",
                            $this->sName, $this->sDescription, $this->sTestedRelease,
-                           $this->sTestedRating, $this->iAppId,
+                           $this->sTestedRating, $this->iAppId, "NOW()",
                            $_SESSION['current']->iUserId, $this->sQueued,
                            $this->sLicense);
 
@@ -1216,7 +1217,7 @@ class version {
           $oTableRow = new TableRow();
           $oTableRow->AddTextCell(version::fullNameLink($oRow->versionId));
           $oTableRow->AddTextCell($oRow->description);
-          $oTableRow->AddTextCell(print_date(mysqltimestamp_to_unixtimestamp($oRow->submitTime)));
+          $oTableRow->AddTextCell(print_date(mysqldatetime_to_unixtimestamp($oRow->submitTime)));
           $oTableRow->SetClass(($i % 2) ? "color0" : "color1");
 
           $oTable->AddRow($oTableRow);
@@ -1515,7 +1516,7 @@ class version {
         $oVendor = new vendor($oApp->iVendorId);
 
         $oTableRow = new TableRow();
-        $oTableRow->AddTextCell(print_date(mysqltimestamp_to_unixtimestamp($this->sSubmitTime)));
+        $oTableRow->AddTextCell(print_date(mysqldatetime_to_unixtimestamp($this->sSubmitTime)));
         $oTableRow->AddTextCell($oUser->objectMakeLink());
         $oTableRow->AddTextCell($oVendor->objectMakeLink());
         $oTableRow->AddTextCell($oApp->objectMakeLink());

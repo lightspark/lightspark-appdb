@@ -54,7 +54,8 @@ class Url {
     /**
      * Creates a new url.
      */
-    function create($sDescription = null, $sUrl = null, $iVersionId = null, $iAppId = null, $bSilent = false)
+    function create($sDescription = null, $sUrl = null, $iVersionId = null,
+                    $iAppId = null, $bSilent = false)
     {
         global $aClean;
 
@@ -64,11 +65,11 @@ class Url {
             $this->bQueued = true;
 
         $hResult = query_parameters("INSERT INTO appData (appId, versionId, type,
-            description, queued, submitterId, url)
-                VALUES ('?', '?', '?', '?', '?', '?', '?')",
+            description, queued, submitTime, submitterId, url)
+                VALUES ('?', '?', '?', '?', '?', ?, '?', '?')",
                     $iAppId, $iVersionId, "url", $sDescription,
                     $this->bQueued ? "true" : "false",
-                    $_SESSION['current']->iUserId, $sUrl);
+                    "NOW()", $_SESSION['current']->iUserId, $sUrl);
 
         if(!$hResult)
         {

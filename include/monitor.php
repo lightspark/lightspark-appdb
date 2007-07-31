@@ -75,9 +75,11 @@ class Monitor {
             return FALSE;
 
         // create the new monitor entry
-        $hResult = query_parameters("INSERT INTO appMonitors (versionId, appId, userId) ".
-                                    "VALUES ('?', '?', '?')",
-                                    $this->iVersionId, $this->iAppId, $this->iUserId);
+        $hResult = query_parameters("INSERT INTO appMonitors (versionId, appId,".
+                                    "submitTime, userId) ".
+                                    "VALUES ('?', '?', ?, '?')",
+                                    $this->iVersionId, $this->iAppId,
+                                    "NOW()", $this->iUserId);
 
         if($hResult)
         {

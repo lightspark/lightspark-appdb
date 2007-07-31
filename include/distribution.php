@@ -99,9 +99,11 @@ class distribution {
             }
         }
 
-        $hResult = query_parameters("INSERT INTO distributions (name, url, submitterId, queued) ".
-                                    "VALUES ('?', '?', '?', '?')",
+        $hResult = query_parameters("INSERT INTO distributions (name, url, submitTime, ".
+                                    "submitterId, queued) ".
+                                    "VALUES ('?', '?', ?, '?', '?')",
                                     $this->sName, $this->sUrl,
+                                    "NOW()",
                                     $_SESSION['current']->iUserId,
                                     $this->mustBeQueued() ? "true" : "false");
         if($hResult)
@@ -570,7 +572,7 @@ class distribution {
                 else
                     echo $oSubmitter->sRealname;
                 echo '</td>',"\n";
-                echo '<td>'.date("M d Y", mysqltimestamp_to_unixtimestamp($oTest->sSubmitTime)).'</td>',"\n";
+                echo '<td>'.date("M d Y", mysqldatetime_to_unixtimestamp($oTest->sSubmitTime)).'</td>',"\n";
                 echo '<td>'.$oTest->sTestedRelease.'&nbsp</td>',"\n";
                 echo '<td>'.$oTest->sInstalls.'&nbsp</td>',"\n";
                 echo '<td>'.$oTest->sRuns.'&nbsp</td>',"\n";

@@ -18,7 +18,7 @@ create table testResults (
 	runs		enum('Yes','No','Not Installable') NOT NULL default 'Yes',
 	testedRating  	enum('Platinum','Gold','Silver','Bronze','Garbage') NOT NULL,
         comments        text,
-	submitTime	timestamp(14) NOT NULL,
+	submitTime	datetime NOT NULL,
 	submitterId	int(11) NOT NULL default '0',
 	queued		enum('true','false','rejected') NOT NULL default 'false',
         key(testingId)

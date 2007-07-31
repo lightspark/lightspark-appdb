@@ -297,11 +297,13 @@ class downloadurl
             return FALSE;
 
         $hResult = query_parameters("INSERT INTO appData (versionId, type,
-            description, url, queued, submitterId)
-                VALUES('?','?','?','?','?','?')",
+            description, url, queued, submitTime, submitterId)
+                VALUES('?', '?', '?', '?', '?', ?, '?')",
                     $this->iVersionId, "downloadurl", $this->sDescription,
-                    $this->sUrl, downloadurl::canEdit($this->iVersionId) ?
-                    "false" : "true", $_SESSION['current']->iUserId);
+                    $this->sUrl,
+                    downloadurl::canEdit($this->iVersionId) ? "false" : "true",
+                    "NOW()",
+                    $_SESSION['current']->iUserId);
 
         $this->iId = mysql_insert_id();
         if(!$hResult)
