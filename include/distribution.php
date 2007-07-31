@@ -147,7 +147,7 @@ class distribution {
            deleted along with the last testData associated with it */
         if(!($this->canEdit() || (!sizeof($this->aTestingIds) &&
                 $this->sQueued != "false")))
-            return;
+            return false;
 
         /* Check for associated test results */
         if(sizeof($this->aTestingIds))
@@ -163,6 +163,7 @@ class distribution {
         if(!($hResult = query_parameters($sQuery, $this->iDistributionId)))
         {
             addmsg("Error removing the Distribution!", "red");
+            return false;
         }
 
         if(!$bSilent)
