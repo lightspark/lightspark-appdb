@@ -930,20 +930,21 @@ class maintainer
 
       // construct the subject of the notification email that we may send
       $sSubject = "Notification of queued data for ";
-      $sMsg = "You are receiving this email to notify you that there is queued data";
+      $sMsg = "";
+      $sMsg.= "Hello ".$oUser->sRealname."<".$oUser->sEmail.">".".\n\n";
+      $sMsg.= "You are receiving this email to notify you that there is queued data";
       $sMsg.=" for the ";
       if($this->bSuperMaintainer)
       {
         $oApp = new Application($this->iAppId);
         $sSubject.= $oApp->sName;
-        $sMsg.='application, '.$oApp->objectMakeLink().', that you maintain.'."\n";
+        $sMsg.='application, '.$oApp->sName.'('.$oApp->objectMakeUrl().'), that you maintain.'."\n";
       } else
       {
         $sFullname = version::fullName($this->iVersionId);
         $oVersion = new Version($this->iVersionId);
         $sSubject.= $sFullname;
-        $sMsg.='version, <a href="'.$oVersion->objectMakeUrl().'">'.$sFullname.
-          '</a>, that you maintain.'."\n";
+        $sMsg.='version, '.$sFullname.'('.$oVersion->objectMakeUrl().'), that you maintain.'."\n";
       }
       $sSubject.=" ready for your processing";
 
@@ -964,8 +965,8 @@ class maintainer
       {
         $oVersion = new Version($iVersionId);
           
-        $sMsg .= 'Version <a href="'.$oVersion->objectMakeUrl().'">'.$sFullname.
-          '</a> is queued and ready for processing.';
+        $sMsg .= 'Version '.$sFullname.' ('.$oVersion->objectMakeUrl().'">'.$sFullname.
+          ') is queued and ready for processing.';
 
         $iSubmitTime = strtotime($oVersion->sSubmitTime);
 
@@ -981,8 +982,8 @@ class maintainer
       {
         // FIXME: should use a function to generate these urls and use it here and
         // in sidebar_maintainer.php and sidebar_admin.php
-        $sMsg = 'Please visit <a href="'.BASE."objectManager.php?sClass=version_queue&bIsQueue=true&sTitle=".
-          "Version%20Queue".'">AppDB Version queue</a> to process queued versions for applications you maintain.\n';
+        $sMsg = 'Please visit the test data queue ('.APPDB_ROOT."objectManager.php?sClass=version_queue&bIsQueue=true&sTitle=".
+          "Version%20Queue".') to process queued versions for applications you maintain.\n';
       }
 
       //////////////////
