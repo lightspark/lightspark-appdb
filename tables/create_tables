@@ -1,9 +1,9 @@
 #! /bin/sh
 
 echo Create the base user
-echo NOTE: It's ok for this to fail if the user already exists
-echo       there doesn't appear to be a way to create a user only
-echo       if they don't exist so we have to live with a potential
+echo NOTE: It is ok for this to fail if the user already exists
+echo       there does not appear to be a way to create a user only
+echo       if they do not exist so we have to live with a potential
 echo       error after we try.
 mysql -p -u root < create_user.sql
 
