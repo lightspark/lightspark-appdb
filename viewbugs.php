@@ -42,14 +42,14 @@ if(!is_numeric($aClean['iBugId']))
 
     if($hResult)
     {
-        while($oRow = mysql_fetch_object($hResult))
+        while($oRow = query_fetch_object($hResult))
         {
             $oApp = new application($oRow->appId);
             $oVersion = new version($oRow->versionId);
             $sDownloadUrls = "";
             if($hDownloadUrls = appData::getData($oRow->versionId, "downloadurl"))
             {
-                while($oDownloadUrl = mysql_fetch_object($hDownloadUrls))
+                while($oDownloadUrl = query_fetch_object($hDownloadUrls))
                     $sDownloadUrls .= "<a href=\"$oDownloadUrl->url\">".
                             "$oDownloadUrl->description</a><br />";
             }

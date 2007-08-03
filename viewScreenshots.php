@@ -59,7 +59,7 @@ echo "</center>";
 $Ids = appData::objectGetEntries(false, false, $ItemsPerPage, $offset, "screenshot");
 $c = 1;
 echo "<div align=center><table><tr>\n";
-while ($oRow = mysql_fetch_object($Ids))
+while ($oRow = query_fetch_object($Ids))
 {
     // display thumbnail
     $oVersion = new version($oRow->versionId);

@@ -47,7 +47,7 @@ class screenshot
                     AND id = '?'
                     AND type = 'screenshot'", $iScreenshotId);
             if($hResult)
-                $oRow = mysql_fetch_object($hResult);
+                $oRow = query_fetch_object($hResult);
         }
 
         if($oRow)
@@ -80,7 +80,7 @@ class screenshot
                                     $_SESSION['current']->iUserId);
         if($hResult)
         {
-            $this->iScreenshotId = mysql_insert_id();
+            $this->iScreenshotId = query_appdb_insert_id();
 
             /* make sure we supply the full path to move_uploaded_file() */
             $moveToPath = appdb_fullpath("data/screenshots/originals/").$this->iScreenshotId;
@@ -432,12 +432,12 @@ class screenshot
         if($bFormatting)
             $sImgFile .= '<center>';
 
-        if(!$hResult || !mysql_num_rows($hResult))
+        if(!$hResult || !query_num_rows($hResult))
         {
             $sImgFile.= '<img src="images/no_screenshot.png" alt="No Screenshot" />';
         } else
         {
-            $oRow = mysql_fetch_object($hResult);
+            $oRow = query_fetch_object($hResult);
             $sImgFile.= '<img src="appimage.php?bThumbnail=true&amp;iId='.$oRow->id.'" alt="'.$oRow->description.'" />';
         }
 
@@ -451,7 +451,7 @@ class screenshot
         $sZoomIcon = Screenshot::get_zoomicon_overlay();
 
         /* we have screenshots */
-        if(mysql_num_rows($hResult))
+        if(query_num_rows($hResult))
         {
             if($iVersionId)
                 $sImg .= "<a href='screenshots.php?iAppId=$iAppId&amp;iVersionId=$iVersionId'>".$sImgFile.$sZoomIcon."<center>View/Submit&nbsp;Screenshot</center></a>";

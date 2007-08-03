@@ -37,7 +37,7 @@ function display_bundle($iAppId)
     $hResult = query_parameters("SELECT appFamily.appId, appName, description FROM appBundle, appFamily ".
                             "WHERE appFamily.queued='false' AND bundleId = '?' AND appBundle.appId = appFamily.appId",
                             $iAppId);
-    if(!$hResult || mysql_num_rows($hResult) == 0)
+    if(!$hResult || query_num_rows($hResult) == 0)
     {
          return; // do nothing
     }
@@ -51,7 +51,7 @@ function display_bundle($iAppId)
     echo "</tr>\n\n";
 
     $c = 0;
-    while($ob = mysql_fetch_object($hResult))
+    while($ob = query_fetch_object($hResult))
     {
         $oApp = new application($ob->appId);
         //set row color

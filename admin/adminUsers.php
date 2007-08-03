@@ -121,7 +121,7 @@ if(isset($aClean['sSubmit']))
         $hResult = query_parameters($sQuery, $sSearch, $sSearch, $aClean['sOrderBy'],
                                 $aClean['iLimit']);
         $i=0;
-        while($hResult && $oRow = mysql_fetch_object($hResult))
+        while($hResult && $oRow = query_fetch_object($hResult))
         {
             $oUser = new User($oRow->userid);
             $sAreYouSure = "Are you sure that you want to delete user ".addslashes($oUser->sRealname)." ?";

@@ -10,7 +10,7 @@ require_once(BASE."include/note.php");
 //FIXME: get rid of appId references everywhere, as version is enough.
 $sQuery = "SELECT appId FROM appVersion WHERE versionId = '?'";
 $hResult = query_parameters($sQuery, $aClean['iVersionId']);
-$oRow = mysql_fetch_object($hResult);
+$oRow = query_fetch_object($hResult);
 $appId = $oRow->appId; 
 
 //check for admin privs

@@ -20,19 +20,19 @@ class TableVE {
     function test($query)
     {
         $hResult  = query_appdb($query);
-        $nfields = mysql_num_fields($hResult);
-        $nrows   = mysql_num_rows($hResult);
-        $table   = mysql_field_table($hResult, 0);
+        $nfields = query_num_fields($hResult);
+        $nrows   = query_num_rows($hResult);
+        $table   = query_field_table($hResult, 0);
 
         echo "Table: $table <br> Fields: $nfields <br> Rows: $nrows <br> <br>\n";
 
         $i = 0;
         while($i < $nfields)
         {
-            $type = mysql_field_type($hResult, $i);
-            $name = mysql_field_name($hResult, $i);
-            $len  = mysql_field_len($hResult, $i);
-            $flags = mysql_field_flags($hResult, $i);
+            $type = query_field_type($hResult, $i);
+            $name = query_field_name($hResult, $i);
+            $len  = query_field_len($hResult, $i);
+            $flags = query_field_flags($hResult, $i);
 
             echo "$type | $name | $len | $flags <br>\n";
             $i++;
@@ -46,7 +46,7 @@ class TableVE {
     function create($query, $table, $idcolumn)
     {
         $hResult = query_appdb($query);
-        $id     = mysql_insert_id();
+        $id     = query_appdb_insert_id();
 	
         $new_query = "SELECT * FROM $table WHERE $idcolumn = $id";
         $this->edit($new_query);
@@ -60,7 +60,7 @@ class TableVE {
         $nrows = 0;
 
         $hResult  = query_appdb($query);
-        $nrows   = mysql_num_rows($hResult);
+        $nrows   = query_num_rows($hResult);
 
         if(debugging())
         {
@@ -76,8 +76,8 @@ class TableVE {
     
     function view_entry($hResult, $num)
     {
-        $nfields = mysql_num_fields($hResult);
-        $fields = mysql_fetch_array($hResult, MYSQL_BOTH);
+        $nfields = query_num_fields($hResult);
+        $fields = query_fetch_array($hResult, MYSQL_BOTH);
 
         $titleValue = $fields[$this->titleField];
         $titleText = $this->titleText;
@@ -98,7 +98,7 @@ class TableVE {
 
         for($i = 0; $i < $nfields; $i++)
         {
-            $field = mysql_fetch_field($hResult, $i);
+            $field = query_fetch_field($hResult, $i);
 
                 if(ereg("^impl_(.+)$", $field->table, $arr))
                     {
@@ -121,7 +121,7 @@ class TableVE {
     function edit($query)
     {
         $hResult  = query_appdb($query);
-        $nrows   = mysql_num_rows($hResult);
+        $nrows   = query_num_rows($hResult);
 
         echo "<form method=post action='".$_SERVER['PHP_SELF']."'>\n";
 
@@ -141,8 +141,8 @@ class TableVE {
     
     function edit_entry($hResult)
     {
-        $nfields = mysql_num_fields($hResult);
-        $fields = mysql_fetch_array($hResult);
+        $nfields = query_num_fields($hResult);
+        $fields = query_fetch_array($hResult);
 	
         echo html_frame_start(ucfirst($this->mode),"80%","",0);
         echo "<table border=0 width='100%' cellspacing=0 cellpadding=2>\n";
@@ -151,8 +151,8 @@ class TableVE {
         for($i = 0; $i < $nfields; $i++)
         {
             global $testvar;
-            $field = mysql_fetch_field($hResult, $i);
-            $len   = mysql_field_len($hResult, $i);
+            $field = query_fetch_field($hResult, $i);
+            $len   = query_field_len($hResult, $i);
 
             if(ereg("^impl_(.+)$", $field->table, $arr))
             {
@@ -189,7 +189,7 @@ class TableVE {
 
         $sStr.= "<select name='$sVarname'>\n";
         $sStr.= "<option value=0>Choose ...</option>\n";
-        while(list($iId, $sName) = mysql_fetch_row($hResult))
+        while(list($iId, $sName) = query_fetch_row($hResult))
         {
             if ($sName == "NONAME")
                 continue;

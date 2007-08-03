@@ -31,7 +31,7 @@ class Vendor {
                         FROM vendor
                         WHERE vendorId = '?'";
             if($hResult = query_parameters($sQuery, $iVendorId))
-                $oRow = mysql_fetch_object($hResult);
+                $oRow = query_fetch_object($hResult);
         }
 
         if($oRow)
@@ -50,7 +50,7 @@ class Vendor {
                     WHERE vendorId = '?'";
         if($hResult = query_parameters($sQuery, $this->iVendorId))
         {
-            while($oRow = mysql_fetch_object($hResult))
+            while($oRow = query_fetch_object($hResult))
             {
                 $this->aApplicationsIds[] = $oRow->appId;
             }
@@ -71,9 +71,9 @@ class Vendor {
         /* Check for duplicates */
         $hResult = query_parameters("SELECT * FROM vendor WHERE vendorName = '?'",
                                    $this->sName);
-        if($hResult && $oRow = mysql_fetch_object($hResult))
+        if($hResult && $oRow = query_fetch_object($hResult))
         {
-            if(mysql_num_rows($hResult))
+            if(query_num_rows($hResult))
             {
                 $this->vendor($oRow->vendorId);
 
@@ -89,7 +89,7 @@ class Vendor {
                                         $this->mustBeQueued() ? "true" : "false");
         if($hResult)
         {
-            $this->iVendorId = mysql_insert_id();
+            $this->iVendorId = query_appdb_insert_id();
             $this->vendor($this->iVendorId);
             return true;
         }
@@ -355,7 +355,7 @@ class Vendor {
         if(!$hResult)
             return FALSE;
 
-        if(!$oRow = mysql_fetch_object($hResult))
+        if(!$oRow = query_fetch_object($hResult))
             return FALSE;
 
         return $oRow->count;

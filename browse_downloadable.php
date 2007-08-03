@@ -37,8 +37,8 @@ else
     $hResult = query_parameters($sQuery, "downloadurl", $sLicense);
 }
 
-if($hResult && mysql_num_rows($hResult))
-    $num = mysql_num_rows($hResult);
+if($hResult && query_num_rows($hResult))
+    $num = query_num_rows($hResult);
 
 $iNumPages = isset($num) ? ceil($num/$aClean['iNumVersions']) : 0;
 
@@ -108,7 +108,7 @@ if(!$sLicense)
                         $aClean['iNumVersions']);
 }
 
-if($hResult && mysql_num_rows($hResult))
+if($hResult && query_num_rows($hResult))
 {
     echo html_frame_start("", "90%");
     
@@ -127,7 +127,7 @@ if($hResult && mysql_num_rows($hResult))
     $oTableRow->SetClass("color4");
     $oTable->AddRow($oTableRow);
 
-    for($iIndex = 1; $oRow = mysql_fetch_object($hResult); $iIndex++)
+    for($iIndex = 1; $oRow = query_fetch_object($hResult); $iIndex++)
     {
         $oVersion = new version($oRow->versionId);
 

@@ -48,7 +48,7 @@ if(!empty($aClean['sBody']))
   {
     $hResult = query_parameters("SELECT * FROM appComments WHERE commentId = '?'",
                             $aClean['iThread']);
-    $oRow = mysql_fetch_object($hResult);
+    $oRow = query_fetch_object($hResult);
     if($oRow)
     {
       $mesTitle = "<b>Replying To ...</b> $oRow->subject\n";

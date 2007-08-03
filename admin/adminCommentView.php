@@ -52,14 +52,14 @@ echo "</center>";
 $offset = (($currentPage-1) * $ItemsPerPage);
 $commentIds = query_parameters("SELECT commentId from appComments ORDER BY ".
                            "appComments.time ASC LIMIT ?, ?", $offset, $ItemsPerPage);
-while ($oRow = mysql_fetch_object($commentIds))
+while ($oRow = query_fetch_object($commentIds))
 {
     $sQuery = "SELECT from_unixtime(unix_timestamp(time), \"%W %M %D %Y, %k:%i\") as time, ".
         "commentId, parentId, versionId, userid, subject, body ".
         "FROM appComments WHERE commentId = '?'";
     $hResult = query_parameters($sQuery, $oRow->commentId);
     /* call view_app_comment to display the comment */
-    $oComment_row = mysql_fetch_object($hResult);
+    $oComment_row = query_fetch_object($hResult);
     Comment::view_app_comment($oComment_row);
 }
 

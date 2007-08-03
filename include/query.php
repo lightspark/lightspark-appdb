@@ -4,14 +4,14 @@ $hBugzillaLink = null;
 
 define("MYSQL_DEADLOCK_ERRNO", 1213);
 
-function query_appdb($sQuery,$sComment="")
+function query_appdb($sQuery, $sComment="")
 {
     global $hAppdbLink;
 
     if(!is_resource($hAppdbLink))
     {
         // The last argument makes sure we are really opening a new connection
-        $hAppdbLink = mysql_connect(APPS_DBHOST, APPS_DBUSER, APPS_DBPASS,true);
+        $hAppdbLink = mysql_connect(APPS_DBHOST, APPS_DBUSER, APPS_DBPASS, true);
         mysql_select_db(APPS_DB, $hAppdbLink);
     }
 
@@ -77,7 +77,7 @@ function query_parameters()
     if(!is_resource($hAppdbLink))
     {
         // The last argument makes sure we are really opening a new connection
-        $hAppdbLink = mysql_connect(APPS_DBHOST, APPS_DBUSER, APPS_DBPASS,true);
+        $hAppdbLink = mysql_connect(APPS_DBHOST, APPS_DBUSER, APPS_DBPASS, true);
         mysql_select_db(APPS_DB, $hAppdbLink);
     }
 
@@ -157,6 +157,63 @@ function query_error($sQuery, $sComment="")
     addmsg($sStatusMessage);
 
     $bInQueryError = false; // clear variable upon exit
+}
+
+function query_fetch_row($hResult)
+{
+  return mysql_fetch_row($hResult);
+}
+
+function query_fetch_object($hResult)
+{
+  return mysql_fetch_object($hResult);
+}
+
+function query_appdb_insert_id()
+{
+    global $hAppdbLink;
+    return mysql_insert_id($hAppdbLink);
+}
+
+function query_bugzilla_insert_id()
+{
+    global $hBugzillaLink;
+    return mysql_insert_id($hBugzillaLink);
+}
+
+function query_num_rows($hResult)
+{
+    return mysql_num_rows($hResult);
+}
+
+function query_escape_string($sString)
+{
+    return mysql_real_escape_string($sString);
+}
+
+function query_field_type($hResult, $iFieldOffset)
+{
+    return mysql_field_type($hResult, $iFieldOffset);
+}
+
+function query_field_name($hResult, $iFieldOffset)
+{
+    return mysql_field_name($hResult, $iFieldOffset);
+}
+
+function query_field_len($hResult, $ifieldOffset)
+{
+    return mysql_field_len($hResult, $iFieldOffset);
+}
+
+function query_field_flags($hResult, $iFieldOffset)
+{
+    return mysql_field_flags($hResult, $iFieldOffset);
+}
+
+function query_fetch_field($hResult, $iFieldOffset)
+{
+    return mysql_fetch_field($hResult, $iFieldOffset);
 }
 
 ?>

@@ -56,7 +56,7 @@ class Application {
                     FROM appFamily 
                     WHERE appId = '?'";
             if($hResult = query_parameters($sQuery, $iAppId))
-                $oRow = mysql_fetch_object($hResult);
+                $oRow = query_fetch_object($hResult);
         }
 
         if($oRow)
@@ -89,7 +89,7 @@ class Application {
         }
         if($hResult)
         {
-            while($oRow = mysql_fetch_object($hResult))
+            while($oRow = query_fetch_object($hResult))
             {
                 $this->aVersionsIds[] = $oRow->versionId;
             }
@@ -132,7 +132,7 @@ class Application {
                                     $this->mustBeQueued() ? "true" : "false");
         if($hResult)
         {
-            $this->iAppId = mysql_insert_id();
+            $this->iAppId = query_appdb_insert_id();
             $this->application($this->iAppId);
             $this->SendNotificationMail();  // Only administrators will be mailed as no supermaintainers exist for this app.
 
@@ -246,7 +246,7 @@ class Application {
         //FIXME: how to deal with concurrency issues such as
         //  if a new version was added during this deletion?
         $hResult = $this->_internal_retrieve_all_versions();
-        while($oRow = mysql_fetch_object($hResult))
+        while($oRow = query_fetch_object($hResult))
         {
             $iVersionId = $oRow->versionId;
             $oVersion = new Version($iVersionId);
@@ -263,7 +263,7 @@ class Application {
 
         if($hResult = query_parameters($sQuery, $this->iAppId))
         {
-            while($oRow = mysql_fetch_object($hResult))
+            while($oRow = query_fetch_object($hResult))
             {
                 $aUrlsIds[] = $oRow->id;
             }
@@ -315,9 +315,9 @@ class Application {
 
             /* Unqueue matching super maintainer request */
             $hResultMaint = query_parameters("SELECT maintainerId FROM appMaintainers WHERE userId = '?' AND appId = '?'", $this->iSubmitterId, $this->iAppId);
-            if($hResultMaint && mysql_num_rows($hResultMaint))
+            if($hResultMaint && query_num_rows($hResultMaint))
             {
-                $oMaintainerRow = mysql_fetch_object($hResultMaint);
+                $oMaintainerRow = query_fetch_object($hResultMaint);
                 $oMaintainer = new Maintainer($oMaintainerRow->maintainerId);
                 $oMaintainer->unQueue("OK");
             }
@@ -420,7 +420,7 @@ class Application {
 
         if($hResult = query_parameters($sQuery, $sRating))
         {
-            $oRow = mysql_fetch_object($hResult);
+            $oRow = query_fetch_object($hResult);
         }
 	     return $oRow->total;
     }
@@ -436,7 +436,7 @@ class Application {
         
         if($hResult = query_parameters($sQuery, $sRating, $iOffset, $iItemsPerPage))
         {
-            while($aRow = mysql_fetch_row($hResult))
+            while($aRow = query_fetch_row($hResult))
             {
                 array_push($aApps, $aRow[0]);
             }
@@ -764,9 +764,9 @@ class Application {
         if(!$appId) return null;
         $result = query_parameters("SELECT appName FROM appFamily WHERE appId = '?'",
                                    $appId);
-        if(!$result || mysql_num_rows($result) != 1)
+        if(!$result || query_num_rows($result) != 1)
             return null;
-        $ob = mysql_fetch_object($result);
+        $ob = query_fetch_object($result);
         return $ob->appName;
     }
 
@@ -781,7 +781,7 @@ class Application {
                 queued = '?'
                     ORDER BY appId", $iUserId, $bQueued ? "true" : "false");
 
-        if(!$hResult || !mysql_num_rows($hResult))
+        if(!$hResult || !query_num_rows($hResult))
             return false;
 
         $oTable = new Table();
@@ -796,7 +796,7 @@ class Application {
         $oTableRow->SetClass("color4");
         $oTable->SetHeader($oTableRow);
 
-        for($i = 1; $oRow = mysql_fetch_object($hResult); $i++)
+        for($i = 1; $oRow = query_fetch_object($hResult); $i++)
         {
           
             $oVendor = new vendor($oRow->vendorId);
@@ -1013,7 +1013,7 @@ class Application {
         if(!$hResult)
             return FALSE;
 
-        if(!$oRow = mysql_fetch_object($hResult))
+        if(!$oRow = query_fetch_object($hResult))
             return FALSE;
 
         return $oRow->count;

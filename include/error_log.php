@@ -47,7 +47,7 @@ class error_log
     {
         $sQuery = "SELECT count(*) as cnt FROM error_log WHERE deleted = '0'";
         $hResult = query_parameters($sQuery);
-        $oRow = mysql_fetch_object($hResult);
+        $oRow = query_fetch_object($hResult);
         return $oRow->cnt;
     }
 
@@ -70,7 +70,7 @@ class error_log
         $hResult = query_parameters($sQuery);
 
         $bEmpty = false;
-        if(mysql_num_rows($hResult) == 0)
+        if(query_num_rows($hResult) == 0)
             $bEmpty = true;
 
         $sMsg = "Log entries:\r\n";
@@ -82,7 +82,7 @@ class error_log
         $sMsg.="----------------------------------\r\n\r\n";
 
         /* append each log entry to $sMsg */
-        while($oRow = mysql_fetch_object($hResult))
+        while($oRow = query_fetch_object($hResult))
         {
             $sMsg.=$oRow->submitTime."    ".$oRow->userid."   ".$oRow->type."\r\n";
             $sMsg.= "---------------------\r\n";

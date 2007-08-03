@@ -30,7 +30,7 @@ class application_queue
                 $hResult = query_parameters($sQuery, $this->oApp->iAppId);
                 if($hResult)
                 {
-                    if($oRow = mysql_fetch_object($hResult))
+                    if($oRow = query_fetch_object($hResult))
                         $iVersionId = $oRow->versionId;
                 }
             }
@@ -230,7 +230,7 @@ class application_queue
             return FALSE;
 
         /* There's no point in displaying an empty table */
-        if($hResult === null ||mysql_num_rows($hResult) == 0)
+        if($hResult === null || (query_num_rows($hResult) == 0))
         {
             echo "No matches.<br />\n";
             return;
@@ -256,7 +256,7 @@ class application_queue
         echo "<table cellpadding='5px'>";
         echo html_tr($aHeader, "color4");
 
-        for($i = 0; $oRow = mysql_fetch_object($hResult); $i++)
+        for($i = 0; $oRow = query_fetch_object($hResult); $i++)
         {
             $oApp = new application($oRow->appId);
             $aCells = array(

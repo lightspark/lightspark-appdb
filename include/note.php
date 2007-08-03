@@ -31,7 +31,7 @@ class Note {
         {
             $sQuery = "SELECT * FROM appNotes WHERE noteId = '?'";
             if($hResult = query_parameters($sQuery, $iNoteId))
-              $oRow = mysql_fetch_object($hResult);
+              $oRow = query_fetch_object($hResult);
         }
 
         if($oRow)
@@ -64,7 +64,7 @@ class Note {
 
         if($hResult)
         {
-            $this->note(mysql_insert_id());
+            $this->note(query_appdb_insert_id());
             $sWhatChanged = "Description is:\n".$this->shDescription.".\n\n";
             $this->SendNotificationMail("add", $sWhatChanged);
             return true;

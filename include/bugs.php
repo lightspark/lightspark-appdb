@@ -39,7 +39,7 @@ class Bug {
                        AND linkid = '?'";
             if($hResult = query_parameters($sQuery, $iLinkId))
             {
-                $oRow = mysql_fetch_object($hResult);
+                $oRow = query_fetch_object($hResult);
                 $this->iLinkId = $iLinkId;
                 $this->iAppId = $oRow->appId;
                 $this->iBug_id = $oRow->bug_id;
@@ -55,7 +55,7 @@ class Bug {
                               WHERE bug_id = ".$this->iBug_id;
                     if($hResult = query_bugzilladb($sQuery))
                     {
-                        $oRow = mysql_fetch_object($hResult);
+                        $oRow = query_fetch_object($hResult);
                         $this->sShort_desc = $oRow->short_desc;
                         $this->sBug_status = $oRow->bug_status;
                         $this->sResolution = $oRow->resolution;
@@ -95,7 +95,7 @@ class Bug {
         $sQuery = "SELECT *
                    FROM bugs 
                    WHERE bug_id = ".$this->iBug_id;
-        if(mysql_num_rows(query_bugzilladb($sQuery, "checking bugzilla")) == 0)
+        if(query_num_rows(query_bugzilladb($sQuery, "checking bugzilla")) == 0)
         {
             addmsg("There is no bug in Bugzilla with that bug number.", "red");
             return false;
@@ -108,7 +108,7 @@ class Bug {
                    WHERE versionId = '?'";
         if($hResult = query_parameters($sQuery, $this->iVersionId))
         {
-            while($oRow = mysql_fetch_object($hResult))
+            while($oRow = query_fetch_object($hResult))
             {
                 if($oRow->bug_id == $this->iBug_id)
                 {
@@ -129,7 +129,7 @@ class Bug {
                                     $this->bQueued ? "true":"false");
         if($hResult)
         {
-            $this->iLinkId = mysql_insert_id();
+            $this->iLinkId = query_bugzilla_insert_id();
 
             $this->SendNotificationMail();
 
@@ -259,7 +259,7 @@ class Bug {
     {
         $hResult = query_parameters("SELECT appFamily.appName, buglinks.versionId, appVersion.versionName, buglinks.submitTime, buglinks.bug_id FROM buglinks, appFamily, appVersion WHERE appFamily.appId = appVersion.appId AND buglinks.versionId = appVersion.versionId AND buglinks.queued = '?' AND buglinks.submitterId = '?' ORDER BY buglinks.versionId", $bQueued ? "true" : "false", $iUserId);
 
-        if(!$hResult || !mysql_num_rows($hResult))
+        if(!$hResult || !query_num_rows($hResult))
             return FALSE;
 
         $sReturn = html_table_begin("width=\"100%\" align=\"center\"");
@@ -272,7 +272,7 @@ class Bug {
             "Submit time"),
             "color4");
 
-        for($i = 1; $oRow = mysql_fetch_object($hResult); $i++)
+        for($i = 1; $oRow = query_fetch_object($hResult); $i++)
         {
             $oBug = new Bug($oRow->bug_id);
             $sReturn .= html_tr(array(

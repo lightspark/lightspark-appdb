@@ -62,7 +62,7 @@ if(!$_SESSION['current']->isLoggedIn())
         "FROM appVotes ".
         "GROUP BY versionId ORDER BY count DESC LIMIT 1";
     $hResult = query_parameters($voteQuery);
-    $oRow = mysql_fetch_object($hResult);
+    $oRow = query_fetch_object($hResult);
 
     echo "There are <b>$iNumApps</b> applications currently in the database";
 

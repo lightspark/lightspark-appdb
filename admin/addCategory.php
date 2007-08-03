@@ -18,7 +18,7 @@ else
     apidb_header("Add Category");
     $sQuery = "SELECT catId, catName FROM appCategory WHERE catId!='?'";
     $hResult = query_parameters($sQuery, $aClean['iCatId']);
-    while($oRow = mysql_fetch_object($hResult))
+    while($oRow = query_fetch_object($hResult))
     {
         $aCatsIds[]=$oRow->catId;
         $aCatsNames[]=$oRow->catName;

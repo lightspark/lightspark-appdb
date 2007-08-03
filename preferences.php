@@ -32,7 +32,7 @@ function build_prefs_list($oUser)
     $aTableRows = array();
 
     $hResult = query_parameters("SELECT * FROM prefs_list ORDER BY id");
-    while($hResult && $r = mysql_fetch_object($hResult))
+    while($hResult && $r = query_fetch_object($hResult))
     {
             // skip admin options
             if(!$_SESSION['current']->hasPriv("admin"))

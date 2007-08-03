@@ -37,7 +37,7 @@ if(isset($aClean['sRegenerate']))
 {
     $sQuery = "SELECT id FROM appData WHERE type = 'screenshot'";
     $hResult = query_parameters($sQuery);
-    while($oRow = mysql_fetch_object($hResult))
+    while($oRow = query_fetch_object($hResult))
     {
         echo "REGENERATING IMAGE ".$oRow->id."<br/>";
         $screenshot = new Screenshot($oRow->id);
@@ -100,7 +100,7 @@ $Ids = query_parameters("SELECT * from appData
                     ORDER BY id ASC LIMIT ?, ?", $offset, $ItemsPerPage);
 $c = 1;
 echo "<div align=center><table><tr>\n";
-while ($oRow = mysql_fetch_object($Ids))
+while ($oRow = query_fetch_object($Ids))
 {
     // display thumbnail
     $oVersion = new Version($oRow->versionId);

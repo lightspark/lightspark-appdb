@@ -36,7 +36,7 @@ class Comment {
                        WHERE appComments.versionId = appVersion.versionId 
                        AND commentId = '?'";
             $hResult = query_parameters($sQuery, $iCommentId);
-            $oRow = mysql_fetch_object($hResult);
+            $oRow = query_fetch_object($hResult);
             $this->iCommentId = $oRow->commentId;
             $this->iParentId = $oRow->parentId;
             $this->iAppId = $oRow->appId;
@@ -68,7 +68,7 @@ class Comment {
 
         if($hResult)
         {
-            $this->comment(mysql_insert_id());
+            $this->comment(query_appdb_insert_id());
             $sEmail = User::get_notify_email_address_list($this->iAppId, $this->iVersionId);
             $sEmail .= $this->oOwner->sEmail." ";
 
@@ -203,7 +203,7 @@ class Comment {
         $hResult = query_parameters($sQuery, $iVersionId);
         if(!$hResult) return 0;
         
-        $oRow = mysql_fetch_object($hResult);
+        $oRow = query_fetch_object($hResult);
         return $oRow->cnt;
     }
 
@@ -275,8 +275,8 @@ class Comment {
         }
 
         /* escape input so we can use query_appdb() without concern */
-        $iVersionId = mysql_real_escape_string($iVersionId);
-        $iParentId = mysql_real_escape_string($iParentId);
+        $iVersionId = query_escape_string($iVersionId);
+        $iParentId = query_escape_string($iParentId);
 
         $sExtra = "";
 
@@ -300,11 +300,11 @@ class Comment {
      */
     function do_display_comments_nested($hResult)
     {
-        while($oRow = mysql_fetch_object($hResult))
+        while($oRow = query_fetch_object($hResult))
         {
             Comment::view_app_comment($oRow);
             $hResult2 = Comment::grab_comments($oRow->versionId, $oRow->commentId);
-            if($hResult && mysql_num_rows($hResult2))
+            if($hResult && query_num_rows($hResult2))
             {
                 echo "<blockquote>\n";
                 Comment::do_display_comments_nested($hResult2);
@@ -328,7 +328,7 @@ class Comment {
         if (!$is_main)
             echo "<ul>\n";
         
-        while ($oRow = mysql_fetch_object($hResult))
+        while ($oRow = query_fetch_object($hResult))
         {
             if ($is_main)
             {
@@ -340,7 +340,7 @@ class Comment {
             }
         
             $hResult2 = Comment::grab_comments($oRow->versionId, $oRow->commentId);
-            if ($hResult2 && mysql_num_rows($hResult2))
+            if ($hResult2 && query_num_rows($hResult2))
             {
                 echo "<blockquote>\n";
                 Comment::do_display_comments_threaded($hResult2, 0);
@@ -367,7 +367,7 @@ class Comment {
         $hResult = Comment::grab_comments($versionId);
         if ($hResult)
         {
-            while($oRow = mysql_fetch_object($hResult))
+            while($oRow = query_fetch_object($hResult))
             {
                 Comment::view_app_comment($oRow);
             }
@@ -380,7 +380,7 @@ class Comment {
 
         // count posts
         $hResult = query_parameters("SELECT commentId FROM appComments WHERE versionId = '?'", $versionId);
-        $messageCount = mysql_num_rows($hResult);
+        $messageCount = query_num_rows($hResult);
     
         //start comment format table
         echo html_frame_start("","98%",'',0);

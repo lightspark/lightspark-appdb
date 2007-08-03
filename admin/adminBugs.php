@@ -111,13 +111,13 @@ if (isset($aClean['sSub']))
                FROM appFamily, appVersion, buglinks, bugs.bugs
                ".$sWhere."
                ORDER BY buglinks.bug_id, appName, versionName
-               LIMIT ".mysql_real_escape_string($offset).", ".mysql_real_escape_string($ItemsPerPage).";";
+               LIMIT ".query_escape_string($offset).", ".query_escape_string($ItemsPerPage).";";
 
     $c = 0;
 
     if($hResult = query_parameters($sQuery))
     {
-        while($oRow = mysql_fetch_object($hResult))
+        while($oRow = query_fetch_object($hResult))
         {
             $oApp = new application($oRow->appId);
             $oVersion = new version($oRow->versionId);

@@ -33,7 +33,7 @@ class Url {
                        WHERE type = 'url'
                        AND id = '?'";
             $hResult = query_parameters($sQuery, $iUrlId);
-            $oRow = mysql_fetch_object($hResult);
+            $oRow = query_fetch_object($hResult);
         }
 
         // we are working on an existing url
@@ -77,7 +77,7 @@ class Url {
             return false;
         }
 
-        $this->iUrlId = mysql_insert_id();
+        $this->iUrlId = query_appdb_insert_id();
         $this->url($this->iUrlId,$this->bQueued);
 
         if(!$bSilent)
@@ -299,7 +299,7 @@ class Url {
 
         if($hResult)
         {
-            for($i = 1; $oRow = mysql_fetch_object($hResult); $i++)
+            for($i = 1; $oRow = query_fetch_object($hResult); $i++)
             {
                 $sReturn .= html_tr(array(
                     "<input type=\"checkbox\" name=\"bRemove$oRow->id\" ".
@@ -360,7 +360,7 @@ class Url {
                 return FALSE;
         }
 
-        if(!($oRow = mysql_fetch_object($hResult)))
+        if(!($oRow = query_fetch_object($hResult)))
             return FALSE;
 
         $num = $oRow->num;
@@ -378,7 +378,7 @@ class Url {
                     return FALSE;
             }
 
-            while($oRow = mysql_fetch_object($hResult))
+            while($oRow = query_fetch_object($hResult))
             {
                 $url = new url($oRow->id);
 
@@ -485,7 +485,7 @@ class Url {
                 return FALSE;
         }
 
-        for($i = 0; $oRow = mysql_fetch_object($hResult); $i++)
+        for($i = 0; $oRow = query_fetch_object($hResult); $i++)
         {
             // create a url object
             $oUrl = new Url(null, $oRow);

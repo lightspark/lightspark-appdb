@@ -47,7 +47,7 @@ if(!empty($aClean['sAction']))
     $sQuery.= "on appVersion.appId = appFamily.appId ORDER BY appFamily.appName, appFamily.appId, appVersion.versionName;";
     $hResult = query_parameters($sQuery);
     $currentAppId = 0;
-    while($oRow = mysql_fetch_object($hResult))
+    while($oRow = query_fetch_object($hResult))
     {
         /* if the version ids differ then we should start a row with a new application */
         /* and the version that matches with it */

@@ -56,7 +56,7 @@ if(!empty($aClean['iCategoryId']))
 
         if($hResult)
         {
-            $oRow = mysql_fetch_object($hResult);
+            $oRow = query_fetch_object($hResult);
             $catParent = $oRow->catParent;
 
             array_push($cat_array, "$currentCatId");
@@ -174,7 +174,7 @@ if($hResult)
     $oTable->AddRow($oTableRow);
 
     $c = 1;
-    while($oRow = mysql_fetch_object($hResult))
+    while($oRow = query_fetch_object($hResult))
     {
         $sColor = ($c % 2) ? "color0" : "color1";
 

@@ -11,7 +11,7 @@ function build_app_list()
     $hResult = query_parameters("SELECT appId, appName FROM appFamily ORDER BY appName");
     
     echo "<select name=iAppId size=5 onChange='this.form.submit()'>\n";
-    while($oRow = mysql_fetch_object($hResult))
+    while($oRow = query_fetch_object($hResult))
     {
         echo "<option value=$oRow->appId>$oRow->appName</option>\n";
     }
@@ -55,10 +55,10 @@ echo "    <td><font color=white> Application Name </font></td>\n";
 echo "    <td><font color=white> Delete </font></td>\n";
 echo "</tr>\n\n";	    
 
-if($hResult && mysql_num_rows($hResult))
+if($hResult && query_num_rows($hResult))
 {
     $c = 1;
-    while($oRow = mysql_fetch_object($hResult))
+    while($oRow = query_fetch_object($hResult))
     {
         //set row color
         if ($c % 2 == 1) { $bgcolor = 'color0'; } else { $bgcolor = 'color1'; }
@@ -72,7 +72,7 @@ if($hResult && mysql_num_rows($hResult))
 		    
         $c++;
     }
-} else if($hResult && !mysql_num_rows($hResult))
+} else if($hResult && !query_num_rows($hResult))
 {
     /* indicate to the user that there are no apps in this bundle at the moment */
     echo "<tr>\n";

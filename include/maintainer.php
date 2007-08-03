@@ -62,7 +62,7 @@ class queuedEntries
       // this application or unqueued versions depending on which user we were
       $hResult = $oApp->_internal_retrieve_all_versions();
 
-      while($oVersionRow = mysql_fetch_object($hResult))
+      while($oVersionRow = query_fetch_object($hResult))
       {
         if($bDebugOutputEnabled)
         {
@@ -108,7 +108,7 @@ class queuedEntries
       $hResult = query_parameters($sQuery, $iVersionId, "true");
 
       // go through the test results looking for the oldest queued data
-      while($oTestingRow = mysql_fetch_object($hResult))
+      while($oTestingRow = query_fetch_object($hResult))
       {
         if($bDebugOutputEnabled)
           echo "\tQueued TestData found\n";
@@ -124,7 +124,7 @@ class queuedEntries
       // queued screenshots
       $sQuery = "select * from appData where type = 'screenshot' and versionId = '?' and queued = '?'";
       $hResult = query_parameters($sQuery, $iVersionId, "true");
-      while($oScreenshotRow = mysql_fetch_object($hResult))
+      while($oScreenshotRow = query_fetch_object($hResult))
       {
         $oScreenshot = new Screenshot(null, $oScreenshotRow);
 
@@ -187,7 +187,7 @@ class maintainer
             $sQuery = "SELECT * FROM appMaintainers WHERE maintainerId = '?'";
             $hResult = query_parameters($sQuery, $iMaintainerId);
             if($hResult)
-                $oRow = mysql_fetch_object($hResult);
+                $oRow = query_fetch_object($hResult);
         }
 
         if($oRow)
@@ -219,8 +219,8 @@ class maintainer
                                     $this->iUserId, $this->sMaintainReason,
                                     $this->bSuperMaintainer, "NOW()", $this->mustBeQueued() ? "true" : "false");
 
-        /* this objects id is the insert id returned by mysql */
-        $this->iMaintainerId = mysql_insert_id();
+        /* this objects id is the insert id returned by the database */
+        $this->iMaintainerId = query_appdb_insert_id();
 
         /* If this is a non-queued maintainer submission, remove the user's non-
            super maintainer entries for the application's versions.  This check is
@@ -469,7 +469,7 @@ class maintainer
         $hResult = query_parameters($sQuery, $oUser->iUserId, $bSuperMaintainer ? "1" : "0", "false");
         if(!$hResult)
             return 0;
-        $oRow = mysql_fetch_object($hResult);
+        $oRow = query_fetch_object($hResult);
         return $oRow->cnt;
     }
 
@@ -483,12 +483,12 @@ class maintainer
                                     "appFamily, appMaintainers WHERE appFamily.appId = appMaintainers.appId ".
                                     "AND userId = '?' AND appMaintainers.queued = '?' ORDER BY appName",
                                     $oUser->iUserId, "false");
-        if(!$hResult || mysql_num_rows($hResult) == 0)
+        if(!$hResult || query_num_rows($hResult) == 0)
             return NULL;
 
         $aAppsMaintained = array();
         $c = 0;
-        while($oRow = mysql_fetch_object($hResult))
+        while($oRow = query_fetch_object($hResult))
         {
             $aAppsMaintained[$c] = array($oRow->appId, $oRow->versionId, $oRow->superMaintainer);
             $c++;
@@ -528,7 +528,7 @@ class maintainer
                                          $bQueued ? "true" : "false")))
             return FALSE;
 
-        for($iCount = 0; $oRow = mysql_fetch_object($hResult);)
+        for($iCount = 0; $oRow = query_fetch_object($hResult);)
             $iCount += $oRow->count;
 
         return $iCount;
@@ -539,7 +539,7 @@ class maintainer
     {
         $sQuery = "SELECT count(*) as maintainers FROM appMaintainers where queued='false'";
         $hResult = query_parameters($sQuery);
-        $oRow = mysql_fetch_object($hResult);
+        $oRow = query_fetch_object($hResult);
         return $oRow->maintainers;
     }
 
@@ -547,7 +547,7 @@ class maintainer
     function getNumberOfMaintainers()
     {
         $hResult = query_parameters("SELECT DISTINCT userId FROM appMaintainers WHERE queued='false';");
-        return mysql_num_rows($hResult);
+        return query_num_rows($hResult);
     }
 
     function isUserMaintainer($oUser, $iVersionId = null)
@@ -570,7 +570,7 @@ class maintainer
         if(!$hResult)
             return false;
         
-        return mysql_num_rows($hResult);
+        return query_num_rows($hResult);
     }
 
     function isUserSuperMaintainer($oUser, $iAppId = null)
@@ -586,7 +586,7 @@ class maintainer
         }
         if(!$hResult)
             return false;
-        return mysql_num_rows($hResult);
+        return query_num_rows($hResult);
     }
 
     /* if given an appid or a version id return a handle for a query that has */
@@ -637,7 +637,7 @@ class maintainer
         $hResult = query_parameters($sQuery, $iAppId, "false");
         $aUserIds = array();
         $c = 0;
-        while($oRow = mysql_fetch_object($hResult))
+        while($oRow = query_fetch_object($hResult))
         {
             $aUserIds[$c] = $oRow->userId;
             $c++;
@@ -1182,10 +1182,10 @@ class maintainer
       // retrieve all of the maintainers
       $hResult = maintainer::objectGetEntries(false, false);
 
-      //      echo "Processing ".mysql_num_rows($hResult)." maintainers\n";
+      //      echo "Processing ".query_num_rows($hResult)." maintainers\n";
 
       // notify this user, the maintainer, of queued data, if any exists
-      while($oRow = mysql_fetch_object($hResult))
+      while($oRow = query_fetch_object($hResult))
       {
         $oMaintainer = new maintainer(null, $oRow);
         $oMaintainer->notifyMaintainerOfQueuedData();

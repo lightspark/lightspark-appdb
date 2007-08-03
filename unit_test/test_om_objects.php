@@ -54,15 +54,15 @@ function test_class($sClassName, $aTestMethods)
 
     if(!$hResult)
     {
-        error("Got '$hResult' instead of a valid MySQL handle");
+        error("Got '$hResult' instead of a valid query handle");
         error("FAILED\t\t$sClassName::$sClassName");
         $oTestObject->delete();
         return FALSE;
     }
 
-    if(!($oRow = mysql_fetch_object($hResult)))
+    if(!($oRow = query_fetch_object($hResult)))
     {
-        error("Failed to fetch MySQL object");
+        error("Failed to fetch query object");
         error("FAILED\t\t$sClassName::$sClassName");
         $oTestObject->delete();
         return FALSE;
@@ -111,7 +111,7 @@ function test_class($sClassName, $aTestMethods)
                 /* Should return 1 or more, since there may be entries present already */
                 $iExpected = 1;
                 $hResult = $oTestObject->objectGetEntries(false, false);
-                $iReceived = mysql_num_rows($hResult);
+                $iReceived = query_num_rows($hResult);
                 if($iExpected > $iReceived)
                 {
                     error("Got $iReceived instead of >= $iExpected");
@@ -223,7 +223,7 @@ function create_object($sClassName, $oUser)
             error("FAILED\t\t$sClassName to create screenshot entry");
             return FALSE;
         }
-        $oTestObject->iScreenshotId = mysql_insert_id();
+        $oTestObject->iScreenshotId = query_appdb_insert_id();
     }
 
     return $oTestObject;

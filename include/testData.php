@@ -37,7 +37,7 @@ class testData{
                         FROM testResults
                         WHERE testingId = '?'";
             if($hResult = query_parameters($sQuery, $iTestingId))
-                $oRow = mysql_fetch_object($hResult);
+                $oRow = query_fetch_object($hResult);
         }
 
         if($oRow)
@@ -83,7 +83,7 @@ class testData{
 
         if($hResult)
         {
-            $this->iTestingId = mysql_insert_id();
+            $this->iTestingId = query_appdb_insert_id();
             $this->testData($this->iTestingId);
             $this->SendNotificationMail();
             return true;
@@ -446,8 +446,8 @@ class testData{
         global $aClean;
 
         /* escape input parameters */
-        $link = mysql_real_escape_string($link);
-        $iDisplayLimit = mysql_real_escape_string($iDisplayLimit);
+        $link = query_escape_string($link);
+        $iDisplayLimit = query_escape_string($iDisplayLimit);
 
         $sShowAll = isset($aClean['sShowAll']) ? $aClean['sShowAll'] : false;
 
@@ -465,7 +465,7 @@ class testData{
         if(!$hResult)
             return;
 
-        $rowsUsed = mysql_num_rows($hResult);
+        $rowsUsed = query_num_rows($hResult);
 
         if($rowsUsed == 0)
              return;
@@ -493,7 +493,7 @@ class testData{
         $oTable->SetHeader($oTableRowHeader);
 
         $iIndex = 0;
-        while($oRow = mysql_fetch_object($hResult))
+        while($oRow = query_fetch_object($hResult))
         {
             $oTest = new testData($oRow->testingId);
             $oVersion = new Version($oTest->iVersionId);
@@ -601,7 +601,7 @@ class testData{
         if(!$hResult)
             return 0;
 
-        if(!$oRow = mysql_fetch_object($hResult))
+        if(!$oRow = query_fetch_object($hResult))
             return 0;
 
         return $oRow->testingId;
@@ -799,7 +799,7 @@ class testData{
     {
         $hResult = query_parameters("SELECT testResults.versionId, testResults.testedDate, testResults.testedRelease, testResults.testedRating, testResults.submitTime, appFamily.appName, appVersion.versionName from testResults, appFamily, appVersion WHERE testResults.versionId = appVersion.versionId AND appVersion.appId = appFamily.appId AND (appFamily.queued = '?' OR appVersion.queued = '?') AND testResults.submitterId = '?' AND testResults.queued = '?' ORDER BY testResults.testingId", "false", "false", $iUserId, $bQueued ? "true" : "false");
 
-        if(!$hResult || !mysql_num_rows($hResult))
+        if(!$hResult || !query_num_rows($hResult))
             return false;
 
         $sReturn = html_table_begin("width=\"100%\" align=\"center\"");
@@ -810,7 +810,7 @@ class testData{
             "Submission Date"),
             "color4");
 
-        for($i = 1; $oRow = mysql_fetch_object($hResult); $i++)
+        for($i = 1; $oRow = query_fetch_object($hResult); $i++)
             $sReturn .= html_tr(array(
                 version::fullNameLink($oRow->versionId),
                 $oRow->testedRating,
@@ -834,7 +834,7 @@ class testData{
 
         $hResult = query_parameters($sQuery, $iVersionId, 'false');
 
-        $oRow = mysql_fetch_object($hResult);
+        $oRow = query_fetch_object($hResult);
         return $oRow->cnt;
     }
 
@@ -901,7 +901,7 @@ class testData{
         if(!$hResult)
             return FALSE;
 
-        if(!$oRow = mysql_fetch_object($hResult))
+        if(!$oRow = query_fetch_object($hResult))
             return FALSE;
 
         return $oRow->count;
@@ -1014,7 +1014,7 @@ class testData{
         $oUser = new user($this->iSubmitterId);
 
         $hMaintainers = maintainer::getMaintainersForAppIdVersionId(null, $this->iVersionId);
-        $bHasMaintainer = (mysql_num_rows($hMaintainers) == 0) ? false : true;
+        $bHasMaintainer = (query_num_rows($hMaintainers) == 0) ? false : true;
 
         $oTableRow = new TableRow();
         $oTableRow->AddCell(new TableCell(print_date(mysqldatetime_to_unixtimestamp($this->sSubmitTime))));

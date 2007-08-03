@@ -37,7 +37,7 @@ class appData
         if(!$oRow)
         {
             $hResult = query_parameters("SELECT * FROM appData WHERE id = '?'", $iId);
-            $oRow = mysql_fetch_object($hResult);
+            $oRow = query_fetch_object($hResult);
         }
 
         if($oRow)
@@ -126,7 +126,7 @@ class appData
                     ORDER BY appData.id",
                         $iUserId, $bQueued ? "true" : "false");
 
-        if(!$hResult || !mysql_num_rows($hResult))
+        if(!$hResult || !query_num_rows($hResult))
             return false;
 
         $sReturn = html_table_begin("width=\"100%\" align=\"center\"");
@@ -137,7 +137,7 @@ class appData
             "Submission Date"),
             "color4");
 
-        for($i = 1; $oRow = mysql_fetch_object($hResult); $i++)
+        for($i = 1; $oRow = query_fetch_object($hResult); $i++)
         {
             if($oRow->versionId)
             {
@@ -180,7 +180,7 @@ class appData
                                      versionId = '?' AND TYPE = '?' AND queued = '?'",
                                     $iAppId, $iVersionId, $sType, $sQueued);
 
-        if(!$hResult || !mysql_num_rows($hResult))
+        if(!$hResult || !query_num_rows($hResult))
             return FALSE;
 
         return $hResult;
@@ -297,7 +297,7 @@ class appData
         if(!$hResult)
             return FALSE;
 
-        for($iCount = 0; $oRow = mysql_fetch_object($hResult);)
+        for($iCount = 0; $oRow = query_fetch_object($hResult);)
             $iCount += $oRow->count;
 
         return $iCount;

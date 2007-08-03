@@ -17,7 +17,7 @@ function vote_count($iVersionId, $iUserId = null)
     }
     $hResult = query_parameters("SELECT * FROM appVotes WHERE versionId = '?' AND userId = '?'",
                             $iVersionId, $iUserId);
-    return mysql_num_rows($hResult);
+    return query_num_rows($hResult);
 }
 
 
@@ -34,7 +34,7 @@ function vote_count_user_total($iUserId = null)
             return 0;
     }
     $hResult = query_parameters("SELECT * FROM appVotes WHERE userId = '?'", $iUserId);
-    return mysql_num_rows($hResult);
+    return query_num_rows($hResult);
 }
 
 
@@ -45,7 +45,7 @@ function vote_count_version_total($iVersionId)
 {
     $hResult = query_parameters("SELECT * FROM appVotes WHERE versionId = '?'",
                                     $iVersionId);
-    return mysql_num_rows($hResult);
+    return query_num_rows($hResult);
 }
 
 
@@ -105,7 +105,7 @@ function vote_get_user_votes($iUserId = null)
         return array();
 
     $obs = array();
-    while($oRow = mysql_fetch_object($hResult))
+    while($oRow = query_fetch_object($hResult))
         $obs[$oRow->slot] = $oRow;
     return $obs;
 }
@@ -198,7 +198,7 @@ function is_vote_in_slot($iSlot, $iUserId = null)
     $sQuery = "SELECT COUNT(*) as count from appVotes WHERE userId = '?' AND slot = '?'";
     if($hResult = query_parameters($sQuery, $iUserId, $iSlot))
     {
-        $oRow = mysql_fetch_object($hResult);        
+        $oRow = query_fetch_object($hResult);        
         if($oRow->count != 0)
             return true;
         else

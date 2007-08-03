@@ -40,7 +40,7 @@ class User {
                        FROM user_list
                        WHERE userId = '?'";
             $hResult = query_parameters($sQuery, $iUserId);
-            $oRow = mysql_fetch_object($hResult);
+            $oRow = query_fetch_object($hResult);
             if($oRow)
             {
                 $this->iUserId = $oRow->userid;
@@ -81,7 +81,7 @@ class User {
         {
             $hResult = query_parameters($sQuery.$sMysqlSHAPasswordPart,
                                       $sEmail, $sPassword);
-            $oRow = mysql_fetch_object($hResult);
+            $oRow = query_fetch_object($hResult);
         }
 
         // if we aren't logged in yet
@@ -90,7 +90,7 @@ class User {
         {
             $hResult = query_parameters($sQuery.$sMysqlPasswordPart,
                                         $sEmail, $sPassword);
-            $oRow = mysql_fetch_object($hResult);
+            $oRow = query_fetch_object($hResult);
             if($oRow) $bUsedOldStylePassword = true;
         }
 
@@ -107,7 +107,7 @@ class User {
             {
                 $hResult = query_parameters($sQuery.$sMysql40xPasswordPart,
                                             $sEmail, $sPassword);
-                $oRow = mysql_fetch_object($hResult);
+                $oRow = query_fetch_object($hResult);
                 if($oRow) $bUsedOldStylePassword = true;
             }
         }
@@ -265,9 +265,9 @@ class User {
 
         $hResult = query_parameters("SELECT * FROM user_prefs WHERE userid = '?' AND name = '?'",
                                 $this->iUserId, $sKey);
-        if(!$hResult || mysql_num_rows($hResult) == 0)
+        if(!$hResult || query_num_rows($hResult) == 0)
             return $sDef;
-        $oRow = mysql_fetch_object($hResult);
+        $oRow = query_fetch_object($hResult);
         return $oRow->value; 
     }
 
@@ -300,7 +300,7 @@ class User {
                                 $this->iUserId, $sPriv);
         if(!$hResult)
             return false;
-        return mysql_num_rows($hResult);
+        return query_num_rows($hResult);
     }
 
 
@@ -373,7 +373,7 @@ class User {
                                       WHERE submitterId = '?'
                                       AND appId = '?'",
                                      $this->iUserId, $iAppId);
-         if(mysql_num_rows($hResult))
+         if(query_num_rows($hResult))
              return true;
          else
              return false;
@@ -386,7 +386,7 @@ class User {
                                   AND appVersion.submitterId = '?'
                                   AND appVersion.versionId = '?'",
                                  $this->iUserId, $iVersionId);
-         if(mysql_num_rows($hResult))
+         if(query_num_rows($hResult))
              return true;
          else
              return false;
@@ -398,7 +398,7 @@ class User {
      {
          $hResult = query_parameters("SELECT count(userId) as c FROM appComments WHERE userId = '?'",
                                  $this->iUserId);
-         $oRow = mysql_fetch_object($hResult);
+         $oRow = query_fetch_object($hResult);
          if($oRow->c != 0) return true;
 
          if($this->isMaintainer() || $this->isSuperMaintainer())
@@ -406,7 +406,7 @@ class User {
 
          $hResult = query_parameters("SELECT count(userId) as c FROM appVotes WHERE userId = '?'",
                                  $this->iUserId);
-         $oRow = mysql_fetch_object($hResult);
+         $oRow = query_fetch_object($hResult);
          if($oRow->c != 0) return true;
 
          return false;
@@ -468,12 +468,12 @@ class User {
      {
          $hResult = query_parameters("SELECT userid FROM user_list WHERE email = '?'",
                                      $sEmail);
-         if(!$hResult || mysql_num_rows($hResult) != 1)
+         if(!$hResult || query_num_rows($hResult) != 1)
          {
              return 0;
          } else
          {
-             $oRow = mysql_fetch_object($hResult);
+             $oRow = query_fetch_object($hResult);
              return $oRow->userid;
          }
      }
@@ -485,7 +485,7 @@ class User {
      function objectGetEntriesCount($bQueued = null, $bRejected = null)
      {
          $hResult = query_parameters("SELECT count(*) as num_users FROM user_list;");
-         $oRow = mysql_fetch_object($hResult);
+         $oRow = query_fetch_object($hResult);
          return $oRow->num_users;
      }
 
@@ -496,7 +496,7 @@ class User {
      {
          $hResult = query_parameters("SELECT count(*) as num_users FROM user_list WHERE stamp >= DATE_SUB(CURDATE(), interval '?' day);",
                                      $days);
-         $oRow = mysql_fetch_object($hResult);
+         $oRow = query_fetch_object($hResult);
          return $oRow->num_users;
      }
 
@@ -508,7 +508,7 @@ class User {
      {
          /* retrieve the number of users that have been warned and are pending deletion */
          $hResult = query_parameters("select count(*) as count from user_list where inactivity_warned = 'true'");
-         $oRow = mysql_fetch_object($hResult);
+         $oRow = query_fetch_object($hResult);
          return $oRow->count;
      }
 
@@ -527,9 +527,9 @@ class User {
 
          if($hResult)
          {
-             if(mysql_num_rows($hResult) > 0)
+             if(query_num_rows($hResult) > 0)
              {
-                 while($oRow = mysql_fetch_object($hResult))
+                 while($oRow = query_fetch_object($hResult))
                      $aUserId[] = $oRow->userId;
              }
          }
@@ -560,9 +560,9 @@ class User {
          }
          if($hResult)
          {
-             if(mysql_num_rows($hResult) > 0)
+             if(query_num_rows($hResult) > 0)
              {
-                 while($oRow = mysql_fetch_object($hResult))
+                 while($oRow = query_fetch_object($hResult))
                      $aUserId[] = $oRow->userId;
              }
          }
@@ -571,9 +571,9 @@ class User {
           * Retrieve administrators.
           */
          $hResult = query_parameters("SELECT * FROM user_privs WHERE priv  = 'admin'");
-         if(mysql_num_rows($hResult) > 0)
+         if(query_num_rows($hResult) > 0)
          {
-             while($oRow = mysql_fetch_object($hResult))
+             while($oRow = query_fetch_object($hResult))
              {
                  $i = array_search($oRow->userid, $aUserId);
 

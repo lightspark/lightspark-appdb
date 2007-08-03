@@ -6,9 +6,9 @@ function log_category_visit($catId)
 
     $result = query_parameters("SELECT * FROM catHitStats WHERE ip = '?' AND catId = '?'",
                                $REMOTE_ADDR, $catId);
-    if($result && mysql_num_rows($result) == 1)
+    if($result && query_num_rows($result) == 1)
     {
-        $oStatsRow = mysql_fetch_object($result);
+        $oStatsRow = query_fetch_object($result);
         query_parameters("UPDATE catHitStats SET count = count + 1 WHERE catHitId = '?'",
                          $oStatsRow->catHitId);
     } else
@@ -25,9 +25,9 @@ function log_application_visit($appId)
 
     $result = query_parameters("SELECT * FROM appHitStats WHERE ip = '?' AND appId = '?'",
                                $REMOTE_ADDR, $appId);
-    if($result && mysql_num_rows($result) == 1)
+    if($result && query_num_rows($result) == 1)
     {
-        $stats = mysql_fetch_object($result);
+        $stats = query_fetch_object($result);
         query_parameters("UPDATE appHitStats SET count = count + 1 WHERE appHitId = '?'",
                          $stats->appHitId);
     } else

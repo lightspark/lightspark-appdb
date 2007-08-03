@@ -555,7 +555,7 @@ function test_maintainer_getMaintainersForAppIdVersionId()
 
     /* The application should have one maintainer */
     $iExpected = 1;
-    $iReceived = mysql_num_rows($hResult);
+    $iReceived = query_num_rows($hResult);
     if($iExpected != $iReceived)
     {
         error("Got super maintainer count of $iReceived instead of $iExpected!");
@@ -575,7 +575,7 @@ function test_maintainer_getMaintainersForAppIdVersionId()
 
     /* The version should have one maintainer */
     $iExpected = 1;
-    $iReceived = mysql_num_rows($hResult);
+    $iReceived = query_num_rows($hResult);
     if($iExpected != $iReceived)
     {
         error("Got maintainer count of $iReceived instead of $iExpected!");
@@ -614,7 +614,7 @@ function test_maintainer_getMaintainersForAppIdVersionId()
 
     /* The first version should have one maintainer */
     $iExpected = 1;
-    $iReceived = mysql_num_rows($hResult);
+    $iReceived = query_num_rows($hResult);
     if($iExpected != $iReceived)
     {
         error("Got maintainer count of $iReceived instead of $iExpected!");
@@ -634,7 +634,7 @@ function test_maintainer_getMaintainersForAppIdVersionId()
 
     /* The second version should have 1 maintainer */
     $iExpected = 1;
-    $iReceived = mysql_num_rows($hResult);
+    $iReceived = query_num_rows($hResult);
     if($iExpected != $iReceived)
     {
         error("Got maintainer count of $iReceived instead of $iExpected!");

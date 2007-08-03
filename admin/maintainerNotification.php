@@ -15,7 +15,7 @@ $hResult = maintainer::objectGetEntries(false, false);
 echo "Maintainers with a non-zero notification level<br />\n";
 
 $bFoundNonZero = false;
-while($oRow = mysql_fetch_object($hResult))
+while($oRow = query_fetch_object($hResult))
 {
   $oMaintainer = new maintainer(null, $oRow);
 
@@ -41,7 +41,7 @@ echo "<br />\n";
 // retrieve all of the maintainers
 echo "Maintainers with notification iTargetLevel != 0<br />\n";
 $hResult = maintainer::objectGetEntries(false, false);
-while($oRow = mysql_fetch_object($hResult))
+while($oRow = query_fetch_object($hResult))
 {
   $oMaintainer = new maintainer(null, $oRow);
 

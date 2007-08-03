@@ -30,7 +30,7 @@ function test_query_parameters()
         return false;
     }
 
-    $oRow = mysql_fetch_object($hResult);
+    $oRow = query_fetch_object($hResult);
     $iUserCount = $oRow->count;
 
     /* see that '~' strings are replaced with parameters */
@@ -41,7 +41,7 @@ function test_query_parameters()
     $hResult = query_parameters($sQuery, "user_list", "1' OR 1='1");
     if($hResult)
     {
-        $oRow = mysql_fetch_object($hResult);
+        $oRow = query_fetch_object($hResult);
         if($iUserCount != $oRow->count)
         {
             echo "sQuery of '".$sQuery."' returned ".$oRow->count." entries instead of the expected ".$iUserCount."\n";
@@ -88,7 +88,7 @@ function test_query_parameters()
      *       properly with slashes in the query, they were incorrectly being recognized
      *       as tokens that should be replaced with parameters
      */
-    $sQuery = "SELECT count(*) as count, '".mysql_real_escape_string("\r\n")."' as x from ?";
+    $sQuery = "SELECT count(*) as count, '".query_escape_string("\r\n")."' as x from ?";
     $hResult = query_parameters($sQuery, "user_list");
     if(!$hResult)
     {

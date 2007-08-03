@@ -117,7 +117,7 @@ class table_counts
         {
             $sQuery = "select count(*) as cnt from ?;";
             $hResult = query_parameters($sQuery, $sTable);
-            $oRow = mysql_fetch_object($hResult);
+            $oRow = query_fetch_object($hResult);
 
             $this->aTableCounts[] = $oRow->cnt;
         }

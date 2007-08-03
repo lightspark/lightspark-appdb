@@ -28,8 +28,8 @@ class downloadurl
                 submitTime, submitterId, queued FROM appData WHERE id = '?'",
                     $iId);
 
-            if($hResult && mysql_num_rows($hResult))
-                $oRow = mysql_fetch_object($hResult);
+            if($hResult && query_num_rows($hResult))
+                $oRow = query_fetch_object($hResult);
         }
 
         if($oRow)
@@ -52,7 +52,7 @@ class downloadurl
 
         // we're appending, so initialize it
         $sReturn = '';
-        for($i = 0; $oRow = mysql_fetch_object($hResult); $i++)
+        for($i = 0; $oRow = query_fetch_object($hResult); $i++)
         {
             $sReturn .= html_tr(array(
                 "<b>Free Download</b>",
@@ -104,7 +104,7 @@ class downloadurl
 
         if($hResult)
         {
-            for($i = 1; $oRow = mysql_fetch_object($hResult); $i++)
+            for($i = 1; $oRow = query_fetch_object($hResult); $i++)
             {
                 $sReturn .= html_tr(array(
                     "<input type=\"checkbox\" name=\"bRemove$oRow->id\" ".
@@ -146,7 +146,7 @@ class downloadurl
                 "downloadurl", $aValues["iVersionId"])))
             return FALSE;
 
-        if(!($oRow = mysql_fetch_object($hResult)))
+        if(!($oRow = query_fetch_object($hResult)))
             return FALSE;
 
         $num = $oRow->num;
@@ -157,7 +157,7 @@ class downloadurl
             if(!$hResult = appData::getData($aValues["iVersionId"], "downloadurl"))
                 return FALSE;
 
-            while($oRow = mysql_fetch_object($hResult))
+            while($oRow = query_fetch_object($hResult))
             {
                 $oDownloadurl = new downloadurl($oRow->id);
 
@@ -258,7 +258,7 @@ class downloadurl
                $hResult = appData::getData($iVersionId, "downloadurl",
                                            TRUE, TRUE, TRUE))
             {
-                $oRow = mysql_fetch_object($hResult);
+                $oRow = query_fetch_object($hResult);
                 $sDownloadUrlUrl = $oRow->url;
                 $sDownloadUrlDescription = $oRow->description;
             }
@@ -305,7 +305,7 @@ class downloadurl
                     "NOW()",
                     $_SESSION['current']->iUserId);
 
-        $this->iId = mysql_insert_id();
+        $this->iId = query_appdb_insert_id();
         if(!$hResult)
             return FALSE;
 
@@ -339,7 +339,7 @@ class downloadurl
         $iId = null;
         if($hResult = appData::getData($iVersionId, "downloadurl", TRUE, TRUE))
         {
-            $oObject = mysql_fetch_object($hResult);
+            $oObject = query_fetch_object($hResult);
             $iId = $oObject->id;
         }
 

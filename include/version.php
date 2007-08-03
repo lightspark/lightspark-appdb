@@ -55,7 +55,7 @@ class version {
                     FROM appVersion
                     WHERE versionId = '?'";
             if($hResult = query_parameters($sQuery, $iVersionId))
-              $oRow = mysql_fetch_object($hResult);
+              $oRow = query_fetch_object($hResult);
         }
 
         if($oRow)
@@ -96,7 +96,7 @@ class version {
 
         if($hResult)
         {
-            $this->iVersionId = mysql_insert_id();
+            $this->iVersionId = query_appdb_insert_id();
             $this->Version($this->iVersionId);
             $this->SendNotificationMail();
 
@@ -226,7 +226,7 @@ class version {
                        WHERE versionId = '?'";
         if($hResult = query_parameters($sQuery, $this->iVersionId))
         {
-            while($oRow = mysql_fetch_object($hResult))
+            while($oRow = query_fetch_object($hResult))
             {
                 $aNotesIds[] = $oRow->noteId;
             }
@@ -247,7 +247,7 @@ class version {
                        WHERE versionId = '?'";
         if($hResult = query_parameters($sQuery, $this->iVersionId))
         {
-            while($oRow = mysql_fetch_object($hResult))
+            while($oRow = query_fetch_object($hResult))
             {
                 $aCommentsIds[] = $oRow->commentId;
             }
@@ -269,7 +269,7 @@ class version {
         
         if($hResult = query_parameters($sQuery, $this->iVersionId))
         {
-            while($oRow = mysql_fetch_object($hResult))
+            while($oRow = query_fetch_object($hResult))
             {
                 if($oRow->type="image")
                     $aScreenshotsIds[] = $oRow->id;
@@ -307,7 +307,7 @@ class version {
                        ORDER BY testingId";
         if($hResult = query_parameters($sQuery, $this->iVersionId))
         {
-            while($oRow = mysql_fetch_object($hResult))
+            while($oRow = query_fetch_object($hResult))
             {
                 $aTestingIds[] = $oRow->testingId;
             }
@@ -328,7 +328,7 @@ class version {
                        ORDER BY monitorId";
         if($hResult = query_parameters($sQuery, $this->iVersionId))
         {
-            while($oRow = mysql_fetch_object($hResult))
+            while($oRow = query_fetch_object($hResult))
             {
                 $aMonitorIds[] = $oRow->monitorId;
             }
@@ -391,9 +391,9 @@ class version {
             appMaintainers WHERE userId = '?' AND versionId = '?'", 
             $this->iSubmitterId, $this->iVersionId);
 
-            if($hResultMaint && mysql_num_rows($hResultMaint))
+            if($hResultMaint && query_num_rows($hResultMaint))
             {
-                $oMaintainerRow = mysql_fetch_object($hResultMaint);
+                $oMaintainerRow = query_fetch_object($hResultMaint);
                 $oMaintainer = new Maintainer($oMaintainerRow->maintainerId);
                 $oMaintainer->unQueue("OK");
             }
@@ -569,7 +569,7 @@ class version {
                        ORDER BY bug_id";
         if($hResult = query_parameters($sQuery, $this->iVersionId))
         {
-            while($oRow = mysql_fetch_object($hResult))
+            while($oRow = query_fetch_object($hResult))
             {
                 $aBuglinkIds[] = $oRow->linkId;
             }
@@ -1014,7 +1014,7 @@ class version {
         $hNotes = query_parameters("SELECT noteId FROM appNotes WHERE versionId = '?'",
                                    $this->iVersionId);
     
-        while( $oRow = mysql_fetch_object($hNotes) )
+        while( $oRow = query_fetch_object($hNotes) )
         {
             $oNote = new Note($oRow->noteId);
             $oNote->display();
@@ -1029,9 +1029,9 @@ class version {
         if(!$versionId) return null;
         $result = query_parameters("SELECT versionName FROM appVersion WHERE versionId = '?'",
                                    $versionId);
-        if(!$result || mysql_num_rows($result) != 1)
+        if(!$result || query_num_rows($result) != 1)
             return null;
-        $ob = mysql_fetch_object($result);
+        $ob = query_fetch_object($result);
         return $ob->versionName;
     }
 
@@ -1046,10 +1046,10 @@ class version {
                 AND versionId = '?'",
                     $iVersionId);
 
-        if(!$hResult || !mysql_num_rows($hResult))
+        if(!$hResult || !query_num_rows($hResult))
             return FALSE;
 
-        $oRow = mysql_fetch_object($hResult);
+        $oRow = query_fetch_object($hResult);
         return "$oRow->appName $oRow->versionName";
     }
 
@@ -1183,7 +1183,7 @@ class version {
     
         $hResult = Maintainer::getMaintainersForAppIdVersionId(null, $this->iVersionId);
         $iCount = 0;
-        while($oRow = mysql_fetch_object($hResult))
+        while($oRow = query_fetch_object($hResult))
         {
             $aMaintainers[$iCount] = $oRow->userId;
             $iCount++;
@@ -1197,7 +1197,7 @@ class version {
     {
         $hResult = query_parameters("SELECT appFamily.appName, appVersion.versionName, appVersion.description, appVersion.versionId, appVersion.submitTime FROM appFamily, appVersion WHERE appFamily.appId = appVersion.appId AND appVersion.submitterId = '?' AND appVersion.queued = '?' AND appFamily.queued = '?'", $iUserId, $bQueued ? "true" : "false", "false");
 
-        if(!$hResult || !mysql_num_rows($hResult))
+        if(!$hResult || !query_num_rows($hResult))
             return false;
 
         $oTable = new Table();
@@ -1212,7 +1212,7 @@ class version {
         $oTableRow->SetClass("color4");
         $oTable->SetHeader($oTableRow);
 
-        for($i = 1; $oRow = mysql_fetch_object($hResult); $i++)
+        for($i = 1; $oRow = query_fetch_object($hResult); $i++)
         {
           $oTableRow = new TableRow();
           $oTableRow->AddTextCell(version::fullNameLink($oRow->versionId));
@@ -1343,7 +1343,7 @@ class version {
         if(!$hResult)
             return FALSE;
 
-        if(!$oRow = mysql_fetch_object($hResult))
+        if(!$oRow = query_fetch_object($hResult))
             return FALSE;
 
         return $oRow->count;
@@ -1546,7 +1546,7 @@ class version {
         if(!$hResult)
             return FALSE;
 
-        while($oRow = mysql_fetch_object($hResult))
+        while($oRow = query_fetch_object($hResult))
         {
             $oTestData = new testData($oRow->testingId);
             $oTestData->iVersionId = $iNewId;
@@ -1563,7 +1563,7 @@ class version {
         if(!$hResult)
             return FALSE;
 
-        while($oRow = mysql_fetch_object($hResult))
+        while($oRow = query_fetch_object($hResult))
         {
             $oAppData = new appData($oRow->testingId);
             $oAppData->iVersionId = $iNewId;

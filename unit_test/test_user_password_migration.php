@@ -19,13 +19,13 @@ function test_user_password_migration()
     // generate the SHA1() of the users password
     $sQuery = "select SHA1('?') as password;";
     $hResult = query_parameters($sQuery, $sTestPassword);
-    $oRow = mysql_fetch_object($hResult);
+    $oRow = query_fetch_object($hResult);
     $sTestUserPasswordSHA1 = $oRow->password;
 
     // test that the user was created with the sha1 hash of their password
     $sQuery = "select password from user_list where userid = '?';";
     $hResult = query_parameters($sQuery, $oUser->iUserId);
-    $oRow = mysql_fetch_object($hResult);
+    $oRow = query_fetch_object($hResult);
     if($sTestUserPasswordSHA1 != $oRow->password)
     {
         error("sTestUserPasswordSHA1 $sTestUserPasswordSHA1 doesn't match oRow->password of $oRow->password after user::create()");
@@ -56,7 +56,7 @@ function test_user_password_migration()
         // after the user was logged in
         $sQuery = "select password from user_list where userid = '?';";
         $hResult = query_parameters($sQuery, $oUser->iUserId);
-        $oRow = mysql_fetch_object($hResult);
+        $oRow = query_fetch_object($hResult);
         if($sTestUserPasswordSHA1 != $oRow->password)
         {
             error("sTestUserPasswordSHA1 $sTestUserPasswordSHA1 doesn't match oRow->password of $oRow->password");

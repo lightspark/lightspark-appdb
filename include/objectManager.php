@@ -114,7 +114,7 @@ class ObjectManager
         }
 
         /* did we get any entries? */
-        if(!$hResult || mysql_num_rows($hResult) == 0)
+        if(!$hResult || query_num_rows($hResult) == 0)
         {
             switch($this->getQueueString($this->bIsQueue, $this->bIsRejected))
             {
@@ -142,7 +142,7 @@ class ObjectManager
         $this->outputHeader("color4");
 
         /* output each entry */
-        for($iCount = 0; $oRow = mysql_fetch_object($hResult); $iCount++)
+        for($iCount = 0; $oRow = query_fetch_object($hResult); $iCount++)
         {
             $oObject = new $this->sClass(null, $oRow);
 
@@ -392,7 +392,7 @@ class ObjectManager
                 "Move here"),
                     "color4");
 
-        for($i = 0; $oRow = mysql_fetch_object($hResult); $i++)
+        for($i = 0; $oRow = query_fetch_object($hResult); $i++)
         {
             $oCandidate = new $this->sClass(null, $oRow);
             if($oCandidate->objectGetId() == $this->iId)

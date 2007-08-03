@@ -38,7 +38,7 @@ if (isset($aClean['sSub']))
     $sQuery.= " AND queued='false' ORDER BY realname;";
     $hResult = query_parameters($sQuery);
 
-    if(!$hResult || !mysql_num_rows($hResult))
+    if(!$hResult || !query_num_rows($hResult))
     {
         // no apps
         echo html_frame_start("","90%");
@@ -61,7 +61,7 @@ if (isset($aClean['sSub']))
         
         $c = 1;
         $oldUserId = 0;
-        while($oRow = mysql_fetch_object($hResult))
+        while($oRow = query_fetch_object($hResult))
         {
             $oUser = new User($oRow->userId);
             $oApp = new application($oRow->appId);

@@ -28,12 +28,12 @@ if(get_magic_quotes_gpc())
     echo "if magic quotes is enabled. ";
     echo "Ooooooh you say.<br/>";
     echo "<i>\"Aren't magic quotes a convienent way to protect my php code from sql injection attacks?\"</i><br/><br/>";
-    echo "No!  <b>addslashes()</b> isn't adequate.  You should use <b>mysql_real_escape_string()</b> or some other function";
+    echo "No!  <b>addslashes()</b> isn't adequate.  You should use <b>query_escape_string()</b> or some other function";
     echo " that will handle multi-byte characters.  See <a href=\"http://shiflett.org/archive/184\">this article</a>";
     echo " for a way to exploit <b>addslash()</b>ed parameters.<br/><br/>";
-    echo "A second reason is that with magic quotes enabled, due to the use of <b>mysql_real_escape_string()</b> to";
+    echo "A second reason is that with magic quotes enabled, due to the use of <b>query_escape_string()</b> to";
     echo " protect from sql injection attacks we'll end up with variables that have been addslash()ed and";
-    echo " <b>mysql_real_escape_string()</b>ed.  So you end up having to call stripslashes() on EVERY variable. ";
+    echo " <b>query_escape_string()</b>ed.  So you end up having to call stripslashes() on EVERY variable. ";
     exit;
 }
 
@@ -250,25 +250,16 @@ function pHttpDate($sDate) {
 /**
  * msgs will be displayed on the Next page view of the same user
  */
-function addmsg($text, $color = "black")
+function addmsg($shText, $color = "black")
 {
-    global $hAppdbLink;
-
-    if(!is_resource($hAppdbLink))
-    {
-        // The last argument makes sure we are really opening a new connection
-        $hAppdbLink = mysql_connect(APPS_DBHOST, APPS_DBUSER, APPS_DBPASS,true);
-        mysql_select_db(APPS_DB, $hAppdbLink);
-    }
-
     if($color)
-        $text = "<font color='$color'> $text </font>\n";
+        $shText = "<font color='$color'> $shText </font>\n";
 
     $sQuery = "INSERT INTO sessionMessages VALUES (null, ?, '?', '?')";
-    if (!query_parameters($sQuery, "NOW()", session_id(), $text))
+    if (!query_parameters($sQuery, "NOW()", session_id(), $shText))
     {
         echo "An error has occurred in addmsg()";
-        echo $text;
+        echo $shText;
     }
 }
 
@@ -289,7 +280,7 @@ function dumpmsgbuffer()
     if(!$hResult)
         return;
 
-    while($oRow = mysql_fetch_object($hResult))
+    while($oRow = query_fetch_object($hResult))
     {
         echo html_frame_start("","300","",5);
         echo "<div align=center> $oRow->message </div>";

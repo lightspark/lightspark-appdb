@@ -176,7 +176,7 @@ function make_bugzilla_version_list($sVarname, $sSelectedValue)
     // TODO: if we ever get a reasonable way to order the list replace this code
     //       with that
     $aVersions = array();
-    while(list($sValue) = mysql_fetch_row($hResult))
+    while(list($sValue) = query_fetch_row($hResult))
     {
       // exclude unspecified versions and the "CVS" version
       if(($sValue != "unspecified") && ($sValue != "CVS"))
@@ -246,7 +246,7 @@ function make_maintainer_rating_list($varname, $cvalue)
 function getNumberOfComments()
 {
     $hResult = query_parameters("SELECT count(*) as num_comments FROM appComments;");
-    $oRow = mysql_fetch_object($hResult);
+    $oRow = query_fetch_object($hResult);
     return $oRow->num_comments;
 }
 
@@ -256,7 +256,7 @@ function getNumberOfQueuedBugLinks()
     $hResult = query_parameters("SELECT count(*) as num_buglinks FROM buglinks WHERE queued='true';");
     if($hResult)
     {
-      $oRow = mysql_fetch_object($hResult);
+      $oRow = query_fetch_object($hResult);
       return $oRow->num_buglinks;
     }
     return 0;
@@ -268,7 +268,7 @@ function getNumberOfBugLinks()
     $hResult = query_parameters("SELECT count(*) as num_buglinks FROM buglinks;");
     if($hResult)
     {
-      $oRow = mysql_fetch_object($hResult);
+      $oRow = query_fetch_object($hResult);
       return $oRow->num_buglinks;
     }
     return 0;
@@ -316,8 +316,8 @@ function outputTopXRow($oRow)
 function outputTopXRowAppsFromRating($sRating, $iNumApps)
 {
     /* clean the input values so we can continue to use query_appdb() */
-    $sRating = mysql_real_escape_string($sRating);
-    $iNumApps = mysql_real_escape_string($iNumApps);
+    $sRating = query_escape_string($sRating);
+    $iNumApps = query_escape_string($iNumApps);
 
     /* list of versionIds we've already output, so we don't output */
     /* them again when filling in any empty spots in the list */
@@ -331,8 +331,8 @@ function outputTopXRowAppsFromRating($sRating, $iNumApps)
            ORDER BY c DESC
            LIMIT ?";
     $hResult = query_parameters($sQuery, $sRating, $iNumApps);
-    $iNumApps -= mysql_num_rows($hResult); /* take away the rows we are outputting here */
-    while($oRow = mysql_fetch_object($hResult))
+    $iNumApps -= query_num_rows($hResult); /* take away the rows we are outputting here */
+    while($oRow = query_fetch_object($hResult))
     {
         /* keep track of the apps we've already output */
         $aVersionId[] = $oRow->versionId;
@@ -358,7 +358,7 @@ function outputTopXRowAppsFromRating($sRating, $iNumApps)
 
     /* get the list that will fill the empty spots */
     $hResult = query_appdb($sQuery);
-    while($oRow = mysql_fetch_object($hResult))
+    while($oRow = query_fetch_object($hResult))
         outputTopXRow($oRow);
 }
 
@@ -457,13 +457,13 @@ function searchForApplication($search_words)
         $sQuery = "SELECT vendorId from vendor where vendorName LIKE '%?%'
                                        OR vendorURL LIKE '%?%'";
         $hResult = query_parameters($sQuery, $value, $value);
-        while($oRow = mysql_fetch_object($hResult))
+        while($oRow = query_fetch_object($hResult))
         {
             array_push($vendorIdArray, $oRow->vendorId);
         }
     }
 
-    $search_words = str_replace(' ', '%', mysql_real_escape_string($search_words));
+    $search_words = str_replace(' ', '%', query_escape_string($search_words));
 
     /* base query */
     $sQuery = "SELECT *
@@ -477,7 +477,7 @@ function searchForApplication($search_words)
     /* append to the query any vendors that we matched with */
     foreach($vendorIdArray as $key=>$value)
     {
-        $sQuery.=" OR appFamily.vendorId=".mysql_real_escape_string($value);
+        $sQuery.=" OR appFamily.vendorId=".query_escape_string($value);
     }
 
     $sQuery.=" ) ORDER BY appName";
@@ -497,7 +497,7 @@ function searchForApplicationFuzzy($search_words, $minMatchingPercent)
 
     /* add on all of the like matches that we can find */
     $hResult = searchForApplication($search_words);
-    while($oRow = mysql_fetch_object($hResult))
+    while($oRow = query_fetch_object($hResult))
     {
         array_push($excludeAppIdArray, $oRow->appId);
     }
@@ -506,7 +506,7 @@ function searchForApplicationFuzzy($search_words, $minMatchingPercent)
     $sQuery = "SELECT appName, appId FROM appFamily WHERE queued = 'false'";
     foreach ($excludeAppIdArray as $key=>$value)
     {
-        $sQuery.=" AND appId != '".mysql_real_escape_string($value)."'";
+        $sQuery.=" AND appId != '".query_escape_string($value)."'";
     }
     $sQuery.=";";
 
@@ -514,7 +514,7 @@ function searchForApplicationFuzzy($search_words, $minMatchingPercent)
     $search_words = strtoupper($search_words);
 
     $hResult = query_appdb($sQuery);
-    while($oRow = mysql_fetch_object($hResult))
+    while($oRow = query_fetch_object($hResult))
     {
         $oRow->appName = strtoupper($oRow->appName); /* convert the appname to upper case */
         similar_text($oRow->appName, $search_words, $similarity_pst);
@@ -535,11 +535,11 @@ function searchForApplicationFuzzy($search_words, $minMatchingPercent)
     {
         if($firstEntry == true)
         {
-            $sQuery.="appId='".mysql_real_escape_string($value)."'";
+            $sQuery.="appId='".query_escape_string($value)."'";
             $firstEntry = false;
         } else
         {
-            $sQuery.=" OR appId='".mysql_real_escape_string($value)."'";
+            $sQuery.=" OR appId='".query_escape_string($value)."'";
         }
     }
     $sQuery.=" ORDER BY appName;";
@@ -550,7 +550,7 @@ function searchForApplicationFuzzy($search_words, $minMatchingPercent)
 
 function outputSearchTableForhResult($search_words, $hResult)
 {
-    if(($hResult == null) || (mysql_num_rows($hResult) == 0))
+    if(($hResult == null) || (query_num_rows($hResult) == 0))
     {
         // do something
         echo html_frame_start("","98%");
@@ -568,7 +568,7 @@ function outputSearchTableForhResult($search_words, $hResult)
         echo "</tr>\n\n";
 
         $c = 0;
-        while($oRow = mysql_fetch_object($hResult))
+        while($oRow = query_fetch_object($hResult))
         {
             $oApp = new application($oRow->appId);
             //skip if a NONAME
@@ -580,7 +580,7 @@ function outputSearchTableForhResult($search_words, $hResult)
             //count versions
             $hResult2 = query_parameters("SELECT count(*) as versions FROM appVersion WHERE appId = '?' AND versionName != 'NONAME' and queued = 'false'",
                                      $oRow->appId);
-            $y = mysql_fetch_object($hResult2);
+            $y = query_fetch_object($hResult2);
 		
             //display row
             echo "<tr class=$bgcolor>\n";

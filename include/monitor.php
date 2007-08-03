@@ -30,7 +30,7 @@ class Monitor {
                        FROM appMonitors
                        WHERE monitorId = '".$iMonitorId."'";
             $hResult = query_appdb($sQuery);
-            $oRow = mysql_fetch_object($hResult);
+            $oRow = query_fetch_object($hResult);
         }
 
         if($oRow)
@@ -51,7 +51,7 @@ class Monitor {
                           WHERE userId = '".$iUserId."'
                           AND versionId = '".$iVersionId."'";
             $hResult = query_appdb($sQuery);
-            if( $oRow = mysql_fetch_object($hResult) )
+            if( $oRow = query_fetch_object($hResult) )
             {
                 $this->iMonitorId = $oRow->monitorId;
                 $this->iAppId = $oRow->appId;
@@ -83,7 +83,7 @@ class Monitor {
 
         if($hResult)
         {
-            $this->Monitor(mysql_insert_id());
+            $this->Monitor(query_appdb_insert_id());
             $sWhatChanged = "New monitor\n\n";
             $this->SendNotificationMail("add", $sWhatChanged);
             return true;
@@ -228,7 +228,7 @@ class Monitor {
         if(!$hResult)
             return FALSE;
 
-        $oRow = mysql_fetch_object($hResult);
+        $oRow = query_fetch_object($hResult);
 
         if(!$oRow)
             return FALSE;
@@ -247,12 +247,12 @@ class Monitor {
     {
          $hResult = query_parameters("SELECT appId, versionId FROM appMonitors WHERE userId = '?'", $oUser->iUserId);
 
-         if(!$hResult || mysql_num_rows($hResult) == 0)
+         if(!$hResult || query_num_rows($hResult) == 0)
              return NULL;
 
          $aVersionsMonitored = array();
 
-         for($i = 0; $oRow = mysql_fetch_object($hResult); $i++)
+         for($i = 0; $oRow = query_fetch_object($hResult); $i++)
              $aVersionsMonitored[$i] = array($oRow->appId, $oRow->versionId);
 
          return $aVersionsMonitored;

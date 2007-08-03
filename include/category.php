@@ -31,7 +31,7 @@ class Category {
                        WHERE catId = '?' ORDER BY catName;";
             if($hResult = query_parameters($sQuery, $iCatId))
             {
-                $oRow = mysql_fetch_object($hResult);
+                $oRow = query_fetch_object($hResult);
                 if($oRow)
                 {
                     $this->iCatId = $iCatId;
@@ -50,7 +50,7 @@ class Category {
                        AND queued = 'false' ORDER BY appName";
             if($hResult = query_parameters($sQuery, $iCatId))
             {
-                while($oRow = mysql_fetch_object($hResult))
+                while($oRow = query_fetch_object($hResult))
                 {
                     $this->aApplicationsIds[] = $oRow->appId;
                 }
@@ -64,7 +64,7 @@ class Category {
                        WHERE catParent = '?' ORDER BY catName;";
             if($hResult = query_parameters($sQuery, $iCatId))
             {
-                while($oRow = mysql_fetch_object($hResult))
+                while($oRow = query_fetch_object($hResult))
                 {
                     $this->aSubcatsIds[] = $oRow->catId;
                 }
@@ -83,7 +83,7 @@ class Category {
                                     $sName, $sDescription, $iParentId);
         if($hResult)
         {
-            $this->iCatId = mysql_insert_id();
+            $this->iCatId = query_appdb_insert_id();
             $this->category($this->iCatId);
             return true;
         }
@@ -171,9 +171,9 @@ class Category {
         {
             $hResult = query_parameters("SELECT catName, catId, catParent FROM appCategory WHERE catId = '?'",
                                        $iCatId);
-            if(!$hResult || mysql_num_rows($hResult) != 1)
+            if(!$hResult || query_num_rows($hResult) != 1)
                 break;
-            $oCatRow = mysql_fetch_object($hResult);
+            $oCatRow = query_fetch_object($hResult);
             $aPath[] = array($oCatRow->catId, $oCatRow->catName);
             $iCatId = $oCatRow->catParent;
         }

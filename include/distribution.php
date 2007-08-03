@@ -30,7 +30,7 @@ class distribution {
                         FROM distributions
                         WHERE distributionId = '?'";
             if($hResult = query_parameters($sQuery, $iDistributionId))
-                $oRow = mysql_fetch_object($hResult);
+                $oRow = query_fetch_object($hResult);
         }
 
         if($oRow)
@@ -69,7 +69,7 @@ class distribution {
 
         if($hResult = query_parameters($sQuery, $this->iDistributionId))
         {
-            while($oRow = mysql_fetch_object($hResult))
+            while($oRow = query_fetch_object($hResult))
             {
                 $this->aTestingIds[] = $oRow->testingId;
             }
@@ -85,9 +85,9 @@ class distribution {
                    WHERE name = '?'";
         $hResult = query_parameters($sQuery, $this->sName);
 
-        if($hResult && $oRow = mysql_fetch_object($hResult))
+        if($hResult && $oRow = query_fetch_object($hResult))
         {
-            if(mysql_num_rows($hResult))
+            if(query_num_rows($hResult))
             {
                 addmsg("There was an existing distribution called ".$this->sName.".", "red");
                 $this->distribution($oRow->distributionId);
@@ -108,7 +108,7 @@ class distribution {
                                     $this->mustBeQueued() ? "true" : "false");
         if($hResult)
         {
-            $this->iDistributionId = mysql_insert_id();
+            $this->iDistributionId = query_appdb_insert_id();
             $this->distribution($this->iDistributionId);
             $this->SendNotificationMail();
             return true;
@@ -397,7 +397,7 @@ class distribution {
 
         if($hResult)
         {
-            $oRow = mysql_fetch_object($hResult);
+            $oRow = query_fetch_object($hResult);
             return $oRow->num_dists;
         }
         return 0;
@@ -414,7 +414,7 @@ class distribution {
 
         echo "<select name='$varname'>\n";
         echo "<option value=\"\">Choose ...</option>\n";
-        while(list($name, $value) = mysql_fetch_row($hResult))
+        while(list($name, $value) = query_fetch_row($hResult))
         {
             if($value == $cvalue)
                 echo "<option value=$value selected>$name\n";

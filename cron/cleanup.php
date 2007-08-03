@@ -52,7 +52,7 @@ function inactiveUserCheck()
   $hUsersToWarn = unwarnedAndInactiveSince(6);
   if($hUsersToWarn)
   {
-    while($oRow = mysql_fetch_object($hUsersToWarn))
+    while($oRow = query_fetch_object($hUsersToWarn))
     {
       $oUser = new User($oRow->userid);
 
@@ -73,7 +73,7 @@ function inactiveUserCheck()
   $hUsersToDelete = warnedSince(1);
   if($hUsersToDelete)
   {
-    while($oRow = mysql_fetch_object($hUsersToDelete))
+    while($oRow = query_fetch_object($hUsersToDelete))
     {
       $oUser = new User($oRow->userid);
       if(!$oUser->hasDataAssociated())
@@ -179,11 +179,11 @@ function orphanVersionCheck()
     $sMsg.= "this sql command '".$sQuery."'\r\n";
 
     /* don't report anything if no orphans are found */
-    if(mysql_num_rows($hResult) == 0)
+    if(query_num_rows($hResult) == 0)
         return;
 
     $sMsg .= "versionId/name\r\n";
-    while($oRow = mysql_fetch_object($hResult))
+    while($oRow = query_fetch_object($hResult))
     {
         $sMsg .= $oRow->versionId."/".$oRow->versionName."\r\n";
     }
@@ -209,7 +209,7 @@ function orphanSessionMessagesCheck()
     $sQuery = "SELECT count(*) as cnt from sessionMessages where TO_DAYS(NOW()) - TO_DAYS(time) > ?";
     $hResult = query_parameters($sQuery, $iSessionMessageDayLimit);
 
-    $oRow = mysql_fetch_object($hResult);
+    $oRow = query_fetch_object($hResult);
     $iMessages = $oRow->cnt;
 
     $sMsg = "Found ".$iMessages." that have been orphaned in the sessionMessages table for longer than ".$iSessionMessageDayLimit." days\r\n";
@@ -237,7 +237,7 @@ function orphanSessionListCheck()
     $sQuery = "SELECT count(*) as cnt from session_list where TO_DAYS(NOW()) - TO_DAYS(stamp) > ?";
     $hResult = query_parameters($sQuery, SESSION_DAYS_TO_EXPIRE + 2);
 
-    $oRow = mysql_fetch_object($hResult);
+    $oRow = query_fetch_object($hResult);
     $iMessages = $oRow->cnt;
 
     $sMsg = "Found ".$iMessages." sessions that have expired after ".(SESSION_DAYS_TO_EXPIRE + 2)." days\r\n";
@@ -272,7 +272,7 @@ function getMissingScreenshotArray()
   $hResult = Screenshot::objectGetEntries(false, false);
 
   // go through each screenshot
-  while($oRow = mysql_fetch_object($hResult))
+  while($oRow = query_fetch_object($hResult))
   {
     $iScreenshotId = $oRow->id;
     $oScreenshot = new Screenshot($iScreenshotId);

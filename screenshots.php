@@ -60,7 +60,7 @@ apidb_header("Screenshots");
 $oApp = new Application($aClean['iAppId']);
 $oVersion = new Version($aClean['iVersionId']);
 
-if($hResult && mysql_num_rows($hResult))
+if($hResult && query_num_rows($hResult))
 {
     echo html_frame_start("Screenshot Gallery for ".$oApp->sName." ".$oVersion->sName,500);
 
@@ -72,7 +72,7 @@ if($hResult && mysql_num_rows($hResult))
     $bUserIsMaintainerOfVersion = false;
 
     echo "<div align=center><table><tr>\n";
-    while($oRow = mysql_fetch_object($hResult))
+    while($oRow = query_fetch_object($hResult))
     {
         // if the current version changed then update the current version
         // and close the previous html frame if this isn't the

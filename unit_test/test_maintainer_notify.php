@@ -130,7 +130,7 @@ class notifyContainer
     {
       $sQuery2 = "select * from appMaintainers where maintainerId = '?'";
       $hResult = query_parameters($sQuery2, $this->oMaintainer->iMaintainerId);
-      $oObject = mysql_fetch_object($hResult);
+      $oObject = query_fetch_object($hResult);
       print_r($oObject);
     }
 
@@ -317,7 +317,7 @@ function test_maintainer_notifyLevel_2_to_3($bTestAsMaintainer)
   // check to make sure the maintainer doesn't exist
   $sQuery = "select count(*) as cnt from appMaintainers where maintainerId = '?'";
   $hResult = query_parameters($sQuery, $oNotifyContainer->oMaintainer->iMaintainerId);
-  $oRow = mysql_fetch_object($hResult);
+  $oRow = query_fetch_object($hResult);
   if($oRow->cnt != 0)
   {
     $bSuccess = false;

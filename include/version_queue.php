@@ -27,7 +27,7 @@ class version_queue
                $hResult = appData::getData($iVersionId, "downloadurl",
                                            TRUE, TRUE, TRUE))
             {
-                if($oRow = mysql_fetch_object($hResult))
+                if($oRow = query_fetch_object($hResult))
                     $iDownloadUrlId = $oRow->id;
             }
         }

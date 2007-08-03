@@ -62,7 +62,7 @@ function test_application_delete()
                       
     if($hResult = query_parameters($sQuery, $iAppId))
     {
-        $iRows = mysql_num_rows($hResult);
+        $iRows = query_num_rows($hResult);
         if($iRows > 0)
         {
             echo "Found '".$iRows."' versions for this application left over!";

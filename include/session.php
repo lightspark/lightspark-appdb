@@ -2,7 +2,7 @@
 
 /*
  * session.php - session handler functions
- * sessions are stored in a mysql table
+ * sessions are stored in a database table
  */
 
 /* the number of days a session cookie is flaged to last */
@@ -72,7 +72,7 @@ class session
     {
         $result = query_parameters("SELECT data FROM session_list WHERE session_id = '?'", $key);
         if (!$result) { return null; }
-        $oRow = mysql_fetch_object($result);
+        $oRow = query_fetch_object($result);
         if($oRow)
             return $oRow->data; 
         else
