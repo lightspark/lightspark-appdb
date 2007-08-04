@@ -608,10 +608,13 @@ class version {
             $oTableRow = new TableRow();
             $oTableRow->SetValign("top");
 
+            $oTableCell = new TableCell("Application");
+            $oTableCell->SetBold(true);
+            $oTableRow->AddCell($oTableCell);
+
             $sOptionList = $x->make_option_list("iAppId", $this->iAppId,
                                                 "appFamily", "appId", "appName");
-            $oTableCell = new TableCell("Application".$sOptionList);
-            $oTableCell->SetBold(true);
+            $oTableCell = new TableCell($sOptionList);
             $oTableCell->SetClass("color0");
             
             $oTableRow->AddCell($oTableCell);
