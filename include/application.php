@@ -119,7 +119,7 @@ class Application {
     function create()
     {
         if(!$_SESSION['current']->canCreateApplication())
-            return;
+            return false;
 
         $hResult = query_parameters("INSERT INTO appFamily (appName, description, ".
                                     "keywords, webPage, vendorId, catId, ".
