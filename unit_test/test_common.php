@@ -13,11 +13,18 @@ function create_version_and_parent_app($sId = "")
 {
     $oApp = new application();
     $oApp->sName = "OM App ".$sId;
-    $oApp->create();
+    if(!$oApp->create())
+    {
+        error("oApp->create() failed\n");
+    }
+
     $oVersion = new version();
     $oVersion->sName = "OM version ".$sId;
     $oVersion->iAppId = $oApp->iAppId;
-    $oVersion->create();
+    if(!$oVersion->create())
+    {
+        error("oVersion->create() failed");
+    }
     return $oVersion->iVersionId;
 }
 
