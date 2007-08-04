@@ -18,10 +18,13 @@ function test_testData_getNewestTestidFromVersionId()
 
     $oOldTestData = new testData();
     $oOldTestData->iVersionId = $iVersionId;
-    $oOldTestData->create();
+    if(!$oOldTestData->create())
+      error("oOldTestData->create() failed");
+
     $oNewTestData = new testData();
     $oNewTestData->iVersionId = $iVersionId;
-    $oNewTestData->create();
+    if(!$oNewTestData->create())
+      error("oNewTestData->create() failed");
 
     $oUser->addPriv("admin");
     $oOldTestData->unQueue();
