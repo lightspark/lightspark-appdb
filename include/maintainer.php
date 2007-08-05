@@ -938,13 +938,13 @@ class maintainer
       {
         $oApp = new Application($this->iAppId);
         $sSubject.= $oApp->sName;
-        $sMsg.='application, '.$oApp->sName.'('.$oApp->objectMakeUrl().'), that you maintain.'."\n";
+        $sMsg.='application, '.$oApp->sName.'('.$oApp->objectMakeUrl().'), that you maintain.'."\n\n";
       } else
       {
         $sFullname = version::fullName($this->iVersionId);
         $oVersion = new Version($this->iVersionId);
         $sSubject.= $sFullname;
-        $sMsg.='version, '.$sFullname.'('.$oVersion->objectMakeUrl().'), that you maintain.'."\n";
+        $sMsg.='version, '.$sFullname.'('.$oVersion->objectMakeUrl().'), that you maintain.'."\n\n";
       }
       $sSubject.=" ready for your processing";
 
@@ -983,7 +983,7 @@ class maintainer
         // FIXME: should use a function to generate these urls and use it here and
         // in sidebar_maintainer.php and sidebar_admin.php
         $sMsg = 'Please visit the test data queue ('.APPDB_ROOT."objectManager.php?sClass=version_queue&bIsQueue=true&sTitle=".
-          "Version%20Queue".') to process queued versions for applications you maintain.\n';
+          'Version%20Queue) to process queued versions for applications you maintain.'."\n";
       }
 
       //////////////////
@@ -1022,8 +1022,10 @@ class maintainer
 
         // FIXME: should use a function to generate these urls and use it here and
         // in sidebar_maintainer.php and sidebar_admin.php
-        $sMsg .= 'Please visit <a href="'.BASE."objectManager.php?sClass=testData_queue&bIsQueue=true&sTitle=".
-          "Test%20Results%20Queue".'">AppDB Test Data queue</a> to process queued test data for versions you maintain.\r\n';
+        $sMsg .= 'Please visit the AppDB Test Data Queue'.
+          '('.APPDB_ROOT.'objectManager.php?sClass=testData_queue&'.
+          'bIsQueue=true&sTitle=Test%20Results%20Queue)'.
+          ' to process queued test data for versions you maintain.'."\n";
       }
       // queued testdata
       //////////////////
@@ -1057,8 +1059,9 @@ class maintainer
       {
         // FIXME: should use a function to generate these urls and use it here and
         // in sidebar_maintainer.php and sidebar_admin.php
-        $sMsg .= 'Please visit <a href="'.BASE."objectManager.php?sClass=screenshot_queue&bIsQueue=true&sTitle=".
-          "Screenshot%20Queue".'">Screenshot queue</a> to process queued screenshots for versions you maintain.\r\n';
+        $sMsg.= 'Please visit the screenshot queue(';
+        $sMsg.= APPDB_ROOT.'objectManager.php?sClass=screenshot_queue&bIsQueue=true&sTitle=Screenshot%20Queue) ';
+        $sMsg.= 'to process queued screenshots for versions you maintain.'."\n";
       }
         
       // queued screenshots
@@ -1121,24 +1124,34 @@ class maintainer
         break;
       case 1: // send the first notification
         // nothing to do here, the first notification is just a reminder
-        $oNotificationUpdate->sMsg.= "\n\nThanks,\n";
-        $oNotificationUpdate->sMsg.= "Appdb Admins";
         break;
       case 2: // send the second notification, notify them that if the queued entries aren't
               // processed after another $iNotificationIntervalDays that
               // we'll have to remove their maintainership for this application/version
               // so a more active person can fill the spot
-        $oNotificationUpdate->sMsg.= "\nThis your second notification of queued entries. If the queued entries are";
-        $oNotificationUpdate->sMsg.= " not processed within the next ".iNotificationIntervalDays. "we will remove";
-        $oNotificationUpdate->sMsg.= " your maintainership for this application/version so a more active person";
-        $oNotificationUpdate->sMsg.= " can fill the spot.";
-        $oNotificationUpdate->sMsg.= "\n\nThanks,\n";
-        $oNotificationUpdate->sMsg.= "Appdb Admins";
+        $oNotificationUpdate->sMsg.= "\nThis your second notification of queued entries.";
+        $oNotificationUpdate->sMsg.= " If the queued entries are not processsed within";
+        $oNotificationUpdate->sMsg.= " the next ".iNotificationIntervalDays. "we will remove";
+        $oNotificationUpdate->sMsg.= " your maintainership for this application/version";
+        $oNotificationUpdate->sMsg.= " so a more active person can fill the spot.";
         break;
-      case 3: // remove their maintainership
+      case 3: // remove their maintainership and notify the maintainer why we are doing so
+        $oNotificationUpdate->sMsg.= "\nThis your third notification of queued entries.";
+        $oNotificationUpdate->sMsg.= " Because your queued entries have not been processed";
+        $oNotificationUpdate->sMsg.= " after two notifications we are removing your maintainer";
+        $oNotificationUpdate->sMsg.= " role for this application/version. Removing inactive";
+        $oNotificationUpdate->sMsg.= " maintainers lets us free up slots for other potential";
+        $oNotificationUpdate->sMsg.= " maintainers.\n";
+        $oNotificationUpdate->sMsg.= " If you are still interested in being a maintainer please";
+        $oNotificationUpdate->sMsg.= " submit a maintainer request.";
         $this->delete(); // delete ourselves from the database
         break;
       }
+      
+      // common end of our message
+      $oNotificationUpdate->sMsg.= "\n\nThanks,\n";
+      $oNotificationUpdate->sMsg.= "Appdb Admins\n";
+      $oNotificationUpdate->sMsg.= "<appdb@winehq.org>";
 
       // save the notification level and notification time back into the database
       $sQuery = "update appMaintainers set notificationLevel = '?', notificationTime = ?".
@@ -1148,6 +1161,7 @@ class maintainer
       //TODO: we probably want to copy the mailing list on each of these emails
       $oNotificationUpdate->sEmail.=" cmorgan@alum.wpi.edu"; // FIXME: for debug append my email address
 
+      // we don't send any emails if the notification level is zero
       if($this->iNotificationLevel == 0)
       {
         if($bDebugOutputEnabled)
@@ -1161,7 +1175,8 @@ class maintainer
           echo "Msg: ".$oNotificationUpdate->sMsg."\n\n";
         }
 
-        mail_appdb($oNotificationUpdate->sEmail, $oNotificationUpdate->sSubject, $oNotificationUpdate->sMsg);
+        mail_appdb($oNotificationUpdate->sEmail, $oNotificationUpdate->sSubject,
+                   $oNotificationUpdate->sMsg);
       }
     }
 
