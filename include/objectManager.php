@@ -172,12 +172,12 @@ class ObjectManager
                 $shDeleteLink = "";
                 if($this->oTableRow->bHasDeleteLink)
                 {
-                  $shDeleteLink = ' [ <a href="'.$this->makeUrl("delete", $oObject->objectGetId()).
-                    '">delete</a> ]';
+                  $shDeleteLink = ' [&nbsp;<a href="'.$this->makeUrl("delete", $oObject->objectGetId()).
+                    '">delete</a>&nbsp;]';
                 }
 
-                $oTableCell = new TableCell('[ <a href="'.$this->makeUrl("edit",
-                                   $oObject->objectGetId()).'">'.$sEditLinkLabel.'</a> ]'.$shDeleteLink);
+                $oTableCell = new TableCell('[&nbsp;<a href="'.$this->makeUrl("edit",
+                                   $oObject->objectGetId()).'">'.$sEditLinkLabel.'</a>&nbsp;]'.$shDeleteLink);
                 $this->oTableRow->AddCell($oTableCell);
             }
 
