@@ -524,13 +524,20 @@ class ObjectManager
         if(method_exists(new $this->sClass, "checkOutputEditorInput"))
         {
             $sErrors = $oObject->checkOutputEditorInput($aClean);
-            if($sErrors)
-                return $sErrors;
         }
 
+        // NOTE: we only check for errors when submitting
+        //       because there is always the possibility that we can
+        //       get into some error state but we don't want to be stuck, unable
+        //       to delete an entry because of an error that we don't want to
+        //       have to correct
         switch($aClean['sSubmit'])
         {
             case "Submit":
+                // if we have errors, return them
+                if($sErrors)
+                    return $sErrors;
+
                 // if we have a valid iId then we are displaying an existing entry
                 // otherwise we should create the entry in the 'else' case
                 if($this->iId)
@@ -551,16 +558,24 @@ class ObjectManager
 
                     $oObject->create();
                 }
-            break;
+                break;
 
             case "Reject":
                 if(!$oObject->canEdit())
                     return FALSE;
 
                 $oObject->reject();
-            break;
+                break;
+
             case "Delete":
                 $this->delete_entry();
+                break;
+
+            default:
+              // shouldn't end up here, log the submit type that landed us here
+              error_log::log_error(ERROR_GENERAL, "processForm() received ".
+                                   "unknown aClean[sSubmit] of: ".$aClean['sSubmit']);
+              return false;
         }
 
         /* Displaying the entire un-queued list for a class is not a good idea,
@@ -762,7 +777,9 @@ class ObjectManager
             echo "</font><br />";
             return TRUE;
         } else
+        {
             return FALSE;
+        }
     }
 }
 
