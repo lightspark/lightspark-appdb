@@ -709,6 +709,11 @@ class ObjectManager
         $iPage = isset($aClean['iPage']) ? $aClean['iPage'] : 1;
         $iCurrentPage = min($iPage, $iNumPages);
 
+        // if iPage is beyond the maximum number of pages, make it the
+        // highest page number
+        if($iPage > $iNumPages)
+          $iPage = $iNumPages;
+
         /* Display selectors and info */
         echo '<div align="center">';
         echo "<b>Page $iPage of $iNumPages</b><br />";
