@@ -366,7 +366,8 @@ class appData
                 AND
                 appData.queued = '?'
                 AND
-                appData.type = '?'";
+                appData.type = '?'
+                ORDER BY appFamily.appName";
             if(!$iRows && !$iStart)
             {
                 $hResult = query_parameters($sQuery, $_SESSION['current']->iUserId,
@@ -386,37 +387,42 @@ class appData
             if($iStart || $iRows)
                 $sLimit = " LIMIT ?,?";
 
-            $sQuery = "(SELECT DISTINCT appData.* FROM appData,
-                appFamily, appVersion WHERE
-                    appFamily.appId = appVersion.appId
-                    AND
-                    (
+            $sQuery = 
+                   "(
+                      SELECT DISTINCT appData.* FROM appData,
+                          appFamily, appVersion WHERE
+                      appFamily.appId = appVersion.appId
+                      AND
+                      (
                         appData.appId = appFamily.appId
+                      )
+                      AND
+                      appVersion.queued = 'false'
+                      AND
+                      appFamily.queued = 'false'
+                      AND
+                      appData.queued = '?'
+                      AND
+                      appData.type = '?' ORDER BY appFamily.appName $sLimit
                     )
-                    AND
-                    appVersion.queued = 'false'
-                    AND
-                    appFamily.queued = 'false'
-                    AND
-                    appData.queued = '?'
-                    AND
-                    appData.type = '?'$sLimit) UNION
+                    UNION
                     (
-                    SELECT DISTINCT appData.* FROM appData,
-                appFamily, appVersion WHERE
-                    appFamily.appId = appVersion.appId
-                    AND
-                    (
-                        appData.versionId = appVersion.versionId
-                    )
-                    AND
-                    appVersion.queued = 'false'
-                    AND
-                    appFamily.queued = 'false'
-                    AND
-                    appData.queued = '?'
-                    AND
-                    appData.type = '?'$sLimit)";
+                      SELECT DISTINCT appData.* FROM appData,
+                        appFamily, appVersion WHERE
+                        appFamily.appId = appVersion.appId
+                      AND
+                      (
+                          appData.versionId = appVersion.versionId
+                      )
+                      AND
+                      appVersion.queued = 'false'
+                      AND
+                      appFamily.queued = 'false'
+                      AND
+                      appData.queued = '?'
+                      AND
+                      appData.type = '?' ORDER BY appFamily.appName $sLimit
+                    )";
             if(!$iRows && !$iStart)
             {
                 $hResult = query_parameters($sQuery, $bQueued ? "true" : "false", $sType,
