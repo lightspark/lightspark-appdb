@@ -1131,8 +1131,8 @@ class maintainer
               // so a more active person can fill the spot
         $oNotificationUpdate->sMsg.= "\nThis your second notification of queued entries.";
         $oNotificationUpdate->sMsg.= " If the queued entries are not processsed within";
-        $oNotificationUpdate->sMsg.= " the next ".iNotificationIntervalDays. "we will remove";
-        $oNotificationUpdate->sMsg.= " your maintainership for this application/version";
+        $oNotificationUpdate->sMsg.= " the next ".iNotificationIntervalDays. " days we will";
+        $oNotificationUpdate->sMsg.= " remove your maintainership for this application/version";
         $oNotificationUpdate->sMsg.= " so a more active person can fill the spot.";
         break;
       case 3: // remove their maintainership and notify the maintainer why we are doing so
