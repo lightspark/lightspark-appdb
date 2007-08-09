@@ -13,20 +13,21 @@ require(BASE."include/incl.php");
 
 apidb_header("Wine Application Database");
 ?>
-    <img src="images/appdb_montage.jpg" width=391 height=266 align=right alt="Wine AppDB">
+    <img style="float:right;" src="images/appdb_montage.jpg" width=391 height=266 alt="Wine AppDB">
 
 <div class='default_container'>    
 <h1>Welcome</h1>
 
-<p>This is the Wine Application Database (AppDB). From here you get info on application
+<p>This is the Wine Application Database (AppDB). Here you can get information on application
 compatibility with Wine.</p>
 <?php
 $str_benefits="
     <ul>
-        <li>Ability to <a href=\"".BASE."help/?sTopic=voting\" title=\"help on voting\" style=\"cursor: help\">vote</a> on your favourite applications</li>
-        <li>Ability to customize the layout and behaviour of the AppDB and comments system</li>
+        <li>Ability to <a href=\"".BASE."help/?sTopic=voting\" title=\"help on voting\" style=\"cursor: help\">vote</a> on your favorite applications</li>
+        <li>Ability to customize the layout and behavior of the AppDB and comments system</li>
         <li>Take credit for your witty posts</li>
-        <li>Ability to sign up to be an <a href=\"".BASE."help/?sTopic=maintainer_guidelines\" title=\"informations about application maintainers\"  style=\"cursor: help\">application maintainer</a>.</li>
+        <li>Ability to sign up to be an <a href=\"".BASE."help/?sTopic=maintainer_guidelines\"
+            title=\"information about application maintainers\"  style=\"cursor: help\">application maintainer</a>.</li>
         <li>Submit new applications and versions.</li>
         <li>Submit new screenshots.</li>
     </ul>
@@ -53,6 +54,33 @@ if(!$_SESSION['current']->isLoggedIn())
     stomping out Wine issues will be greatly appreciated.</p>";
 
 }
+
+echo "<div style='clear:both; border: 2px solid; background-color: #d7d7d7; font-weight: bold; padding:4px;'>";
+echo "<p style='font-size:large;'>Do you use Wine regularly? Interested in helping other users and".
+     " keeping information about your favorite applications up-to-date?</p>";
+echo "<p style='font-size: medium;'>Consider".
+     " becoming an <a href=\"".BASE."help/?sTopic=maintainer_guidelines\"".
+     " title=\"information about application maintainers\"  style=\"cursor: help\">application maintainer</a>".
+     " for the applications that you use under Wine.</p>";
+echo "<p style='font-size:medium;'>As an application maintainer you'll get to post HOWTOs to help other users".
+     " run the application. You'll be able to review and process user submitted screenshots".
+     " and test results.</p>";
+echo "<p style='font-size:medium;'>Dozens of new test results and screenshots are submitted each day and we can".
+     " use your help to keep user contributed information reviewed and processed in a timely fashion.".
+     " Please consider becoming an application maintainer.";
+echo "<p style='font-size:medium;'>- The Appdb Admins<br/> <a href=\"mailto:".APPDB_OWNER_EMAIL."\">".APPDB_OWNER_EMAIL."</a></p>";
+
+if(!$_SESSION['current']->isLoggedIn())
+{
+  echo "<p style='font-size: medium;'>To become a maintainer, [<a href=\"".login_url()."\">log in</a>]".
+    " or [<a href=\"account.php?sCmd=new\">register</a>] and on the application or version page".
+    ", depending on whether you want to maintain all versions of an application or a specific version,".
+    " click on the <i>'Become a super maintainer of this app'</i> or <i>'Be a maintainer for this version'</i>".
+    " button. We'll process your request within a day or so.</p>";
+}
+
+echo "</div>";
+
 ?>
 <?php
 
