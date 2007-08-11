@@ -159,41 +159,17 @@ function make_bugzilla_version_list($sVarname, $sSelectedValue)
 
     $sTable = BUGZILLA_DB.".versions";
     $sWhere = "WHERE product_id=".BUGZILLA_PRODUCT_ID;
-    $sQuery = "SELECT value FROM $sTable $sWhere";
+    $sQuery = "SELECT value FROM $sTable $sWhere ORDER BY id desc limit 6";
 
     $hResult = query_bugzilladb($sQuery);
     if(!$hResult) return;
 
-    // NOTE: perform some version list pruning
-    //       - Reverse the order, we want the newest entries first
-    //         and we can't use 'order by' since we have no column
-    //         to order by, but the entries should come out in the
-    //         order they were added
-    //       - Trim the list, we don't want every version of wine ever released and
-    //         we don't want the "CVS" version included since we can never figure out
-    //         what version of Wine any given "CVS" version is
-    //
-    // TODO: if we ever get a reasonable way to order the list replace this code
-    //       with that
+    // build the list of versions
     $aVersions = array();
     while(list($sValue) = query_fetch_row($hResult))
     {
-      // exclude unspecified versions and the "CVS" version
-      if(($sValue != "unspecified") && ($sValue != "CVS"))
         $aVersions[] = $sValue;
     }
-
-    // now reverse the array order since the oldest
-    // versions were added first
-    $aVersions = array_reverse($aVersions);
-
-    // now trim off all but the last X versions
-    $iVersionsToKeep = 6;
-    $aVersions = array_slice($aVersions, 0, $iVersionsToKeep);
-
-    // DONE TRIMMING VERSIONS
-    /////////////////////////
-
 
     // build the selection array
     $sStr.= "<select name='$sVarname'>\n";
