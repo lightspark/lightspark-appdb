@@ -1,6 +1,9 @@
 # default permissions
 allow from all
 
+# uncomment this to take the website offline
+# RedirectMatch   ^.*$    http://appdb.winehq.org/site_outage.html
+
 # Set Our Default Directory Index
 DirectoryIndex index.php
 
