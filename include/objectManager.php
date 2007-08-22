@@ -296,6 +296,9 @@ class ObjectManager
             echo html_frame_end();
         } else
         {
+            // display the move children entry
+            $this->displayMoveChildren($oObject);
+
             echo '<tr valign=top><td class=color3 align=center colspan=2>',"\n";
             echo '<input name="sSubmit" type="submit" value="Submit" class="button">'.
                  '&nbsp',"\n";
@@ -461,6 +464,17 @@ class ObjectManager
                 "now</a>, it only takes a few seconds.");
     }
 
+    function displayMoveChildren($oObject)
+    {
+        /* Display a link to the move child objects page if the class has the necessary
+           functions and the user has edit rights.  Not all classes have child objects. */
+        if(method_exists($oObject, "objectMoveChildren") &&
+           method_exists($oObject, "objectGetId") && $oObject->canEdit())
+        {
+            echo "<a href=\"".$this->makeUrl("showMoveChildren", $this->iId,
+                 "Move Child Objects")."\">Move child objects</a>\n";
+        }
+    }
 
     /* View an entry */
     function view($sBackLink)
@@ -469,16 +483,10 @@ class ObjectManager
 
         $oObject = new $this->sClass($this->iId);
 
-        /* Display a link to the move child objects page if the class has the necessary
-           functions and the user has edit rights.  Not all classes have child objects. */
-        if(method_exists($oObject, "objectMoveChildren") &&
-           method_exists($oObject, "objectGetId") && $oObject->canEdit())
-        {
-            echo "<a href=\"".$this->makeUrl("showMoveChildren", $this->iId,
-                 "Move Child Objects")."\">Move child objects</a><br /><br />\n";
-        }
-
         $oObject->display();
+
+        // display the move children entry
+        $this->displayMoveChildren($oObject);
 
         echo html_back_link(1, $sBackLink);
     }
