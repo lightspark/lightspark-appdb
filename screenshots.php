@@ -125,8 +125,9 @@ if($hResult && query_num_rows($hResult))
  echo "<br />Please consider submitting a screenshot for the selected version yourself.</p>";
 }
 
-// let's show the screenshot uploading box
-if($aClean['iVersionId'])
+// let's show the screenshot uploading box, but only
+// if the user is logged in
+if($aClean['iVersionId'] && $_SESSION['current']->isLoggedIn())
 {
     echo "<p align=\"center\">When submitting screenshots please ensure that the focus is on the application running inside Wine.";
     echo "<br />This means if the application is running in a window then please crop the image so that only the application is shown and not your desktop.</p>";
@@ -144,6 +145,10 @@ if($aClean['iVersionId'])
     echo '<input type="hidden" name="MAX_FILE_SIZE" value="4000000" />',"\n";
     echo '<input type="hidden" name="sCmd" value="screenshot_upload" />',"\n";
     echo '<input type="hidden" name="iVersionId" value="'.$aClean['iVersionId'].'"></form />',"\n";
+} else // else let the person know that if they log in they can submit screenshots
+{
+  echo '<div align="center"><a href="'.login_url().'">';
+  echo "Log in</a> to submit screenshots</div>\n";
 }
 echo html_back_link(1);
 
