@@ -62,7 +62,7 @@ $oVersion = new Version($aClean['iVersionId']);
 
 if($hResult && query_num_rows($hResult))
 {
-    echo html_frame_start("Screenshot Gallery for ".$oApp->sName." ".$oVersion->sName,500);
+    echo html_frame_start("Screenshot Gallery for ".$oApp->sName, 500);
 
     // display thumbnails
     $c = 1;
@@ -77,7 +77,7 @@ if($hResult && query_num_rows($hResult))
         // if the current version changed then update the current version
         // and close the previous html frame if this isn't the
         // first frame
-        if(!$aClean['iVersionId'] && $oRow->versionId != $iCurrentVersionId)
+        if($oRow->versionId != $iCurrentVersionId)
         {
             if($iCurrentVersionId)
             {
@@ -86,13 +86,14 @@ if($hResult && query_num_rows($hResult))
                 $c=1;
             }
             $iCurrentVersionId = $oRow->versionId;
-            $bUserIsMaintainerOfVersion = $_SESSION['current']->isMaintainer($iCurrentVersionId); 
+            $bUserIsMaintainerOfVersion = $_SESSION['current']->isMaintainer($iCurrentVersionId);
 
             echo html_frame_start("Version ".Version::lookup_name($iCurrentVersionId));
             echo "<div align=center><table><tr>\n";
         }
         $oScreenshot = new Screenshot($oRow->id);
         $img = $oScreenshot->get_thumbnail_img();
+
         // display image
         echo "<td>\n";
         echo $img;
@@ -120,7 +121,8 @@ if($hResult && query_num_rows($hResult))
 
     echo html_frame_end(); // close the current version we are displaying
     echo html_frame_end(); // close the "Screenshot Gallary..." html frame
-} else {
+} else
+{
  echo "<p align=\"center\">There are currently no screenshots for the selected version of this application.";
  echo "<br />Please consider submitting a screenshot for the selected version yourself.</p>";
 }
