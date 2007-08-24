@@ -6,7 +6,7 @@
  *  - iCommentId, comment identifier
  *
  * Optional parameters:
- *  - sWhy, reason for deleting the comment
+ *  - sReplyText, reason for deleting the comment
  *  - iDeleteIt, 1 if the deletion has been confirmed
  */
 
@@ -40,7 +40,7 @@ if($_SESSION['current']->getPref("confirm_comment_deletion") != "no" && !isset($
     echo htmlify_urls($oComment->sBody), "<br /><br />\n";
     echo html_frame_end();
     echo '<table width="100%" border=0 cellpadding=0 cellspacing=1>',"\n";
-    echo "<tr class=color1><td colspan=2><textarea name=\"sWhy\" cols=\"70\" rows=\"15\" wrap=\"virtual\"></textarea></td></tr>\n";
+    echo "<tr class=color1><td colspan=2><textarea name=\"sReplyText\" cols=\"70\" rows=\"15\" wrap=\"virtual\"></textarea></td></tr>\n";
     echo "<tr class=color1><td colspan=2 align=center>\n";
     echo "  <input type=\"submit\" value=\"Delete Comment\" class=\"button\" />\n";
     echo "</td></tr>\n";
@@ -54,7 +54,7 @@ if($_SESSION['current']->getPref("confirm_comment_deletion") != "no" && !isset($
 // otherwise, just delete the comment
 } else
 {
-    $oComment->delete($aClean['sWhy']);
+    $oComment->delete(true);
     $oVersion = new version($oComment->iVersionId);
     util_redirect_and_exit($oVersion->objectMakeUrl());
 }

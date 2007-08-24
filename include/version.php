@@ -256,7 +256,10 @@ class version {
         foreach($aCommentsIds as $iCommentId)
         {
             $oComment = new Comment($iCommentId);
-            $oComment->delete($bSilent);
+
+            // delete the comment silently, we don't want to send out
+            // any notifications since the version is being deleted
+            $oComment->delete(false);
         }
 
 
@@ -295,8 +298,6 @@ class version {
             $oBug = new Bug($iBug_id);
             $oBug->delete($bSilent);
         }
-
-
 
 
         /* fetch Test Results Ids */

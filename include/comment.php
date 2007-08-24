@@ -162,7 +162,7 @@ class Comment {
      * Informs interested people about the deletion.
      * Returns true on success and false on failure.
      */
-    function delete($sReason=null)
+    function delete($bSilent = false)
     {
         $hResult = query_parameters("DELETE FROM appComments WHERE commentId = '?'", $this->iCommentId);
         if ($hResult)
@@ -170,31 +170,58 @@ class Comment {
             /* fixup the child comments so the parentId points to a valid parent comment */
             $hResult = query_parameters("UPDATE appComments set parentId = '?' WHERE parentId = '?'",
                                         $this->iParentId, $this->iCommentId);
-            $sEmail = User::get_notify_email_address_list($this->iAppId, $this->iVersionId);
-            $sEmail .= $this->oOwner->sEmail;
-            if($sEmail)
+
+            if(!$bSilent)
             {
-                $sSubject = "Comment for '".version::fullName($this->iVersionId)."' deleted by ".$_SESSION['current']->sRealname;
-                $oVersion = new version($this->iVersionId);
-                $sMsg  = $oVersion->objectMakeUrl()."\n";
-                $sMsg .= "\n";
-                $sMsg .= "This comment was made on ".substr($this->sDateCreated,0,10)." by ".$this->oOwner->sRealname."\n";
-                $sMsg .= "\n";
-                $sMsg .= "Subject: ".$this->sSubject."\r\n";
-                $sMsg .= "\n";
-                $sMsg .= $this->sBody."\r\n";
-                $sMsg .= "\n";
-                $sMsg .= "Because:\n";
-                if($sReason)
-                    $sMsg .= $sReason."\n";
-                else
-                    $sMsg .= "No reason given.\n";
-                mail_appdb($sEmail, $sSubject ,$sMsg);
-            } 
-            addmsg("Comment deleted.", "green");
+                $this->SendNotificationMail("delete");
+            }
+
             return true;
+        } else
+        {
+            addmsg("Error removing the deleted comment!", "red");
         }
+
         return false;
+    }
+
+    function SendNotificationMail($sAction="add", $sMsg = null)
+    {
+        global $aClean;
+        
+        // use 'sReplyText' if it is defined, otherwise define the value as an empty string
+        if(!isset($aClean['sReplyText']))
+            $aClean['sReplyText'] = "";
+
+        $oApp = new Application($this->iAppId);
+        switch($sAction)
+        {
+            case "delete":
+              $sSubject = "Comment for '".version::fullName($this->iVersionId)."' deleted by ".$_SESSION['current']->sRealname;
+              $oVersion = new version($this->iVersionId);
+              $sMsg  = $oVersion->objectMakeUrl()."\n";
+              $sMsg .= "\n";
+              $sMsg .= "This comment was made on ".substr($this->sDateCreated,0,10)." by ".$this->oOwner->sRealname."\n";
+              $sMsg .= "\n";
+              $sMsg .= "Subject: ".$this->sSubject."\r\n";
+              $sMsg .= "\n";
+              $sMsg .= $this->sBody."\r\n";
+              $sMsg .= "\n";
+              $sMsg .= "Because:\n";
+              if($sReason)
+                $sMsg .= $sReason."\n";
+              else
+                $sMsg .= "No reason given.\n";
+
+              addmsg("Comment deleted.", "green");
+
+              break;
+        } 
+
+        $sEmail = User::get_notify_email_address_list($this->iAppId, $this->iVersionId);
+        $sEmail .= $this->oOwner->sEmail;
+        if($sEmail)
+          mail_appdb($sEmail, $sSubject, $sMsg);
     }
 
     function get_comment_count_for_versionid($iVersionId)
