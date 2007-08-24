@@ -259,7 +259,7 @@ class version {
 
             // delete the comment silently, we don't want to send out
             // any notifications since the version is being deleted
-            $oComment->delete(false);
+            $oComment->delete(true);
         }
 
 
