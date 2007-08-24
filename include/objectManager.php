@@ -95,8 +95,8 @@ class ObjectManager
 
         $oObject = new $this->sClass();
 
-        /* Display selectors for items per page and current page, if applicable.  The function
-           returns FALSE or an array of arguments to be passed to objectGetEntries() */
+        // Display top of the page selectors for items per page and
+        // current page, if applicable.
         $this->handleMultiPageControls($aClean, TRUE);
 
         /* query the class for its entries */
@@ -192,6 +192,11 @@ class ObjectManager
             echo "<br /><br /><a href=\"".$this->makeUrl("add", false,
                     "Add $this->sClass")."\">Add entry</a>\n";
         }
+
+        // Display bottom of page selectors current page, if applicable
+        // NOTE: second parameter is false because we don't want the
+        //       items per page selector appearing for the second set of page controls
+        $this->handleMultiPageControls($aClean, FALSE);
     }
 
     /* display the entry for editing */
@@ -704,24 +709,32 @@ class ObjectManager
 
         $iItemsPerPage = $iDefaultPerPage;
 
-        if ( isset($aClean['iItemsPerPage']) && in_array($aClean['iItemsPerPage'], $aItemsPerPage) )
-            $iItemsPerPage = $aClean['iItemsPerPage'];
-        
-        $sControls = "<form action=\"".$this->makeUrl()."\" method=\"get\">";
-
-        /* Fill in form data for the objectManager URL */
-        $sControls .= $this->makeUrlFormData();
-        $sControls .= "<p><b>&nbsp;Items per page</b>";
-        $sControls .= "<select name=\"iItemsPerPage\" />";
-
-        foreach($aItemsPerPage as $iNum)
+        if ( isset($aClean['iItemsPerPage']) && 
+             in_array($aClean['iItemsPerPage'], $aItemsPerPage) )
         {
-            $sSelected = ($iNum == $iItemsPerPage) ? ' selected="selected"' : "";
-            $sControls .= "<option$sSelected>$iNum</option>";
+            $iItemsPerPage = $aClean['iItemsPerPage'];
         }
-        $sControls .= "</select>";
-        $sControls .= " &nbsp; <input type=\"submit\" value=\"Update\" />";
-        $sControls .= "</form></p>";
+        
+        // if $bItemsPerPageSelector is true, display the items
+        // per-page dropdown and update button
+        if($bItemsPerPageSelector)
+        {
+            $sControls = "<form action=\"".$this->makeUrl()."\" method=\"get\">";
+
+            /* Fill in form data for the objectManager URL */
+            $sControls .= $this->makeUrlFormData();
+            $sControls .= "<p><b>&nbsp;Items per page</b>";
+            $sControls .= "<select name=\"iItemsPerPage\" />";
+
+            foreach($aItemsPerPage as $iNum)
+            {
+                $sSelected = ($iNum == $iItemsPerPage) ? ' selected="selected"' : "";
+                $sControls .= "<option$sSelected>$iNum</option>";
+            }
+            $sControls .= "</select>";
+            $sControls .= " &nbsp; <input type=\"submit\" value=\"Update\" />";
+            $sControls .= "</form></p>";
+        }
 
         $iTotalEntries = $oObject->objectGetEntriesCount($this->bIsQueue, $this->bIsRejected);
         $iNumPages = ceil($iTotalEntries / $iItemsPerPage);
