@@ -151,11 +151,16 @@ class distribution {
                 $this->sQueued != "false")))
             return false;
 
-        /* Check for associated test results */
-        if(sizeof($this->aTestingIds))
+        // if the distribution has test results only enable an admin to delete
+        // the distribution
+        if(sizeof($this->aTestingIds) && !$_SESSION['current']->hasPriv("admin"))
+          return FALSE;
+
+        // delete any test results this distribution has
+        foreach($this->aTestingIds as $iTestId)
         {
-            addmsg("This distribution still has associated test results", "red");
-            return FALSE;
+          $oTestData = new TestData($iTestId);
+          $oTestData->delete();
         }
 
         // now delete the Distribution 
