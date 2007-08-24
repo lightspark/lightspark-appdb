@@ -76,6 +76,11 @@ if(empty($aClean['iAppId']) && empty($aClean['iVersionId']))
 
 if (isset($aClean['sSub']))
 {
+    // create the version object if iVersionId is set
+    // we use this version object in many of the below cases
+    if(isset($aClean['iVersionId']))
+      $oVersion = new Version($aClean['iVersionId']);
+
     if(($aClean['sSub'] == 'delete' ) && ($aClean['iBuglinkId']))
     {
         if(($_SESSION['current']->hasPriv("admin") ||
