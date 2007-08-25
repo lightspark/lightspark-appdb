@@ -38,8 +38,9 @@ function filter_gpc()
         //       the value wasn't found strpos(something) == 0 will still be true
         if((strpos($aKeys[$i], "Dialog") === 0) ||
            (strpos($aKeys[$i], "XinhaColorPicker") === 0) || // Xinha variables
-           ($aKeys[$i] == "cx") ||   // google custom search variable
-           ($aKeys[$i] == "cof"))    // google custom search variable
+           ($aKeys[$i] == "cx")  ||  // google custom search variable
+           ($aKeys[$i] == "cof") ||  // google custom search variable
+           ($aKeys[$i] == "q"))      // google custom search variable
 
         {
             // copy the key over to the clean array
