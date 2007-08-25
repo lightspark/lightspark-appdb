@@ -48,10 +48,10 @@ function app_search_box($q = '')
     // Chris Morgan <cmorgan@alum.wpi.edu> maintains
     // the search engine settings
     $sSearchStr = '
-<!-- Google CSE Search Box Begins  -->
-  <form id="searchbox_013271970634691685804:bc-56dvxydi" action="http://www.google.com/cse">
+<!-- Google CSE Search Box Begins -->
+  <form id="searchbox_013271970634691685804:bc-56dvxydi" action="http://appdb.winehq.org/search_results.php">
     <input type="hidden" name="cx" value="013271970634691685804:bc-56dvxydi" />
-    <input type="hidden" name="cof" value="FORID:0" />
+    <input type="hidden" name="cof" value="FORID:11" />
     <input name="q" type="text" size="20" />
     <input type="submit" name="sa" value="Search" />
   </form>
