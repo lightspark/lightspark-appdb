@@ -760,6 +760,7 @@ class ObjectManager
                            $this->makeUrl()."&iItemsPerPage=$iItemsPerPage");
 
         echo $sControls;
+        echo "</div>\n";
 
         /* Fill the MultiPage object with the LIMIT related values */
         $iLowerLimit = ($iPage - 1) * $iItemsPerPage;
