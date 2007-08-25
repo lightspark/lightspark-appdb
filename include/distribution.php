@@ -624,6 +624,13 @@ class distribution {
         return $iCount;
     }
 
+    function objectGetItemsPerPage($bQueued = false)
+    {
+        $aItemsPerPage = array(25, 50, 100, 200);
+        $iDefaultPerPage = 25;
+        return array($aItemsPerPage, $iDefaultPerPage);
+    }
+
     function objectGetid()
     {
         return $this->iDistributionId;
