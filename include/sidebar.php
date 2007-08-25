@@ -43,11 +43,23 @@ function global_sidebar_menu()
 
 function app_search_box($q = '')
 {
-   $str =  "</span><form method=\"get\" action=\"".BASE."search.php\">\n";
-   $str .= "<input type=text name=sSearchQuery value='$q' size=11 class=searchfield>";
-   $str .= "<input type=submit value='Search' class=searchbutton>\n";
-   $str .= "</form>\n<span>";
-   return $str;
+    // google custom search dialog
+    // used in place of appdb specific search engine code
+    // Chris Morgan <cmorgan@alum.wpi.edu> maintains
+    // the search engine settings
+    $sSearchStr = '
+<!-- Google CSE Search Box Begins  -->
+  <form id="searchbox_013271970634691685804:bc-56dvxydi" action="http://www.google.com/cse">
+    <input type="hidden" name="cx" value="013271970634691685804:bc-56dvxydi" />
+    <input type="hidden" name="cof" value="FORID:0" />
+    <input name="q" type="text" size="20" />
+    <input type="submit" name="sa" value="Search" />
+  </form>
+  <script type="text/javascript" src="http://www.google.com/coop/cse/brand?form=searchbox_013271970634691685804%3Abc-56dvxydi"></script>
+<!-- Google CSE Search Box Ends -->
+';
+
+   return $sSearchStr;
 }
 
 ?>
