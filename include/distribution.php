@@ -157,10 +157,13 @@ class distribution {
           return FALSE;
 
         // delete any test results this distribution has
-        foreach($this->aTestingIds as $iTestId)
+        if($this->aTestingIds)
         {
-          $oTestData = new TestData($iTestId);
-          $oTestData->delete();
+            foreach($this->aTestingIds as $iTestId)
+            {
+                $oTestData = new TestData($iTestId);
+                $oTestData->delete();
+            }
         }
 
         // now delete the Distribution 
