@@ -226,30 +226,6 @@ function getNumberOfComments()
     return $oRow->num_comments;
 }
 
-/* Get the number of queued bug links in the database */
-function getNumberOfQueuedBugLinks()
-{
-    $hResult = query_parameters("SELECT count(*) as num_buglinks FROM buglinks WHERE queued='true';");
-    if($hResult)
-    {
-      $oRow = query_fetch_object($hResult);
-      return $oRow->num_buglinks;
-    }
-    return 0;
-}
-
-/* Get the number of bug links in the database */
-function getNumberOfBugLinks()
-{
-    $hResult = query_parameters("SELECT count(*) as num_buglinks FROM buglinks;");
-    if($hResult)
-    {
-      $oRow = query_fetch_object($hResult);
-      return $oRow->num_buglinks;
-    }
-    return 0;
-}
-
 /* used by outputTopXRowAppsFromRating() to reduce duplicated code */
 function outputTopXRow($oRow)
 {

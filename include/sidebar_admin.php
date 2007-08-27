@@ -25,13 +25,17 @@ function global_admin_menu() {
     $g->add("Test Results Queue (".testData::objectGetEntriesCount(true, false).")",
             BASE."objectManager.php?sClass=testData_queue&bIsQueue=true&sTitle=".
             "Test%20Results%20Queue");
+    $g->add("Bug Link Queue (".bug::objectGetEntriesCount(true, false).")",
+            BASE."objectManager.php?sClass=bug&bIsQueue=true&sTitle=".
+            "Bug%20Link%20Queue");
 
     $g->addmisc("&nbsp;");
 
     $g->add("Maintainer Entries (".Maintainer::getMaintainerCount().")",
             BASE."admin/adminMaintainers.php");
-    $g->add("Bug Links (".getNumberOfQueuedBugLinks()."/".getNumberOfBugLinks().")",
-            BASE."admin/adminBugs.php");
+    $g->add("Bug Links (".bug::objectGetEntriesCount(false, false).")",
+            BASE."objectManager.php?sClass=bug&bIsQueue=false&sTitle=".
+            "Bug%20Links");
     $g->add("Test Results (".testData::objectGetEntriesCount(false, false).")",
             BASE."objectManager.php?sClass=testData&bIsQueue=false&sTitle=".
             "View%20Test%20Results");

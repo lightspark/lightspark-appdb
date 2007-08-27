@@ -210,7 +210,9 @@ class maintainer
     {
         /* user id, appid, and maintain reason must be valid to continue */
         if(!$this->iUserId || !$this->iAppId || !$this->sMaintainReason)
+        {
             return NULL;
+        }
 
         $hResult = query_parameters("INSERT INTO appMaintainers (appId, versionId, ".
                                     "userId, maintainReason, superMaintainer, submitTime, queued) ".

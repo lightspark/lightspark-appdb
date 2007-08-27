@@ -9,7 +9,8 @@ require_once(BASE."include/application.php");
 /**
  * Bug Link class for handling Bug Links and thumbnails
  */
-class Bug {
+class Bug
+{
     var $iLinkId;
 
     // parameters necessary to create a new Bug with Bug::create()
@@ -20,7 +21,6 @@ class Bug {
     var $sShort_desc;
     var $sBug_status;
     var $sResolution;
-    var $iAppId;
     var $sSubmitTime;
     var $iSubmitterId;
     var $bQueued;
@@ -28,34 +28,40 @@ class Bug {
     /**    
      * Constructor, fetches the data and bug objects if $ilinkId is given.
      */
-    function bug($iLinkId = null)
+    function bug($iLinkId = null, $oRow = null)
     {
-        // we are working on an existing Bug
-        if(is_numeric($iLinkId))
+        if(!$iLinkId && !$oRow)
+          return;
+
+        if(!$oRow)
         {
-            $sQuery = "SELECT buglinks.*, appVersion.appId AS appId
-                       FROM buglinks, appVersion 
-                       WHERE buglinks.versionId = appVersion.versionId 
-                       AND linkid = '?'";
+            $sQuery = "SELECT * FROM buglinks
+                       WHERE linkid = '?'";
             if($hResult = query_parameters($sQuery, $iLinkId))
             {
                 $oRow = query_fetch_object($hResult);
-                $this->iLinkId = $iLinkId;
-                $this->iAppId = $oRow->appId;
-                $this->iBug_id = $oRow->bug_id;
-                $this->iVersionId = $oRow->versionId;
-                $this->bQueued = ($oRow->queued=="true")?true:false;
-                $this->sSubmitTime = $oRow->submitTime;
-                $this->iSubmitterId = $oRow->submitterId;
-                /* lets fill in some blanks */ 
-                if ($this->iBug_id)
-                {
-                    $sQuery = "SELECT *
+            }
+        }
+
+        if($oRow)
+        {
+            $this->iLinkId = $oRow->linkId;
+            $this->iBug_id = $oRow->bug_id;
+            $this->iVersionId = $oRow->versionId;
+            $this->bQueued = ($oRow->queued=="true") ? true : false;
+            $this->sSubmitTime = $oRow->submitTime;
+            $this->iSubmitterId = $oRow->submitterId;
+            /* lets fill in some blanks */ 
+            if ($this->iBug_id)
+            {
+                $sQuery = "SELECT *
                               FROM bugs 
                               WHERE bug_id = ".$this->iBug_id;
-                    if($hResult = query_bugzilladb($sQuery))
+                if($hResult = query_bugzilladb($sQuery))
+                {
+                    $oRow = query_fetch_object($hResult);
+                    if($oRow)
                     {
-                        $oRow = query_fetch_object($hResult);
                         $this->sShort_desc = $oRow->short_desc;
                         $this->sBug_status = $oRow->bug_status;
                         $this->sResolution = $oRow->resolution;
@@ -72,18 +78,18 @@ class Bug {
     function create()
     {
         $oVersion = new Version($this->iVersionId);
-        // Security, if we are not an administrator or a maintainer, the Bug must be queued.
-        if(!($_SESSION['current']->hasPriv("admin") ||
-             $_SESSION['current']->isMaintainer($oVersion->iVersionId) ||
-             $_SESSION['current']->isSuperMaintainer($oVersion->iAppId)))
+
+        // Security, if we are not an administrator or a maintainer,
+        // the Bug must be queued.
+        if($this->mustBeQueued())
         {
             $this->bQueued = true;
         } else
         {
             $this->bQueued = false;
         }
-        /* lets check for a valid bug id */
 
+        /* lets check for a valid bug id */
         if(!is_numeric($this->iBug_id))
         {
             addmsg($this->iBug_id." is not a valid bug number.", "red");
@@ -91,7 +97,6 @@ class Bug {
         }
 
         /* check that bug # exists in bugzilla*/
-
         $sQuery = "SELECT *
                    FROM bugs 
                    WHERE bug_id = ".$this->iBug_id;
@@ -119,7 +124,6 @@ class Bug {
         }
 
         /* passed the checks so lets insert the puppy! */
-
         $hResult = query_parameters("INSERT INTO buglinks (versionId, bug_id, ".
                                     "submitTime, submitterId, queued) ".
                                     "VALUES('?', '?', ?, '?', '?')",
@@ -129,7 +133,7 @@ class Bug {
                                     $this->bQueued ? "true":"false");
         if($hResult)
         {
-            $this->iLinkId = query_bugzilla_insert_id();
+            $this->iLinkId = query_appdb_insert_id();
 
             $this->SendNotificationMail();
 
@@ -141,10 +145,11 @@ class Bug {
         }
     }
 
-
     /**    
      * Deletes the Bug from the database. 
      * and request its deletion from the filesystem (including the thumbnail).
+     *
+     * Return true if successful, false if an error occurs
      */
     function delete($bSilent=false)
     {
@@ -154,15 +159,19 @@ class Bug {
         {
             if(!$bSilent)
                 $this->SendNotificationMail(true);
+        } else
+        {
+          return false;
         }
+
         if($this->iSubmitterId &&
            ($this->iSubmitterId != $_SESSION['current']->iUserId))
         {
             $this->mailSubmitter(true);
         }
 
+        return true;
     }
-
 
     /**
      * Move Bug out of the queue.
@@ -185,17 +194,23 @@ class Bug {
         }
     }
 
+    //TODO: figure out what we might want to do here but lie and
+    // return true until then
+    function update()
+    {
+        return true;
+    }
 
     function mailSubmitter($bRejected=false)
     {
         global $aClean;
         if(!isset($aClean['sReplyText']))
             $aClean['sReplyText'] = "";
-	
+
         if($this->iSubmitterId)
         {
             $oSubmitter = new User($this->iSubmitterId);
-            $sAppName = Application::lookup_name($this->iAppId)." ".Version::lookup_name($this->iVersionId);
+            $sAppName = Version::fullName($this->iVersionId);
             if(!$bRejected)
             {
                 $sSubject =  "Submitted Bug Link accepted";
@@ -293,6 +308,182 @@ class Bug {
     function isOpen()
     {
         return ($this->sBug_status != 'RESOLVED' && $this->sBug_status != 'CLOSED');
+    }
+
+    function allowAnonymousSubmissions()
+    {
+        return false;
+    }
+
+    function mustBeQueued()
+    {
+        if($_SESSION['current']->hasPriv("admin") ||
+           $_SESSION['current']->isMaintainer($oVersion->iVersionId) ||
+           $_SESSION['current']->isSuperMaintainer($oVersion->iAppId))
+        {
+          return false;
+        }
+
+        return true;
+    }
+
+    function objectGetId()
+    {
+        return $this->iLinkId;
+    }
+
+    function objectGetEntries($bQueued, $bRejected, $iRows = 0, $iStart = 0)
+    {
+        $sLimit = "";
+        
+        /* Selecting 0 rows makes no sense, so we assume the user
+         wants to select all of them
+         after an offset given by iStart */
+        if(!$iRows)
+          $iRows = bug::objectGetEntriesCount($bQueued, $bRejected);
+
+        $sQueued = objectManager::getQueueString($bQueued, $bRejected);
+        $sQuery = "select * from buglinks where queued = '?' LIMIT ?, ?";
+        $hResult = query_parameters($sQuery, $sQueued, $iStart, $iRows);
+        return $hResult;
+    }
+
+    function objectGetEntriesCount($bQueued, $bRejected)
+    {
+        $sQueued = objectManager::getQueueString($bQueued, $bRejected);
+        $sQuery = "select count(*) as cnt from buglinks where queued = '?'";
+        $hResult = query_parameters($sQuery, $sQueued);
+        $oRow = mysql_fetch_object($hResult);
+        return $oRow->cnt;
+    }
+
+    function objectGetHeader()
+    {
+        $oTableRow = new TableRow();
+        
+        $oTableRow->AddTextCell("Bug #");
+
+        $oTableCell = new TableCell("Status");
+        $oTableCell->SetAlign("center");
+        $oTableRow->AddCell($oTableCell);
+
+        $oTableRow->AddTextCell("Bug Description");
+
+        $oTableCell = new TableCell("Application Name");
+        $oTableCell->SetAlign("center");
+        $oTableRow->AddCell($oTableCell);
+
+        $oTableCell = new TableCell("Application Description");
+        $oTableCell->SetAlign("center");
+        $oTableRow->AddCell($oTableCell);
+
+        $oTableCell = new TableCell("Version");
+        $oTableCell->SetAlign("center");
+        $oTableRow->AddCell($oTableCell);
+
+        return $oTableRow;
+    }
+
+    // returns a table row
+    function objectGetTableRow()
+    {
+        $oTableRow = new TableRow();
+        
+        $oVersion = new version($this->iVersionId);
+        $oApp = new application($oVersion->iAppId);
+
+        $oTableCell = new TableCell($this->iBug_id);
+        $oTableCell->SetAlign("center");
+        $oTableCell->SetCellLink(BUGZILLA_ROOT.'show_bug.cgi?id='.$oRow->bug_id);
+        $oTableRow->AddCell($oTableCell);
+
+        $oTableCell = new TableCell($this->sBug_status);
+        $oTableCell->SetAlign("center");
+        $oTableRow->AddCell($oTableCell);
+
+        $oTableRow->AddTextCell($this->sShort_desc);
+
+        $oTableRow->AddTextCell($oApp->objectMakeLink());
+
+        $oTableRow->AddTextCell(util_trim_description($oApp->sDescription));
+
+        $oTableRow->AddTextCell($oVersion->objectMakeLink());
+
+        $oOMTableRow = new OMTableRow($oTableRow);
+
+        // enable the deletion link, the objectManager will check
+        // for appropriate permissions before adding the link
+        $oOMTableRow->SetRowHasDeleteLink(true);
+
+        return $oOMTableRow;
+    }
+
+    function objectMakeUrl()
+    {
+        $oManager = new objectManager("bug", "View Bug");
+        return $oManager->makeUrl("view", $this->objectGetId());
+    }
+
+    function objectMakeLink()
+    {
+        $sLink = "<a href=\"".$this->objectMakeUrl()."\">".
+                 $this->sShort_desc."</a>";
+        return $sLink;
+    }
+
+    function canEdit()
+    {
+        if($_SESSION['current']->hasPriv("admin"))
+        {
+            return true;
+        } else if($this->iVersionId)
+        {
+            if(maintainer::isUserMaintainer($_SESSION['current'],
+                                          $this->iVersionId))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    function objectGetItemsPerPage($bQueued = false)
+    {
+        $aItemsPerPage = array(25, 50, 100, 200);
+        $iDefaultPerPage = 25;
+        return array($aItemsPerPage, $iDefaultPerPage);
+    }
+
+    function display()
+    {
+        $oTable = new Table();
+        $oTable->SetAlign("center");
+        $oTable->SetClass("color0");
+        $oTable->SetCellPadding(2);
+
+        $oHeaderRow = $this->objectGetHeader();
+        $oHeaderRow->SetClass("color4");
+        $oTable->AddRow($oHeaderRow);
+
+        $oDataRow = $this->objectGetTableRow();
+        $oDataRow->oTableRow->SetClass("color0");
+        $oTable->AddRow($oDataRow);
+        
+        echo $oTable->GetString();
+    }
+
+    // NOTE: we don't have any editing support for this entry at this time
+    //       so output the entry and a field to identify the bug id
+    function outputEditor()
+    {
+        $this->display();
+        echo '<input type="hidden" name="iBugLinkId" value="'.$this->iLinkId.'" >';
+    }
+
+    function getOutputEditorValues($aClean)
+    {
+       $this->iTestingId = $aValues['iBugLinkId'];
     }
 }
 

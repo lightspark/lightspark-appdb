@@ -12,6 +12,8 @@ require_once(BASE.'include/version_queue.php');
 require_once(BASE.'include/application_queue.php');
 require_once(BASE.'include/browse_newest_apps.php');
 require_once(BASE.'include/monitor.php');
+require_once(BASE.'include/bugs.php');
+
 
 /* internal function */
 function test_class($sClassName, $aTestMethods)
@@ -139,6 +141,11 @@ function cleanup($oObject)
 {
     switch(get_class($oObject))
     {
+        case "bug":
+          // remove the bug row we created for the bug in create_object()
+          $sQuery = "delete from bugs where bug_id = '?'";
+          $hResult = query_bugzilladb($sQuery, $oObject->iBug_id);
+        break;
         case "downloadurl":
         case "maintainer":
         case "screenshot":
@@ -166,6 +173,18 @@ function create_object($sClassName, $oUser)
     /* Set up one test entry, depending on class */
     switch($sClassName)
     {
+        case "bug":
+          // create a bug in the bugzilla database, we need a valid
+          // bug id to create a bug entry
+          $sQuery = "insert into bugs (short_desc, bug_status, resolution)".
+            " values ('?', '?', '?')";
+          $hResult = query_bugzilladb($sQuery, "test_om_objects", "VERIFIED",
+                                      '');
+
+          // retrieve the bug id and assign that to our
+          // bug class
+          $oTestObject->iBug_id = query_bugzilla_insert_id();
+        break;
         case "distribution":
             $oTestObject->sName = "Silly test distribution";
             $oTestObject->sUrl = "http://appdb.winehq.org/";
@@ -173,10 +192,11 @@ function create_object($sClassName, $oUser)
         case "downloadurl":
             $oTestObject->sUrl = "http://appdb.winehq.org/";
             $oTestObject->sDescription = "DANGER";
-            $oTestObject->iVersionId = create_version_and_parent_app();
+            $oTestObject->iVersionId = create_version_and_parent_app("create_object_downloadurl");
         break;
         case "maintainer":
-            $oVersion = new version(create_version_and_parent_app());
+            $iVersionId = create_version_and_parent_app("create_object_maintainer");
+            $oVersion = new version($iVersionId);
             $oTestObject->iUserId = $oUser->iUserId;
             $oTestObject->iAppId = $oVersion->iAppId;
             $oTestObject->iVersionId = $oVersion->iVersionId;
@@ -184,10 +204,10 @@ function create_object($sClassName, $oUser)
         break;
         case "screenshot":
         case "testData":
-            $oTestObject->iVersionId = create_version_and_parent_app();
+            $oTestObject->iVersionId = create_version_and_parent_app("create_object_testData");
         break;
         case "testData_queue":
-            $oTestObject->oTestData->iVersionId = create_version_and_parent_app();
+            $oTestObject->oTestData->iVersionId = create_version_and_parent_app("create_object_testData_queue");
         break;
         case "version":
             $oApp = new application();
@@ -250,6 +270,7 @@ function test_object_methods()
     $aTestClasses = array("application",
                           "application_queue",
                           "browse_newest_apps",
+                          "bug",
                           "distribution",
                           "downloadurl",
                           "maintainer",

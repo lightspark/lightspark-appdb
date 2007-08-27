@@ -11,6 +11,7 @@ require_once(BASE."include/bugs.php");
 require_once(BASE."include/util.php");
 require_once(BASE."include/testData.php");
 require_once(BASE."include/downloadurl.php");
+require_once(BASE."include/monitor.php");
 
 define("LICENSE_OPENSOURCE", "Open Source");
 define("LICENSE_FREEWARE", "Freeware");
