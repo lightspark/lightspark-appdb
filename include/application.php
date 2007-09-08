@@ -96,10 +96,15 @@ class Application {
         }
     }
 
-    function _internal_retrieve_all_versions()
+    function _internal_retrieve_all_versions($bIncludeObsolete = TRUE)
     {
+        if(!$bIncludeObsolete)
+            $sObsolete = " AND obsoleteBy = '0'";
+        else
+            $sObsolete = "";
+
         $sQuery = "SELECT versionId FROM appVersion WHERE
-                        appId = '?'";
+                        appId = '?'$sObsolete";
         $hResult  = query_parameters($sQuery, $this->iAppId);
         return $hResult;
     }
@@ -986,16 +991,39 @@ class Application {
         return $oRow->count;
     }
 
-    function getVersions()
+    function getVersions($bIncludeObsolete = TRUE)
     {
         $aVersions = array();
 
-        $hResult = $this->_internal_retrieve_all_versions();
+        $hResult = $this->_internal_retrieve_all_versions($bIncludeObsolete);
 
         while($oRow = mysql_fetch_object($hResult))
             $aVersions[] = new version($oRow->versionId);
 
         return $aVersions;
+    }
+
+    /* Make a drop-down list of this application's versions.  Optionally set the default
+       versionId, a version to exclude and whether to not show obsolete versions */
+    function makeVersionDropDownList($sVarName, $iCurrentId = null, $iExclude = null, $bIncludeObsolete = TRUE)
+    {
+        $sMsg = "<select name=\"$sVarName\">\n";
+        foreach($this->getVersions() as $oVersion)
+        {
+            if($oVersion->sQueued != "false" || $oVersion->iVersionId == $iExclude ||
+               (!$bIncludeObsolete && $oVersion->iObsoleteBy))
+                continue;
+
+            $sMsg .= "<option value=\"".$oVersion->iVersionId."\"";
+
+            if($oVersion->iVersionId == $iCurrentId)
+                $sMsg .= " selected=\"selected\"";
+
+            $sMsg .= ">".$oVersion->sName."</option>\n";
+        }
+        $sMsg .= "</select>\n";
+
+        return $sMsg;
     }
 
     function objectGetChildren()

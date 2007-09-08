@@ -117,29 +117,37 @@ function vote_menu()
 
     $m = new htmlmenu("Votes","updatevote.php");
 
-    $votes = vote_get_user_votes();
+    $oVersion = new version($aClean['iVersionId']);
 
-    for($i = 1;$i <= MAX_VOTES; $i++)
+    if($oVersion->iObsoleteBy)
     {
-        if(isset($votes[$i]))
-            $str = Version::fullNameLink($votes[$i]->versionId);
-        else
-            $str = "No App Selected";
+        $m->add("This version is marked as obsolete, so you cannot vote for it.");
+    } else
+    {
+        $votes = vote_get_user_votes();
 
-        $m->add("<input type=radio name=iSlot value='$i'> $str");
+        for($i = 1;$i <= MAX_VOTES; $i++)
+        {
+            if(isset($votes[$i]))
+                $str = Version::fullNameLink($votes[$i]->versionId);
+            else
+                $str = "No App Selected";
+
+            $m->add("<input type=radio name=iSlot value='$i'> $str");
+        }
+
+        $m->addmisc("&nbsp;");
+
+        $m->add("<input type=submit name=sClear value=' Clear Vote   ' class=votebutton>");
+        $m->add("<input type=submit name=sVote value='Vote for App' class=votebutton>");
+
+        $m->addmisc("<input type=hidden name=iVersionId value={$aClean['iVersionId']}>");
+
+        $m->add("View Results", BASE."votestats.php");
+        $m->add("Voting Help", BASE."help/?sTopic=voting");
     }
-    
-    $m->addmisc("&nbsp;");
 
-    $m->add("<input type=submit name=sClear value=' Clear Vote   ' class=votebutton>");
-    $m->add("<input type=submit name=sVote value='Vote for App' class=votebutton>");
-    
-    $m->addmisc("<input type=hidden name=iVersionId value={$aClean['iVersionId']}>");
-    
-    $m->add("View Results", BASE."votestats.php");
-    $m->add("Voting Help", BASE."help/?sTopic=voting");
-    
-    $m->done(1);    
+    $m->done(1);
 }
 
 

@@ -60,6 +60,7 @@ create table appVersion (
   submitterId           int(11) NOT NULL default '0',
   queued                enum('true','false','rejected') NOT NULL default 'false',
   license		enum('Retail','Open Source','Freeware','Demo','Shareware'),
+  obsoleteBy            int(11) NOT NULL default '0',
   key(versionId),
   index(appId)
 );

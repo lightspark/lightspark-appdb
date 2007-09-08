@@ -33,6 +33,8 @@ class version {
     var $iSubmitterId;
     var $sQueued;
     var $sLicense;
+    var $iObsoleteBy; /* Whether this version is marked as obsolete, and if so which
+                         version its votes should be moved to. */
     var $iMaintainerRequest; /* Temporary variable for version submisson.
                                 Indicates whether the user wants to become a 
                                 maintainer of the version being submitted.
@@ -71,6 +73,7 @@ class version {
             $this->sTestedRating = $oRow->maintainer_rating;
             $this->sQueued = $oRow->queued;
             $this->sLicense = $oRow->license;
+            $this->iObsoleteBy = $oRow->obsoleteBy;
         }
     }
 
@@ -198,6 +201,23 @@ class version {
 
             $sWhatChanged .= "License was changed from $oVersion->sLicense to ".
                              "$this->sLicense.\n\n";
+        }
+
+        if($this->iObsoleteBy != $oVersion->iObsoleteBy)
+        {
+            if(!query_parameters("UPDATE appVersion SET obsoleteBy = '?' WHERE versionId = '?'",
+                                 $this->iObsoleteBy, $this->iVersionId))
+
+            if($this->iObsoleteBy)
+                $sWhatChanged .= "The version was marked as obsolete.\n\n";
+            else
+                $sWhatChanged .= "The version is no longer marked as obsolete.\n\n";
+
+            if($this->iObsoleteBy)
+            {
+                query_parameters("UPDATE appVotes SET versionId = '?' WHERE versionId = '?'",
+                                $this->iObsoleteBy, $this->iVersionId);
+            }
         }
 
         if($sWhatChanged and !$bSilent)
@@ -460,6 +480,26 @@ class version {
         return $aBuglinkIds;
     }
 
+    /* Makes a frame with title 'Mark as obsolete' and info about what it means, plus
+       caller-defined content */
+    function makeObsoleteFrame($sContent = "")
+    {
+        $sMsg = html_frame_start("Mark as obsolete", "90%", "", 0);
+
+        $sMsg .= "Some applications need to be updated from time to time in order to ";
+        $sMsg .= "be of any use. An example is online multi-player games, where you need ";
+        $sMsg .= "to be running a version compatible with the server. ";
+        $sMsg .= "If this is such an application, and this version is no longer usable, ";
+        $sMsg .= "you can mark it as obsolete and move its current votes to a usable ";
+        $sMsg .= "version instead.<br /><br />";
+
+        $sMsg .= $sContent;
+
+        $sMsg .= html_frame_end();
+
+        return $sMsg;
+    }
+
     /* output html and the current versions information for editing */
     /* if $editParentApplication is true that means we need to display fields */
     /* to let the user change the parent application of this version */
@@ -588,6 +628,32 @@ class version {
             echo $oTable->GetString();
 
             echo html_frame_end();
+
+            /* Mark as obsolete */
+            $oApp = new application($this->iAppId);
+            $oVersionInDB = new version($this->iVersionId);
+
+            if($oVersionInDB->iObsoleteBy)
+            {
+                $sObsoleteTxt = "<input type=\"checkbox\" name=\"bObsolete\" value=\"true\" checked=\"checked\" />";
+                $sObsoleteTxt .= " This version is obsolete";
+                echo $this->makeObsoleteFrame($sObsoleteTxt);
+
+                echo "<input type=\"hidden\" name=\"iObsoleteBy\" value=\"".
+                     $oVersionInDB->iObsoleteBy."\" type=\"hidden\" />\n";
+            } else if(sizeof($oApp->getVersions(FALSE)) > 1)
+            {
+                if($this->iObsoleteBy)
+                    $sObsolete = "checked=\"checked\"";
+                else
+                    $sObsolete = "";
+
+                $sObsoleteTxt = "<input type=\"checkbox\" name=\"bObsolete\" value=\"true\"$sObsolete />";
+                $sObsoleteTxt .= "Mark as obsolete and move votes to \n";
+                $sObsoleteTxt .= $oApp->makeVersionDropDownList("iObsoleteBy", $this->iObsoleteBy, $this->iVersionId, FALSE);
+
+                echo $this->makeObsoleteFrame($sObsoleteTxt);
+            }
         } else
         {
             echo '<input type="hidden" name="sMaintainerRating" value="'.$this->sTestedRating.'" />';
@@ -620,6 +686,11 @@ class version {
         $this->sTestedRelease = $aValues['sMaintainerRelease'];
         $this->sLicense = $aValues['sLicense'];
         $this->iMaintainerRequest = $aValues['iMaintainerRequest'];
+
+        if($aValues['bObsolete'] == "true")
+            $this->iObsoleteBy = $aValues['iObsoleteBy'];
+        else
+            $this->iObsoleteBy = 0;
     }
 
     function display($iTestingId)
