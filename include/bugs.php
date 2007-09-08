@@ -394,7 +394,7 @@ class Bug
 
         $oTableCell = new TableCell($this->iBug_id);
         $oTableCell->SetAlign("center");
-        $oTableCell->SetCellLink(BUGZILLA_ROOT.'show_bug.cgi?id='.$oRow->bug_id);
+        $oTableCell->SetCellLink(BUGZILLA_ROOT.'show_bug.cgi?id='.$this->iBug_id);
         $oTableRow->AddCell($oTableCell);
 
         $oTableCell = new TableCell($this->sBug_status);
