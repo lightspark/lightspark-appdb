@@ -669,6 +669,11 @@ class distribution {
     {
         return FALSE;
     }
+
+    function objectShowAddEntry()
+    {
+        return TRUE;
+    }
 }
 
 ?>

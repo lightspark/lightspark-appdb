@@ -1068,6 +1068,11 @@ class Application {
     {
         return $this->iAppId;
     }
+
+    function objectShowAddEntry()
+    {
+        return TRUE;
+    }
 }
 
 function get_vendor_from_keywords($sKeywords)

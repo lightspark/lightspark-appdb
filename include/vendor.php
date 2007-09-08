@@ -395,6 +395,11 @@ class Vendor {
         $iDefaultPerPage = 25;
         return array($aItemsPerPage, $iDefaultPerPage);
     }
+
+    function objectShowAddEntry()
+    {
+        return TRUE;
+    }
 }
 
 ?>

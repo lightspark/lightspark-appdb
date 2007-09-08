@@ -130,8 +130,14 @@ class ObjectManager
                 break;
             }
 
-            echo "<br /><center><a href=\"".$this->makeUrl("add", false,
-                    "Add $this->sClass entry")."\">Add an entry?</a></center>";
+            if(method_exists($oObject, "objectShowAddEntry") &&
+               $oObject->objectShowAddEntry())
+            {
+                echo "<br /><center><a href=\"".
+                     $this->makeUrl("add", false,
+                     "Add $this->sClass entry").
+                     "\">Add an entry?</a></center>";
+            }
             return;
         }
 
@@ -187,7 +193,9 @@ class ObjectManager
         echo "</table>";
 
         $oObject = new $this->sClass();
-        if($oObject->canEdit())
+        if($oObject->canEdit() &&
+           method_exists($oObject, "objectShowAddEntry") &&
+           $oObject->objectShowAddEntry())
         {
             echo "<br /><br /><a href=\"".$this->makeUrl("add", false,
                     "Add $this->sClass")."\">Add entry</a>\n";
