@@ -92,7 +92,7 @@ function test_class($sClassName, $aTestMethods)
 
     if(!$oTestObject->delete())
     {
-        error("sClassName of $sClassName oTestObject->delete() failed!");
+        error("sClassName of '".$sClassName."' oTestObject->delete() failed!");
         $oUser->delete();
         return false;
     }
@@ -220,6 +220,9 @@ function create_object($sClassName, $oUser)
             $oApp->create();
             $oTestObject->oVersion->iAppId = $oApp->iAppId;
             $oTestObject->oVersion->sName = "OM Version";
+        break;
+        case "vendor":
+            $oTestObject->sName = "OM vendor";
         break;
     }
 
