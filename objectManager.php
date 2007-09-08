@@ -55,7 +55,9 @@ if($aClean['bIsRejected'] == 'true')
     $oObject->bIsRejected = true;
     $oObject->bIsQueue = true;
 } else
+{
     $oObject->bIsRejected = false;
+}
 
 $oObject->oMultiPage->getDataFromInput($aClean);
 
@@ -67,7 +69,9 @@ $oOtherObject = new $oObject->sClass($oObject->iId);
 $sErrors = $oObject->processForm($aClean);
 
 if($oObject->iId && $aClean['sAction'] == "delete")
+{
     $oObject->delete_entry();
+}
 
 if(isset($aClean['sAction']) && $aClean['sAction'] == "add")
     $oObject->handle_anonymous_submission();
