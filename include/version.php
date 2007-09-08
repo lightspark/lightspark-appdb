@@ -680,7 +680,7 @@ class version {
             $oTable->SetCellSpacing(0);
 
             $oTableRow = new TableRow();
-            
+
             $oTableCell = new TableCell("Rating");
             $oTableCell->SetClass("color4");
             $oTableRow->AddCell($oTableCell);
@@ -690,19 +690,18 @@ class version {
             $oTableCell->SetClass("color0");
             $oTableRow->AddCell($oTableCell);
 
-            
+            $oTable->AddRow($oTableRow);
             $oTableRow = new TableRow();
-            
+
             $oTableCell = new TableCell("Release");
             $oTableCell->SetClass("color1");
             $oTableRow->AddCell($oTableCell);
-            
 
             $oTableCell = new TableCell(make_bugzilla_version_list("sMaintainerRelease", $this->sTestedRelease));
             $oTableCell->SetClass("color0");
 
             $oTableRow->AddCell($oTableCell);
-            
+
             $oTable->AddRow($oTableRow);
 
             // output the table
