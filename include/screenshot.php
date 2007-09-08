@@ -297,6 +297,12 @@ class screenshot
         return $this->oScreenshotImage->get_width();
     }
 
+    function objectGetChildren()
+    {
+        /* We have none */
+        return array();
+    }
+
     function get_screenshot_height()
     {
         $this->load_image(false);

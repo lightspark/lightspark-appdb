@@ -499,6 +499,11 @@ class Url {
         return $sReturn;
     }
 
+    function objectGetChildren()
+    {
+        return array();
+    }
+
     // if a url lacks "://" assume the url is an http one
     // and prepend "http://"
     function normalize($sTheUrl)

@@ -311,6 +311,11 @@ class Note {
         return $oManager->makeUrl("view", $this->objectGetId());
     }
 
+    function objectGetChildren()
+    {
+        return array();
+    }
+
     //TODO: not sure if we want to use sTitle here or what
     function objectMakeLink()
     {

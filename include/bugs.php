@@ -269,6 +269,11 @@ class Bug
         }
     }
 
+    function objectGetChildren()
+    {
+        return array();
+    }
+
     /* Get a list of bugs submitted by a given user */
     function listSubmittedBy($iUserId, $bQueued = true)
     {

@@ -379,6 +379,11 @@ class Comment {
             echo "</ul>\n";
     }
 
+    function objectGetChildren()
+    {
+        return array();
+    }
+
     function display_comments_threaded($versionId, $threadId = 0)
     {
         $hResult = Comment::grab_comments($versionId, $threadId);

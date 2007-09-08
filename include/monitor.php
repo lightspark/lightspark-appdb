@@ -61,6 +61,12 @@ class Monitor {
         }
     }
 
+    function objectGetChildren()
+    {
+        /* We have none */
+        return array();
+    }
+
     /*
      * Creates a new Monitor.
      * Informs interested people about the creation.

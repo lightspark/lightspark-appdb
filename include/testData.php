@@ -1079,6 +1079,12 @@ class testData{
         return TRUE;
     }
 
+    function objectGetChildren()
+    {
+        /* We have none */
+        return array();
+    }
+
     function objectDisplayAddItemHelp()
     {
         echo "<p>This is the screen for inputing test information so that others ";

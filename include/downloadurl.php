@@ -63,6 +63,12 @@ class downloadurl
         return $sReturn;
     }
 
+    function objectGetChildren()
+    {
+        /* We have none */
+        return array();
+    }
+
     /* Output an editor for Download URL fields */
     function outputEditor($oVersion = null, $sFormAction = null)
     {

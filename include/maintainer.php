@@ -819,6 +819,12 @@ class maintainer
         return array($aItemsPerPage, $iDefaultPerPage);
     }
 
+    function objectGetChildren()
+    {
+        /* We have none */
+        return array();
+    }
+
     function update()
     {
         /* STUB: No updating possible at the moment */
