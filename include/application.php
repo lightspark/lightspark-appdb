@@ -240,58 +240,25 @@ class Application {
         if(!$_SESSION['current']->canDeleteApplication($this))
             return false;
 
-        /* we have to retrieve the versions again here because */
-        /* new ones could have been added since this application */
-        /* object was created */
-        //FIXME: how to deal with concurrency issues such as
-        //  if a new version was added during this deletion?
-        $hResult = $this->_internal_retrieve_all_versions();
-        while($oRow = query_fetch_object($hResult))
+        foreach($this->objectGetChildren() as $oChild)
         {
-            $iVersionId = $oRow->versionId;
-            $oVersion = new Version($iVersionId);
-            if(!$oVersion->delete($bSilent))
-                $bSuccess = false; // return false, deleting the version failed
-        }
-
-        /* fetch urlsIds */
-        $aUrlsIds = array();
-        $sQuery = "SELECT id
-                       FROM appData
-                       WHERE type = 'url'
-                       AND appId = '?'";
-
-        if($hResult = query_parameters($sQuery, $this->iAppId))
-        {
-            while($oRow = query_fetch_object($hResult))
-            {
-                $aUrlsIds[] = $oRow->id;
-            }
-        }
-
-        foreach($aUrlsIds as $iUrlId)
-        {
-            $oUrl = new Url($iUrlId);
-            $oUrl->delete($bSilent);
-        }
-
-        // remove any supermaintainers for this application so we don't orphan them
-        $hResult = Maintainer::deleteMaintainersForApplication($this);
-        if(!$hResult)
-        {
-            addmsg("Error removing app maintainers for the deleted application!", "red");
+            if(!$oChild->delete())
+                $bSuccess = FALSE;
         }
 
         $sQuery = "DELETE FROM appFamily 
                    WHERE appId = '?' 
                    LIMIT 1";
         if(!($hResult = query_parameters($sQuery, $this->iAppId)))
-        {
-            addmsg("Error deleting application!", "red");
-        }
+            $bSuccess = false;
 
         if(!$bSilent)
+        {
             $this->SendNotificationMail("delete");
+
+            if(!$bSuccess)
+                addmsg("Error deleting application", "red");
+        }
 
         return $bSuccess;
     }
@@ -1017,6 +984,60 @@ class Application {
             return FALSE;
 
         return $oRow->count;
+    }
+
+    function getVersions()
+    {
+        $aVersions = array();
+
+        $hResult = $this->_internal_retrieve_all_versions();
+
+        while($oRow = mysql_fetch_object($hResult))
+            $aVersions[] = new version($oRow->versionId);
+
+        return $aVersions;
+    }
+
+    function objectGetChildren()
+    {
+        $aChildren = array();
+
+        /* Get versions */
+        foreach($this->getVersions() as $oVersion)
+        {
+            $aChildren += $oVersion->objectGetChildren();
+            $aChildren[] = $oVersion;
+        }
+
+        /* Get urls */
+        $sQuery = "SELECT * FROM appData WHERE type = '?' AND appId = '?'";
+        $hResult = query_parameters($sQuery, "url", $this->iAppId);
+
+        if(!$hResult)
+            return FALSE;
+
+        while($oRow = mysql_fetch_object($hResult))
+        {
+            $oUrl = new url(0, $oRow);
+            $aChildren += $oUrl->objectGetChildren();
+            $aChildren[] = $oUrl;
+        }
+
+        /* Get maintainers */
+        $sQuery = "SELECT * FROM appMaintainers WHERE appId = '?' AND superMaintainer = '?'";
+        $hResult = query_parameters($sQuery, $this->iAppId, '1');
+
+        if(!$hResult)
+            return FALSE;
+
+        while($oRow = mysql_fetch_object($hResult))
+        {
+            $oMaintainer = new maintainer(0, $oRow);
+            $aChildren += $oMaintainer->objectGetChildren();
+            $aChildren[] = $oMaintainer;
+        }
+
+        return $aChildren;
     }
 
     function objectMoveChildren($iNewId)

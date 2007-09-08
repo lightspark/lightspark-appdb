@@ -27,9 +27,12 @@ class Comment {
      * Constructor.
      * If $iCommentId is provided, fetches comment.
      */
-    function Comment($iCommentId="")
+    function Comment($iCommentId = null, $oRow = null)
     {
-        if(is_numeric($iCommentId))
+        if(!$iCommentId && !$oRow)
+            return;
+
+        if(!$oRow)
         {
             $sQuery = "SELECT appComments.*, appVersion.appId AS appId
                        FROM appComments, appVersion
@@ -37,6 +40,10 @@ class Comment {
                        AND commentId = '?'";
             $hResult = query_parameters($sQuery, $iCommentId);
             $oRow = query_fetch_object($hResult);
+        }
+
+        if($oRow)
+        {
             $this->iCommentId = $oRow->commentId;
             $this->iParentId = $oRow->parentId;
             $this->iAppId = $oRow->appId;

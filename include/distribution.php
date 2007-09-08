@@ -19,6 +19,7 @@ class distribution {
      // constructor, fetches the data.
     function distribution($iDistributionId = null, $oRow = null)
     {
+        $this->aTestingIds = array();
         // we are working on an existing distribution.
         if(!$iDistributionId && !$oRow)
             return;
@@ -156,14 +157,12 @@ class distribution {
         if(sizeof($this->aTestingIds) && !$_SESSION['current']->hasPriv("admin"))
           return FALSE;
 
-        // delete any test results this distribution has
-        if($this->aTestingIds)
+        $bSuccess = TRUE;
+
+        foreach($this->objectGetChildren() as $oChild)
         {
-            foreach($this->aTestingIds as $iTestId)
-            {
-                $oTestData = new TestData($iTestId);
-                $oTestData->delete();
-            }
+            if(!$oChild->delete())
+                $bSuccess = FALSE;
         }
 
         // now delete the Distribution 
@@ -171,17 +170,19 @@ class distribution {
                    WHERE distributionId = '?' 
                    LIMIT 1";
         if(!($hResult = query_parameters($sQuery, $this->iDistributionId)))
-        {
-            addmsg("Error removing the Distribution!", "red");
-            return false;
-        }
+            $bSuccess = FALSE;
 
         if(!$bSilent)
+        {
             $this->SendNotificationMail("delete");
+
+            if(!$bSuccess)
+                addmsg("Error deleting distribution", "delete");
+        }
 
         $this->mailSubmitter("delete");
 
-        return true;
+        return $bSuccess;
     }
 
 
@@ -224,6 +225,31 @@ class distribution {
             return false;
 
         return $this->delete();
+    }
+
+    function getTestResults()
+    {
+        $aTests = array();
+        $sQuery = "SELECT * FROM testResults WHERE distributionId = '?'";
+        $hResult = query_parameters($sQuery, $this->iDistributionId);
+
+        while($oRow = mysql_fetch_object($hResult))
+            $aTests += new testData(null, $oRow);
+
+        return $aTests;
+    }
+
+    function objectGetChildren()
+    {
+        $aChildren = array();
+
+        foreach($this->getTestResults() as $oTest)
+        {
+            $aChildren += $oTest->objectGetChildren();
+            $aChildren[] = $oTest;
+        }
+
+        return $aChildren;
     }
 
     function ReQueue()
@@ -282,7 +308,7 @@ class distribution {
             break;
             }
             $sMsg .= "We appreciate your help in making the Application Database better for all users.";
-        
+
             mail_appdb($oSubmitter->sEmail, $sSubject ,$sMsg);
         }
     }

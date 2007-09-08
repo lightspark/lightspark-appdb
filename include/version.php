@@ -220,134 +220,12 @@ class version {
         if(!$_SESSION['current']->canDeleteVersion($this))
             return false;
 
-        /* fetch notesIds */
-        $aNotesIds = array();
-        $sQuery = "SELECT noteId
-                       FROM appNotes
-                       WHERE versionId = '?'";
-        if($hResult = query_parameters($sQuery, $this->iVersionId))
+        $bSuccess = TRUE;
+
+        foreach($this->objectGetChildren() as $oChild)
         {
-            while($oRow = query_fetch_object($hResult))
-            {
-                $aNotesIds[] = $oRow->noteId;
-            }
-        }
-
-        /* remove all of the items this version contains */
-        foreach($aNotesIds as $iNoteId)
-        {
-            $oNote = new Note($iNoteId);
-            $oNote->delete($bSilent);
-        }
-
-
-        /* We fetch commentsIds. */
-        $aCommentsIds = array();
-        $sQuery = "SELECT commentId
-                       FROM appComments
-                       WHERE versionId = '?'";
-        if($hResult = query_parameters($sQuery, $this->iVersionId))
-        {
-            while($oRow = query_fetch_object($hResult))
-            {
-                $aCommentsIds[] = $oRow->commentId;
-            }
-        }
-
-        foreach($aCommentsIds as $iCommentId)
-        {
-            $oComment = new Comment($iCommentId);
-
-            // delete the comment silently, we don't want to send out
-            // any notifications since the version is being deleted
-            $oComment->delete(true);
-        }
-
-
-        /* fetch screenshotsIds and urlsIds  */
-        $aScreenshotsIds = array();
-        $aUrlsIds = array();
-        $sQuery = "SELECT id, type
-                       FROM appData
-                       WHERE versionId = '?'";
-        
-        if($hResult = query_parameters($sQuery, $this->iVersionId))
-        {
-            while($oRow = query_fetch_object($hResult))
-            {
-                if($oRow->type="image")
-                    $aScreenshotsIds[] = $oRow->id;
-                else
-                    $aUrlsIds[] = $oRow->id;
-            }
-        }
-
-        foreach($aScreenshotsIds as $iScreenshotId)
-        {
-            $oScreenshot = new Screenshot($iScreenshotId);
-            $oScreenshot->delete($bSilent);
-        }
-        foreach($aUrlsIds as $iUrlId)
-        {
-            $oUrl = new Url($iUrlId);
-            $oUrl->delete($bSilent);
-        }
-
-        $aBuglinkIds = $this->get_buglink_ids();
-        foreach($aBuglinkIds as $iBug_id)
-        {
-            $oBug = new Bug($iBug_id);
-            $oBug->delete($bSilent);
-        }
-
-
-        /* fetch Test Results Ids */
-        $aTestingIds = array();
-        $sQuery = "SELECT *
-                       FROM testResults
-                       WHERE versionId = '?'
-                       ORDER BY testingId";
-        if($hResult = query_parameters($sQuery, $this->iVersionId))
-        {
-            while($oRow = query_fetch_object($hResult))
-            {
-                $aTestingIds[] = $oRow->testingId;
-            }
-        }
-
-        foreach($aTestingIds as $iTestId)
-        {
-            $oTest = new testData($iTestId);
-            $oTest->delete($bSilent);
-        }
-
-
-        /* fetch monitor Ids */
-        $aMonitorIds = array();
-        $sQuery = "SELECT *
-                       FROM appMonitors
-                       WHERE versionId = '?'
-                       ORDER BY monitorId";
-        if($hResult = query_parameters($sQuery, $this->iVersionId))
-        {
-            while($oRow = query_fetch_object($hResult))
-            {
-                $aMonitorIds[] = $oRow->monitorId;
-            }
-        }
-
-        foreach($aMonitorIds as $iMonitorId)
-        {
-            $oMonitor = new Monitor($iMonitorId);
-            $oMonitor->delete($bSilent);
-        }
-
-
-        // remove any maintainers for this version so we don't orphan them
-        $result = Maintainer::deleteMaintainersForVersion($this);
-        if(!$result)
-        {
-            addmsg("Error removing version maintainers for the deleted version!", "red");
+            if(!$oChild->delete())
+                $bSuccess = FALSE;
         }
 
         /* now delete the version */
@@ -355,16 +233,18 @@ class version {
                                      WHERE versionId = '?' 
                                      LIMIT 1", $this->iVersionId);
         if(!$hResult)
-        {
-            addmsg("Error removing the deleted version!", "red");
-        }
-
-        if(!$bSilent)
-            $this->SendNotificationMail("delete");
+            $bSuccess = FALSE;
 
         $this->mailSubmitter("delete");
 
-        return true;
+        if(!$bSilent)
+        {
+            if(!$bSuccess)
+                addmsg("Error removing version", "red");
+
+            $this->SendNotificationMail("delete");
+        }
+        return $bSuccess;
     }
 
 
@@ -1536,6 +1416,133 @@ class version {
              "or to be rejected.</p>\n";
         echo "<p>To view a submission, click on its name. ".
              "From that page you can edit, delete or approve it into the AppDB.</p>\n";
+    }
+
+    function objectGetChildren()
+    {
+        $aChildren = array();
+
+        /* Find test results */
+        $sQuery = "SELECT * FROM testResults WHERE versionId = '?'";
+        $hResult = query_parameters($sQuery, $this->iVersionId);
+
+        if(!$hResult)
+            return FALSE;
+
+        while($oRow = mysql_fetch_object($hResult))
+        {
+            $oTest = new testData(0, $oRow);
+            $aChildren += $oTest->objectGetChildren();
+            $aChildren[] = $oTest;
+        }
+
+        /* Find maintainers */
+        $sQuery = "SELECT * FROM appMaintainers WHERE versionId = '?'";
+        $hResult = query_parameters($sQuery, $this->iVersionId);
+
+        if(!$hResult)
+            return FALSE;
+
+        while($oRow = mysql_fetch_object($hResult))
+        {
+            $oMaintainer = new maintainer(0, $oRow);
+            $aChildren += $oMaintainer->objectGetChildren();
+            $aChildren[] = $oMaintainer;
+        }
+
+        /* Find monitors */
+        $sQuery = "SELECT * FROM appMonitors WHERE versionId = '?'";
+        $hResult = query_parameters($sQuery, $this->iVersionId);
+
+        if(!$hResult)
+            return FALSE;
+
+        while($oRow = mysql_fetch_object($hResult))
+        {
+            $oMonitor = new monitor(0, $oRow);
+            $aChildren += $oMonitor->objectGetChildren();
+            $aChildren[] = $oMonitor;
+        }
+
+        /* Find notes */
+        $sQuery = "SELECT * FROM appNotes WHERE versionId = '?'";
+        $hResult = query_parameters($sQuery, $this->iVersionId);
+
+        if(!$hResult)
+            return FALSE;
+
+        while($oRow = mysql_fetch_object($hResult))
+        {
+            $oNote = new note(0, $oRow);
+            $aChildren += $oNote->objectGetChildren();
+            $aChildren[] = $oNote;
+        }
+
+        /* Find screenshots */
+        $sQuery = "SELECT * FROM appData WHERE type = '?' AND versionId = '?'";
+        $hResult = query_parameters($sQuery, "screenshot", $this->iVersionId);
+
+        if(!$hResult)
+            return FALSE;
+
+        while($oRow = mysql_fetch_object($hResult))
+        {
+            $oScreenshot = new screenshot(0, $oRow);
+            $aChildren += $oScreenshot->objectGetChildren();
+            $aChildren[] = $oScreenshot;
+        }
+
+        /* Get bug links */
+        foreach($this->get_buglink_ids() as $iBugId)
+        {
+            $oBug = new bug($iBugId);
+            $aChildren += $oBug->objectGetChildren();
+            $aChildren[] = $oBug;
+        }
+
+        /* Get comments */
+        $sQuery = "SELECT * FROM appComments WHERE versionId = '?'";
+        $hResult = query_parameters($sQuery, $this->iVersionId);
+
+        if(!$hResult)
+            return FALSE;
+
+        while($oRow = mysql_fetch_object($hResult))
+        {
+            $oComment = new comment(0, $oRow);
+            $aChildren += $oComment->objectGetChildren();
+            $aChildren[] = $oComment;
+        }
+
+        /* Get urls */
+        $sQuery = "SELECT * FROM appData WHERE type = '?' AND versionId = '?'";
+        $hResult = query_parameters($sQuery, "url", $this->iVersionId);
+
+        if(!$hResult)
+            return FALSE;
+
+        while($oRow = mysql_fetch_object($hResult))
+        {
+            $oUrl = new url(0, $oRow);
+            $aChildren += $oUrl->objectGetChildren();
+            $aChildren[] = $oUrl;
+        }
+
+        /* Get downloadurls */
+        $sQuery = "SELECT * FROM appData WHERE type = '?' AND versionId = '?'";
+        $hResult = query_parameters($sQuery, "downloadurl", $this->iVersionId);
+
+        if(!$hResult)
+            return FALSE;
+
+        while($oRow = mysql_fetch_object($hResult))
+        {
+            $oDownload = new downloadurl(0, $oRow);
+            $aChildren += $oDownload->objectGetChildren();
+            $aChildren[] = $oDownload;
+        }
+
+        return $aChildren;
     }
 
     function objectMoveChildren($iNewId)
