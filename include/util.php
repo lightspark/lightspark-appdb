@@ -200,22 +200,24 @@ function make_bugzilla_version_list($sVarname, $sSelectedValue)
     return $sStr;
 }
 
+// returns a string containing the html for the maintainer rating list
 function make_maintainer_rating_list($varname, $cvalue)
 {
-    
-    echo "<select name='$varname'>\n";
-    echo "<option value=\"\">Choose ...</option>\n";
+    $sTxt =  "<select name='$varname'>\n";
+    $sTxt .= "<option value=\"\">Choose ...</option>\n";
     $aRating = array("Platinum", "Gold", "Silver", "Bronze", "Garbage");
     $iMax = count($aRating);
 
     for($i=0; $i < $iMax; $i++)
     {
         if($aRating[$i] == $cvalue)
-            echo "<option class=$aRating[$i] value=$aRating[$i] selected>$aRating[$i]\n";
+            $sTxt .= "<option class=$aRating[$i] value=$aRating[$i] selected>$aRating[$i]\n";
         else
-            echo "<option class=$aRating[$i] value=$aRating[$i]>$aRating[$i]\n";
+            $sTxt .= "<option class=$aRating[$i] value=$aRating[$i]>$aRating[$i]\n";
     }
-    echo "</select>\n";
+    $sTxt .= "</select>\n";
+
+    return $sTxt;
 }
 
 /* Get the number of users in the database */
