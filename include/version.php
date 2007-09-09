@@ -207,6 +207,7 @@ class version {
         {
             if(!query_parameters("UPDATE appVersion SET obsoleteBy = '?' WHERE versionId = '?'",
                                  $this->iObsoleteBy, $this->iVersionId))
+                return FALSE;
 
             if($this->iObsoleteBy)
                 $sWhatChanged .= "The version was marked as obsolete.\n\n";
