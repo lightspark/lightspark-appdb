@@ -178,14 +178,6 @@ class application_queue
 
             $this->oApp->outputEditor();
 
-            /* We need to accept vendors submitted using the old
-               keyword hack.  This should be removed soon */
-            if(!$this->oVendor->sName && $this->oApp->iAppId)
-            {
-                $this->oVendor->sName = get_vendor_from_keywords(
-                    $this->oApp->sKeywords);
-            }
-
             /* Display the new vendor form for new applications or if we
                are processing an application and the vendor is queued */
             if(!$this->oApp->iAppId || $this->oVendor->sQueued != "false")

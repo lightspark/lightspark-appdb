@@ -882,10 +882,8 @@ class Application {
     {
         $oUser = new user($this->iSubmitterId);
         $oVendor = new vendor($this->iVendorId);
-        if(!$oVendor->sName)
-            $sVendor = get_vendor_from_keywords($this->sKeywords);
-        else
-            $sVendor = $oVendor->objectMakeLink();
+
+        $sVendor = $oVendor->objectMakeLink();
 
         $oTableRow = new TableRow();
         $oTableRow->AddTextCell(print_date(mysqldatetime_to_unixtimestamp($this->sSubmitTime)));
@@ -1113,13 +1111,6 @@ class Application {
     {
         return TRUE;
     }
-}
-
-function get_vendor_from_keywords($sKeywords)
-{
-    $aKeywords = explode(" *** ",$sKeywords);
-    $iLastElt = (sizeOf($aKeywords)-1);
-    return($aKeywords[$iLastElt]);
 }
 
 ?>
