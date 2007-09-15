@@ -8,7 +8,7 @@
  *  - iVersionId, version identifier
  *
  * Optional parameters:
- *  - sSub, action to perform ("delete", "unqueue", "Submit a new bug link.", "StartMonitoring", "StopMonitoring")
+ *  - sSub, action to perform ("delete", "unqueue", "Submit a new bug link.")
  *  - iBuglinkId, bug identifier to link a bug with a version
  *
  * TODO:
@@ -25,7 +25,6 @@ require_once(BASE."include/appdb.php");
 require_once(BASE."include/vote.php");
 require_once(BASE."include/category.php");
 require_once(BASE."include/maintainer.php");
-require_once(BASE."include/monitor.php");
 
 
 /**
@@ -113,26 +112,6 @@ if (isset($aClean['sSub']))
         $oBuglink->create();
         util_redirect_and_exit($oVersion->objectMakeUrl());
     }
-    if($aClean['sSub'] == 'StartMonitoring')
-    {
-        $oMonitor = new Monitor();
-        $oMonitor->iUserId = $_SESSION['current']->iUserId;
-        $oMonitor->iAppId = $aClean['iAppId'];
-        $oMonitor->iVersionId = $aClean['iVersionId'];
-        $oMonitor->create();
-        util_redirect_and_exit($oVersion->objectMakeUrl());
-    }
-    if($aClean['sSub'] == 'StopMonitoring')
-    {
-        $oMonitor = new Monitor();
-        $oMonitor->find($_SESSION['current']->iUserId, $aClean['iVersionId']);
-        if($oMonitor->iMonitorId)
-        {
-            $oMonitor->delete();
-        }
-        util_redirect_and_exit($oVersion->objectMakeUrl());
-    }
-
 }
 
 /**

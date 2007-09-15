@@ -899,9 +899,14 @@ class version {
         {
             echo '<tr><td colspan="2" align="center">'."\n";
             echo '</form>'."\n";
-            echo '<form method="post" name="sMessage" action='.
-                    $this->objectMakeUrl().'>'."\n";
-            echo '<input type=hidden name="sSub" value="StopMonitoring" />'."\n";
+            echo '<form method="post" name="sMessage" action="'.
+                    APPDB_ROOT."objectManager.php\">\n";
+            echo "\t<input type=\"hidden\" name=\"iId\" value=\"".
+                    $oMonitor->iMonitorId."\" />\n";
+            echo "\t<input type=\"hidden\" name=\"sSubmit\" value=\"Delete\" />\n";
+            echo "\t<input type=\"hidden\" name=\"sClass\" value=\"monitor\" />\n";
+            echo "\t<input type=\"hidden\" name=\"sReturnTo\" value=\"".
+                    $this->objectMakeUrl()."\" />\n";
             echo '<input type=submit value="Stop Monitoring Version" class="button" />'."\n";
             echo "</form>\n";
             echo "</td></tr>\n";
