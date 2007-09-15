@@ -104,14 +104,6 @@ if (isset($aClean['sSub']))
         }
  
     }
-    if(($aClean['sSub'] == 'Submit a new bug link.' ) && ($aClean['iBuglinkId']))
-    {
-        $oBuglink = new Bug();
-        $oBuglink->iVersionId = $aClean['iVersionId'];
-        $oBuglink->iBug_id = $aClean['iBuglinkId']; 
-        $oBuglink->create();
-        util_redirect_and_exit($oVersion->objectMakeUrl());
-    }
 }
 
 /**

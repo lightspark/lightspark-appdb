@@ -492,7 +492,8 @@ class Bug
 
     function getOutputEditorValues($aClean)
     {
-       $this->iTestingId = $aValues['iBugLinkId'];
+       $this->iBug_id = $aClean['iBuglinkId'];
+       $this->iVersionId = $aClean['iVersionId'];
     }
 }
 
@@ -519,7 +520,7 @@ function view_version_bugs($iVersionId = null, $aBuglinkIds)
     //start format table
     if($_SESSION['current']->isLoggedIn())
     {
-        echo "<form method=post action='".$oVersion->objectMakeUrl()."'>\n";
+        echo "<form method=post action='".APPDB_ROOT."objectManager.php'>\n";
     }
     echo html_frame_start("Known bugs","98%",'',0);
     echo "<table width=\"100%\" border=\"0\" cellpadding=\"3\" cellspacing=\"1\">\n\n";
@@ -585,6 +586,9 @@ function view_version_bugs($iVersionId = null, $aBuglinkIds)
         echo '<tr class=color3><td align=center>',"\n";
         $sBuglinkId = isset($aClean['buglinkId']) ? $aClean['buglinkId'] : '';
         echo '<input type="text" name="iBuglinkId" value="'.$sBuglinkId.'" size="8"></td>',"\n";
+        echo '<input type="hidden" name="sSubmit" value="Submit" />',"\n";
+        echo '<input type="hidden" name="sClass" value="bug" />',"\n";
+        echo '<input type="hidden" name="sReturnTo" value="'.$oVersion->objectMakeUrl().'" />',"\n";
         echo '<td><input type="submit" name="sSub" value="Submit a new bug link."></td>',"\n";
         echo '<td colspan=6></td></tr></form>',"\n";
     }
