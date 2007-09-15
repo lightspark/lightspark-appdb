@@ -136,6 +136,22 @@ class downloadurl
         return $sReturn;
     }
 
+    function objectGetSubmitterId()
+    {
+        return $this->iSubmitterId;
+    }
+
+    function objectGetMailOptions($sAction, $bMailSubmitter, $bParentAction)
+    {
+        return new mailOptions();
+    }
+
+    function objectGetMail($sAction, $bMailSubmitter, $bParentAction)
+    {
+        /* We don't do this at the moment */
+        return array(null, null, null);
+    }
+
     /* Process data from a Download URL form */
     function ProcessForm($aValues)
     {

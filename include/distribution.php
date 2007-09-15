@@ -141,9 +141,9 @@ class distribution {
             return false;
         }
     }
-    
+
     // Delete Distributution.
-    function delete($bSilent=false)
+    function delete()
     {
         /* Is the current user allowed to delete this distribution?  We allow
            everyone to delete a queued, empty distribution, because it should be
@@ -171,16 +171,6 @@ class distribution {
                    LIMIT 1";
         if(!($hResult = query_parameters($sQuery, $this->iDistributionId)))
             $bSuccess = FALSE;
-
-        if(!$bSilent)
-        {
-            $this->SendNotificationMail("delete");
-
-            if(!$bSuccess)
-                addmsg("Error deleting distribution", "delete");
-        }
-
-        $this->mailSubmitter("delete");
 
         return $bSuccess;
     }
@@ -281,6 +271,46 @@ class distribution {
         /* returning */
         addmsg("Error requeueing Distribution", "red");
         return false;
+    }
+
+    function objectGetSubmitterId()
+    {
+        return $this->iSubmitterId;
+    }
+
+    function objectGetMailOptions($sAction, $bMailSubmitter, $bParentAction)
+    {
+        return new mailOptions();
+    }
+
+    function objectGetMail($sAction, $bMailSubmitter, $bParentAction)
+    {
+        $oSubmitter = new user($this->iSubmitterId);
+
+        if($bMailSubmitter)
+        {
+            switch($sAction)
+            {
+                case "delete":
+                    $sSubject = "Submitted distribution deleted";
+                    $sMsg = "The distribution you submitted (".$this->sName.") has been ".
+                            "deleted.\n";
+                break;
+            }
+            $aMailTo = null;
+        } else
+        {
+            switch($sAction)
+            {
+                case "delete":
+                    $sSubject = "Distribution ".$this->sName." deleted";
+                    $sMsg = "";
+                break;
+            }
+            $aMailTo = User::get_notify_email_address_list(null, null);
+        }
+
+        return array($sSubject, $sMsg, $aMailTo);
     }
 
     function mailSubmitter($sAction="add")

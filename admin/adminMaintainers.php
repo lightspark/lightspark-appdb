@@ -18,19 +18,6 @@ echo '<form name="sQform" action="adminMaintainers.php" method="post" enctype="m
 
 if (isset($aClean['sSub']))
 {
-    if($aClean['sSub'] == 'delete')
-    {
-        $oMaintainer = new maintainer($aClean['iMaintainerId']);
-        $oMaintainer->delete();
-        echo html_frame_start("Delete maintainer: ".$aClean['iMaintainerId'],400,"",0);
-        if($hResult)
-        {
-            // success
-            echo "<p>Maintainer was successfully deleted</p>\n";
-        }
-        echo html_frame_end("&nbsp;");
-        echo html_back_link(1,'adminMaintainers.php');
-    }
 } else
 {
     // get available maintainers
@@ -115,7 +102,7 @@ if (isset($aClean['sSub']))
                 $oVersion = new version($oRow->versionId);
                 echo "    <td>".$oVersion->objectMakeLink()."</td>\n";
             }
-            echo "    <td align=\"center\">[<a href='adminMaintainers.php?sSub=delete&iMaintainerId=$oRow->maintainerId'>delete</a>]</td>\n";
+            echo "    <td align=\"center\">[<a href='".BASE."objectManager.php?sClass=maintainer&iId=$oRow->maintainerId&bIsQueue=false&sTitle=Admin%20Maintainers&sAction=delete&sReturnTo=".APPDB_ROOT."admin/adminMaintainers.php'>delete</a>]</td>\n";
             echo "</tr>\n\n";
             $c++;
         }

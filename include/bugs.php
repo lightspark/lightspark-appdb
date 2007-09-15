@@ -151,24 +151,12 @@ class Bug
      *
      * Return true if successful, false if an error occurs
      */
-    function delete($bSilent=false)
+    function delete()
     {
         $sQuery = "DELETE FROM buglinks 
                    WHERE linkId = '?'";
-        if($hResult = query_parameters($sQuery, $this->iLinkId))
-        {
-            if(!$bSilent)
-                $this->SendNotificationMail(true);
-        } else
-        {
-          return false;
-        }
-
-        if($this->iSubmitterId &&
-           ($this->iSubmitterId != $_SESSION['current']->iUserId))
-        {
-            $this->mailSubmitter(true);
-        }
+        if(!($hResult = query_parameters($sQuery, $this->iLinkId)))
+            return false;
 
         return true;
     }
@@ -267,6 +255,22 @@ class Bug
         {
             mail_appdb($sEmail, $sSubject ,$sMsg);
         }
+    }
+
+    function objectGetSubmitterId()
+    {
+        return $this->iSubmitterId;
+    }
+
+    function objectGetMailOptions($sAction, $bMailSubmitter, $bParentAction)
+    {
+        return new mailOptions();
+    }
+
+    function objectGetMail($sAction, $bMailSubmitter, $bParentAction)
+    {
+        /* We don't do this at the moment */
+                return array(null, null, null);
     }
 
     function objectGetChildren()

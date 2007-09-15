@@ -91,7 +91,7 @@ class Url {
      * Deletes the url from the database. 
      * and request its deletion from the filesystem (including the thumbnail).
      */
-    function delete($bSilent=false)
+    function delete()
     {
         $sQuery = "DELETE FROM appData 
                    WHERE id = '?' 
@@ -99,15 +99,6 @@ class Url {
                    LIMIT 1";
         if(!$hResult = query_parameters($sQuery, $this->iUrlId))
             return false;
-
-        if(!$bSilent)
-            $this->SendNotificationMail(true);
-
-        if($this->iSubmitterId &&
-        $this->iSubmitterId != $_SESSION['current']->iUserId)
-        {
-            $this->mailSubmitter(true);
-        }
 
         return true;
     }
@@ -255,11 +246,6 @@ class Url {
                 addmsg("The url you submitted will be added to the database ".
                         "database after being reviewed.", "green");
             }
-        } else // Url deleted.
-        {
-            $sSubject = "Url for $sAppName deleted by ".$_SESSION['current']->sRealname;
-            $sMsg  = "$sUrl\n";
-            addmsg("Url deleted.", "green");
         }
 
         $sEmail = User::get_notify_email_address_list(null, $this->iVersionId);
@@ -456,7 +442,7 @@ class Url {
         return TRUE;
     }
 
-    function canEdit($iVersionId, $iAppId = NULL)
+    function canEdit($iVersionId = NULL, $iAppId = NULL)
     {
         if($_SESSION['current']->hasPriv("admin"))
             return TRUE;
@@ -497,6 +483,27 @@ class Url {
         }
 
         return $sReturn;
+    }
+
+    function objectGetId()
+    {
+        return $this->iUrlId;
+    }
+
+    function objectGetSubmitterId()
+    {
+        return $this->iSubmitterId;
+    }
+
+    function objectGetMailOptions($sAction, $bMailSubmitter, $bParentAction)
+    {
+        return new mailOptions();
+    }
+
+    function objectGetMail($sAction, $bMailSubmitter, $bParentAction)
+    {
+        /* We don't do this at the moment */
+                return array(null, null, null);
     }
 
     function objectGetChildren()

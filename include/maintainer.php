@@ -839,6 +839,77 @@ class maintainer
         return $sReplyTextHelp;
     }
 
+    function objectGetMailOptions($sAction, $bMailSubmitter, $bParentAction)
+    {
+        return new mailOptions();
+    }
+
+    function objectGetMail($sAction, $bMailSubmitter, $bParentAction)
+    {
+        $oSubmitter = new user($this->iSubmitterId);
+
+        $sVerb = $this->sQueued == "true" ? "rejected" : "removed";
+
+        if($this->bSuperMaintainer)
+        {
+            $oApp = new application($this->iAppId);
+            $sFor = $oApp->sName;
+        } else
+        {
+            $sFor = version::fullName($this->iVersionId);
+        }
+
+        $sMsg = null;
+        $sSubject = null;
+
+        if($bMailSubmitter)
+        {
+            switch($sAction)
+            {
+                case "delete":
+                    $sSubject = "Maintainership for $sFor $sVerb";
+                    if($this->sQueued == "true")
+                    {
+                        $sMsg = "Your request to be a maintainer of '$sFor'".
+                                    " has been denied.";
+                    } else
+                    {
+                        $sMsg = "You have been removed as a maintainer of ".
+                                    "'$sFor'.";
+                    }
+                break;
+            }
+            $aMailTo = null;
+        } else
+        {
+            switch($sAction)
+            {
+                case "delete":
+                    if(!$bParentAction)
+                    {
+                        $sSubject = "Maintainership for $sFor $sVerb";
+                        if($this->bQueued == "false")
+                        {
+                            $sMsg = $oSubmitter->sRealName." has been removed as a ".
+                                        "maintainer of $sFor.";
+                        } else
+                        {
+                            $sMsg = $oSubmitter->sRealName." request to be a maintainer ".
+                                        " of $sFor has been rejected.";
+                        }
+                    }
+                break;
+            }
+            $aMailTo = User::get_notify_email_address_list(null, null);
+        }
+        return array($sSubject, $sMsg, $aMailTo);
+    }
+
+    function objectGetSubmitterId()
+    {
+        return $this->iUserId;
+    }
+
     function objectHideDelete()
     {
         return TRUE;

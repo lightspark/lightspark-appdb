@@ -209,7 +209,7 @@ class testData{
     }
     
     // Delete test results.
-    function delete($bSilent=false)
+    function delete()
     {
         // is the current user allowed to delete this test result? 
         $oVersion = new Version($this->iVersionId);
@@ -229,12 +229,6 @@ class testData{
             addmsg("Error removing the deleted test data!", "red");
             return false;
         }
-
-        if(!$bSilent)
-            $this->SendNotificationMail("delete");
-
-        if($this->iSubmitterId && ($this->iSubmitterId != $_SESSION['current']->iUserId))
-            $this->mailSubmitter("delete");
 
         return true;
     }
@@ -314,6 +308,60 @@ class testData{
         }
     }
 
+    function objectGetMailOptions($sAction, $bMailSubmitter, $bParentAction)
+    {
+        $oOptions = new mailOptions();
+
+        if($sAction == "delete" && $bParentAction)
+            $oOptions->bMailOnce = TRUE;
+
+        return $oOptions;
+    }
+
+    function objectGetMail($sAction, $bMailSubmitter, $bParentAction)
+    {
+        $oSubmitter = new User($this->iSubmitterId);
+        $sName = version::fullName($this->iVersionId);
+
+        $sMsg = null;
+        $sSubject = null;
+
+        if($bMailSubmitter)
+        {
+            switch($sAction)
+            {
+                case "delete":
+                    $sSubject =  "Submitted test data deleted";
+                    if($bParentAction)
+                    {
+                        $sMsg = "All test data you submitted for '$sName' has ".
+                                "been deleted because '$sName' was deleted.";
+                    } else
+                    {
+                        $sMsg  = "The test report you submitted for '$sName' has ".
+                                "been deleted.";
+                    }
+                break;
+            }
+            $aMailTo = nulL;
+        } else
+        {
+            switch($sAction)
+            {
+                case "delete":
+                    if(!$bParentAction)
+                    {
+                        $sSubject = "Test Results deleted for $sName by ".
+                                    $_SESSION['current']->sRealname;
+                        $sMsg = "";
+                    }
+                break;
+            }
+            $aMailTo = User::get_notify_email_address_list(null, $this->iVersionId);
+        }
+        return array($sSubject, $sMsg, $aMailTo);
+    }
+
     function mailSubmitter($sAction="add")
     {
         global $aClean;
@@ -341,12 +389,6 @@ class testData{
                 $sMsg  = "The testing data you submitted for '$sName' has ".
                         "been rejected by ".$_SESSION['current']->sRealname.".";
                 $sMsg .= $this->objectMakeUrl()."\n";
-                $sMsg .= "Reason given:\n";
-            break;
-            case "delete":
-                $sSubject =  "Submitted testing data deleted";
-                $sMsg  = "The testing data you submitted for '$sName' has ".
-                        "been deleted by ".$_SESSION['current']->sRealname.".";
                 $sMsg .= "Reason given:\n";
             break;
             }
@@ -399,17 +441,6 @@ class testData{
                 $sSubject = "Test Results modified for version ".$oVersion->sName." of ".$oApp->sName." by ".$_SESSION['current']->sRealname;
                 $sMsg  .= $sBacklink;
                 addmsg("test data modified.", "green");
-            break;
-            case "delete":
-                $sSubject = "Test Results deleted for version ".$oVersion->sName." of ".$oApp->sName." by ".$_SESSION['current']->sRealname;
-                // if replyText is set we should report the reason the data was deleted 
-                if($aClean['sReplyText'])
-                {
-                    $sMsg .= "Reason given:\n";
-                    $sMsg .= $aClean['sReplyText']."\n"; // append the reply text, if there is any 
-                }
-
-                addmsg("test data deleted.", "green");
             break;
             case "reject":
                 $sSubject = "Test Results rejected for version ".$oVersion->sName." of ".$oApp->sName." by ".$_SESSION['current']->sRealname;
@@ -1139,6 +1170,11 @@ class testData{
     function objectGetId()
     {
         return $this->iTestingId;
+    }
+
+    function objectGetSubmitterId()
+    {
+        return $this->iSubmitterId;
     }
 }
 

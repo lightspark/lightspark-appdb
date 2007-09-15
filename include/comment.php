@@ -163,13 +163,18 @@ class Comment {
         return true;
     }
 
+    function getOutputEditorValues($aClean)
+    {
+        /* Stub */
+    }
+
 
     /**
      * Removes the current comment from the database.
      * Informs interested people about the deletion.
      * Returns true on success and false on failure.
      */
-    function delete($bSilent = false)
+    function delete()
     {
         $hResult = query_parameters("DELETE FROM appComments WHERE commentId = '?'", $this->iCommentId);
         if ($hResult)
@@ -178,57 +183,11 @@ class Comment {
             $hResult = query_parameters("UPDATE appComments set parentId = '?' WHERE parentId = '?'",
                                         $this->iParentId, $this->iCommentId);
 
-            if(!$bSilent)
-            {
-                $this->SendNotificationMail("delete");
-            }
-
             return true;
         } else
         {
-            addmsg("Error removing the deleted comment!", "red");
+            return false;
         }
-
-        return false;
-    }
-
-    function SendNotificationMail($sAction="add", $sMsg = null)
-    {
-        global $aClean;
-        
-        // use 'sReplyText' if it is defined, otherwise define the value as an empty string
-        if(!isset($aClean['sReplyText']))
-            $aClean['sReplyText'] = "";
-
-        $oApp = new Application($this->iAppId);
-        switch($sAction)
-        {
-            case "delete":
-              $sSubject = "Comment for '".version::fullName($this->iVersionId)."' deleted by ".$_SESSION['current']->sRealname;
-              $oVersion = new version($this->iVersionId);
-              $sMsg  = $oVersion->objectMakeUrl()."\n";
-              $sMsg .= "\n";
-              $sMsg .= "This comment was made on ".substr($this->sDateCreated,0,10)." by ".$this->oOwner->sRealname."\n";
-              $sMsg .= "\n";
-              $sMsg .= "Subject: ".$this->sSubject."\r\n";
-              $sMsg .= "\n";
-              $sMsg .= $this->sBody."\r\n";
-              $sMsg .= "\n";
-              $sMsg .= "Because:\n";
-              if($sReason)
-                $sMsg .= $sReason."\n";
-              else
-                $sMsg .= "No reason given.\n";
-
-              addmsg("Comment deleted.", "green");
-
-              break;
-        } 
-
-        $sEmail = User::get_notify_email_address_list($this->iAppId, $this->iVersionId);
-        $sEmail .= $this->oOwner->sEmail;
-        if($sEmail)
-          mail_appdb($sEmail, $sSubject, $sMsg);
     }
 
     function get_comment_count_for_versionid($iVersionId)
@@ -280,9 +239,15 @@ class Comment {
             || $_SESSION['current']->isMaintainer($oRow->versionId) 
             || $_SESSION['current']->isSuperMaintainer($oRow->appId))
         {
+            $oVersion = new version($oRow->versionId);
             echo "<tr>";
-            echo "<td><form method=\"post\" name=\"sMessage\" action=\"".BASE."deletecomment.php\"><input type=\"submit\" value=\"Delete\" class=\"button\">\n";
-            echo "<input type=\"hidden\" name=\"iCommentId\" value=\"$oRow->commentId\" />";
+            echo "<td><form method=\"post\" name=\"sMessage\" action=\"".BASE."objectManager.php\"><input type=\"submit\" value=\"Delete\" class=\"button\">\n";
+            echo "<input type=\"hidden\" name=\"iId\" value=\"$oRow->commentId\" />";
+            echo "<input type=\"hidden\" name=\"sClass\" value=\"comment\" />";
+            echo "<input type=\"hidden\" name=\"bQueued\" value=\"false\" />";
+            echo "<input type=\"hidden\" name=\"sAction\" value=\"delete\" />";
+            echo "<input type=\"hidden\" name=\"sTitle\" value=\"Delete comment\" />";
+            echo "<input type=\"hidden\" name=\"sReturnTo\" value=\"".$oVersion->objectMakeUrl()."\" />";
             echo "</form>\n";
             echo "</td></tr>";
         }
@@ -381,9 +346,89 @@ class Comment {
                 echo "</blockquote>\n";
             }
         }
-    
+
         if (!$is_main)
             echo "</ul>\n";
+    }
+
+    function canEdit()
+    {
+        return $_SESSION['current']->hasPriv("admin");
+    }
+
+    function objectGetId()
+    {
+        return $this->iCommentId;
+    }
+
+    function objectGetSubmitterId()
+    {
+        return $this->oOwner->iUserId;
+    }
+
+    function objectGetMailOptions($sAction, $bMailSubmitter, $bParentAction)
+    {
+        $oOptions = new mailOptions();
+
+        if($sAction == "delete" && $bParentAction)
+            $oOptions->bMailOnce = TRUE;
+
+        return $oOptions;
+    }
+
+    function objectGetMail($sAction, $bMailSubmitter, $bParentAction)
+    {
+        $sSubject = "";
+        $sMessage = "";
+        $aRecipients = null;
+
+        $oVersion = new version($this->iVersionId);
+        $sVerName = version::fullName($this->iVersionId);
+
+        if($bMailSubmitter)
+        {
+            switch($sAction)
+            {
+                case "delete":
+                    if($bParentAction)
+                    {
+                        $sSubject = "Comments for $sVerName deleted";
+                        $sMessage = "Your comments for $sVerName were deleted because the";
+                        $sMessage .= "version was removed from the database";
+                    } else
+                    {
+                        $sSubject = "Comment for $sVerName deleted";
+                        $sMessage  = $oVersion->objectMakeUrl()."\n";
+                        $sMessage .= "\n";
+                        $sMessage .= "This comment was made on ".substr($this->sDateCreated,0,10)."\n";
+                        $sMessage .= "\n";
+                        $sMessage .= "Subject: ".$this->sSubject."\r\n";
+                        $sMessage .= "\n";
+                        $sMessage .= $this->sBody."\r\n";
+                    }
+                break;
+            }
+        } else
+        {
+            switch($sAction)
+            {
+                case "delete":
+                    if(!$bParentAction)
+                    {
+                        $sSubject = "Comment for $sVerName deleted";
+                        $sMessage  = $oVersion->objectMakeUrl()."\n";
+                        $sMessage .= "\n";
+                        $sMessage .= "This comment was made on ".substr($this->sDateCreated,0,10)." by ".$this->oOwner->sRealname."\n";
+                        $sMessage .= "\n";
+                        $sMessage .= "Subject: ".$this->sSubject."\r\n";
+                        $sMessage .= "\n";
+                        $sMessage .= $this->sBody."\r\n";
+                    }
+                    break;
+            }
+            $aRecipients = User::get_notify_email_address_list($this->iAppId, $this->iVersionId);
+        }
+        return array($sSubject, $sMessage, $aRecipients);
     }
 
     function objectGetChildren()

@@ -10,6 +10,7 @@ class ObjectManager
     var $sTitle;
     var $iId;
     var $bIsRejected;
+    var $sReturnTo;
     var $oMultiPage;
     var $oTableRow;
 
@@ -335,20 +336,228 @@ class ObjectManager
                              "ObjectDisplayQueueProcessingHelp"));
     }
 
-    /* Delete the object associated with the given id */
-    function delete_entry()
+    /* Ask whether the user really wants to delete the entry and display a delete reason box */
+    function delete_prompt()
     {
         $this->checkMethods(array("delete", "canEdit"));
 
         $oObject = new $this->sClass($this->iId);
 
+        /* Check permissions */
+        if(!$oObject->canEdit())
+        {
+            echo "<font color=\"red\">You do not have permission to delete this entry.</font>\n";
+            return;
+        }
+
+        /* Check whether the object exists */
+        if(!$oObject->objectGetId())
+        {
+            echo "<font>There is no entry with that id in the database.</font>\n";
+            return;
+        }
+
+        $oTable = new Table();
+        $oTableRow = new TableRow();
+        $oTable->setAlign("center");
+        $oTable->addRow($oTableRow);
+        $oTableRow->addTextCell(
+        '<div style="left: 200px; width: 400px;" align="center" class="default_container">'.
+        '<div style="text-align: left;" class="info_container">'.
+        '<div class="title_class">'.
+        "Confirm deletion".
+        "</div>".
+        '<div class="info_contents">'.
+        "Are you sure you wish to delete this entry?<br />".
+        "Please enter a reason why so that you don&#8217;t hurt the submitter&#8217;s".
+        " feelings.".
+        "</div>".
+        "</div>".
+
+        '<form method="post" action="'.$this->makeUrl().'">'.
+        $this->makeUrlFormData().
+        '<input type="hidden" name="iId" value="'.$this->iId.'" />'.
+        '<textarea rows="15" cols="50" name="sReplyText"></textarea><br /><br />'.
+        '<input type="submit" value="Delete" name="sSubmit" class="button" />'.
+        "</form>".
+        "</div>");
+        echo $oTable->getString();
+    }
+
+    function delete_child($sReplyText, $bMailSubmitter, $bMailCommon)
+    {
+        $this->checkMethods(array("delete", "canEdit"));
+
+        $oObject = new $this->sClass($this->iId);
+        $oSubmitterMail = null;
+        $oCommonMail = null;
+
         if(!$oObject->canEdit())
             return FALSE;
 
+        if($bMailSubmitter)
+            $oSubmitterMail = $this->get_mail(TRUE, "delete", TRUE);
+
+        if($bMailCommon)
+            $oCommonMail = $this->get_mail(FALSE, "delete", TRUE);
+
         if($oObject->delete())
-            util_redirect_and_exit($this->makeUrl("view", false));
-        else
-            echo "Failure.\n";
+        {
+            if($oCommonMail || $oSubmitterMail)
+            {
+                $sReplyText = "The parent entry was deleted. The reason given for ".
+                              "that deletion was:\n$sReplyText";
+
+                if($oCommonMail)
+                        $oCommonMail->send("delete", $sReplyText);
+
+                if($oSubmitterMail)
+                    $oSubmitterMail->send("delete", $sReplyText);
+            }
+
+            return TRUE;
+        } else
+        {
+            return FALSE;
+        }
+    }
+
+    /* Delete the object associated with the given id */
+    function delete_entry($sReplyText)
+    {
+        $this->checkMethods(array("delete", "canEdit"));
+
+        $oObject = new $this->sClass($this->iId);
+
+        if(!$oObject->objectGetId())
+            return FALSE;
+
+        if(!$oObject->canEdit())
+            return FALSE;
+
+        $oSubmitterMail = $this->get_mail(TRUE, "delete");
+        $oCommonMail = $this->get_mail(FALSE, "delete");
+
+        $iFailed = 0;
+        $iDeleted = 0;
+
+        /* Delete children first, if there are any */
+        if(method_exists($oObject, "objectGetChildren"))
+        {
+            $aChildren = $oObject->objectGetChildren();
+
+            if(!is_array($aChildren))
+            {
+                addmsg("Failed to get child entries, aborting", "red");
+                util_redirect_and_exit($this->makeUrl("view", false));
+            }
+
+            /* Keep track of whether we should send mails.  This is used by the
+               'mail once' option */
+            $aSendMailSubmitter = array();
+            $aSendMailCommon = array();
+
+            foreach($aChildren as $oChild)
+            {
+                if(!is_object($oChild))
+                {
+                    addmsg("Failed to get child entries, aborting", "red");
+                    util_redirect_and_exit($this->makeUrl("view", false));
+                }
+
+                $oM = $this->om_from_object($oChild);
+
+                if(!isset($aSendMailSubmitter[$oM->sClass][$oChild->objectGetSubmitterId()]))
+                    $aSendMailSubmitter[$oM->sClass][$oChild->objectGetSubmitterId()] = TRUE;
+
+                if(!isset($aSendMailCommon[$oM->sClass]))
+                    $aSendMailCommon[$oM->sClass] = TRUE;
+
+                if($oM->delete_child($sReplyText, $aSendMailSubmitter[$oM->sClass][$oChild->objectGetSubmitterId()], $aSendMailCommon[$oM->sClass]))
+                {
+                    $iDeleted++;
+
+                    if($oChild->objectGetMailOptions("delete", TRUE, TRUE)->bMailOnce)
+                        $aSendMailSubmitter[$oM->sClass][$oChild->objectGetSubmitterId()] = FALSE;
+
+                    if($oChild->objectGetMailOptions("delete", FALSE, TRUE)->bMailOnce)
+                        $aSendMailCommon[$oM->sClass] = FALSE;
+                } else
+                {
+                    $iFailed++;
+                }
+            }
+        }
+
+        if($oObject->delete())
+        {
+            $oCommonMail->send("delete", $sReplyText);
+
+            if($oSubmitterMail)
+                $oSubmitterMail->send("delete", $sReplyText);
+
+            addmsg("Entry deleted", "green");
+
+            if($iDeleted)
+                addmsg("Deleted $iDeleted child entries", "green");
+
+            if($iFailed)
+                addmsg("Failed to delete $iFailed child entries", "red");
+
+            $this->return_to_url($this->makeUrl("view", false));
+        } else
+        {
+            addmsg("Failed to delete entry", "red");
+        }
+    }
+
+    /* Return the user to the url specified in the objectManager object.  Fall back to a
+       given value if the object member is not set */
+    function return_to_url($sFallback)
+    {
+        $sUrl = $this->sReturnTo;
+
+        if(!$sUrl)
+            $sUrl = $sFallback;
+
+        util_redirect_and_exit($sUrl);
+    }
+
+    function om_from_object($oObject)
+    {
+        return new objectManager(get_class($oObject), "", $oObject->objectGetId());
+    }
+
+    /* Creates a mail object using information from objectGetMail().  If bMailSubmitter
+       is true then we first check to see whether the submitter is the one deleting the
+       entry, in which case we don't send him a notification mail.
+       Thus it returns null if no mail is to be sent, or a Mail object otherwise.
+       bParentAction states whether the action was caused by a change to the parent
+       entry, for instance this will be true when deleting a version because we
+       delete its parent application. */
+    function get_mail($bMailSubmitter, $sAction, $bParentAction = FALSE)
+    {
+        $oObject = new $this->sClass($this->iId);
+
+        if($bMailSubmitter)
+        {
+            $iSubmitterId = $oObject->objectGetSubmitterId();
+
+            /* Should we mail the submitter? */
+            if($iSubmitterId && $iSubmitterId != $_SESSION['current']->iUserId)
+            {
+                return new mail($oObject->objectGetMail($sAction, $bMailSubmitter,
+                                                        $bParentAction),
+                                $iSubmitterId);
+            } else
+            {
+                return null;
+            }
+        } else
+        {
+            return new mail($oObject->objectGetMail("delete", $bMailSubmitter,
+                                                    $bParentAction));
+        }
     }
 
     /* Move all the object's children to another object of the same type, and
@@ -377,7 +586,8 @@ class ObjectManager
             return FALSE;
         }
 
-        $this->delete_entry();
+        /* The argument is the reply text */
+        $this->delete_entry("Duplicate entry");
     }
 
     /* Display a page where the user can select which object the children of the current
@@ -542,7 +752,8 @@ class ObjectManager
         $oObject->getOutputEditorValues($aClean);
 
         /* Check input, if necessary */
-        if(method_exists(new $this->sClass, "checkOutputEditorInput"))
+        if($aClean['sSubmit'] != "Delete" &&
+                method_exists(new $this->sClass, "checkOutputEditorInput"))
         {
             $sErrors = $oObject->checkOutputEditorInput($aClean);
         }
@@ -589,7 +800,7 @@ class ObjectManager
                 break;
 
             case "Delete":
-                $this->delete_entry();
+                $this->delete_entry($aClean['sReplyText']);
                 break;
 
             default:
@@ -655,6 +866,7 @@ class ObjectManager
         $sReturn .= "<input type=\"hidden\" name=\"bIsRejected\" value=\"$sIsRejected\" />\n";
         $sReturn .= "<input type=\"hidden\" name=\"sClass\" value=\"".$this->sClass."\" />\n";
         $sReturn .= "<input type=\"hidden\" name=\"sTitle\" value=\"".$this->sTitle."\" />\n";
+        $sReturn .= "<input type=\"hidden\" name=\"sReturnTo\" value=\"".$this->sReturnTo."\" />\n";
 
         if($this->oMultiPage->bEnabled)
         {
@@ -836,6 +1048,69 @@ class MultiPage
 
         $this->iItemsPerPage = $aClean['iItemsPerPage'];
         $this->iPage = $aClean['iPage'];
+    }
+}
+
+class mailOptions
+{
+    var $bMailOnce;
+
+    function mailOptions()
+    {
+        /* Set default options */
+        $this->bMailOnce = FALSE;
+    }
+}
+
+class mail
+{
+    var $sSubject;
+    var $sMessage;
+    var $aRecipients;
+
+    function mail($aInput, $iRecipientId = null)
+    {
+        if(!$aInput)
+            return;
+
+        /* $aInput is returned from objectGetMail(); an array with the following members
+           0: Mail subject
+           1: Mail text
+           2: Array of recipients
+           If iRecipientId is set the third array member is ignored. */
+        $this->sSubject = $aInput[0];
+        $this->sMessage = $aInput[1];
+
+        if($iRecipientId)
+        {
+            $oRecipient = new user($iRecipientId);
+            $this->aRecipients = array($oRecipient->sEmail);
+        } else
+        {
+            $this->aRecipients = $aInput[2];
+        }
+    }
+
+    function send($sAction, $sReplyText)
+    {
+        /* We don't send empty mails */
+        if(!$this->sSubject && !$this->sMessage)
+            return;
+
+        $this->sMessage .= "\n";
+
+        $this->sMessage .= "The action was performed by ".$_SESSION['current']->sRealname."\n";
+
+        switch($sAction)
+        {
+            case "delete":
+                $this->sMessage .= "Reasons given\n";
+            break;
+        }
+
+        $this->sMessage .= $sReplyText;
+
+        mail_appdb($this->aRecipients, $this->sSubject, $this->sMessage);
     }
 }
 

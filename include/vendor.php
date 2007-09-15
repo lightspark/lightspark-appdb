@@ -149,19 +149,18 @@ class Vendor {
     /**
      * Deletes the vendor from the database. 
      */
-    function delete($bSilent=false)
+    function delete()
     {
         if(sizeof($this->aApplicationsIds)>0)
         {
-            addmsg("The vendor has not been deleted because there are still applications linked to it.", "red");
-        } else 
+            return FALSE;
+        } else
         {
             $sQuery = "DELETE FROM vendor 
                        WHERE vendorId = '?' 
                        LIMIT 1";
             if(query_parameters($sQuery, $this->iVendorId))
             {
-                addmsg("The vendor has been deleted.", "green");
                 return TRUE;
             }
 
@@ -290,6 +289,29 @@ class Vendor {
             return FALSE;
         else
             return TRUE;
+    }
+
+    function objectGetMailOptions($sAction, $bMailSubmitter, $bParentAction)
+    {
+        return new mailOptions();
+    }
+
+    function objectGetChildren()
+    {
+        /* We don't have any */
+        return array();
+    }
+
+    function objectGetMail($sAction, $bMailSubmitter, $bParentAction)
+    {
+        /* We don't send notification mails */
+        return array(null, null, null);
+    }
+
+    function objectGetSubmitterId()
+    {
+        /* We don't record the submitter id */
+        return NULL;
     }
 
     function getOutputEditorValues($aClean)

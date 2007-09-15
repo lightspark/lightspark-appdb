@@ -100,16 +100,75 @@ class Monitor {
         }
     }
 
+    function objectGetSubmitterId()
+    {
+        return $this->iUserId;
+    }
+
+    function objectGetMailOptions($sAction, $bMailSubmitter, $bParentAction)
+    {
+        return new mailOptions();
+    }
+
+    function objectGetMail($sAction, $bMailSubmitter, $bParentAction)
+    {
+        $sSubject = null;
+        $sMsg = null;
+
+        if($this->iVersionId)
+        {
+            $sWhat = "version";
+            $sName = version::fullName($this->iVersionId);
+            $oVersion = new version($this->iVersionId);
+            $sUrl = $oVersion->objectMakeUrl();
+        } else
+        {
+            $sWhat = "application";
+            $oApp = new application($this->iAppId);
+            $sName = $oApp->sName;
+            $sUrl = $oApp->objectMakeUrl();
+        }
+
+        if($bMailSubmitter)
+        {
+            switch($sAction)
+            {
+                case "delete":
+                    if($bParentActino)
+                    {
+                        $sSubject = "Monitored $sWhat deleted";
+                        $sMsg = "The $sWhat $sName which you monitored has been ".
+                                "deleted by ".$_SESSION['current']->iUserId.".";
+                    }
+                break;
+            }
+            $aMailTo = null;
+        } else
+        {
+            $oUser = new user($this->iUserId);
+            $sUser = $oUser->sName;
+            switch($sAction)
+            {
+                case "delete":
+                    if(!$bParentAction)
+                    {
+                        $sSubject = "Monitor for $sName removed: $sUser";
+                        $sMsg = $sUrl;
+                    }
+                break;
+            }
+            User::get_notify_email_address_list(null, $this->iVersionId);
+        }
+        return array($sSubject, $sMsg, $aMailTo);
+    }
 
    /**
      * Removes the current Monitor from the database.
      * Informs interested people about the deletion.
      */
-    function delete($bSilent=false)
+    function delete()
     {
         $hResult = query_parameters("DELETE FROM appMonitors WHERE monitorId = '?'", $this->iMonitorId);
-        if(!$bSilent)
-            $this->SendNotificationMail("delete");
 
         if(!$hResult)
             return FALSE;

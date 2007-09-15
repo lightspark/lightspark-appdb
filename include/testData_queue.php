@@ -177,6 +177,26 @@ class testData_queue
     {
         return $this->oTestData->objectGetId();
     }
+
+    function objectGetSubmitterId()
+    {
+        return $this->oTestData->objectGetSubmitterId();
+    }
+
+    function objectGetChildren()
+    {
+        return $this->oTestData->objectGetChildren();
+    }
+
+    function objectGetMailOptions($sAction, $bMailSubmitter, $bParentAction)
+    {
+        return $this->oTestData->objectGetMailOptions($sAction, $bMailSubmitter, $bParentAction);
+    }
+
+    function objectGetMail($sAction, $bMailSubmitter, $bParentAction)
+    {
+        return $this->oTestData->objectGetMail($sAction, $bMailSubmitter, $bParentAction);
+    }
 }
 
 ?>

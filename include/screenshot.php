@@ -132,7 +132,7 @@ class screenshot
      *
      * Returns: true if deletion was success, false if otherwise
      */
-    function delete($bSilent=false)
+    function delete()
     {
         /* appData has a universal function for removing database entries */
         $oAppData = new appData($this->iScreenshotId, null, $this);
@@ -150,13 +150,6 @@ class screenshot
             $sOriginalFilename = appdb_fullpath("/data/screenshots/originals/".$this->iScreenshotId);
             if(is_file($sOriginalFilename))
               unlink($sOriginalFilename);
-
-            if(!$bSilent)
-                $this->mailMaintainers(true);
-        }
-        if($this->iSubmitterId && ($this->iSubmitterId != $_SESSION['current']->iUserId))
-        {
-            $this->mailSubmitter(true);
         }
 
         return true;
@@ -321,6 +314,64 @@ class screenshot
         return $this->oThumbnailImage->get_height();
     }
 
+    function objectGetSubmitterId()
+    {
+        return $this->iSubmitterId;
+    }
+
+    function objectGetMailOptions($sAction, $bMailSubmitter, $bParentAction)
+    {
+        $oOptions = new mailOptions();
+
+        if($sAction == "delete" && $bParentAction)
+            $oOptions->bMailOnce = TRUE;
+
+        return $oOptions;
+    }
+
+    function objectGetMail($sAction, $bMailSubmitter, $bParentAction)
+    {
+        $sFor = version::fullName($this->iVersionId);
+
+        $sMsg = null;
+        $sSubject = null;
+
+        if($bMailSubmitter)
+        {
+            switch($sAction)
+            {
+                case "delete":
+                    if($bParentAction)
+                    {
+                        $sSubject = "Submitter screenshots deleted";
+                        $sMsg = "The screenshots you submitted for $sFor have been ".
+                                "deleted because $sFor was deleted.";
+                    } else
+                    {
+                        $sSubject = "Submitted screenshot deleted";
+                        $sMsg = "The screenshot with description '".$this->sDescription.
+                                "' that you submitted for $sFor has been deleted.";
+                    }
+                break;
+            }
+            $aMailTo = null;
+        } else
+        {
+            switch($sAction)
+            {
+                case "delete":
+                    if(!$bParentAction)
+                    {
+                        $sSubject = "Screenshot for $sFor deleted";
+                        $sMsg = "The screenshot with description '".$this->sDescription.
+                                "' for $sFor has been deleted.";
+                    }
+                break;
+            }
+            $aMailTo = User::get_notify_email_address_list(null, $this->iVersionId);
+        }
+        return array($sSubject, $sMsg, $aMailTo);
+    }
 
     function mailSubmitter($bRejected=false)
     {

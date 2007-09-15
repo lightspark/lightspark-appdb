@@ -126,13 +126,14 @@ class Note {
      *
      * Returns: true if successful, false if not
      */
-    function delete($bSilent=false)
+    function delete()
     {
         $hResult = query_parameters("DELETE FROM appNotes WHERE noteId = '?'", $this->iNoteId);
-        if(!$bSilent)
-            $this->SendNotificationMail("delete");
 
-        return true;
+        if(!$hResult)
+            return FALSE;
+
+        return TRUE;
     }
 
 
@@ -309,6 +310,22 @@ class Note {
     {
         $oManager = new objectManager("note", "View Note");
         return $oManager->makeUrl("view", $this->objectGetId());
+    }
+
+    function objectGetSubmitterId()
+    {
+        return $this->iSubmitterId;
+    }
+
+    function objectGetMailOptions($sAction, $bMailSubmitter, $bParentAction)
+    {
+        return new mailOptions();
+    }
+
+    function objectGetMail($sAction, $bMailSubmitter, $bParentAction)
+    {
+        /* We don't do this at the moment */
+                return array(null, null, null);
     }
 
     function objectGetChildren()

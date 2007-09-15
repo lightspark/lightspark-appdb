@@ -236,7 +236,7 @@ class Application {
      * Deletes the application from the database. 
      * and request the deletion of linked elements.
      */
-    function delete($bSilent=false)
+    function delete()
     {
         $bSuccess = true;
 
@@ -256,14 +256,6 @@ class Application {
                    LIMIT 1";
         if(!($hResult = query_parameters($sQuery, $this->iAppId)))
             $bSuccess = false;
-
-        if(!$bSilent)
-        {
-            $this->SendNotificationMail("delete");
-
-            if(!$bSuccess)
-                addmsg("Error deleting application", "red");
-        }
 
         return $bSuccess;
     }
@@ -342,6 +334,43 @@ class Application {
         }
     }
 
+    function objectGetSubmitterId()
+    {
+        return $this->iSubmitterId;
+    }
+
+    function objectGetMailOptions($sAction, $bMailSubmitter, $bParentAction)
+    {
+        return new mailOptions();
+    }
+
+    function objectGetMail($sAction, $bMailSubmitter, $bParentAction)
+    {
+        if($bMailSubmitter)
+        {
+            switch($sAction)
+            {
+                case "delete":
+                    $sSubject = "Submitted application deleted";
+                    $sMsg  = "The application you submitted (".$this->sName.
+                             ") has been deleted.";
+                break;
+            }
+            $aMailTo = null;
+        } else
+        {
+            switch($sAction)
+            {
+                case "delete":
+                    $sSubject = $this->sName." deleted";
+                    $sMsg = "The application '".$this->sName."' has been deleted.";
+                break;
+            }
+            $aMailTo = User::get_notify_email_address_list($this->iAppId);
+        }
+        return array($sSubject, $sMsg, $aMailTo);
+    }
+
     function mailSubmitter($sAction="add")
     {
         global $aClean;
@@ -366,11 +395,6 @@ class Application {
                 $sMsg .= APPDB_ROOT."objectManager.php?sClass=application_queue".
                         "&bIsQueue=true&bIsRejected=true&iId=".$this->iAppId."&sTitle=".
                         "Edit+Application\n";
-                $sMsg .= "Reason given:\n";
-            break;
-            case "delete":
-                $sSubject =  "Submitted application deleted";
-                $sMsg  = "The application you submitted (".$this->sName.") has been deleted by ".$_SESSION['current']->sRealname.".";
                 $sMsg .= "Reason given:\n";
             break;
             }
@@ -454,18 +478,6 @@ class Application {
                 $sSubject =  $this->sName." has been modified by ".$_SESSION['current']->sRealname;
                 $sMsg  .= $this->objectMakeUrl()."\n";
                 addmsg("Application modified.", "green");
-            break;
-            case "delete":
-                $sSubject = $this->sName." has been deleted by ".$_SESSION['current']->sRealname;
-
-                // if sReplyText is set we should report the reason the application was deleted 
-                if($aClean['sReplyText'])
-                {
-                    $sMsg .= "Reason given:\n";
-                    $sMsg .= $aClean['sReplyText']."\n"; // append the reply text, if there is any 
-                }
-
-                addmsg("Application deleted.", "green");
             break;
             case "reject":
                 $sSubject = $this->sName." has been rejected by ".$_SESSION['current']->sRealname;
@@ -698,8 +710,8 @@ class Application {
             }
             if($_SESSION['current']->hasPriv("admin"))
             {
-                $url = BASE."admin/deleteAny.php?sWhat=appFamily&amp;iAppId=".$this->iAppId."&amp;sConfirmed=yes";
-                echo "        <form method=\"post\" name=\"sEdit\" action=\"javascript:deleteURL('Are you sure?', '".$url."')\"><input type=\"submit\" value=\"Delete App\" class=\"button\"></form>";
+                $url = BASE."objectManager.php?sClass=application&bIsQueue=false&sAction=delete&sTitle=Delete%20".$this->sName."&iId=".$this->iAppId;
+                echo "        <form method=\"post\" name=\"sEdit\" action=\"javascript:self.location = '".$url."'\"><input type=\"submit\" value=\"Delete App\" class=\"button\"></form>";
                 echo '        <form method="post" name="sEdit" action="admin/editBundle.php"><input type="hidden" name="iBundleId" value="'.$this->iAppId.'"><input type="submit" value="Edit Bundle" class="button"></form>';
             }
         } else

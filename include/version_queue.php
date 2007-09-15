@@ -97,6 +97,26 @@ class version_queue
         $this->oDownloadUrl->unQueue();
     }
 
+    function objectGetSubmitterId()
+    {
+        return $this->oVersion->objectGetSubmitterId();
+    }
+
+    function objectGetChildren()
+    {
+        return $this->oVersion->objectGetChildren();
+    }
+
+    function objectGetMailOptions($sAction, $bMailSubmitter, $bParentAction)
+    {
+        return $this->oVersion->objectGetMailOptions($sAction, $bMailSubmitter, $bParentAction);
+    }
+
+    function objectGetMail($sAction, $bMailSubmitter, $bParentAction)
+    {
+        return $this->oVersion->objectGetMail($sAction, $bMailSubmitter, $bParentAction);
+    }
+
     function outputEditor()
     {
         global $aClean;

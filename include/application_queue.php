@@ -132,6 +132,26 @@ class application_queue
         return $bSuccess;
     }
 
+    function objectGetChildren()
+    {
+        return $this->oApp->objectGetChildren();
+    }
+
+    function objectGetSubmitterId()
+    {
+        return $this->oApp->objectGetSubmitterId();
+    }
+
+    function objectGetMailOptions($sAction, $bMailSubmitter, $bParentAction)
+    {
+        return $this->oApp->objectGetMailOptions($sAction, $bMailSubmitter, $bParentAction);
+    }
+
+    function objectGetMail($sAction, $bMailSubmitter, $bParentAction)
+    {
+        return $this->oApp->objectGetMail($sAction, $bMailSubmitter, $bParentAction);
+    }
+
     function outputEditor()
     {
         /* We ask the user for the application name first so as to avoid duplicate

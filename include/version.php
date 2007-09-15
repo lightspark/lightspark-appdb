@@ -231,7 +231,7 @@ class version {
      * Deletes the version from the database. 
      * and request the deletion of linked elements.
      */
-    function delete($bSilent=false)
+    function delete()
     {
         /* We need the versionId to continue */
         if(!$this->iVersionId)
@@ -256,18 +256,8 @@ class version {
         if(!$hResult)
             $bSuccess = FALSE;
 
-        $this->mailSubmitter("delete");
-
-        if(!$bSilent)
-        {
-            if(!$bSuccess)
-                addmsg("Error removing version", "red");
-
-            $this->SendNotificationMail("delete");
-        }
         return $bSuccess;
     }
-
 
     /**
      * Move version out of the queue.
@@ -344,6 +334,46 @@ class version {
         }
     }
 
+    function objectGetSubmitterId()
+    {
+        return $this->iSubmitterId;
+    }
+
+    function objectGetMailOptions($sAction, $bMailSubmitter, $bParentAction)
+    {
+        return new mailOptions();
+    }
+
+    function objectGetMail($sAction, $bMailSubmitter, $bParentAction)
+    {
+        $oApp = new application($this->iAppId);
+
+        if($bMailSubmitter)
+        {
+            switch($sAction)
+            {
+                case "delete":
+                    $sSubject = "Submitted version deleted";
+                    $sMsg  = "The version you submitted (".$oApp->sName." ".$this->sName.
+                             ") has been deleted.";
+                break;
+            }
+            $aMailTo = null;
+        } else
+        {
+            switch($sAction)
+            {
+                case "delete":
+                    $sSubject = "Version '".$this->sName."' of '".$oApp->sName."' ".
+                                "deleted";
+                    $sMsg = "";
+                break;
+            }
+            $aMailTo = User::get_notify_email_address_list(null, $this->iVersionId);
+        }
+        return array($sSubject, $sMsg, $aMailTo);
+    }
+
     function mailSubmitter($sAction="add")
     {
         global $aClean; //FIXME: we should pass the sReplyText value in
@@ -371,11 +401,6 @@ class version {
                 $sMsg .= APPDB_ROOT."objectManager.php?sClass=version_queue".
                         "&bIsQueue=true&bIsRejected=true&iId=".$this->iVersionId."&".
                         "sTitle=Edit+Version\n";
-            break;
-            case "delete":
-                $sSubject = "Submitted version deleted";
-                $sMsg  = "The version you submitted (".$oApp->sName." ".$this->sName.") has been deleted by ".$_SESSION['current']->sRealname.".";
-                $sMsg .= "Reason given:\n";
             break;
             }
             $sMsg .= $aClean['sReplyText']."\n";
@@ -428,7 +453,6 @@ class version {
                 addmsg("Version modified.", "green");
             break;
             case "delete":
-                $sSubject = "Version '".$this->sName."' of '".$oApp->sName."' has been deleted by ".$_SESSION['current']->sRealname;
 
                 // if sReplyText is set we should report the reason the application was deleted 
                 if($aClean['sReplyText'])
@@ -851,8 +875,8 @@ class version {
             echo "\t".'<input type="hidden" name="iVersionId" value="'.$this->iVersionId.'" />'."\n";
             echo "\t".'<input type=submit value="Edit Version" class="button" />'."\n";
             echo '</form>'."\n";
-            $url = BASE."admin/deleteAny.php?sWhat=appVersion&amp;iAppId=".$oApp->iAppId."&amp;iVersionId=".$this->iVersionId."&amp;sConfirmed=yes";
-            echo "<form method=\"post\" name=\"sDelete\" action=\"javascript:deleteURL('Are you sure?', '".$url."')\">\n";
+            $url = BASE."objectManager.php?sClass=version&sAction=delete&bQueued=false&sTitle=Delete%20".version::fullName($this->iVersionId)."&iId=".$this->iVersionId;
+            echo "<form method=\"post\" name=\"sDelete\" action=\"javascript:self.location = '".$url."'\">\n";
             echo "\t".'<input type=submit value="Delete Version" class="button" />'."\n";
             echo '</form>'."\n";
             echo '<form method="post" name="message" action="admin/addAppNote.php">'."\n";
@@ -975,7 +999,7 @@ class version {
             $oNote = new Note($oRow->noteId);
             $oNote->display();
         }
-    
+
         // Comments Section
         Comment::view_app_comments($this->iVersionId);
     }

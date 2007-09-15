@@ -98,6 +98,30 @@ class browse_newest_apps
     return array($aItemsPerPage, $iDefaultPerPage);
   }
 
+  function objectGetChildren()
+  {
+      $oApp = new application($this->iAppId);
+      return $oApp->objectGetChildren();
+  }
+
+  function objectGetSubmitterId()
+  {
+    $oApp = new application($this->iAppId);
+    return $oApp->objectGetSubmitterId();
+  }
+
+  function objectGetMailOptions($sAction, $bMailSubmitter, $bParentAction)
+  {
+    $oApp = new application($this->iAppId);
+    return $oApp->objectGetMailOptions($sAction, $bMailSubmitter, $bParentAction);
+  }
+
+  function objectGetMail($sAction, $bMailSubmitter, $bParentAction)
+  {
+    $oApp = new application($this->iAppId);
+    return $oApp->objectGetMail($sAction, $bMailSubmitter, $bParentAction);
+  }
+
   function objectGetId()
   {
     return $this->iAppId;

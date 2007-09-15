@@ -48,6 +48,9 @@ if(isset($aClean['bIsQueue']) && $aClean['bIsQueue'] == 'true')
 else
     $oObject->bIsQueue = false;
 
+if(isset($aClean['sReturnTo']))
+    $oObject->sReturnTo = $aClean['sReturnTo'];
+
 $aClean['bIsRejected'] = isset($aClean['bIsRejected']) ? $aClean['bIsRejected'] : false;
 /* If it is rejected it is defined as queued */
 if($aClean['bIsRejected'] == 'true')
@@ -67,11 +70,6 @@ $oOtherObject = new $oObject->sClass($oObject->iId);
 /* processForm returns TRUE on success, or a user-readable list of errors
    on failure */
 $sErrors = $oObject->processForm($aClean);
-
-if($oObject->iId && $aClean['sAction'] == "delete")
-{
-    $oObject->delete_entry();
-}
 
 if(isset($aClean['sAction']) && $aClean['sAction'] == "add")
     $oObject->handle_anonymous_submission();
@@ -98,6 +96,10 @@ if($oObject->iId)
 
         case "showMoveChildren":
         $oObject->display_move_children();
+        break;
+
+        case "delete":
+        $oObject->delete_prompt();
         break;
 
         default:
