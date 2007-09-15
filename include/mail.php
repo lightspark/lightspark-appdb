@@ -30,6 +30,7 @@ function mail_appdb($sEmailList,$sSubject,$sMsg)
     {
         $sMsg = str_replace("\n", "<br />", $sMsg);
         addmsg("This mail would have been sent<br /><br />".
+               "To: $sEmailList<br />".
                "Subject: $sSubject<br /><br />".
                "Body:<br />$sMsg", "purple");
         return;
@@ -38,9 +39,9 @@ function mail_appdb($sEmailList,$sSubject,$sMsg)
     $bResult = mail(APPDB_SENDER_EMAIL, "[AppDB] ".$sSubject, $sMsg, $sHeaders,
                     "-f".APPDB_SENDER_EMAIL);
     if($bResult)
-        addmsg("Message sent to: ".$sEmailList, "green");
+        addmsg("E-mail sent", "green");
     else 
-        addmsg("Error while sending message to: ".$sEmailList, "red");
+        addmsg("Error while sending e-mail", "red");
     return $bResult;
 }
 ?>
