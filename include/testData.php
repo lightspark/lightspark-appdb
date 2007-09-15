@@ -672,14 +672,29 @@ class testData{
         echo '<tr valign=top><td class="color1"><b>Date tested </b></td>',"\n";
         echo '<td class="color0"><input type=text name="sTestedDate" value="'.$this->sTestedDate.'" size="20"></td></tr>',"\n";
         echo '<tr valign=top><td class="color1"></td><td class="color0"><p/>YYYY-MM-DD HH:MM:SS</td></tr>',"\n";
+
         // Distribution
+        $oDistribution = new distribution($this->iDistributionId);
+        $sDistributionHelp = "";
+        if(!$this->iDistributionId || $oDistribution->sQueued != "false")
+        {
+            if(!$this->iDistributionId)
+            {
+                $sDistributionHelp = "If yours is not on the list, ".
+                                     "please add it using the form below.";
+            } else
+            {
+                $sDistributionHelp = "The user added a new distribution; ";
+                                     "review it in the form below or replace ".
+                                     "it with one from the list.";
+            }
+            $sDistributionHelp ."<br />\n";
+        }
+
         echo '<tr valign=top><td class="color0"><b>Distribution</b></td class="color0">',"\n";
 
-        echo '<td class="color0">If yours is not on the list, please add it using the form '.
-                    'below</td></tr>',"\n";
-        echo '<tr><td class=color0><b></b></td>',"\n";
-
         echo '<td class=color0>',"\n";
+        echo $sDistributionHelp;
         distribution::make_distribution_list("iDistributionId", $this->iDistributionId);
         echo '</td></tr>',"\n";
 
