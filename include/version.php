@@ -1055,7 +1055,7 @@ class version {
     }
 
     // display the versions
-    function display_approved($aVersionsIds)
+    function displayList($aVersionsIds)
     {
         if ($aVersionsIds)
         {
@@ -1098,7 +1098,8 @@ class version {
             foreach($aVersionsIds as $iVersionId)
             {
                 $oVersion = new Version($iVersionId);
-                if ($oVersion->sQueued == 'false')
+                $oApp = new application($oVersion->iAppId);
+                if ($oVersion->sQueued == $oApp->sQueued)
                 {
                     // set row color
                     $bgcolor = ($c % 2 == 0) ? "color0" : "color1";

@@ -752,7 +752,7 @@ class Application {
         echo html_frame_end("For more details and user comments, view the versions of this application.");
 
         // display versions
-        Version::display_approved($this->aVersionsIds);
+        Version::displayList($this->aVersionsIds);
 
         // display bundle
         display_bundle($this->iAppId);
