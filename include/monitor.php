@@ -76,6 +76,7 @@ class Monitor {
     {
         /* Check for duplicate entries */
         $oMonitor = new monitor();
+        $this->iUserId = $_SESSION['current']->iUserId;
         $oMonitor->find($this->iUserId, $this->iVersionId);
         if($oMonitor->iVersionId)
             return FALSE;
@@ -98,6 +99,12 @@ class Monitor {
             addmsg("Error while creating a new Monitor.", "red");
             return false;
         }
+    }
+
+    function update()
+    {
+        /* Stub */
+        return TRUE;
     }
 
     function objectGetSubmitterId()
@@ -235,9 +242,10 @@ class Monitor {
     }
 
     /* Stub */
-    function getOutputEditorValues()
+    function getOutputEditorValues($aClean)
     {
-        return FALSE;
+        $this->iVersionId = $aClean['iVersionId'];
+        $this->iAppId = $aClean['iAppId'];
     }
 
     /* Stub */

@@ -817,7 +817,7 @@ class ObjectManager
         else
             $sRedirectLink = APPDB_ROOT;
 
-        util_redirect_and_exit($sRedirectLink);
+        $this->return_to_url($sRedirectLink);
 
         return TRUE;
     }

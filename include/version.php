@@ -848,9 +848,16 @@ class version {
                     $oMonitor->find($_SESSION['current']->iUserId, $this->iVersionId);
                     if(!$oMonitor->iMonitorId)
                     {
-                        echo '<form method="post" name="sMessage" action='.
-                                $this->objectMakeUrl().'&iAppId='.$oApp->iAppId.'>'."\n";
-                        echo "\t".'<input type=hidden name="sSub" value="StartMonitoring" />'."\n";
+                        echo '<form method="post" name="sMessage" action="'.
+                                 APPDB_ROOT."objectManager.php\">\n";
+                        echo "\t<input type=\"hidden\" name=\"iAppId\" value=\"".
+                                $this->iAppId."\" />\n";
+                        echo "\t<input type=\"hidden\" name=\"iVersionId\" value=\"".
+                                $this->iVersionId."\" />\n";
+                        echo "\t<input type=\"hidden\" name=\"sSubmit\" value=\"Submit\" />\n";
+                        echo "\t<input type=\"hidden\" name=\"sClass\" value=\"monitor\" />\n";
+                        echo "\t<input type=\"hidden\" name=\"sReturnTo\" value=\"".
+                                $this->objectMakeUrl()."\" />\n";
                         echo "\t".'<input type=submit value="Monitor Changes" class="button" />'."\n";
                         echo "</form>\n";
                     }
