@@ -523,9 +523,24 @@ class Application {
         echo $w->make_option_list("iAppCatId", $this->iCatId,"appCategory","catId","catName");
         echo '</td></tr>',"\n";
 
+        $oVendor = new vendor($this->iVendorId);
+        $sVendorHelp = "The developer of the application. ";
+        if(!$this->iAppId || $oVendor->sQueued != "false")
+        {
+            if(!$this->iAppId)
+            {
+                $sVendorHelp .= "If it is not on the list please add it ".
+                                "using the form below.";
+            } else
+            {
+                $sVendorHelp .= "The user added a new one; review ".
+                                "it in the vendor form below or ". 
+                                "replace it with an existing one.";
+            }
+        }
         // vendor name
         echo '<tr valign=top><td class="color0"><b>Vendor</b></td>',"\n";
-        echo '<td>If it is not on the list please add it using the form below</td></tr>',"\n";
+        echo "<td>$sVendorHelp</td></tr>\n";
 
         // alt vendor
         $x = new TableVE("view");
