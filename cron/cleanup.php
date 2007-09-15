@@ -300,17 +300,28 @@ function removeScreenshotsWithMissingFiles()
 
     $aMissingScreenshotIds = getMissingScreenshotArray();
 
-    // build the email to admins about what we are doing
-    $sMsg = "Found ".count($aMissingScreenshotIds)." screenshots with missing files.\r\n";
-    $sMsg.= "Deleting these screenshots.\r\n";
-
-    // add the screenshot ids to the email so we can see which screenshots are
-    // going to be deleted
-    $sMsg.="\r\n";
-    $sMsg.="Screenshot IDs:\r\n";
-    foreach($aMissingScreenshotIds as $iScreenshotId)
+    if(sizeof($aMissingScreenshotIds))
     {
-        $sMsg.=$iScreenshotId."\r\n";
+        $sPlural = (sizeof($aMissingScreenshotIds) == 1) ? "" : "s";
+        // build the email to admins about what we are doing
+        $sMsg = "Found ".count($aMissingScreenshotIds)." screenshot$sPlural with missing files.\r\n";
+
+        if($sPlural)
+            $sMsg.= "Deleting these screenshots.\r\n";
+        else
+            $sMsgm.= "Deleting it.\r\n";
+
+        // add the screenshot ids to the email so we can see which screenshots are
+        // going to be deleted
+        $sMsg.="\r\n";
+        $sMsg.="Screenshot ID$sPlural:\r\n";
+        foreach($aMissingScreenshotIds as $iScreenshotId)
+        {
+            $sMsg.=$iScreenshotId."\r\n";
+        }
+    } else
+    {
+        $sMsg = "No screenshot entries with missing files were found.\r\n";
     }
 
     $sSubject = $sEmailSubject."Missing screenshot cleanup\r\n";
