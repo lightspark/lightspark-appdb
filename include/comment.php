@@ -234,10 +234,9 @@ class Comment {
 
         echo "</td></tr>\n";
 
+        $oComment = new comment($oRow->commentId);
         // delete message button, for admins
-        if ($_SESSION['current']->hasPriv("admin")
-            || $_SESSION['current']->isMaintainer($oRow->versionId) 
-            || $_SESSION['current']->isSuperMaintainer($oRow->appId))
+        if ($oComment->canEdit())
         {
             $oVersion = new version($oRow->versionId);
             echo "<tr>";
@@ -353,7 +352,11 @@ class Comment {
 
     function canEdit()
     {
-        return $_SESSION['current']->hasPriv("admin");
+        if($_SESSION['current']->hasPriv("admin"))
+            return TRUE;
+
+        $oVersion = new version($this->iVersionId);
+        return $oVersion->canEdit();
     }
 
     function objectGetId()
