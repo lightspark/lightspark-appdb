@@ -566,7 +566,7 @@ function view_version_bugs($iVersionId = null, $aBuglinkIds)
                 echo "<td align=center>[<a href='objectManager.php?sClass=bug&iId=".$oBuglink->iLinkId."&sAction=delete&sSubmit=Delete&sReturnTo=".$oVersion->objectMakeUrl()."'>delete</a>]</td>\n";
                 if ($oBuglink->bQueued)
                 {
-                    echo "<td align=center>[<a href='".$oVersion->objectMakeUrl()."&sSub=unqueue&iBuglinkId=".$oBuglink->iLinkId."'>OK</a>]</td>\n";
+                    echo "<td align=center>[<a href='objectManager.php?sClass=bug&iId=".$oBuglink->iLinkId."&sAction=edit&sSubmit=Submit&bIsQueue=true&sReturnTo=".$oVersion->objectMakeUrl()."'>OK</a>]</td>\n";
                 } else
                 {
                     echo "<td align=center>Yes</td>\n";

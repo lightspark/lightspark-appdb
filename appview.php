@@ -69,31 +69,6 @@ function display_bundle($iAppId)
     echo html_frame_end();
 }
 
-// if both iAppId and iVersionId are empty we have a problem
-if(empty($aClean['iAppId']) && empty($aClean['iVersionId']))
-    util_show_error_page_and_exit("Something went wrong with the application or version id");
-
-if (isset($aClean['sSub']))
-{
-    // create the version object if iVersionId is set
-    // we use this version object in many of the below cases
-    if(isset($aClean['iVersionId']))
-      $oVersion = new Version($aClean['iVersionId']);
-
-    if(($aClean['sSub'] == 'unqueue' ) && ($aClean['iBuglinkId']))
-    {
-        if(($_SESSION['current']->hasPriv("admin") ||
-            $_SESSION['current']->isMaintainer($oVersion->iVersionId) ||
-            $_SESSION['current']->isSuperMaintainer($oVersion->iAppId)))
-        {
-            $oBuglink = new Bug($aClean['iBuglinkId']);
-            $oBuglink->unqueue();
-            util_redirect_and_exit($oVersion->objectMakeUrl());
-        }
- 
-    }
-}
-
 /**
  * We want to see an application family (=no version).
  */
