@@ -80,18 +80,6 @@ if (isset($aClean['sSub']))
     if(isset($aClean['iVersionId']))
       $oVersion = new Version($aClean['iVersionId']);
 
-    if(($aClean['sSub'] == 'delete' ) && ($aClean['iBuglinkId']))
-    {
-        if(($_SESSION['current']->hasPriv("admin") ||
-            $_SESSION['current']->isMaintainer($oVersion->iVersionId) ||
-            $_SESSION['current']->isSuperMaintainer($oVersion->iAppId)))
-        {
-            $oBuglink = new Bug($aClean['iBuglinkId']);
-            $oBuglink->delete();
-            util_redirect_and_exit($oVersion->objectMakeUrl());
-        }
- 
-    }
     if(($aClean['sSub'] == 'unqueue' ) && ($aClean['iBuglinkId']))
     {
         if(($_SESSION['current']->hasPriv("admin") ||
