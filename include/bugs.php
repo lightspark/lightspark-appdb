@@ -487,7 +487,8 @@ class Bug
     function outputEditor()
     {
         $this->display();
-        echo '<input type="hidden" name="iBugLinkId" value="'.$this->iLinkId.'" >';
+        echo '<input type="hidden" name="iBuglinkId" value="'.$this->iBug_id.'" />';
+        echo '<input type="hidden" name="iVersionId" value="'.$this->iVersionId.'" />';
     }
 
     function getOutputEditorValues($aClean)
