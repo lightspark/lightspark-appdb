@@ -80,7 +80,9 @@ if( isset($aClean['iAppId']) )
 {
     $oVersion = new Version($aClean['iVersionId']);
     $iTestingId = isset($aClean['iTestingId']) ? $aClean['iTestingId'] : null;
-    $oVersion->display($iTestingId);
+    // header
+    apidb_header("Viewing App: ".version::fullName($oVersion->iVersionId));
+    $oVersion->display($aClean);
 } else
 {
     // Oops! Called with no params, bad llamah!

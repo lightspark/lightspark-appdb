@@ -12,6 +12,7 @@ require_once(BASE."include/util.php");
 require_once(BASE."include/testData.php");
 require_once(BASE."include/downloadurl.php");
 require_once(BASE."include/monitor.php");
+require_once(BASE."include/vote.php");
 
 define("LICENSE_OPENSOURCE", "Open Source");
 define("LICENSE_FREEWARE", "Freeware");
@@ -718,11 +719,27 @@ class version {
             $this->iObsoleteBy = 0;
     }
 
-    function display($iTestingId)
+    function objectGetCustomVars($aClean, $sAction)
+    {
+        switch($sAction)
+        {
+            case "display":
+                /* Allow the user to select which test report is
+                   shown in the version view */
+                return array("iTestingId");
+
+            default:
+                return null;
+        }
+    }
+
+    function display($aVars)
     {
         /* is this user supposed to view this version? */
         if(!$_SESSION['current']->canViewVersion($this))
             util_show_error_page_and_exit("Something went wrong with the application or version id");
+
+        $iTestingId = $aVars['iTestingId'];
 
         $oApp = new Application($this->iAppId);
 
@@ -737,10 +754,6 @@ class version {
         // show Vote Menu
         if($_SESSION['current']->isLoggedIn())
             apidb_sidebar_add("vote_menu");
-
-
-        // header
-        apidb_header("Viewing App- ".$oApp->sName." Version - ".$this->sName);
 
         // cat
         $oCategory = new Category($oApp->iCatId);

@@ -103,7 +103,7 @@ if($oObject->iId)
         break;
 
         default:
-        $oObject->view($_SERVER['REQUEST_URI']);
+        $oObject->view($_SERVER['REQUEST_URI'], $aClean);
         break;
     }
 } else if (isset($aClean['sAction']) && $aClean['sAction'] == "add")

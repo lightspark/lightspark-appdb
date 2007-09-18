@@ -699,14 +699,42 @@ class ObjectManager
         }
     }
 
+    /* Gets the custom variables, if any, from a class depending on
+       the action which is being taken, such as viewing an entry,
+       editing one etc.
+       Returns null if there are no custom vars, or a labelled array
+       with the variable contents otherwise */
+    function get_custom_vars($aClean, $sAction)
+    {
+        $oObject = new $this->sClass($this->iId);
+
+        if(!method_exists($oObject, "objectGetCustomVars"))
+            return null; /* No vars */
+
+        $aVars = array();
+
+        foreach($oObject->objectGetCustomVars($aClean, $sAction) as $sVar)
+            $aVars[$sVar] = $aClean[$sVar];
+
+        if(!sizeof($aVars))
+           return null; /* No vars */
+        else
+            return $aVars;
+    }
+
     /* View an entry */
-    function view($sBackLink)
+    function view($sBackLink, $aClean)
     {
         $this->checkMethods(array("display"));
 
         $oObject = new $this->sClass($this->iId);
 
-        $oObject->display();
+        $aVars = $this->get_custom_vars($aClean, "display");
+
+        if(!$aVars)
+            $oObject->display();
+        else
+            $oObject->display($aVars);
 
         // display the move children entry
         $this->displayMoveChildren($oObject);
