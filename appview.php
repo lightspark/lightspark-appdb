@@ -79,7 +79,7 @@ if( isset($aClean['iAppId']) )
 } else if( isset($aClean['iVersionId']) ) // We want to see a particular version.
 {
     $oVersion = new Version($aClean['iVersionId']);
-    $iTestingId = isset($aClean['iTestingId']) ? $aClean['iTestingId'] : null;
+
     // header
     apidb_header("Viewing App: ".version::fullName($oVersion->iVersionId));
     $oVersion->display($aClean);

@@ -719,6 +719,18 @@ class version {
             $this->iObsoleteBy = 0;
     }
 
+    function objectGetCustomTitle($sAction)
+    {
+        switch($sAction)
+        {
+            case "display":
+                return "Viewing App: ".version::fullName($this->iVersionId);
+
+            default:
+                return null;
+        }
+    }
+
     function objectGetCustomVars($aClean, $sAction)
     {
         switch($sAction)
@@ -986,7 +998,7 @@ class version {
         // show the test results table
         if($oTest->iTestingId)
         {
-            $oTest->ShowVersionsTestingTable($_SERVER['PHP_SELF']."?iVersionId=".$this->iVersionId."&iTestingId=",
+            $oTest->ShowVersionsTestingTable($this->objectMakeUrl()."&iTestingId=",
                                              5);
         }
         if($_SESSION['current']->isLoggedIn())
@@ -1278,7 +1290,7 @@ class version {
 
     function objectMakeUrl()
     {
-        return APPDB_ROOT."appview.php?iVersionId=$this->iVersionId";
+        return APPDB_ROOT."objectManager.php?sClass=version&iId=$this->iVersionId";
     }
 
     function objectMakeLink()

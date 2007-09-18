@@ -79,12 +79,21 @@ if(isset($aClean['sAction']) && $aClean['sAction'] == "add")
 if($oObject->iId && $aClean['sAction'] == "moveChildren" && $aClean['iNewId'])
     $oObject->move_children($aClean['iNewId']);
 
-apidb_header($oObject->sTitle);
+$sAction = $aClean['sAction'];
+
+/* If no action is specified, use a default depending on other parameters */
+if(!$sAction)
+{
+    if($oObject->iId)
+        $sAction = "display";
+}
+
+apidb_header($oObject->get_title($sAction));
 
 /* display a particular element */
 if($oObject->iId)
 {
-    switch($aClean['sAction'])
+    switch($sAction)
     {
         case "cancel":
         $oObject->display_table($aClean); /* go back to the queue */
@@ -102,11 +111,11 @@ if($oObject->iId)
         $oObject->delete_prompt();
         break;
 
-        default:
+        case "display":
         $oObject->view($_SERVER['REQUEST_URI'], $aClean);
         break;
     }
-} else if (isset($aClean['sAction']) && $aClean['sAction'] == "add")
+} else if ($sAction == "add")
 {
     $oObject->add_entry($_SERVER['REQUEST_URI'], $sErrors);
 } else

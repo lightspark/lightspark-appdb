@@ -700,6 +700,29 @@ class ObjectManager
         }
     }
 
+    /* Gets the title of the page to be displayed. Classes can set
+       the page title depending on the action, or return null to
+       let objectManager use one, normally the title specified in
+       the URL. Since this only affects the user interface and not
+       functionality, objectGetCustomTitle is not a required method.
+       Why do we need this method?  Think of the versions, for instance.
+       If we were to fetch the name from the URL, that would mean
+       that changes to the version name would not be reflected in
+       static URLs, like external links to the AppDB. */
+    function get_title($sAction)
+    {
+        $oObject = new $this->sClass($this->iId);
+        $sTitle = "";
+
+        if(method_exists($oObject, "objectGetCustomTitle"))
+            $sTitle = $oObject->objectGetCustomTitle($sAction);
+
+        if(!$sTitle)
+            $sTitle = $this->sTitle;
+
+        return $sTitle;
+    }
+
     /* Gets the custom variables, if any, from a class depending on
        the action which is being taken, such as viewing an entry,
        editing one etc.
