@@ -628,15 +628,62 @@ class Application {
         $this->iMaintainerRequest = $aValues['iMaintainerRequest'];
     }
 
+    /**
+     * Displays the SUB apps that belong to this application.
+    */
+    function displayBundle()
+    {
+        $hResult = query_parameters("SELECT appFamily.appId, appName, description FROM appBundle, appFamily ".
+                "WHERE appFamily.queued='false' AND bundleId = '?' AND appBundle.appId = appFamily.appId",
+                $this->iAppId);
+        if(!$hResult || query_num_rows($hResult) == 0)
+        {
+            return; // do nothing
+        }
+
+        echo html_frame_start("","98%","",0);
+        echo "<table width=\"100%\" border=\"0\" cellpadding=\"3\" cellspacing=\"1\">\n\n";
+
+        echo "<tr class=\"color4\">\n";
+        echo "    <td>Application Name</td>\n";
+        echo "    <td>Description</td>\n";
+        echo "</tr>\n\n";
+
+        for($c = 0; $ob = query_fetch_object($hResult); $c++)
+        {
+            $oApp = new application($ob->appId);
+        //set row color
+                $bgcolor = ($c % 2 == 0) ? "color0" : "color1";
+
+        //display row
+                echo "<tr class=\"$bgcolor\">\n";
+        echo "    <td>".$oApp->objectMakeLink()."</td>\n";
+        echo "    <td>".util_trim_description($oApp->sDescription)."</td>\n";
+        echo "</tr>\n\n";
+        }
+
+        echo "</table>\n\n";
+        echo html_frame_end();
+    }
+
+    function objectGetCustomTitle($sAction)
+    {
+        switch($sAction)
+        {
+            case "display":
+                return "Viewing App: ".$this->sName;
+
+            default:
+                return null;
+        }
+    }
+
     /* display this application */
     function display()
     {
         /* is this user supposed to view this version? */
         if(!$_SESSION['current']->canViewApplication($this))
             util_show_error_page_and_exit("Something went wrong with the application or version id");
-
-        // header
-        apidb_header("Viewing App - ".$this->sName);
 
         // cat display
         $oCategory = new Category($this->iCatId);
@@ -755,7 +802,7 @@ class Application {
         Version::displayList($this->aVersionsIds);
 
         // display bundle
-        display_bundle($this->iAppId);
+        $this->displayBundle();
     }
 
     function lookup_name($appId)
@@ -816,7 +863,7 @@ class Application {
 
     function objectMakeUrl()
     {
-        $sUrl = APPDB_ROOT."appview.php?iAppId=$this->iAppId";
+        $sUrl = APPDB_ROOT."objectManager.php?sClass=application&iId=$this->iAppId";
         return $sUrl;
     }
 
