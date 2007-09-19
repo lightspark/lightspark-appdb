@@ -5,17 +5,14 @@
 // class for managing the highlighting/inactive state of a row
 class TableRowHighlight
 {
-  //TODO: php5, make these private
-  var $oHighlightColor;
-  var $oInactiveColor;
+  private $oHighlightColor;
+  private $oInactiveColor;
 
   // properties to apply to text when highlighted or inactive
-  // TODO: php5, make these private
-  var $sTextDecorationHighlight;
-  var $sTextDecorationInactive;
+  private $sTextDecorationHighlight;
+  private $sTextDecorationInactive;
 
-  //TODO: php5, type hint to color class
-  function TableRowHighlight($oHighlightColor, $oInactiveColor,
+  function TableRowHighlight(color $oHighlightColor, color $oInactiveColor,
                           $sTextDecorationHighlight = "",
                           $sTextDecorationInactive = "")
   {
@@ -24,6 +21,26 @@ class TableRowHighlight
 
     $this->sTextDecorationHighlight = $sTextDecorationHighlight;
     $this->sTextDecorationInactive = $sTextDecorationInactive;
+  }
+
+  function GetHighlightColor()
+  {
+    return $this->oHighlightColor;
+  }
+
+  function GetInactiveColor()
+  {
+    return $this->oInactiveColor;
+  }
+
+  function GetTextDecorationHighlight()
+  {
+    return $this->sTextDecorationHighlight;
+  }
+
+  function GetTextDecorationInactive()
+  {
+    return $this->sTextDecorationInactive;
   }
 }
 
@@ -40,8 +57,7 @@ class TableRowClick
     $this->oTableRowHighlight = null;
   }
 
-  //TODO: php5, type hint to TableRowHighlight class
-  function SetHighlight($oTableRowHighlight)
+  function SetHighlight(TableRowHighlight $oTableRowHighlight)
   {
     $this->oTableRowHighlight = $oTableRowHighlight;
   }
@@ -55,15 +71,15 @@ class TableRowClick
     if($this->oTableRowHighlight)
     {
       $sStr.= 'onmouseover="ChangeTr(this, true,'.
-                                    '\''.$this->oTableRowHighlight->oHighlightColor->GetHexString().'\','.
-                                    '\''.$this->oTableRowHighlight->oInactiveColor->GetHexString().'\','.
-                                    '\''.$this->oTableRowHighlight->sTextDecorationHighlight.'\','.
-                                    '\''.$this->oTableRowHighlight->sTextDecorationInactive.'\');"';
+                                    '\''.$this->oTableRowHighlight->getHighlightColor()->GetHexString().'\','.
+                                    '\''.$this->oTableRowHighlight->getInactiveColor()->GetHexString().'\','.
+                                    '\''.$this->oTableRowHighlight->getTextDecorationHighlight().'\','.
+                                    '\''.$this->oTableRowHighlight->getTextDecorationInactive().'\');"';
       $sStr.= ' onmouseout="ChangeTr(this, false,'.
-                                    '\''.$this->oTableRowHighlight->oHighlightColor->GetHexString().'\','.
-                                    '\''.$this->oTableRowHighlight->oInactiveColor->GetHexString().'\','.
-                                    '\''.$this->oTableRowHighlight->sTextDecorationHighlight.'\','.
-                                    '\''.$this->oTableRowHighlight->sTextDecorationInactive.'\');"';
+                                   '\''.$this->oTableRowHighlight->getHighlightColor()->GetHexString().'\','.
+                                   '\''.$this->oTableRowHighlight->getInactiveColor()->GetHexString().'\','.
+                                   '\''.$this->oTableRowHighlight->getTextDecorationHighlight().'\','.
+                                   '\''.$this->oTableRowHighlight->getTextDecorationInactive().'\');"';
     }
 
     $sStr.= ' onclick="DoNav(\''.$this->shUrl.'\');"';
@@ -74,15 +90,14 @@ class TableRowClick
 
 class TableCell
 {
-  //TODO: make these private when we move to php5
-  var $sCell;
-  var $sStyle;
-  var $sClass;
-  var $sAlign;  // align="$sAlign" will be output if this is not null
-  var $sValign; // valign="$sValign" will be output if this is not null
-  var $sWidth;  // width="$sWidth"
-  var $sUrl;    // wraps the cell contents in an anchor tag if $sUrl is not null
-  var $bBold;   // if true will output the cell contents as bold
+  private $sCell;
+  private $sStyle;
+  private $sClass;
+  private $sAlign;  // align="$sAlign" will be output if this is not null
+  private $sValign; // valign="$sValign" will be output if this is not null
+  private $sWidth;  // width="$sWidth"
+  private $sUrl;    // wraps the cell contents in an anchor tag if $sUrl is not null
+  private $bBold;   // if true will output the cell contents as bold
 
   // NOTE: We specifically have limited the parameters to the constructor
   //       to only the contents of the cell. Additional parameters, while
@@ -134,7 +149,6 @@ class TableCell
     $this->sUrl = $sUrl;
   }
 
-  //php5 make sure this type is boolean
   function SetBold($bBold)
   {
     $this->bBold = $bBold;
@@ -186,13 +200,12 @@ class TableCell
 
 class TableRow
 {
-  //TODO: make these private when we get php5
-    var $aTableCells; // array that contains the cells for the table row
-    var $sStyle; // CSS style to be used
-    var $sClass; // CSS class to be used
-    var $sValign; // valign="$sValign" - if this variable is set
+    private $aTableCells; // array that contains the cells for the table row
+    private $sStyle; // CSS style to be used
+    private $sClass; // CSS class to be used
+    private $sValign; // valign="$sValign" - if this variable is set
 
-    var $oTableRowClick; // information about whether the table row is clickable etc
+    private $oTableRowClick; // information about whether the table row is clickable etc
 
     function TableRow()
     {
@@ -203,8 +216,7 @@ class TableRow
       $this->oTableRowClick = null;
     }
 
-    // TODO: php5 need to add type hinting here to make sure this is a TableCell instance
-    function AddCell($oTableCell)
+    function AddCell(TableCell $oTableCell)
     {
       $this->aTableCells[] = $oTableCell;
     }
@@ -217,7 +229,6 @@ class TableRow
       }
     }
 
-    // TODO: php5 type hint as text
     function AddTextCell($sCellText)
     {
       $this->AddCell(new TableCell($sCellText));
@@ -275,6 +286,16 @@ class TableRow
 
       return $sStr;
     }
+
+    function GetClass()
+    {
+      return $this->sClass;
+    }
+
+    function GetTableRowClick()
+    {
+      return $this->oTableRowClick;
+    }
 }
 
 // object manager table row, has additional parameters used by the object manager
@@ -283,9 +304,9 @@ class TableRow
 //  extension of that class
 class OMTableRow
 {
-  var $oTableRow;
-  var $bHasDeleteLink;
-  var $bCanEdit;
+  private $oTableRow;
+  private $bHasDeleteLink;
+  private $bCanEdit;
 
   function OMTableRow($oTableRow)
   {
@@ -294,14 +315,17 @@ class OMTableRow
     $this->bCanEdit = false;
   }
 
-  // php5 hint that type is bool
-  function SetRowHasDeleteLink($bHasDeleteLink)
+  function SetHasDeleteLink($bHasDeleteLink)
   {
     $this->bHasDeleteLink = $bHasDeleteLink;
   }
 
-  // php5 hint type here
-  function SetRowClickable($oTableRowClick)
+  function GetHasDeleteLink()
+  {
+    return $this->bHasDeleteLink;
+  }
+
+  function SetRowClickable(TableRowClick $oTableRowClick)
   {
     $this->oTableRowClick = $oTableRowClick;
   }
@@ -325,15 +349,14 @@ class OMTableRow
 
 class Table
 {
-  //TODO: make private when we have php5
-  var $oTableRowHeader;
-  var $aTableRows;
-  var $sClass;
-  var $sWidth;
-  var $iBorder;
-  var $sAlign; // align="$sAlign" - deprecated in html standards
-  var $iCellSpacing; // cellspacing="$iCellSpacing"
-  var $iCellPadding; // cellpadding="$iCellPadding"
+  private $oTableRowHeader;
+  private $aTableRows;
+  private $sClass;
+  private $sWidth;
+  private $iBorder;
+  private $sAlign; // align="$sAlign" - deprecated in html standards
+  private $iCellSpacing; // cellspacing="$iCellSpacing"
+  private $iCellPadding; // cellpadding="$iCellPadding"
 
   function Table()
   {
@@ -352,8 +375,7 @@ class Table
     $this->aTableRows[] = $oTableRow;
   }
 
-  // TODO: php5 force type to HtmlTableRow
-  function SetHeader($oTableRowHeader)
+  function SetHeader(TableRow $oTableRowHeader)
   {
     $this->oTableRowHeader = $oTableRowHeader;
   }
@@ -447,9 +469,8 @@ function GetStandardRowHighlight($iRowIndex)
   return $oTableRowHighlight;
 }
 
-// TODO: php5 type hint this to color class
 // returns a color class instance
-function GetHighlightColorFromInactiveColor($oInactiveColor)
+function GetHighlightColorFromInactiveColor(color $oInactiveColor)
 {
   $oHighlightColor = new color($oInactiveColor->iRed,
                                $oInactiveColor->iGreen,

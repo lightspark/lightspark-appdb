@@ -1074,7 +1074,7 @@ class testData{
         $oTableRow->SetClass($this->sTestedRating);
 
         $oOMTableRow = new OMTableRow($oTableRow);
-        $oOMTableRow->SetRowHasDeleteLink(true);
+        $oOMTableRow->SetHasDeleteLink(true);
 
         return $oOMTableRow;
     }

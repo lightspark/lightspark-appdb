@@ -422,7 +422,7 @@ class Bug
 
         // enable the deletion link, the objectManager will check
         // for appropriate permissions before adding the link
-        $oOMTableRow->SetRowHasDeleteLink(true);
+        $oOMTableRow->SetHasDeleteLink(true);
 
         return $oOMTableRow;
     }

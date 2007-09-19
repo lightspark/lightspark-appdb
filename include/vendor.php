@@ -270,7 +270,7 @@ class Vendor {
 
         // create the object manager specific row
         $oOMTableRow = new OMTableRow($oTableRow);
-        $oOMTableRow->SetRowHasDeleteLink($bDeleteLink);
+        $oOMTableRow->SetHasDeleteLink($bDeleteLink);
 
         return $oOMTableRow;
     }

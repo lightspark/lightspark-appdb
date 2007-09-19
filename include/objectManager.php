@@ -157,14 +157,15 @@ class ObjectManager
 
             $sColor = ($iCount % 2) ? "color0" : "color1";
 
-            //TODO: we shouldn't access this method directly, should make an accessor for it
-            if(!$this->oTableRow->oTableRow->sClass)
+            // if there is no class set for a given row use the
+            // default one in $sColor
+            if(!$this->oTableRow->oTableRow->GetClass())
             {
                 $this->oTableRow->oTableRow->SetClass($sColor);
             }
 
             // if this row is clickable, make it highlight appropirately
-            $oTableRowClick = $this->oTableRow->oTableRow->oTableRowClick;
+            $oTableRowClick = $this->oTableRow->oTableRow->GetTableRowClick();
             if($oTableRowClick)
             {
               $oTableRowHighlight = GetStandardRowHighlight($iCount);

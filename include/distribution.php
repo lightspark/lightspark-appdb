@@ -543,7 +543,7 @@ class distribution {
         $bDeleteLink = sizeof($this->aTestingIds) ? FALSE : TRUE;
 
         $oOMTableRow = new OMTableRow($oTableRow);
-        $oOMTableRow->SetRowHasDeleteLink($bDeleteLink);
+        $oOMTableRow->SetHasDeleteLink($bDeleteLink);
         return $oOMTableRow;
     }
 
