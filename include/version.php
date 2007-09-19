@@ -994,7 +994,7 @@ class version {
             echo '<form method=post name=sMessage action=objectManager.php?'.
                     'sClass=testData_queue&sAction=add&iVersionId='.$this->iVersionId.
                     '&sTitle=Add+Test+Data&sReturnTo='.
-                    $this->objectMakeUrl().'>'."\n";
+                    urlencode($this->objectMakeUrl()).'>'."\n";
             echo "\t".'<input type=submit value="Add Test Data" class="button" />'."\n";
             echo '</form>'."\n";
         } else
