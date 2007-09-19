@@ -241,13 +241,7 @@ class ObjectManager
         echo '<form name="sQform" action="'.$this->makeUrl("edit", $this->iId).
                 '" method="post" enctype="multipart/form-data">',"\n";
 
-        echo '<input type="hidden" name="sClass" value="'.$this->sClass.'" />';
-        echo '<input type="hidden" name="sTitle" value="'.$this->sTitle.'" />';
-        echo '<input type="hidden" name="iId" value="'.$this->iId.'" />';
-        echo '<input type="hidden" name="bIsQueue" '.
-             'value='.($this->bIsQueue ? "true" : "false").' />';
-        echo '<input type="hidden" name="bIsRejected" '.
-             'value='.($this->bIsRejected ? "true" : "false").' />';
+        echo $this->makeUrlFormData();
 
         $oObject->outputEditor();
 
@@ -317,6 +311,7 @@ class ObjectManager
             echo '<tr valign=top><td class=color3 align=center colspan=2>',"\n";
             echo '<input name="sSubmit" type="submit" value="Submit" class="button">'.
                  '&nbsp',"\n";
+            echo '<input name="sSubmit" type="submit" value="Delete" class="button" />'."\n";
             echo "</td></tr>\n";
         }
 
@@ -638,7 +633,7 @@ class ObjectManager
     }
 
     /* Display screen for submitting a new entry of given type */
-    function add_entry($sBackLink, $sErrors = "")
+    function add_entry($aClean, $sErrors = "")
     {
         $this->checkMethods(array("outputEditor", "getOutputEditorValues",
                                   "update", "create"));
@@ -661,7 +656,12 @@ class ObjectManager
 
         echo "<form method=\"post\">\n";
 
-        $oObject->outputEditor();
+        $aVars = $this->get_custom_vars($aClean, "add");
+
+        if($aVars)
+            $oObject->outputEditor($aVars);
+        else
+            $oObject->outputEditor();
 
         echo "<input type=\"hidden\" name=\"sClass=\"distribution\" />\n";
         echo "<input type=\"hidden\" name=\"sTitle\" value=\"$this->sTitle\" />\n";

@@ -205,7 +205,9 @@ class Note {
             
             $sColor = 'blue';
         }
-    
+
+        $oVersion = new version($this->iVersionId);
+
         $shOutput = html_frame_start("","98%",'',0);
 
         $shOutput .= "<table width=\"100%\" border=\"0\" cellspacing=\"0\">\n";
@@ -219,7 +221,7 @@ class Note {
             if ($this->canEdit())
             {
                 $shOutput .= "<tr class=\"color1\" align=\"center\" valign=\"top\"><td>";
-                $shOutput .= "<form method=\"post\" name=\"message\" action=\"admin/editAppNote.php?iNoteId={$this->iNoteId}\">";
+                $shOutput .= "<form method=\"post\" name=\"message\" action=\"objectManager.php?sClass=note&sAction=edit&iId=".$this->iNoteId."&sReturnTo=".urlencode($oVersion->objectMakeUrl())."\">";
                 $shOutput .= '<input type="submit" value="Edit Note" class="button">';
                 $shOutput .= '</form></td></tr>';
             }
@@ -231,11 +233,31 @@ class Note {
         echo $shOutput;
     }
 
-
-    function outputEditor()
+    function objectGetCustomVars($sAction)
     {
+        switch($sAction)
+        {
+            case "add":
+                return array("iVersionId","sNoteTitle");
+
+            default:
+                return null;
+        }
+    }
+
+    function outputEditor($aValues = null)
+    {
+        if($aValues)
+        {
+            if(!$this->iVersionId)
+                $this->iVersionId = $aValues['iVersionId'];
+
+            if(!$this->sTitle)
+                $this->sTitle = $aValues['sNoteTitle'];
+        }
+
         HtmlAreaLoaderScript(array("editor"));
-    
+
         echo html_frame_start("Edit Application Note {$aClean['noteId']}", "90%","",0);
         echo html_table_begin("width='100%' border=0 align=left cellpadding=6 cellspacing=0 class='box-body'");
 

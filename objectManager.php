@@ -91,7 +91,7 @@ if(!$sAction)
 apidb_header($oObject->get_title($sAction));
 
 /* display a particular element */
-if($oObject->iId)
+if($oObject->iId && $sAction != "add")
 {
     switch($sAction)
     {
@@ -117,7 +117,7 @@ if($oObject->iId)
     }
 } else if ($sAction == "add")
 {
-    $oObject->add_entry($_SERVER['REQUEST_URI'], $sErrors);
+    $oObject->add_entry($aClean, $sErrors);
 } else
 {
     // if displaying a queue display the help for the given queue

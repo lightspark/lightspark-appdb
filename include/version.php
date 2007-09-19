@@ -901,6 +901,7 @@ class version {
 
         if ($_SESSION['current']->hasPriv("admin") || $_SESSION['current']->isMaintainer($this->iVersionId) || $_SESSION['current']->isSuperMaintainer($this->iAppId))
         {
+            $shAdd = '<form method="post" name="sMessage" action="objectManager.php?sClass=note&sAction=add&iVersionId='.$this->iVersionId.'&sReturnTo='.urlencode($this->objectMakeUrl());
             echo '<tr><td colspan="2" align="center">'."\n";
             echo '<form method="post" name="sMessage" action="admin/editAppVersion.php">'."\n";
             echo "\t".'<input type="hidden" name="iAppId" value="'.$oApp->iAppId.'" />'."\n";
@@ -911,16 +912,13 @@ class version {
             echo "<form method=\"post\" name=\"sDelete\" action=\"javascript:self.location = '".$url."'\">\n";
             echo "\t".'<input type=submit value="Delete Version" class="button" />'."\n";
             echo '</form>'."\n";
-            echo '<form method="post" name="message" action="admin/addAppNote.php">'."\n";
-            echo "\t".'<input type="hidden" name="iVersionId" value="'.$this->iVersionId.'" />'."\n";
+            echo $shAdd.'" />';
             echo "\t".'<input type="submit" value="Add Note" class="button" />'."\n";
             echo '</form>'."\n";
-            echo '<form method=post name=message action=admin/addAppNote.php?iVersionId='.$this->iVersionId.'>'."\n";
-            echo "\t".'<input type=hidden name="sNoteTitle" value="HOWTO" />'."\n";
+            echo $shAdd.'&sNoteTitle=HOWTO" />';
             echo "\t".'<input type=submit value="Add How To" class="button" />'."\n";
             echo '</form>'."\n";
-            echo '<form method=post name=message action=admin/addAppNote.php?iVersionId='.$this->iVersionId.'>'."\n";
-            echo "\t".'<input type=hidden name="sNoteTitle" value="WARNING" />'."\n";
+            echo $shAdd.'&sNoteTitle=WARNING" />';
             echo "\t".'<input type=submit value="Add Warning" class="button" />'."\n";
             echo '</form>';
             echo "</td></tr>";
