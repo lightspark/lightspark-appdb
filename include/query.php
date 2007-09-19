@@ -12,6 +12,8 @@ function query_appdb($sQuery, $sComment="")
     {
         // The last argument makes sure we are really opening a new connection
         $hAppdbLink = mysql_connect(APPS_DBHOST, APPS_DBUSER, APPS_DBPASS, true);
+        if(!$hAppdbLink)
+          die("Database error, please try again soon.");          
         mysql_select_db(APPS_DB, $hAppdbLink);
     }
 
@@ -125,7 +127,7 @@ function query_bugzilladb($sQuery,$sComment="")
     if(!is_resource($hBugzillaLink))
     {
         // The last argument makes sure we are really opening a new connection
-        $hBugzillaLink = mysql_connect(BUGZILLA_DBHOST, BUGZILLA_DBUSER, BUGZILLA_DBPASS,true);
+        $hBugzillaLink = mysql_connect(BUGZILLA_DBHOST, BUGZILLA_DBUSER, BUGZILLA_DBPASS, true);
         if(!$hBugzillaLink) return;
         mysql_select_db(BUGZILLA_DB, $hBugzillaLink);
     }
