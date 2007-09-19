@@ -345,6 +345,11 @@ class OMTableRow
   {
     return $this->oTableRow->GetString();
   }
+
+  function GetTableRow()
+  {
+    return $this->oTableRow;
+  }
 }
 
 class Table

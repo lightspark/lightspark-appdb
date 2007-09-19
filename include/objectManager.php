@@ -159,13 +159,13 @@ class ObjectManager
 
             // if there is no class set for a given row use the
             // default one in $sColor
-            if(!$this->oTableRow->oTableRow->GetClass())
+            if(!$this->oTableRow->GetTableRow()->GetClass())
             {
-                $this->oTableRow->oTableRow->SetClass($sColor);
+                $this->oTableRow->GetTableRow()->SetClass($sColor);
             }
 
             // if this row is clickable, make it highlight appropirately
-            $oTableRowClick = $this->oTableRow->oTableRow->GetTableRowClick();
+            $oTableRowClick = $this->oTableRow->GetTableRow()->GetTableRowClick();
             if($oTableRowClick)
             {
               $oTableRowHighlight = GetStandardRowHighlight($iCount);
@@ -178,7 +178,7 @@ class ObjectManager
             if($oObject->canEdit())
             {
                 $shDeleteLink = "";
-                if($this->oTableRow->bHasDeleteLink)
+                if($this->oTableRow->GetHasDeleteLink())
                 {
                   $shDeleteLink = ' [&nbsp;<a href="'.$this->makeUrl("delete", $oObject->objectGetId()).
                     '">delete</a>&nbsp;]';
