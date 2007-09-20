@@ -864,7 +864,7 @@ class version {
                     echo "</form>\n";
                 } else /* nope */
                 {
-                    echo '<form method="post" name="sMessage" action="maintainersubmit.php">'."\n";
+                    echo '<form method="post" name="sMessage" action="objectManager.php?sClass=maintainer&sAction=add&iVersionId='.$this->iVersionId.'&sTitle='.urlencode("Be a Maintainer for ".version::fullName($this->iVersionId)).'&sReturnTo='.urlencode($this->objectMakeUrl()).'">'."\n";
                     echo "\t".'<input type="submit" value="Be a Maintainer for This Version" class="button" title="Click here to know more about maintainers.">'."\n";
                     echo "\t"."<input type=hidden name=\"iAppId\" value=\"".$oApp->iAppId."\">\n";
                     echo "\t"."<input type=hidden name=\"iVersionId\" value=\"".$this->iVersionId."\">\n";

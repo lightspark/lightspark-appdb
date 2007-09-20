@@ -663,9 +663,6 @@ class ObjectManager
         else
             $oObject->outputEditor();
 
-        echo "<input type=\"hidden\" name=\"sClass=\"distribution\" />\n";
-        echo "<input type=\"hidden\" name=\"sTitle\" value=\"$this->sTitle\" />\n";
-
         echo "<div align=\"center\">";
         echo "<input type=\"submit\" class=\"button\" value=\"Submit\" ". 
         "name=\"sSubmit\" />\n";

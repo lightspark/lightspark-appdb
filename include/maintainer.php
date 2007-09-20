@@ -209,7 +209,7 @@ class maintainer
     function create()
     {
         /* user id, appid, and maintain reason must be valid to continue */
-        if(!$this->iUserId || !$this->iAppId || !$this->sMaintainReason)
+        if(!$this->iAppId || !$this->sMaintainReason)
         {
             return NULL;
         }
@@ -218,7 +218,7 @@ class maintainer
                                     "userId, maintainReason, superMaintainer, submitTime, queued) ".
                                     "VALUES ('?', '?', '?', '?', '?', ?, '?')",
                                     $this->iAppId, $this->iVersionId,
-                                    $this->iUserId, $this->sMaintainReason,
+                                    $_SESSION['current']->iUserId, $this->sMaintainReason,
                                     $this->bSuperMaintainer, "NOW()", $this->mustBeQueued() ? "true" : "false");
 
         /* this objects id is the insert id returned by the database */
@@ -677,6 +677,22 @@ class maintainer
         return $oOMTableRow;
     }
 
+    function objectDisplayAddItemHelp()
+    {
+        echo "<p>This page is for submitting a request to become an application maintainer.\n";
+        echo "An application maintainer is someone who runs the application \n";
+        echo "regularly and who is willing to be active in reporting regressions with newer \n";
+        echo "versions of Wine and to help other users run this application under Wine.</p>";
+        echo "<p>Being an application maintainer comes with new rights and new responsibilities; please be sure to read the <a href=\"".BASE."/help/?sTopic=maintainer_guidelines\">maintainer's guidelines</a> before to proceed.</p> ";
+        echo "<p>We ask that all maintainers explain why they want to be an application maintainer,\n";
+        echo "why they think they will do a good job and a little about their experience\n";
+        echo "with Wine.  This is both to give you time to\n";
+        echo "think about whether you really want to be an application maintainer and also for the\n";
+        echo "appdb admins to identify people that are best suited for the job.  Your request\n";
+        echo "may be denied if there are already a handful of maintainers for this application or if you\n";
+        echo "don't have the experience with Wine that is necessary to help other users out.</p>\n";
+    }
+
     function ObjectDisplayQueueProcessingHelp()
     {
         echo "<div align=center><table width='90%' border=0 cellpadding=3 cellspacing=0><tr><td>\n\n";
@@ -693,111 +709,161 @@ class maintainer
         return FALSE;
     }
 
-    function outputEditor()
+    function objectGetCustomVars($sAction)
     {
-        //view application details
-        echo html_frame_start("New Maintainer Form",600,"",0);
-        echo "<table width='100%' border=0 cellpadding=2 cellspacing=0>\n";
-        echo "<input type=\"hidden\" name=\"iMaintainerId\" ".
-             "value=\"$this->iMaintainerId\" />";
-
-        /* User name */
-        $oSubmitter = new user($this->iUserId);
-        echo html_tr(array(
-                array("<b>User name</b>", 'style="text-align:right" class="color0"'),
-                $oSubmitter->objectMakeLink()
-                          ));
-
-        /**
-          * Show the other maintainers of this application, if there are any
-          */
-        echo '<tr valign=top><td class=color0 style=\'text-align:right\'><b>Other maintainers of this app:</b></td>',"\n";
-
-        /* Fetch maintainers and super maintainers */
-        $oVersion = new Version($this->iVersionId);
-        $aOtherMaintainers = $oVersion->getMaintainersUserIds();
-        $aOtherSuperMaintainers =
-               Maintainer::getSuperMaintainersUserIdsFromAppId($this->iAppId);
-
-        if($aOtherMaintainers || $aOtherSuperMaintainers)
-            $bFoundMaintainers = true;
-        else
-            $bFoundMaintainers = false;
-
-        echo "<td>\n";
-        /* display maintainers for the version */
-        if($aOtherMaintainers)
+        switch($sAction)
         {
-            while(list($index, $iUserId) = each($aOtherMaintainers))
-            {
-                $oUser = new User($iUserId);
+            case "add":
+                return array("iAppId","iVersionId");
 
-                // because Version::getMaintainersUserIds() includes super maintainers
-                // we need to exclude these from the list of maintainers that we are
-                // building
-                if(!maintainer::isUserSuperMaintainer($oUser, $oVersion->iAppId))
-                    echo "$oUser->sRealname<br />\n";
-            }
+            default:
+                return null;
         }
+    }
 
-        /* display super maintainers for the given app */
-
-        if($aOtherSuperMaintainers)
+    function outputEditor($aClean = null)
+    {
+        if(!$this->iMaintainerId)
         {
-            while(list($index, $iUserId) = each($aOtherSuperMaintainers))
+            if($aClean['iVersionId'])
             {
-                $oUser = new User($iUserId);
-                echo "$oUser->sRealname*<br />\n";
-            }
-        }
-
-        if(!$bFoundMaintainers)
-        {
-            echo "No other maintainers";
-        }
-
-        echo "</td></tr>\n";
-
-        // Show which other apps the user maintains
-        echo '<tr valign="top"><td class="color0" style=\'text-align:right\'><b>This user also maintains these apps:</b></td><td>',"\n";
-
-        $oUser = new User($this->iUserId);
-        $aOtherApps = Maintainer::getAppsMaintained($oUser);
-        if($aOtherApps)
-        {
-            while(list($index, list($iAppIdOther, $iVersionIdOther, $bSuperMaintainerOther)) = each($aOtherApps))
+                $oVersion = new version($aClean['iVersionId']);
+                $iAppId = $oVersion->iAppId;
+            } else
             {
-                $oApp = new Application($iAppIdOther);
-
-                if($bSuperMaintainerOther)
-                    echo $oApp->objectMakeLink()."*<br />\n";
-                else
-                    echo $oVersion->fullNameLink($iVersionIdOther)."<br />\n";
+                $iAppId = $aClean['iAppId'];
             }
+
+            $oApp = new application($iAppId);
+
+            echo "<table width='100%' border=0 cellpadding=2 cellspacing=0>\n";
+            echo "<tr valign=top><td class=color0>";
+            echo '<b>Application</b></td><td>'.$oApp->sName;
+            echo '</td></tr>',"\n";
+            if($aClean['iVersionId'])
+            {
+                echo "<tr valign=top><td class=color0>";
+                echo '<b>Version</b></td><td>'.$oVersion->sName;
+                echo '</td></tr>',"\n";
+            }
+
+            $iSuperMaintainer = $aClean['iVersionId'] ? 0 : 1;
+            echo "<input type=hidden name='iAppId' value={$aClean['iAppId']}>";
+            echo "<input type=hidden name='iVersionId' value={$aClean['iVersionId']}>";
+            echo "<input type=hidden name='iSuperMaintainer' value=$iSuperMaintainer>";
+
+            if($aClean['iSuperMaintainer'])
+                echo '<tr valign=top><td class=color0><b>Why you want to and should<br />be an application super maintainer</b></td><td><textarea name="sMaintainReason" rows=15 cols=70></textarea></td></tr>',"\n";
+            else
+                echo '<tr valign=top><td class=color0><b>Why you want to and should<br />be an application maintainer</b></td><td><textarea name="sMaintainReason" rows=15 cols=70></textarea></td></tr>',"\n";
+
+            echo '</table>',"\n";
         } else
         {
-            echo "User maintains no other applications";
+
+            //view application details
+            echo html_frame_start("New Maintainer Form",600,"",0);
+            echo "<table width='100%' border=0 cellpadding=2 cellspacing=0>\n";
+            echo "<input type=\"hidden\" name=\"iMaintainerId\" ".
+                "value=\"$this->iMaintainerId\" />";
+
+            /* User name */
+            $oSubmitter = new user($this->iUserId);
+            echo html_tr(array(
+                    array("<b>User name</b>", 'style="text-align:right" class="color0"'),
+                    $oSubmitter->objectMakeLink()
+                            ));
+
+            /**
+            * Show the other maintainers of this application, if there are any
+            */
+            echo '<tr valign=top><td class=color0 style=\'text-align:right\'><b>Other maintainers</b>';
+            /* Fetch maintainers and super maintainers */
+            $oVersion = new Version($this->iVersionId);
+            $aOtherMaintainers = $oVersion->getMaintainersUserIds();
+            $aOtherSuperMaintainers =
+                Maintainer::getSuperMaintainersUserIdsFromAppId($this->iAppId);
+
+            if($aOtherMaintainers || $aOtherSuperMaintainers)
+                $bFoundMaintainers = true;
+            else
+                $bFoundMaintainers = false;
+
+            echo "<td>\n";
+            /* display maintainers for the version */
+            if($aOtherMaintainers)
+            {
+                while(list($index, $iUserId) = each($aOtherMaintainers))
+                {
+                    $oUser = new User($iUserId);
+
+                    // because Version::getMaintainersUserIds() includes super maintainers
+                    // we need to exclude these from the list of maintainers that we are
+                    // building
+                    if(!maintainer::isUserSuperMaintainer($oUser, $oVersion->iAppId))
+                        echo "$oUser->sRealname<br />\n";
+                }
+            }
+
+            /* display super maintainers for the given app */
+
+            if($aOtherSuperMaintainers)
+            {
+                while(list($index, $iUserId) = each($aOtherSuperMaintainers))
+                {
+                    $oUser = new User($iUserId);
+                    echo "$oUser->sRealname*<br />\n";
+                }
+            }
+
+            if(!$bFoundMaintainers)
+            {
+                echo "No other maintainers";
+            }
+
+            echo "</td></tr>\n";
+
+            // Show which other apps the user maintains
+            echo '<tr valign="top"><td class="color0" style=\'text-align:right\'><b>This user also maintains these apps:</b></td><td>',"\n";
+
+            $oUser = new User($this->iUserId);
+            $aOtherApps = Maintainer::getAppsMaintained($oUser);
+            if($aOtherApps)
+            {
+                while(list($index, list($iAppIdOther, $iVersionIdOther, $bSuperMaintainerOther)) = each($aOtherApps))
+                {
+                    $oApp = new Application($iAppIdOther);
+
+                    if($bSuperMaintainerOther)
+                        echo $oApp->objectMakeLink()."*<br />\n";
+                    else
+                        echo $oVersion->fullNameLink($iVersionIdOther)."<br />\n";
+                }
+            } else
+            {
+                echo "User maintains no other applications";
+            }
+
+            echo "</td></tr>\n";
+
+            $oApp = new Application($this->iAppId);
+            $oVersion = new Version($this->iVersionId);
+
+            //app name
+            echo '<tr valign=top><td class=color0 style=\'text-align:right\'><b>App Name:</b></td>',"\n";
+            echo "<td>".$oApp->objectMakeLink()."</td></tr>\n";
+
+            //version
+            echo '<tr valign=top><td class=color0 style=\'text-align:right\'><b>App Version:</b></td>',"\n";
+            echo "<td>".$oVersion->objectMakeLink()."</td></tr>\n";
+
+            //maintainReason
+            echo '<tr valign=top><td class=color0 style=\'text-align:right\'><b>Maintainer request reason:</b></td>',"\n";
+            echo '<td><textarea name="sMaintainReason" rows=10 cols=35>'.$this->sMaintainReason.'</textarea></td></tr>',"\n";
+            echo '</table>';
+
+            echo html_frame_end("&nbsp;");
         }
-
-        echo "</td></tr>\n";
-
-        $oApp = new Application($this->iAppId);
-        $oVersion = new Version($this->iVersionId);
-
-        //app name
-        echo '<tr valign=top><td class=color0 style=\'text-align:right\'><b>App Name:</b></td>',"\n";
-        echo "<td>".$oApp->objectMakeLink()."</td></tr>\n";
-
-        //version
-        echo '<tr valign=top><td class=color0 style=\'text-align:right\'><b>App Version:</b></td>',"\n";
-        echo "<td>".$oVersion->objectMakeLink()."</td></tr>\n";
-         
-        //maintainReason
-        echo '<tr valign=top><td class=color0 style=\'text-align:right\'><b>Maintainer request reason:</b></td>',"\n";
-        echo '<td><textarea name="sMaintainReason" rows=10 cols=35>'.$this->sMaintainReason.'</textarea></td></tr>',"\n";
-        echo '</table>';
-
-        echo html_frame_end("&nbsp;");
     }
 
     function ObjectGetId()
@@ -807,7 +873,10 @@ class maintainer
 
     function getOutputEditorValues($aClean)
     {
+        $this->iAppId = $aClean['iAppId'];
+        $this->iVersionId = $aClean['iVersionId'];
         $this->sReplyText = $aClean['sReplyText'];
+        $this->sMaintainReason = $aClean['sMaintainReason'];
 
         return TRUE;
     }
