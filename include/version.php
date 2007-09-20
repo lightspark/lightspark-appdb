@@ -1009,9 +1009,9 @@ class version {
             echo '</form>'."\n";
         } else
         {
-            echo '<form method="post" name="sMessage" action="account.php">'."\n";
+            echo '<form method="post" name="sMessage" action="'.login_url().'">'."\n";
             echo "\t".'<input type="hidden" name="sCmd" value="login">'."\n";
-            echo "\t".'<input type=submit value="Log in add Test Data" class="button">'."\n";
+            echo "\t".'<input type=submit value="Log in to add test data" class="button">'."\n";
             echo '</form>'."\n";
         }
 
