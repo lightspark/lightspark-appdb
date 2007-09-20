@@ -652,7 +652,14 @@ class ObjectManager
 
         /* Display help if it is exists */
         if(method_exists(new $this->sClass, "objectDisplayAddItemHelp"))
-            $oObject->objectDisplayAddItemHelp();
+        {
+            $aVars = $this->get_custom_vars($aClean, "addHelp");
+
+            if($aVars)
+                $oObject->objectDisplayAddItemHelp($aClean);
+            else
+                $oObject->objectDisplayAddItemHelp();
+        }
 
         echo "<form method=\"post\">\n";
 

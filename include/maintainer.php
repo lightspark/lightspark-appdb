@@ -677,7 +677,7 @@ class maintainer
         return $oOMTableRow;
     }
 
-    function objectDisplayAddItemHelp()
+    function objectDisplayAddItemHelp($aClean)
     {
         echo "<p>This page is for submitting a request to become an application maintainer.\n";
         echo "An application maintainer is someone who runs the application \n";
@@ -691,6 +691,14 @@ class maintainer
         echo "appdb admins to identify people that are best suited for the job.  Your request\n";
         echo "may be denied if there are already a handful of maintainers for this application or if you\n";
         echo "don't have the experience with Wine that is necessary to help other users out.</p>\n";
+
+        if(!$aClean['iVersionId'])
+        {
+            echo "<p>Super maintainers are just like normal maintainers but they can modify EVERY version of\n";
+            echo "this application (and the application itself).  We don't expect you to run every version but at least to help keep\n";
+            echo "the forums clean of stale and out-of-date information.</p>\n";
+
+        }
     }
 
     function ObjectDisplayQueueProcessingHelp()
@@ -715,6 +723,9 @@ class maintainer
         {
             case "add":
                 return array("iAppId","iVersionId");
+
+            case "addHelp":
+                return array("iVersionId");
 
             default:
                 return null;
@@ -749,10 +760,10 @@ class maintainer
 
             $iSuperMaintainer = $aClean['iVersionId'] ? 0 : 1;
             echo "<input type=hidden name='iAppId' value={$aClean['iAppId']}>";
-            echo "<input type=hidden name='iVersionId' value={$aClean['iVersionId']}>";
+            echo "<input type=hidden name='iVersionId' value='{$aClean['iVersionId']}'>";
             echo "<input type=hidden name='iSuperMaintainer' value=$iSuperMaintainer>";
 
-            if($aClean['iSuperMaintainer'])
+            if($iSuperMaintainer)
                 echo '<tr valign=top><td class=color0><b>Why you want to and should<br />be an application super maintainer</b></td><td><textarea name="sMaintainReason" rows=15 cols=70></textarea></td></tr>',"\n";
             else
                 echo '<tr valign=top><td class=color0><b>Why you want to and should<br />be an application maintainer</b></td><td><textarea name="sMaintainReason" rows=15 cols=70></textarea></td></tr>',"\n";
@@ -877,6 +888,7 @@ class maintainer
         $this->iVersionId = $aClean['iVersionId'];
         $this->sReplyText = $aClean['sReplyText'];
         $this->sMaintainReason = $aClean['sMaintainReason'];
+        $this->bSuperMaintainer = $this->iVersionId ? 0 : 1;
 
         return TRUE;
     }

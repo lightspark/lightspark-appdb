@@ -751,7 +751,7 @@ class Application {
                 echo '        <form method="post" name="sMessage" action="maintainerdelete.php"><input type=submit value="Remove yourself as a super maintainer" class="button">';
             } else /* nope */
             {
-                echo '        <form method="post" name="sMessage" action="maintainersubmit.php"><input type="submit" value="Be a super maintainer of this app" class="button" title="Click here to know more about super maintainers.">';
+                echo '        <form method="post" name="sMessage" action="objectManager.php?sClass=maintainer&iAppId='.$this->iAppId.'&sAction=add&sTitle='.urlencode("Be a Super Maintainer for ".$this->sName).'&sReturnTo='.urlencode($this->objectMakeUrl()).'"><input type="submit" value="Be a super maintainer of this app" class="button" title="Click here to know more about super maintainers.">';
             }
 
             echo "        <input type=\"hidden\" name=\"iAppId\" value=\"".$this->iAppId."\">";
