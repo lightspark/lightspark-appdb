@@ -736,14 +736,15 @@ class ObjectManager
             return null; /* No vars */
 
         $aVars = array();
+        $aVarNames = $oObject->objectGetCustomVars($sAction);
 
-        foreach($oObject->objectGetCustomVars($aClean, $sAction) as $sVar)
+        if(!$aVarNames) /* No vars */
+            return null;
+
+        foreach($aVarNames as $sVar)
             $aVars[$sVar] = $aClean[$sVar];
 
-        if(!sizeof($aVars))
-           return null; /* No vars */
-        else
-            return $aVars;
+        return $aVars;
     }
 
     /* View an entry */

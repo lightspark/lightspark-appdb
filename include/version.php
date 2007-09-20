@@ -731,7 +731,7 @@ class version {
         }
     }
 
-    function objectGetCustomVars($aClean, $sAction)
+    function objectGetCustomVars($sAction)
     {
         switch($sAction)
         {
