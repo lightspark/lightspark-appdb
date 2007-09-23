@@ -476,7 +476,7 @@ class Bug
         $oTable->AddRow($oHeaderRow);
 
         $oDataRow = $this->objectGetTableRow();
-        $oDataRow->oTableRow->SetClass("color0");
+        $oDataRow->GetTableRow()->SetClass("color0");
         $oTable->AddRow($oDataRow);
         
         echo $oTable->GetString();
