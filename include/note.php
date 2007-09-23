@@ -136,6 +136,10 @@ class Note {
         return TRUE;
     }
 
+    function objectShowPreview()
+    {
+        return TRUE;
+    }
 
     function SendNotificationMail($sAction="add",$sMsg=null)
     {
@@ -183,7 +187,7 @@ class Note {
     /* Show note */
     /* $bDisplayOnly means we should not display any editing controls, even if */
     /*   the user has the ability to edit this note */
-    function display($bDisplayOnly = false)
+    function display($aVars = null)
     {
         switch($this->sTitle)
         {
@@ -216,15 +220,12 @@ class Note {
         $shOutput .= $this->shDescription;
         $shOutput .= "</td></tr>\n";
 
-        if(!$bDisplayOnly)
+        if((!$aVars || $aVars['bEditing'] != "true") && $this->canEdit())
         {
-            if ($this->canEdit())
-            {
-                $shOutput .= "<tr class=\"color1\" align=\"center\" valign=\"top\"><td>";
-                $shOutput .= "<form method=\"post\" name=\"message\" action=\"objectManager.php?sClass=note&sAction=edit&iId=".$this->iNoteId."&sReturnTo=".urlencode($oVersion->objectMakeUrl())."\">";
-                $shOutput .= '<input type="submit" value="Edit Note" class="button">';
-                $shOutput .= '</form></td></tr>';
-            }
+            $shOutput .= "<tr class=\"color1\" align=\"center\" valign=\"top\"><td>";
+            $shOutput .= "<form method=\"post\" name=\"message\" action=\"objectManager.php?sClass=note&sAction=edit&iId=".$this->iNoteId."&sReturnTo=".urlencode($oVersion->objectMakeUrl())."\">";
+            $shOutput .= '<input type="submit" value="Edit Note" class="button">';
+            $shOutput .= '</form></td></tr>';
         }
 
         $shOutput .= "</table>\n";
@@ -237,6 +238,9 @@ class Note {
     {
         switch($sAction)
         {
+            case "preview":
+                return array("bEditing");
+
             case "add":
                 return array("iVersionId","sNoteTitle");
 
@@ -261,6 +265,7 @@ class Note {
         echo html_frame_start("Edit Application Note {$aClean['noteId']}", "90%","",0);
         echo html_table_begin("width='100%' border=0 align=left cellpadding=6 cellspacing=0 class='box-body'");
 
+        echo '<input type="hidden" name="bEditing" value="true" />';
         echo '<input type="hidden" name="iNoteId" value="'.$this->iNoteId.'" />';
         echo '<input type="hidden" name="iVersionId" value="'.$this->iVersionId.'" />';
 

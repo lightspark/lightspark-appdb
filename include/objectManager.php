@@ -1,5 +1,7 @@
 <?php
 
+define("PREVIEW_ENTRY", 2);
+
 /* class for managing objects */
 /* - handles processing of queued objects */
 /* - handles the display and editing of unqueued objects */
@@ -236,6 +238,9 @@ class ObjectManager
         {
             global $aClean;
             $oObject->getOutputEditorValues($aClean);
+
+            if($sErrors == PREVIEW_ENTRY)
+                $this->show_preview($oObject, $aClean);
         }
 
         echo '<form name="sQform" action="'.$this->makeUrl("edit", $this->iId).
@@ -312,6 +317,7 @@ class ObjectManager
             echo '<input name="sSubmit" type="submit" value="Submit" class="button">'.
                  '&nbsp',"\n";
             echo '<input name="sSubmit" type="submit" value="Delete" class="button" />'."\n";
+            $this->handle_preview_button();
             echo "</td></tr>\n";
         }
 
@@ -632,6 +638,20 @@ class ObjectManager
         echo "</table>\n";
     }
 
+    function show_preview($oObject, $aClean)
+    {
+        echo html_frame_start("Preview", "75%");
+
+        $aVars = $this->get_custom_vars($aClean, "preview");
+
+        if($aVars)
+            $oObject->display($aVars);
+        else
+            $oObject->display();
+
+        echo html_frame_end();
+    }
+
     /* Display screen for submitting a new entry of given type */
     function add_entry($aClean, $sErrors = "")
     {
@@ -648,6 +668,9 @@ class ObjectManager
         {
             global $aClean;
             $oObject->getOutputEditorValues($aClean);
+
+            if($sErrors == PREVIEW_ENTRY)
+                $this->show_preview($oObject, $aClean);
         }
 
         /* Display help if it is exists */
@@ -673,11 +696,24 @@ class ObjectManager
         echo "<div align=\"center\">";
         echo "<input type=\"submit\" class=\"button\" value=\"Submit\" ". 
         "name=\"sSubmit\" />\n";
+        $this->handle_preview_button();
         echo "</div></form>\n";
-
         echo html_back_link(1, $sBackLink);
 
         echo "</div>\n";
+    }
+
+    function handle_preview_button()
+    {
+        $oObject = new $this->sClass($this->iId);
+
+        if(!method_exists($oObject, "objectShowPreview"))
+            return;
+
+        if(!$oObject->objectShowPreview())
+            return;
+
+        echo '<input type="submit" name="sSubmit" class="button" value="Preview" />';
     }
 
     function handle_anonymous_submission()
@@ -822,6 +858,9 @@ class ObjectManager
         //       have to correct
         switch($aClean['sSubmit'])
         {
+            case "Preview":
+                return PREVIEW_ENTRY;
+
             case "Submit":
                 // if we have errors, return them
                 if($sErrors)
@@ -1068,6 +1107,10 @@ class ObjectManager
                messages.  This is for example useful when gathering information
                in several steps, such as with application submission */
             if($sErrors === TRUE)
+                return TRUE;
+
+
+            if($sErrors == PREVIEW_ENTRY)
                 return TRUE;
 
             echo "<font color=\"red\">\n";
