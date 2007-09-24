@@ -214,11 +214,14 @@ class maintainer
             return NULL;
         }
 
+        if(!$this->iUserId)
+            $this->iUserId = $_SESSION['current']->iUserId;
+
         $hResult = query_parameters("INSERT INTO appMaintainers (appId, versionId, ".
                                     "userId, maintainReason, superMaintainer, submitTime, queued) ".
                                     "VALUES ('?', '?', '?', '?', '?', ?, '?')",
                                     $this->iAppId, $this->iVersionId,
-                                    $_SESSION['current']->iUserId, $this->sMaintainReason,
+                                    $this->iUserId, $this->sMaintainReason,
                                     $this->bSuperMaintainer, "NOW()", $this->mustBeQueued() ? "true" : "false");
 
         /* this objects id is the insert id returned by the database */
