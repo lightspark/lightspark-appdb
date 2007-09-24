@@ -480,7 +480,7 @@ class testData{
         $link = query_escape_string($link);
         $iDisplayLimit = query_escape_string($iDisplayLimit);
 
-        $sShowAll = isset($aClean['sShowAll']) ? $aClean['sShowAll'] : false;
+        $bShowAll = ($aClean['bShowAll'] == "true") ? true : false;
 
         $sQuery = "SELECT * 
                    FROM testResults
@@ -489,7 +489,7 @@ class testData{
                    queued = '?'
                    ORDER BY testedDate DESC";
 	
-        if(!$sShowAll)
+        if(!$bShowAll)
             $sQuery.=" LIMIT 0,".$iDisplayLimit;
 
         $hResult = query_parameters($sQuery, $this->iVersionId, "false");
@@ -603,15 +603,23 @@ class testData{
 
         echo '<br />',"\n"; // put a space after the test results table and the button
 
-        echo '<form method=get action="'.$_SERVER['PHP_SELF'].'">'."\n";
-        echo "\t".'<input name="iVersionId" type=hidden value="',$this->iVersionId,'" />'."\n";
-        if($rowsUsed >= $iDisplayLimit && !is_string($sShowAll))
-            echo "\t".'<input class="button" name="sShowAll" type=submit value="Show All Tests" />'."\n";
+        echo '<form method=get action="objectManager.php">'."\n";
 
-        if(is_string($sShowAll))
+        if($rowsUsed >= $iDisplayLimit && $bShowAll)
         {
-            echo "\t".'<input class="button" name="sHideAll" type=submit value="Limit to '.$iDisplayLimit.' Tests" />'."\n";
+            $sShowButtonText = "Limit to $iDisplayLimit Tests";
+        } else
+        {
+            $sShowButtonText = "Show All Tests";
+            echo '<input type="hidden" name="bShowAll" value="true" />';
         }
+
+        $oManager = new objectManager("version", null, $this->iVersionId);
+
+        echo $oManager->makeUrlFormData();
+
+        echo "\t".'<input class="button" type=submit value="'.$sShowButtonText.'" />'."\n";
+
         echo '</form>'."\n";
 
         echo '</div>',"\n"; // end of the 'info_contents' div
