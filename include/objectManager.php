@@ -239,7 +239,7 @@ class ObjectManager
             global $aClean;
             $oObject->getOutputEditorValues($aClean);
 
-            if($sErrors == PREVIEW_ENTRY)
+            if($sErrors === PREVIEW_ENTRY)
                 $this->show_preview($oObject, $aClean);
         }
 
@@ -669,7 +669,7 @@ class ObjectManager
             global $aClean;
             $oObject->getOutputEditorValues($aClean);
 
-            if($sErrors == PREVIEW_ENTRY)
+            if($sErrors === PREVIEW_ENTRY)
                 $this->show_preview($oObject, $aClean);
         }
 
