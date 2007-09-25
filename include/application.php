@@ -970,12 +970,15 @@ class Application {
 
             if($this->sQueued != "true" && $this->iSubmitterId =
                $_SESSION['current']->iUserId)
+            {
                 return TRUE;
+            }
 
             return FALSE;
-        }
-        else
+        } else
+        {
             return FALSE;
+        }
     }
 
     public function mustBeQueued()
