@@ -224,7 +224,7 @@ class distribution {
         $hResult = query_parameters($sQuery, $this->iDistributionId);
 
         while($oRow = mysql_fetch_object($hResult))
-            $aTests += new testData(null, $oRow);
+            $aTests[] = new testData(null, $oRow);
 
         return $aTests;
     }
