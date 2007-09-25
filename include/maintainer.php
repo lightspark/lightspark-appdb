@@ -60,18 +60,10 @@ class queuedEntries
       //TODO: would like to rely on the constructor but we might be a user with 'admin'
       // privileges and that would mean we would end up retrieved queued versions for
       // this application or unqueued versions depending on which user we were
-      $hResult = $oApp->_internal_retrieve_all_versions();
+      $aVersions = $oApp->getVersions();
 
-      while($oVersionRow = query_fetch_object($hResult))
+      foreach($aVersions as $oVersion)
       {
-        if($bDebugOutputEnabled)
-        {
-          echo "oVersionRow is: ";
-          print_r($oVersionRow);
-        }
-
-        $oVersion = new Version($oVersionRow->versionId);
-
         if($bDebugOutputEnabled)
         {
           echo "Processing version: ";

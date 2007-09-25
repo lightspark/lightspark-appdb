@@ -43,7 +43,7 @@ class Application {
     /**    
      * constructor, fetches the data.
      */
-    function Application($iAppId = null, $oRow = null)
+    public function Application($iAppId = null, $oRow = null)
     {
         // we are working on an existing application
         if(!$iAppId && !$oRow)
@@ -96,7 +96,7 @@ class Application {
         }
     }
 
-    function _internal_retrieve_all_versions($bIncludeObsolete = TRUE)
+    private function _internal_retrieve_all_versions($bIncludeObsolete = TRUE)
     {
         if(!$bIncludeObsolete)
             $sObsolete = " AND obsoleteBy = '0'";
@@ -109,7 +109,7 @@ class Application {
         return $hResult;
     }
 
-    function _internal_retrieve_unqueued_versions()
+    private function _internal_retrieve_unqueued_versions()
     {
         $sQuery = "SELECT versionId FROM appVersion WHERE
                         queued = 'false' AND
@@ -121,7 +121,7 @@ class Application {
     /**
      * Creates a new application.
      */
-    function create()
+    public function create()
     {
         if(!$_SESSION['current']->canCreateApplication())
             return false;
@@ -165,7 +165,7 @@ class Application {
      * Update application.
      * Returns true on success and false on failure.
      */
-    function update($bSilent=false)
+    public function update($bSilent=false)
     {
         $sWhatChanged = "";
 
@@ -236,7 +236,7 @@ class Application {
      * Deletes the application from the database. 
      * and request the deletion of linked elements.
      */
-    function delete()
+    public function delete()
     {
         $bSuccess = true;
 
@@ -264,7 +264,7 @@ class Application {
     /**
      * Move application out of the queue.
      */
-    function unQueue()
+    public function unQueue()
     {
         if(!$_SESSION['current']->canUnQueueApplication())
             return;
@@ -288,7 +288,7 @@ class Application {
         }
     }
 
-    function Reject()
+    public function Reject()
     {
         if(!$_SESSION['current']->canRejectApplication($this))
             return;
@@ -310,14 +310,14 @@ class Application {
         }
     }
 
-    function objectGetItemsPerPage($bQueued = false)
+    public static function objectGetItemsPerPage($bQueued = false)
     {
         $aItemsPerPage = array(25, 50, 100, 200);
         $iDefaultPerPage = 25;
         return array($aItemsPerPage, $iDefaultPerPage);
     }
 
-    function ReQueue()
+    public function ReQueue()
     {
         if(!$_SESSION['current']->canRequeueApplication($this))
             return false;
@@ -334,17 +334,17 @@ class Application {
         }
     }
 
-    function objectGetSubmitterId()
+    public function objectGetSubmitterId()
     {
         return $this->iSubmitterId;
     }
 
-    function objectGetMailOptions($sAction, $bMailSubmitter, $bParentAction)
+    public function objectGetMailOptions($sAction, $bMailSubmitter, $bParentAction)
     {
         return new mailOptions();
     }
 
-    function objectGetMail($sAction, $bMailSubmitter, $bParentAction)
+    public function objectGetMail($sAction, $bMailSubmitter, $bParentAction)
     {
         if($bMailSubmitter)
         {
@@ -371,7 +371,7 @@ class Application {
         return array($sSubject, $sMsg, $aMailTo);
     }
 
-    function mailSubmitter($sAction="add")
+    private function mailSubmitter($sAction="add")
     {
         global $aClean;
         if(!isset($aClean['sReplyText']))
@@ -407,7 +407,7 @@ class Application {
     }
 
 
-    function countWithRating($sRating)
+    public static function countWithRating($sRating)
     {
         $sQuery = "SELECT DISTINCT count(appId) as total 
                        FROM appVersion
@@ -421,7 +421,7 @@ class Application {
 	     return $oRow->total;
     }
 
-    function getWithRating($sRating, $iOffset, $iItemsPerPage)
+    public static function getWithRating($sRating, $iOffset, $iItemsPerPage)
     {
         $aApps = array();
         $sQuery = "SELECT DISTINCT appId 
@@ -440,7 +440,7 @@ class Application {
         return $aApps;
     }
 
-    function SendNotificationMail($sAction="add",$sMsg=null)
+    private function SendNotificationMail($sAction="add",$sMsg=null)
     {
         global $aClean;
         if(!isset($aClean['sReplyText']))
@@ -502,7 +502,7 @@ class Application {
 
 
     /* output a html table and this applications values to the fields for editing */
-    function outputEditor($sVendorName = "")
+    public function outputEditor($sVendorName = "")
     {
         HtmlAreaLoaderScript(array("app_editor"));
 
@@ -591,7 +591,7 @@ class Application {
         echo html_frame_end();
     }
 
-    function CheckOutputEditorInput($aValues)
+    public function CheckOutputEditorInput($aValues)
     {
         $errors = "";
 
@@ -616,7 +616,7 @@ class Application {
 
     /* retrieves values from $aValues that were output by outputEditor() */
     /* $aValues can be $_REQUEST or any array with the values from outputEditor() */
-    function GetOutputEditorValues($aValues)
+    public function GetOutputEditorValues($aValues)
     {
         $this->iAppId = $aValues['iAppId'];
         $this->sName = $aValues['sAppName'];
@@ -630,8 +630,8 @@ class Application {
 
     /**
      * Displays the SUB apps that belong to this application.
-    */
-    function displayBundle()
+     */
+    public function displayBundle()
     {
         $hResult = query_parameters("SELECT appFamily.appId, appName, description FROM appBundle, appFamily ".
                 "WHERE appFamily.queued='false' AND bundleId = '?' AND appBundle.appId = appFamily.appId",
@@ -666,7 +666,7 @@ class Application {
         echo html_frame_end();
     }
 
-    function objectGetCustomTitle($sAction)
+    public function objectGetCustomTitle($sAction)
     {
         switch($sAction)
         {
@@ -679,7 +679,7 @@ class Application {
     }
 
     /* display this application */
-    function display()
+    public function display()
     {
         /* is this user supposed to view this version? */
         if(!$_SESSION['current']->canViewApplication($this))
@@ -805,7 +805,7 @@ class Application {
         $this->displayBundle();
     }
 
-    function lookup_name($appId)
+    public static function lookup_name($appId)
     {
         if(!$appId) return null;
         $result = query_parameters("SELECT appName FROM appFamily WHERE appId = '?'",
@@ -817,7 +817,7 @@ class Application {
     }
 
     /* List applications submitted by a given user */
-    function listSubmittedBy($iUserId, $bQueued = true)
+    public static function listSubmittedBy($iUserId, $bQueued = true)
     {
         $hResult = query_parameters("SELECT appId, appName, vendorId, description,
                submitTime FROM appFamily
@@ -861,20 +861,20 @@ class Application {
         return $oTable->GetString();
     }
 
-    function objectMakeUrl()
+    public function objectMakeUrl()
     {
         $sUrl = APPDB_ROOT."objectManager.php?sClass=application&iId=$this->iAppId";
         return $sUrl;
     }
 
-    function objectMakeLink()
+    public function objectMakeLink()
     {
         $sLink = "<a href=\"".$this->objectMakeUrl()."\">".
                  $this->sName."</a>";
         return $sLink;
     }
 
-    function objectGetEntries($bQueued, $bRejected, $iRows = 0, $iStart = 0, $sOrderBy = "appId")
+    public static function objectGetEntries($bQueued, $bRejected, $iRows = 0, $iStart = 0, $sOrderBy = "appId")
     {
         $sLimit = "";
 
@@ -930,7 +930,7 @@ class Application {
         return $hResult;
     }
 
-    function objectGetHeader()
+    public static function objectGetHeader()
     {
         $oTableRow = new TableRow();
         $oTableRow->AddTextCell("Submission Date");
@@ -940,7 +940,7 @@ class Application {
         return $oTableRow;
     }
 
-    function objectGetTableRow()
+    public function objectGetTableRow()
     {
         $oUser = new user($this->iSubmitterId);
         $oVendor = new vendor($this->iVendorId);
@@ -957,7 +957,7 @@ class Application {
         return $oOMTableRow;
     }
 
-    function canEdit()
+    public function canEdit()
     {
         if($_SESSION['current']->hasPriv("admin"))
             return TRUE;
@@ -978,7 +978,7 @@ class Application {
             return FALSE;
     }
 
-    function mustBeQueued()
+    public function mustBeQueued()
     {
         if($_SESSION['current']->hasPriv("admin"))
             return FALSE;
@@ -986,7 +986,7 @@ class Application {
             return TRUE;
     }
 
-    function objectDisplayQueueProcessingHelp()
+    public function objectDisplayQueueProcessingHelp()
     {
         echo "<p>This is the list of applications waiting for your approval, ".
              "or to be rejected.</p>\n";
@@ -994,7 +994,7 @@ class Application {
              "From that page you can edit, delete or approve it into the AppDB.</p>\n";
     }
 
-    function objectDisplayAddItemHelp()
+    public function objectDisplayAddItemHelp()
     {
         /* We don't display the full help on the page where you only input the app name */
         if(!$this->sName)
@@ -1032,7 +1032,7 @@ class Application {
         }
     }
 
-    function objectGetEntriesCount($bQueued, $bRejected)
+    public static function objectGetEntriesCount($bQueued, $bRejected)
     {
         $sQueued = objectManager::getQueueString($bQueued, $bRejected);
 
@@ -1063,7 +1063,7 @@ class Application {
         return $oRow->count;
     }
 
-    function getVersions($bIncludeObsolete = TRUE)
+    public function getVersions($bIncludeObsolete = TRUE)
     {
         $aVersions = array();
 
@@ -1077,7 +1077,7 @@ class Application {
 
     /* Make a drop-down list of this application's versions.  Optionally set the default
        versionId, a version to exclude and whether to not show obsolete versions */
-    function makeVersionDropDownList($sVarName, $iCurrentId = null, $iExclude = null, $bIncludeObsolete = TRUE)
+    public function makeVersionDropDownList($sVarName, $iCurrentId = null, $iExclude = null, $bIncludeObsolete = TRUE)
     {
         $sMsg = "<select name=\"$sVarName\">\n";
         foreach($this->getVersions() as $oVersion)
@@ -1098,7 +1098,7 @@ class Application {
         return $sMsg;
     }
 
-    function objectGetChildren()
+    public function objectGetChildren()
     {
         $aChildren = array();
 
@@ -1140,7 +1140,7 @@ class Application {
         return $aChildren;
     }
 
-    function objectMoveChildren($iNewId)
+    public function objectMoveChildren($iNewId)
     {
         /* Keep track of how many children we have moved */
         $iCount = 0;
@@ -1159,17 +1159,17 @@ class Application {
         return $iCount;
     }
 
-    function allowAnonymousSubmissions()
+    public static function allowAnonymousSubmissions()
     {
         return FALSE;
     }
 
-    function objectGetId()
+    public function objectGetId()
     {
         return $this->iAppId;
     }
 
-    function objectShowAddEntry()
+    public function objectShowAddEntry()
     {
         return TRUE;
     }

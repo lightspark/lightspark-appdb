@@ -44,7 +44,7 @@ class version {
     /**
      * constructor, fetches the data.
      */
-    function Version($iVersionId = null, $oRow = null)
+    public function Version($iVersionId = null, $oRow = null)
     {
         // we are working on an existing version
         if(!$iVersionId && !$oRow)
@@ -82,7 +82,7 @@ class version {
     /**
      * Creates a new version.
      */
-    function create()
+    public function create()
     {
         if(!$_SESSION['current']->canCreateVersion())
             return;
@@ -130,7 +130,7 @@ class version {
     /**
      * Update version.
      */
-    function update($bSilent=false)
+    public function update($bSilent=false)
     {
         $sWhatChanged = "";
 
@@ -232,7 +232,7 @@ class version {
      * Deletes the version from the database. 
      * and request the deletion of linked elements.
      */
-    function delete()
+    public function delete()
     {
         /* We need the versionId to continue */
         if(!$this->iVersionId)
@@ -263,7 +263,7 @@ class version {
     /**
      * Move version out of the queue.
      */
-    function unQueue()
+    public function unQueue()
     {
         if(!$_SESSION['current']->canUnQueueVersion($this))
             return;
@@ -294,7 +294,7 @@ class version {
         }
     }
 
-    function Reject($bSilent=false)
+    public function Reject($bSilent=false)
     {
         if(!$_SESSION['current']->canRejectVersion($this))
             return;
@@ -318,7 +318,7 @@ class version {
         }
     }
 
-    function ReQueue()
+    public function ReQueue()
     {
         if(!$_SESSION['current']->canRequeueVersion($this))
             return;
@@ -335,17 +335,18 @@ class version {
         }
     }
 
-    function objectGetSubmitterId()
+    public function objectGetSubmitterId()
     {
         return $this->iSubmitterId;
     }
 
-    function objectGetMailOptions($sAction, $bMailSubmitter, $bParentAction)
+    public static function objectGetMailOptions($sAction, $bMailSubmitter,
+                                                $bParentAction)
     {
         return new mailOptions();
     }
 
-    function objectGetMail($sAction, $bMailSubmitter, $bParentAction)
+    public function objectGetMail($sAction, $bMailSubmitter, $bParentAction)
     {
         $oApp = new application($this->iAppId);
 
@@ -375,7 +376,7 @@ class version {
         return array($sSubject, $sMsg, $aMailTo);
     }
 
-    function mailSubmitter($sAction="add")
+    private function mailSubmitter($sAction="add")
     {
         global $aClean; //FIXME: we should pass the sReplyText value in
 
@@ -411,7 +412,7 @@ class version {
         }
     }
 
-    function SendNotificationMail($sAction="add",$sMsg=null)
+    private function SendNotificationMail($sAction="add",$sMsg=null)
     {
         global $aClean;
         
@@ -485,7 +486,7 @@ class version {
             mail_appdb($sEmail, $sSubject ,$sMsg);
     } 
 
-    function get_buglink_ids()
+    public function get_buglink_ids()
     {
         /*
          * We fetch Bug linkIds. 
@@ -508,7 +509,7 @@ class version {
 
     /* Makes a frame with title 'Mark as obsolete' and info about what it means, plus
        caller-defined content */
-    function makeObsoleteFrame($sContent = "")
+    private static function makeObsoleteFrame($sContent = "")
     {
         $sMsg = html_frame_start("Mark as obsolete", "90%", "", 0);
 
@@ -530,7 +531,7 @@ class version {
     /* if $editParentApplication is true that means we need to display fields */
     /* to let the user change the parent application of this version */
     /* otherwise, if $editParentAppliation is false, we leave them out */
-    function outputEditor()
+    public function outputEditor()
     {
         HtmlAreaLoaderScript(array("version_editor"));
         echo html_frame_start("Version Form", "90%", "", 0);
@@ -687,7 +688,7 @@ class version {
         }
     }
 
-    function CheckOutputEditorInput($aValues)
+    public function CheckOutputEditorInput($aValues)
     {
         $errors = "";
 
@@ -702,7 +703,7 @@ class version {
 
     /* retrieves values from $aValues that were output by outputEditor() */
     /* $aValues can be $_REQUEST or any array with the values from outputEditor() */
-    function GetOutputEditorValues($aValues)
+    public function GetOutputEditorValues($aValues)
     {
         $this->iAppId = $aValues['iAppId'];
         $this->iVersionId = $aValues['iVersionId'];
@@ -719,7 +720,7 @@ class version {
             $this->iObsoleteBy = 0;
     }
 
-    function objectGetCustomTitle($sAction)
+    public function objectGetCustomTitle($sAction)
     {
         switch($sAction)
         {
@@ -731,7 +732,7 @@ class version {
         }
     }
 
-    function objectGetCustomVars($sAction)
+    public static function objectGetCustomVars($sAction)
     {
         switch($sAction)
         {
@@ -745,7 +746,7 @@ class version {
         }
     }
 
-    function display($aVars)
+    public function display($aVars)
     {
         /* is this user supposed to view this version? */
         if(!$_SESSION['current']->canViewVersion($this))
@@ -1040,7 +1041,7 @@ class version {
         Comment::view_app_comments($this->iVersionId);
     }
 
-    function lookup_name($versionId)
+    public static function lookup_name($versionId)
     {
         if(!$versionId) return null;
         $result = query_parameters("SELECT versionName FROM appVersion WHERE versionId = '?'",
@@ -1070,7 +1071,7 @@ class version {
     }
 
     /* Creates a link to the version labelled with the full application name */
-    function fullNameLink($iVersionId)
+    public static function fullNameLink($iVersionId)
     {
         $oVersion = new version($iVersionId);
         $sLink = "<a href=\"".$oVersion->objectMakeUrl()."\">".
@@ -1079,7 +1080,7 @@ class version {
     }
 
     // display the versions
-    function displayList($aVersionsIds)
+    public static function displayList($aVersionsIds)
     {
         if ($aVersionsIds)
         {
@@ -1190,7 +1191,7 @@ class version {
     }
 
     /* returns the maintainers of this version in an array */
-    function getMaintainersUserIds()
+    public function getMaintainersUserIds()
     {
         $aMaintainers = array();
 
@@ -1210,7 +1211,7 @@ class version {
     }
 
     /* List the versions submitted by a user.  Ignore versions for queued applications */
-    function listSubmittedBy($iUserId, $bQueued = true)
+    public static function listSubmittedBy($iUserId, $bQueued = true)
     {
         $hResult = query_parameters("SELECT appFamily.appName, appVersion.versionName, appVersion.description, appVersion.versionId, appVersion.submitTime FROM appFamily, appVersion WHERE appFamily.appId = appVersion.appId AND appVersion.submitterId = '?' AND appVersion.queued = '?' AND appFamily.queued = '?'", $iUserId, $bQueued ? "true" : "false", "false");
 
@@ -1244,7 +1245,7 @@ class version {
     }
 
     // returns a string containing the html for a selection list
-    function makeLicenseList($sLicense = NULL)
+    private function makeLicenseList($sLicense = NULL)
     {
         if(!$sLicense)
             $sLicense = $this->sLicense;
@@ -1272,7 +1273,7 @@ class version {
     }
 
     /* In order to prevent MySQL injections.  Returns matched license */
-    function checkLicense($sLicense)
+    public static function checkLicense($sLicense)
     {
         $aLicense = array(LICENSE_RETAIL, LICENSE_OPENSOURCE, LICENSE_FREEWARE,
                           LICENSE_DEMO, LICENSE_SHAREWARE);
@@ -1286,19 +1287,19 @@ class version {
         return FALSE;
     }
 
-    function objectMakeUrl()
+    public function objectMakeUrl()
     {
         return APPDB_ROOT."objectManager.php?sClass=version&iId=$this->iVersionId";
     }
 
-    function objectMakeLink()
+    public function objectMakeLink()
     {
         $sLink = "<a href=\"".$this->objectMakeUrl()."\">".
                  $this->sName."</a>";
         return $sLink;
     }
 
-    function objectGetEntriesCount($bQueued, $bRejected)
+    public static function objectGetEntriesCount($bQueued, $bRejected)
     {
         $sQueued = objectManager::getQueueString($bQueued, $bRejected);
 
@@ -1366,7 +1367,7 @@ class version {
         return $oRow->count;
     }
 
-    function canEdit()
+    public function canEdit()
     {
         if($_SESSION['current']->hasPriv("admin"))
             return TRUE;
@@ -1385,7 +1386,7 @@ class version {
             return FALSE;
     }
 
-    function mustBeQueued()
+    public function mustBeQueued()
     {
         if($_SESSION['current']->hasPriv("admin"))
             return FALSE;
@@ -1415,7 +1416,7 @@ class version {
         }
     }
 
-    function objectGetHeader()
+    public static function objectGetHeader()
     {
         $oTableRow = new TableRow();
         $oTableRow->AddTextCell("Submission Date");
@@ -1426,14 +1427,14 @@ class version {
         return $oTableRow;
     }
 
-    function objectGetItemsPerPage($bQueued = false)
+    public static function objectGetItemsPerPage($bQueued = false)
     {
         $aItemsPerPage = array(25, 50, 100, 200);
         $iDefaultPerPage = 25;
         return array($aItemsPerPage, $iDefaultPerPage);
     }
 
-    function objectGetEntries($bQueued, $bRejected, $iRows = 0, $iStart = 0, $sOrderBy = "versionId")
+    public static function objectGetEntries($bQueued, $bRejected, $iRows = 0, $iStart = 0, $sOrderBy = "versionId")
     {
         $sQueued = objectManager::getQueueString($bQueued, $bRejected);
 
@@ -1526,7 +1527,7 @@ class version {
         return $hResult;
     }
 
-    function objectGetTableRow()
+    public function objectGetTableRow()
     {
         $oUser = new user($this->iSubmitterId);
         $oApp = new application($this->iAppId);
@@ -1543,7 +1544,7 @@ class version {
         return $oOMTableRow;
     }
 
-    function objectDisplayQueueProcessingHelp()
+    public function objectDisplayQueueProcessingHelp()
     {
         echo "<p>This is the list of versions waiting for your approval, ".
              "or to be rejected.</p>\n";
@@ -1551,7 +1552,7 @@ class version {
              "From that page you can edit, delete or approve it into the AppDB.</p>\n";
     }
 
-    function objectGetChildren()
+    public function objectGetChildren()
     {
         $aChildren = array();
 
@@ -1678,7 +1679,7 @@ class version {
         return $aChildren;
     }
 
-    function objectMoveChildren($iNewId)
+    public function objectMoveChildren($iNewId)
     {
         /* Keep track of how many items we have updated */
         $iCount = 0;
@@ -1721,12 +1722,12 @@ class version {
         return $iCount;
     }
 
-    function allowAnonymousSubmissions()
+    public static function allowAnonymousSubmissions()
     {
         return FALSE;
     }
 
-    function objectGetId()
+    public function objectGetId()
     {
         return $this->iVersionId;
     }
