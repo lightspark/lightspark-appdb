@@ -1372,7 +1372,7 @@ class version {
         if($_SESSION['current']->hasPriv("admin"))
             return TRUE;
 
-        else if($this->iVersionId)
+        if(isset($this) && is_object($this) && $this->iVersionId)
         {
             if(maintainer::isUserMaintainer($_SESSION['current'], $this->iVersionId))
                 return TRUE;
@@ -1381,9 +1381,10 @@ class version {
                 return TRUE;
 
             return FALSE;
-        }
-        else
+        } else
+        {
             return FALSE;
+        }
     }
 
     public function mustBeQueued()
@@ -1451,7 +1452,7 @@ class version {
                 $iRows = maintainer::objectGetEntriesCount($bQueued, $bRejected);
         }
 
-        if($bQueued && !$this->canEdit())
+        if($bQueued && !version::canEdit())
         {
             /* Users should see their own rejected entries, but maintainers should
                not be able to see rejected entries for versions they maintain */
