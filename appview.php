@@ -22,7 +22,7 @@ if(isset($aClean['iAppId']) || isset($aClean['iVersionId'])) // Valid args
         $oObject = new Version($aClean['iVersionId']);
 
     // header
-    apidb_header($oObject->objectGetCustomTitle("display"));
+    apidb_header($oObject->objectGetCustomTitle("view"));
 
     if(isset($aClean['iVersionId']))
         $oObject->display($aClean);

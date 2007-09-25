@@ -724,7 +724,7 @@ class version {
     {
         switch($sAction)
         {
-            case "display":
+            case "view":
                 return "Viewing App: ".version::fullName($this->iVersionId);
 
             default:
@@ -736,7 +736,7 @@ class version {
     {
         switch($sAction)
         {
-            case "display":
+            case "view":
                 /* Allow the user to select which test report is
                    shown in the version view */
                 return array("iTestingId");

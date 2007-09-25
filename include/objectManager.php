@@ -794,7 +794,7 @@ class ObjectManager
 
         $oObject = new $this->sClass($this->iId);
 
-        $aVars = $this->get_custom_vars($aClean, "display");
+        $aVars = $this->get_custom_vars($aClean, "view");
 
         if(!$aVars)
             $oObject->display();

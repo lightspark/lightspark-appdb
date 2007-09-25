@@ -85,7 +85,7 @@ $sAction = $aClean['sAction'];
 if(!$sAction)
 {
     if($oObject->iId)
-        $sAction = "display";
+        $sAction = "view";
 }
 
 apidb_header($oObject->get_title($sAction));
@@ -111,7 +111,7 @@ if($oObject->iId && $sAction != "add")
         $oObject->delete_prompt();
         break;
 
-        case "display":
+        case "view":
         $oObject->view($_SERVER['REQUEST_URI'], $aClean);
         break;
     }

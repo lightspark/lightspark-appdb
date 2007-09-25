@@ -670,7 +670,7 @@ class Application {
     {
         switch($sAction)
         {
-            case "display":
+            case "view":
                 return "Viewing App: ".$this->sName;
 
             default:
