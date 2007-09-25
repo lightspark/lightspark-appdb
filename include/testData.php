@@ -471,35 +471,8 @@ class testData{
         echo $this->sComments,"\n";
     }
 
-    // Show the Test results for a application version
-    function ShowVersionsTestingTable($sLink, $iDisplayLimit)
+    function CreateTestTable()
     {
-        global $aClean;
-
-        /* escape input parameters */
-        $link = query_escape_string($link);
-        $iDisplayLimit = query_escape_string($iDisplayLimit);
-
-        $bShowAll = ($aClean['bShowAll'] == "true") ? true : false;
-
-        $sQuery = "SELECT * 
-                   FROM testResults
-                   WHERE versionId = '?'
-                   AND
-                   queued = '?'
-                   ORDER BY testedDate DESC";
-	
-        if(!$bShowAll)
-            $sQuery.=" LIMIT 0,".$iDisplayLimit;
-
-        $hResult = query_parameters($sQuery, $this->iVersionId, "false");
-        if(!$hResult)
-            return;
-
-        $rowsUsed = query_num_rows($hResult);
-
-        if($rowsUsed == 0)
-             return;
         echo '<div class="info_container">',"\n";
         echo '<div class="title_class">Test Results</div>',"\n";
         echo '<div class="info_contents">',"\n";
@@ -523,76 +496,118 @@ class testData{
         $oTableRowHeader->AddTextCell("Submitter");
         $oTable->SetHeader($oTableRowHeader);
 
+        return $oTable;
+    }
+
+    /* Creates and returns a table row for a test result table */
+    function CreateTestTableRow($iCurrentId, $sLink)
+    {
+        $oVersion = new Version($this->iVersionId);
+        $oApp  = new Application($oVersion->iAppId);
+        $oSubmitter = new User($this->iSubmitterId);
+        $oDistribution = new distribution($this->iDistributionId);
+        $bgcolor = $this->sTestedRating;
+
+        // initialize the array ech time we loop
+        $oTableRowClick = null;
+
+        $oTableRow = new TableRow();
+
+        /* if the test we are displaying is this test then */
+        /* mark it as the current test */
+        if ($this->iTestingId == $iCurrentId)
+        {
+            $sTRClass = $bgcolor;
+
+            $oTableCell = new TableCell("<b>Current</b>");
+            $oTableCell->SetAlign("center");
+        } else /* make all non-current rows clickable so clicking on them selects the test as current */
+        {
+            $sTRClass = $bgcolor;
+
+            $oInactiveColor = new color();
+            $oInactiveColor->SetColorByName($this->sTestedRating);
+
+            $oHighlightColor = GetHighlightColorFromInactiveColor($oInactiveColor);
+
+            $oTableRowHighlight = new TableRowHighlight($oHighlightColor, $oInactiveColor);
+
+            $sUrl = $sLink.$this->iTestingId;
+
+            $oTableRowClick = new TableRowClick($sUrl);
+            $oTableRowClick->SetHighlight($oTableRowHighlight);
+
+            // add the table element indicating that the user can show the row by clicking on it
+            $oTableCell = new TableCell("Show");
+            $oTableCell->SetCellLink($sUrl);
+            $oTableCell->SetAlign("center");
+        }
+
+        $oTableRow->AddCell($oTableCell);
+        $oTableRow->SetClass($sTRClass);
+
+        $oTableRow->AddTextCell($oDistribution->objectMakeLink());
+        $oTableRow->AddTextCell(date("M d Y", mysqldatetime_to_unixtimestamp($this->sTestedDate)));
+        $oTableRow->AddTextCell($this->sTestedRelease.'&nbsp');
+        $oTableRow->AddTextCell($this->sInstalls.'&nbsp');
+        $oTableRow->AddTextCell($this->sRuns.'&nbsp');
+        $oTableRow->AddTextCell($this->sTestedRating.'&nbsp');
+        $oTableRow->AddTextCell($oSubmitter->objectMakeLink().'&nbsp');
+        if ($this->iTestingId && $_SESSION['current']->hasAppVersionModifyPermission($oVersion))
+        {
+            $oObject = new objectManager("testData");
+            $oTableRow->AddTextCell('<a href="'.$oObject->makeUrl("edit", $this->iTestingId,
+                                    "Edit Test Results").'">'.
+                                    'Edit</a> &nbsp; ',"\n".
+                                    '<a href="objectManager.php?sClass=testData&bIsQueue=false&sAction='.
+                                    'delete&iId='.$this->iTestingId.'&sTitle=Delete+Test+Results'.
+                                    '">Delete</a></td>',"\n");
+        }
+
+        // if this is a clickable row, set the appropriate property
+        if($oTableRowClick)
+            $oTableRow->SetRowClick($oTableRowClick);
+
+        return $oTableRow;
+    }
+
+    // Show the Test results for a application version
+    function ShowVersionsTestingTable($sLink, $iDisplayLimit)
+    {
+        global $aClean;
+
+        /* escape input parameters */
+        $sLink = query_escape_string($sLink);
+        $iDisplayLimit = query_escape_string($iDisplayLimit);
+
+        $bShowAll = ($aClean['bShowAll'] == "true") ? true : false;
+
+        $sQuery = "SELECT * 
+                   FROM testResults
+                   WHERE versionId = '?'
+                   AND
+                   queued = '?'
+                   ORDER BY testedDate DESC";
+	
+        if(!$bShowAll)
+            $sQuery.=" LIMIT 0,".$iDisplayLimit;
+
+        $hResult = query_parameters($sQuery, $this->iVersionId, "false");
+        if(!$hResult)
+            return;
+
+        $rowsUsed = query_num_rows($hResult);
+
+        if($rowsUsed == 0)
+             return;
+
+        $oTable = $this->CreateTestTable();
+
         $iIndex = 0;
         while($oRow = query_fetch_object($hResult))
         {
             $oTest = new testData($oRow->testingId);
-            $oVersion = new Version($oTest->iVersionId);
-            $oApp  = new Application($oVersion->iAppId);
-            $oSubmitter = new User($oTest->iSubmitterId);
-            $oDistribution = new distribution($oTest->iDistributionId);
-            $bgcolor = $oTest->sTestedRating;
-
-            // initialize the array ech time we loop
-            $oTableRowClick = null;
-
-            $oTableRow = new TableRow();
-
-            /* if the test we are displaying is this test then */
-            /* mark it as the current test */
-            if ($oTest->iTestingId == $this->iTestingId)
-            {
-              $sTRClass = $bgcolor;
-
-              $oTableCell = new TableCell("<b>Current</b>");
-              $oTableCell->SetAlign("center");
-            } else /* make all non-current rows clickable so clicking on them selects the test as current */
-            {
-              $sTRClass = $bgcolor;
-
-              $oInactiveColor = new color();
-              $oInactiveColor->SetColorByName($oTest->sTestedRating);
-
-              $oHighlightColor = GetHighlightColorFromInactiveColor($oInactiveColor);
-
-              $oTableRowHighlight = new TableRowHighlight($oHighlightColor, $oInactiveColor);
-
-              $sUrl = $sLink.$oTest->iTestingId;
-
-              $oTableRowClick = new TableRowClick($sUrl);
-              $oTableRowClick->SetHighlight($oTableRowHighlight);
-
-              // add the table element indicating that the user can show the row by clicking on it
-              $oTableCell = new TableCell("Show");
-              $oTableCell->SetCellLink($sUrl);
-              $oTableCell->SetAlign("center");
-            }
-
-            $oTableRow->AddCell($oTableCell);
-            $oTableRow->SetClass($sTRClass);
-
-            $oTableRow->AddTextCell($oDistribution->objectMakeLink());
-            $oTableRow->AddTextCell(date("M d Y", mysqldatetime_to_unixtimestamp($oTest->sTestedDate)));
-            $oTableRow->AddTextCell($oTest->sTestedRelease.'&nbsp');
-            $oTableRow->AddTextCell($oTest->sInstalls.'&nbsp');
-            $oTableRow->AddTextCell($oTest->sRuns.'&nbsp');
-            $oTableRow->AddTextCell($oTest->sTestedRating.'&nbsp');
-            $oTableRow->AddTextCell($oSubmitter->objectMakeLink().'&nbsp');
-            if ($_SESSION['current']->hasAppVersionModifyPermission($oVersion))
-            {
-                $oObject = new objectManager("testData");
-                $oTableRow->AddTextCell('<a href="'.$oObject->makeUrl("edit", $oTest->iTestingId,
-                                        "Edit Test Results").'">'.
-                                        'Edit</a> &nbsp; ',"\n".
-                                        '<a href="objectManager.php?sClass=testData&bIsQueue=false&sAction='.
-                                        'delete&iId='.$oTest->iTestingId.'&sTitle=Delete+Test+Results'.
-                                        '">Delete</a></td>',"\n");
-            }
-
-            // if this is a clickable row, set the appropriate property
-            if($oTableRowClick)
-              $oTableRow->SetRowClick($oTableRowClick);
-
+            $oTableRow = $oTest->CreateTestTableRow($this->iTestingId, $sLink);
             // add the row to the table
             $oTable->AddRow($oTableRow);
 
@@ -1114,10 +1129,21 @@ class testData{
              "you can submit it into the AppDB, reject it or delete it.</p>\n";
     }
 
+    function objectShowPreview()
+    {
+        return TRUE;
+    }
+
     function display()
     {
-        /* STUB */
-        return TRUE;
+        $this->ShowTestResult();
+        $this->iSubmitterId = $_SESSION['current']->iUserId;
+
+        $oTable = $this->CreateTestTable();
+
+        $oTable->AddRow($this->CreateTestTableRow($this->iTestingId, ""));
+
+        echo $oTable->GetString();
     }
 
 

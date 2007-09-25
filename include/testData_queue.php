@@ -148,6 +148,11 @@ class testData_queue
         $oTest->objectDisplayQueueProcessingHelp();
     }
 
+    function objectShowPreview()
+    {
+        return $this->oTestData->objectShowPreview();
+    }
+
     function display()
     {
         return $this->oTestData->display();
