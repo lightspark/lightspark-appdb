@@ -711,7 +711,7 @@ class testData{
                                      "review it in the form below or replace ".
                                      "it with one from the list.";
             }
-            $sDistributionHelp ."<br />\n";
+            $sDistributionHelp .= "<br />\n";
         }
 
         echo '<tr valign=top><td class="color0"><b>Distribution</b></td class="color0">',"\n";
