@@ -182,7 +182,7 @@ class TableVE {
         if($aWhere)
             $sWhere = "WHERE ".$aWhere[0]." ='".$aWhere[1]."'";
 
-        $hResult = query_parameters("SELECT ?, ? FROM ? $sWhere ORDER BY '?'",
+        $hResult = query_parameters("SELECT ?, ? FROM ? $sWhere ORDER BY ?",
                                 $sIdField, $sNameField, $sTable, $sNameField);
         if(!$hResult)
             return $sStr; // Oops
