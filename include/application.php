@@ -968,7 +968,7 @@ class Application {
                 $this->iAppId))
                 return TRUE;
 
-            if($this->sQueued != "true" && $this->iSubmitterId =
+            if($this->sQueued != "false" && $this->iSubmitterId ==
                $_SESSION['current']->iUserId)
             {
                 return TRUE;
