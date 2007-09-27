@@ -147,11 +147,22 @@ if($aClean['iVersionId'] && $_SESSION['current']->isLoggedIn())
     echo '<input type="hidden" name="MAX_FILE_SIZE" value="4000000" />',"\n";
     echo '<input type="hidden" name="sCmd" value="screenshot_upload" />',"\n";
     echo '<input type="hidden" name="iVersionId" value="'.$aClean['iVersionId'].'"></form />',"\n";
-} else // else let the person know that if they log in they can submit screenshots
+} else if(!$_SESSION['current']->isLoggedIn()) // else let the person know that if they log in they can submit screenshots
 {
   echo '<div align="center"><a href="'.login_url().'">';
   echo "Log in</a> to submit screenshots</div>\n";
+} else
+{
+    echo html_frame_start("Upload Screenshot", "30%");
+    echo 'If you would like to submit screenshots, please select an application version below.<br />';
+    echo '<ul>';
+    foreach($oApp->getVersions() as $oVersion)
+        echo '<li><a href="'.BASE.'screenshots.php?iVersionId='.$oVersion->objectGetId().'">'.$oVersion->sName.'</a></li>';
+
+    echo '</ul>';
+    echo html_frame_end();
 }
+
 echo html_back_link(1);
 
 apidb_footer();
