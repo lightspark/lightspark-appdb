@@ -669,14 +669,13 @@ class screenshot
 
     function getOutputEditorValues($aClean)
     {
-        /* STUB: No update possible, reply text fetched from $aClean */
-        return TRUE;
+        $this->sDescription = $aClean['sDescription'];
     }
 
     function update()
     {
-        /* STUB: No updating possible at the moment */
-        return TRUE;
+        $oAppData = new appData($this->iScreenshotId, null, $this);
+        return $oAppData->update();
     }
 
     function objectHideDelete()

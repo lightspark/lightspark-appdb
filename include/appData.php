@@ -94,25 +94,18 @@ class appData
             return TRUE;
     }
 
-    function update($bSilent = FALSE)
+    function update()
     {
         if(!$this->canEdit())
             return FALSE;
 
-        $sQuery = "UPDATE appData SET versionId = '?', appId = '?', sDescription = '?'
+        $sQuery = "UPDATE appData SET versionId = '?', appId = '?', description = '?'
                         WHERE id = '?'";
-        $hResult = query_parameters($this->iVersionId, $this->iAppId,
+        $hResult = query_parameters($sQuery, $this->iVersionId, $this->iAppId,
                                     $this->sDescription, $this->iId);
  
         if(!$hResult)
-        {
-            if(!$bResult)
-                addmsg("Failed to update add data", "red");
             return FALSE;
-        }
-
-        if(!$bSilent)
-            addmsg("Updated app data successfully", "green");
 
         return TRUE;
     }
