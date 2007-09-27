@@ -107,7 +107,9 @@ if($hResult && query_num_rows($hResult))
             )
           )
         {
-            echo "<br />[<a href='screenshots.php?sCmd=delete&iImageId=$oRow->id&iAppId=".$aClean['iAppId']."&iVersionId=".$aClean['iVersionId']."'>Delete Image</a>]";
+            $oM = new objectManager("screenshot");
+            $oM->sReturnTo = "screenshots.php?iAppId=".$oScreenshot->iAppId."&iVersionId=".$oScreenshot->iVersionId;
+            echo '<br />[<a href="'.$oM->makeUrl("delete", $oScreenshot->iScreenshotId, "Delete Screenshot").'">Delete</a>]';
         }
 
         echo "</div></td>\n";

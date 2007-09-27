@@ -935,7 +935,8 @@ class ObjectManager
         if($sAction)
             $sUrl .= "&sAction=$sAction";
 
-
+        if($this->sReturnTo)
+            $sUrl .= "&sReturnTo=".urlencode($this->sReturnTo);
 
         if(!$sTitle)
             $sTitle = $this->sTitle;
