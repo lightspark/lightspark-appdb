@@ -1245,7 +1245,7 @@ class version {
     }
 
     // returns a string containing the html for a selection list
-    private function makeLicenseList($sLicense = NULL)
+    public function makeLicenseList($sLicense = NULL)
     {
         if(!$sLicense)
             $sLicense = $this->sLicense;
