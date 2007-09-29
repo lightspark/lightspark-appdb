@@ -7,18 +7,53 @@ define("PREVIEW_ENTRY", 2);
 /* - handles the display and editing of unqueued objects */
 class ObjectManager
 {
-    var $sClass;
-    var $bIsQueue;
-    var $sTitle;
-    var $iId;
-    var $bIsRejected;
-    var $sReturnTo;
-    var $oMultiPage;
-    var $oTableRow;
+    private $sClass;
+    private $bIsQueue;
+    private $sTitle;
+    private $iId;
+    private $bIsRejected;
+    private $sReturnTo;
+    private $oMultiPage;
+    private $oTableRow;
 
     // an array of common responses used when replying to
     // queued entries
-    var $aCommonResponses;
+    private $aCommonResponses;
+
+    public function getClass()
+    {
+      return $this->sClass;
+    }
+
+    public function setIsQueue($bIsQueue)
+    {
+      $this->bIsQueue = $bIsQueue;
+    }
+
+    public function getIsQueue()
+    {
+      return $this->bIsQueue;
+    }
+
+    public function setReturnTo($sReturnTo)
+    {
+      $this->sReturnTo = $sReturnTo;
+    }
+
+    public function setIsRejected($bIsRejected)
+    {
+      $this->bIsRejected = $bIsRejected;
+    }
+
+    public function getId()
+    {
+      return $this->iId;
+    }
+
+    public function getMultiPageDataFromInput($aClean)
+    {
+      $this->oMultiPage->getDataFromInput($aClean);
+    }
 
     function ObjectManager($sClass, $sTitle = "list", $iId = false)
     {
@@ -47,7 +82,7 @@ class ObjectManager
     }
 
     /* Check whether the associated class has the given method */
-    function checkMethod($sMethodName, $bEnableOutput)
+    public function checkMethod($sMethodName, $bEnableOutput)
     {
         // NOTE: we only 'new' here because php4 requires an instance
         //       of an object as the first argument to method_exists(), php5
@@ -62,7 +97,7 @@ class ObjectManager
     }
 
     /* Check whether the specified methods are valid */
-    function checkMethods($aMethods, $bExit = true)
+    public function checkMethods($aMethods, $bExit = true)
     {
         foreach($aMethods as $sMethod)
         {
@@ -82,7 +117,7 @@ class ObjectManager
     }
 
     /* displays the list of entries */
-    function display_table($aClean)
+    public function display_table($aClean)
     {
         $this->checkMethods(array("ObjectGetEntries", "ObjectGetHeader",
              "objectGetTableRow", "objectGetId", "canEdit"));
@@ -212,7 +247,7 @@ class ObjectManager
     }
 
     /* display the entry for editing */
-    function display_entry_for_editing($sBackLink, $sErrors)
+    public function display_entry_for_editing($sBackLink, $sErrors)
     {
         $this->checkMethods(array("outputEditor", "getOutputEditorValues",
                                   "update", "create"));
@@ -328,7 +363,7 @@ class ObjectManager
     }
 
     /* Display help for queue processing */
-    function display_queue_processing_help()
+    public function display_queue_processing_help()
     {
         /* No help text defined, so do nothing */
         if(!method_exists(new $this->sClass(), "ObjectDisplayQueueProcessingHelp"))
@@ -339,7 +374,7 @@ class ObjectManager
     }
 
     /* Ask whether the user really wants to delete the entry and display a delete reason box */
-    function delete_prompt()
+    public function delete_prompt()
     {
         $this->checkMethods(array("delete", "canEdit"));
 
@@ -386,7 +421,7 @@ class ObjectManager
         echo $oTable->getString();
     }
 
-    function delete_child($sReplyText, $bMailSubmitter, $bMailCommon)
+    public function delete_child($sReplyText, $bMailSubmitter, $bMailCommon)
     {
         $this->checkMethods(array("delete", "canEdit"));
 
@@ -425,7 +460,7 @@ class ObjectManager
     }
 
     /* Delete the object associated with the given id */
-    function delete_entry($sReplyText)
+    public function delete_entry($sReplyText)
     {
         $this->checkMethods(array("delete", "canEdit"));
 
@@ -515,7 +550,7 @@ class ObjectManager
 
     /* Return the user to the url specified in the objectManager object.  Fall back to a
        given value if the object member is not set */
-    function return_to_url($sFallback)
+    private function return_to_url($sFallback)
     {
         $sUrl = $this->sReturnTo;
 
@@ -525,7 +560,7 @@ class ObjectManager
         util_redirect_and_exit($sUrl);
     }
 
-    function om_from_object($oObject)
+    private function om_from_object($oObject)
     {
         return new objectManager(get_class($oObject), "", $oObject->objectGetId());
     }
@@ -537,7 +572,7 @@ class ObjectManager
        bParentAction states whether the action was caused by a change to the parent
        entry, for instance this will be true when deleting a version because we
        delete its parent application. */
-    function get_mail($bMailSubmitter, $sAction, $bParentAction = FALSE)
+    private function get_mail($bMailSubmitter, $sAction, $bParentAction = FALSE)
     {
         $oObject = new $this->sClass($this->iId);
 
@@ -564,7 +599,7 @@ class ObjectManager
 
     /* Move all the object's children to another object of the same type, and
        delete the original object afterwards */
-    function move_children($iNewId)
+    public function move_children($iNewId)
     {
         $oObject = new $this->sClass($this->iId);
         $oNewObject = new $this->sClass($iNewId);
@@ -594,7 +629,7 @@ class ObjectManager
 
     /* Display a page where the user can select which object the children of the current
        object can be moved to */
-    function display_move_children()
+    public function display_move_children()
     {
         $oObject = new $this->sClass($this->iId);
         if(!$oObject->canEdit())
@@ -638,7 +673,7 @@ class ObjectManager
         echo "</table>\n";
     }
 
-    function show_preview($oObject, $aClean)
+    private function show_preview($oObject, $aClean)
     {
         echo html_frame_start("Preview", "75%");
 
@@ -653,7 +688,7 @@ class ObjectManager
     }
 
     /* Display screen for submitting a new entry of given type */
-    function add_entry($aClean, $sErrors = "")
+    public function add_entry($aClean, $sErrors = "")
     {
         $this->checkMethods(array("outputEditor", "getOutputEditorValues",
                                   "update", "create"));
@@ -703,7 +738,7 @@ class ObjectManager
         echo "</div>\n";
     }
 
-    function handle_preview_button()
+    private function handle_preview_button()
     {
         $oObject = new $this->sClass($this->iId);
 
@@ -716,7 +751,7 @@ class ObjectManager
         echo '<input type="submit" name="sSubmit" class="button" value="Preview" />';
     }
 
-    function handle_anonymous_submission()
+    public function handle_anonymous_submission()
     {
         $oObject = new $this->sClass();
         if($oObject->allowAnonymousSubmissions() || $_SESSION['current']->isLoggedIn())
@@ -728,7 +763,7 @@ class ObjectManager
                 "now</a>, it only takes a few seconds.");
     }
 
-    function displayMoveChildren($oObject)
+    private function displayMoveChildren($oObject)
     {
         /* Display a link to the move child objects page if the class has the necessary
            functions and the user has edit rights.  Not all classes have child objects. */
@@ -749,7 +784,7 @@ class ObjectManager
        If we were to fetch the name from the URL, that would mean
        that changes to the version name would not be reflected in
        static URLs, like external links to the AppDB. */
-    function get_title($sAction)
+    public function get_title($sAction)
     {
         $oObject = new $this->sClass($this->iId);
         $sTitle = "";
@@ -768,7 +803,7 @@ class ObjectManager
        editing one etc.
        Returns null if there are no custom vars, or a labelled array
        with the variable contents otherwise */
-    function get_custom_vars($aClean, $sAction)
+    private function get_custom_vars($aClean, $sAction)
     {
         $oObject = new $this->sClass($this->iId);
 
@@ -788,7 +823,7 @@ class ObjectManager
     }
 
     /* View an entry */
-    function view($sBackLink, $aClean)
+    public function view($sBackLink, $aClean)
     {
         $this->checkMethods(array("display"));
 
@@ -808,7 +843,7 @@ class ObjectManager
     }
 
     /* Process form data generated by adding or updating an entry */
-    function processForm($aClean)
+    public function processForm($aClean)
     {
         // FIXME: hack so if we modify $aClean in here any objects that use the global
         // $aClean will see the modified value. Should be replaced when we have
@@ -919,7 +954,7 @@ class ObjectManager
     }
 
     /* Make an objectManager URL based on the object and optional parameters */
-    function makeUrl($sAction = false, $iId = false, $sTitle = false)
+    public function makeUrl($sAction = false, $iId = false, $sTitle = false)
     {
         $sUrl = APPDB_ROOT."objectManager.php?";
 
@@ -954,7 +989,7 @@ class ObjectManager
 
     /* Inserts the information in an objectManager object as form data, so that it
        is preserved when submitting forms */
-    function makeUrlFormData()
+    public function makeUrlFormData()
     {
         $sIsQueue = $this->bIsQueue ? "true" : "false";
         $sIsRejected = $this->bIsRejected ? "true" : "false";
@@ -976,8 +1011,9 @@ class ObjectManager
 
         return $sReturn;
     }
+
     /* Get id from form data */
-    function getIdFromInput($aClean)
+    private function getIdFromInput($aClean)
     {
         $sId = "i".ucfirst($this->sClass)."Id";
         $iId = isset($aClean['sId']) ? $aClean['sId'] : $aClean['iId'];
@@ -986,7 +1022,7 @@ class ObjectManager
     }
 
     /* Output headers for a table */
-    function outputHeader($sClass)
+    private function outputHeader($sClass)
     {
         $oObject = new $this->sClass();
         $oTableRow = $oObject->objectGetHeader();
@@ -1003,7 +1039,7 @@ class ObjectManager
         echo $oTableRow->GetString();
     }
 
-    function handleMultiPageControls($aClean, $bItemsPerPageSelector = TRUE)
+    private function handleMultiPageControls($aClean, $bItemsPerPageSelector = TRUE)
     {
         /* Display multi-page browsing controls (prev, next etc.) if applicable.
            objectGetItemsPerPage returns FALSE if no multi-page display should be used,
@@ -1086,7 +1122,7 @@ class ObjectManager
         $this->oMultiPage->iPage = $iPage;
     }
 
-    function getQueueString($bQueued, $bRejected)
+    public function getQueueString($bQueued, $bRejected)
     {
         if($bQueued)
         {
@@ -1100,7 +1136,7 @@ class ObjectManager
         return $sQueueString;
     }
 
-    function displayErrors($sErrors)
+    private function displayErrors($sErrors)
     {
         if($sErrors)
         {

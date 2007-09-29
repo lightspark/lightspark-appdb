@@ -44,27 +44,28 @@ $aClean['iId'] = isset($aClean['iId']) ? $aClean['iId'] : 0;
 $oObject = new objectManager($aClean['sClass'], $aClean['sTitle'], $aClean['iId']);
 
 if(isset($aClean['bIsQueue']) && $aClean['bIsQueue'] == 'true')
-    $oObject->bIsQueue = true;
+  $oObject->setIsQueue(true);
 else
-    $oObject->bIsQueue = false;
+  $oObject->setIsQueue(false);
 
 if(isset($aClean['sReturnTo']))
-    $oObject->sReturnTo = $aClean['sReturnTo'];
+  $oObject->setReturnTo($aClean['sReturnTo']);
 
 $aClean['bIsRejected'] = isset($aClean['bIsRejected']) ? $aClean['bIsRejected'] : false;
 /* If it is rejected it is defined as queued */
 if($aClean['bIsRejected'] == 'true')
 {
-    $oObject->bIsRejected = true;
-    $oObject->bIsQueue = true;
+    $oObject->setIsRejected(true);
+    $oObject->setIsQueue(true);
 } else
 {
-    $oObject->bIsRejected = false;
+    $oObject->setIsRejected(false);
 }
 
-$oObject->oMultiPage->getDataFromInput($aClean);
+$oObject->getMultiPageDataFromInput($aClean);
 
-$oOtherObject = new $oObject->sClass($oObject->iId);
+$sClass = $oObject->getClass();
+$oOtherObject = new $sClass($oObject->getId());
 
 /* Certain actions must be performed before the header is set. */
 /* processForm returns TRUE on success, or a user-readable list of errors
@@ -76,7 +77,7 @@ if(isset($aClean['sAction']) && $aClean['sAction'] == "add")
 
 /* Provided the necessary values are present, an object's children may be moved
    without any confirmation */
-if($oObject->iId && $aClean['sAction'] == "moveChildren" && $aClean['iNewId'])
+if($oObject->getId() && $aClean['sAction'] == "moveChildren" && $aClean['iNewId'])
     $oObject->move_children($aClean['iNewId']);
 
 $sAction = $aClean['sAction'];
@@ -84,14 +85,14 @@ $sAction = $aClean['sAction'];
 /* If no action is specified, use a default depending on other parameters */
 if(!$sAction)
 {
-    if($oObject->iId)
+    if($oObject->getId())
         $sAction = "view";
 }
 
 apidb_header($oObject->get_title($sAction));
 
 /* display a particular element */
-if($oObject->iId && $sAction != "add")
+if($oObject->getId() && $sAction != "add")
 {
     switch($sAction)
     {
@@ -121,7 +122,7 @@ if($oObject->iId && $sAction != "add")
 } else
 {
     // if displaying a queue display the help for the given queue
-    if($oObject->bIsQueue)
+    if($oObject->getIsQueue())
         $oObject->display_queue_processing_help();
 
     $oObject->display_table($aClean);

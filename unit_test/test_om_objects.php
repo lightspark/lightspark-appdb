@@ -18,13 +18,12 @@ require_once(BASE.'include/bugs.php');
 /* internal function */
 function test_class($sClassName, $aTestMethods)
 {
-    $oObject = new ObjectManager("");
-    $oObject->sClass = $sClassName;
+    $oObject = new ObjectManager($sClassName);
 
     /* Check whether the required methods are present */
     if(!$oObject->checkMethods($aTestMethods, false))
     {
-        echo "FAILED\t\t".$oObject->sClass." does not have valid methods for use with".
+        echo "FAILED\t\t".$oObject->getClass()." does not have valid methods for use with".
              " the object manager\n";
         return false;
     }
@@ -133,7 +132,7 @@ function test_class($sClassName, $aTestMethods)
 
     $oUser->delete();
 
-    echo "PASSED\t\t".$oObject->sClass."\n";
+    echo "PASSED\t\t".$oObject->getClass()."\n";
     return TRUE;
 }
 
