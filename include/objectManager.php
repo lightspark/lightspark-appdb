@@ -15,10 +15,35 @@ class ObjectManager
     private $sReturnTo;
     private $oMultiPage;
     private $oTableRow;
+    private $oObject; /* Store an instance of the object of the class
+                         we are working with.  This is useful if
+                         we are calling object functions which modify
+                         the object without storing it in the database,
+                         and then call objectManager functions which
+                         operate on the object, such as in processForm
+                         where we first run the object's getOutputEditorValues()
+                         and then objectManager's delete_entry(). */
 
     // an array of common responses used when replying to
     // queued entries
     private $aCommonResponses;
+
+    /* Get an instance of the object of the class we are working with */
+    private function getObject()
+    {
+        if(!$this->oObject)
+            $this->oObject = new $this->sClass($this->iId);
+
+        return $this->oObject;
+    }
+
+    private function setId($iId)
+    {
+        $this->iId = $iId;
+
+        if($this->oObject)
+            $this->oObject = new $this->sClass($this->iId);
+    }
 
     public function getClass()
     {
@@ -466,7 +491,7 @@ class ObjectManager
     {
         $this->checkMethods(array("delete", "canEdit"));
 
-        $oObject = new $this->sClass($this->iId);
+        $oObject = $this->getObject();
 
         if(!$oObject->objectGetId())
             return FALSE;
@@ -933,6 +958,11 @@ class ObjectManager
                 break;
 
             case "Delete":
+                /* Heere we call an objectManager function instead
+                   of a function of the object's class.  Thus we
+                   need to store the object so changes in
+                   getOutputEditorValues() are caught. */
+                $this->oObject = $oObject;
                 $this->delete_entry($aClean['sReplyText']);
                 break;
 
