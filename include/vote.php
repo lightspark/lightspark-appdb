@@ -55,6 +55,21 @@ class vote
 
         return TRUE;
     }
+
+    public function delete()
+    {
+        /* A vote needs to have a versionId, so if it doesn't that means it is not in the
+           database or it was not selected in the vote editor */
+        if(!$this->iVersionId)
+            return TRUE;
+
+        $hResult = query_parameters("DELETE FROM appVotes WHERE id = '?'", $this->iVoteId);
+
+        if(!$hResult)
+            return FALSE;
+
+        return TRUE;
+    }
 }
 
 class voteManager
@@ -82,7 +97,7 @@ class voteManager
 
     public function outputEditor($aClean = null)
     {
-        echo "The following shows your current votes.  Check the boxes next to the apps you wish to replace with a vote for ".version::fullNameLink($aClean['iVersionId']).".";
+        echo "The following shows your current votes.  Check the boxes next to the apps you wish to replace with a vote for ".version::fullNameLink($aClean['iVersionId'])." or delete.";
 
         $oTable = new table();
         $this->aVotes = $this->getVotes();
@@ -107,6 +122,11 @@ class voteManager
         return FALSE;
     }
 
+    function objectGetMail($sAction, $bMailSubmitter, $bParentAction)
+    {
+        return array(null, null, null); /* No mail */
+    }
+
     public function mustBeQueued()
     {
         return FALSE;
@@ -125,6 +145,22 @@ class voteManager
     public function create()
     {
         return TRUE;
+    }
+
+    public function delete()
+    {
+        $bSuccess = TRUE;
+
+        if(!is_array($this->aVotes))
+            $this->aVotes = $this->getVotes();
+
+        foreach($this->aVotes as $oVote)
+        {
+            if(!$oVote->delete())
+                $bSuccess = FALSE;
+        }
+
+        return $bSuccess;
     }
 
     public function update()

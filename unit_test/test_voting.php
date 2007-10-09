@@ -23,7 +23,7 @@ function test_voteManager_getVotes()
 
 /* Tests that the votes are saved to the database and that we cannot create more than MAX_VOTES.
    Note that a user always has MAX_VOTES even though they're not in the DB, so we use update instead of create */
-function test_vote_update()
+function test_vote_update_delete()
 {
     $iUserId = 655000;
 
@@ -60,13 +60,26 @@ function test_vote_update()
         return FALSE;
     }
 
-    /* We don't normally delete votes, so we have to do it manually */
-    query_parameters("DELETE FROM appVotes WHERE userId = '?'", $iUserId);
+    /* Now the entries should be gone again */
+    $oVoteManager->delete();
+    $iExpected = 0;
+    $iReceived = 0; /* Incremented below */
+    foreach($oVoteManager->getVotes() as $oVote)
+    {
+        if($oVote->iVoteId)
+            $iReceived++;
+    }
+
+    if($iExpected != $iReceived)
+    {
+        echo "Expected $iExpected votes after deletion, got $iReceived\n";
+        return FALSE;
+    }
 
     return TRUE;
 }
 
 run_test("test_voteManager_getVotes");
-run_test("test_vote_update");
+run_test("test_vote_update_delete");
 
 ?>
