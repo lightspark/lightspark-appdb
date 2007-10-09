@@ -272,7 +272,7 @@ class ObjectManager
     }
 
     /* display the entry for editing */
-    public function display_entry_for_editing($sBackLink, $sErrors)
+    public function display_entry_for_editing($aClean, $sErrors)
     {
         $this->checkMethods(array("outputEditor", "getOutputEditorValues",
                                   "update", "create"));
@@ -281,7 +281,7 @@ class ObjectManager
         echo "<div class='default_container'>\n";
 
         // link back to the previous page
-        echo html_back_link(1, $sBackLink);
+        echo html_back_link(1, null);
 
         $oObject = new $this->sClass($this->iId);
 
@@ -296,7 +296,6 @@ class ObjectManager
         /* Display errors, if any, and fetch form data */
         if($this->displayErrors($sErrors))
         {
-            global $aClean;
             $oObject->getOutputEditorValues($aClean);
 
             if($sErrors === PREVIEW_ENTRY)
@@ -308,7 +307,12 @@ class ObjectManager
 
         echo $this->makeUrlFormData();
 
-        $oObject->outputEditor();
+        $aCustomVars = $this->get_custom_vars($aClean, "edit");
+
+        if($aCustomVars)
+            $oObject->outputEditor($aClean);
+        else
+            $oObject->outputEditor();
 
         /* if this is a queue add a dialog for replying to the submitter of the
            queued entry */
@@ -760,7 +764,7 @@ class ObjectManager
         "name=\"sSubmit\" />\n";
         $this->handle_preview_button();
         echo "</div></form>\n";
-        echo html_back_link(1, $sBackLink);
+        echo html_back_link(1);
 
         echo "</div>\n";
     }

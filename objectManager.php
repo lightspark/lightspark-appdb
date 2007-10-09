@@ -101,7 +101,7 @@ if($oObject->getId() && $sAction != "add")
         break;
 
         case "edit":
-        $oObject->display_entry_for_editing($_SERVER['REQUEST_URI'], $sErrors);
+        $oObject->display_entry_for_editing($aClean, $sErrors);
         break;
 
         case "showMoveChildren":

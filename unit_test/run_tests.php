@@ -44,6 +44,8 @@ echo "\n";
 include_once("test_appData.php");
 echo "\n";
 include_once("test_testData.php");
+echo "\n";
+include_once("test_voting.php");
 
 // purge any session messages we generated during the test
 purgeSessionMessages();

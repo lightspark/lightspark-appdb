@@ -100,4 +100,17 @@ function error($sMsg)
     echo "$sClass::$sFunction:$sFile:$sLine $sMsg\n";
 }
 
+function run_test($sTestName)
+{
+    if(!$sTestName())
+    {
+        global $bTestSuccess;
+        echo "$sTestName() failed!\n";
+        $bTestSuccess = false;
+    } else
+    {
+        echo "$sTestName() passed.\n";
+    }
+}
+
 ?>
