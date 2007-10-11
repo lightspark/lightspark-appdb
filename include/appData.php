@@ -263,6 +263,8 @@ class appData
                     AND
                     (
                         appData.appId = appFamily.appId
+                        AND
+                        appData.versionId = '0'
                     )
                     AND
                     appVersion.queued = 'false'
@@ -388,6 +390,8 @@ class appData
                       AND
                       (
                         appData.appId = appFamily.appId
+                        AND
+                        appData.versionId = '0'
                       )
                       AND
                       appVersion.queued = 'false'
