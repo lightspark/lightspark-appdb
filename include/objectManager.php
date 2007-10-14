@@ -271,6 +271,14 @@ class ObjectManager
         $this->handleMultiPageControls($aClean, FALSE);
     }
 
+    private function getOptionalSetting($sFunction, $bDefault)
+    {
+        if(!method_exists($this->sClass, $sFunction))
+            return $bDefault;
+
+        return $this->getObject()->$sFunction();
+    }
+
     /* display the entry for editing */
     public function display_entry_for_editing($aClean, $sErrors)
     {
@@ -363,7 +371,7 @@ class ObjectManager
                      'class="button" />',"\n";
             }
 
-            if(!$this->bIsRejected)
+            if(!$this->bIsRejected && !$this->getOptionalSetting("objectHideReject", FALSE))
             {
                 echo '<input name="sSubmit" type="submit" value="Reject" class="button" '.
                     '/>',"\n";

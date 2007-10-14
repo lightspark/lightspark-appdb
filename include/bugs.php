@@ -482,6 +482,11 @@ class Bug
         echo $oTable->GetString();
     }
 
+    function objectHideReject()
+    {
+        return TRUE;
+    }
+
     // NOTE: we don't have any editing support for this entry at this time
     //       so output the entry and a field to identify the bug id
     function outputEditor()
