@@ -52,7 +52,7 @@ function global_sidebar_login() {
         $iVersionsRejected = version::objectGetEntriesCount(true, true);
         if($iVersionsRejected && !$_SESSION['current']->hasPriv("admin"))
         {
-            $g->add("Review Rejected Versiosn ($iVersionsRejected)",
+            $g->add("Review Rejected Versions ($iVersionsRejected)",
                     BASE."objectManager.php?sClass=version_queue&bIsRejected=true".
                     "&bIsQueue=true&sTitle=Rejected+Versions", "center");
         }
