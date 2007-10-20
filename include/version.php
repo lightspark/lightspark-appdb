@@ -1427,6 +1427,7 @@ class version {
         $oTableRow->AddTextCell("Vendor");
         $oTableRow->AddTextCell("Application");
         $oTableRow->AddTextCell("Version");
+        $oTableRow->AddTextCell("Has Super Maintainer");
         return $oTableRow;
     }
 
@@ -1536,12 +1537,19 @@ class version {
         $oApp = new application($this->iAppId);
         $oVendor = new vendor($oApp->iVendorId);
 
+        $aSuper_maintainers = Maintainer::getSuperMaintainersUserIdsFromAppId($this->iAppId);
+        if($aSuper_maintainers)
+            $bHasSuperMaintainer = true;
+        else
+            $bHasSuperMaintainer = false;
+
         $oTableRow = new TableRow();
         $oTableRow->AddTextCell(print_date(mysqldatetime_to_unixtimestamp($this->sSubmitTime)));
         $oTableRow->AddTextCell($oUser->objectMakeLink());
         $oTableRow->AddTextCell($oVendor->objectMakeLink());
         $oTableRow->AddTextCell($oApp->objectMakeLink());
         $oTableRow->AddTextCell($this->sName);
+        $oTableRow->AddCell(new TableCell($bHasSuperMaintainer ? "Yes" : "No"));
 
         $oOMTableRow = new OMTableRow($oTableRow);
         return $oOMTableRow;
