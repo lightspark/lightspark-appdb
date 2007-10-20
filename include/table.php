@@ -425,16 +425,16 @@ class Table
     if($this->sWidth)
       $sStr.= ' width="'.$this->sWidth.'"';
 
-    if($this->iBorder)
+    if($this->iBorder !== null)
       $sStr.= ' border="'.$this->iBorder.'"';
 
     if($this->sAlign)
       $sStr.= ' align="'.$this->sAlign.'"';
 
-    if($this->iCellSpacing)
+    if($this->iCellSpacing !== null)
       $sStr.= ' cellspacing="'.$this->iCellSpacing.'"';
 
-    if($this->iCellPadding)
+    if($this->iCellPadding !== null)
       $sStr.= ' cellpadding="'.$this->iCellPadding.'"';
 
     $sStr.= ">"; // close the open table element
