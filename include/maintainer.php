@@ -237,7 +237,7 @@ class maintainer
         $oUser = new User($this->iUserId);
         
         if(!$oUser->isSuperMaintainer($this->iAppId) &&
-           ((!$this->bSuperMaintainer && !$oUser->isMaintainer($this->iVersionId)) | $this->bSuperMaintainer))
+           ((!$this->bSuperMaintainer && !$oUser->isMaintainer($this->iVersionId)) || $this->bSuperMaintainer))
         {
             /* unqueue the maintainer entry */
             $hResult = query_parameters("UPDATE appMaintainers SET queued='false' WHERE userId = '?' AND maintainerId = '?'",
@@ -855,13 +855,19 @@ class maintainer
             $oApp = new Application($this->iAppId);
             $oVersion = new Version($this->iVersionId);
 
+            echo "<input type=\"hidden\" name=\"iAppId\" value=\"".$oApp->iAppId."\" />\n";
+            echo "<input type=\"hidden\" name=\"iVersionId\" value=\"".$oVersion->iVersionId."\" />\n";
+
             //app name
             echo '<tr valign=top><td class=color0 style=\'text-align:right\'><b>App Name:</b></td>',"\n";
             echo "<td>".$oApp->objectMakeLink()."</td></tr>\n";
 
             //version
-            echo '<tr valign=top><td class=color0 style=\'text-align:right\'><b>App Version:</b></td>',"\n";
-            echo "<td>".$oVersion->objectMakeLink()."</td></tr>\n";
+            if($oVersion->iVersionId)
+            {
+                echo '<tr valign=top><td class=color0 style=\'text-align:right\'><b>App Version:</b></td>',"\n";
+                echo "<td>".$oVersion->objectMakeLink()."</td></tr>\n";
+            }
 
             //maintainReason
             echo '<tr valign=top><td class=color0 style=\'text-align:right\'><b>Maintainer request reason:</b></td>',"\n";
