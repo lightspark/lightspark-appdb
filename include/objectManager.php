@@ -758,7 +758,9 @@ class ObjectManager
                 $oObject->objectDisplayAddItemHelp();
         }
 
-        echo "<form method=\"post\">\n";
+        echo "<form method=\"post\" action=\"".$this->makeUrl("add")."\">\n";
+
+        echo $this->makeUrlFormData();
 
         $aVars = $this->get_custom_vars($aClean, "add");
 
