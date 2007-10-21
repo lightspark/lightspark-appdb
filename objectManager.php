@@ -48,6 +48,9 @@ if(isset($aClean['bIsQueue']) && $aClean['bIsQueue'] == 'true')
 else
   $oObject->setIsQueue(false);
 
+if(isset($aClean['sReturnToTitle']))
+  $oObject->setReturnToTitle($aClean['sReturnToTitle']);
+
 if(isset($aClean['sReturnTo']))
   $oObject->setReturnTo($aClean['sReturnTo']);
 

@@ -13,6 +13,7 @@ class ObjectManager
     private $iId;
     private $bIsRejected;
     private $sReturnTo;
+    private $sReturnToTitle; /* Used to preserve the title when processing entries from a queue list, for instance */
     private $oMultiPage;
     private $oTableRow;
     private $oObject; /* Store an instance of the object of the class
@@ -63,6 +64,11 @@ class ObjectManager
     public function setReturnTo($sReturnTo)
     {
       $this->sReturnTo = $sReturnTo;
+    }
+
+    public function setReturnToTitle($sTitle)
+    {
+      $this->sReturnToTitle = $sTitle;
     }
 
     public function setIsRejected($bIsRejected)
@@ -209,6 +215,9 @@ class ObjectManager
 
         /* Output header cells */
         $this->outputHeader("color4");
+
+        /* Preserve the page title */
+        $this->setReturnToTitle($this->sTitle);
 
         /* output each entry */
         for($iCount = 0; $oRow = query_fetch_object($hResult); $iCount++)
@@ -990,7 +999,7 @@ class ObjectManager
         /* Displaying the entire un-queued list for a class is not a good idea,
         so only do so for queued data */
         if($this->bIsQueue)
-            $sRedirectLink = $this->makeUrl("view", false, "$this->sClass list");
+            $sRedirectLink = $this->makeUrl("view", false, $this->sReturnToTitle ? $this->sReturnToTitle : "$this->sClass list");
         else
             $sRedirectLink = APPDB_ROOT;
 
@@ -1021,6 +1030,9 @@ class ObjectManager
 
         if(!$sTitle)
             $sTitle = $this->sTitle;
+
+        if($this->sReturnToTitle)
+            $sUrl .= "&sReturnToTitle=".$this->sReturnToTitle;
 
         $sUrl .= "&sTitle=".urlencode($sTitle);
 
@@ -1054,6 +1066,9 @@ class ObjectManager
             $sReturn .= "<input type=\"hidden\" name=\"iPage\" value=\"".
                     $this->oMultiPage->iPage."\" />\n";
         }
+
+        if($this->sReturnToTitle)
+            $sReturn .= "<input type=\"hidden\" name=\"sReturnToTitle\" value=\"".$this->sReturnToTitle."\" />\n";
 
         return $sReturn;
     }
