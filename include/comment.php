@@ -163,11 +163,6 @@ class Comment {
         return true;
     }
 
-    function getOutputEditorValues($aClean)
-    {
-        /* Stub */
-    }
-
 
     /**
      * Removes the current comment from the database.
@@ -200,48 +195,65 @@ class Comment {
         return $oRow->cnt;
     }
 
-    /**
-     * class static functions
-     */
+    function getOutputEditorValues($aClean)
+    {
+        $this->sSubject = $aClean['sSubject'];
+        $this->sBody = $aClean['sBody'];
+        $this->iParentId = $aClean['iThread'];
+        $this->iVersionId = $aClean['iVersionId'];
+
+        if(!$this->oOwner)
+            $this->oOwner = $_SESSION['current'];
+
+        if(!$this->sDateCreated)
+            $this->sDateCreated = date("l F jS Y, H:i");
+    }
 
     /**
      * display a single comment (in $oRow)
      */
     function view_app_comment($oRow)
     {
+        $oComment = new comment(null, $oRow);
+        $oComment->display();
+    }
+
+    function display()
+    {
         echo html_frame_start('','98%');
         echo '<table width="100%" border="0" cellpadding="2" cellspacing="1">',"\n";
 
         // message header
-        echo "<tr bgcolor=\"#E0E0E0\"><td><a name=Comment-".$oRow->commentId."></a>\n";
-        echo " <b>".$oRow->subject."</b><br />\n";
-        echo " by  ".forum_lookup_user($oRow->userId)." on ".$oRow->time."<br />\n";
+        echo "<tr bgcolor=\"#E0E0E0\"><td><a name=Comment-".$this->iCommentId."></a>\n";
+        echo " <b>".$this->sSubject."</b><br />\n";
+        echo " by  ".forum_lookup_user($this->oOwner->iUserId)." on ".$this->sDateCreated."<br />\n";
         echo "</td></tr><tr><td>\n";
     
         // body
-        echo htmlify_urls($oRow->body), "<br /><br />\n";
+        echo htmlify_urls($this->sBody), "<br /><br />\n";
     
         // only add RE: once
-        if(eregi("RE:", $oRow->subject))
-            $subject = $oRow->subject;
+        if(eregi("RE:", $this->sSubject))
+            $sSubject = $this->sSubject;
         else
-            $subject = "RE: ".$oRow->subject;
+            $sSubject = "RE: ".$this->sSubject;
 
+        $oVersion = new version($this->iVersionId);
+        $oM = new objectManager("comment", "Post new ocmment");
+        $oM->setReturnTo($oVersion->objectMakeUrl());
         // reply post buttons
-        echo "	[<a href=\"addcomment.php?iAppId=$oRow->appId&amp;iVersionId=$oRow->versionId\"><small>post new</small></a>] \n";
-        echo "	[<a href=\"addcomment.php?iAppId=$oRow->appId&amp;iVersionId=$oRow->versionId&amp;sSubject=".
-            urlencode("$subject")."&amp;iThread=$oRow->commentId\"><small>reply to this</small></a>] \n";
+        echo "	[<a href=\"".$oM->makeUrl("add")."&iAppId=$this->iAppId&amp;iVersionId=$this->iVersionId\"><small>post new</small></a>] \n";
+        echo "	[<a href=\"".$oM->makeUrl("add")."&iAppId=$this->iAppId&amp;iVersionId=$this->iVersionId&amp;sSubject=".
+                urlencode("$sSubject")."&amp;iThread=$this->iCommentId\"><small>reply to this</small></a>] \n";
 
         echo "</td></tr>\n";
 
-        $oComment = new comment($oRow->commentId);
         // delete message button, for admins
-        if ($oComment->canEdit())
+        if ($this->canEdit())
         {
-            $oVersion = new version($oRow->versionId);
             echo "<tr>";
             echo "<td><form method=\"post\" name=\"sMessage\" action=\"".BASE."objectManager.php\"><input type=\"submit\" value=\"Delete\" class=\"button\">\n";
-            echo "<input type=\"hidden\" name=\"iId\" value=\"$oRow->commentId\" />";
+            echo "<input type=\"hidden\" name=\"iId\" value=\"$this->iCommentId\" />";
             echo "<input type=\"hidden\" name=\"sClass\" value=\"comment\" />";
             echo "<input type=\"hidden\" name=\"bQueued\" value=\"false\" />";
             echo "<input type=\"hidden\" name=\"sAction\" value=\"delete\" />";
@@ -474,7 +486,9 @@ class Comment {
         echo '<table width="100%" border="0" cellpadding="1" cellspacing="0">',"\n";
     
         echo '<tr><td bgcolor="#C0C0C0" align="center"><table border="0" cellpadding="0" cellspacing="0"><tr bgcolor="#C0C0C0">',"\n";
-    
+
+        $oVersion = new version($versionId);
+
         // message display mode changer
         if ($_SESSION['current']->isLoggedIn())
         {
@@ -482,7 +496,6 @@ class Comment {
             if (!empty($aClean['sCmode']))
                 $_SESSION['current']->setPref("comments:mode", $aClean['sCmode']);
 
-            $oVersion = new version($versionId);
             $sel[$_SESSION['current']->getPref("comments:mode", "threaded")] = 'selected';
             echo '<td><form method="post" name="sMode" action="'.
                     $oVersion->objectMakeUrl().'">',"\n";
@@ -498,9 +511,15 @@ class Comment {
     
         // blank space
         echo '<td> &nbsp; </td>',"\n";
-    
+
+        $oM = new objectManager("comment", "Add comment");
+        $oM->setReturnTo($oVersion->objectMakeUrl());
+
         // post new message button
-        echo '<td><form method="post" name="sMessage" action="addcomment.php"><input type="submit" value="post new comment" class="button"> ',"\n";
+        echo '<td><form method="post" name="sMessage" action="objectManager.php">';
+        echo '<input type="hidden" name="sAction" value="add" />';
+        echo $oM->makeUrlFormData();
+        echo '<input type="submit" value="Post new comment" class="button"> ',"\n";
         echo '<input type="hidden" name="iVersionId" value="'.$versionId.'"></form></td>',"\n";
         
         //end comment format table
@@ -539,6 +558,67 @@ class Comment {
         }
 
         echo '</td></tr></table>',"\n";
+    }
+
+    function allowAnonymousSubmissions()
+    {
+        return TRUE;
+    }
+
+    function objectGetCustomVars($sAction)
+    {
+        switch($sAction)
+        {
+            case "add":
+                return array("iThread", "iAppId", "iVersionId");
+
+            default:
+                return null;
+        }
+    }
+
+    function outputEditor($aClean)
+    {
+        $sMesTitle = "<b>Post New Comment</b>";
+
+        if($aClean['iThread'] > 0)
+        {
+            $hResult = query_parameters("SELECT * FROM appComments WHERE commentId = '?'",
+                                    $aClean['iThread']);
+            $oRow = query_fetch_object($hResult);
+            if($oRow)
+            {
+                $sMesTitle = "<b>Replying To ...</b> $oRow->subject\n";
+                echo html_frame_start($oRow->subject,500);
+                echo htmlify_urls($oRow->body), "<br /><br />\n";
+                echo html_frame_end();
+            }
+        }
+
+        echo "<p align=\"center\">Enter your comment in the box below.";
+        echo "</br>Please do not paste large terminal or debug outputs here.</p>";
+
+        echo html_frame_start($sMesTitle,500,"",0);
+
+        echo '<table width="100%" border=0 cellpadding=0 cellspacing=1>',"\n";
+        echo "<tr class=\"color0\"><td align=right><b>From:</b>&nbsp;</td>\n";
+        echo "	<td>&nbsp;".$_SESSION['current']->sRealname."</td></tr>\n";
+        echo "<tr class=\"color0\"><td align=right><b>Subject:</b>&nbsp;</td>\n";
+        echo "	<td>&nbsp;<input type=\"text\" size=\"35\" name=\"sSubject\" value=\"".$this->sSubject."\" /> </td></tr>\n";
+        echo "<tr class=\"color1\"><td colspan=2><textarea name=\"sBody\" cols=\"70\" rows=\"15\" wrap=\"virtual\">".$this->sBody."</textarea></td></tr>\n";
+
+        echo "</table>\n";
+
+        echo html_frame_end();
+
+        echo "<input type=\"hidden\" name=\"iThread\" value=\"".$aClean['iThread']."\" />\n";
+        echo "<input type=\"hidden\" name=\"iAppId\" value=\"".$aClean['iAppId']."\" />\n";
+        echo "<input type=\"hidden\" name=\"iVersionId\" value=\"".$aClean['iVersionId']."\" />\n";
+    }
+
+    function objectShowPreview()
+    {
+        return TRUE;
     }
 
     function objectMakeUrl()
