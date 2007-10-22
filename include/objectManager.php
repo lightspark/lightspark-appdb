@@ -331,6 +331,8 @@ class ObjectManager
         else
             $oObject->outputEditor();
 
+        $this->oObject = $oObject;
+
         /* if this is a queue add a dialog for replying to the submitter of the
            queued entry */
         if($this->bIsQueue || ($oObject->objectGetSubmitterId() && $oObject->objectGetSubmitterId() != $_SESSION['current']->iUserId))
@@ -778,6 +780,7 @@ class ObjectManager
         else
             $oObject->outputEditor();
 
+        $this->oObject = $oObject;
         echo "<div align=\"center\">";
         echo "<input type=\"submit\" class=\"button\" value=\"Submit\" ". 
         "name=\"sSubmit\" />\n";
@@ -790,7 +793,7 @@ class ObjectManager
 
     private function handle_preview_button()
     {
-        $oObject = new $this->sClass($this->iId);
+        $oObject = $this->getObject();
 
         if(!method_exists($oObject, "objectShowPreview"))
             return;
