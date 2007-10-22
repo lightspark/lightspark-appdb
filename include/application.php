@@ -618,7 +618,9 @@ class Application {
     /* $aValues can be $_REQUEST or any array with the values from outputEditor() */
     public function GetOutputEditorValues($aValues)
     {
-        $this->iAppId = $aValues['iAppId'];
+        if($aValues['iAppId'])
+            $this->iAppId = $aValues['iAppId'];
+
         $this->sName = $aValues['sAppName'];
         $this->sDescription = $aValues['shAppDescription'];
         $this->iCatId = $aValues['iAppCatId'];

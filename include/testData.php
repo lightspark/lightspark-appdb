@@ -815,8 +815,12 @@ class testData{
     /* $aValues can be $_REQUEST or any array with the values from outputEditor() */
     function GetOutputEditorValues($aValues)
     {
-        $this->iTestingId = $aValues['iTestingId'];
-        $this->iVersionId = $aValues['iVersionId'];
+        if($aValues['iTestingId'])
+            $this->iTestingId = $aValues['iTestingId'];
+
+        if($aValues['iVersionId'])
+            $this->iVersionId = $aValues['iVersionId'];
+
         $this->shWhatWorks = $aValues['shWhatWorks'];
         $this->shWhatDoesnt = $aValues['shWhatDoesnt'];
         $this->shWhatNotTested = $aValues['shWhatNotTested'];

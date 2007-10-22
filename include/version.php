@@ -705,8 +705,12 @@ class version {
     /* $aValues can be $_REQUEST or any array with the values from outputEditor() */
     public function GetOutputEditorValues($aValues)
     {
-        $this->iAppId = $aValues['iAppId'];
-        $this->iVersionId = $aValues['iVersionId'];
+        if($aValues['iAppId'])
+            $this->iAppId = $aValues['iAppId'];
+
+        if($aValues['iVersionId'])
+            $this->iVersionId = $aValues['iVersionId'];
+
         $this->sName = $aValues['sVersionName'];
         $this->sDescription = $aValues['shVersionDescription'];
         $this->sTestedRating = $aValues['sMaintainerRating'];
