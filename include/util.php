@@ -5,7 +5,7 @@
 function util_show_error_page_and_exit($text = null, $message = null)
 {
     if (!$text) {
-        $text = "You must be logged in to perform that operation.";
+        $text = "You must be <a href=\"".login_url()."\">logged in</a> to perform that operation.";
     }
     header("HTTP/1.0 404 Object not found or user is not logged in");
     apidb_header("Oops");
