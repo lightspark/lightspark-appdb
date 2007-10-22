@@ -242,8 +242,8 @@ class Comment {
         $oM = new objectManager("comment", "Post new ocmment");
         $oM->setReturnTo($oVersion->objectMakeUrl());
         // reply post buttons
-        echo "	[<a href=\"".$oM->makeUrl("add")."&iAppId=$this->iAppId&amp;iVersionId=$this->iVersionId\"><small>post new</small></a>] \n";
-        echo "	[<a href=\"".$oM->makeUrl("add")."&iAppId=$this->iAppId&amp;iVersionId=$this->iVersionId&amp;sSubject=".
+        echo "	[<a href=\"".$oM->makeUrl("add")."&amp;iVersionId=$this->iVersionId\"><small>post new</small></a>] \n";
+        echo "	[<a href=\"".$oM->makeUrl("add")."&amp;iVersionId=$this->iVersionId&amp;sSubject=".
                 urlencode("$sSubject")."&amp;iThread=$this->iCommentId\"><small>reply to this</small></a>] \n";
 
         echo "</td></tr>\n";
@@ -570,11 +570,24 @@ class Comment {
         switch($sAction)
         {
             case "add":
-                return array("iThread", "iAppId", "iVersionId");
+                return array("iThread", "iVersionId");
 
             default:
                 return null;
         }
+    }
+
+    function checkOutputEditorInput($aClean)
+    {
+        $sErrors = "";
+
+        if(!$aClean['iVersionId'])
+            $sErrors .= "<li>No version id defined; something may have gone wrong with the URL</li>\n";
+
+        if(!$aClean['sBody'])
+            $sErrors .= "<li>You need to enter a message!</li>\n";
+
+        return $sErrors;
     }
 
     function outputEditor($aClean)
@@ -612,7 +625,6 @@ class Comment {
         echo html_frame_end();
 
         echo "<input type=\"hidden\" name=\"iThread\" value=\"".$aClean['iThread']."\" />\n";
-        echo "<input type=\"hidden\" name=\"iAppId\" value=\"".$aClean['iAppId']."\" />\n";
         echo "<input type=\"hidden\" name=\"iVersionId\" value=\"".$aClean['iVersionId']."\" />\n";
     }
 
