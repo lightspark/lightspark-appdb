@@ -162,6 +162,10 @@ class ObjectManager
             return;
         }
 
+        // if displaying a queue display the help for the given queue
+        if($this->getIsQueue())
+            $this->GetOptionalSetting("ObjectDisplayQueueProcessingHelp", "");
+
         $oObject = new $this->sClass();
 
         // Display top of the page selectors for items per page and
@@ -199,8 +203,7 @@ class ObjectManager
                 break;
             }
 
-            if(method_exists($oObject, "objectShowAddEntry") &&
-               $oObject->objectShowAddEntry())
+            if($this->GetOptionalSetting("objectShowAddEntry", FALSE))
             {
                 echo "<br /><center><a href=\"".
                      $this->makeUrl("add", false,
@@ -266,9 +269,7 @@ class ObjectManager
         echo "</table>";
 
         $oObject = new $this->sClass();
-        if($oObject->canEdit() &&
-           method_exists($oObject, "objectShowAddEntry") &&
-           $oObject->objectShowAddEntry())
+        if($oObject->canEdit() && $this->GetOptionalSetting("objectShowAddEntry", FALSE))
         {
             echo "<br /><br /><a href=\"".$this->makeUrl("add", false,
                     "Add $this->sClass")."\">Add entry</a>\n";
@@ -338,8 +339,7 @@ class ObjectManager
         if($this->bIsQueue || ($oObject->objectGetSubmitterId() && $oObject->objectGetSubmitterId() != $_SESSION['current']->iUserId))
         {
             /* If it isn't implemented, that means there is no default text */
-            if(method_exists(new $this->sClass, "getDefaultReply"))
-                $sDefaultReply = $oObject->getDefaultReply();
+            $sDefaultReply = $this->getOptionalSetting("getDefaultReply", "");
 
             echo html_frame_start("Reply text", "90%", "", 0);
             echo "<table width='100%' border=0 cellpadding=2 cellspacing=0>\n";
@@ -376,7 +376,7 @@ class ObjectManager
             echo '<tr valign=top><td class=color3 align=center colspan=2>' ,"\n";
             echo '<input name="sSubmit" type="submit" value="Submit" class="button" '. 
                  '/>',"\n";
-            if(!method_exists(new $this->sClass, "objectHideDelete"))
+            if(!$this->getOptionalSetting("objectHideDelete", FALSE))
             {
                 echo '<input name="sSubmit" type="submit" value="Delete" '.
                      'class="button" />',"\n";
@@ -410,17 +410,6 @@ class ObjectManager
 
         echo "</div>\n";
 
-    }
-
-    /* Display help for queue processing */
-    public function display_queue_processing_help()
-    {
-        /* No help text defined, so do nothing */
-        if(!method_exists(new $this->sClass(), "ObjectDisplayQueueProcessingHelp"))
-            return FALSE;
-
-        call_user_func(array($this->sClass,
-                             "ObjectDisplayQueueProcessingHelp"));
     }
 
     /* Ask whether the user really wants to delete the entry and display a delete reason box */

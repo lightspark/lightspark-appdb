@@ -124,10 +124,6 @@ if($oObject->getId() && $sAction != "add")
     $oObject->add_entry($aClean, $sErrors);
 } else
 {
-    // if displaying a queue display the help for the given queue
-    if($oObject->getIsQueue())
-        $oObject->display_queue_processing_help();
-
     $oObject->display_table($aClean);
 }
 
