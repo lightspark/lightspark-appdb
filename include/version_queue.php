@@ -162,6 +162,7 @@ class version_queue
 
     function getOutputEditorValues($aClean)
     {
+        $this->oVersion->iAppId = $aClean['iAppId'];
         $this->oVersion->getOutputEditorValues($aClean);
         $this->oTestDataQueue->getOutputEditorValues($aClean);
     }
@@ -214,9 +215,17 @@ class version_queue
         return $this->oVersion->objectGetTableRow();
     }
 
+    public function objectShowPreview()
+    {
+        return $this->oVersion->objectShowPreview();
+    }
+
     function display()
     {
-        $this->oVersion->display();
+        $aVars = array();
+        $aVars['iTestingId'] = 0;
+
+        $this->oVersion->display($aVars, $this->oTestDataQueue->oTestData);
     }
 
     function objectMakeUrl()

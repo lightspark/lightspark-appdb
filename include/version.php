@@ -746,7 +746,13 @@ class version {
         }
     }
 
-    public function display($aVars)
+    public function objectShowPreview()
+    {
+        return TRUE;
+    }
+
+    /* $oTest can be passed by version_queue to allow previewing a version, in which case the test id may not be defined */
+    public function display($aVars, $oTest = null)
     {
         /* is this user supposed to view this version? */
         if(!$_SESSION['current']->canViewVersion($this))
@@ -759,10 +765,6 @@ class version {
         // Oops! application not found or other error. do something
         if(!$oApp->iAppId) 
             util_show_error_page_and_exit('Internal Database Access Error. No App found.');
-
-        // Oops! Version not found or other error. do something
-        if(!$this->iVersionId) 
-            util_show_error_page_and_exit('Internal Database Access Error. No Version Found.');
 
         // show Vote Menu
         if($_SESSION['current']->isLoggedIn())
@@ -976,10 +978,13 @@ class version {
         echo "\t<div class='title_class'>\n";
         echo "\t\tSelected test results <small><small>(selected in 'Test Results' table below)</small></small>\n";
         echo "\t</div>\n";
-        $oTest = new testData($iTestingId);
+
+        /* oTest may be passed by version_queue to allow previewing a version which does not exist in the database */
+        if(!$oTest && $iTestingId)
+            $oTest = new testData($iTestingId);
 
         /* if $iTestingId wasn't valid then it won't be valid in $oTest */
-        if(!$oTest->iTestingId)
+        if(!$oTest)
         {
             /* fetch a new test id for this version */
             $iTestingId = testData::getNewestTestIdFromVersionId($this->iVersionId);
@@ -999,9 +1004,14 @@ class version {
         // show the test results table
         if($oTest->iTestingId)
         {
-            $oTest->ShowVersionsTestingTable($this->objectMakeUrl()."&iTestingId=",
-                                             5);
+            $oTest->ShowVersionsTestingTable($this->objectMakeUrl()."&iTestingId=", 5);
+        } else /* We are previewing the version */
+        {
+            $oTable = $oTest->CreateTestTable();
+            $oTable->AddRow($oTest->CreateTestTableRow(0, ""));
+            echo $oTable->GetString();
         }
+
         if($_SESSION['current']->isLoggedIn())
         {
             echo '<form method=post name=sMessage action=objectManager.php?'.
@@ -1040,7 +1050,8 @@ class version {
         }
 
         // Comments Section
-        Comment::view_app_comments($this->iVersionId);
+        if($this->iVersionId)
+            Comment::view_app_comments($this->iVersionId);
     }
 
     public static function lookup_name($versionId)
