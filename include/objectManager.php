@@ -433,6 +433,22 @@ class ObjectManager
             return;
         }
 
+        /* Why the user should write an explanation for the deletion */
+        if($oObject->objectGetSubmitterId() != $_SESSION['current']->iUserId)
+        {
+            $shWhyComment = "Please enter a reason why so that you don&#8217;t hurt the submitter&#8217;s".
+                            " feelings.";
+
+            $oUser = new user($oObject->objectGetSubmitterId());
+            $sSubmitter = " (submitted by ".$oUser->objectMakeLink().")";
+        } else
+        {
+            $shWhyComment = "Although you submitted it it might be useful for other users to know why ".
+                            "you are deleting it.";
+
+            $sSubmitter = "";
+        }
+
         $oTable = new Table();
         $oTableRow = new TableRow();
         $oTable->setAlign("center");
@@ -444,9 +460,8 @@ class ObjectManager
         "Confirm deletion".
         "</div>".
         '<div class="info_contents">'.
-        "Are you sure you wish to delete this entry?<br />".
-        "Please enter a reason why so that you don&#8217;t hurt the submitter&#8217;s".
-        " feelings.".
+        "Are you sure you wish to delete this entry".$sSubmitter."?<br />".
+        $shWhyComment.
         "</div>".
         "</div>".
 
