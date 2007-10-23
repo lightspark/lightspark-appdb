@@ -232,19 +232,13 @@ class Comment {
         // body
         echo htmlify_urls($this->sBody), "<br /><br />\n";
     
-        // only add RE: once
-        if(eregi("RE:", $this->sSubject))
-            $sSubject = $this->sSubject;
-        else
-            $sSubject = "RE: ".$this->sSubject;
-
         $oVersion = new version($this->iVersionId);
         $oM = new objectManager("comment", "Post new ocmment");
         $oM->setReturnTo($oVersion->objectMakeUrl());
         // reply post buttons
         echo "	[<a href=\"".$oM->makeUrl("add")."&amp;iVersionId=$this->iVersionId\"><small>post new</small></a>] \n";
-        echo "	[<a href=\"".$oM->makeUrl("add")."&amp;iVersionId=$this->iVersionId&amp;sSubject=".
-                urlencode("$sSubject")."&amp;iThread=$this->iCommentId\"><small>reply to this</small></a>] \n";
+        echo "	[<a href=\"".$oM->makeUrl("add")."&amp;iVersionId=$this->iVersionId".
+                "&amp;iThread=$this->iCommentId\"><small>reply to this</small></a>] \n";
 
         echo "</td></tr>\n";
 
@@ -605,6 +599,17 @@ class Comment {
                 echo html_frame_start($oRow->subject,500);
                 echo htmlify_urls($oRow->body), "<br /><br />\n";
                 echo html_frame_end();
+
+                /* Set default reply subject */
+                if(!$this->sSubject)
+                {
+                    // Only add RE: once
+                    if(eregi("RE:", $oRow->subject))
+                        $this->sSubject = $oRow->subject;
+                    else
+                        $this->sSubject = "RE: ".$oRow->subject;
+                }
+
             }
         }
 
