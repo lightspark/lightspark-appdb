@@ -632,6 +632,10 @@ class User {
      /* application permissions */
      function canViewApplication($oApp)
      {
+         /* If there is no id the app is not in the database, which means the current user must have created the object */
+         if(!$oApp->iAppId)
+             return true;
+
          /* if the application isn't queued */
          if($oApp->sQueued == 'false')
              return true;
