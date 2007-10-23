@@ -556,7 +556,7 @@ class Comment {
 
     function allowAnonymousSubmissions()
     {
-        return TRUE;
+        return FALSE;
     }
 
     function objectGetCustomVars($sAction)
