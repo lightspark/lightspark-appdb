@@ -200,7 +200,9 @@ class Comment {
         $this->sSubject = $aClean['sSubject'];
         $this->sBody = $aClean['sBody'];
         $this->iParentId = $aClean['iThread'];
-        $this->iVersionId = $aClean['iVersionId'];
+
+        if($aClean['iVersionId'])
+            $this->iVersionId = $aClean['iVersionId'];
 
         if(!$this->oOwner)
             $this->oOwner = $_SESSION['current'];

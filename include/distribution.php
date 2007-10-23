@@ -443,7 +443,9 @@ class distribution {
     /* $aValues can be $_REQUEST or any array with the values from outputEditor() */
     function GetOutputEditorValues($aValues)
     {
-        $this->iDistributionId = $aValues['iDistributionId'];
+        if($aClean['iDistributionId'])
+            $this->iDistributionId = $aValues['iDistributionId'];
+
         $this->sName = $aValues['sDistribution'];
         $this->sUrl = $aValues['sUrl'];
     }
