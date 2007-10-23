@@ -37,6 +37,7 @@ class Application {
     var $sSubmitTime;
     var $iSubmitterId;
     var $aVersionsIds;  // an array that contains the versionId of every version linked to this app.
+    var $aVersions; // Array of version objects belonging to this app
     var $iMaintainerRequest; /* Temporary variable for tracking maintainer
                                 requests on app submission.  Value denotes type of request */
 
@@ -45,6 +46,8 @@ class Application {
      */
     public function Application($iAppId = null, $oRow = null)
     {
+        $this->aVersions = array(); // Should always be an array
+
         // we are working on an existing application
         if(!$iAppId && !$oRow)
             return;
@@ -500,6 +503,10 @@ class Application {
             mail_appdb($sEmail, $sSubject ,$sMsg);
     } 
 
+    public function objectShowPreview()
+    {
+        return TRUE;
+    }
 
     /* output a html table and this applications values to the fields for editing */
     public function outputEditor($sVendorName = "")
@@ -801,7 +808,7 @@ class Application {
         echo html_frame_end("For more details and user comments, view the versions of this application.");
 
         // display versions
-        Version::displayList($this->aVersionsIds);
+        Version::displayList($this->getVersions());
 
         // display bundle
         $this->displayBundle();
@@ -1070,6 +1077,10 @@ class Application {
 
     public function getVersions($bIncludeObsolete = TRUE)
     {
+        /* If no id is set we cannot query for the versions, but perhaps objects are already cached? */
+        if(!$this->iAppId)
+            return $this->aVersions;
+
         $aVersions = array();
 
         $hResult = $this->_internal_retrieve_all_versions($bIncludeObsolete);

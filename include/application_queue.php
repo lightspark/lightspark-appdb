@@ -152,6 +152,14 @@ class application_queue
         return $this->oApp->objectGetMail($sAction, $bMailSubmitter, $bParentAction);
     }
 
+    public function objectShowPreview()
+    {
+        if($this->oApp->sName)
+            return TRUE;
+
+        return FALSE;
+    }
+
     function outputEditor()
     {
         /* We ask the user for the application name first so as to avoid duplicate
@@ -291,6 +299,10 @@ class application_queue
 
     function display()
     {
+        /* Cache the version object if it is not in the database */
+        if(!$this->oVersionQueue->objectGetId())
+            $this->oApp->aVersions = array($this->oVersionQueue->oVersion);
+
         $this->oApp->display();
     }
 

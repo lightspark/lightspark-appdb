@@ -1097,9 +1097,9 @@ class version {
     }
 
     // display the versions
-    public static function displayList($aVersionsIds)
+    public static function displayList($aVersions)
     {
-        if ($aVersionsIds)
+        if ($aVersions)
         {
             echo html_frame_start("","98%","",0);
 
@@ -1137,9 +1137,8 @@ class version {
             $oTable->SetHeader($oTableRow);
 
             $c = 0;
-            foreach($aVersionsIds as $iVersionId)
+            foreach($aVersions as $oVersion)
             {
-                $oVersion = new Version($iVersionId);
                 $oApp = new application($oVersion->iAppId);
                 if ($oVersion->sQueued == $oApp->sQueued)
                 {
