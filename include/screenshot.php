@@ -464,6 +464,7 @@ class screenshot
                                        $bFormatting = true) 
     {
         // initialize variables to avoid notices when appending to them
+        $hResult = null;
         $sImgFile = '';
         $sImg = '';
         // we want a random screenshots for this app
@@ -508,7 +509,7 @@ class screenshot
         $sZoomIcon = Screenshot::get_zoomicon_overlay();
 
         /* we have screenshots */
-        if(query_num_rows($hResult))
+        if($hResult && query_num_rows($hResult))
         {
             if($iVersionId)
                 $sImg .= "<a href='screenshots.php?iAppId=$iAppId&amp;iVersionId=$iVersionId'>".$sImgFile.$sZoomIcon."<center>View/Submit&nbsp;Screenshot</center></a>";
