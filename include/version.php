@@ -1482,7 +1482,7 @@ class version {
                         AND
                         appVersion.submitterId = '?'
                         AND
-                        appVersion.queued = '?' ORDER BY '?'$sLimit";
+                        appVersion.queued = '?' ORDER BY ?$sLimit";
             else
                 $sQuery = "SELECT appVersion.* FROM
                         appVersion, appMaintainers, appFamily WHERE
@@ -1508,7 +1508,7 @@ class version {
                         AND
                         appMaintainers.queued = 'false'
                         AND
-                        appVersion.queued = '?' ORDER BY '?'$sLimit";
+                        appVersion.queued = '?' ORDER BY ?$sLimit";
 
             if($sLimit)
             {
@@ -1527,7 +1527,7 @@ class version {
                     AND
                     appFamily.queued = 'false'
                     AND
-                    appVersion.queued = '?' ORDER BY '?'$sLimit";
+                    appVersion.queued = '?' ORDER BY ?$sLimit";
 
             if($sLimit)
             {
