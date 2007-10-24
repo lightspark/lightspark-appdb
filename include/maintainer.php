@@ -557,11 +557,11 @@ class maintainer
         /* otherwise check if we maintain this specific version */
         if($iVersionId)
         {
-            $sQuery = "SELECT * FROM appMaintainers WHERE userid = '?' AND versionId = '?' AND queued = '?'";
+            $sQuery = "SELECT * FROM appMaintainers WHERE userId = '?' AND versionId = '?' AND queued = '?'";
             $hResult = query_parameters($sQuery, $oUser->iUserId, $iVersionId, "false");
         } else // are we maintaining any version ?
         {
-            $sQuery = "SELECT * FROM appMaintainers WHERE userid = '?' AND queued = '?'";
+            $sQuery = "SELECT * FROM appMaintainers WHERE userId = '?' AND queued = '?'";
             $hResult = query_parameters($sQuery, $oUser->iUserId, "false");
         }
         if(!$hResult)
