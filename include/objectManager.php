@@ -519,14 +519,17 @@ class ObjectManager
         $this->checkMethods(array("delete", "canEdit"));
 
         $oObject = $this->getObject();
+        $oOriginalObject = new $this->sClass($this->iId); /* Prevent possible security hole if users change key
+                                                             variables, making the permission checks run on
+                                                             the wrong criteria */
 
-        if(!$oObject->objectGetId())
+        if(!$oOriginalObject->objectGetId())
         {
             addmsg("No id defined", "red");
             return FALSE;
         }
 
-        if(!$oObject->canEdit())
+        if(!$oOriginalObject->canEdit())
         {
             addmsg("You don&#8217;t have permission to delete this entry", "red");
             return FALSE;
@@ -923,6 +926,9 @@ class ObjectManager
         $this->iId = $this->getIdFromInput($aClean);
 
         $oObject = new $this->sClass($this->iId);
+        $oOriginalObject = new $this->sClass($this->iId);  /* Prevent possible security hole if users change key
+                                                              variables, making the permission checks run on
+                                                              the wrong criteria */
 
         /* If it isn't implemented, that means there is no default text */
         if(method_exists(new $this->sClass, "getDefaultReply"))
@@ -968,13 +974,13 @@ class ObjectManager
                 // otherwise we should create the entry in the 'else' case
                 if($this->iId)
                 {
-                    if(!$oObject->canEdit())
+                    if(!$oOriginalObject->canEdit())
                         return FALSE;
 
                     if($this->bIsRejected)
                         $oObject->ReQueue();
 
-                    if($this->bIsQueue && !$oObject->mustBeQueued())
+                    if($this->bIsQueue && !$oOriginalObject->mustBeQueued())
                         $oObject->unQueue();
 
                     $oObject->update();
@@ -987,7 +993,7 @@ class ObjectManager
                 break;
 
             case "Reject":
-                if(!$oObject->canEdit())
+                if(!$oOriginalObject->canEdit())
                     return FALSE;
 
                 $oObject->reject();
