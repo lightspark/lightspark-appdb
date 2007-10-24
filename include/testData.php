@@ -1009,7 +1009,7 @@ class testData{
                         AND
                         testResults.submitterId = '?'
                         AND
-                        testResults.queued = '?' ORDER BY '?'$sLimit";
+                        testResults.queued = '?' ORDER BY ?$sLimit";
             } else
             {
                 $sQuery = "SELECT testResults.* FROM testResults, appVersion,
@@ -1036,7 +1036,7 @@ class testData{
                             AND
                             appMaintainers.queued = 'false'
                             AND
-                            testResults.queued = '?' ORDER BY '?'$sLimit";
+                            testResults.queued = '?' ORDER BY ?$sLimit";
             }
             if($sLimit)
             {
@@ -1054,7 +1054,7 @@ class testData{
                     AND
                     appVersion.queued = 'false'
                     AND
-                    testResults.queued = '?' ORDER by '?'$sLimit";
+                    testResults.queued = '?' ORDER by ?$sLimit";
             if($sLimit)
                 $hResult = query_parameters($sQuery, $sQueued, $sOrderBy, $iStart, $iRows);
             else
