@@ -909,7 +909,7 @@ class Application {
             if(!$bRejected)
                 return FALSE;
 
-            $sQuery .= " AND appFamily.submitterId = '?' ORDER BY '?'$sLimit";
+            $sQuery .= " AND appFamily.submitterId = '?' ORDER BY ?$sLimit";
             if($sLimit)
             {
                 $hResult = query_parameters($sQuery, $sQueued,
@@ -922,7 +922,7 @@ class Application {
             }
         } else
         {
-            $sQuery .= " ORDER BY '?'$sLimit";
+            $sQuery .= " ORDER BY ?$sLimit";
             if($sLimit)
             {
                 $hResult = query_parameters($sQuery, $sQueued, $sOrderBy,
