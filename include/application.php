@@ -692,7 +692,7 @@ class Application {
     {
         /* is this user supposed to view this version? */
         if(!$_SESSION['current']->canViewApplication($this))
-            util_show_error_page_and_exit("Something went wrong with the application or version id");
+            objectManager::error_exit("You do not have permission to view this entry");
 
         // cat display
         $oCategory = new Category($this->iCatId);

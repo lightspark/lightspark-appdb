@@ -147,6 +147,13 @@ class ObjectManager
         return TRUE;
     }
 
+    public static function error_exit($shMessage)
+    {
+        echo '<div align="center"><p><font color="red"><b>'.$shMessage.'</b></font></p></div';
+        echo apidb_footer();
+        exit;
+    }
+
     /* displays the list of entries */
     public function display_table($aClean)
     {
