@@ -521,10 +521,16 @@ class ObjectManager
         $oObject = $this->getObject();
 
         if(!$oObject->objectGetId())
+        {
+            addmsg("No id defined", "red");
             return FALSE;
+        }
 
         if(!$oObject->canEdit())
+        {
+            addmsg("You don&#8217;t have permission to delete this entry", "red");
             return FALSE;
+        }
 
         $oSubmitterMail = $this->get_mail(TRUE, "delete");
         $oCommonMail = $this->get_mail(FALSE, "delete");
