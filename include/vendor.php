@@ -343,7 +343,9 @@ class Vendor {
             foreach($this->aApplicationsIds as $iAppId)
             {
                 $oApp  = new Application($iAppId);
-                echo '<li>'.$oApp->objectMakeLink().'</li>',"\n";
+
+                if($oApp->sQueued == "false")
+                    echo '<li>'.$oApp->objectMakeLink().'</li>',"\n";
             }
             echo '</ol>',"\n";
         }
