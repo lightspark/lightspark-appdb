@@ -26,6 +26,7 @@ define("LICENSE_RETAIL", "Retail");
 class version {
     var $iVersionId;
     var $iAppId;
+    var $oApp; /* Parento object */
     var $sName;
     var $sDescription;
     var $sTestedRelease;
@@ -759,6 +760,16 @@ class version {
         return TRUE;
     }
 
+    /* Not standard OM function yet, but will be in the future */
+    public function objectGetParent()
+    {
+        /* No id so we can't query the DB, but perhaps an entry is cached? */
+        if(!$this->iAppId)
+            return $this->oApp;
+
+        return new application($this->iAppId);
+    }
+
     public function display($aVars = array())
     {
         /* is this user supposed to view this version? */
@@ -767,11 +778,7 @@ class version {
 
         $iTestingId = $aVars['iTestingId'] ? $aVars['iTestingId'] : 0;
 
-        $oApp = new Application($this->iAppId);
-
-        // Oops! application not found or other error. do something
-        if(!$oApp->iAppId) 
-            util_show_error_page_and_exit('Internal Database Access Error. No App found.');
+        $oApp = $this->objectGetParent();
 
         // show Vote Menu
         if($_SESSION['current']->isLoggedIn())

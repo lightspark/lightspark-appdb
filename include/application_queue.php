@@ -160,7 +160,7 @@ class application_queue
         return FALSE;
     }
 
-    function outputEditor()
+    function outputEditor($aClean = array())
     {
         /* We ask the user for the application name first so as to avoid duplicate
            submissons; a list of potential duplicates is displayed on the next page */
@@ -203,6 +203,23 @@ class application_queue
                     $this->oVersionQueue->oVersion->iVersionId, $aClean);
 
             $this->oVersionQueue->oTestDataQueue->outputEditor();
+
+            /* Allow the user to choose whether to preview the application view
+               or the version view.  Application view is default */
+            echo html_frame_start("Select What to Preview");
+            $sPreviewVersion = $aClean['bPreviewVersion'] ? $aClean['bPreviewVersion'] : "";
+
+            $shPreviewApp = '';
+            $shPreviewVersion = '';
+
+            if($sPreviewVersion == "true")
+                $shPreviewVersion = ' checked="checked"';
+            else
+                $shPreviewApp = ' checked="checked"';
+
+            echo "<input type=\"radio\" name=\"bPreviewVersion\"$shPreviewApp value=\"false\" /> Preview application<br />\n";
+            echo "<input type=\"radio\" name=\"bPreviewVersion\"$shPreviewVersion value=\"true\" /> Preview version\n";
+            echo html_frame_end();
         }
     }
 
@@ -297,13 +314,34 @@ class application_queue
         echo "</table>";
     }
 
-    function display()
+    function objectGetCustomVars($sAction)
+    {
+        switch($sAction)
+        {
+            case "preview":
+                return array("bPreviewVersion");
+
+            default:
+                return 0;
+        }
+    }
+
+    function display($aClean = array())
     {
         /* Cache the version object if it is not in the database */
         if(!$this->oVersionQueue->objectGetId())
             $this->oApp->aVersions = array($this->oVersionQueue->oVersion);
 
-        $this->oApp->display();
+        $sPreviewVersion = $aClean['bPreviewVersion'] ? $aClean['bPreviewVersion'] : "";
+
+        if($sPreviewVersion == "true")
+        {
+            $this->oVersionQueue->oVersion->oApp = $this->oApp;
+            $this->oVersionQueue->display();
+        } else
+        {
+            $this->oApp->display();
+        }
     }
 
     function objectMakeUrl()
