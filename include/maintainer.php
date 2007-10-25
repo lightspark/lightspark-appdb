@@ -209,12 +209,22 @@ class maintainer
         if(!$this->iUserId)
             $this->iUserId = $_SESSION['current']->iUserId;
 
+        $oApp = new application($this->iAppId);
+        if(!$this->bSuperMaintainer)
+            $oVersion = new version($this->iVersionId);
+
+        if($oApp->sQueued != "false" ||
+           (!$this->bSuperMaintainer && $oVersion->sQueued != "false"))
+            $this->sQueued = "pending";
+        else
+            $this->sQueued = $this->mustBeQueued() ? "true" : "false";
+
         $hResult = query_parameters("INSERT INTO appMaintainers (appId, versionId, ".
                                     "userId, maintainReason, superMaintainer, submitTime, queued) ".
                                     "VALUES ('?', '?', '?', '?', '?', ?, '?')",
                                     $this->iAppId, $this->iVersionId,
                                     $this->iUserId, $this->sMaintainReason,
-                                    $this->bSuperMaintainer, "NOW()", $this->mustBeQueued() ? "true" : "false");
+                                    $this->bSuperMaintainer, "NOW()", $this->sQueued);
 
         /* this objects id is the insert id returned by the database */
         $this->iMaintainerId = query_appdb_insert_id();
