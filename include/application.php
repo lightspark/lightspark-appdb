@@ -107,7 +107,7 @@ class Application {
             $sObsolete = "";
 
         $sQuery = "SELECT versionId FROM appVersion WHERE
-                        appId = '?'$sObsolete";
+                        appId = '?'$sObsolete ORDER by versionName";
         $hResult  = query_parameters($sQuery, $this->iAppId);
         return $hResult;
     }
