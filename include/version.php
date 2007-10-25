@@ -34,6 +34,9 @@ class version {
     var $iSubmitterId;
     var $sQueued;
     var $sLicense;
+    var $aTestResults; /* Array of test result objects. Especially useful when
+                          we want to preview a version before submitting it;
+                          in that case there is no data in the database */
     var $iObsoleteBy; /* Whether this version is marked as obsolete, and if so which
                          version its votes should be moved to. */
     var $iMaintainerRequest; /* Temporary variable for version submisson.
@@ -46,6 +49,7 @@ class version {
      */
     public function Version($iVersionId = null, $oRow = null)
     {
+        $this->aTestResults = array(); // should always be an array
         // we are working on an existing version
         if(!$iVersionId && !$oRow)
             return;
@@ -755,14 +759,13 @@ class version {
         return TRUE;
     }
 
-    /* $oTest can be passed by version_queue to allow previewing a version, in which case the test id may not be defined */
-    public function display($aVars, $oTest = null)
+    public function display($aVars = array())
     {
         /* is this user supposed to view this version? */
         if(!$_SESSION['current']->canViewVersion($this))
             util_show_error_page_and_exit("Something went wrong with the application or version id");
 
-        $iTestingId = $aVars['iTestingId'];
+        $iTestingId = $aVars['iTestingId'] ? $aVars['iTestingId'] : 0;
 
         $oApp = new Application($this->iAppId);
 
@@ -983,16 +986,17 @@ class version {
         echo "\t\tSelected test results <small><small>(selected in 'Test Results' table below)</small></small>\n";
         echo "\t</div>\n";
 
-        /* oTest may be passed by version_queue to allow previewing a version which does not exist in the database */
-        if(!$oTest && $iTestingId)
+        /* Set if the use chose to display a particular test report */
+        if($iTestingId)
             $oTest = new testData($iTestingId);
-
-        /* if $iTestingId wasn't valid then it won't be valid in $oTest */
-        if(!$oTest)
+        else if($this->iVersionId) /* Let's query for the latest rest report */
         {
-            /* fetch a new test id for this version */
             $iTestingId = testData::getNewestTestIdFromVersionId($this->iVersionId);
             $oTest = new testData($iTestingId);
+        } else /* Perhaps we have a cached entry? There should be */
+        {
+            $aTests = $this->getTestResults();
+            $oTest = $aTests[0];
         }
 
         echo "<div class='info_contents'>\n";
@@ -1577,9 +1581,14 @@ class version {
              "From that page you can edit, delete or approve it into the AppDB.</p>\n";
     }
 
-    public function objectGetChildren()
+    public function getTestResults()
     {
-        $aChildren = array();
+        /* If we don't have an id we can query the database, but perhaps we
+           have some cached entries? */
+        if(!$this->iVersionId)
+            return $this->aTestResults;
+
+        $aTests = array();
 
         /* Find test results */
         $sQuery = "SELECT * FROM testResults WHERE versionId = '?'";
@@ -1589,8 +1598,17 @@ class version {
             return FALSE;
 
         while($oRow = mysql_fetch_object($hResult))
+            $aTests[] = new testData(0, $oRow);
+
+        return $aTests;
+    }
+
+    public function objectGetChildren()
+    {
+        $aChildren = array();
+
+        foreach($this->getTestResults() as $oTest)
         {
-            $oTest = new testData(0, $oRow);
             $aChildren += $oTest->objectGetChildren();
             $aChildren[] = $oTest;
         }

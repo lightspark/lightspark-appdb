@@ -222,10 +222,9 @@ class version_queue
 
     function display()
     {
-        $aVars = array();
-        $aVars['iTestingId'] = 0;
-
-        $this->oVersion->display($aVars, $this->oTestDataQueue->oTestData);
+        /* Cache the test result object as it's not in the DB */
+        $this->oVersion->aTestResults[] = $this->oTestDataQueue->oTestData;
+        $this->oVersion->display();
     }
 
     function objectMakeUrl()
