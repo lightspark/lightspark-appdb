@@ -203,7 +203,7 @@ class Application {
             $sWhatChanged .= "Keywords were changed from\n ".$oApp->sKeywords."\n to \n".$this->sKeywords.".\n\n";
         }
 
-        if ($this->sWebpage && ($this->sWebpage!=$oApp->sWebpage))
+        if ($this->sWebpage!=$oApp->sWebpage)
         {
             if (!query_parameters("UPDATE appFamily SET webPage = '?' WHERE appId = '?'",
                                   $this->sWebpage, $this->iAppId))
