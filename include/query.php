@@ -28,10 +28,10 @@ function query_appdb($sQuery, $sComment="")
         {
             /* if this error isn't a deadlock OR if it is a deadlock and we've */
             /* run out of retries, report the error */
-            $iErrno = mysql_errno();
+            $iErrno = mysql_errno($hAppdbLink);
             if(($iErrno != MYSQL_DEADLOCK_ERRNO) || (($iErrno == MYSQL_DEADLOCK_ERRNO) && ($iRetries <= 0)))
             {
-                query_error($sQuery, $sComment);
+                query_error($sQuery, $sComment, $hAppdbLink);
                 return $hResult;
             }
 
@@ -133,12 +133,12 @@ function query_bugzilladb($sQuery,$sComment="")
     }
     
     $hResult = mysql_query($sQuery, $hBugzillaLink);
-    if(!$hResult) query_error($sQuery, $sComment);
+    if(!$hResult) query_error($sQuery, $sComment, $hBugzillaLink);
     return $hResult;
 }
 
 
-function query_error($sQuery, $sComment="")
+function query_error($sQuery, $sComment, $hLink)
 {
     static $bInQueryError = false;
 
@@ -151,8 +151,8 @@ function query_error($sQuery, $sComment="")
     $bInQueryError = true;
 
     error_log::log_error(ERROR_SQL, "Query: '".$sQuery."' ".
-                         "mysql_errno(): '".mysql_errno()."' ".
-                         "mysql_error(): '".mysql_error()."' ".
+                         "mysql_errno(): '".mysql_errno($hLink)."' ".
+                         "mysql_error(): '".mysql_error($hLink)."' ".
                          "comment: '".$sComment."'");
 
     $sStatusMessage = "<p><b>An internal error has occurred and has been logged and reported to appdb admins</b></p>";
