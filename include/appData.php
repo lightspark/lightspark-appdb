@@ -14,6 +14,7 @@ class appData
     var $iSubmitterId;
     var $sSubmitTime;
     var $sDescription;
+    var $bQueued;
 
     function appData($iId = null, $oRow = null, $oObject = null)
     {
@@ -31,6 +32,7 @@ class appData
             $this->iVersionId = $oObject->iVersionId;
             $this->sSubmitTime = $oObject->sSubmitTime;
             $this->iId = $iId;
+            $this->bQueued = $oObject->bQueued;
             return;
         }
 
@@ -47,6 +49,7 @@ class appData
             $this->iVersionId = $oRow->versionId;
             $this->sSubmitTime = $oRow->submitTime;
             $this->iId = $iId;
+            $this->bQueued = ($oRow->sQueued == "false") ? false : true;
             $this->sDescription = $oRow->description;
         }
     }
@@ -122,16 +125,26 @@ class appData
         if(!$hResult || !query_num_rows($hResult))
             return false;
 
-        $sReturn = html_table_begin("width=\"100%\" align=\"center\"");
-        $sReturn .= html_tr(array(
-            "Version",
-            "Type",
-            "Description",
-            "Submission Date"),
-            "color4");
+        $oTable = new table();
+        $oTable->setWidth("100%");
+        $oTable->setAlign("center");
+
+        $oTableRow = new tableRow();
+
+        $oTableRow->addTextCell("Version");
+        $oTableRow->addTextCell("Type");
+        $oTableRow->addTextCell("Description");
+        $oTableRow->addTextCell("Submission Date");
+
+        if($bQueued)
+            $oTableRow->addTextCell("Action");
+
+        $oTableRow->setClass("color4");
+        $oTable->addRow($oTableRow);
 
         for($i = 1; $oRow = query_fetch_object($hResult); $i++)
         {
+            $oTableRow = new tableRow();
             if($oRow->versionId)
             {
                 $oVersion = new version($oRow->versionId);
@@ -142,17 +155,26 @@ class appData
                 $oApp = new application($this->appId);
                 $sLink = $oApp->objectMakeLink();
             }
-            $sReturn .= html_tr(array(
-                $sLink,
-                $oRow->type,
-                $oRow->description,
-                print_date(mysqldatetime_to_unixtimestamp($oRow->submitTime))),
-                ($i % 2) ? "color0" : "color1");
+
+            $oTableRow->addTextCell($sLink);
+            $oTableRow->addTextCell($oRow->type);
+            $oTableRow->addTextCell($oRow->description);
+            $oTableRow->addTextCell(print_date(mysqldatetime_to_unixtimestamp($oRow->submitTime)));
+
+            if($bQueued)
+            {
+                $oM = new objectManager($oRow->type);
+                $oM->setReturnTo(array_key_exists('REQUEST_URI', $_SERVER) ? $_SERVER['REQUEST_URI'] : "");
+                $shDeleteLink = '<a href="'.$oM->makeUrl("delete", $oRow->id, "Delete entry").'">delete</a>';
+                $shEditLink = '<a href="'.$oM->makeUrl("edit", $oRow->id, "Edit entry").'">edit</a>';
+                $oTableRow->addTextCell("[ $shEditLink ] &nbsp; [ $shDeleteLink ]");
+            }
+
+            $oTableRow->setClass(($i % 2) ? "color0" : "color1");
+            $oTable->addRow($oTableRow);
         }
 
-        $sReturn .= html_table_end("");
-
-        return $sReturn;
+        return $oTable->getString();
 
     }
 
@@ -448,6 +470,9 @@ class appData
             return TRUE;
         if($this)
         {
+            if($this->bQueued && $this->iSubmitterId == $_SESSION['current']->iUserId)
+                return true;
+
             if($this->iVersionId)
             {
                 $oVersion = new version($this->iVersionId);
