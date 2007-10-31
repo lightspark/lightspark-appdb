@@ -606,9 +606,7 @@ class screenshot
     {
         if($this)
         {
-            $oAppData = new appData();
-            $oAppData->iVersionId = $this->iVersionId;
-            $oAppData->iAppId = NULL;
+            $oAppData = new appData($this->objectGetId(), null, $this);
             return $oAppData->canEdit();
         } else
             return appData::canEdit();
