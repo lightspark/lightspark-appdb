@@ -300,7 +300,7 @@ class Bug
         {
             $oBug = new Bug($oRow->bug_id);
             $sReturn .= html_tr(array(
-                version::fullNameUrl($oRow->versionId),
+                version::fullNameLink($oRow->versionId),
                 "<a href=\"".BUGZILLA_ROOT."show_bug.cgi?id=".$oRow->bug_id."\">".$oRow->bug_id."</a>",
                 $oBug->sBug_status,
                 $oBug->sResolution,
@@ -326,6 +326,8 @@ class Bug
 
     function mustBeQueued()
     {
+        $oVersion = new version($this->iVersionId);
+
         if($_SESSION['current']->hasPriv("admin") ||
            $_SESSION['current']->isMaintainer($oVersion->iVersionId) ||
            $_SESSION['current']->isSuperMaintainer($oVersion->iAppId))
