@@ -63,6 +63,12 @@ div.info_contents { padding:10px; background-color: #eee; }
 div.title_class { font-weight: bold; border-bottom: 1px solid; padding: 4px;
                   font-size: 140%; background-color: #ddd; }
 
+/* Classes for a note box */
+div.note_container { margin:6px; border: 1px solid; }
+div.note_body { padding: 10px; background-color: #ffe732; }
+div.note_title { font-weight: bold; border-bottom: 1px solid; padding: 4px;
+                 font-size: 140%; background-color: #ffc004; }
+
 /* classes for the main page */
 div.rating_header { padding: 8px; }
 div.rating_title { padding-bottom: 4px; font-weight: bold; font-size: 160%; }

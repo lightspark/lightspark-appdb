@@ -987,11 +987,7 @@ class version {
 
         //////////////////////
         // Show test data
-        echo "<div class='info_container'>\n";
 
-        echo "\t<div class='title_class'>\n";
-        echo "\t\tSelected test results <small><small>(selected in 'Test Results' table below)</small></small>\n";
-        echo "\t</div>\n";
 
         /* Set if the use chose to display a particular test report */
         if($iTestingId)
@@ -999,18 +995,45 @@ class version {
         else if($this->iVersionId) /* Let's query for the latest rest report */
         {
             $iTestingId = testData::getNewestTestIdFromVersionId($this->iVersionId);
-            $oTest = new testData($iTestingId);
+
+            if($iTestingId) /* We want all entries to have test data, but old versions might lack
+                               it, or data may have been deleted */
+                $oTest = new testData($iTestingId);
         } else /* Perhaps we have a cached entry? There should be */
         {
             $aTests = $this->getTestResults();
-            $oTest = $aTests[0];
+
+            if(sizeof($aTests)) /* ... but we cannot be certain */
+                $oTest = $aTests[0];
         }
 
-        echo "<div class='info_contents'>\n";
-        $oTest->ShowTestResult();
-        echo "</div>\n";
+        if($oTest)
+        {
+            echo "<div class='info_container'>\n";
 
-        echo "</div>\n"; // end the 'info_container' div
+            echo "\t<div class='title_class'>\n";
+            echo "\t\tSelected test results <small><small>(selected in 'Test Results' table below)</small></small>\n";
+            echo "\t</div>\n";
+
+            echo "<div class='info_contents'>\n";
+
+            $oTest->ShowTestResult();
+
+            echo "</div>\n";
+
+            echo "</div>\n";
+        } else /* Show a note saying that no test results are present,
+                  and encourage the user to take action */
+        {
+            echo html_note('No Test Results',
+                           'This version has no test results, please consider submitting some.<br />'.
+                           'They may be part of the '.
+                           'version or application description. If they are, please '.
+                           'consider becoming a maintainer and remove them, submitting '.
+                           'a proper test report instead.');
+        }
+
+        // end the 'info_container' div
         // end show test data
         /////////////////////
 
@@ -1020,7 +1043,7 @@ class version {
         if($oTest->iTestingId)
         {
             $oTest->ShowVersionsTestingTable($this->objectMakeUrl()."&iTestingId=", 5);
-        } else /* We are previewing the version */
+        } else if($oTest) /* We are previewing the version */
         {
             $oTable = $oTest->CreateTestTable();
             $oTable->AddRow($oTest->CreateTestTableRow(0, ""));

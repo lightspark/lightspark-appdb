@@ -286,4 +286,18 @@ function make_inx_option_list($varname, $inx = null)
 
 }
 
+/* Displays a note box */
+function html_note($shTitle, $shBody)
+{
+    $shRet = '<div class="note_container">';
+    $shRet .= '<div class="note_title">';
+    $shRet .= $shTitle;
+    $shRet .= '</div>';
+    $shRet .= '<div class="note_body">';
+    $shRet .= $shBody;
+    $shRet .= '</div></div>';
+
+    return $shRet;
+}
+
 ?>
