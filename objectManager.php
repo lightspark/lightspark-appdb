@@ -75,15 +75,28 @@ $oOtherObject = new $sClass($oObject->getId());
    on failure */
 $sErrors = $oObject->processForm($aClean);
 
-if(isset($aClean['sAction']) && $aClean['sAction'] == "add")
-    $oObject->handle_anonymous_submission();
+if(array_key_exists("sAction", $aClean))
+    $sAction = $aClean['sAction'];
+else
+    $sAction = "";
 
-/* Provided the necessary values are present, an object's children may be moved
-   without any confirmation */
-if($oObject->getId() && $aClean['sAction'] == "moveChildren" && $aClean['iNewId'])
-    $oObject->move_children($aClean['iNewId']);
+/* Handle things that need to be done before showing any output */
+if($sAction)
+{
+    switch($aClean['sAction'])
+    {
+        case 'add':
+            $oObject->handle_anonymous_submission();
+            break;
 
-$sAction = $aClean['sAction'];
+        case 'moveChildren':
+            /* Provided the necessary values are present, an object's children may be moved
+            without any confirmation */
+            if($oObject->getId() && $aClean['iNewId'])
+                $oObject->move_children($aClean['iNewId']);
+            break;
+    }
+}
 
 /* If no action is specified, use a default depending on other parameters */
 if(!$sAction)
@@ -119,12 +132,17 @@ if($oObject->getId() && $sAction != "add")
         $oObject->view($_SERVER['REQUEST_URI'], $aClean);
         break;
     }
-} else if ($sAction == "add")
-{
-    $oObject->add_entry($aClean, $sErrors);
 } else
 {
-    $oObject->display_table($aClean);
+    switch($sAction)
+    {
+        case 'add':
+            $oObject->add_entry($aClean, $sErrors);
+            break;
+
+        default:
+            $oObject->display_table($aClean);
+    }
 }
 
 apidb_footer();
