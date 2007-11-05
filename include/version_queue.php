@@ -299,6 +299,16 @@ class version_queue
         return version::allowAnonymousSubmissions();
     }
 
+    function objectAllowPurgingRejected()
+    {
+        return $this->oVersion->objectAllowPurgingRejected();
+    }
+
+    public function objectGetSubmitTime()
+    {
+        return $this->oVersion->objectGetSubmitTime();
+    }
+
     function objectGetId()
     {
         return $this->oVersion->objectGetId();

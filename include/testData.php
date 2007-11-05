@@ -1213,6 +1213,16 @@ class testData{
         return FALSE;
     }
 
+    function objectAllowPurgingRejected()
+    {
+        return TRUE;
+    }
+
+    public function objectGetSubmitTime()
+    {
+        return mysqltimestamp_to_unixtimestamp($this->sSubmitTime);
+    }
+
     function objectGetItemsPerPage($bQueued = false)
     {
         $aItemsPerPage = array(25, 50, 100, 200);

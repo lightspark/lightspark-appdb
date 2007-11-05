@@ -220,6 +220,15 @@ class ObjectManager
             return;
         }
 
+        /* Show a link to the 'purge rejected entries' page if we are an admin */
+        if($_SESSION['current']->hasPriv('admin') && $this->getOptionalSetting('objectAllowPurgingRejected', FALSE))
+        {
+            echo '<div align="center">';
+            $oM = new objectManager($this->sClass, 'Purge Rejected Entries');
+            echo '<a href="'.$oM->makeUrl('purgeRejected').'">Purge rejected entries</a><br /><br />';
+            echo '</div>';
+        }
+
         /* output the header */
         echo '<table width="100%" border="0" cellpadding="3" cellspacing="0">';
 
@@ -520,8 +529,9 @@ class ObjectManager
         }
     }
 
-    /* Delete the object associated with the given id */
-    public function delete_entry($sReplyText)
+    /* Delete the object associated with the given id
+       bStandAlone determines whether this is a stand alone delete operation, where we want to output messages and return */
+    public function delete_entry($sReplyText, $bStandAlone = true)
     {
         $this->checkMethods(array("delete", "canEdit"));
 
@@ -603,19 +613,25 @@ class ObjectManager
             if($oSubmitterMail)
                 $oSubmitterMail->send("delete", $sReplyText);
 
-            addmsg("Entry deleted", "green");
+            if($bStandAlone)
+            {
+                addmsg("Entry deleted", "green");
 
-            if($iDeleted)
-                addmsg("Deleted $iDeleted child entries", "green");
+                if($iDeleted)
+                    addmsg("Deleted $iDeleted child entries", "green");
 
-            if($iFailed)
-                addmsg("Failed to delete $iFailed child entries", "red");
+                if($iFailed)
+                    addmsg("Failed to delete $iFailed child entries", "red");
 
-            $this->return_to_url($this->makeUrl("view", false));
-        } else
-        {
-            addmsg("Failed to delete entry", "red");
+                $this->return_to_url($this->makeUrl("view", false));
+            }
+            return TRUE;
         }
+
+        if($bStandAlone)
+            addmsg("Failed to delete entry", "red");
+
+        return FALSE;
     }
 
     /* Return the user to the url specified in the objectManager object.  Fall back to a
@@ -665,6 +681,94 @@ class ObjectManager
             return new mail($oObject->objectGetMail("delete", $bMailSubmitter,
                                                     $bParentAction));
         }
+    }
+
+    /* Purge rejected entries, optionally by date */
+    public function purgeRejected($aClean)
+    {
+        if(!$_SESSION['current']->hasPriv("admin"))
+        {
+            addmsg("Insufficient privileges", "red");
+            return FALSE;
+        }
+
+        if(!$this->getOptionalSetting("objectAllowPurgingRejected", FALSE))
+        {
+            addmsg("Purging rejected entries is not allowed for this object type");
+            return FALSE;
+        }
+
+        $oObject = $this->getObject();
+
+        $hResult = $oObject->objectGetEntries(true, true);
+
+        if(!$hResult)
+        {
+            addmsg("Failed to get list of rejected entries", "red");
+            return FALSE;
+        }
+
+        if($aClean['bTimeLimit'] == 'true')
+            $iSubmittedBefore = mysqltimestamp_to_unixtimestamp($aClean['sSubmittedBefore']);
+        else
+            $iSubmittedBefore = 0;
+
+        $iDeleted = 0;
+        $iFailed = 0;
+
+        if($sSubmittedBefore)
+            $sMailWord = "old";
+        else
+            $sMailWord = "all";
+
+        while($oRow = mysql_fetch_object($hResult))
+        {
+            $oObject = new $this->sClass(null, $oRow);
+
+            if(!$iSubmittedBefore || $oObject->objectGetSubmitTime() < $iSubmittedBefore)
+            {
+                $oM = new objectManager($this->sClass, "", $oObject->objectGetId());
+                if($oM->delete_entry("Purging $sMailWord rejected entries", false))
+                    $iDeleted++;
+                else
+                    $iFailed++;
+            }
+        }
+
+        if($iFailed)
+            addmsg("Failed to delete $iFailed entries", 'red');
+
+        $sNoun = ($iDeleted == 1) ? 'entry' : 'entries';
+
+        if($iDeleted)
+            addmsg("Deleted $iDeleted $sNoun", 'green');
+
+        $this->return_to_url(APPDB_ROOT);
+    }
+
+    public function displayPurgeRejected()
+    {
+        if(!$_SESSION['current']->hasPriv("admin"))
+        {
+            $this->error_exit('Only admins can do this');
+            return FALSE;
+        }
+
+        if(!$this->getOptionalSetting("objectAllowPurgingRejected", FALSE))
+        {
+            $this->error_exit('Purging rejected entries is not allowed for this object type');
+            return FALSE;
+        }
+
+        echo '<form action="objectManager.php" action="post" />';
+        echo 'Purge rejected entries of this type<br />';
+        echo '<input type="checkbox" value="true" name="bTimeLimit" /> ';
+        echo 'Only entries submitted before ';
+        echo '<input type="text" name="sSubmittedBefore" size="25" value="'.date('Y-m-d H:i:s').'" /><br /><br />';
+        echo '<input type="hidden" name="sAction" value="doPurgeRejected" />';
+        echo $this->makeUrlFormData();
+        echo '<input type="submit" value="Purge" />';
+        echo '</form>';
     }
 
     /* Move all the object's children to another object of the same type, and

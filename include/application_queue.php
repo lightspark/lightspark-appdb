@@ -400,6 +400,16 @@ class application_queue
         return application::allowAnonymousSubmissions();
     }
 
+    function objectAllowPurgingRejected()
+    {
+        return $this->oApp->objectAllowPurgingRejected();
+    }
+
+    public function objectGetSubmitTime()
+    {
+        return $this->oApp->objectGetSubmitTime();
+    }
+
     function objectGetId()
     {
         return $this->oApp->objectGetId();

@@ -173,6 +173,16 @@ class testData_queue
         return testData::allowAnonymousSubmissions();
     }
 
+    function objectAllowPurgingRejected()
+    {
+        return $this->oTestData->objectAllowPurgingRejected();
+    }
+
+    public function objectGetSubmitTime()
+    {
+        return $this->oTestData->objectGetSubmitTime();
+    }
+
     function objectGetItemsPerPage($bQueued = false)
     {
         return testData::objectGetItemsPerPage($bQueued);

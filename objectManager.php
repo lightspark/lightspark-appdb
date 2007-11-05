@@ -95,6 +95,11 @@ if($sAction)
             if($oObject->getId() && $aClean['iNewId'])
                 $oObject->move_children($aClean['iNewId']);
             break;
+
+        case 'doPurgeRejected':
+            /* Purge some or all rejected entries */
+            $oObject->purgeRejected($aClean);
+            break;
     }
 }
 
@@ -138,6 +143,10 @@ if($oObject->getId() && $sAction != "add")
     {
         case 'add':
             $oObject->add_entry($aClean, $sErrors);
+            break;
+
+        case 'purgeRejected':
+            $oObject->displayPurgeRejected();
             break;
 
         default:

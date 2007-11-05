@@ -1180,6 +1180,16 @@ class Application {
         return FALSE;
     }
 
+    function objectAllowPurgingRejected()
+    {
+        return TRUE;
+    }
+
+    public function objectGetSubmitTime()
+    {
+        return mysqltimestamp_to_unixtimestamp($this->sSubmitTime);
+    }
+
     public function objectGetId()
     {
         return $this->iAppId;
