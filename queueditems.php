@@ -11,7 +11,10 @@ require_once(BASE."include/appData.php");
 $oUser = new User($_SESSION['current']->iUserId);
 
 if(!$oUser->isLoggedIn())
-    util_show_error_page_and_exit();
+{
+    login_form();
+    exit;
+}
 
 apidb_header("View Your Queued Items");
 

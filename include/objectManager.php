@@ -164,8 +164,9 @@ class ObjectManager
         if(!$_SESSION['current']->isLoggedIn() && $this->bIsQueue)
         {
             $sQueueText = $this->bIsRejected ? "rejected" : "queued";
-            echo '<div align="center">You need to <a href="'.login_url().'">';
-            echo "log in</a> in order to process $sQueueText entries</div>\n";
+            echo '<div align="center">You need to ';
+            echo "log in in order to process $sQueueText entries</div>\n";
+            login_form(false);
             return;
         }
 
@@ -934,10 +935,8 @@ class ObjectManager
         if($oObject->allowAnonymousSubmissions() || $_SESSION['current']->isLoggedIn())
             return;
 
-        util_show_error_page_and_exit("You need to be <a href=\"".login_url().
-                "\">logged in</a>.  If you don&#8217;t have an ".
-                "account you can <a href=\"".BASE."account.php?sCmd=new\">register ".
-                "now</a>, it only takes a few seconds.");
+        login_form();
+        exit;
     }
 
     private function displayMoveChildren($oObject)

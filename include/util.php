@@ -55,6 +55,20 @@ function values($arr)
     return $res;
 }
 
+/* Display a login form */
+function login_form($bShowHeader = true)
+{
+    global $aClean;
+    $aClean['sReturnTo'] = urlencode($_SERVER['REQUEST_URI']);
+
+    if($bShowHeader)
+        apidb_header("Login");
+    include(BASE."include/"."form_login.php");
+
+    if($bShowHeader)
+        apidb_footer();
+}
+
 // print the month, day, year, hour, minute, second
 function print_date($sTimestamp)
 {
