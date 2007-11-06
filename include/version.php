@@ -1360,34 +1360,16 @@ class version {
                not be able to see rejected entries for versions they maintain */
             if($bRejected)
                 $sQuery = "SELECT COUNT(DISTINCT appVersion.versionId) as count FROM
-                        appVersion, appFamily WHERE
-                        appFamily.appId = appVersion.appId
-                        AND
-                        appFamily.queued = 'false'
-                        AND
+                        appVersion WHERE
                         appVersion.submitterId = '?'
                         AND
                         appVersion.queued = '?'";
             else
                 $sQuery = "SELECT COUNT(DISTINCT appVersion.versionId) as count FROM
-                        appVersion, appMaintainers, appFamily WHERE
-                        appFamily.appId = appVersion.appId
+                        appVersion, appMaintainers WHERE
+                        appMaintainers.appId = appVersion.appId
                         AND
-                        appFamily.queued = 'false'
-                        AND
-                        (
-                            (
-                                appMaintainers.appId = appVersion.appId
-                                AND
-                                superMaintainer = '1'
-                            )
-                            OR
-                            (
-                                appMaintainers.versionId = appVersion.versionId
-                                AND
-                                superMaintainer = '0'
-                            )
-                        )
+                        superMaintainer = '1'
                         AND
                         appMaintainers.userId = '?'
                         AND
@@ -1399,11 +1381,7 @@ class version {
         } else
         {
             $sQuery = "SELECT COUNT(DISTINCT versionId) as count
-                    FROM appVersion, appFamily WHERE
-                    appFamily.appId = appVersion.appId
-                    AND
-                    appFamily.queued = 'false'
-                    AND
+                    FROM appVersion WHERE
                     appVersion.queued = '?'";
             $hResult = query_parameters($sQuery, $sQueued);
         }
@@ -1508,35 +1486,16 @@ class version {
             /* Users should see their own rejected entries, but maintainers should
                not be able to see rejected entries for versions they maintain */
             if($bRejected)
-                $sQuery = "SELECT appVersion.* FROM
-                        appVersion, appFamily WHERE
-                        appFamily.appId = appVersion.appId
-                        AND
-                        appFamily.queued = 'false'
-                        AND
+                $sQuery = "SELECT * FROM appVersion WHERE
                         appVersion.submitterId = '?'
                         AND
                         appVersion.queued = '?' ORDER BY ?$sLimit";
             else
                 $sQuery = "SELECT appVersion.* FROM
-                        appVersion, appMaintainers, appFamily WHERE
-                        appFamily.appId = appVersion.appId
-                        AND
-                        appFamily.queued = 'false'
-                        AND
-                        (
-                            (
-                                appMaintainers.appId = appVersion.appId
-                                AND
-                                superMaintainer = '1'
-                            )
-                            OR
-                            (
-                                appMaintainers.versionId = appVersion.versionId
-                                AND
-                                superMaintainer = '0'
-                            )
-                        )
+                        appVersion, appMaintainers WHERE
+                        appMaintainers.appId = appVersion.appId
+                        and
+                        superMaintainer = '1'
                         AND
                         appMaintainers.userId = '?'
                         AND
@@ -1555,12 +1514,7 @@ class version {
             }
         } else
         {
-            $sQuery = "SELECT appVersion.*
-                    FROM appVersion, appFamily WHERE
-                    appFamily.appId = appVersion.appId
-                    AND
-                    appFamily.queued = 'false'
-                    AND
+            $sQuery = "SELECT * FROM appVersion WHERE
                     appVersion.queued = '?' ORDER BY ?$sLimit";
 
             if($sLimit)
