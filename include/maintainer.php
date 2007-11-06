@@ -410,24 +410,8 @@ class maintainer
 
         /* Excluding requests for queued apps and versions, as these will be
            handled automatically */
-        $sQuery = "(SELECT DISTINCT appMaintainers.* FROM 
-            appMaintainers, appFamily WHERE
-            appMaintainers.queued = '?'
-            AND
-            appMaintainers.superMaintainer = '1'
-            AND
-            appFamily.appId = appMaintainers.appId
-            AND
-            appFamily.queued = 'false') UNION
-            (SELECT DISTINCT appMaintainers.* FROM
-            appMaintainers, appVersion WHERE
-            appMaintainers.queued = '?'
-            AND
-            appMaintainers.versionId = appVersion.versionId
-            AND
-            appMaintainers.superMaintainer = '0'
-            AND
-            appVersion.queued = 'false')$sLimit";
+        $sQuery = "SELECT * FROM appMaintainers WHERE
+            appMaintainers.queued = '?'$sLimit";
 
         if($bQueued)
         {
@@ -435,13 +419,10 @@ class maintainer
             {
                 if($sLimit)
                 {
-                    return query_parameters($sQuery, $bQueued ? "true" : "false",
-                                            $bQueued ? "true" : "false",
-                                            $iStart, $iRows);
+                    return query_parameters($sQuery, $bQueued ? "true" : "false", $iStart, $iRows);
                 } else
                 {
-                    return query_parameters($sQuery, $bQueued ? "true" : "false",
-                                            $bQueued ? "true" : "false");
+                    return query_parameters($sQuery, $bQueued ? "true" : "false");
                 }
             } else
             {
@@ -451,12 +432,10 @@ class maintainer
         {
             if($sLimit)
             {
-                return query_parameters($sQuery, $bQueued ? "true" : "false",
-                                        $bQueued ? "true" : "false", $iStart, $iRows);
+                return query_parameters($sQuery, $bQueued ? "true" : "false", $iStart, $iRows);
             } else
             {
-                return query_parameters($sQuery, $bQueued ? "true" : "false",
-                                        $bQueued ? "true" : "false");
+                return query_parameters($sQuery, $bQueued ? "true" : "false");
             }
         }
     }
@@ -512,31 +491,16 @@ class maintainer
 
         /* Excluding requests for queued apps and versions, as these are handled 
            automatically.  One SELECT for super maintainers, one for maintainers. */
-       $sQuery = "(SELECT COUNT(DISTINCT maintainerId) as count FROM 
-            appMaintainers, appFamily WHERE
-            appMaintainers.queued = '?'
-            AND
-            appMaintainers.superMaintainer = '1'
-            AND
-            appFamily.appId = appMaintainers.appId
-            AND
-            appFamily.queued = 'false') UNION
-            (SELECT COUNT(DISTINCT maintainerId) as count FROM
-            appMaintainers, appVersion WHERE
-            appMaintainers.queued = '?'
-            AND
-            appMaintainers.versionId = appVersion.versionId
-            AND
-            appMaintainers.superMaintainer = '0'
-            AND
-            appVersion.queued = 'false')";
+       $sQuery = "SELECT COUNT(maintainerId) as count FROM appMaintainers WHERE
+            appMaintainers.queued = '?'";
 
-        if(!($hResult = query_parameters($sQuery, $bQueued ? "true" : "false",
-                                         $bQueued ? "true" : "false")))
+        if(!($hResult = query_parameters($sQuery, $bQueued ? "true" : "false")))
             return FALSE;
 
-        for($iCount = 0; $oRow = query_fetch_object($hResult);)
-            $iCount += $oRow->count;
+        if($oRow = query_fetch_object($hResult))
+            $iCount = $oRow->count;
+        else
+            $iCount = 0;
 
         return $iCount;
     }
