@@ -920,11 +920,7 @@ class testData{
             if($bRejected)
             {
                 $sQuery = "SELECT COUNT(testingId) AS count FROM
-                        testResults, appVersion WHERE
-                        appVersion.queued = 'false'
-                        AND
-                        appVersion.versionId = testResults.versionId
-                        AND
+                        testResults WHERE
                         testResults.submitterId = '?'
                         AND
                         testResults.queued = '?'";
@@ -933,8 +929,6 @@ class testData{
                 $sQuery = "SELECT COUNT(testingId) AS count FROM
                         testResults, appVersion, appMaintainers WHERE
                             testResults.versionId = appVersion.versionId
-                            AND
-                            appVersion.queued = 'false'
                             AND
                             appMaintainers.userId = '?'
                             AND
@@ -961,12 +955,7 @@ class testData{
                                         $sQueued);
         } else
         {
-            $sQuery = "SELECT COUNT(testingId) as count FROM testResults,
-                    appVersion WHERE
-                    appVersion.versionId = testResults.versionId
-                    AND
-                    appVersion.queued = 'false'
-                    AND
+            $sQuery = "SELECT COUNT(testingId) as count FROM testResults WHERE
                     testResults.queued = '?'";
             $hResult = query_parameters($sQuery, $sQueued);
         }
@@ -1002,11 +991,7 @@ class testData{
         {
             if($bRejected)
             {
-                $sQuery = "SELECT testResults.* FROM testResults, appVersion WHERE
-                        appVersion.queued = 'false'
-                        AND
-                        appVersion.versionId = testResults.versionId
-                        AND
+                $sQuery = "SELECT testResults.* FROM testResults WHERE
                         testResults.submitterId = '?'
                         AND
                         testResults.queued = '?' ORDER BY ?$sLimit";
@@ -1017,8 +1002,6 @@ class testData{
                             testResults.versionId = appVersion.versionId
                             AND
                             appMaintainers.userId = '?'
-                            AND
-                            appVersion.queued = 'false'
                             AND
                             (
                                 (
@@ -1049,11 +1032,7 @@ class testData{
             }
         } else
         {
-            $sQuery = "SELECT testResults.* FROM testResults, appVersion WHERE
-                    testResults.versionId = appVersion.versionId
-                    AND
-                    appVersion.queued = 'false'
-                    AND
+            $sQuery = "SELECT testResults.* FROM testResults WHERE
                     testResults.queued = '?' ORDER by ?$sLimit";
             if($sLimit)
                 $hResult = query_parameters($sQuery, $sQueued, $sOrderBy, $iStart, $iRows);
