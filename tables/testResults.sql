@@ -20,6 +20,6 @@ create table testResults (
         comments        text,
 	submitTime	datetime NOT NULL,
 	submitterId	int(11) NOT NULL default '0',
-	queued		enum('true','false','rejected') NOT NULL default 'false',
+	queued		enum('true','false','rejected','pending') NOT NULL default 'false',
         key(testingId)
 );

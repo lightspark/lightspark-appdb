@@ -17,8 +17,7 @@ class version_queue
 
         if($iVersionId)
         {
-            $iTestingId = testData::getNewestTestIdFromVersionId($iVersionId,
-                                                                 $this->oVersion->sQueued);
+            $iTestingId = testData::getNewestTestIdFromVersionId($iVersionId, "pending");
             /* This illustrates the importance of converting downloadurl completely
                to the objectManager model.  If we don't get  a match searching for
                a queued entry, try finding a rejected one. */
@@ -54,7 +53,6 @@ class version_queue
     function reQueue()
     {
         $this->oVersion->reQueue();
-        $this->oTestDataQueue->reQueue();
         $this->oDownloadUrl->reQueue();
     }
 
@@ -64,8 +62,6 @@ class version_queue
 
         if($this->oDownloadUrl->iId)
             $this->oDownloadUrl->reject();
-
-        $this->oTestDataQueue->reject();
     }
 
     function update()

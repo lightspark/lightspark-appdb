@@ -63,6 +63,12 @@ class testData{
     // Creates a new Test Results.
     function create()
     {
+        $oVersion = new version($this->iVersionId);
+        if($oVersion->sQueued != "false")
+            $this->sQueued = "pending";
+        else
+            $this->sQueued = $this->mustBeQueued() ? "true" : "false";
+
         $hResult = query_parameters("INSERT INTO testResults (versionId, whatWorks, whatDoesnt,".
                                     "whatNotTested, testedDate, distributionId, testedRelease,".
                                     "installs, runs, testedRating, comments,".
@@ -79,7 +85,7 @@ class testData{
                                     $this->sTestedRating, $this->sComments,
                                     "NOW()",
                                     $_SESSION['current']->iUserId,
-                                    $this->mustBeQueued() ? "true" : "false");
+                                    $this->sQueued);
 
         if($hResult)
         {
@@ -246,7 +252,7 @@ class testData{
         }
 
         // If we are not in the queue, we can't move the test data out of the queue.
-        if(!$this->sQueued == 'true')
+        if($this->sQueued == 'false')
             return false;
 
         if(query_parameters("UPDATE testResults SET queued = '?' WHERE testingId = '?'",
