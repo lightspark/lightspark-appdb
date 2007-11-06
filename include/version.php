@@ -92,7 +92,11 @@ class version {
         if(!$_SESSION['current']->canCreateVersion())
             return;
 
-        $this->sQueued = $this->mustBeQueued() ? "true" : "false";
+        $oApp = new application($this->iAppId);
+        if($oApp->sQueued != "false")
+            $this->sQueued = "pending";
+        else
+            $this->sQueued = $this->mustBeQueued() ? "true" : "false";
 
         $hResult = query_parameters("INSERT INTO appVersion
                    (versionName, description, maintainer_release,
@@ -274,7 +278,7 @@ class version {
             return;
 
         // If we are not in the queue, we can't move the version out of the queue.
-        if(!$this->sQueued == 'true')
+        if($this->sQueued == 'false')
             return false;
 
         if(query_parameters("UPDATE appVersion SET queued = '?' WHERE versionId = '?'",

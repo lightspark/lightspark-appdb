@@ -58,7 +58,7 @@ create table appVersion (
   maintainer_release    text,
   submitTime            datetime NOT NULL,
   submitterId           int(11) NOT NULL default '0',
-  queued                enum('true','false','rejected') NOT NULL default 'false',
+  queued                enum('true','false','rejected','pending') NOT NULL default 'false',
   license		enum('Retail','Open Source','Freeware','Demo','Shareware'),
   obsoleteBy            int(11) NOT NULL default '0',
   key(versionId),

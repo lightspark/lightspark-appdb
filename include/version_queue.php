@@ -52,7 +52,6 @@ class version_queue
 
     function reQueue()
     {
-        $this->oVersion->reQueue();
         $this->oDownloadUrl->reQueue();
     }
 
