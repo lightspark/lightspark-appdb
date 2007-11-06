@@ -46,7 +46,15 @@ class Comment {
         {
             $this->iCommentId = $oRow->commentId;
             $this->iParentId = $oRow->parentId;
-            $this->iAppId = $oRow->appId;
+
+            if($oRow->appId)
+            {
+                $this->iAppId = $oRow->appId;
+            } else
+            {
+                $oVersion = new version($this->iVersionId);
+                $this->iAppId = $oApp->iAppId;
+            }
             $this->iVersionId = $oRow->versionId;
             $this->sSubject = $oRow->subject;
             $this->sBody = $oRow->body;
