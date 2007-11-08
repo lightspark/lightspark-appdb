@@ -57,7 +57,10 @@ class version_queue
 
     function reject()
     {
-        $this->oVersion->reject();
+        $oApp = new application($this->oVersion->iAppId);
+
+        if($oApp->sQueued == "false")
+            $this->oVersion->reject();
 
         if($this->oDownloadUrl->iId)
             $this->oDownloadUrl->reject();
