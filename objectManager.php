@@ -66,6 +66,7 @@ if($aClean['bIsRejected'] == 'true')
 }
 
 $oObject->getMultiPageDataFromInput($aClean);
+$oObject->setSortInfo($aClean);
 
 $sClass = $oObject->getClass();
 $oOtherObject = new $sClass($oObject->getId());

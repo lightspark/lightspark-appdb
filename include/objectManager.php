@@ -16,6 +16,7 @@ class ObjectManager
     private $sReturnToTitle; /* Used to preserve the title when processing entries from a queue list, for instance */
     private $oMultiPage;
     private $oTableRow;
+    private $oSortInfo; /* Contains sort info used when displaying tables */
     private $oObject; /* Store an instance of the object of the class
                          we are working with.  This is useful if
                          we are calling object functions which modify
@@ -74,6 +75,19 @@ class ObjectManager
     public function setIsRejected($bIsRejected)
     {
       $this->bIsRejected = $bIsRejected;
+    }
+
+    public function setSortInfo($aClean = null)
+    {
+        /* No use to continue if there are no sortable fields */
+        if(!$this->getOptionalSetting("objectGetSortableFields", FALSE))
+            return;
+
+        $this->oSortInfo = null;
+        $this->oSortInfo = new TableSortInfo($this->makeUrl().'&');
+
+        if($aClean)
+            $this->oSortInfo->ParseArray($aClean, $this->getObject()->objectGetSortableFields());
     }
 
     public function getId()
@@ -180,18 +194,41 @@ class ObjectManager
         // current page, if applicable.
         $this->handleMultiPageControls($aClean, TRUE);
 
+        /* Set the sort info */
+        $this->setSortInfo($aClean);
+
         /* query the class for its entries */
         /* We pass in $this->bIsQueue to tell the object */
         /* if we are requesting a list of its queued objects or */
         /* all of its objects */
         if($this->oMultiPage->bEnabled)
         {
-            $hResult = $oObject->objectGetEntries($this->bIsQueue, $this->bIsRejected,
-                                                  $this->oMultiPage->iItemsPerPage,
-                                                  $this->oMultiPage->iLowerLimit);
+            /* Has the user chosen a particular field to sort by?  If not we want to use the default */
+            if($this->oSortInfo->sCurrentSort)
+            {
+                $hResult = $oObject->objectGetEntries($this->bIsQueue, $this->bIsRejected,
+                                                      $this->oMultiPage->iItemsPerPage,
+                                                      $this->oMultiPage->iLowerLimit,
+                                                      $this->oSortInfo->sCurrentSort,
+                                                      $this->oSortInfo->bAscending);
+            } else
+            {
+                $hResult = $oObject->objectGetEntries($this->bIsQueue, $this->bIsRejected,
+                                                      $this->oMultiPage->iItemsPerPage,
+                                                      $this->oMultiPage->iLowerLimit);
+            }
         } else
         {
-            $hResult = $oObject->objectGetEntries($this->bIsQueue, $this->bIsRejected);
+            /* Has the user chosen a particular field to sort by?  If not we want to use the default */
+            if($this->oSortInfo->sCurrentSort)
+            {
+                $hResult = $oObject->objectGetEntries($this->bIsQueue, $this->bIsRejected,
+                                                      $this->oSortInfo->sCurrentSort,
+                                                      $this->oSortInfo->bAscending);
+            } else
+            {
+                $hResult = $oObject->objectGetEntries($this->bIsQueue, $this->bIsRejected);
+            }
         }
 
         /* did we get any entries? */
@@ -1171,6 +1208,12 @@ class ObjectManager
             $sUrl .= "&iPage=".$this->oMultiPage->iPage;
         }
 
+        if($this->oSortInfo && $this->oSortInfo->sCurrentSort)
+        {
+            $sUrl .= "&sOrderBy={$this->oSortInfo->sCurrentSort}";
+            $sUrl .= '&bAscending='.($this->oSortInfo->bAscending ? 'true' : 'false');
+        }
+
         return $sUrl;
     }
 
@@ -1199,6 +1242,12 @@ class ObjectManager
         if($this->sReturnToTitle)
             $sReturn .= "<input type=\"hidden\" name=\"sReturnToTitle\" value=\"".$this->sReturnToTitle."\" />\n";
 
+        if($this->oSortInfo && $this->oSortInfo->sCurrentSort)
+        {
+            $sReturn .= "<input type=\"hidden\" name=\"sOrderBy\" value=\"{$this->oSortInfo->sCurrentSort}\" />";
+            $sReturn .= "<input type=\"hidden\" name=\"bAscending\" value=\"".($this->oSortInfo->bAscending ? 'true' : 'false')."\" />";
+        }
+
         return $sReturn;
     }
 
@@ -1225,6 +1274,10 @@ class ObjectManager
         }
 
         $oTableRow->SetClass($sClass);
+
+        /* Set the current sorting info if the header is sortable */
+        if(get_class($oTableRow) == "TableRowSortable")
+            $oTableRow->SetSortInfo($this->oSortInfo);
 
         echo $oTableRow->GetString();
     }

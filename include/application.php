@@ -883,9 +883,10 @@ class Application {
         return $sLink;
     }
 
-    public static function objectGetEntries($bQueued, $bRejected, $iRows = 0, $iStart = 0, $sOrderBy = "appId")
+    public static function objectGetEntries($bQueued, $bRejected, $iRows = 0, $iStart = 0, $sOrderBy = "appId", $bAscending = TRUE)
     {
         $sLimit = "";
+        $sOrdering = $bAscending ? "ASC" : "DESC";
 
         /* Should we add a limit clause to the query? */
         if($iRows || $iStart)
@@ -909,27 +910,28 @@ class Application {
             if(!$bRejected)
                 return FALSE;
 
-            $sQuery .= " AND appFamily.submitterId = '?' ORDER BY ?$sLimit";
+            $sQuery .= " AND appFamily.submitterId = '?' ORDER BY ? ?$sLimit";
             if($sLimit)
             {
                 $hResult = query_parameters($sQuery, $sQueued,
                                             $_SESSION['current']->iUserId, $sOrderBy,
-                                            $iStart, $iRows);
+                                            $sOrdering, $iStart, $iRows);
             } else
             {
                 $hResult = query_parameters($sQuery, $sQueued,
-                                            $_SESSION['current']->iUserId, $sOrderBy);
+                                            $_SESSION['current']->iUserId, $sOrderBy,
+                                            $sOrdering);
             }
         } else
         {
-            $sQuery .= " ORDER BY ?$sLimit";
+            $sQuery .= " ORDER BY ? ?$sLimit";
             if($sLimit)
             {
-                $hResult = query_parameters($sQuery, $sQueued, $sOrderBy,
+                $hResult = query_parameters($sQuery, $sQueued, $sOrderBy, $sOrdering,
                                             $iStart, $iRows);
             } else
             {
-                $hResult = query_parameters($sQuery, $sQueued, $sOrderBy);
+                $hResult = query_parameters($sQuery, $sQueued, $sOrderBy, $sOrdering);
             }
         }
 
@@ -939,13 +941,18 @@ class Application {
         return $hResult;
     }
 
+    public static function objectGetSortableFields()
+    {
+        return array("submitTime", "appName");
+    }
+
     public static function objectGetHeader()
     {
-        $oTableRow = new TableRow();
-        $oTableRow->AddTextCell("Submission Date");
+        $oTableRow = new TableRowSortable();
+        $oTableRow->AddSortableTextCell("Submission Date", "submitTime");
         $oTableRow->AddTextCell("Submitter");
         $oTableRow->AddTextCell("Vendor");
-        $oTableRow->AddTextCell("Application");
+        $oTableRow->AddSortableTextCell("Application", "appName");
         return $oTableRow;
     }
 

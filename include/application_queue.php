@@ -364,12 +364,17 @@ class application_queue
         return $this->oApp->objectGetEntriesCount($bQueued, $bRejected);
     }
 
-    function objectGetEntries($bQueued, $bRejected, $iRows = 0, $iStart = 0, $sOrderBy = "appId")
+    function objectGetEntries($bQueued, $bRejected, $iRows = 0, $iStart = 0, $sOrderBy = "appId", $bAscending = TRUE)
     {
         return $this->oApp->objectGetEntries($bQueued, $bRejected, $iRows, $iStart,
-                                             $sOrderBy);
+                                             $sOrderBy, $bAscending);
     }
- 
+
+    public static function objectGetSortableFields()
+    {
+        return application::objectGetSortableFields();
+    }
+
     function objectGetHeader()
     {
         return $this->oApp->objectGetHeader();

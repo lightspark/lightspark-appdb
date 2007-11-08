@@ -200,7 +200,7 @@ class TableCell
 
 class TableRow
 {
-    private $aTableCells; // array that contains the cells for the table row
+    protected $aTableCells; // array that contains the cells for the table row
     private $sStyle; // CSS style to be used
     private $sClass; // CSS class to be used
     private $sValign; // valign="$sValign" - if this variable is set
@@ -295,6 +295,95 @@ class TableRow
     function GetTableRowClick()
     {
       return $this->oTableRowClick;
+    }
+}
+
+/* Class for a sortable table row.  The user can click on the header for a sortable field, and it
+   will alternate between sorting that by ascending/descending order and the default sorting */
+class TableRowSortable extends TableRow
+{
+    private $aSortVars; /* Array of sort variables.  Not all fields have to be sortable.
+                           This is paired with the aTableCells array from TableRow */
+
+    function TableRowSortable()
+    {
+        $this->aSortVars = array();
+
+        $this->TableRow();
+    }
+
+    /* Adds a table cell without sorting */
+    function AddTableCell(TableCell $oCell)
+    {
+        $this->aTableCells[] = $oCell;
+        $this->aSortVars[] = '';
+    }
+
+    /* Adds a text cell without sorting */
+    function AddTextCell($shText)
+    {
+        $this->AddTableCell(new TableCell($shText));
+    }
+
+    /* Adds a text cell with a sorting var */
+    function AddSortableTextCell($shText, $sSortVar)
+    {
+        $this->aTableCells[] = new TableCell($shText);
+        $this->aSortVars[] = $sSortVar;
+    }
+
+    /* Sets sorting info on all cells that are sortable */
+    function SetSortInfo(TableSortInfo $oSortInfo)
+    {
+        for($i = 0; $i < sizeof($this->aTableCells); $i++)
+        {
+            $sSortVar = $this->aSortVars[$i];
+
+            if($sSortVar)
+            {
+                $bAscending = TRUE;
+
+                if($this->aSortVars[$i] == $oSortInfo->sCurrentSort)
+                {
+                    if($oSortInfo->bAscending)
+                        $bAscending = FALSE;
+                    else
+                        $sSortVar = '';
+                }
+
+                $sAscending = $bAscending == TRUE ? 'true': 'false';
+                $this->aTableCells[$i]->SetCellLink($oSortInfo->shUrl."sOrderBy=$sSortVar&bAscending=$sAscending");
+            }
+        }
+    }
+}
+
+/* Container for table sorting info, used to hold the current sort order */
+class TableSortInfo
+{
+    var $sCurrentSort;
+    var $bAscending;
+    var $shUrl;
+
+    function TableSortInfo($shUrl, $sCurrentSort = '', $bAscending = TRUE)
+    {
+        $this->sCurrentSort = $sCurrentSort;
+        $this->shUrl = $shUrl;
+        $this->bAscending = $bAscending;
+    }
+
+    /* Parses an array of HTTP vars to determine current sort settings.
+       Optionally checks the sort var against an array of legal values */
+    function ParseArray($aClean, $aLegalValues = null)
+    {
+        $sCurrentSort = key_exists('sOrderBy', $aClean) ? $aClean['sOrderBy'] : '';
+
+        if($aLegalValues && array_search($sCurrentSort, $aLegalValues) === FALSE)
+            return;
+
+        $this->sCurrentSort = $sCurrentSort;
+        $this->bAscending = key_exists('bAscending', $aClean) ?
+                                 ($aClean['bAscending'] == 'false') ? false : true : true;
     }
 }
 
