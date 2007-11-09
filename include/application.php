@@ -943,7 +943,7 @@ class Application {
 
     public static function objectGetSortableFields()
     {
-        return array("submitTime", "appName");
+        return array('submitTime', 'appName', 'appId');
     }
 
     public static function objectGetHeader()

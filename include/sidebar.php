@@ -20,8 +20,8 @@ function global_sidebar_menu()
     $g = new htmlmenu("AppDB");
     $g->add("Screenshots", BASE."viewScreenshots.php");
     $g->add("Browse Apps", BASE."appbrowse.php");
-    $g->add("Browse Newest Apps", BASE."objectManager.php?sClass=browse_newest_apps&".
-            "bIsQueue=false&sTitle=Newest%20apps");
+    $g->add("Browse Newest Apps", BASE."objectManager.php?sClass=application&".
+            "bIsQueue=false&sTitle=Newest%20apps&sOrderBy=appId&bAscending=false");
     $g->add("Downloadable Apps", BASE."browse_downloadable.php");
     $g->add("Browse Apps by Rating", BASE."browse_by_rating.php");
     $g->add("Top 25", BASE."votestats.php");
