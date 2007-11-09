@@ -967,7 +967,7 @@ class Application {
         $oTableRow->AddTextCell(print_date(mysqldatetime_to_unixtimestamp($this->sSubmitTime)));
         $oTableRow->AddTextCell($oUser->objectMakeLink());
         $oTableRow->AddTextCell($sVendor);
-        $oTableRow->AddTextCell($this->sName);
+        $oTableRow->AddTextCell(($this->sQueued == 'false') ? $this->objectMakeLink() : $this->sName);
 
         $oOMTableRow = new OMTableRow($oTableRow);
         return $oOMTableRow;
