@@ -47,19 +47,31 @@ function app_search_box($q = '')
     // used in place of appdb specific search engine code
     // Chris Morgan <cmorgan@alum.wpi.edu> maintains
     // the search engine settings
-    $sSearchStr = '
+    $shSearchStr = '
 <!-- Google CSE Search Box Begins -->
-  <form id="searchbox_013271970634691685804:bc-56dvxydi" action="http://appdb.winehq.org/search_results.php">
-    <input type="hidden" name="cx" value="013271970634691685804:bc-56dvxydi" />
-    <input type="hidden" name="cof" value="FORID:11" />
-    <input name="q" type="text" size="20" />
-    <input type="submit" name="sa" value="Search" />
-  </form>
+  <script type="text/javascript">
+  document.write(\'<form id=\"searchbox_013271970634691685804:bc-56dvxydi\" action=\"http://appdb.winehq.org/search_results.php\">\')
+    document.write(\'<input type="hidden" name="cx" value="013271970634691685804:bc-56dvxydi" />\')
+    document.write(\'<input type=\"hidden\" name=\"cof" value=\"FORID:11\" />\')
+    document.write(\'<input name=\"q\" type=\"text\" size=\"20\" />\')
+    document.write(\'<input type=\"submit\" name=\"sa\" value=\"Search\" />\')
+  document.write(\'</form>\')
+  </script>
   <script type="text/javascript" src="http://www.google.com/coop/cse/brand?form=searchbox_013271970634691685804%3Abc-56dvxydi"></script>
 <!-- Google CSE Search Box Ends -->
 ';
+    // Search dialog using our own search engine, displayed when
+    // JavaScript is unavailable
+    $shSearchStr .= '
+  <noscript>
+    <form method="post" action="search.php">
+    <input type="text" size="20" name="sSearchQuery" />
+    <input type="submit" value="Search" />
+    </form>
+  </noscript>
+';
 
-   return $sSearchStr;
+   return $shSearchStr;
 }
 
 ?>
