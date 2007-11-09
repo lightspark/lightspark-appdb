@@ -598,7 +598,7 @@ class distribution {
 
         if($this->aTestingIds)
         {
-            echo '<p><span class="title">Testing Results for '.$this->sName.'</span><br />',"\n";
+            echo '<p><span class="title">Test Results for '.$this->sName.'</span><br />',"\n";
             echo '<table width="100%" border="1">',"\n";
             echo '<thead class="historyHeader">',"\n";
             echo '<tr>',"\n";
