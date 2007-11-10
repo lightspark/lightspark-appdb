@@ -294,15 +294,21 @@ class Comment {
 
         $sExtra = "";
 
+        $sOrderingMode = "DESC";
+
         /* NOTE: we must compare against NULL here because $iParentId of 0 is valid */
-        if($iParentId != NULL)
+        if($iParentId)
+        {
             $sExtra = "AND parentId = '".$iParentId."' ";
+            $sOrderingMode = "ASC";
+        }
 
         $sQuery = "SELECT from_unixtime(unix_timestamp(appComments.time), \"%W %M %D %Y, %k:%i\") as time, ".
             "appComments.commentId, appComments.parentId, appComments.versionId, appComments.userId, appComments.subject, appComments.body, appVersion.appId ".
             "FROM appComments, appVersion WHERE appComments.versionId = appVersion.versionId AND appComments.versionId = '".$iVersionId."' ".
             $sExtra.
-            "ORDER BY appComments.time ASC";
+            "ORDER BY appComments.time $sOrderingMode";
+
         $hResult = query_appdb($sQuery);
 
         return $hResult;
