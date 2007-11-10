@@ -416,37 +416,15 @@ function searchForApplication($search_words)
             array_push($split_words, $value);
     }
 
-    $vendorIdArray = array();
-
-    /* find all of the vendors whos names or urls match words in our */
-    /* search parameters */
-    foreach ($split_words as $key=>$value)
-    {
-        $sQuery = "SELECT vendorId from vendor where vendorName LIKE '%?%'
-                                       OR vendorURL LIKE '%?%'";
-        $hResult = query_parameters($sQuery, $value, $value);
-        while($oRow = query_fetch_object($hResult))
-        {
-            array_push($vendorIdArray, $oRow->vendorId);
-        }
-    }
-
     $search_words = str_replace(' ', '%', query_escape_string($search_words));
 
     /* base query */
     $sQuery = "SELECT *
-           FROM appFamily, vendor
+           FROM appFamily
            WHERE appName != 'NONAME'
-           AND appFamily.vendorId = vendor.vendorId
            AND appFamily.queued = 'false'
            AND (appName LIKE '%" . $search_words . "%'
            OR keywords LIKE '%" . $search_words . "%'";
-    
-    /* append to the query any vendors that we matched with */
-    foreach($vendorIdArray as $key=>$value)
-    {
-        $sQuery.=" OR appFamily.vendorId=".query_escape_string($value);
-    }
 
     $sQuery.=" ) ORDER BY appName";
 
