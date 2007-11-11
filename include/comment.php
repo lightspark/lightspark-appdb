@@ -292,15 +292,15 @@ class Comment {
         $iVersionId = query_escape_string($iVersionId);
         $iParentId = query_escape_string($iParentId);
 
-        $sExtra = "";
-
-        $sOrderingMode = "DESC";
-
         /* NOTE: we must compare against NULL here because $iParentId of 0 is valid */
         if($iParentId)
         {
             $sExtra = "AND parentId = '".$iParentId."' ";
             $sOrderingMode = "ASC";
+        } else
+        {
+            $sExtra = "AND parentId = '0'";
+            $sOrderingMode = "DESC";
         }
 
         $sQuery = "SELECT from_unixtime(unix_timestamp(appComments.time), \"%W %M %D %Y, %k:%i\") as time, ".
