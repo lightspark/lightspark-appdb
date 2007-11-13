@@ -899,7 +899,9 @@ class Application {
                 $iRows = maintainer::objectGetEntriesCount($bQueued, $bRejected);
         }
 
-        $sQuery = "SELECT * FROM appFamily WHERE
+        $sQuery = "SELECT appFamily.*, vendor.vendorName AS vendorName FROM appFamily, user_list, vendor WHERE
+                     appFamily.vendorId = vendor.vendorId
+                     AND
                      appFamily.queued = '?'";
 
         $sQueued = objectManager::getQueueString($bQueued, $bRejected);
@@ -943,16 +945,16 @@ class Application {
 
     public static function objectGetSortableFields()
     {
-        return array('submitTime', 'appName', 'appId');
+        return array('submitTime', 'appName', 'appId', 'userName', 'vendorName');
     }
 
     public static function objectGetHeader()
     {
         $oTableRow = new TableRowSortable();
-        $oTableRow->AddSortableTextCell("Submission Date", "submitTime");
-        $oTableRow->AddTextCell("Submitter");
-        $oTableRow->AddTextCell("Vendor");
-        $oTableRow->AddSortableTextCell("Application", "appName");
+        $oTableRow->AddSortableTextCell('Submission Date', 'submitTime');
+        $oTableRow->AddTextCell('Submitter');
+        $oTableRow->AddSortableTextCell('Vendor', 'vendorName');
+        $oTableRow->AddSortableTextCell('Application', 'appName');
         return $oTableRow;
     }
 
