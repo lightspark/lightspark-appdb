@@ -20,6 +20,7 @@ define("GARBAGE_RATING", "Garbage");
 
 define("MAINTAINER_REQUEST", 1);
 define("SUPERMAINTAINER_REQUEST", 2);
+define('MONITOR_REQUEST', 3);
 
 /**
  * Application class for handling applications.

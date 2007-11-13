@@ -42,7 +42,7 @@ class version {
                          version its votes should be moved to. */
     var $iMaintainerRequest; /* Temporary variable for version submisson.
                                 Indicates whether the user wants to become a 
-                                maintainer of the version being submitted.
+                                maintainer or monitor of the version being submitted.
                                 Value denotes type of request. */
 
     /**
@@ -115,16 +115,26 @@ class version {
             $this->SendNotificationMail();
 
             /* Submit maintainer request if asked to */
-            if($this->iMaintainerRequest == MAINTAINER_REQUEST)
+            switch($this->iMaintainerRequest)
             {
-                $oMaintainer = new Maintainer();
-                $oMaintainer->iAppId = $this->iAppId;
-                $oMaintainer->iVersionId = $this->iVersionId;
-                $oMaintainer->iUserId = $_SESSION['current']->iUserId;
-                $oMaintainer->sMaintainReason = "This user submitted the version;". 
-                                                "auto-queued.";
-                $oMaintainer->bSuperMaintainer = 0;
-                $oMaintainer->create();
+                case MAINTAINER_REQUEST;
+                    $oMaintainer = new Maintainer();
+                    $oMaintainer->iAppId = $this->iAppId;
+                    $oMaintainer->iVersionId = $this->iVersionId;
+                    $oMaintainer->iUserId = $_SESSION['current']->iUserId;
+                    $oMaintainer->sMaintainReason = "This user submitted the version;". 
+                                                    "auto-queued.";
+                    $oMaintainer->bSuperMaintainer = 0;
+                    $oMaintainer->create();
+                    break;
+
+                case MONITOR_REQUEST:
+                    $oMonitor = new Monitor();
+                    $oMonitor->iVersionId = $this->iVersionId;
+                    $oMonitor->iUserId = $_SESSION['current']->iUserId;
+                    $oMonitor->iAppId = $this->iAppId;
+                    $oMonitor->create();
+                    break;
             }
             return true;
         }

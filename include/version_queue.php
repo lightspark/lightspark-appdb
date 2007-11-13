@@ -133,20 +133,31 @@ class version_queue
         if(!$this->oVersion->iVersionId && $this->oVersion->iAppId &&
            !$_SESSION['current']->isSuperMaintainer($this->oVersion->iAppId))
         {
-            echo html_frame_start("Become Maintainer", "90%");
+            echo html_frame_start("Become Maintainer or Monitor Changes", "90%");
             echo "<div style='padding:5px;' class='color0'>\n";
-            echo "<table width='100%' cellpadding=0 cellspacing=0>";
+            $oTable = new Table();
             if($this->oVersion->iMaintainerRequest == MAINTAINER_REQUEST)
-                $sRequestMaintainerChecked = 'checked="checked"';
-            echo html_tr(array(
-                               array("<b>Become maintainer?</b>", ""),
-                               array(
-                                     "<input type=\"checkbox\" $sRequestMaintainerChecked".
+                $sRequestMaintainerChecked = 'checked="checked" ';
+            else
+                $sRequestMaintainerChecked = '';
+            if($this->oVersion->iMaintainerRequest == MONITOR_REQUEST)
+                $sRequestMonitorChecked = 'checked="checked"' ;
+            else
+                $sRequestMonitorChecked = '';
+
+            $oTableRow = new TableRow();
+            $oTableRow->AddTextCell('&nbsp;');
+            $oTableRow->AddTextCell("<input type=\"radio\" $sRequestMaintainerChecked".
                                      "name=\"iMaintainerRequest\" value=\"".MAINTAINER_REQUEST."\" /> ".
-                                     "Check this box to request being a maintainer for this version",
-                                     "")
-                               ));
-            echo "</table>";
+                                     "Request being a maintainer for this version, allowing you to edit it later");
+            $oTable->AddRow($oTableRow);
+            $oTableRow = new TableRow();
+            $oTableRow->AddTextCell('&nbsp;');
+            $oTableRow->AddTextCell("<input type=\"radio\" $sRequestMonitorChecked".
+                                     "name=\"iMaintainerRequest\" value=\"".MONITOR_REQUEST."\" /> ".
+                                     "Monitor changes to this version, also after it has been accepted");
+            $oTable->AddRow($oTableRow);
+            echo $oTable->GetString();
             echo "</div\n";
             echo html_frame_end();
         }
