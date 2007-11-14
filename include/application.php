@@ -900,7 +900,7 @@ class Application {
                 $iRows = maintainer::objectGetEntriesCount($bQueued, $bRejected);
         }
 
-        $sQuery = "SELECT appFamily.*, vendor.vendorName AS vendorName FROM appFamily, user_list, vendor WHERE
+        $sQuery = "SELECT appFamily.*, vendor.vendorName AS vendorName FROM appFamily, vendor WHERE
                      appFamily.vendorId = vendor.vendorId
                      AND
                      appFamily.queued = '?'";
