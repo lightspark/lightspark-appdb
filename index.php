@@ -55,32 +55,6 @@ if(!$_SESSION['current']->isLoggedIn())
 
 }
 
-echo "<div style='clear:both; border: 2px solid; background-color: #d7d7d7; font-weight: bold; padding:4px;'>";
-echo "<p style='font-size:large;'>Do you use Wine regularly? Interested in helping other users and".
-     " keeping information about your favorite applications up-to-date?</p>";
-echo "<p style='font-size: medium;'>Consider".
-     " becoming an <a href=\"".BASE."help/?sTopic=maintainer_guidelines\"".
-     " title=\"information about application maintainers\"  style=\"cursor: help\">application maintainer</a>".
-     " for the applications that you use under Wine.</p>";
-echo "<p style='font-size:medium;'>As an application maintainer you'll get to post HOWTOs to help other users".
-     " run the application. You'll be able to review and process user submitted screenshots".
-     " and test results.</p>";
-echo "<p style='font-size:medium;'>Dozens of new test results and screenshots are submitted each day and we can".
-     " use your help to keep user contributed information reviewed and processed in a timely fashion.".
-     " Please consider becoming an application maintainer.";
-echo "<p style='font-size:medium;'>- The Appdb Admins<br/> <a href=\"mailto:".APPDB_OWNER_EMAIL."\">".APPDB_OWNER_EMAIL."</a></p>";
-
-if(!$_SESSION['current']->isLoggedIn())
-{
-  echo "<p style='font-size: medium;'>To become a maintainer, [<a href=\"".login_url()."\">log in</a>]".
-    " or [<a href=\"account.php?sCmd=new\">register</a>] and on the application or version page".
-    ", depending on whether you want to maintain all versions of an application or a specific version,".
-    " click on the <i>'Become a super maintainer of this app'</i> or <i>'Be a maintainer for this version'</i>".
-    " button. We'll process your request within a day or so.</p>";
-}
-
-echo "</div>";
-
 ?>
 <?php
 
