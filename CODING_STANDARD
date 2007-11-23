@@ -97,3 +97,20 @@ function bar()
 3) always put a single space after the comment mark
 
 4) never use # for commenting as it will become obsolete in the future
+
+/**
+ * string quotes
+ */
+There are two different ways to quote strings in PHP - single quotes or double quotes.
+The difference is that the parser does variable interpolation in double-quoted strings, but not in single quoted strings.
+Because of this, always use single quotes unless the string contains a variable that needs to be parsed.
+
+Also if the string contains a variable put it inside double quotes instead of using 'bla' . $var . 'bla';
+To increase readability of the code.
+Wrong:
+$str = "This is a long string without any variables";
+$str = 'This string contains a variable ' . $var . ' enough said.';
+
+Right:
+$str = 'This is a long string without any variables';
+$str = "This string contains a variable $var enough said";
