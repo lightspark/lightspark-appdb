@@ -604,14 +604,6 @@ class User {
      /* Permission functions */
      /************************/
 
-     function canDeleteCategory($oCategory)
-     {
-        if($this->hasPriv("admin"))
-            return true;
-
-        return false;
-     }
-
      /**
       * Returns true or false depending on whether the user can view the image
       */

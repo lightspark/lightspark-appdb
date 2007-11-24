@@ -76,58 +76,31 @@ class Category {
     /**
      * Creates a new category.
      */
-    function create($sName=null, $sDescription=null, $iParentId=null)
+    function create()
     {
         $hResult = query_parameters("INSERT INTO appCategory (catName, catDescription, catParent) ".
                                     "VALUES('?', '?', '?')",
-                                    $sName, $sDescription, $iParentId);
+                                    $this->sName, $this->sDescription, $this->iParentId);
         if($hResult)
         {
             $this->iCatId = query_appdb_insert_id();
             $this->category($this->iCatId);
             return true;
         }
-        else
-        {
-            addmsg("Error while creating a new vendor.", "red");
-            return false;
-        }
-    }
 
+        return false;
+    }
 
     /**
      * Update category.
      * Returns true on success and false on failure.
      */
-    function update($sName=null, $sDescription=null, $iParentId=null)
+    function update()
     {
-        if(!$this->iCatId)
-            return $this->create($sName, $sDescription, $iParentId);
+        if(!query_parameters("UPDATE appCategory SET catName = '?', catDescription = '?', catParent = '?' WHERE catId = '?'",
+                             $this->sName, $this->sDescription, $this->iParentId, $this->iCatId))
+            return false;
 
-        if($sName)
-        {
-            if (!query_parameters("UPDATE appCategory SET catName = '?' WHERE catId = '?'",
-                                  $sName, $this->iCatId))
-                return false;
-            $this->sName = $sName;
-        }     
-
-        if($sDescription)
-        {
-            if (!query_parameters("UPDATE appCategory SET catDescription = '?' WHERE catId = '?'",
-                                  $sDescription, $this->iCatId))
-                return false;
-            $this->sDescription = $sDescription;
-        }
-
-        if($iParentId)
-        {
-            if (!query_parameters("UPDATE appCategory SET catParent = '?' WHERE catId = '?'",
-                                  $iParentId, $this->iCatId))
-                return false;
-            $this->iParentId = $iParentId;
-        }
-       
         return true;
     }
 
@@ -135,26 +108,38 @@ class Category {
     /**    
      * Deletes the category from the database. 
      */
-    function delete($bSilent=false)
+    function delete()
     {
-        if(!$_SESSION['current']->canDeleteCategory($this))
+        if(!$this->canEdit())
             return false;
 
         if(sizeof($this->aApplicationsIds)>0)
-        {
-            addmsg("The category has not been deleted because there are still applications linked to it.", "red");
-        } else 
-        {
-            $sQuery = "DELETE FROM appCategory 
-                       WHERE catId = '?' 
-                       LIMIT 1";
-            query_parameters($sQuery, $this->iCatId);
-            addmsg("The category has been deleted.", "green");
-        }
+            return FALSE;
+
+        $sQuery = "DELETE FROM appCategory 
+                    WHERE catId = '?' 
+                    LIMIT 1";
+        query_parameters($sQuery, $this->iCatId);
 
         return true;
     }
 
+    function objectGetMailOptions($sAction, $bMailSubmitter, $bParentAction)
+    {
+        return new mailOptions();
+    }
+
+    function objectGetChildren()
+    {
+        /* We don't have any (or we do, sort of, but we don't use them for anything at the moment) */
+                return array();
+    }
+
+    function objectGetMail($sAction, $bMailSubmitter, $bParentAction)
+    {
+        /* We don't send notification mails */
+                return array(null, null, null);
+    }
 
     /**
      * returns a path like:
@@ -246,6 +231,77 @@ class Category {
         }
 
         return $str;
+    }
+
+    function objectGetId()
+    {
+        return $this->iCatId;
+    }
+
+    function objectGetSubmitterId()
+    {
+        /* We don't log that */
+        return 0;
+    }
+
+    function outputEditor()
+    {
+        $sQuery = "SELECT catId, catName FROM appCategory WHERE catId!='?'";
+        $hResult = query_parameters($sQuery, $this->iCatId);
+
+        /* Add the virtual 'Main' category */
+        $aCatIds = array(0);
+        $aCatNames = array('Main');
+
+        /* Add the rest from the database */
+        while($oRow = query_fetch_object($hResult))
+        {
+            $aCatIds[] = $oRow->catId;
+            $aCatNames[] = $oRow->catName;
+        }
+
+        echo "<table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"2\">
+                <tr>
+                <td width=\"15%\" class=\"box-label\"><b>Category name</b></td>
+                <td class=\"box-body\">
+                <input type=\"text\" size=\"50\" name=\"sName\" value=\"".$this->sName."\" /> 
+                </td>
+                </tr>
+                <tr>
+                <td width=\"15%\" class=\"box-label\"><b>Description</b></td>
+                <td class=\"box-body\">
+                <input type=\"text\" size=\"50\" name=\"sDescription\" value=\"".$this->sDescription."\" /> 
+                </td>
+                </tr>
+                <tr>
+                <td width=\"15%\" class=\"box-label\"><b>Parent</b></td>
+                <td class=\"box-body\">
+                ".html_select("iParentId",$aCatIds,$this->iParentId, $aCatNames)." 
+                </td>
+                </tr>
+                </table>";
+    }
+
+    function allowAnonymousSubmissions()
+    {
+        return FALSE;
+    }
+
+    function getOutputEditorValues($aClean)
+    {
+        $this->sName = $aClean['sName'];
+        $this->iParentId = $aClean['iParentId'];
+        $this->sDescription = $aClean['sDescription'];
+    }
+
+    function mustBeQueued()
+    {
+        return $_SESSION['current']->hasPriv('admin');
+    }
+
+    function canEdit()
+    {
+        return $_SESSION['current']->hasPriv('admin');
     }
 
     /**

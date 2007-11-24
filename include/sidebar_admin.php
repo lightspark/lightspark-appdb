@@ -59,7 +59,7 @@ function global_admin_menu() {
 
     $g->addmisc("&nbsp;");
 
-    $g->add("Add Category", BASE."admin/addCategory.php");
+    $g->add("Add Category", BASE."objectManager.php?sClass=category&sAction=add&sTitle=Add+Category");
     $g->add("Add Vendor", BASE."objectManager.php?sClass=vendor&bQueue=".
     "false&sAction=add&sTitle=Add%20Vendor");
 

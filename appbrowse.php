@@ -17,9 +17,13 @@ function admin_menu()
     global $aClean;
 
     $m = new htmlmenu("Admin");
-    $m->add("Edit this Category", BASE."admin/addCategory.php?iCatId=".$aClean['iCatId']);
+    $m->add('Edit this Category', BASE."objectManager.php?iId=${aClean[iCatId]}&sClass=category&sAction=edit");
     $url = BASE."admin/deleteAny.php?sWhat=category&iCatId=".$aClean['iCatId']."&sConfirmed=yes";
-    $m->add("Delete this Category", "javascript:deleteURL(\"Are you sure?\", \"".$url."\")");
+
+    /* We only allow deletion of the category if it is empty */
+    $oCat = new category($aClean['iCatId']);
+    if(!sizeof($oCat->aApplicationsIds))
+        $m->add('Delete this Category', BASE."objectManager.php?iId=${aClean[iCatId]}&sClass=category&sAction=delete");
 
     $m->done();
 }
