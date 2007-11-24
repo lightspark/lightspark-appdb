@@ -18,7 +18,6 @@ function admin_menu()
 
     $m = new htmlmenu("Admin");
     $m->add('Edit this Category', BASE."objectManager.php?iId=${aClean[iCatId]}&sClass=category&sAction=edit");
-    $url = BASE."admin/deleteAny.php?sWhat=category&iCatId=".$aClean['iCatId']."&sConfirmed=yes";
 
     /* We only allow deletion of the category if it is empty */
     $oCat = new category($aClean['iCatId']);
