@@ -492,9 +492,9 @@ class distribution {
 
     function objectGetHeader()
     {
-        $oTableRow = new TableRow();
+        $oTableRow = new TableRowSortable();
 
-        $oTableRow->AddTextCell("Distribution name");
+        $oTableRow->AddSortableTextCell("Distribution name", "name");
 
         $oTableRow->AddTextCell("Distribution url");
 
@@ -505,7 +505,12 @@ class distribution {
         return $oTableRow;
     }
 
-    function objectGetEntries($bQueued, $bRejected, $iRows = 0, $iStart = 0)
+    public static function objectGetSortableFields()
+    {
+        return array('name');
+    }
+
+    function objectGetEntries($bQueued, $bRejected, $iRows = 0, $iStart = 0, $sOrderBy = "name", $bAscending = TRUE)
     {
         /* Not implemented */
         if($bRejected)
@@ -516,12 +521,14 @@ class distribution {
         if($bQueued && !distribution::canEdit())
             return NULL;
 
+        $sOrder = $bAscending ? "ASC" : "DESC";
+
         /* If row limit is 0 we want to fetch all rows */
         if(!$iRows)
             $iRows = distribution::objectGetEntriesCount($bQueued, $bRejected);
 
         $sQuery = "SELECT * FROM distributions
-                       WHERE queued = '?' ORDER BY name LIMIT ?,?";
+                       WHERE queued = '?' ORDER BY $sOrderBy $sOrder LIMIT ?,?";
 
         return query_parameters($sQuery, $bQueued ? "true" : "false",
                                 $iStart, $iRows);
