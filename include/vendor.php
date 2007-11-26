@@ -213,7 +213,12 @@ class Vendor {
       echo  '<input type="hidden" name="iVendorId" value="'.$this->iVendorId.'">',"\n";
     }
 
-    function objectGetEntries($bQueued, $bRejected, $iRows = 0, $iStart = 0)
+    public static function objectGetSortableFields()
+    {
+        return array('vendorName');
+    }
+
+    function objectGetEntries($bQueued, $bRejected, $iRows = 0, $iStart = 0, $sOrderBy = 'vendorName', $bAscending = TRUE)
     {
         /* Vendor queueing is not implemented yet */
         if($bQueued)
@@ -223,11 +228,13 @@ class Vendor {
         if($bRejected)
             return FALSE;
 
+        $sOrder = $bAscending ? 'ASC' : 'DESC';
+
         if(!$iRows)
             $iRows = Vendor::objectGetEntriesCount($bQueued, $bRejected);
 
         $hResult = query_parameters("SELECT * FROM vendor
-                       ORDER BY vendorName LIMIT ?,?",
+                       ORDER BY $sOrderBy $sOrder LIMIT ?,?",
                            $iStart, $iRows);
 
         if(!$hResult)
@@ -238,9 +245,9 @@ class Vendor {
 
     function objectGetHeader()
     {
-        $oTableRow = new TableRow();
+        $oTableRow = new TableRowSortable();
         
-        $oTableRow->AddTextCell("Name");
+        $oTableRow->AddSortableTextCell('Name', 'vendorName');
 
         $oTableRow->AddTextCell("Website");
 
