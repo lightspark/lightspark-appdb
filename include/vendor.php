@@ -47,7 +47,7 @@ class Vendor {
             */
         $sQuery = "SELECT appId
                     FROM appFamily
-                    WHERE vendorId = '?'";
+                    WHERE vendorId = '?' ORDER by appName";
         if($hResult = query_parameters($sQuery, $this->iVendorId))
         {
             while($oRow = query_fetch_object($hResult))
