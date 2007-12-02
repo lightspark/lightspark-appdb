@@ -591,10 +591,70 @@ class screenshot
         return $shImg;
     }
 
+    public static function objectGetItemsPerPage($bQueued = false)
+    {
+        if($bQueued)
+        {
+            $aItemsPerPage = array(25, 50, 100, 200);
+            $iDefaultPerPage = 25;
+        } else
+        {
+            $aItemsPerPage = array(6, 9, 12, 15, 18, 21, 24);
+            $iDefaultPerPage = 6;
+        }
+        return array($aItemsPerPage, $iDefaultPerPage);
+    }
+
+    function objectWantCustomDraw($sWhat, $sQueued)
+    {
+        switch($sWhat)
+        {
+            case 'table':
+                if($sQueued == 'false')
+                    return true;
+                break;
+        }
+
+        return false;
+    }
+
+    function objectDrawCustomTable($hResult, $sQueued)
+    {
+        echo "<div align=center><table><tr>\n";
+        for($i = 1; $oRow = query_fetch_object($hResult); $i++)
+        {
+            // display thumbnail
+            $oVersion = new version($oRow->versionId);
+            $oApp = new Application($oVersion->iAppId);
+            $oScreenshot = new Screenshot($oRow->id);
+            $shImg = $oScreenshot->get_thumbnail_img();
+            echo "<td align=center>\n";
+            echo $shImg;
+            echo "<div align=center>". substr($oRow->description,0,20). "\n";
+
+            echo "<br />[".$oApp->objectMakeLink()."]";
+
+            echo "<br />[".$oVersion->objectMakeLink()."]";
+
+            echo "</div></td>\n";
+            // end row if counter of 3
+            if($i % 3 == 0)
+                echo "</tr><tr>\n";
+        }
+
+        echo "</tr></table></div><br />\n";
+    }
+
     function objectGetEntries($bQueued, $bRejected, $iRows = 0, $iStart = 0)
     {
         return appData::objectGetEntries($bQueued, $bRejected, $iRows, $iStart,
                                          "screenshot");
+    }
+
+    function objectGetEntriesCount($bQueued, $bRejected, $iRows = 0, $iStart = 0)
+    {
+        return appData::objectGetEntriesCount($bQueued, $bRejected,
+                                              'screenshot');
     }
 
     function objectGetHeader()

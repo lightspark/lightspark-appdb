@@ -18,7 +18,7 @@ function global_sidebar_menu()
     $g->done();
 
     $g = new htmlmenu("AppDB");
-    $g->add("Screenshots", BASE."viewScreenshots.php");
+    $g->add("Screenshots", BASE."objectManager.php?sClass=screenshot&sTitle=View+Screenshots");
     $g->add("Browse Apps", BASE."appbrowse.php");
     $g->add("Browse Newest Apps", BASE."objectManager.php?sClass=application&".
             "bIsQueue=false&sTitle=Newest%20apps&sOrderBy=appId&bAscending=false");

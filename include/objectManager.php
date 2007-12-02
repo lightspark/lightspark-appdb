@@ -168,6 +168,64 @@ class ObjectManager
         exit;
     }
 
+    public function drawTable($hResult)
+    {
+        /* output the header */
+        echo '<table width="100%" border="0" cellpadding="3" cellspacing="0">';
+
+        /* Output header cells */
+        $this->outputHeader("color4");
+
+        /* Preserve the page title */
+        $this->setReturnToTitle($this->sTitle);
+
+        /* output each entry */
+        for($iCount = 0; $oRow = query_fetch_object($hResult); $iCount++)
+        {
+            $oObject = new $this->sClass(null, $oRow);
+
+            $this->oTableRow = $oObject->objectGetTableRow();
+
+            $sColor = ($iCount % 2) ? "color0" : "color1";
+
+            // if there is no class set for a given row use the
+            // default one in $sColor
+            if(!$this->oTableRow->GetTableRow()->GetClass())
+            {
+                $this->oTableRow->GetTableRow()->SetClass($sColor);
+            }
+
+            // if this row is clickable, make it highlight appropirately
+            $oTableRowClick = $this->oTableRow->GetTableRow()->GetTableRowClick();
+            if($oTableRowClick)
+            {
+            $oTableRowHighlight = GetStandardRowHighlight($iCount);
+            $oTableRowClick->SetHighlight($oTableRowHighlight);
+            }
+
+            $sEditLinkLabel = $this->bIsQueue ? "process" : "edit";
+
+            /* We add some action links */
+            if($oObject->canEdit())
+            {
+                $shDeleteLink = "";
+                if($this->oTableRow->GetHasDeleteLink())
+                {
+                $shDeleteLink = ' [&nbsp;<a href="'.$this->makeUrl("delete", $oObject->objectGetId()).
+                    '">delete</a>&nbsp;]';
+                }
+
+                $oTableCell = new TableCell('[&nbsp;<a href="'.$this->makeUrl("edit",
+                                $oObject->objectGetId()).'">'.$sEditLinkLabel.'</a>&nbsp;]'.$shDeleteLink);
+                $this->oTableRow->AddCell($oTableCell);
+            }
+
+            echo $this->oTableRow->GetString();
+        }
+
+        echo "</table>";
+    }
+
     /* displays the list of entries */
     public function display_table($aClean)
     {
@@ -267,60 +325,14 @@ class ObjectManager
             echo '</div>';
         }
 
-        /* output the header */
-        echo '<table width="100%" border="0" cellpadding="3" cellspacing="0">';
+        $sQueued = $this->getQueueString($this->bIsQueue,                                                                         $this->bIsRejected);
 
-        /* Output header cells */
-        $this->outputHeader("color4");
-
-        /* Preserve the page title */
-        $this->setReturnToTitle($this->sTitle);
-
-        /* output each entry */
-        for($iCount = 0; $oRow = query_fetch_object($hResult); $iCount++)
-        {
-            $oObject = new $this->sClass(null, $oRow);
-
-            $this->oTableRow = $oObject->objectGetTableRow();
-
-            $sColor = ($iCount % 2) ? "color0" : "color1";
-
-            // if there is no class set for a given row use the
-            // default one in $sColor
-            if(!$this->oTableRow->GetTableRow()->GetClass())
-            {
-                $this->oTableRow->GetTableRow()->SetClass($sColor);
-            }
-
-            // if this row is clickable, make it highlight appropirately
-            $oTableRowClick = $this->oTableRow->GetTableRow()->GetTableRowClick();
-            if($oTableRowClick)
-            {
-              $oTableRowHighlight = GetStandardRowHighlight($iCount);
-              $oTableRowClick->SetHighlight($oTableRowHighlight);
-            }
-
-            $sEditLinkLabel = $this->bIsQueue ? "process" : "edit";
-
-            /* We add some action links */
-            if($oObject->canEdit())
-            {
-                $shDeleteLink = "";
-                if($this->oTableRow->GetHasDeleteLink())
-                {
-                  $shDeleteLink = ' [&nbsp;<a href="'.$this->makeUrl("delete", $oObject->objectGetId()).
-                    '">delete</a>&nbsp;]';
-                }
-
-                $oTableCell = new TableCell('[&nbsp;<a href="'.$this->makeUrl("edit",
-                                   $oObject->objectGetId()).'">'.$sEditLinkLabel.'</a>&nbsp;]'.$shDeleteLink);
-                $this->oTableRow->AddCell($oTableCell);
-            }
-
-            echo $this->oTableRow->GetString();
-        }
-
-        echo "</table>";
+        /* Should we let the class draw its own custom table? */
+        if(method_exists($this->sClass, 'objectWantCustomDraw') && 
+           $oObject->objectWantCustomDraw('table', $sQueued))
+            $oObject->objectDrawCustomTable($hResult, $sQueued);
+        else
+            $this->drawTable($hResult);
 
         $oObject = new $this->sClass();
         if($oObject->canEdit() && $this->GetOptionalSetting("objectShowAddEntry", FALSE))
