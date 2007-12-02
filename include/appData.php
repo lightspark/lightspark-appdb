@@ -214,7 +214,6 @@ class appData
             $sQueued = "false";
 
         $sSelectType = "";
-        $sLimit = "";
 
         if(($sQueued == "true" || $sQueued == "all") &&
             !$_SESSION['current']->hasPriv("admin"))
@@ -280,16 +279,12 @@ class appData
                 $sSelectType = " AND type = '?'";
 
             $sQuery = "(SELECT COUNT(DISTINCT appData.id) as count FROM appData,
-                appFamily, appVersion WHERE
-                    appFamily.appId = appVersion.appId
-                    AND
+                appFamily WHERE
                     (
                         appData.appId = appFamily.appId
                         AND
                         appData.versionId = '0'
                     )
-                    AND
-                    appVersion.queued = 'false'
                     AND
                     appFamily.queued = 'false'$sAppDataQueued$sSelectType) UNION
                     (
@@ -407,16 +402,12 @@ class appData
             $sQuery = 
                    "(
                       SELECT DISTINCT appData.* FROM appData,
-                          appFamily, appVersion WHERE
-                      appFamily.appId = appVersion.appId
-                      AND
+                          appFamily WHERE
                       (
                         appData.appId = appFamily.appId
                         AND
                         appData.versionId = '0'
                       )
-                      AND
-                      appVersion.queued = 'false'
                       AND
                       appFamily.queued = 'false'
                       AND
