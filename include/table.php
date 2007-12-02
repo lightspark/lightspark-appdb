@@ -349,6 +349,9 @@ class TableRowSortable extends TableRow
                         $bAscending = FALSE;
                     else
                         $sSortVar = '';
+
+                    $this->aTableCells[$i]->sCellContents .= $oSortInfo->bAscending ?
+                                                             ' &#9650;' : ' &#9660;';
                 }
 
                 $sAscending = $bAscending == TRUE ? 'true': 'false';
