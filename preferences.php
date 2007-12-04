@@ -201,7 +201,7 @@ $oTable->SetCellSpacing(0);
 $oTable->SetClass("box-body");
 
 // retrieve the form editing rows
-$aTableRows = GetEditAccountFormRows($oUser->sEmail);
+$aTableRows = GetEditAccountFormRows($oUser->sEmail, $oUser->sRealname);
 foreach($aTableRows as $oTableRow)
   $oTable->AddRow($oTableRow);
 

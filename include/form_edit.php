@@ -6,7 +6,7 @@ require_once(BASE."include/util.php");
 /*********************/
 
 // returns an array of TableRow instances
-function GetEditAccountFormRows($sUserEmail)
+function GetEditAccountFormRows($sUserEmail, $sUserRealname)
 {
   $aTableRows = array();
 
