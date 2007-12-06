@@ -822,9 +822,13 @@ class version {
         $oM = new objectManager("voteManager", "Vote");
         $oM->setReturnTo($this->objectMakeUrl());
         // Votes
+        if($_SESSION['current']->isLoggedIn())
+            $shVoteLink = ' &nbsp; <a href="'.$oM->makeUrl("edit", $_SESSION['current']->iUserId).'&iVersionId='.$this->iVersionId.'">Vote</a>';
+        else
+            $shVoteLink = '';
         echo html_tr(array(
             "<b>Votes</b>",
-            vote_count_version_total($this->iVersionId).' &nbsp; <a href="'.$oM->makeUrl("edit", $_SESSION['current']->iUserId).'&iVersionId='.$this->iVersionId.'">Vote</a>'),
+            vote_count_version_total($this->iVersionId).$shVoteLink),
             "color0");
 
         if($this->sTestedRating != "/" && $this->sTestedRating)
