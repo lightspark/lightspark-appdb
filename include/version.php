@@ -794,10 +794,6 @@ class version {
 
         $oApp = $this->objectGetParent();
 
-        // show Vote Menu
-        if($_SESSION['current']->isLoggedIn())
-            apidb_sidebar_add("vote_menu");
-
         // cat
         $oCategory = new Category($oApp->iCatId);
         $oCategory->display($oApp->iAppId, $this->iVersionId);
