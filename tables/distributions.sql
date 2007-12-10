@@ -11,7 +11,7 @@ create table distributions (
         url                 varchar(255) default NULL,
         submitTime          datetime NOT NULL,
         submitterId         int(11) NOT NULL default '0',
-        queued              enum('true','false','rejected') NOT NULL default 'false',
+        state               enum('accepted','queued') NOT NULL default 'accepted',
         key(distributionId),
         index(name)
 );

@@ -13,7 +13,7 @@ class distribution {
     var $sUrl;
     var $sSubmitTime;
     var $iSubmitterId;
-    var $sQueued;
+    var $sState;
     var $aTestingIds;
 
      // constructor, fetches the data.
@@ -41,7 +41,7 @@ class distribution {
             $this->sUrl = $oRow->url;
             $this->sSubmitTime = $oRow->submitTime;
             $this->iSubmitterId = $oRow->submitterId;
-            $this->sQueued = $oRow->queued;
+            $this->sState = $oRow->state;
         }
 
         /*
@@ -101,12 +101,12 @@ class distribution {
         }
 
         $hResult = query_parameters("INSERT INTO distributions (name, url, submitTime, ".
-                                    "submitterId, queued) ".
+                                    "submitterId, state) ".
                                     "VALUES ('?', '?', ?, '?', '?')",
                                     $this->sName, $this->sUrl,
                                     "NOW()",
                                     $_SESSION['current']->iUserId,
-                                    $this->mustBeQueued() ? "true" : "false");
+                                    $this->mustBeQueued() ? 'queued' : 'accepted');
         if($hResult)
         {
             $this->iDistributionId = query_appdb_insert_id();
@@ -149,7 +149,7 @@ class distribution {
            everyone to delete a queued, empty distribution, because it should be
            deleted along with the last testData associated with it */
         if(!($this->canEdit() || (!sizeof($this->aTestingIds) &&
-                $this->sQueued != "false")))
+                $this->sState != 'accepted')))
             return false;
 
         // if the distribution has test results only enable an admin to delete
@@ -184,13 +184,13 @@ class distribution {
             return FALSE;
 
         // If we are not in the queue, we can't move the Distribution out of the queue.
-        if(!$this->sQueued == 'true')
+        if($this->sState != 'queued')
             return false;
 
-        if(query_parameters("UPDATE distributions SET queued = '?' WHERE distributionId = '?'",
-                            "false", $this->iDistributionId))
+        if(query_parameters("UPDATE distributions SET state = '?' WHERE distributionId = '?'",
+                            'accepted', $this->iDistributionId))
         {
-            $this->sQueued = 'false';
+            $this->sState = 'accepted';
             // we send an e-mail to interested people
             $this->mailSubmitter("add");
             $this->SendNotificationMail();
@@ -211,7 +211,7 @@ class distribution {
         }
 
         // If we are not in the queue, we can't move the Distribution out of the queue.
-        if(!$this->sQueued == 'true')
+        if($this->sState != 'queued')
             return false;
 
         return $this->delete();
@@ -254,10 +254,10 @@ class distribution {
         if(query_parameters("UPDATE testResults SET queued = '?' WHERE testingId = '?'",
                             "true", $this->iTestingId))
         {
-            if(query_parameters("UPDATE distribution SET queued = '?' WHERE distributionId = '?'",
-                                "true", $this->iDistributionId))
+            if(query_parameters("UPDATE distribution SET state = '?' WHERE distributionId = '?'",
+                                'queued', $this->iDistributionId))
             {
-                $this->sQueued = 'true';
+                $this->sState = 'queued';
                 // we send an e-mail to interested people
                 $this->SendNotificationMail();
 
@@ -351,7 +351,7 @@ class distribution {
         switch($sAction)
         {
             case "add":
-                if($this->sQueued == "false")
+                if($this->sState == 'accepted')
                 {
                     $sSubject = "Distribution ".$this->sName." added by ".
                             $_SESSION['current']->sRealname;
@@ -458,8 +458,8 @@ class distribution {
             return FALSE;
 
         $hResult = query_parameters("SELECT count(distributionId) as num_dists FROM
-                                     distributions WHERE queued='?'",
-                                    $bQueued ? "true" : "false");
+                                     distributions WHERE state='?'",
+                                    $bQueued ? 'queued' : 'accepted');
 
         if($hResult)
         {
@@ -473,7 +473,7 @@ class distribution {
     function make_distribution_list($varname, $cvalue)
     {
         $sQuery = "SELECT name, distributionId FROM distributions
-                WHERE queued = 'false'
+                WHERE state = 'accepted'
                 ORDER BY name";
         $hResult = query_parameters($sQuery);
         if(!$hResult) return;
@@ -528,9 +528,9 @@ class distribution {
             $iRows = distribution::objectGetEntriesCount($bQueued, $bRejected);
 
         $sQuery = "SELECT * FROM distributions
-                       WHERE queued = '?' ORDER BY $sOrderBy $sOrder LIMIT ?,?";
+                       WHERE state = '?' ORDER BY $sOrderBy $sOrder LIMIT ?,?";
 
-        return query_parameters($sQuery, $bQueued ? "true" : "false",
+        return query_parameters($sQuery, $bQueued ? 'queued' : 'accepted',
                                 $iStart, $iRows);
     }
 
@@ -564,7 +564,7 @@ class distribution {
 
         /* Maintainers are allowed to process queued test results and therefore also
            queued distributions */
-        if(is_object($this) && $this->sQueued != "false" &&
+        if(is_object($this) && $this->sState != 'accepted' &&
            maintainer::isUserMaintainer($_SESSION['current']))
             return TRUE;
 
