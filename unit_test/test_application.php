@@ -183,7 +183,7 @@ function test_application_getWithRating()
     $oVersion->description = "Some Version description".$iVersionIdIndex;
     $oVersion->iAppId = $oApp->iAppId;
     $oVersion->sTestedRating = "Bronze";
-    $oVersion->sQueued = "True";
+    $oVersion->objectSetState('queued');
         
     if(!$oVersion->create())
     {

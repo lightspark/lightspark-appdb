@@ -524,7 +524,7 @@ function outputSearchTableForhResult($search_words, $hResult)
             $bgcolor = ($c % 2) ? 'color0' : 'color1';
 		
             //count versions
-            $hResult2 = query_parameters("SELECT count(*) as versions FROM appVersion WHERE appId = '?' AND versionName != 'NONAME' and queued = 'false'",
+            $hResult2 = query_parameters("SELECT count(*) as versions FROM appVersion WHERE appId = '?' AND versionName != 'NONAME' and state = 'accepted'",
                                      $oRow->appId);
             $y = query_fetch_object($hResult2);
 		

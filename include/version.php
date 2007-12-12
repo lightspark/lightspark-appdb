@@ -33,7 +33,7 @@ class version {
     var $sTestedRating;
     var $sSubmitTime;
     var $iSubmitterId;
-    var $sQueued;
+    private $sState;
     var $sLicense;
     var $aTestResults; /* Array of test result objects. Especially useful when
                           we want to preview a version before submitting it;
@@ -77,7 +77,7 @@ class version {
             $this->sDescription = $oRow->description;
             $this->sTestedRelease = $oRow->maintainer_release;
             $this->sTestedRating = $oRow->maintainer_rating;
-            $this->sQueued = $oRow->queued;
+            $this->sState = $oRow->state;
             $this->sLicense = $oRow->license;
             $this->iObsoleteBy = $oRow->obsoleteBy;
         }
@@ -94,18 +94,18 @@ class version {
 
         $oApp = new application($this->iAppId);
         if($oApp->sQueued != "false")
-            $this->sQueued = "pending";
+            $this->sState = 'pending';
         else
-            $this->sQueued = $this->mustBeQueued() ? "true" : "false";
+            $this->sState = $this->mustBeQueued() ? 'queued' : 'accepted';
 
         $hResult = query_parameters("INSERT INTO appVersion
                    (versionName, description, maintainer_release,
                    maintainer_rating, appId, submitTime, submitterId,
-                   queued, license)
+                   state, license)
                        VALUES ('?', '?', '?', '?', '?', ?, '?', '?', '?')",
                            $this->sName, $this->sDescription, $this->sTestedRelease,
                            $this->sTestedRating, $this->iAppId, "NOW()",
-                           $_SESSION['current']->iUserId, $this->sQueued,
+                           $_SESSION['current']->iUserId, $this->sState,
                            $this->sLicense);
 
         if($hResult)
@@ -288,13 +288,13 @@ class version {
             return;
 
         // If we are not in the queue, we can't move the version out of the queue.
-        if($this->sQueued == 'false')
+        if($this->sState == 'accepted')
             return false;
 
-        if(query_parameters("UPDATE appVersion SET queued = '?' WHERE versionId = '?'",
-                            "false", $this->iVersionId))
+        if(query_parameters("UPDATE appVersion SET state = '?' WHERE versionId = '?'",
+                            'accepted', $this->iVersionId))
         {
-            $this->sQueued = 'false';
+            $this->sState = 'accepted';
             // we send an e-mail to interested people
             $this->mailSubmitter("add");
             $this->SendNotificationMail();
@@ -319,13 +319,13 @@ class version {
             return;
 
         // If we are not in the queue, we can't move the version out of the queue.
-        if(!$this->sQueued == 'true')
+        if($this->sState != 'queued')
             return false;
 
-        if(query_parameters("UPDATE appVersion SET queued = '?' WHERE versionId = '?'",
-                            "rejected", $this->iVersionId))
+        if(query_parameters("UPDATE appVersion SET state = '?' WHERE versionId = '?'",
+                            'rejected', $this->iVersionId))
         {
-            $this->sQueued = 'rejected';
+            $this->sState = 'rejected';
             // we send an e-mail to interested people
             if(!$bSilent)
             {
@@ -342,10 +342,10 @@ class version {
         if(!$_SESSION['current']->canRequeueVersion($this))
             return;
 
-        if(query_parameters("UPDATE appVersion SET queued = '?' WHERE versionId = '?'",
-                            "true", $this->iVersionId))
+        if(query_parameters("UPDATE appVersion SET state = '?' WHERE versionId = '?'",
+                            'queued', $this->iVersionId))
         {
-            $this->sQueued = 'true';
+            $this->sState = 'queued';
             // we send an e-mail to interested people
             $this->SendNotificationMail();
 
@@ -443,7 +443,7 @@ class version {
         switch($sAction)
         {
             case "add":
-                if($this->sQueued == "false")
+                if($this->sState == 'accepted')
                 {
                     $sSubject = "Version ".$this->sName." of ".$oApp->sName." added by ".$_SESSION['current']->sRealname;
                     $sMsg  = $this->objectMakeUrl()."\n";
@@ -569,7 +569,7 @@ class version {
         if(!$this->iAppId)
             $this->iAppId = $aClean['iAppId'];
 
-        if($this->sQueued == "false" && $this->iVersionId)
+        if($this->sState == 'accepted' && $this->iVersionId)
         {
             // app parent
             $x = new TableVE("view");
@@ -636,7 +636,7 @@ class version {
 
         echo html_frame_end();
 
-        if($this->sQueued == "false" && $this->iVersionId)
+        if($this->sState == 'accepted' && $this->iVersionId)
         {
             echo html_frame_start("Info", "90%", "", 0);
 
@@ -1188,7 +1188,14 @@ class version {
             foreach($aVersions as $oVersion)
             {
                 $oApp = new application($oVersion->iAppId);
-                if ($oVersion->sQueued == $oApp->sQueued)
+
+                /* Temporary workaround */
+                $sAppState = $oApp->sQueued;
+                if($sAppState == 'true')
+                    $sAppState = 'queued';
+                else if($sAppState == 'false')
+                    $sAppState = 'accepted';
+                if ($oVersion->sState == $sAppState)
                 {
                     // set row color
                     $bgcolor = ($c % 2 == 0) ? "color0" : "color1";
@@ -1277,7 +1284,7 @@ class version {
     /* List the versions submitted by a user.  Ignore versions for queued applications */
     public static function listSubmittedBy($iUserId, $bQueued = true)
     {
-        $hResult = query_parameters("SELECT appFamily.appName, appVersion.versionName, appVersion.description, appVersion.versionId, appVersion.submitTime FROM appFamily, appVersion WHERE appFamily.appId = appVersion.appId AND appVersion.submitterId = '?' AND appVersion.queued = '?' AND appFamily.queued = '?'", $iUserId, $bQueued ? "true" : "false", "false");
+        $hResult = query_parameters("SELECT appFamily.appName, appVersion.versionName, appVersion.description, appVersion.versionId, appVersion.submitTime FROM appFamily, appVersion WHERE appFamily.appId = appVersion.appId AND appVersion.submitterId = '?' AND appVersion.state = '?' AND appFamily.queued = '?'", $iUserId, $bQueued ? 'queued' : 'accepted', 'false');
 
         if(!$hResult || !query_num_rows($hResult))
             return false;
@@ -1365,7 +1372,7 @@ class version {
 
     public static function objectGetEntriesCount($bQueued, $bRejected)
     {
-        $sQueued = objectManager::getQueueString($bQueued, $bRejected);
+        $sState = objectManager::getStateString($bQueued, $bRejected);
 
         $oVersion = new version();
         if($bQueued && !$oVersion->canEdit())
@@ -1377,7 +1384,7 @@ class version {
                         appVersion WHERE
                         appVersion.submitterId = '?'
                         AND
-                        appVersion.queued = '?'";
+                        appVersion.state = '?'";
             else
                 $sQuery = "SELECT COUNT(DISTINCT appVersion.versionId) as count FROM
                         appVersion, appMaintainers WHERE
@@ -1389,15 +1396,15 @@ class version {
                         AND
                         appMaintainers.queued = 'false'
                         AND
-                        appVersion.queued = '?'";
+                        appVersion.state = '?'";
 
-            $hResult = query_parameters($sQuery, $_SESSION['current']->iUserId, $sQueued);
+            $hResult = query_parameters($sQuery, $_SESSION['current']->iUserId, $sState);
         } else
         {
             $sQuery = "SELECT COUNT(DISTINCT versionId) as count
                     FROM appVersion WHERE
-                    appVersion.queued = '?'";
-            $hResult = query_parameters($sQuery, $sQueued);
+                    appVersion.state = '?'";
+            $hResult = query_parameters($sQuery, $sState);
         }
 
         if(!$hResult)
@@ -1407,6 +1414,16 @@ class version {
             return FALSE;
 
         return $oRow->count;
+    }
+
+    public function objectGetState()
+    {
+        return $this->sState;
+    }
+
+    public function objectSetState($sState)
+    {
+        $this->sState = $sState;
     }
 
     public function canEdit()
@@ -1480,7 +1497,7 @@ class version {
 
     public static function objectGetEntries($bQueued, $bRejected, $iRows = 0, $iStart = 0, $sOrderBy = "versionId")
     {
-        $sQueued = objectManager::getQueueString($bQueued, $bRejected);
+        $sState = objectManager::getStateString($bQueued, $bRejected);
 
         $sLimit = "";
 
@@ -1503,7 +1520,7 @@ class version {
                 $sQuery = "SELECT * FROM appVersion WHERE
                         appVersion.submitterId = '?'
                         AND
-                        appVersion.queued = '?' ORDER BY ?$sLimit";
+                        appVersion.state = '?' ORDER BY ?$sLimit";
             else
                 $sQuery = "SELECT appVersion.* FROM
                         appVersion, appMaintainers WHERE
@@ -1515,29 +1532,29 @@ class version {
                         AND
                         appMaintainers.queued = 'false'
                         AND
-                        appVersion.queued = '?' ORDER BY ?$sLimit";
+                        appVersion.state = '?' ORDER BY ?$sLimit";
 
             if($sLimit)
             {
                 $hResult = query_parameters($sQuery, $_SESSION['current']->iUserId,
-                                            $sQueued, $sOrderBy, $iStart, $iRows);
+                                            $sState, $sOrderBy, $iStart, $iRows);
             } else
             {
                 $hResult = query_parameters($sQuery, $_SESSION['current']->iUserId,
-                                            $sQueued, $sOrderBy);
+                                            $sState, $sOrderBy);
             }
         } else
         {
             $sQuery = "SELECT * FROM appVersion WHERE
-                    appVersion.queued = '?' ORDER BY ?$sLimit";
+                    appVersion.state = '?' ORDER BY ?$sLimit";
 
             if($sLimit)
             {
-                $hResult = query_parameters($sQuery, $sQueued, $sOrderBy,
+                $hResult = query_parameters($sQuery, $sState, $sOrderBy,
                                             $iStart, $iRows);
             } else
             {
-                $hResult = query_parameters($sQuery, $sQueued, $sOrderBy);
+                $hResult = query_parameters($sQuery, $sState, $sOrderBy);
             }
         }
 

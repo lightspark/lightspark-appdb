@@ -252,7 +252,7 @@ class appData
                     )
                 )
                 AND
-                appVersion.queued = 'false'
+                appVersion.state = 'accepted'
                 AND
                 appFamily.queued = 'false'";
 
@@ -296,7 +296,7 @@ class appData
                         appData.versionId = appVersion.versionId
                     )
                     AND
-                    appVersion.queued = 'false'
+                    appVersion.state = 'accepted'
                     AND
                     appFamily.queued = 'false'$sAppDataQueued$sSelectType)";
 
@@ -372,7 +372,7 @@ class appData
                     )
                 )
                 AND
-                appVersion.queued = 'false'
+                appVersion.state = 'accepted'
                 AND
                 appFamily.queued = 'false'
                 AND
@@ -425,7 +425,7 @@ class appData
                           appData.versionId = appVersion.versionId
                       )
                       AND
-                      appVersion.queued = 'false'
+                      appVersion.state = 'accepted'
                       AND
                       appFamily.queued = 'false'
                       AND
@@ -492,7 +492,7 @@ class appData
             if($this->iVersionId)
             {
                 $oVersion = new version($this->iVersionId);
-                if($oVersion->canEdit() && $oVersion->sQueued == "false")
+                if($oVersion->canEdit() && $oVersion->objectGetState() == 'accepted')
                     return FALSE;
                 else
                     return TRUE;

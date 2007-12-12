@@ -27,7 +27,7 @@ $sQuery = "SELECT DISTINCT appFamily.appName,
     appVersion.versionName, appVersion.versionId, appFamily.description
         FROM appFamily, appVersion, appData
             WHERE appData.type = '?' AND appData.versionId = appVersion.versionId
-            AND appFamily.appId = appVersion.appId AND appVersion.queued = 'false'";
+            AND appFamily.appId = appVersion.appId AND appVersion.state = 'accepted'";
 
 if(!$sLicense)
     $hResult = query_parameters($sQuery, "downloadurl");
@@ -93,7 +93,7 @@ $sQuery = "SELECT DISTINCT appFamily.appName,
             FROM appFamily, appVersion, appData
                 WHERE appData.type = '?' AND appData.versionId = appVersion.versionId
                 AND appFamily.appId = appVersion.appId 
-                AND appVersion.queued = 'false' ";
+                AND appVersion.state = 'accepted' ";
 
 if(!$sLicense)
 {

@@ -64,7 +64,7 @@ class testData{
     function create()
     {
         $oVersion = new version($this->iVersionId);
-        if($oVersion->sQueued != "false")
+        if($oVersion->objectGetState() != 'accepted')
             $this->sState = 'pending';
         else
             $this->sState = $this->mustBeQueued() ? 'queued' : 'accepted';
@@ -876,7 +876,7 @@ class testData{
     /* List test data submitted by a given user.  Ignore test results for queued applications/versions */
     function listSubmittedBy($iUserId, $bQueued = true)
     {
-        $hResult = query_parameters("SELECT testResults.versionId, testResults.testedDate, testResults.testedRelease, testResults.testedRating, testResults.submitTime, appFamily.appName, appVersion.versionName from testResults, appFamily, appVersion WHERE testResults.versionId = appVersion.versionId AND appVersion.appId = appFamily.appId AND (appFamily.queued = '?' OR appVersion.queued = '?') AND testResults.submitterId = '?' AND testResults.state = '?' ORDER BY testResults.testingId", "false", "false", $iUserId, $bQueued ? 'queued' : 'accepted');
+        $hResult = query_parameters("SELECT testResults.versionId, testResults.testedDate, testResults.testedRelease, testResults.testedRating, testResults.submitTime, appFamily.appName, appVersion.versionName from testResults, appFamily, appVersion WHERE testResults.versionId = appVersion.versionId AND appVersion.appId = appFamily.appId AND (appFamily.queued = '?' OR appVersion.state = '?') AND testResults.submitterId = '?' AND testResults.state = '?' ORDER BY testResults.testingId", "false", 'accepted', $iUserId, $bQueued ? 'queued' : 'accepted');
 
         if(!$hResult || !query_num_rows($hResult))
             return false;
@@ -1188,7 +1188,7 @@ class testData{
             // they can also submit test results without them being queued
             // this is the case where they maintain the version and the version isn't queued
             $oVersion = new version($this->iVersionId);
-            if($oVersion->canEdit() && $oVersion->sQueued == "false")
+            if($oVersion->canEdit() && $oVersion->objectGetState() == 'accepted')
                 return FALSE;
             else
                 return TRUE;

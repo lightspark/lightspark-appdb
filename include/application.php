@@ -116,7 +116,7 @@ class Application {
     private function _internal_retrieve_unqueued_versions()
     {
         $sQuery = "SELECT versionId FROM appVersion WHERE
-                        queued = 'false' AND
+                        state = 'accepted' AND
                         appId = '?'";
         $hResult  = query_parameters($sQuery, $this->iAppId);
         return $hResult;
@@ -1108,7 +1108,7 @@ class Application {
         $sMsg = "<select name=\"$sVarName\">\n";
         foreach($this->getVersions() as $oVersion)
         {
-            if($oVersion->sQueued != "false" || $oVersion->iVersionId == $iExclude ||
+            if($oVersion->objectGetState() != 'accepted' || $oVersion->iVersionId == $iExclude ||
                (!$bIncludeObsolete && $oVersion->iObsoleteBy))
                 continue;
 

@@ -63,7 +63,7 @@ class distribution {
                                 testResults.versionId = appVersion.versionId AND
                                 appFamily.appId = appVersion.appId AND
                                 appFamily.queued = 'false' AND
-                                appVersion.queued = 'false' AND
+                                appVersion.state = 'accepted' AND
                                 distributionId = '?'
                             ORDER BY testedRating;";
         }

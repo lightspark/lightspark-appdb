@@ -70,7 +70,7 @@ class queuedEntries
           print_r($oVersion);
         }
 
-        if($oVersion->sQueued == "true")
+        if($oVersion->objectGetState() == 'queued')
         {
           $this->aVersions[] = $oVersion->objectGetId();
         } else // version isn't queued
@@ -214,7 +214,7 @@ class maintainer
             $oVersion = new version($this->iVersionId);
 
         if($oApp->sQueued != "false" ||
-           (!$this->bSuperMaintainer && $oVersion->sQueued != "false"))
+           (!$this->bSuperMaintainer && $oVersion->objectGetState() != 'accepted'))
             $this->sQueued = "pending";
         else
             $this->sQueued = $this->mustBeQueued() ? "true" : "false";

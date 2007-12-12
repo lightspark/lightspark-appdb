@@ -268,7 +268,7 @@ class version_queue
         foreach($oApp->aVersionsIds as $iVersionId)
         {
             $oVersion = new Version($iVersionId);
-            if ($oVersion->sQueued == 'false')
+            if ($oVersion->objectGetState() == 'accepted')
             {
                 //display row
                 echo html_tr(array(

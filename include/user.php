@@ -722,7 +722,7 @@ class User {
      function canViewVersion($oVersion)
      {
          /* if the version isn't queued */
-         if($oVersion->sQueued == 'false')
+         if($oVersion->objectGetState() == 'accepted')
              return true;
 
          if($this->hasPriv("admin"))
@@ -730,7 +730,7 @@ class User {
 
          /* if the user is the submitter and the version is still queued */
          if(($this->iUserId == $oVersion->iSubmitterId) &&
-            ($oVersion->sQueued != 'false'))
+            ($oVersion->objectGetState() != 'accepted'))
              return true;
 
          /* if this user supermaintains the application this version belongs to */
@@ -758,7 +758,7 @@ class User {
              return true;
 
          /* the version is queued and the user is the submitter */
-         if(($oVersion->sQueued != 'false') && ($this->iUserId == $oVersion->iSubmitterId))
+         if(($oVersion->objectGetState() != 'accepted') && ($this->iUserId == $oVersion->iSubmitterId))
              return true;
 
          return false;
@@ -783,7 +783,7 @@ class User {
 
          /* if the app is anything other than not queued and if the user is the submitter */
          /* then allow the user to delete the app */
-         if(($oVersion->sQueued != 'false') && ($oVersion->iSubmitterId == $this->iUserId))
+         if(($oVersion->objectGetState() != 'accepted') && ($oVersion->iSubmitterId == $this->iUserId))
              return true;
          
          /* is this user a supermaintainer of the application this version is under? */
@@ -833,7 +833,7 @@ class User {
              return true;
 
          if(($this->iUserId == $oVersion->iSubmitterId) &&
-            ($oVersion->sQueued != 'false'))
+            ($oVersion->objectGetState() != 'accepted'))
              return true;
 
          return false;
