@@ -49,7 +49,7 @@ class testData_queue
         $this->oTestData->unQueue();
 
         /* Avoid a misguiding message about the distribution being unqueued */
-        if($this->oDistribution->sQueued != "false")
+        if($this->oDistribution->sStatus != 'accepted')
             $this->oDistribution->unQueue();
     }
 
@@ -77,7 +77,7 @@ class testData_queue
         /* If we are processing queued test results with a queued distribution,
            we display some additional help here */
         if($this->oDistribution->iDistributionId &&
-                $this->oDistribution->sQueued != "false" && $this->canEdit())
+                $this->oDistribution->sStatus != 'accepted' && $this->canEdit())
         {
             echo "The user submitted a new distribution, which will be un-queued ".
                 "together with the test data unless you select an existing one ".
@@ -88,7 +88,7 @@ class testData_queue
            distribution is un-queued, there is no need to display the
            distribution form here */
         if(!$this->oTestData->iDistributionId or 
-                $this->oDistribution->sQueued != "false")
+                $this->oDistribution->sStatus != 'accepted')
         {
             echo html_frame_start("New Distribution", "90%");
             $this->oDistribution->outputEditor();
