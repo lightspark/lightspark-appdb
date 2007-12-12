@@ -13,7 +13,7 @@ class distribution {
     var $sUrl;
     var $sSubmitTime;
     var $iSubmitterId;
-    var $sState;
+    private $sState;
     var $aTestingIds;
 
      // constructor, fetches the data.
@@ -554,6 +554,11 @@ class distribution {
         $oOMTableRow = new OMTableRow($oTableRow);
         $oOMTableRow->SetHasDeleteLink($bDeleteLink);
         return $oOMTableRow;
+    }
+
+    public function objectGetState()
+    {
+        return $this->sState;
     }
 
     // Whether the user has permission to edit distributions
