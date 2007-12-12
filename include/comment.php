@@ -171,6 +171,10 @@ class Comment {
         return true;
     }
 
+    function purge()
+    {
+        return $this->delete();
+    }
 
     /**
      * Removes the current comment from the database.
@@ -456,7 +460,7 @@ class Comment {
         return array($sSubject, $sMessage, $aRecipients);
     }
 
-    function objectGetChildren()
+    function objectGetChildren($bIncludeDeleted = false)
     {
         return array();
     }

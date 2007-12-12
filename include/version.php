@@ -251,9 +251,40 @@ class version {
         return true;
     }
 
+    /**
+     * Removes the version from the database and
+     * requests the same action for child entries
+     */
+    public function purge()
+    {
+        /* We need the versionId to continue */
+                if(!$this->iVersionId)
+                return;
 
-    /**    
-     * Deletes the version from the database. 
+        /* is the current user allowed to delete this version? */
+                if(!$_SESSION['current']->canDeleteVersion($this))
+                return false;
+
+        $bSuccess = TRUE;
+
+        foreach($this->objectGetChildren(TRUE) as $oChild)
+        {
+            if(!$oChild->purge())
+                $bSuccess = FALSE;
+        }
+
+        /* now remove the version from the DB */
+        $hResult = query_parameters("DELETE FROM appVersion
+                WHERE versionId = '?' 
+                LIMIT 1", $this->iVersionId);
+        if(!$hResult)
+            $bSuccess = FALSE;
+
+        return $bSuccess;
+    }
+
+    /**
+     * Flags the version as deleted
      * and request the deletion of linked elements.
      */
     public function delete()
@@ -274,8 +305,8 @@ class version {
                 $bSuccess = FALSE;
         }
 
-        /* now delete the version */
-        $hResult = query_parameters("DELETE FROM appVersion 
+        /* now flag the version as deleted */
+        $hResult = query_parameters("UPDATE appVersion SET state = 'deleted'
                                      WHERE versionId = '?' 
                                      LIMIT 1", $this->iVersionId);
         if(!$hResult)
@@ -1591,17 +1622,22 @@ class version {
              "From that page you can edit, delete or approve it into the AppDB.</p>\n";
     }
 
-    public function getTestResults()
+    public function getTestResults($bIncludeDeleted = false)
     {
-        /* If we don't have an id we can query the database, but perhaps we
+        /* If we don't have an id we can't query the database, but perhaps we
            have some cached entries? */
         if(!$this->iVersionId)
             return $this->aTestResults;
 
         $aTests = array();
 
+        if($bIncludeDeleted)
+            $sExcludeDeleted = "";
+        else
+            $sExcludeDeleted = " AND state != 'deleted'";
+
         /* Find test results */
-        $sQuery = "SELECT * FROM testResults WHERE versionId = '?'";
+        $sQuery = "SELECT * FROM testResults WHERE versionId = '?'$sExcludeDeleted";
         $hResult = query_parameters($sQuery, $this->iVersionId);
 
         if(!$hResult)
@@ -1613,13 +1649,13 @@ class version {
         return $aTests;
     }
 
-    public function objectGetChildren()
+    public function objectGetChildren($bIncludeDeleted = false)
     {
         $aChildren = array();
 
-        foreach($this->getTestResults() as $oTest)
+        foreach($this->getTestResults($bIncludeDeleted) as $oTest)
         {
-            $aChildren += $oTest->objectGetChildren();
+            $aChildren += $oTest->objectGetChildren($bIncludeDeleted);
             $aChildren[] = $oTest;
         }
 
@@ -1633,7 +1669,7 @@ class version {
         while($oRow = mysql_fetch_object($hResult))
         {
             $oMaintainer = new maintainer(0, $oRow);
-            $aChildren += $oMaintainer->objectGetChildren();
+            $aChildren += $oMaintainer->objectGetChildren($bIncludeDeleted);
             $aChildren[] = $oMaintainer;
         }
 
@@ -1647,7 +1683,7 @@ class version {
         while($oRow = mysql_fetch_object($hResult))
         {
             $oMonitor = new monitor(0, $oRow);
-            $aChildren += $oMonitor->objectGetChildren();
+            $aChildren += $oMonitor->objectGetChildren($bIncludeDeleted);
             $aChildren[] = $oMonitor;
         }
 
@@ -1661,7 +1697,7 @@ class version {
         while($oRow = mysql_fetch_object($hResult))
         {
             $oNote = new note(0, $oRow);
-            $aChildren += $oNote->objectGetChildren();
+            $aChildren += $oNote->objectGetChildren($bIncludeDeleted);
             $aChildren[] = $oNote;
         }
 
@@ -1675,7 +1711,7 @@ class version {
         while($oRow = mysql_fetch_object($hResult))
         {
             $oScreenshot = new screenshot(0, $oRow);
-            $aChildren += $oScreenshot->objectGetChildren();
+            $aChildren += $oScreenshot->objectGetChildren($bIncludeDeleted);
             $aChildren[] = $oScreenshot;
         }
 
@@ -1683,7 +1719,7 @@ class version {
         foreach($this->get_buglink_ids() as $iBugId)
         {
             $oBug = new bug($iBugId);
-            $aChildren += $oBug->objectGetChildren();
+            $aChildren += $oBug->objectGetChildren($bIncludeDeleted);
             $aChildren[] = $oBug;
         }
 
@@ -1697,7 +1733,7 @@ class version {
         while($oRow = mysql_fetch_object($hResult))
         {
             $oComment = new comment(0, $oRow);
-            $aChildren += $oComment->objectGetChildren();
+            $aChildren += $oComment->objectGetChildren($bIncludeDeleted);
             $aChildren[] = $oComment;
         }
 
@@ -1711,7 +1747,7 @@ class version {
         while($oRow = mysql_fetch_object($hResult))
         {
             $oUrl = new url(0, $oRow);
-            $aChildren += $oUrl->objectGetChildren();
+            $aChildren += $oUrl->objectGetChildren($bIncludeDeleted);
             $aChildren[] = $oUrl;
         }
 
@@ -1725,7 +1761,7 @@ class version {
         while($oRow = mysql_fetch_object($hResult))
         {
             $oDownload = new downloadurl(0, $oRow);
-            $aChildren += $oDownload->objectGetChildren();
+            $aChildren += $oDownload->objectGetChildren($bIncludeDeleted);
             $aChildren[] = $oDownload;
         }
 

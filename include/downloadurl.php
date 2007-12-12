@@ -63,7 +63,7 @@ class downloadurl
         return $sReturn;
     }
 
-    function objectGetChildren()
+    function objectGetChildren($bIncludeDeleted = false)
     {
         /* We have none */
         return array();
@@ -393,6 +393,11 @@ class downloadurl
             return FALSE;
 
         return TRUE;
+    }
+
+    function purge()
+    {
+        return $this->delete();
     }
 
     function delete()

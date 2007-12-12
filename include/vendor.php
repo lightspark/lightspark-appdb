@@ -144,9 +144,32 @@ class Vendor {
         return true;
     }
 
+    /**
+    * Remove the vendor from the database. 
+    */
+    function purge()
+    {
+        if(sizeof($this->aApplicationsIds)>0)
+        {
+            return FALSE;
+        } else
+        {
+            $sQuery = "DELETE FROM vendor 
+                    WHERE vendorId = '?' 
+                    LIMIT 1";
+            if(query_parameters($sQuery, $this->iVendorId))
+            {
+                return TRUE;
+            }
+
+            return FALSE;
+        }
+
+        return false;
+    }
 
     /**
-     * Deletes the vendor from the database. 
+     * Flag the vendor as deleted
      */
     function delete()
     {
@@ -155,7 +178,7 @@ class Vendor {
             return FALSE;
         } else
         {
-            $sQuery = "DELETE FROM vendor 
+            $sQuery = "UPDATE vendor SET state = 'deleted'
                        WHERE vendorId = '?' 
                        LIMIT 1";
             if(query_parameters($sQuery, $this->iVendorId))
@@ -307,7 +330,7 @@ class Vendor {
         return new mailOptions();
     }
 
-    function objectGetChildren()
+    function objectGetChildren($bIncludeDeleted = false)
     {
         /* We don't have any */
         return array();

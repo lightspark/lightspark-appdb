@@ -223,7 +223,29 @@ class testData{
             return false;
         }
     }
-    
+
+    // Purge test results from the database
+    function purge()
+    {
+        // is the current user allowed to delete this test result? 
+        $oVersion = new Version($this->iVersionId);
+        if(!$_SESSION['current']->hasPriv("admin") && 
+           !$_SESSION['current']->hasAppVersionModifyPermission($oVersion) &&
+           !(($_SESSION['current']->iUserId == $this->iSubmitterId) && !($this->sState == 'accepted')))
+        {
+            return false;
+        }
+
+        // now we delete the data
+        $sQuery = "DELETE FROM testResults
+                WHERE testingId = '?' 
+                LIMIT 1";
+        if(!($hResult = query_parameters($sQuery, $this->iTestingId)))
+            return false;
+
+        return true;
+    }
+
     // Delete test results.
     function delete()
     {
@@ -236,8 +258,8 @@ class testData{
             return false;
         }
 
-        // now delete the test data 
-        $sQuery = "DELETE FROM testResults
+        // now we flag the data as deleted
+        $sQuery = "UPDATE testResults SET state = 'deleted'
                    WHERE testingId = '?' 
                    LIMIT 1";
         if(!($hResult = query_parameters($sQuery, $this->iTestingId)))
@@ -1163,7 +1185,7 @@ class testData{
         return TRUE;
     }
 
-    function objectGetChildren()
+    function objectGetChildren($bIncludeDeleted = false)
     {
         /* We have none */
         return array();

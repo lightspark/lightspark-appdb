@@ -43,7 +43,7 @@ function test_appData_listSubmittedBy()
     }
 
     /* Clean up */
-    if(!$oDownloadUrl->delete())
+    if(!$oDownloadUrl->purge())
     {
         $bSuccess = false;
         error("Failed to delete oDownloadUrl!");

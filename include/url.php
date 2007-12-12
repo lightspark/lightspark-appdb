@@ -86,6 +86,10 @@ class Url {
         return true;
     }
 
+    function purge()
+    {
+        return $this->delete();
+    }
 
     /**    
      * Deletes the url from the database. 
@@ -506,7 +510,7 @@ class Url {
                 return array(null, null, null);
     }
 
-    function objectGetChildren()
+    function objectGetChildren($bIncludeDeleted = false)
     {
         return array();
     }

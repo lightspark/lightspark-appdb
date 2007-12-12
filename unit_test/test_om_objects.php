@@ -51,7 +51,7 @@ function test_class($sClassName, $aTestMethods)
     {
         error("Got '$hResult' instead of a valid query handle");
         error("FAILED\t\t$sClassName::$sClassName");
-        $oTestObject->delete();
+        $oTestObject->purge();
         return FALSE;
     }
 
@@ -59,7 +59,7 @@ function test_class($sClassName, $aTestMethods)
     {
         error("Failed to fetch query object");
         error("FAILED\t\t$sClassName::$sClassName");
-        $oTestObject->delete();
+        $oTestObject->purge();
         return FALSE;
     }
 
@@ -70,7 +70,7 @@ function test_class($sClassName, $aTestMethods)
     {
         error("Got '$iReceived' instead of a valid id");
         error("FAILED\t\t$sClassName::$sClassName()");
-        $oTestObject->delete();
+        $oTestObject->purge();
         return FALSE;
     }
 
@@ -83,9 +83,9 @@ function test_class($sClassName, $aTestMethods)
     if(!$oUser->addPriv("admin"))
         error("oUser->addPriv('admin') failed");
 
-    if(!$oTestObject->delete())
+    if(!$oTestObject->purge())
     {
-        error("sClassName of '".$sClassName."' oTestObject->delete() failed!");
+        error("sClassName of '".$sClassName."' oTestObject->purge() failed!");
         $oUser->delete();
         return false;
     }
@@ -111,13 +111,13 @@ function test_class($sClassName, $aTestMethods)
                 {
                     error("Got $iReceived instead of >= $iExpected");
                     error("FAILED\t\t$sClassName::$sMethod");
-                    $oTestObject->delete();
+                    $oTestObject->purge();
                     return FALSE;
                 }
 
                 /* Class specific clean-up */
                 cleanup($oTestObject);
-                $oTestObject->delete();
+                $oTestObject->purge();
 
                 echo "PASSED\t\t$sClassName::$sMethod\n";
             break;
@@ -150,11 +150,11 @@ function cleanup($oObject)
         break;
         case "version":
             $oApp = new application($oObject->iAppId);
-            $oApp->delete();
+            $oApp->purge();
         break;
         case "version_queue":
             $oApp = new application($oObject->oVersion->iAppId);
-            $oApp->delete();
+            $oApp->purge();
         break;
     }
 }
@@ -253,6 +253,7 @@ function test_object_methods()
                           "canEdit",
                           "display",
                           "getOutputEditorValues",
+                          "mustBeQueued",
                           "objectGetChildren",
                           "objectGetEntries",
                           "objectGetHeader",
@@ -264,7 +265,7 @@ function test_object_methods()
                           "objectMakeLink",
                           "objectMakeUrl",
                           "outputEditor",
-                          "mustBeQueued"
+                          "purge"
                          );
 
     $aTestClasses = array("application",

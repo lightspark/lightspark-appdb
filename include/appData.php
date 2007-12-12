@@ -54,6 +54,11 @@ class appData
         }
     }
 
+    function purge()
+    {
+        return $this->delete();
+    }
+
     function delete()
     {
         if(!$this->canEdit())
@@ -499,7 +504,7 @@ class appData
             } else if($this->iAppId)
             {
                 $oApp = new application($this->iAppId);
-                if($oApp->canEdit() && $oApp->objectGetQueueState() == 'accepted')
+                if($oApp->canEdit() && $oApp->objectGetState() == 'accepted')
                     return FALSE;
                 else
                     return TRUE;

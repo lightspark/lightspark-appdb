@@ -113,6 +113,25 @@ class application_queue
         $this->oApp->reject();
     }
 
+    function purge()
+    {
+        $bSuccess = TRUE;
+
+        if(!$this->oApp->purge())
+            $bSuccess = FALSE;
+
+        /* When deleting a duplicate app in the application queue, the version is moved
+                to another app and so when application_queue::delete() is called there is
+                no version child to delete, so check if the versionId is valid */
+                if($this->oVersionQueue->oVersion->iVersionId)
+        {
+            if(!$this->oVersionQueue->purge())
+                $bSuccess = FALSE;
+        }
+
+        return $bSuccess;
+    }
+
     function delete()
     {
         $bSuccess = TRUE;
@@ -132,9 +151,9 @@ class application_queue
         return $bSuccess;
     }
 
-    function objectGetChildren()
+    function objectGetChildren($bIncludeDeleted = false)
     {
-        return $this->oApp->objectGetChildren();
+        return $this->oApp->objectGetChildren($bIncludeDeleted);
     }
 
     function objectGetSubmitterId()

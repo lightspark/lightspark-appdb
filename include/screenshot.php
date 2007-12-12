@@ -125,6 +125,10 @@ class screenshot
         }
     }
 
+    function purge()
+    {
+        return $this->delete();
+    }
 
     /**    
      * Deletes the screenshot from the database. 
@@ -290,7 +294,7 @@ class screenshot
         return $this->oScreenshotImage->get_width();
     }
 
-    function objectGetChildren()
+    function objectGetChildren($bIncludeDeleted = false)
     {
         /* We have none */
         return array();

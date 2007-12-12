@@ -40,9 +40,9 @@ function delete_version_and_parent_app($iVersionId)
 
     $oVersion = new version($iVersionId);
     $oApp = new application($oVersion->iAppId);
-    if(!$oApp->delete())
+    if(!$oApp->purge())
     {
-        echo __FUNCTION__."() oApp->delete() failed, returned false!\n";
+        echo __FUNCTION__."() oApp->purge() failed, returned false!\n";
     }
 
     // remove the admin privleges only if the user didn't

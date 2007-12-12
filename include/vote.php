@@ -147,6 +147,11 @@ class voteManager
         return TRUE;
     }
 
+    function purge()
+    {
+        return $this->delete();
+    }
+
     public function delete()
     {
         $bSuccess = TRUE;

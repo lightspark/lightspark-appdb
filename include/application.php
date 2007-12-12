@@ -100,15 +100,20 @@ class Application {
         }
     }
 
-    private function _internal_retrieve_all_versions($bIncludeObsolete = TRUE)
+    private function _internal_retrieve_all_versions($bIncludeObsolete = TRUE, $bIncludeDeleted = false)
     {
         if(!$bIncludeObsolete)
             $sObsolete = " AND obsoleteBy = '0'";
         else
             $sObsolete = "";
 
+        if($bIncludeDeleted)
+            $sExcludeDeleted = "";
+        else
+            $sExcludeDeleted = " AND state != 'deleted'";
+
         $sQuery = "SELECT versionId FROM appVersion WHERE
-                        appId = '?'$sObsolete ORDER by versionName";
+                appId = '?'$sObsolete$sExcludeDeleted ORDER by versionName";
         $hResult  = query_parameters($sQuery, $this->iAppId);
         return $hResult;
     }
@@ -236,8 +241,37 @@ class Application {
         return true;
     }
 
-    /**    
-     * Deletes the application from the database. 
+    /**
+    * Deletes the application from the database. 
+    * and request the deletion of linked elements.
+    */
+    public function purge()
+    {
+        $bSuccess = true;
+
+        /* make sure the current user has the appropriate permission to delete
+                this application */
+                if(!$_SESSION['current']->canDeleteApplication($this))
+                return false;
+
+        foreach($this->objectGetChildren(true) as $oChild)
+        {
+            if(!$oChild->purge())
+                $bSuccess = FALSE;
+        }
+
+        /* Flag the entry as deleted */
+                $sQuery = "DELETE FROM appFamily
+                WHERE appId = '?' 
+                LIMIT 1";
+        if(!($hResult = query_parameters($sQuery, $this->iAppId)))
+            $bSuccess = false;
+
+        return $bSuccess;
+    }
+
+    /**
+     * Falgs the application as deleted
      * and request the deletion of linked elements.
      */
     public function delete()
@@ -255,7 +289,8 @@ class Application {
                 $bSuccess = FALSE;
         }
 
-        $sQuery = "DELETE FROM appFamily 
+        /* Flag the entry as deleted */
+        $sQuery = "UPDATE appFamily SET state = 'deleted'
                    WHERE appId = '?' 
                    LIMIT 1";
         if(!($hResult = query_parameters($sQuery, $this->iAppId)))
@@ -1090,7 +1125,7 @@ class Application {
         return $oRow->count;
     }
 
-    public function getVersions($bIncludeObsolete = TRUE)
+    public function getVersions($bIncludeObsolete = TRUE, $bIncludeDeleted = false)
     {
         /* If no id is set we cannot query for the versions, but perhaps objects are already cached? */
         if(!$this->iAppId)
@@ -1098,7 +1133,7 @@ class Application {
 
         $aVersions = array();
 
-        $hResult = $this->_internal_retrieve_all_versions($bIncludeObsolete);
+        $hResult = $this->_internal_retrieve_all_versions($bIncludeObsolete, $bIncludeDeleted);
 
         while($oRow = mysql_fetch_object($hResult))
             $aVersions[] = new version($oRow->versionId);
@@ -1129,14 +1164,14 @@ class Application {
         return $sMsg;
     }
 
-    public function objectGetChildren()
+    public function objectGetChildren($bIncludeDeleted = false)
     {
         $aChildren = array();
 
         /* Get versions */
-        foreach($this->getVersions() as $oVersion)
+                foreach($this->getVersions(true, $bIncludeDeleted) as $oVersion)
         {
-            $aChildren += $oVersion->objectGetChildren();
+            $aChildren += $oVersion->objectGetChildren($bIncludeDeleted);
             $aChildren[] = $oVersion;
         }
 
@@ -1150,7 +1185,7 @@ class Application {
         while($oRow = mysql_fetch_object($hResult))
         {
             $oUrl = new url(0, $oRow);
-            $aChildren += $oUrl->objectGetChildren();
+            $aChildren += $oUrl->objectGetChildren($bIncludeDeleted);
             $aChildren[] = $oUrl;
         }
 
@@ -1164,7 +1199,7 @@ class Application {
         while($oRow = mysql_fetch_object($hResult))
         {
             $oMaintainer = new maintainer(0, $oRow);
-            $aChildren += $oMaintainer->objectGetChildren();
+            $aChildren += $oMaintainer->objectGetChildren($bIncludeDeleted);
             $aChildren[] = $oMaintainer;
         }
 

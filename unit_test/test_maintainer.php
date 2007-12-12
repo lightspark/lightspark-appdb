@@ -200,7 +200,7 @@ function test_maintainer_getAppsMaintained()
 
     /* remove this application */
     $oApp = new Application($iAppId);
-    $oApp->delete();
+    $oApp->purge();
 
     $oUser->delete();
 
@@ -461,7 +461,7 @@ function test_superMaintainerOnAppSubmit()
 
     Maintainer::deleteMaintainer($oUser, $iAppId);
 
-    $oApp->delete();
+    $oApp->purge();
     $oUser->delete();
 
     return true;
@@ -549,7 +549,7 @@ function test_maintainer_getMaintainersForAppIdVersionId()
     {
         error("Failed to get list of maintainers!");
         $oUser->delete(); // delete the user
-        $oApp->delete(); // cleanup the application and its versions we created
+        $oApp->purge(); // cleanup the application and its versions we created
         return FALSE;
     }
 
@@ -560,7 +560,7 @@ function test_maintainer_getMaintainersForAppIdVersionId()
     {
         error("Got super maintainer count of $iReceived instead of $iExpected!");
         $oUser->delete(); // delete the user
-        $oApp->delete(); // cleanup the application and its versions we created
+        $oApp->purge(); // cleanup the application and its versions we created
         return FALSE;
     }
 
@@ -569,7 +569,7 @@ function test_maintainer_getMaintainersForAppIdVersionId()
     {
         error("Failed to get list of maintainers!");
         $oUser->delete(); // delete the user
-        $oApp->delete(); // cleanup the application and its versions we created
+        $oApp->purge(); // cleanup the application and its versions we created
         return FALSE;
     }
 
@@ -608,7 +608,7 @@ function test_maintainer_getMaintainersForAppIdVersionId()
     {
         error("Failed to get list of maintainers!");
         $oUser->delete(); // delete the user
-        $oApp->delete(); // cleanup the application and its versions we created
+        $oApp->purge(); // cleanup the application and its versions we created
         return FALSE;
     }
 
@@ -619,7 +619,7 @@ function test_maintainer_getMaintainersForAppIdVersionId()
     {
         error("Got maintainer count of $iReceived instead of $iExpected!");
         $oUser->delete(); // delete the user
-        $oApp->delete(); // cleanup the application and its versions we created
+        $oApp->purge(); // cleanup the application and its versions we created
         return FALSE;
     }
 
@@ -628,7 +628,7 @@ function test_maintainer_getMaintainersForAppIdVersionId()
     {
         error("Failed to get list of maintainers!");
         $oUser->delete(); // delete the user
-        $oApp->delete(); // cleanup the application and its versions we created
+        $oApp->purge(); // cleanup the application and its versions we created
         return FALSE;
     }
 
@@ -639,12 +639,12 @@ function test_maintainer_getMaintainersForAppIdVersionId()
     {
         error("Got maintainer count of $iReceived instead of $iExpected!");
         $oUser->delete(); // clean up the user
-        $oApp->delete(); // cleanup the application and its versions we created
+        $oApp->purge(); // cleanup the application and its versions we created
         return FALSE;
     }
 
-    if(!$oApp->delete())
-      echo __FUNCTION__." oApp->delete() failed\n";
+    if(!$oApp->purge())
+      echo __FUNCTION__." oApp->purge() failed\n";
 
     $oUser->delete(); // clean up the user
 

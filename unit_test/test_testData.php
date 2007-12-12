@@ -35,14 +35,14 @@ function test_testData_getNewestTestidFromVersionId()
     if($iExpected != $iReceived)
     {
         error("Got testData id of $iReceived instead of $iExpected!");
-        $oOldTestData->delete();
-        $oNewTestData->delete();
+        $oOldTestData->purge();
+        $oNewTestData->purge();
         $oUser->delete();
         return FALSE;
     }
 
-    $oOldTestData->delete();
-    $oNewTestData->delete();
+    $oOldTestData->purge();
+    $oNewTestData->purge();
     $oUser->delete();
 
     return TRUE;

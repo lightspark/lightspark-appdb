@@ -22,6 +22,21 @@ class testData_queue
         return $this->oTestData->create();
     }
 
+    function purge()
+    {
+        $bSuccess = $this->oTestData->purge();
+
+        /* We delete the distribution if it has not been approved and is not associated
+                with any other testData.  Otherwise we would have to have a distribution
+                queue for admins to clean up unused, queued entries */
+                $this->oDistribution = new distribution($this->oDistribution->iDistributionId);
+        if(!sizeof($this->oDistribution->aTestingIds) &&
+           $this->oDistribution->canEdit())
+            $this->oDistribution->purge();
+
+        return $bSuccess;
+    }
+
     function delete()
     {
         $bSuccess = $this->oTestData->delete();
@@ -198,9 +213,9 @@ class testData_queue
         return $this->oTestData->objectGetSubmitterId();
     }
 
-    function objectGetChildren()
+    function objectGetChildren($bIncludeDeleted = false)
     {
-        return $this->oTestData->objectGetChildren();
+        return $this->oTestData->objectGetChildren($bIncludeDeleted);
     }
 
     function objectGetMailOptions($sAction, $bMailSubmitter, $bParentAction)

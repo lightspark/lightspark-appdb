@@ -23,7 +23,7 @@ create table vendor (
        vendorId         int not null auto_increment,
        vendorName       varchar(100) not null,
        vendorURL        varchar(200),
-       state           enum('accepted','queued') NOT NULL default 'accepted',
+       state           enum('accepted','queued','deleted') NOT NULL default 'accepted',
        key(vendorId)
 );
 
@@ -41,7 +41,7 @@ create table appFamily (
 	catId         int,
 	submitTime    datetime NOT NULL,
 	submitterId   int(11) NOT NULL default '0',
-	state         enum('accepted','queued','rejected') NOT NULL default 'accepted',
+	state         enum('accepted','queued','rejected','deleted') NOT NULL default 'accepted',
 	key(appId)
 );
 
@@ -60,7 +60,7 @@ create table appVersion (
   submitterId           int(11) NOT NULL default '0',
   license		enum('Retail','Open Source','Freeware','Demo','Shareware'),
   obsoleteBy            int(11) NOT NULL default '0',
-  state                 enum('accepted','queued','rejected','pending') NOT NULL default 'accepted',
+  state                 enum('accepted','queued','rejected','pending','deleted') NOT NULL default 'accepted',
   key(versionId),
   index(appId)
 );

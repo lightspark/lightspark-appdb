@@ -61,7 +61,7 @@ class Monitor {
         }
     }
 
-    function objectGetChildren()
+    function objectGetChildren($bIncludeDeleted = false)
     {
         /* We have none */
         return array();
@@ -167,6 +167,11 @@ class Monitor {
             User::get_notify_email_address_list(null, $this->iVersionId);
         }
         return array($sSubject, $sMsg, $aMailTo);
+    }
+
+    function purge()
+    {
+        return $this->delete();
     }
 
    /**

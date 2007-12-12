@@ -72,6 +72,22 @@ class version_queue
         $this->oTestDataQueue->update();
     }
 
+    function purge()
+    {
+        $bSuccess = TRUE;
+
+        if(!$this->oVersion->purge())
+            $bSuccess = FALSE;
+
+        if(!$this->oTestDataQueue->purge())
+            $bSuccess = FALSE;
+
+        if($this->oDownloadUrl->iId && !$this->oDownloadUrl->purge())
+            $bSuccess = FALSE;
+
+        return $bSuccess;
+    }
+
     function delete()
     {
         $bSuccess = TRUE;
@@ -100,9 +116,9 @@ class version_queue
         return $this->oVersion->objectGetSubmitterId();
     }
 
-    function objectGetChildren()
+    function objectGetChildren($bIncludeDeleted = false)
     {
-        return $this->oVersion->objectGetChildren();
+        return $this->oVersion->objectGetChildren($bIncludeDeleted);
     }
 
     function objectGetMailOptions($sAction, $bMailSubmitter, $bParentAction)

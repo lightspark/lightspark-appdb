@@ -145,6 +145,11 @@ class Bug
         }
     }
 
+    function purge()
+    {
+        return $this->delete();
+    }
+
     /**    
      * Deletes the Bug from the database. 
      * and request its deletion from the filesystem (including the thumbnail).
@@ -273,7 +278,7 @@ class Bug
                 return array(null, null, null);
     }
 
-    function objectGetChildren()
+    function objectGetChildren($bIncludeDeleted = false)
     {
         return array();
     }

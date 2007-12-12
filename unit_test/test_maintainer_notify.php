@@ -15,7 +15,7 @@ class notifyContainer
 
   function cleanup()
   {
-    $this->oTestData->delete();   // deleted the created testData
+    $this->oTestData->purge();   // deleted the created testData
     $this->oMaintainer->delete(); // delete the created maintainer entry
                                   // (Should be deleted when the user is deleted)
 

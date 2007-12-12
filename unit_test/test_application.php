@@ -7,7 +7,7 @@ require_once(BASE.'include/version.php');
 require_once(BASE.'include/application.php');
 require_once("test_common.php");
 
-/* test that Application::delete() properly deletes data dependent on */
+/* test that Application::purge() properly deletes data dependent on */
 /* having an application */
 //TODO: need to test that we delete all urls, maintainers and other things
 //      tested under an application
@@ -210,9 +210,9 @@ function test_application_getWithRating()
 function delete_app_and_user($oApp, $oUser)
 {
     $bSuccess = true;
-    if(!$oApp->delete())
+    if(!$oApp->purge())
     {
-        echo __FUNCTION__."() oApp->delete() failed\n";
+        echo __FUNCTION__."() oApp->purge() failed\n";
         $bSuccess = false;
     }
 

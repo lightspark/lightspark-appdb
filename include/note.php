@@ -119,6 +119,10 @@ class Note {
         return true;
     }
 
+    function purge()
+    {
+        return $this->delete();
+    }
 
     /**
      * Removes the current note from the database.
@@ -355,7 +359,7 @@ class Note {
                 return array(null, null, null);
     }
 
-    function objectGetChildren()
+    function objectGetChildren($bIncludeDeleted = false)
     {
         return array();
     }

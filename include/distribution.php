@@ -142,6 +142,38 @@ class distribution {
         }
     }
 
+    function purge()
+    {
+        /* Is the current user allowed to delete this distribution?  We allow
+                everyone to delete a queued, empty distribution, because it should be
+                deleted along with the last testData associated with it */
+                if(!($this->canEdit() || (!sizeof($this->aTestingIds) &&
+                $this->sState != 'accepted')))
+                return false;
+
+        // if the distribution has test results only enable an admin to delete
+        // the distribution
+                if(sizeof($this->aTestingIds) && !$_SESSION['current']->hasPriv("admin"))
+                return FALSE;
+
+        $bSuccess = TRUE;
+
+        foreach($this->objectGetChildren(true) as $oChild)
+        {
+            if(!$oChild->purge())
+                $bSuccess = FALSE;
+        }
+
+        // now delete the Distribution 
+                $sQuery = "DELETE FROM distributions
+                WHERE distributionId = '?' 
+                LIMIT 1";
+        if(!($hResult = query_parameters($sQuery, $this->iDistributionId)))
+            $bSuccess = FALSE;
+
+        return $bSuccess;
+    }
+
     // Delete Distributution.
     function delete()
     {
@@ -166,7 +198,7 @@ class distribution {
         }
 
         // now delete the Distribution 
-        $sQuery = "DELETE FROM distributions
+        $sQuery = "UPDATE distributions SET state = 'deleted'
                    WHERE distributionId = '?' 
                    LIMIT 1";
         if(!($hResult = query_parameters($sQuery, $this->iDistributionId)))
@@ -174,7 +206,6 @@ class distribution {
 
         return $bSuccess;
     }
-
 
     // Move Distribution out of the queue.
     function unQueue()
@@ -217,10 +248,15 @@ class distribution {
         return $this->delete();
     }
 
-    function getTestResults()
+    function getTestResults($bIncludeDeleted = false)
     {
+        if($bIncludeDeleted)
+            $sExcludeDeleted = "";
+        else
+            $sExcludeDeleted = " AND state != 'deleted'";
+
         $aTests = array();
-        $sQuery = "SELECT * FROM testResults WHERE distributionId = '?'";
+        $sQuery = "SELECT * FROM testResults WHERE distributionId = '?'$sExcludeDeleted";
         $hResult = query_parameters($sQuery, $this->iDistributionId);
 
         while($oRow = mysql_fetch_object($hResult))
@@ -229,13 +265,13 @@ class distribution {
         return $aTests;
     }
 
-    function objectGetChildren()
+    function objectGetChildren($bIncludeDeleted = false)
     {
         $aChildren = array();
 
-        foreach($this->getTestResults() as $oTest)
+        foreach($this->getTestResults($bIncludeDeleted) as $oTest)
         {
-            $aChildren += $oTest->objectGetChildren();
+            $aChildren += $oTest->objectGetChildren($bIncludeDeleted);
             $aChildren[] = $oTest;
         }
 

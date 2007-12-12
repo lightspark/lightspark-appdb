@@ -334,6 +334,11 @@ class maintainer
             return TRUE;
     }
 
+    function purge()
+    {
+        return $this->delete();
+    }
+
     function delete()
     {
         $sQuery = "DELETE from appMaintainers where maintainerId = '?'";
@@ -875,7 +880,7 @@ class maintainer
         return array($aItemsPerPage, $iDefaultPerPage);
     }
 
-    function objectGetChildren()
+    function objectGetChildren($bIncludeDeleted = false)
     {
         /* We have none */
         return array();
