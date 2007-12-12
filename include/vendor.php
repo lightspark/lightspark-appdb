@@ -10,7 +10,7 @@ class Vendor {
     var $iVendorId;
     var $sName;
     var $sWebpage;
-    var $sQueued;
+    private $sState;
     var $aApplicationsIds;  // an array that contains the appId of every application linked to this vendor
 
     /**    
@@ -39,7 +39,7 @@ class Vendor {
             $this->iVendorId = $oRow->vendorId;
             $this->sName = $oRow->vendorName;
             $this->sWebpage = $oRow->vendorURL;
-            $this->sQueued = $oRow->queued;
+            $this->sState = $oRow->state;
         }
 
         /*
@@ -56,7 +56,6 @@ class Vendor {
             }
         }
     }
-
 
     /**
      * Creates a new vendor.
@@ -83,10 +82,10 @@ class Vendor {
             }
         }
 
-        $hResult = query_parameters("INSERT INTO vendor (vendorName, vendorURL, queued) ".
+        $hResult = query_parameters("INSERT INTO vendor (vendorName, vendorURL, state) ".
                                     "VALUES ('?', '?', '?')",
                                         $this->sName, $this->sWebpage,
-                                        $this->mustBeQueued() ? "true" : "false");
+                                        $this->mustBeQueued() ? 'queued' : 'accepted');
         if($hResult)
         {
             $this->iVendorId = query_appdb_insert_id();
@@ -109,8 +108,8 @@ class Vendor {
         if(!$this->canEdit())
             return FALSE;
 
-        $hResult = query_parameters("UPDATE vendor SET queued = '?' WHERE vendorId = '?'",
-                                       'false', $this->iVendorId);
+        $hResult = query_parameters("UPDATE vendor SET state = '?' WHERE vendorId = '?'",
+                                       'accepted', $this->iVendorId);
 
         if(!$hResult)
             return FALSE;
@@ -280,6 +279,11 @@ class Vendor {
         $oOMTableRow->SetHasDeleteLink($bDeleteLink);
 
         return $oOMTableRow;
+    }
+
+    public function objectGetState()
+    {
+        return $this->sState;
     }
 
     function canEdit()

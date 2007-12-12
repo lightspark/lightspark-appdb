@@ -94,7 +94,7 @@ class application_queue
     {
         /* The vendor is not necessarily queued, as it could have existed on
            beforehand */
-        if($this->oVendor->sQueued != "false")
+        if($this->oVendor->objectGetState() != 'accepted')
             $this->oVendor->unQueue();
 
         $this->oApp->unQueue();
@@ -188,7 +188,7 @@ class application_queue
 
             /* Display the new vendor form for new applications or if we
                are processing an application and the vendor is queued */
-            if(!$this->oApp->iAppId || $this->oVendor->sQueued != "false")
+            if(!$this->oApp->iAppId || $this->oVendor->objectGetState() != 'accepted')
             {
                 echo html_frame_start("New Vendor", "90%");
                 $this->oVendor->outputEditor();

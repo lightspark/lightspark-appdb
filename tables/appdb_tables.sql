@@ -23,7 +23,7 @@ create table vendor (
        vendorId         int not null auto_increment,
        vendorName       varchar(100) not null,
        vendorURL        varchar(200),
-       queued           enum('true','false') NOT NULL default 'false',
+       state           enum('accepted','queued') NOT NULL default 'accepted',
        key(vendorId)
 );
 
