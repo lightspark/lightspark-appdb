@@ -629,7 +629,7 @@ class User {
              return true;
 
          /* if the application isn't queued */
-         if($oApp->sQueued == 'false')
+         if($oApp->objectGetState() == 'accepted')
              return true;
 
          if($this->hasPriv("admin"))
@@ -637,7 +637,7 @@ class User {
 
          /* if this user is the submitter and the application is queued */
          if(($this->iUserId == $oApp->iSubmitterId) &&
-            ($oApp->sQueued != 'false'))
+            ($oApp->objectGetState() != 'accepted'))
              return true;
 
          return false;
@@ -659,7 +659,7 @@ class User {
          /* and the application is still queued */
          /* the user can modify the app */
          if(($this->iUserId == $oApp->iSubmitterId) &&
-            ($oApp->sQueued != 'false'))
+            ($oApp->objectGetState() != 'accepted'))
              return true;
 
          return false;
@@ -683,7 +683,7 @@ class User {
              return true;
 
          /* is this the user that submitted the application and is still queued */
-         if(($oApp->sQueued != 'false') && ($oApp->iSubmitterId == $this->iUserId))
+         if(($oApp->objectGetState() != 'accepted') && ($oApp->iSubmitterId == $this->iUserId))
              return true;
 
          return false;
@@ -698,13 +698,13 @@ class User {
      /* Can this user Requeue an application? */
      function canRequeueApplication($oApp)
      {
-         if($oApp->sQueued == 'false')
+         if($oApp->objectGetState() == 'accepted')
              return false;
 
          if($this->hasPriv("admin"))
              return true;
 
-         if(($oApp->sQueued != 'false') && ($oApp->iSubmitterId == $this->iUserId))
+         if(($oApp->objectGetState() != 'accepted') && ($oApp->iSubmitterId == $this->iUserId))
              return true;
 
          return false;

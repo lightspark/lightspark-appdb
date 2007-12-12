@@ -422,7 +422,7 @@ function searchForApplication($search_words)
     $sQuery = "SELECT *
            FROM appFamily
            WHERE appName != 'NONAME'
-           AND appFamily.queued = 'false'
+           AND appFamily.state = 'accepted'
            AND (appName LIKE '%" . $search_words . "%'
            OR keywords LIKE '%" . $search_words . "%'";
 
@@ -449,7 +449,7 @@ function searchForApplicationFuzzy($search_words, $minMatchingPercent)
     }
 
     /* add on all of the fuzzy matches we can find */
-    $sQuery = "SELECT appName, appId FROM appFamily WHERE queued = 'false'";
+    $sQuery = "SELECT appName, appId FROM appFamily WHERE state = 'accepted'";
     foreach ($excludeAppIdArray as $key=>$value)
     {
         $sQuery.=" AND appId != '".query_escape_string($value)."'";

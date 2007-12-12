@@ -41,7 +41,7 @@ create table appFamily (
 	catId         int,
 	submitTime    datetime NOT NULL,
 	submitterId   int(11) NOT NULL default '0',
-	queued        enum('true','false','rejected') NOT NULL default 'false',
+	state         enum('accepted','queued','rejected') NOT NULL default 'accepted',
 	key(appId)
 );
 

@@ -24,7 +24,7 @@ class application_queue
             if($_SESSION['current']->hasPriv("admin"))
             {
                 $iVersionId = $this->oApp->aVersionsIds[0];
-            } else if($this->oApp->sQueued == "rejected")
+            } else if($this->oApp->objectGetState() == 'rejected')
             {
                 $sQuery = "SELECT versionId FROM appVersion WHERE appId = '?' LIMIT 1";
                 $hResult = query_parameters($sQuery, $this->oApp->iAppId);

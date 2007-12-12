@@ -34,7 +34,7 @@ class Application {
     var $sKeywords;
     var $sDescription;
     var $sWebpage;
-    var $sQueued;
+    private $sState;
     var $sSubmitTime;
     var $iSubmitterId;
     var $aVersionsIds;  // an array that contains the versionId of every version linked to this app.
@@ -76,7 +76,7 @@ class Application {
             //TODO: we should move the url to the appData table
             // and return an id into the appData table here
             $this->sWebpage = Url::normalize($oRow->webPage);
-            $this->sQueued = $oRow->queued;
+            $this->sState = $oRow->state;
         }
 
         /* fetch versions of this application, if there are any */
@@ -133,12 +133,12 @@ class Application {
         $hResult = query_parameters("INSERT INTO appFamily (appName, description, ".
                                     "keywords, webPage, vendorId, catId, ".
                                     "submitTime, submitterId, ".
-                                    "queued) VALUES (".
+                                    "state) VALUES (".
                                     "'?', '?', '?', '?', '?', '?', ?, '?', '?')",
                                     $this->sName, $this->sDescription, $this->sKeywords,
                                     $this->sWebpage, $this->iVendorId, $this->iCatId,
                                     "NOW()", $_SESSION['current']->iUserId,
-                                    $this->mustBeQueued() ? "true" : "false");
+                                    $this->mustBeQueued() ? 'queued' : 'accepted');
         if($hResult)
         {
             $this->iAppId = query_appdb_insert_id();
@@ -273,10 +273,10 @@ class Application {
         if(!$_SESSION['current']->canUnQueueApplication())
             return;
 
-        if(query_parameters("UPDATE appFamily SET queued = '?', keywords = '?' WHERE appId = '?'",
-                            "false",  str_replace(" *** ","",$this->sKeywords), $this->iAppId))
+        if(query_parameters("UPDATE appFamily SET state = '?', keywords = '?' WHERE appId = '?'",
+                            'accepted',  str_replace(" *** ","",$this->sKeywords), $this->iAppId))
         {
-            $this->sQueued = 'false';
+            $this->sState = 'accepted';
             // we send an e-mail to interested people
             $this->mailSubmitter();
             $this->SendNotificationMail();
@@ -298,13 +298,13 @@ class Application {
             return;
 
         // If we are not in the queue, we can't move the application out of the queue.
-        if(!$this->sQueued == 'true')
+        if($this->sState != 'queued')
             return false;
 
-        if(query_parameters("UPDATE appFamily SET queued = '?' WHERE appId = '?'",
-                            "rejected", $this->iAppId))
+        if(query_parameters("UPDATE appFamily SET state = '?' WHERE appId = '?'",
+                            'rejected', $this->iAppId))
         {
-            $this->sQueued = 'rejected';
+            $this->sState = 'rejected';
             // we send an e-mail to interested people
             $this->mailSubmitter("reject");
             $this->SendNotificationMail("reject");
@@ -326,10 +326,10 @@ class Application {
         if(!$_SESSION['current']->canRequeueApplication($this))
             return false;
 
-        if(query_parameters("UPDATE appFamily SET queued = '?' WHERE appId = '?'",
-                            "true", $this->iAppId))
+        if(query_parameters("UPDATE appFamily SET state = '?' WHERE appId = '?'",
+                            'queued', $this->iAppId))
         {
-            $this->sQueued = 'true';
+            $this->sState = 'queued';
             // we send an e-mail to interested people
             $this->SendNotificationMail();
 
@@ -416,7 +416,7 @@ class Application {
         $sQuery = "SELECT DISTINCT count(appId) as total 
                        FROM appVersion
                        WHERE maintainer_rating = '?'
-                       AND queued='false'";
+                       AND state = 'accepted'";
 
         if($hResult = query_parameters($sQuery, $sRating))
         {
@@ -431,7 +431,7 @@ class Application {
         $sQuery = "SELECT DISTINCT appId 
                        FROM appVersion
                        WHERE maintainer_rating = '?'
-                       AND queued = 'false'
+                       AND state = 'accepted'
                        ORDER BY appId ASC LIMIT ?, ?";
         
         if($hResult = query_parameters($sQuery, $sRating, $iOffset, $iItemsPerPage))
@@ -453,7 +453,7 @@ class Application {
         switch($sAction)
         {
             case "add":
-                if($this->sQueued == 'false') // Has been accepted.
+                if($this->sState == 'accepted') // Has been accepted.
                 {
                     $sSubject = $this->sName." has been added by ".$_SESSION['current']->sRealname;
                     $sMsg  = $this->objectMakeUrl()."\n";
@@ -533,7 +533,7 @@ class Application {
 
         $oVendor = new vendor($this->iVendorId);
         $sVendorHelp = "The developer of the application. ";
-        if(!$this->iAppId || $oVendor->sQueued != "false")
+        if(!$this->iAppId || $oVendor->objectGetState() != 'accepted')
         {
             if(!$this->iAppId)
             {
@@ -555,7 +555,7 @@ class Application {
         echo '<tr valign=top><td class="color0">&nbsp;</td><td>',"\n";
         echo $x->make_option_list("iAppVendorId",
                                   $this->iVendorId,"vendor","vendorId","vendorName",
-                                  array("vendor.queued", "false"));
+                                  array('vendor.state', 'accepted'));
         echo '</td></tr>',"\n";
 
         // url
@@ -644,7 +644,7 @@ class Application {
     public function displayBundle()
     {
         $hResult = query_parameters("SELECT appFamily.appId, appName, description FROM appBundle, appFamily ".
-                "WHERE appFamily.queued='false' AND bundleId = '?' AND appBundle.appId = appFamily.appId",
+                "WHERE appFamily.state = 'accepted' AND bundleId = '?' AND appBundle.appId = appFamily.appId",
                 $this->iAppId);
         if(!$hResult || query_num_rows($hResult) == 0)
         {
@@ -834,8 +834,8 @@ class Application {
                 WHERE
                 submitterId = '?'
                 AND
-                queued = '?'
-                    ORDER BY appId", $iUserId, $bQueued ? "true" : "false");
+                state = '?'
+                    ORDER BY appId", $iUserId, $bQueued ? 'queued' : 'accepted');
 
         if(!$hResult || !query_num_rows($hResult))
             return false;
@@ -903,9 +903,9 @@ class Application {
         $sQuery = "SELECT appFamily.*, vendor.vendorName AS vendorName FROM appFamily, vendor WHERE
                      appFamily.vendorId = vendor.vendorId
                      AND
-                     appFamily.queued = '?'";
+                     appFamily.state = '?'";
 
-        $sQueued = objectManager::getQueueString($bQueued, $bRejected);
+        $sState = objectManager::getStateString($bQueued, $bRejected);
 
         if($bQueued && !application::canEdit())
         {
@@ -916,12 +916,12 @@ class Application {
             $sQuery .= " AND appFamily.submitterId = '?' ORDER BY ? ?$sLimit";
             if($sLimit)
             {
-                $hResult = query_parameters($sQuery, $sQueued,
+                $hResult = query_parameters($sQuery, $sState,
                                             $_SESSION['current']->iUserId, $sOrderBy,
                                             $sOrdering, $iStart, $iRows);
             } else
             {
-                $hResult = query_parameters($sQuery, $sQueued,
+                $hResult = query_parameters($sQuery, $sState,
                                             $_SESSION['current']->iUserId, $sOrderBy,
                                             $sOrdering);
             }
@@ -930,11 +930,11 @@ class Application {
             $sQuery .= " ORDER BY ? ?$sLimit";
             if($sLimit)
             {
-                $hResult = query_parameters($sQuery, $sQueued, $sOrderBy, $sOrdering,
+                $hResult = query_parameters($sQuery, $sState, $sOrderBy, $sOrdering,
                                             $iStart, $iRows);
             } else
             {
-                $hResult = query_parameters($sQuery, $sQueued, $sOrderBy, $sOrdering);
+                $hResult = query_parameters($sQuery, $sState, $sOrderBy, $sOrdering);
             }
         }
 
@@ -970,10 +970,15 @@ class Application {
         $oTableRow->AddTextCell(print_date(mysqldatetime_to_unixtimestamp($this->sSubmitTime)));
         $oTableRow->AddTextCell($oUser->objectMakeLink());
         $oTableRow->AddTextCell($sVendor);
-        $oTableRow->AddTextCell(($this->sQueued == 'false') ? $this->objectMakeLink() : $this->sName);
+        $oTableRow->AddTextCell(($this->sState == 'accepted') ? $this->objectMakeLink() : $this->sName);
 
         $oOMTableRow = new OMTableRow($oTableRow);
         return $oOMTableRow;
+    }
+
+    public function objectGetState()
+    {
+        return $this->sState;
     }
 
     public function canEdit()
@@ -987,7 +992,7 @@ class Application {
                 $this->iAppId))
                 return TRUE;
 
-            if($this->sQueued != "false" && $this->iSubmitterId ==
+            if($this->sState != 'accepted' && $this->iSubmitterId ==
                $_SESSION['current']->iUserId)
             {
                 return TRUE;
@@ -1056,7 +1061,7 @@ class Application {
 
     public static function objectGetEntriesCount($bQueued, $bRejected)
     {
-        $sQueued = objectManager::getQueueString($bQueued, $bRejected);
+        $sState = objectManager::getStateString($bQueued, $bRejected);
 
         if($bQueued && !application::canEdit())
         {
@@ -1067,13 +1072,13 @@ class Application {
             $sQuery = "SELECT COUNT(appId) as count FROM appFamily WHERE
                     submitterId = '?'
                     AND
-                    queued = '?'";
+                    state = '?'";
             $hResult = query_parameters($sQuery, $_SESSION['current']->iUserId,
-                                        $sQueued);
+                                        $sState);
         } else
         {
-            $sQuery = "SELECT COUNT(appId) as count FROM appFamily WHERE queued = '?'";
-            $hResult = query_parameters($sQuery, $sQueued);
+            $sQuery = "SELECT COUNT(appId) as count FROM appFamily WHERE state = '?'";
+            $hResult = query_parameters($sQuery, $sState);
         }
 
         if(!$hResult)

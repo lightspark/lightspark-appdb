@@ -254,7 +254,7 @@ class appData
                 AND
                 appVersion.state = 'accepted'
                 AND
-                appFamily.queued = 'false'";
+                appFamily.state = 'accepted'";
 
             if($sQueued == "true")
                 $sQuery .= " AND appData.queued = 'true'";
@@ -286,7 +286,7 @@ class appData
                         appData.versionId = '0'
                     )
                     AND
-                    appFamily.queued = 'false'$sAppDataQueued$sSelectType) UNION
+                    appFamily.state = 'accepted'$sAppDataQueued$sSelectType) UNION
                     (
                     SELECT COUNT(DISTINCT appData.id) as count FROM appData,
                 appFamily, appVersion WHERE
@@ -298,7 +298,7 @@ class appData
                     AND
                     appVersion.state = 'accepted'
                     AND
-                    appFamily.queued = 'false'$sAppDataQueued$sSelectType)";
+                    appFamily.state = 'accepted'$sAppDataQueued$sSelectType)";
 
             if($sType)
                 $hResult = query_parameters($sQuery, $sType, $sType);
@@ -374,7 +374,7 @@ class appData
                 AND
                 appVersion.state = 'accepted'
                 AND
-                appFamily.queued = 'false'
+                appFamily.state = 'accepted'
                 AND
                 appData.queued = '?'
                 AND
@@ -409,7 +409,7 @@ class appData
                         appData.versionId = '0'
                       )
                       AND
-                      appFamily.queued = 'false'
+                      appFamily.state = 'accepted'
                       AND
                       appData.queued = '?'
                       AND
@@ -427,7 +427,7 @@ class appData
                       AND
                       appVersion.state = 'accepted'
                       AND
-                      appFamily.queued = 'false'
+                      appFamily.state = 'accepted'
                       AND
                       appData.queued = '?'
                       AND
@@ -499,7 +499,7 @@ class appData
             } else if($this->iAppId)
             {
                 $oApp = new application($this->iAppId);
-                if($oApp->canEdit() && $oApp->sQueued == "false")
+                if($oApp->canEdit() && $oApp->objectGetQueueState() == 'accepted')
                     return FALSE;
                 else
                     return TRUE;

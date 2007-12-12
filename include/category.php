@@ -47,7 +47,7 @@ class Category {
             $sQuery = "SELECT appId
                        FROM appFamily
                        WHERE catId = '?'
-                       AND queued = 'false' ORDER BY appName";
+                       AND state = 'accepted' ORDER BY appName";
             if($hResult = query_parameters($sQuery, $iCatId))
             {
                 while($oRow = query_fetch_object($hResult))

@@ -62,7 +62,7 @@ class distribution {
                             WHERE testResults.state = 'accepted' AND
                                 testResults.versionId = appVersion.versionId AND
                                 appFamily.appId = appVersion.appId AND
-                                appFamily.queued = 'false' AND
+                                appFamily.state = 'accepted' AND
                                 appVersion.state = 'accepted' AND
                                 distributionId = '?'
                             ORDER BY testedRating;";

@@ -93,7 +93,7 @@ class version {
             return;
 
         $oApp = new application($this->iAppId);
-        if($oApp->sQueued != "false")
+        if($oApp->objectGetState() != 'accepted')
             $this->sState = 'pending';
         else
             $this->sState = $this->mustBeQueued() ? 'queued' : 'accepted';
@@ -1189,13 +1189,7 @@ class version {
             {
                 $oApp = new application($oVersion->iAppId);
 
-                /* Temporary workaround */
-                $sAppState = $oApp->sQueued;
-                if($sAppState == 'true')
-                    $sAppState = 'queued';
-                else if($sAppState == 'false')
-                    $sAppState = 'accepted';
-                if ($oVersion->sState == $sAppState)
+                if ($oVersion->sState == $oApp->objectGetState())
                 {
                     // set row color
                     $bgcolor = ($c % 2 == 0) ? "color0" : "color1";
@@ -1284,7 +1278,7 @@ class version {
     /* List the versions submitted by a user.  Ignore versions for queued applications */
     public static function listSubmittedBy($iUserId, $bQueued = true)
     {
-        $hResult = query_parameters("SELECT appFamily.appName, appVersion.versionName, appVersion.description, appVersion.versionId, appVersion.submitTime FROM appFamily, appVersion WHERE appFamily.appId = appVersion.appId AND appVersion.submitterId = '?' AND appVersion.state = '?' AND appFamily.queued = '?'", $iUserId, $bQueued ? 'queued' : 'accepted', 'false');
+        $hResult = query_parameters("SELECT appFamily.appName, appVersion.versionName, appVersion.description, appVersion.versionId, appVersion.submitTime FROM appFamily, appVersion WHERE appFamily.appId = appVersion.appId AND appVersion.submitterId = '?' AND appVersion.state = '?' AND appFamily.state = '?'", $iUserId, $bQueued ? 'queued' : 'accepted', 'accepted');
 
         if(!$hResult || !query_num_rows($hResult))
             return false;

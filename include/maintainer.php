@@ -213,7 +213,7 @@ class maintainer
         if(!$this->bSuperMaintainer)
             $oVersion = new version($this->iVersionId);
 
-        if($oApp->sQueued != "false" ||
+        if($oApp->objectGetState() != 'accepted' ||
            (!$this->bSuperMaintainer && $oVersion->objectGetState() != 'accepted'))
             $this->sQueued = "pending";
         else
