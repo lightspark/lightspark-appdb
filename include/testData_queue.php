@@ -55,8 +55,8 @@ class testData_queue
     function reQueue()
     {
         $this->oTestData->reQueue();
-        if($this->oDistribution->sQueued == "rejected")
-            $this->oDistribution->reQueue();
+
+        $this->oDistribution->reQueue();
     }
 
     function unQueue()
