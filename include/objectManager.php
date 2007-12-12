@@ -1391,6 +1391,20 @@ class ObjectManager
         return $sQueueString;
     }
 
+    public function getStateString($bQueued, $bRejected)
+    {
+        if($bQueued)
+        {
+            if($bRejected)
+                $sStateString = 'rejected';
+            else
+                $sStateString = 'queued';
+        } else
+            $sStateString = 'accepted';
+
+            return $sStateString;
+    }
+
     private function displayErrors($sErrors)
     {
         if($sErrors)

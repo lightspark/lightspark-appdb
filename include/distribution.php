@@ -59,7 +59,7 @@ class distribution {
         {
             $sQuery = "SELECT testingId
                             FROM testResults, appFamily, appVersion
-                            WHERE testResults.queued = 'false' AND
+                            WHERE testResults.state = 'accepted' AND
                                 testResults.versionId = appVersion.versionId AND
                                 appFamily.appId = appVersion.appId AND
                                 appFamily.queued = 'false' AND
@@ -251,8 +251,8 @@ class distribution {
             return false;
         }
 
-        if(query_parameters("UPDATE testResults SET queued = '?' WHERE testingId = '?'",
-                            "true", $this->iTestingId))
+        if(query_parameters("UPDATE testResults SET state = '?' WHERE testingId = '?'",
+                            'queued', $this->iTestingId))
         {
             if(query_parameters("UPDATE distribution SET state = '?' WHERE distributionId = '?'",
                                 'queued', $this->iDistributionId))

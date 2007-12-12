@@ -21,7 +21,7 @@ class testData{
     var $sComments;
     var $sSubmitTime;
     var $iSubmitterId;
-    var $sQueued;
+    private $sState;
 
      // constructor, fetches the data.
     function testData($iTestingId = null, $oRow = null)
@@ -56,7 +56,7 @@ class testData{
             $this->sComments = $oRow->comments;
             $this->sSubmitTime = $oRow->submitTime;
             $this->iSubmitterId = $oRow->submitterId;
-            $this->sQueued = $oRow->queued;
+            $this->sState = $oRow->state;
         }
     }
 
@@ -65,14 +65,14 @@ class testData{
     {
         $oVersion = new version($this->iVersionId);
         if($oVersion->sQueued != "false")
-            $this->sQueued = "pending";
+            $this->sState = 'pending';
         else
-            $this->sQueued = $this->mustBeQueued() ? "true" : "false";
+            $this->sState = $this->mustBeQueued() ? 'queued' : 'accepted';
 
         $hResult = query_parameters("INSERT INTO testResults (versionId, whatWorks, whatDoesnt,".
                                     "whatNotTested, testedDate, distributionId, testedRelease,".
                                     "installs, runs, testedRating, comments,".
-                                    "submitTime, submitterId, queued)".
+                                    "submitTime, submitterId, state)".
                                     "VALUES('?', '?', '?', '?', '?', '?', '?',".
                                     "'?', '?', '?', '?',".
                                     "?, '?', '?')",
@@ -85,7 +85,7 @@ class testData{
                                     $this->sTestedRating, $this->sComments,
                                     "NOW()",
                                     $_SESSION['current']->iUserId,
-                                    $this->sQueued);
+                                    $this->sState);
 
         if($hResult)
         {
@@ -108,7 +108,7 @@ class testData{
         $oVersion = new Version($this->iVersionId);
         if(!$_SESSION['current']->hasPriv("admin") && 
            !$_SESSION['current']->hasAppVersionModifyPermission($oVersion) &&
-           !(($_SESSION['current']->iUserId == $this->iSubmitterId) && !($this->sQueued == 'false')))
+           !(($_SESSION['current']->iUserId == $this->iSubmitterId) && $this->sState != 'accepted'))
         {
             return;
         }
@@ -221,7 +221,7 @@ class testData{
         $oVersion = new Version($this->iVersionId);
         if(!$_SESSION['current']->hasPriv("admin") && 
            !$_SESSION['current']->hasAppVersionModifyPermission($oVersion) &&
-           !(($_SESSION['current']->iUserId == $this->iSubmitterId) && !($this->sQueued == 'false')))
+           !(($_SESSION['current']->iUserId == $this->iSubmitterId) && $this->sState != 'accepted'))
         {
             return false;
         }
@@ -252,13 +252,13 @@ class testData{
         }
 
         // If we are not in the queue, we can't move the test data out of the queue.
-        if($this->sQueued == 'false')
+        if($this->sState == 'accepted')
             return false;
 
-        if(query_parameters("UPDATE testResults SET queued = '?' WHERE testingId = '?'",
-                            "false", $this->iTestingId))
+        if(query_parameters("UPDATE testResults SET state = '?' WHERE testingId = '?'",
+                            'accepted', $this->iTestingId))
         {
-            $this->sQueued = 'false';
+            $this->sState = 'accepted';
             // we send an e-mail to interested people
             $this->mailSubmitter("add");
             $this->SendNotificationMail();
@@ -281,13 +281,13 @@ class testData{
         }
 
         // If we are not in the queue, we can't move the version out of the queue.
-        if(!$this->sQueued == 'true')
+        if($this->sState != 'queued')
             return false;
 
-        if(query_parameters("UPDATE testResults SET queued = '?' WHERE testingId = '?'", 
-                            "rejected", $this->iTestingId))
+        if(query_parameters("UPDATE testResults SET state = '?' WHERE testingId = '?'", 
+                            'rejected', $this->iTestingId))
         {
-            $this->sQueued = 'rejected';
+            $this->sState = 'rejected';
             // we send an e-mail to interested people
             $this->mailSubmitter("reject");
             $this->SendNotificationMail("reject");
@@ -305,10 +305,10 @@ class testData{
             return;
         }
 
-        if(query_parameters("UPDATE testResults SET queued = '?' WHERE testingId = '?'",
-                            "true", $this->iTestingId))
+        if(query_parameters("UPDATE testResults SET state = '?' WHERE testingId = '?'",
+                            'queued', $this->iTestingId))
         {
-            $this->sQueued = 'true';
+            $this->sState = 'queued';
             // we send an e-mail to interested people
             $this->SendNotificationMail();
         }
@@ -418,7 +418,7 @@ class testData{
         switch($sAction)
         {
             case "add":
-                if($this->sQueued == "false")
+                if($this->sState == 'accepted')
                 {
                     $sSubject = "Test Results added to version ".$oVersion->sName." of ".$oApp->sName." by ".$_SESSION['current']->sRealname;
                     $sMsg  .= $sBacklink;
@@ -592,13 +592,13 @@ class testData{
                    FROM testResults
                    WHERE versionId = '?'
                    AND
-                   queued = '?'
+                   state = '?'
                    ORDER BY testedDate DESC";
 	
         if(!$bShowAll)
             $sQuery.=" LIMIT 0,".$iDisplayLimit;
 
-        $hResult = query_parameters($sQuery, $this->iVersionId, "false");
+        $hResult = query_parameters($sQuery, $this->iVersionId, 'accepted');
         if(!$hResult)
             return;
 
@@ -648,15 +648,15 @@ class testData{
     }
 
     /* retrieve the latest test result for a given version id */
-    function getNewestTestIdFromVersionId($iVersionId, $sQueued = "false")
+    function getNewestTestIdFromVersionId($iVersionId, $sState = 'accepted')
     {
         $sQuery = "SELECT testingId FROM testResults WHERE
                 versionId = '?'
                 AND
-                queued = '?'
+                state = '?'
                      ORDER BY testedDate DESC limit 1";
 
-        $hResult = query_parameters($sQuery, $iVersionId, $sQueued);
+        $hResult = query_parameters($sQuery, $iVersionId, $sState);
 
         if(!$hResult)
             return 0;
@@ -705,7 +705,7 @@ class testData{
         // Distribution
         $oDistribution = new distribution($this->iDistributionId);
         $sDistributionHelp = "";
-        if(!$this->iDistributionId || $oDistribution->sQueued != "false")
+        if(!$this->iDistributionId || $oDistribution->objectGetState() != 'accepted')
         {
             if(!$this->iDistributionId)
             {
@@ -876,7 +876,7 @@ class testData{
     /* List test data submitted by a given user.  Ignore test results for queued applications/versions */
     function listSubmittedBy($iUserId, $bQueued = true)
     {
-        $hResult = query_parameters("SELECT testResults.versionId, testResults.testedDate, testResults.testedRelease, testResults.testedRating, testResults.submitTime, appFamily.appName, appVersion.versionName from testResults, appFamily, appVersion WHERE testResults.versionId = appVersion.versionId AND appVersion.appId = appFamily.appId AND (appFamily.queued = '?' OR appVersion.queued = '?') AND testResults.submitterId = '?' AND testResults.queued = '?' ORDER BY testResults.testingId", "false", "false", $iUserId, $bQueued ? "true" : "false");
+        $hResult = query_parameters("SELECT testResults.versionId, testResults.testedDate, testResults.testedRelease, testResults.testedRating, testResults.submitTime, appFamily.appName, appVersion.versionName from testResults, appFamily, appVersion WHERE testResults.versionId = appVersion.versionId AND appVersion.appId = appFamily.appId AND (appFamily.queued = '?' OR appVersion.queued = '?') AND testResults.submitterId = '?' AND testResults.state = '?' ORDER BY testResults.testingId", "false", "false", $iUserId, $bQueued ? 'queued' : 'accepted');
 
         if(!$hResult || !query_num_rows($hResult))
             return false;
@@ -909,9 +909,9 @@ class testData{
                    FROM testResults
                    WHERE versionId = '?'
                    AND
-                   queued = '?';";
+                   state = '?';";
 
-        $hResult = query_parameters($sQuery, $iVersionId, 'false');
+        $hResult = query_parameters($sQuery, $iVersionId, 'accepted');
 
         $oRow = query_fetch_object($hResult);
         return $oRow->cnt;
@@ -920,7 +920,7 @@ class testData{
     function objectGetEntriesCount($bQueued, $bRejected)
     {
         $oTest = new testData();
-        $sQueued = objectManager::getQueueString($bQueued, $bRejected);
+        $sState = objectManager::getStateString($bQueued, $bRejected);
         if($bQueued && !$oTest->canEdit())
         {
             if($bRejected)
@@ -929,7 +929,7 @@ class testData{
                         testResults WHERE
                         testResults.submitterId = '?'
                         AND
-                        testResults.queued = '?'";
+                        testResults.state = '?'";
             } else
             {
                 $sQuery = "SELECT COUNT(testingId) AS count FROM
@@ -954,16 +954,16 @@ class testData{
                                 )
                             )
                             AND
-                            testResults.queued = '?'";
+                            testResults.state = '?'";
             }
 
             $hResult = query_parameters($sQuery, $_SESSION['current']->iUserId,
-                                        $sQueued);
+                                        $sState);
         } else
         {
             $sQuery = "SELECT COUNT(testingId) as count FROM testResults WHERE
-                    testResults.queued = '?'";
-            $hResult = query_parameters($sQuery, $sQueued);
+                    testResults.state = '?'";
+            $hResult = query_parameters($sQuery, $sState);
         }
 
         if(!$hResult)
@@ -978,7 +978,7 @@ class testData{
     function objectGetEntries($bQueued, $bRejected, $iRows = 0, $iStart = 0, $sOrderBy = "testingId")
     {
         $oTest = new testData();
-        $sQueued = objectManager::getQueueString($bQueued, $bRejected);
+        $sState = objectManager::getStateString($bQueued, $bRejected);
 
         $sLimit = "";
 
@@ -1000,7 +1000,7 @@ class testData{
                 $sQuery = "SELECT testResults.* FROM testResults WHERE
                         testResults.submitterId = '?'
                         AND
-                        testResults.queued = '?' ORDER BY ?$sLimit";
+                        testResults.state = '?' ORDER BY ?$sLimit";
             } else
             {
                 $sQuery = "SELECT testResults.* FROM testResults, appVersion,
@@ -1025,25 +1025,25 @@ class testData{
                             AND
                             appMaintainers.queued = 'false'
                             AND
-                            testResults.queued = '?' ORDER BY ?$sLimit";
+                            testResults.state = '?' ORDER BY ?$sLimit";
             }
             if($sLimit)
             {
                 $hResult = query_parameters($sQuery, $_SESSION['current']->iUserId,
-                                            $sQueued, $sOrderBy, $iStart, $iRows);
+                                            $sState, $sOrderBy, $iStart, $iRows);
             } else
             {
                 $hResult = query_parameters($sQuery, $_SESSION['current']->iUserId,
-                                            $sQueued, $sOrderBy);
+                                            $sState, $sOrderBy);
             }
         } else
         {
             $sQuery = "SELECT testResults.* FROM testResults WHERE
-                    testResults.queued = '?' ORDER by ?$sLimit";
+                    testResults.state = '?' ORDER by ?$sLimit";
             if($sLimit)
-                $hResult = query_parameters($sQuery, $sQueued, $sOrderBy, $iStart, $iRows);
+                $hResult = query_parameters($sQuery, $sState, $sOrderBy, $iStart, $iRows);
             else
-                $hResult = query_parameters($sQuery, $sQueued, $sOrderBy);
+                $hResult = query_parameters($sQuery, $sState, $sOrderBy);
         }
 
         if(!$hResult)
@@ -1091,6 +1091,11 @@ class testData{
         return $oOMTableRow;
     }
 
+    public function objectGetState()
+    {
+        return $this->sState;
+    }
+
     function canEdit()
     {
         if($_SESSION['current']->hasPriv("admin"))
@@ -1098,7 +1103,7 @@ class testData{
         else if($this->iVersionId)
         {
             if($this->iSubmitterId == $_SESSION['current']->iUserId &&
-               $this->sQueued == "rejected")
+               $this->sState == 'rejected')
                 return TRUE;
 
             $oVersion = new version($this->iVersionId);

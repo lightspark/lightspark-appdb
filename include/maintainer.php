@@ -96,8 +96,8 @@ class queuedEntries
       // queued testdata
 
       // retrieve queued testdata for this version
-      $sQuery = "select * from testResults where versionId = '?' and queued = '?'";
-      $hResult = query_parameters($sQuery, $iVersionId, "true");
+      $sQuery = "select * from testResults where versionId = '?' and state = '?'";
+      $hResult = query_parameters($sQuery, $iVersionId, 'queued');
 
       // go through the test results looking for the oldest queued data
       while($oTestingRow = query_fetch_object($hResult))
