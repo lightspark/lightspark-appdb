@@ -177,6 +177,14 @@ class testData{
                     $oOldTest->sTestedRelease." to $this->sTestedRelease.\n";
         }
 
+        if($this->iVersionId != $oOldTest->iVersionId)
+        {
+            $sWhatChanged .= 'Moved from '.version::fullName($oOldTest->iVersionId).' to '.version::fullName($this->iVersionId)."\n";
+            $oNewVersion = new version($this->iVersionId);
+            if($oNewVersion->objectGetState() == 'accepted' && $this->sState == 'pending')
+                $this->sState = 'queued';
+        }
+
         if(query_parameters("UPDATE testResults SET 
                                         versionId       = '?',
                                         whatWorks       = '?',
@@ -188,7 +196,8 @@ class testData{
                                         installs        = '?',
                                         runs            = '?',
                                         testedRating    = '?',
-                                        comments        = '?'
+                                        comments        = '?',
+                                        state           = '?'
                                     WHERE testingId = '?'",
                             $this->iVersionId,
                             $this->shWhatWorks,
@@ -201,6 +210,7 @@ class testData{
                             $this->sRuns,
                             $this->sTestedRating,
                             $this->sComments,
+                            $this->sState,
                             $this->iTestingId))
         {
             if(!$bSilent)
