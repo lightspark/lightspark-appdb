@@ -204,11 +204,16 @@ class version {
      
         if ($this->iAppId && ($this->iAppId!=$oVersion->iAppId))
         {
-            if (!query_parameters("UPDATE appVersion SET appId = '?' WHERE versionId = '?'",
-                                  $this->iAppId, $this->iVersionId))
-                return false;
             $oAppBefore = new Application($oVersion->iAppId);
             $oAppAfter = new Application($this->iAppId);
+
+            if($oAppAfter->objectGetState() == 'accepted' && $this->sState == 'pending')
+                $this->sState = 'queued';
+
+            if (!query_parameters("UPDATE appVersion SET appId = '?', state = '?' WHERE versionId = '?'",
+                                  $this->iAppId, $this->sState, $this->iVersionId))
+                return false;
+
             $sWhatChanged .= "Version was moved from application ".$oAppBefore->sName." to application ".$oAppAfter->sName.".\n\n";
         }
 
