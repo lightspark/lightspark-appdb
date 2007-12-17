@@ -30,6 +30,13 @@ class ObjectManager
     // queued entries
     private $aCommonResponses;
 
+    /* Remove the cached object of the class we are working with, useful in cases where we
+       modify the object in such a way that it needs to be reloaded */
+    private function flushCachedObject()
+    {
+        $this->oObject = null;
+    }
+
     /* Get an instance of the object of the class we are working with */
     private function getObject()
     {
@@ -835,6 +842,9 @@ class ObjectManager
             return FALSE;
 
         $iAffected = $oObject->objectMoveChildren($iNewId);
+
+        /* Some classes record the id of their child objects, so we shouldn't keep an old instance around */
+        $this->flushCachedObject();
 
         if($iAffected)
         {
