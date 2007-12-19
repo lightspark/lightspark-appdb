@@ -378,7 +378,7 @@ class Vendor {
             {
                 $oApp  = new Application($iAppId);
 
-                if($oApp->sQueued == "false")
+                if($oApp->objectGetState() == 'accepted')
                     echo '<li>'.$oApp->objectMakeLink().'</li>',"\n";
             }
             echo '</ol>',"\n";
