@@ -1038,13 +1038,15 @@ class version {
         //////////////////////
         // Show test data
 
+        $iNewestId = 0;
 
         /* Set if the use chose to display a particular test report */
         if($iTestingId)
             $oTest = new testData($iTestingId);
         else if($this->iVersionId) /* Let's query for the latest rest report */
         {
-            $iTestingId = testData::getNewestTestIdFromVersionId($this->iVersionId);
+            $iNewestId = testData::getNewestTestIdFromVersionId($this->iVersionId);
+            $iTestingId = $iNewestId;
 
             if($iTestingId) /* We want all entries to have test data, but old versions might lack
                                it, or data may have been deleted */
@@ -1059,6 +1061,19 @@ class version {
 
         if($oTest)
         {
+            if($oTest->isOld())
+            {
+                if($iNewestId != $oTest->objectGetId())
+                {
+                    $sWarnOldText = 'The test results you have selected are very old and may not represent the current state of Wine.';
+                } else
+                {
+                    $sWarnOldText = 'The test results for this version are very old, and as such they may not represent '.
+                                    'the current state of Wine.  Please consider submitting a new test report.';
+                }
+                echo html_note('Old test results', $sWarnOldText);
+            }
+
             echo "<div class='info_container'>\n";
 
             echo "\t<div class='title_class'>\n";

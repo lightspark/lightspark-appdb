@@ -1214,6 +1214,15 @@ class testData{
         return TRUE;
     }
 
+    public function isOld()
+    {
+        /* If no id is defined that means the test report is not in the database, which means it can't be old */
+        if(!$this->iTestingId)
+            return false;
+
+        return ((mktime() - mysqltimestamp_to_unixtimestamp($this->sSubmitTime)) > (60 * 60 * 24  * 175));
+    }
+
     function objectGetChildren($bIncludeDeleted = false)
     {
         /* We have none */
