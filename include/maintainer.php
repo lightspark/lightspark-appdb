@@ -873,7 +873,7 @@ class maintainer
         return TRUE;
     }
 
-    function objectGetItemsPerPage($bQueued = false)
+    function objectGetItemsPerPage($sState = 'accepted')
     {
         $aItemsPerPage = array(25, 50, 100, 200);
         $iDefaultPerPage = 25;

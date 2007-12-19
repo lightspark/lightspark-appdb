@@ -214,9 +214,9 @@ class version_queue
         /* $this->oVersion->displayAddItemHelp(); */
     }
 
-    function objectGetItemsPerPage($bQueued = false)
+    function objectGetItemsPerPage($sState = 'accepted')
     {
-        return $this->oVersion->objectGetItemsPerPage($bQueued);
+        return $this->oVersion->objectGetItemsPerPage($sState);
     }
 
     function objectGetEntriesCount($bQueued, $bRejected)

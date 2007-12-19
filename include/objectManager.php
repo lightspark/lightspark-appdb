@@ -12,6 +12,7 @@ class ObjectManager
     private $sTitle;
     private $iId;
     private $bIsRejected;
+    private $sState;
     private $sReturnTo;
     private $sReturnToTitle; /* Used to preserve the title when processing entries from a queue list, for instance */
     private $oMultiPage;
@@ -62,6 +63,11 @@ class ObjectManager
     public function setIsQueue($bIsQueue)
     {
       $this->bIsQueue = $bIsQueue;
+
+      if($this->sState != 'rejected' && $bIsQueue)
+          $this->sState = 'queued';
+      else if ($this->sState == 'queued' && !$bIsQueue)
+          $this->sState = 'accepted';
     }
 
     public function getIsQueue()
@@ -82,6 +88,11 @@ class ObjectManager
     public function setIsRejected($bIsRejected)
     {
       $this->bIsRejected = $bIsRejected;
+
+      if($bIsRejected)
+          $this->sState = 'rejected';
+      else if ($this->sState == 'rejected')
+          $this->sState = 'queued';
     }
 
     public function setSortInfo($aClean = null)
@@ -114,6 +125,7 @@ class ObjectManager
         $this->iId = $iId;
         $this->oMultiPage = new MultiPage(FALSE);
         $this->oTableRow = new OMTableRow(null);
+        $this->sState = 'accepted';
 
         // initialize the common responses array
         $this->aCommonResponses = array();
@@ -1314,14 +1326,14 @@ class ObjectManager
         $oObject = new $this->sClass();
 
         if(!method_exists($oObject, "objectGetItemsPerPage") ||
-          $oObject->objectGetItemsPerPage($this->bIsQueue) === FALSE)
+          $oObject->objectGetItemsPerPage($this->sState) === FALSE)
         {
             /* Do not enable the MultiPage controls */
             $this->oMultiPage->MultiPage(FALSE);
             return;
         }
 
-        $aReturn = $oObject->objectGetItemsPerPage($this->bIsQueue);
+        $aReturn = $oObject->objectGetItemsPerPage($this->sState);
         $aItemsPerPage = $aReturn[0];
         $iDefaultPerPage = $aReturn[1];
 

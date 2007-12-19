@@ -373,9 +373,9 @@ class application_queue
         return TRUE;
     }
 
-    function objectGetItemsPerPage($bQueued = false)
+    function objectGetItemsPerPage($sState = 'accepted')
     {
-        return $this->oApp->objectGetItemsPerPage($bQueued);
+        return $this->oApp->objectGetItemsPerPage($sState);
     }
 
     function objectGetEntriesCount($bQueued, $bRejected)

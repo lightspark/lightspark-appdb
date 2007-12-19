@@ -349,7 +349,7 @@ class Application {
         }
     }
 
-    public static function objectGetItemsPerPage($bQueued = false)
+    public static function objectGetItemsPerPage($sState = 'accepted')
     {
         $aItemsPerPage = array(25, 50, 100, 200);
         $iDefaultPerPage = 25;

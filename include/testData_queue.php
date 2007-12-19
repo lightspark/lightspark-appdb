@@ -198,9 +198,9 @@ class testData_queue
         return $this->oTestData->objectGetSubmitTime();
     }
 
-    function objectGetItemsPerPage($bQueued = false)
+    function objectGetItemsPerPage($sState = 'accepted')
     {
-        return testData::objectGetItemsPerPage($bQueued);
+        return testData::objectGetItemsPerPage($sState);
     }
 
     function objectGetId()
