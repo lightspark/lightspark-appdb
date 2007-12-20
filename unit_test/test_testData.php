@@ -18,11 +18,13 @@ function test_testData_getNewestTestidFromVersionId()
 
     $oOldTestData = new testData();
     $oOldTestData->iVersionId = $iVersionId;
+    $oOldTestData->sTestedRelease = '0.9.50.';
     if(!$oOldTestData->create())
       error("oOldTestData->create() failed");
 
     $oNewTestData = new testData();
     $oNewTestData->iVersionId = $iVersionId;
+    $oNewTestData->sTestedRelease = '0.9.51.';
     if(!$oNewTestData->create())
       error("oNewTestData->create() failed");
 
