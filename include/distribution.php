@@ -51,24 +51,33 @@ class distribution {
         if($_SESSION['current']->hasPriv("admin"))
         {
             $sQuery = "SELECT testingId
-                            FROM testResults
-                            WHERE distributionId = '?' 
-                            ORDER BY testedRating;" ;
+                            FROM testResults, ?.versions
+                            WHERE
+                            versions.value = testResults.testedRelease
+                            AND
+                            versions.product_id = '?'
+                            AND
+                            distributionId = '?'
+                            ORDER BY testedRating,bugs.versions.id DESC";
         } else /* only let users view test results that aren't queued and for apps that */
                 /* aren't queued or versions that aren't queued */
         {
             $sQuery = "SELECT testingId
-                            FROM testResults, appFamily, appVersion
+                            FROM testResults, appFamily, appVersion, ?.versions
                             WHERE testResults.state = 'accepted' AND
+                                versions.value = testResults.testedRelease
+                                AND
+                                versions.product_id = '?'
+                                AND
                                 testResults.versionId = appVersion.versionId AND
                                 appFamily.appId = appVersion.appId AND
                                 appFamily.state = 'accepted' AND
                                 appVersion.state = 'accepted' AND
                                 distributionId = '?'
-                            ORDER BY testedRating;";
+                            ORDER BY testedRating,bugs.versions.id DESC";
         }
 
-        if($hResult = query_parameters($sQuery, $this->iDistributionId))
+        if($hResult = query_parameters($sQuery, BUGZILLA_DB, BUGZILLA_PRODUCT_ID, $this->iDistributionId))
         {
             while($oRow = query_fetch_object($hResult))
             {
