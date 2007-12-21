@@ -916,30 +916,51 @@ class testData{
     /* List test data submitted by a given user.  Ignore test results for queued applications/versions */
     function listSubmittedBy($iUserId, $bQueued = true)
     {
-        $hResult = query_parameters("SELECT testResults.versionId, testResults.testedDate, testResults.testedRelease, testResults.testedRating, testResults.submitTime, appFamily.appName, appVersion.versionName from testResults, appFamily, appVersion WHERE testResults.versionId = appVersion.versionId AND appVersion.appId = appFamily.appId  AND testResults.submitterId = '?' AND testResults.state = '?' ORDER BY testResults.testingId", $iUserId, $bQueued ? 'queued' : 'accepted');
+        $hResult = query_parameters("SELECT testResults.versionId, testResults.testedDate, testResults.testedRelease, testResults.testedRating, testResults.submitTime, testResults.testingId, appFamily.appName, appVersion.versionName from testResults, appFamily, appVersion WHERE testResults.versionId = appVersion.versionId AND appVersion.appId = appFamily.appId  AND testResults.submitterId = '?' AND testResults.state = '?' ORDER BY testResults.testingId", $iUserId, $bQueued ? 'queued' : 'accepted');
 
         if(!$hResult || !query_num_rows($hResult))
             return false;
 
-        $sReturn = html_table_begin("width=\"100%\" align=\"center\"");
-        $sReturn .= html_tr(array(
-            "Version",
-            "Rating",
-            "Wine version",
-            "Submission Date"),
-            "color4");
+        $oTable = new Table();
+        $oTable->SetWidth("100%");
+        $oTable->SetAlign("center");
+
+        // setup the table header
+        $oTableRow = new TableRow();
+        $oTableRow->AddTextCell('Version');
+        $oTableRow->AddTextCell('Rating');
+        $oTableRow->AddTextCell('Wine version');
+        $oTableRow->AddTextCell('Submission date');
+
+        if($bQueued)
+            $oTableRow->addTextCell('Action');
+
+        $oTableRow->SetClass('color4');
+        $oTable->AddRow($oTableRow);
 
         for($i = 1; $oRow = query_fetch_object($hResult); $i++)
-            $sReturn .= html_tr(array(
-                version::fullNameLink($oRow->versionId),
-                $oRow->testedRating,
-                $oRow->testedRelease,
-                print_date(mysqldatetime_to_unixtimestamp($oRow->submitTime))),
-                $oRow->testedRating);
+        {
+            $oTableRow = new TableRow();
 
-        $sReturn .= html_table_end();
+            $oTableRow->AddTextCell(version::fullNameLink($oRow->versionId));
+            $oTableRow->AddTextCell($oRow->testedRating);
+            $oTableRow->AddTextCell($oRow->testedRelease);
+            $oTableRow->AddTextCell(print_date(mysqldatetime_to_unixtimestamp($oRow->submitTim)));
 
-        return $sReturn;
+            if($bQueued)
+            {
+                $oM = new objectManager('testData_queue');
+                $oM->setReturnTo(array_key_exists('REQUEST_URI', $_SERVER) ? $_SERVER['REQUEST_URI'] : "");
+                $shDeleteLink = '<a href="'.$oM->makeUrl('delete', $oRow->testingId, 'Delete entry').'">delete</a>';
+                $shEditLink = '<a href="'.$oM->makeUrl('edit', $oRow->testingId, 'Edit entry').'">edit</a>';
+                $oTableRow->addTextCell("[ $shEditLink ] &nbsp; [ $shDeleteLink ]");
+            }
+
+            $oTableRow->SetClass($oRow->testedRating);
+            $oTable->AddRow($oTableRow);
+        }
+
+        return $oTable->GetString();
     }
 
     // return the number of test data entries for a particular version id
@@ -1143,7 +1164,7 @@ class testData{
         else if($this->iVersionId)
         {
             if($this->iSubmitterId == $_SESSION['current']->iUserId &&
-               $this->sState == 'rejected')
+               $this->sState != 'accepted')
                 return TRUE;
 
             $oVersion = new version($this->iVersionId);
