@@ -258,7 +258,9 @@ class downloadurl
             return TRUE;
         } else
         {
-            return FALSE;
+            $oVersion = new version($this->iVersionId);
+
+            return $oVersion->canEdit();
         }
     }
 

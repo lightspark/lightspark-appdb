@@ -887,6 +887,9 @@ class Application {
         $oTableRow->SetClass("color4");
         $oTable->SetHeader($oTableRow);
 
+        if($bQueued)
+            $oTableRow->addTextCell("Action");
+
         for($i = 1; $oRow = query_fetch_object($hResult); $i++)
         {
           
@@ -899,6 +902,15 @@ class Application {
             $oTableRow->AddTextCell($oVendor->objectMakeLink());
             $oTableRow->AddTextCell(print_date(mysqldatetime_to_unixtimestamp($oRow->submitTime)));
             $oTableRow->SetClass(($i % 2) ? "color0" : "color1");
+
+            if($bQueued)
+            {
+                $oM = new objectManager('application');
+                $oM->setReturnTo(array_key_exists('REQUEST_URI', $_SERVER) ? $_SERVER['REQUEST_URI'] : "");
+                $shDeleteLink = '<a href="'.$oM->makeUrl("delete", $oApp->iAppId, "Delete entry").'">delete</a>';
+                $shEditLink = '<a href="'.$oM->makeUrl("edit", $oApp->iAppId, "Edit entry").'">edit</a>';
+                $oTableRow->addTextCell("[ $shEditLink ] &nbsp; [ $shDeleteLink ]");
+            }
 
             $oTable->AddRow($oTableRow);
         }

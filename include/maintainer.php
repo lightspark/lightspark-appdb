@@ -685,7 +685,7 @@ class maintainer
 
     function canEdit()
     {
-        if($_SESSION['current']->hasPriv("admin"))
+        if($_SESSION['current']->hasPriv("admin") || $this->iUserId == $_SESSION['current']->iUserId)
             return TRUE;
 
         return FALSE;
