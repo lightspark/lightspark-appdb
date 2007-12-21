@@ -286,37 +286,54 @@ class Bug
     /* Get a list of bugs submitted by a given user */
     function listSubmittedBy($iUserId, $bQueued = true)
     {
-        $hResult = query_parameters("SELECT appFamily.appName, buglinks.versionId, appVersion.versionName, buglinks.submitTime, buglinks.bug_id FROM buglinks, appFamily, appVersion WHERE appFamily.appId = appVersion.appId AND buglinks.versionId = appVersion.versionId AND buglinks.queued = '?' AND buglinks.submitterId = '?' ORDER BY buglinks.versionId", $bQueued ? "true" : "false", $iUserId);
+        $hResult = query_parameters("SELECT appFamily.appName, buglinks.versionId, appVersion.versionName, buglinks.submitTime, buglinks.bug_id, buglinks.linkId FROM buglinks, appFamily, appVersion WHERE appFamily.appId = appVersion.appId AND buglinks.versionId = appVersion.versionId AND buglinks.queued = '?' AND buglinks.submitterId = '?' ORDER BY buglinks.versionId", $bQueued ? "true" : "false", $iUserId);
 
         if(!$hResult || !query_num_rows($hResult))
             return FALSE;
 
-        $sReturn = html_table_begin("width=\"100%\" align=\"center\"");
-        $sReturn .= html_tr(array(
-            "Version",
-            array("Bug #", 'width="50"'),
-            array("Status", 'width="80"'),
-            array("Resolution", 'width="110"'),
-            "Description",
-            "Submit time"),
-            "color4");
+        $oTable = new Table();
+        $oTable->SetWidth("100%");
+        $oTable->SetAlign("center");
+
+        // setup the table header
+        $oTableRow = new TableRow();
+        $oTableRow->AddTextCell('Version');
+        $oTableRow->AddTextCell('Bug #', 'width="50"');
+        $oTableRow->AddTextCell('Status', 'width="80"');
+        $oTableRow->AddTextCell('Resolution', 'width="110"');
+        $oTableRow->AddTextCell('Description', 'Submit time');
+        $oTableRow->AddTextCell('Submit time');
+
+        if($bQueued)
+            $oTableRow->addTextCell('Action');
+
+        $oTableRow->SetClass('color4');
+        $oTable->AddRow($oTableRow);
 
         for($i = 1; $oRow = query_fetch_object($hResult); $i++)
         {
-            $oBug = new Bug($oRow->bug_id);
-            $sReturn .= html_tr(array(
-                version::fullNameLink($oRow->versionId),
-                "<a href=\"".BUGZILLA_ROOT."show_bug.cgi?id=".$oRow->bug_id."\">".$oRow->bug_id."</a>",
-                $oBug->sBug_status,
-                $oBug->sResolution,
-                $oBug->sShort_desc,
-                print_date(mysqldatetime_to_unixtimestamp($oRow->submitTime))),
-                ($i % 2) ? "color0" : "color1");
+            $oTableRow = new TableRow();
+
+            $oTableRow->AddTextCell(version::fullNameLink($oRow->versionId));
+            $oTableRow->AddTextCell('<a href='.BUGZILLA_ROOT.'show_bug.cgi?id='.$oRow->bug_id.'">'.$oRow->bug_id.'</a>');
+            $oTableRow->AddTextCell($oBug->sBug_status);
+            $oTableRow->AddTextCell($oBug->sResolution);
+            $oTableRow->AddTextCell($oBug->sShort_desc);
+            $oTableRow->AddTextCell(print_date(mysqldatetime_to_unixtimestamp($oRow->submitTime)));
+
+            if($bQueued)
+            {
+                $oM = new objectManager('bug');
+                $oM->setReturnTo(array_key_exists('REQUEST_URI', $_SERVER) ? $_SERVER['REQUEST_URI'] : "");
+                $shDeleteLink = '<a href="'.$oM->makeUrl('delete', $oRow->linkId, 'Delete entry').'">delete</a>';
+                $oTableRow->addTextCell(" [ $shDeleteLink ]");
+            }
+
+            $oTableRow->SetClass(($i % 2 ) ? 'color0' : 'color1');
+            $oTable->AddRow($oTableRow);
         }
 
-        $sReturn .= html_table_end();
-
-        return $sReturn;
+        return $oTable->GetString();
     }
 
     function isOpen()
@@ -459,6 +476,9 @@ class Bug
             {
                 return true;
             }
+
+            if($this->iSubmitterId == $_SESSION['current']->iUserId)
+                return true;
         }
 
         return false;
