@@ -1331,15 +1331,27 @@ class version {
         $oTableRow->SetClass("color4");
         $oTable->SetHeader($oTableRow);
 
+        if($bQueued)
+            $oTableRow->addTextCell('Action');
+
         for($i = 1; $oRow = query_fetch_object($hResult); $i++)
         {
-          $oTableRow = new TableRow();
-          $oTableRow->AddTextCell(version::fullNameLink($oRow->versionId));
-          $oTableRow->AddTextCell($oRow->description);
-          $oTableRow->AddTextCell(print_date(mysqldatetime_to_unixtimestamp($oRow->submitTime)));
-          $oTableRow->SetClass(($i % 2) ? "color0" : "color1");
+            $oTableRow = new TableRow();
+            $oTableRow->AddTextCell(version::fullNameLink($oRow->versionId));
+            $oTableRow->AddTextCell($oRow->description);
+            $oTableRow->AddTextCell(print_date(mysqldatetime_to_unixtimestamp($oRow->submitTime)));
+            $oTableRow->SetClass(($i % 2) ? "color0" : "color1");
 
-          $oTable->AddRow($oTableRow);
+            if($bQueued)
+            {
+                $oM = new objectManager('version_queue');
+                $oM->setReturnTo(array_key_exists('REQUEST_URI', $_SERVER) ? $_SERVER['REQUEST_URI'] : "");
+                $shDeleteLink = '<a href="'.$oM->makeUrl('delete', $oRow->versionId, 'Delete entry').'">delete</a>';
+                $shEditLink = '<a href="'.$oM->makeUrl('edit', $oRow->versionId, 'Edit entry').'">edit</a>';
+                $oTableRow->addTextCell("[ $shEditLink ] &nbsp; [ $shDeleteLink ]");
+            }
+
+            $oTable->AddRow($oTableRow);
         }
 
         return $oTable->GetString();
