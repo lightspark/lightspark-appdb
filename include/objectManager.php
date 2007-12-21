@@ -687,10 +687,24 @@ class ObjectManager
                 addmsg("Entry deleted", "green");
 
                 if($iDeleted)
-                    addmsg("Deleted $iDeleted child entries", "green");
+                {
+                    if($iDeleted == 1)
+                        $sNoun = 'entry';
+                    else
+                        $sNoun = 'entries';
+
+                    addmsg("Deleted $iDeleted child $sNoun", 'green');
+                }
 
                 if($iFailed)
-                    addmsg("Failed to delete $iFailed child entries", "red");
+                {
+                    if($iFailed == 1)
+                        $sNoun = 'entry';
+                    else
+                        $sNoun = 'entries';
+
+                    addmsg("Failed to delete $iFailed child $sNoun", 'red');
+                }
 
                 $this->return_to_url($this->makeUrl("view", false));
             }
