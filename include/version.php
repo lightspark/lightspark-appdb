@@ -674,43 +674,6 @@ class version {
 
         if($this->sState == 'accepted' && $this->iVersionId)
         {
-            echo html_frame_start("Info", "90%", "", 0);
-
-            $oTable = new Table();
-            $oTable->SetBorder(0);
-            $oTable->SetCellPadding(2);
-            $oTable->SetCellSpacing(0);
-
-            $oTableRow = new TableRow();
-
-            $oTableCell = new TableCell("Rating");
-            $oTableCell->SetClass("color4");
-            $oTableRow->AddCell($oTableCell);
-
-            $oTableCell = new TableCell(make_maintainer_rating_list("sMaintainerRating",
-                                                                    $this->sTestedRating));
-            $oTableCell->SetClass("color0");
-            $oTableRow->AddCell($oTableCell);
-
-            $oTable->AddRow($oTableRow);
-            $oTableRow = new TableRow();
-
-            $oTableCell = new TableCell("Release");
-            $oTableCell->SetClass("color1");
-            $oTableRow->AddCell($oTableCell);
-
-            $oTableCell = new TableCell(make_bugzilla_version_list("sMaintainerRelease", $this->sTestedRelease));
-            $oTableCell->SetClass("color0");
-
-            $oTableRow->AddCell($oTableCell);
-
-            $oTable->AddRow($oTableRow);
-
-            // output the table
-            echo $oTable->GetString();
-
-            echo html_frame_end();
-
             /* Mark as obsolete */
             $oApp = new application($this->iAppId);
             $oVersionInDB = new version($this->iVersionId);
@@ -768,8 +731,6 @@ class version {
 
         $this->sName = $aValues['sVersionName'];
         $this->sDescription = $aValues['shVersionDescription'];
-        $this->sTestedRating = $aValues['sMaintainerRating'];
-        $this->sTestedRelease = $aValues['sMaintainerRelease'];
         $this->sLicense = $aValues['sLicense'];
         $this->iMaintainerRequest = $aValues['iMaintainerRequest'];
 
