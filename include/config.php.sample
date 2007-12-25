@@ -30,6 +30,9 @@ define("BUGZILLA_ROOT","http://bugs.winehq.org/"); // path to bugzilla
 //if(!defined("PRINT_EMAIL"))
 // define("PRINT_EMAIL", true); // print email, see mail_appdb() in include/mail.php
 
+// How old (days) a test report has to before it is judged to be aged
+define("TESTDATA_AGED_THRESHOLD", 175);
+
 /*
  * apps database info
  */

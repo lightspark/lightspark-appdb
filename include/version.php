@@ -820,6 +820,29 @@ class version {
         return new application($this->iAppId);
     }
 
+    public function getRatingInfo()
+    {
+        return testData::getRatingInfoForVersionId($this->iVersionId);
+    }
+
+    public function updateRatingInfo()
+    {
+        $aRatingInfo = $this->getRatingInfo();
+
+        $hResult = query_parameters("UPDATE appVersion SET
+                                    maintainer_rating = '?',
+                                    maintainer_release = '?'
+                                    WHERE versionId = '?'",
+                                    $aRatingInfo[0],
+                                    $aRatingInfo[1],
+                                    $this->iVersionId);
+
+        if(!$hResult)
+            return false;
+
+        return true;
+    }
+
     public function display($aVars = array())
     {
         /* is this user supposed to view this version? */
@@ -863,10 +886,12 @@ class version {
             vote_count_version_total($this->iVersionId).$shVoteLink),
             "color0");
 
-        if($this->sTestedRating != "/" && $this->sTestedRating)
-            $sMaintainerColor = $this->sTestedRating;
+        $sRating = $this->sTestedRating;
+        $sRelease = $this->sTestedRelease;
+        if($sRating != "/" && $sRating)
+            $sRatingColor = $sRating;
         else
-            $sMaintainerColor = "color0";
+            $sRatingColor = 'color0';
 
         // URLs
         if($sUrls = url::display($this->iVersionId))
@@ -875,8 +900,8 @@ class version {
         }
 
         // rating Area
-        echo "<tr class=\"$sMaintainerColor\" valign=\"top\"><td><b>Maintainer&#8217;s Rating</b></td><td>".$this->sTestedRating."</td></tr>\n";
-        echo "<tr class=\"$sMaintainerColor\" valign=\"top\"><td><b>Maintainer&#8217;s Version</b></td><td>".$this->sTestedRelease."</td></tr>\n";
+                echo "<tr class=\"$sRatingColor\" valign=\"top\"><td><b>Rating</b></td><td>".$sRating."</td></tr>\n";
+        echo "<tr class=\"$sRatingColor\" valign=\"top\"><td><b>Wine Version</b></td><td>".$sRelease."</td></tr>\n";
 
         // Download URLs
         if($sDownloadurls = downloadurl::display($this->iVersionId))

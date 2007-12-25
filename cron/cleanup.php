@@ -33,6 +33,8 @@ removeScreenshotsWithMissingFiles();
 /* status since they aren't really maintaining the application/version */
 maintainerCheck();
 
+/* Updates the rating info for all versions based on test results */
+updateRatings();
 
 /*
  * Warn users that have been inactive for some number of months
@@ -354,6 +356,20 @@ function removeScreenshotsWithMissingFiles()
 function maintainerCheck()
 {
   maintainer::notifyMaintainersOfQueuedData();
+}
+
+function updateRatings()
+{
+    $hResult = query_parameters("SELECT * FROM appVersion");
+
+    if(!$hResult)
+        return;
+
+    while($oRow = mysql_fetch_object($hResult))
+    {
+        $oVersion = new version(0, $oRow);
+        $oVersion->updateRatingInfo();
+    }
 }
 
 ?>

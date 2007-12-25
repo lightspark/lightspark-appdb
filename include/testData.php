@@ -683,6 +683,118 @@ class testData{
         echo '</div>',"\n"; // end of the 'info_container' div
     }
 
+    /* Convert a given rating string to a numeric scale */
+    public function ratingToNumber($sRating)
+    {
+        switch($sRating)
+        {
+            case GARBAGE_RATING:
+                return 0;
+            case BRONZE_RATING:
+                return 1;
+            case SILVER_RATING:
+                return 2;
+            case GOLD_RATING:
+                return 3;
+            case PLATINUM_RATING:
+                return 4;
+        }
+    }
+
+    /* Convert a numeric rating scale to a rating name */
+    public function numberToRating($iNumber)
+    {
+        switch($iNumber)
+        {
+            case 0:
+                return GARBAGE_RATING;
+            case 1:
+                return BRONZE_RATING;
+            case 2:
+                return SILVER_RATING;
+            case 3:
+                return GOLD_RATING;
+            case 4:
+                return PLATINUM_RATING;
+        }
+    }
+
+    /* Gets rating info for the selected version: an array with the elements
+       0 - Rating
+       1 - Wine version */
+    public function getRatingInfoForVersionId($iVersionId)
+    {
+        $sQuery = "SELECT testedRating,testedDate,testedRelease,versions.id as versionId
+                FROM testResults, ?.versions WHERE
+                versions.value = testResults.testedRelease
+                AND
+                versions.product_id = '?'
+                AND versionId = '?'
+                AND
+                state = '?'
+                AND
+                TO_DAYS(testedDate) > (TO_DAYS(NOW()) - ?)
+                    ORDER BY versions.id DESC,testedDate DESC";
+
+        $hResult = query_parameters($sQuery, BUGZILLA_DB, BUGZILLA_PRODUCT_ID, $iVersionId, 'accepted', TESTDATA_AGED_THRESHOLD);
+
+        $aEntries = array();
+
+        if($hResult)
+        {
+            $iPrevVersion = 0;
+            $iIndex = -1;
+            for($i = 0; $oRow = mysql_fetch_object($hResult); $i++)
+            {
+                if($iPrevRelease != $oRow->versionId)
+                {
+                    $iIndex++;
+                    $iPrevRelease = $oRow->versionId;
+                }
+
+                if(!$aEntries[$iIndex])
+                {
+                    $aEntries[$iIndex] = array();
+                    $aEntries[$iIndex][0] = 0;
+                    $aEntries[$iIndex][1] = 0;
+                    $aEntries[$iIndex][2] = $oRow->testedRelease;
+                }
+
+                $aEntries[$iIndex][0] += testData::RatingToNumber($oRow->testedRating);
+                $aEntries[$iIndex][1]++;
+            }
+        }
+
+        $sRelease = '';
+
+        if(sizeof($aEntries))
+        {
+            $fRating = 0.0;
+
+            for($i = 0; $i < sizeof($aEntries); $i++)
+            {
+                /* Discard the rating if it's the only one for that Wine version
+                   and its score is lower than previous averages */
+                if(($aEntries[$i][1] < 2) && sizeof($aEntries) > ($i+1) && ($aEntries[$i][0] < ($aEntries[$i+1][0] / $aEntries[$i+1][1])))
+                    continue;
+
+                $fRating = $aEntries[$i][0] / $aEntries[$i][1];
+                $sRelease = $aEntries[$i][2];
+                break;
+            }
+
+            $sRating = testData::NumberToRating(round($fRating, 0));
+        }
+
+        if(!$sRelease)
+        {
+            $iNewestId = testData::getNewestTestIdFromVersionId($iVersionId);
+            $oTestData = new testData($iNewestId);
+            return array($oTestData->sTestedRating, $oTestData->sTestedRelease);
+        }
+        return array($sRating,$sRelease);
+    }
+
     /* retrieve the latest test result for a given version id */
     function getNewestTestIdFromVersionId($iVersionId, $sState = 'accepted')
     {
