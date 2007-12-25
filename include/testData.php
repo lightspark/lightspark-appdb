@@ -92,6 +92,9 @@ class testData{
             $this->iTestingId = query_appdb_insert_id();
             $this->testData($this->iTestingId);
             $this->SendNotificationMail();
+
+            if(!$this->sState == 'accepted')
+                $oVersion->updateRatingInfo();
             return true;
         }
         else
@@ -165,17 +168,23 @@ class testData{
                     "$this->sRuns.\n";
         }
 
+        $bUpdateRatingInfo = false;
         if($this->sTestedRating != $oOldTest->sTestedRating)
         {
+            $bUpdateRatingInfo = true;
             $sWhatChanged .= "Rating was changed from $oOldTest->sTestedRating ".
                     "to $this->sTestedRating.\n";
         }
 
         if($this->sTestedRelease != $oOldTest->sTestedRelease)
         {
+            $bUpdateRatingInfo = true;
             $sWhatChanged .= "Tested release was changed from ".
                     $oOldTest->sTestedRelease." to $this->sTestedRelease.\n";
         }
+
+        if($bUpdateRatingInfo && $this->sState == 'accepted')
+            $oVersion->updateRatingInfo();
 
         if($this->iVersionId != $oOldTest->iVersionId)
         {
@@ -183,6 +192,12 @@ class testData{
             $oNewVersion = new version($this->iVersionId);
             if($oNewVersion->objectGetState() == 'accepted' && $this->sState == 'pending')
                 $this->sState = 'queued';
+
+            if($this->sState == 'accepted')
+            {
+                $oOldVersion->updateRatingInfo();
+                $oNewVersion->updateRatingInfo();
+            }
         }
 
         if(query_parameters("UPDATE testResults SET 
@@ -268,6 +283,9 @@ class testData{
             return false;
         }
 
+        if($this->sState == 'accepted')
+            $oVersion->updateRatingInfo();
+
         return true;
     }
 
@@ -298,6 +316,8 @@ class testData{
         {
           return false;
         }
+
+        $oVersion->updateRatingInfo();
 
         return true;
     }
