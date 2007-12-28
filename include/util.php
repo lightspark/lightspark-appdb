@@ -293,7 +293,7 @@ function outputTopXRowAppsFromRating($sRating, $iNumApps)
 
     $sQuery = "SELECT appVotes.versionId, COUNT( appVotes.versionId ) AS c
            FROM appVotes, appVersion
-           WHERE appVersion.maintainer_rating = '?'
+           WHERE appVersion.rating = '?'
            AND appVersion.versionId = appVotes.versionId
            GROUP BY appVotes.versionId
            ORDER BY c DESC
@@ -313,7 +313,7 @@ function outputTopXRowAppsFromRating($sRating, $iNumApps)
     /* if we have any empty spots in the list, get these from applications with images */
     $sQuery = "SELECT DISTINCT appVersion.versionId
            FROM appVersion, appData
-           WHERE appVersion.maintainer_rating = '$sRating'
+           WHERE appVersion.rating = '$sRating'
            AND appVersion.versionId = appData.versionId
            AND appData.type = 'screenshot'
            AND appData.queued = 'false'";

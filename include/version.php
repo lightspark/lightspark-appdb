@@ -75,8 +75,8 @@ class version {
             $this->sSubmitTime = $oRow->submitTime;
             $this->sName = $oRow->versionName;
             $this->sDescription = $oRow->description;
-            $this->sTestedRelease = $oRow->maintainer_release;
-            $this->sTestedRating = $oRow->maintainer_rating;
+            $this->sTestedRelease = $oRow->ratingRelease;
+            $this->sTestedRating = $oRow->rating;
             $this->sState = $oRow->state;
             $this->sLicense = $oRow->license;
             $this->iObsoleteBy = $oRow->obsoleteBy;
@@ -99,8 +99,8 @@ class version {
             $this->sState = $this->mustBeQueued() ? 'queued' : 'accepted';
 
         $hResult = query_parameters("INSERT INTO appVersion
-                   (versionName, description, maintainer_release,
-                   maintainer_rating, appId, submitTime, submitterId,
+                   (versionName, description, ratingRelease,
+                   rating, appId, submitTime, submitterId,
                    state, license)
                        VALUES ('?', '?', '?', '?', '?', ?, '?', '?', '?')",
                            $this->sName, $this->sDescription, $this->sTestedRelease,
@@ -180,7 +180,7 @@ class version {
 
         if ($this->sTestedRelease && ($this->sTestedRelease!=$oVersion->sTestedRelease))
         {
-            if (!query_parameters("UPDATE appVersion SET maintainer_release = '?' WHERE versionId = '?'",
+            if (!query_parameters("UPDATE appVersion SET ratingRelease = '?' WHERE versionId = '?'",
                                   $this->sTestedRelease, $this->iVersionId))
                 return false;
 
@@ -192,7 +192,7 @@ class version {
 
         if ($this->sTestedRating && ($this->sTestedRating!=$oVersion->sTestedRating))
         {
-            if (!query_parameters("UPDATE appVersion SET maintainer_rating = '?' WHERE versionId = '?'",
+            if (!query_parameters("UPDATE appVersion SET rating = '?' WHERE versionId = '?'",
                                   $this->sTestedRating, $this->iVersionId))
                 return false;
 
@@ -791,8 +791,8 @@ class version {
         $aRatingInfo = $this->getRatingInfo();
 
         $hResult = query_parameters("UPDATE appVersion SET
-                                    maintainer_rating = '?',
-                                    maintainer_release = '?'
+                                    rating = '?',
+                                    ratingRelease = '?'
                                     WHERE versionId = '?'",
                                     $aRatingInfo[0],
                                     $aRatingInfo[1],

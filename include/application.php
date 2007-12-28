@@ -450,7 +450,7 @@ class Application {
     {
         $sQuery = "SELECT DISTINCT count(appId) as total 
                        FROM appVersion
-                       WHERE maintainer_rating = '?'
+                       WHERE rating = '?'
                        AND state = 'accepted'";
 
         if($hResult = query_parameters($sQuery, $sRating))
@@ -465,7 +465,7 @@ class Application {
         $aApps = array();
         $sQuery = "SELECT DISTINCT appId 
                        FROM appVersion
-                       WHERE maintainer_rating = '?'
+                       WHERE rating = '?'
                        AND state = 'accepted'
                        ORDER BY appId ASC LIMIT ?, ?";
         
