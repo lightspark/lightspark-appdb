@@ -741,8 +741,9 @@ class testData{
 
     /* Gets rating info for the selected version: an array with the elements
        0 - Rating
-       1 - Wine version */
-    public function getRatingInfoForVersionId($iVersionId)
+       1 - Wine version
+       The $sDate parameter can be used to calculate the rating at a given point in time */
+    public function getRatingInfoForVersionId($iVersionId, $sDate = 'NOW()')
     {
         $sQuery = "SELECT testedRating,testedDate,testedRelease,versions.id as versionId
                 FROM testResults, ?.versions WHERE
@@ -753,10 +754,10 @@ class testData{
                 AND
                 state = '?'
                 AND
-                TO_DAYS(testedDate) > (TO_DAYS(NOW()) - ?)
+                TO_DAYS(testedDate) > (TO_DAYS(?) - ?)
                     ORDER BY versions.id DESC,testedDate DESC";
 
-        $hResult = query_parameters($sQuery, BUGZILLA_DB, BUGZILLA_PRODUCT_ID, $iVersionId, 'accepted', TESTDATA_AGED_THRESHOLD);
+        $hResult = query_parameters($sQuery, BUGZILLA_DB, BUGZILLA_PRODUCT_ID, $iVersionId, 'accepted', $sDate, TESTDATA_AGED_THRESHOLD);
 
         $aEntries = array();
 
