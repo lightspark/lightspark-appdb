@@ -149,7 +149,7 @@ class version_queue
         if(!$this->oVersion->iVersionId && $this->oVersion->iAppId &&
            !$_SESSION['current']->isSuperMaintainer($this->oVersion->iAppId))
         {
-            echo html_frame_start("Become Maintainer or Monitor Changes", "90%");
+            echo html_frame_start("Become a Maintainer or Monitor Changes", "90%");
             echo "<div style='padding:5px;' class='color0'>\n";
             $oTable = new Table();
             if($this->oVersion->iMaintainerRequest == MAINTAINER_REQUEST)
@@ -173,6 +173,12 @@ class version_queue
                                      "name=\"iMaintainerRequest\" value=\"".MONITOR_REQUEST."\" /> ".
                                      "Monitor changes to this version, also after it has been accepted");
             $oTable->AddRow($oTableRow);
+            $oTableRow = new TableRow();
+            $oTableRow->AddTextCell('&nbsp;');
+            $oTableRow->AddTextCell('<input type="radio" name="iMaintainerRequest" value="0" /> '.
+                                    'None of the above');
+            $oTable->AddRow($oTableRow);
+
             echo $oTable->GetString();
             echo "</div\n";
             echo html_frame_end();
