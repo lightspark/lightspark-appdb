@@ -234,6 +234,15 @@ function make_maintainer_rating_list($varname, $cvalue)
     return $sTxt;
 }
 
+/* Get the element with specified key from an array if it is defined */
+function getInput($sVar, $aInput)
+{
+    if(array_key_exists($sVar, $aInput))
+        return $aInput[$sVar];
+
+    return null;
+}
+
 /* Get the number of users in the database */
 function getNumberOfComments()
 {

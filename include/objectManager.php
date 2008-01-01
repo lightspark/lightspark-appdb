@@ -60,14 +60,14 @@ class ObjectManager
       return $this->sClass;
     }
 
-    public function setIsQueue($bIsQueue)
+    public function getState()
     {
-      $this->bIsQueue = $bIsQueue;
+        return $this->sState;
+    }
 
-      if($this->sState != 'rejected' && $bIsQueue)
-          $this->sState = 'queued';
-      else if ($this->sState == 'queued' && !$bIsQueue)
-          $this->sState = 'accepted';
+    public function setState($sState)
+    {
+        $this->sState = $sState;
     }
 
     public function getIsQueue()
@@ -83,16 +83,6 @@ class ObjectManager
     public function setReturnToTitle($sTitle)
     {
       $this->sReturnToTitle = $sTitle;
-    }
-
-    public function setIsRejected($bIsRejected)
-    {
-      $this->bIsRejected = $bIsRejected;
-
-      if($bIsRejected)
-          $this->sState = 'rejected';
-      else if ($this->sState == 'rejected')
-          $this->sState = 'queued';
     }
 
     public function setSortInfo($aClean = null)

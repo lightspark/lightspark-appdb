@@ -42,27 +42,18 @@ $aClean['iId'] = isset($aClean['iId']) ? $aClean['iId'] : 0;
 
 $oObject = new objectManager($aClean['sClass'], $aClean['sTitle'], $aClean['iId']);
 
-if(isset($aClean['bIsQueue']) && $aClean['bIsQueue'] == 'true')
-  $oObject->setIsQueue(true);
+if(getInput('bIsRejected', $aClean) == 'true')
+    $oObject->setState('rejected');
+else if(getInput('bIsQueue', $aClean) == 'true')
+  $oObject->setState('queued');
 else
-  $oObject->setIsQueue(false);
+  $oObject->setState('accepted');
 
 if(isset($aClean['sReturnToTitle']))
   $oObject->setReturnToTitle($aClean['sReturnToTitle']);
 
 if(isset($aClean['sReturnTo']))
   $oObject->setReturnTo($aClean['sReturnTo']);
-
-$aClean['bIsRejected'] = isset($aClean['bIsRejected']) ? $aClean['bIsRejected'] : false;
-/* If it is rejected it is defined as queued */
-if($aClean['bIsRejected'] == 'true')
-{
-    $oObject->setIsRejected(true);
-    $oObject->setIsQueue(true);
-} else
-{
-    $oObject->setIsRejected(false);
-}
 
 $oObject->getMultiPageDataFromInput($aClean);
 $oObject->setSortInfo($aClean);
