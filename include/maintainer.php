@@ -1200,7 +1200,7 @@ class maintainer
         // FIXME: should use a function to generate these urls and use it here and
         // in sidebar_maintainer.php and sidebar_admin.php
         $sMsg.= 'Please visit the screenshot queue(';
-        $sMsg.= APPDB_ROOT.'objectManager.php?sClass=screenshot_queue&bIsQueue=true&sTitle=Screenshot%20Queue) ';
+        $sMsg.= APPDB_ROOT.'objectManager.php?sClass=screenshot&bIsQueue=true&sTitle=Screenshot%20Queue) ';
         $sMsg.= 'to process queued screenshots for versions you maintain.'."\n";
       }
         
