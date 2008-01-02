@@ -1106,7 +1106,7 @@ class testData{
             $oTableRow->AddTextCell(version::fullNameLink($oRow->versionId));
             $oTableRow->AddTextCell($oRow->testedRating);
             $oTableRow->AddTextCell($oRow->testedRelease);
-            $oTableRow->AddTextCell(print_date(mysqldatetime_to_unixtimestamp($oRow->submitTim)));
+            $oTableRow->AddTextCell(print_date(mysqldatetime_to_unixtimestamp($oRow->submitTime)));
 
             if($bQueued)
             {
