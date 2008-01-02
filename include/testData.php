@@ -936,6 +936,23 @@ class testData{
         echo '<input type="hidden" name="iTestingId" value="'.$this->iTestingId.'" >';
         echo '<input type="hidden" name="iTestDataId" value="'.$this->iTestingId.'" >';
 
+        // Display confirmation box for changing the Wine version
+        $oOldTest = new testData($this->iTestingId);
+        if($this->iTestingId && $oOldTest->sTestedRelease != $this->sTestedRelease)
+        {
+            if(getInput('bConfirmTestedVersionChange', $aClean) != 'true')
+            {
+                echo '<tr><td class="color1">&nbsp;</td><td class="color0">';
+                echo 'You have changed the Wine version of the report.  Are you sure you want to do this?  Please submit a new test report for every Wine version you test; this is useful for tracking Wine&#8217;s progress.<br />';
+                echo '<input type="checkbox" name="bConfirmTestedVersionChange" value="true" /> ';
+                echo 'Yes, I want to change the Wine version';
+                echo '</td></tr>';
+            } else
+            {
+                echo '<input type="hidden" name="bConfirmTestedVersionChange" value="true" />';
+            }
+        }
+
         echo "</table>\n";
 
         echo html_frame_end();
@@ -959,6 +976,17 @@ class testData{
 
         if (empty($aValues['sTestedRelease']))
             $errors .= "<li>Please enter the version of Wine that you tested with.</li>\n";
+
+        // Ask for confirmation if changing the tested Wine versions, becase we want users
+        // to submit new reports instead of updating existing ones when testing new Wines
+        $oOldTest = new testData($this->iTestingId);
+        if($this->iTestingId && $oOldTest->sTestedRelease != getInput('sTestedRelease', $aValues) &&
+           getInput('bConfirmTestedVersionChange', $aValues) != 'true')
+        {
+            $errors .= '<li>Are you sure you want to change the Wine version of the report? Please submit a new '.
+                        'test report for every Wine version you test; this is useful for tracking Wine&#8217;s progress. '.
+                        'Tick the box above the submit button if you want to proceed</li>';
+        }
 
         // No Distribution entered, and nothing in the list is selected
         if (empty($aValues['sDistribution']) && !$aValues['iDistributionId'])
