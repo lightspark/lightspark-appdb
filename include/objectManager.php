@@ -8,10 +8,8 @@ define("PREVIEW_ENTRY", 2);
 class ObjectManager
 {
     private $sClass;
-    private $bIsQueue;
     private $sTitle;
     private $iId;
-    private $bIsRejected;
     private $sState;
     private $sReturnTo;
     private $sReturnToTitle; /* Used to preserve the title when processing entries from a queue list, for instance */
@@ -72,7 +70,7 @@ class ObjectManager
 
     public function getIsQueue()
     {
-      return $this->bIsQueue;
+      return $this->sState != 'accepted';
     }
 
     public function setReturnTo($sReturnTo)
@@ -212,7 +210,7 @@ class ObjectManager
             $oTableRowClick->SetHighlight($oTableRowHighlight);
             }
 
-            $sEditLinkLabel = $this->bIsQueue ? "process" : "edit";
+            $sEditLinkLabel = $this->getIsQueue() ? 'process' : 'edit';
 
             /* We add some action links */
             if($oObject->canEdit())
@@ -242,9 +240,9 @@ class ObjectManager
              "objectGetTableRow", "objectGetId", "canEdit"));
 
         /* We cannot process a queue if we are not logged in */
-        if(!$_SESSION['current']->isLoggedIn() && $this->bIsQueue)
+        if(!$_SESSION['current']->isLoggedIn() && $this->getIsQueue())
         {
-            $sQueueText = $this->bIsRejected ? "rejected" : "queued";
+            $sQueueText = $this->sState == 'rejected' ? "rejected" : "queued";
             echo '<div align="center">You need to ';
             echo "log in in order to process $sQueueText entries</div>\n";
             login_form(false);
@@ -265,7 +263,7 @@ class ObjectManager
         $this->setSortInfo($aClean);
 
         /* query the class for its entries */
-        /* We pass in $this->bIsQueue to tell the object */
+        /* We pass in queue states to tell the object */
         /* if we are requesting a list of its queued objects or */
         /* all of its objects */
         if($this->oMultiPage->bEnabled)
@@ -273,14 +271,14 @@ class ObjectManager
             /* Has the user chosen a particular field to sort by?  If not we want to use the default */
             if($this->oSortInfo->sCurrentSort)
             {
-                $hResult = $oObject->objectGetEntries($this->bIsQueue, $this->bIsRejected,
+                $hResult = $oObject->objectGetEntries($this->getIsQueue(), $this->sState == 'rejected',
                                                       $this->oMultiPage->iItemsPerPage,
                                                       $this->oMultiPage->iLowerLimit,
                                                       $this->oSortInfo->sCurrentSort,
                                                       $this->oSortInfo->bAscending);
             } else
             {
-                $hResult = $oObject->objectGetEntries($this->bIsQueue, $this->bIsRejected,
+                $hResult = $oObject->objectGetEntries($this->getIsQueue(), $this->sState == 'rejected',
                                                       $this->oMultiPage->iItemsPerPage,
                                                       $this->oMultiPage->iLowerLimit);
             }
@@ -289,19 +287,19 @@ class ObjectManager
             /* Has the user chosen a particular field to sort by?  If not we want to use the default */
             if($this->oSortInfo->sCurrentSort)
             {
-                $hResult = $oObject->objectGetEntries($this->bIsQueue, $this->bIsRejected,
+                $hResult = $oObject->objectGetEntries($this->getIsQueue(), $this->sState == 'rejected',
                                                       $this->oSortInfo->sCurrentSort,
                                                       $this->oSortInfo->bAscending);
             } else
             {
-                $hResult = $oObject->objectGetEntries($this->bIsQueue, $this->bIsRejected);
+                $hResult = $oObject->objectGetEntries($this->getIsQueue(), $this->sState == 'rejected');
             }
         }
 
         /* did we get any entries? */
         if(!$hResult || query_num_rows($hResult) == 0)
         {
-            switch($this->getQueueString($this->bIsQueue, $this->bIsRejected))
+            switch($this->getQueueString($this->getIsQueue(), $this->sState == 'rejected'))
             {
                 case "true":
                     echo "<center>The queue for '$this->sClass' is empty</center>";
@@ -334,7 +332,7 @@ class ObjectManager
             echo '</div>';
         }
 
-        $sQueued = $this->getQueueString($this->bIsQueue,                                                                         $this->bIsRejected);
+        $sQueued = $this->getQueueString($this->getIsQueue(),                                                                         $this->sState == 'rejected');
 
         /* Should we let the class draw its own custom table? */
         if(method_exists($this->sClass, 'objectWantCustomDraw') && 
@@ -411,7 +409,7 @@ class ObjectManager
 
         /* if this is a queue add a dialog for replying to the submitter of the
            queued entry */
-        if($this->bIsQueue || ($oObject->objectGetSubmitterId() && $oObject->objectGetSubmitterId() != $_SESSION['current']->iUserId))
+        if($this->getIsQueue() || ($oObject->objectGetSubmitterId() && $oObject->objectGetSubmitterId() != $_SESSION['current']->iUserId))
         {
             /* If it isn't implemented, that means there is no default text */
             $sDefaultReply = $this->getOptionalSetting("getDefaultReply", "");
@@ -422,7 +420,7 @@ class ObjectManager
             echo '<td><textarea name="sReplyText" style="width: 100%" cols="80" '. 
                  'rows="10">'.$sDefaultReply.'</textarea></td></tr>',"\n";
 
-            if($this->bIsQueue)
+            if($this->getIsQueue())
             {
                 /////////////////////////////////////////////////
                 // output radio buttons for some common responses
@@ -457,7 +455,7 @@ class ObjectManager
                      'class="button" />',"\n";
             }
 
-            if(!$this->bIsRejected && !$this->getOptionalSetting("objectHideReject", FALSE))
+            if($this->sState != 'rejected' && !$this->getOptionalSetting("objectHideReject", FALSE))
             {
                 echo '<input name="sSubmit" type="submit" value="Reject" class="button" '.
                     '/>',"\n";
@@ -1162,10 +1160,10 @@ class ObjectManager
                     if(!$oOriginalObject->canEdit())
                         return FALSE;
 
-                    if($this->bIsRejected)
+                    if($this->sState == 'rejected')
                         $oObject->ReQueue();
 
-                    if($this->bIsQueue && !$oOriginalObject->mustBeQueued())
+                    if($this->getIsQueue() && !$oOriginalObject->mustBeQueued())
                         $oObject->unQueue();
 
                     $oObject->update();
@@ -1202,7 +1200,7 @@ class ObjectManager
 
         /* Displaying the entire un-queued list for a class is not a good idea,
         so only do so for queued data */
-        if($this->bIsQueue)
+        if($this->getIsQueue())
             $sRedirectLink = $this->makeUrl("view", false, $this->sReturnToTitle ? $this->sReturnToTitle : "$this->sClass list");
         else
             $sRedirectLink = APPDB_ROOT;
@@ -1217,9 +1215,9 @@ class ObjectManager
     {
         $sUrl = APPDB_ROOT."objectManager.php?";
 
-        $sIsQueue = $this->bIsQueue ? "true" : "false";
+        $sIsQueue = $this->getIsQueue() ? "true" : "false";
         $sUrl .= "bIsQueue=$sIsQueue";
-        $sIsRejected = $this->bIsRejected ? "true" : "false";
+        $sIsRejected = $this->sState == 'rejected' ? "true" : "false";
         $sUrl .= "&bIsRejected=$sIsRejected";
 
         $sUrl .= "&sClass=".$this->sClass;
@@ -1259,8 +1257,8 @@ class ObjectManager
        is preserved when submitting forms */
     public function makeUrlFormData()
     {
-        $sIsQueue = $this->bIsQueue ? "true" : "false";
-        $sIsRejected = $this->bIsRejected ? "true" : "false";
+        $sIsQueue = $this->getIsQueue() ? "true" : "false";
+        $sIsRejected = $this->sState == 'rejected' ? "true" : "false";
 
         $sReturn = "<input type=\"hidden\" name=\"bIsQueue\" value=\"$sIsQueue\" />\n";
         $sReturn .= "<input type=\"hidden\" name=\"bIsRejected\" value=\"$sIsRejected\" />\n";
@@ -1306,7 +1304,7 @@ class ObjectManager
 
         /* Add an action column if the user can edit this class, or if it is a queue.
            Even though a user annot process items, he can edit his queued submissions */
-        if($oObject->canEdit() || $this->bIsQueue)
+        if($oObject->canEdit() || $this->getIsQueue())
         {
             $oTableRow->AddTextCell("Action");
         }
@@ -1371,7 +1369,7 @@ class ObjectManager
             $sControls .= "</form></p>";
         }
 
-        $iTotalEntries = $oObject->objectGetEntriesCount($this->bIsQueue, $this->bIsRejected);
+        $iTotalEntries = $oObject->objectGetEntriesCount($this->getIsQueue(), $this->sState == 'rejected');
         $iNumPages = ceil($iTotalEntries / $iItemsPerPage);
         if($iNumPages == 0)
             $iNumPages = 1;
