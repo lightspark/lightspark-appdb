@@ -42,7 +42,9 @@ $aClean['iId'] = isset($aClean['iId']) ? $aClean['iId'] : 0;
 
 $oObject = new objectManager($aClean['sClass'], $aClean['sTitle'], $aClean['iId']);
 
-if(getInput('bIsRejected', $aClean) == 'true')
+if(getInput('sState', $aClean))
+    $oObject->setState($aClean['sState']);
+else if(getInput('bIsRejected', $aClean) == 'true') // Compatibility with old URLs
     $oObject->setState('rejected');
 else if(getInput('bIsQueue', $aClean) == 'true')
   $oObject->setState('queued');

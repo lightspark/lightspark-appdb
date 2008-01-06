@@ -21,7 +21,7 @@ function global_sidebar_menu()
     $g->add("Screenshots", BASE."objectManager.php?sClass=screenshot&sTitle=View+Screenshots");
     $g->add("Browse Apps", BASE."appbrowse.php");
     $g->add("Browse Newest Apps", BASE."objectManager.php?sClass=application&".
-            "bIsQueue=false&sTitle=Newest%20apps&sOrderBy=appId&bAscending=false");
+            'sTitle=Newest%20apps&sOrderBy=appId&bAscending=false');
     $g->add("Downloadable Apps", BASE."browse_downloadable.php");
     $g->add("Browse Apps by Rating", BASE."browse_by_rating.php");
     $g->add("Top 25", BASE."votestats.php");
@@ -29,10 +29,10 @@ function global_sidebar_menu()
             "sTitle=Submit+Application&sAction=add");
     $g->add("Help &amp; Documentation", BASE."help/");
     $g->add("Statistics", BASE."appdbStats.php");
-    $g->add("Distributions (".distribution::objectGetEntriesCount(false, false).")", BASE."objectManager.php?sClass=distribution&bIsQueue=false&sTitle=View%20Distributions");
-    $g->add("Vendors (".vendor::objectGetEntriesCount(false, false).")", BASE."objectManager.php?sClass=vendor&bIsQueue=false&sTitle=View%20Vendors");
+    $g->add("Distributions (".distribution::objectGetEntriesCount(false, false).")", BASE.'objectManager.php?sClass=distribution&sTitle=View%20Distributions');
+    $g->add("Vendors (".vendor::objectGetEntriesCount(false, false).")", BASE.'objectManager.php?sClass=vendor&sTitle=View%20Vendors');
     $g->add("Email your suggestions for improving the AppDB", "mailto:appdb@winehq.org");
-    $g->done();    
+    $g->done();
 
     $g = new htmlmenu("Search");
     $g->addmisc(app_search_box(!empty($aClean['sSearchQuery']) ? $aClean['sSearchQuery'] : ''));

@@ -65,7 +65,19 @@ class ObjectManager
 
     public function setState($sState)
     {
-        $this->sState = $sState;
+        /* Ensure that the given state is valid */
+        switch($sState)
+        {
+            case 'accepted':
+            case 'queued':
+            case 'rejected':
+            case 'deleted':
+                $this->sState = $sState;
+                return true;
+
+            default:
+                return false;
+        }
     }
 
     public function getIsQueue()
