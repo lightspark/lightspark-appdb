@@ -15,10 +15,11 @@ require_once(BASE."include/monitor.php");
 require_once(BASE."include/vote.php");
 
 define("LICENSE_OPENSOURCE", "Open Source");
-define("LICENSE_FREEWARE", "Freeware");
 define("LICENSE_SHAREWARE", "Shareware");
 define("LICENSE_DEMO", "Demo");
 define("LICENSE_RETAIL", "Retail");
+define('LICENSE_FREETOUSE', 'Free to use');
+define('LICENSE_FREETOSHARE', 'Free to use and share');
 
 /**
  * Version class for handling versions.
@@ -1366,8 +1367,8 @@ class version {
 
         $sReturn = "<select name=\"sLicense\">\n";
         $sReturn .= "<option value=\"\">Choose . . .</option>\n";
-        $aLicense = array(LICENSE_RETAIL, LICENSE_OPENSOURCE, LICENSE_FREEWARE,
-                          LICENSE_DEMO, LICENSE_SHAREWARE);
+        $aLicense = array(LICENSE_RETAIL, LICENSE_OPENSOURCE, LICENSE_FREETOUSE,
+                          LICENSE_FREETOSHARE, LICENSE_DEMO, LICENSE_SHAREWARE);
         $iMax = count($aLicense);
 
         for($i = 0; $i < $iMax; $i++)
@@ -1389,8 +1390,8 @@ class version {
     /* In order to prevent MySQL injections.  Returns matched license */
     public static function checkLicense($sLicense)
     {
-        $aLicense = array(LICENSE_RETAIL, LICENSE_OPENSOURCE, LICENSE_FREEWARE,
-                          LICENSE_DEMO, LICENSE_SHAREWARE);
+        $aLicense = array(LICENSE_RETAIL, LICENSE_OPENSOURCE, LICENSE_FREETOUSE,
+                          LICENSE_FREETOSHARE, LICENSE_DEMO, LICENSE_SHAREWARE);
 
         foreach($aLicense as $sElement)
         {
