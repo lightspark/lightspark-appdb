@@ -438,9 +438,9 @@ class testData{
             case "add":
                 $sSubject =  "Submitted testing data accepted";
                 $sMsg  = "The testing data you submitted for '$sName' has been ".
-                        "accepted by ".$_SESSION['current']->sRealname.".";
+                        "accepted by ".$_SESSION['current']->sRealname.".\n";
                 $sMsg .= $oVersion->objectMakeUrl()."&iTestingId=".$this->iTestingId."\n";
-                $sMsg .= "Administrators Responce:\n";
+                $sMsg .= "Administrators response:\n";
             break;
             case "reject":
                 $sSubject =  "Submitted testing data rejected";

@@ -448,8 +448,8 @@ class version {
             {
             case "add":
                 $sSubject = "Submitted version accepted";
-                $sMsg  = "The version you submitted (".$oApp->sName." ".$this->sName.") has been accepted by ".$_SESSION['current']->sRealname.".";
-                $sMsg .= "Administrators Responce:\n";
+                $sMsg  = "The version you submitted (".$oApp->sName." ".$this->sName.") has been accepted by ".$_SESSION['current']->sRealname.".\n";
+                $sMsg .= "Administrators response:\n";
             break;
             case "reject":
                 $sSubject = "Submitted version rejected";
