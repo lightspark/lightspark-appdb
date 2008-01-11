@@ -315,7 +315,7 @@ class Bug
             $oTableRow = new TableRow();
 
             $oTableRow->AddTextCell(version::fullNameLink($oRow->versionId));
-            $oTableRow->AddTextCell('<a href='.BUGZILLA_ROOT.'show_bug.cgi?id='.$oRow->bug_id.'">'.$oRow->bug_id.'</a>');
+            $oTableRow->AddTextCell('<a href="'.BUGZILLA_ROOT.'show_bug.cgi?id='.$oRow->bug_id.'">'.$oRow->bug_id.'</a>');
             $oTableRow->AddTextCell($oBug->sBug_status);
             $oTableRow->AddTextCell($oBug->sResolution);
             $oTableRow->AddTextCell($oBug->sShort_desc);
