@@ -73,7 +73,7 @@ class queuedEntries
         if($oVersion->objectGetState() == 'queued')
         {
           $this->aVersions[] = $oVersion->objectGetId();
-        } else // version isn't queued
+        } else if($oVersion->objectGetState() == 'accepted') // version isn't queued
         {
           // add the unqueued version to the list of versions to check for queued data
           $aVersionsToCheck[] = $oVersion->iVersionId;

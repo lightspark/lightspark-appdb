@@ -121,8 +121,8 @@ class notifyContainer
     // and will skip over queued entries that depend on this version
     if(!$bTestAsMaintainer)
     {
-      $sVersionUnqueue = "update appVersion set queued='?' where versionId = '?'";
-      $hResult = query_parameters($sVersionUnqueue, 'false', $this->iVersionId);
+      $sVersionUnqueue = "update appVersion set state='?' where versionId = '?'";
+      $hResult = query_parameters($sVersionUnqueue, 'accepted', $this->iVersionId);
     }
 
     // debug printing
