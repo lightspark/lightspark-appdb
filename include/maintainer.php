@@ -1122,7 +1122,7 @@ class maintainer
       {
         // FIXME: should use a function to generate these urls and use it here and
         // in sidebar_maintainer.php and sidebar_admin.php
-        $sMsg = 'Please visit the test data queue ('.APPDB_ROOT."objectManager.php?sClass=version_queue&bIsQueue=true&sTitle=".
+        $sMsg = 'Please visit the version queue ('.APPDB_ROOT."objectManager.php?sClass=version_queue&bIsQueue=true&sTitle=".
           'Version%20Queue) to process queued versions for applications you maintain.'."\n";
       }
 
@@ -1192,18 +1192,23 @@ class maintainer
       if($iOldestQueuedEntryTime < $iMaintainerSignupTime)
         $iOldestQueuedEntryTime = $iMaintainerSignupTime;
 
-
+      $iScreenshotCount = count($oQueuedEntries->aScreenshotIds);
       // if we found any queued screenshots add the screenshot queue processing link
       // to the email
-      if(count($oQueuedEntries->aScreenshotIds) != 0)
+      if($iScreenshotCount != 0)
       {
+        if($iScreenshotCount == 1)
+          $sMsg.= 'There is one queued screenshot waiting to be processed. ';
+        else
+          $sMsg.= "There are $iScreenshotCount screenshots waiting to be processed. ";
+
         // FIXME: should use a function to generate these urls and use it here and
         // in sidebar_maintainer.php and sidebar_admin.php
         $sMsg.= 'Please visit the screenshot queue(';
         $sMsg.= APPDB_ROOT.'objectManager.php?sClass=screenshot&bIsQueue=true&sTitle=Screenshot%20Queue) ';
         $sMsg.= 'to process queued screenshots for versions you maintain.'."\n";
       }
-        
+
       // queued screenshots
       //////////////////////
 
