@@ -31,7 +31,7 @@ class htmlmenu {
 <td>
     <table width="155" border="0" cellspacing="0" cellpadding="1">
     <tr class="topMenu"><td>
-      <table width="100%" border="0" cellspacing="0" cellpadding="5">
+      <table width="100%" border="0" cellspacing="0" cellpadding="5"><tr><td class="sidemenu">
 ';
 
     }
@@ -43,38 +43,23 @@ class htmlmenu {
 
         if($shUrl)
         {
-            $oTableCell = new TableCell("<span class=MenuItem>&nbsp;<u>".
-                                        "<a href=\"$shUrl\">$sName</a></u></span>");
-
-            $oHighlightColor = new Color(0xe0, 0xe6, 0xff);
-            $oInactiveColor = new Color(0xff, 0xff, 0xff);
-            $oTableRowHighlight = new TableRowHighlight($oHighlightColor, $oInactiveColor);
-
-            $oTableRowClick = new TableRowClick($shUrl);
-            $oTableRowClick->SetHighlight($oTableRowHighlight);
-
-            $oTableRow->SetRowClick($oTableRowClick);
+            echo "<a href=\"$shUrl\" class=\"menuLink\">$sName</a>";
         } else
         {
-          $oTableCell = new TableCell("<span class=menuItem>&nbsp;$sName</span></td></tr>");
+         echo "<div class=\"menuItem\">$sName</div>";
         }
-        $oTableCell->SetAlign($sAlign);
-        $oTableCell->SetWidth("100%");
-
-        $oTableRow->SetClass("sidemenu");
-        $oTableRow->AddCell($oTableCell);
-
-        echo $oTableRow->GetString();
     }
 
     function addmisc($sStuff, $sAlign = "left")
     {
-        echo " <tr class=sideMenu><td width='100%' align=$sAlign><span class=menuItem>&nbsp;$sStuff</span></td></tr>\n";
+        echo "<div align=\"$sAlign\" class=\"menuItem\">$sStuff</div>\n";
     }
 
     function done($form = null)
     {
         echo '
+        </td>
+        </tr>
         </table>
         </td></tr>
         </table>

@@ -63,8 +63,9 @@ p.indent            { padding-left: 1em; padding-right: 1em;}
 .menuTitle	        { font-size: 12px; color: #ffffff; font-weight: bold; text-decoration: none; }
 .menuTitle:visited  { font-size: 12px; color: #ffffff; font-weight: bold; text-decoration: none; }
 .menuTitle:hover    { font-size: 12px; color: #ffffff; font-weight: bold; text-decoration: none; }
-.menuLink           { font-size: 11px; color: #ffffff; font-weight: bold; }
-.menuItem           { font-size: 11px; color: #000000; }
+.menuLink           { padding-left: 4px; padding-top: 5px; padding-bottom: 5px; background-color: #ffffff; font-size: 11px; width: 140px; display: block; }
+.menulink:hover     { background-color: #e0e6ff; }
+.menuItem           { padding-left: 4px; padding-top: 5px; padding-bottom: 5px; background-color: #ffffff; font-size: 11px; width: 140px; display: block; }
 .menuItem:visited   { font-size: 11px; color: #000000; }
 .menuItem:hover     { font-size: 11px; color: #A50D0D; } 
 
