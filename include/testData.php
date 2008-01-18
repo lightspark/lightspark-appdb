@@ -93,7 +93,7 @@ class testData{
             $this->testData($this->iTestingId);
             $this->SendNotificationMail();
 
-            if(!$this->sState == 'accepted')
+            if($this->sState == 'accepted')
                 $oVersion->updateRatingInfo();
             return true;
         }
