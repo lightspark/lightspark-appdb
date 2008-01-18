@@ -836,17 +836,24 @@ class version {
         // main URL
         echo "        <tr class=\"color1\"><td><b>URL</b></td><td>".$appLinkURL."</td></tr>\n";
 
-        $oM = new objectManager("voteManager", "Vote");
-        $oM->setReturnTo($this->objectMakeUrl());
         // Votes
-        if($_SESSION['current']->isLoggedIn())
-            $shVoteLink = ' &nbsp; <a href="'.$oM->makeUrl("edit", $_SESSION['current']->iUserId).'&iVersionId='.$this->iVersionId.'">Vote</a>';
-        else
-            $shVoteLink = '';
-        echo html_tr(array(
-            "<b>Votes</b>",
-            vote_count_version_total($this->iVersionId).$shVoteLink),
-            "color0");
+        if(!$this->iObsoleteBy)
+        {
+            $oM = new objectManager("voteManager", "Vote");
+            $oM->setReturnTo($this->objectMakeUrl());
+
+            if($_SESSION['current']->isLoggedIn())
+                $shVoteLink = ' &nbsp; <a href="'.$oM->makeUrl("edit", $_SESSION['current']->iUserId).'&iVersionId='.$this->iVersionId.'">Vote</a>';
+            else
+                $shVoteLink = '';
+
+            $shVoteText = vote_count_version_total($this->iVersionId).$shVoteLink;
+        } else
+        {
+            $shVoteText = 'Marked as obsolete';
+        }
+
+        echo html_tr(array('<b>Votes</b>', $shVoteText), 'color0');
 
         $sRating = $this->sTestedRating;
         $sRelease = $this->sTestedRelease;
