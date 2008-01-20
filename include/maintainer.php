@@ -548,7 +548,7 @@ class maintainer
             $hResult = query_parameters($sQuery, $oUser->iUserId, $iAppId, 'accepted');
         } else /* are we super maintainer of any applications? */
         {
-            $sQuery = "SELECT * FROM appMaintainers WHERE userid = '?' AND superMaintainer = '1' AND state'?'";
+            $sQuery = "SELECT * FROM appMaintainers WHERE userid = '?' AND superMaintainer = '1' AND state = '?'";
             $hResult = query_parameters($sQuery, $oUser->iUserId, 'accepted');
         }
         if(!$hResult)
