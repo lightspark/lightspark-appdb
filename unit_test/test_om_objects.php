@@ -45,7 +45,7 @@ function test_class($sClassName, $aTestMethods)
         return FALSE;
 
     /* Should return 1 or more, since there may be entries present already */
-    $hResult = $oTestObject->objectGetEntries(false, false);
+    $hResult = $oTestObject->objectGetEntries('accepted');
 
     if(!$hResult)
     {
@@ -105,7 +105,7 @@ function test_class($sClassName, $aTestMethods)
 
                 /* Should return 1 or more, since there may be entries present already */
                 $iExpected = 1;
-                $hResult = $oTestObject->objectGetEntries(false, false);
+                $hResult = $oTestObject->objectGetEntries('accepted');
                 $iReceived = query_num_rows($hResult);
                 if($iExpected > $iReceived)
                 {
@@ -230,9 +230,9 @@ function create_object($sClassName, $oUser)
     } else
     {
         $sQuery = "INSERT INTO appData
-                (versionId, type, description, queued, submitterId)
+                (versionId, type, description, state, submitterId)
                 VALUES('?','?','?','?','?')";
-        $hResult = query_parameters($sQuery, $oTestObject->iVersionId, "screenshot", "", "false",
+        $hResult = query_parameters($sQuery, $oTestObject->iVersionId, 'screenshot', '', 'accepted',
                                     $oUser->iUserId);
         if(!$hResult)
         {

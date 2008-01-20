@@ -240,20 +240,16 @@ class Vendor {
         return array('vendorName');
     }
 
-    function objectGetEntries($bQueued, $bRejected, $iRows = 0, $iStart = 0, $sOrderBy = 'vendorName', $bAscending = TRUE)
+    function objectGetEntries($sState, $iRows = 0, $iStart = 0, $sOrderBy = 'vendorName', $bAscending = TRUE)
     {
-        /* Vendor queueing is not implemented yet */
-        if($bQueued)
-            return FALSE;
-
         /* Not implemented */
-        if($bRejected)
+        if($sState == 'rejected')
             return FALSE;
 
         $sOrder = $bAscending ? 'ASC' : 'DESC';
 
         if(!$iRows)
-            $iRows = Vendor::objectGetEntriesCount($bQueued, $bRejected);
+            $iRows = Vendor::objectGetEntriesCount($sState);
 
         $hResult = query_parameters("SELECT * FROM vendor
                        ORDER BY $sOrderBy $sOrder LIMIT ?,?",
@@ -398,14 +394,10 @@ class Vendor {
         return "<a href=\"".$this->objectMakeUrl()."\">$this->sName</a>";
     }
 
-    function objectGetEntriesCount($bQueued, $bRejected)
+    function objectGetEntriesCount($sState)
     {
         /* Not implemented */
-        if($bQueued)
-            return FALSE;
-
-        /* Not implemented */
-        if($bRejected)
+        if($sState == 'rejected')
             return FALSE;
 
         $hResult = query_parameters("SELECT COUNT(vendorId) as count FROM vendor");

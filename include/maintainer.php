@@ -114,8 +114,8 @@ class queuedEntries
 
       ////////////////////
       // queued screenshots
-      $sQuery = "select * from appData where type = 'screenshot' and versionId = '?' and queued = '?'";
-      $hResult = query_parameters($sQuery, $iVersionId, "true");
+      $sQuery = "select * from appData where type = 'screenshot' and versionId = '?' and state = '?'";
+      $hResult = query_parameters($sQuery, $iVersionId, 'queued');
       while($oScreenshotRow = query_fetch_object($hResult))
       {
         $oScreenshot = new Screenshot(null, $oScreenshotRow);
@@ -157,7 +157,7 @@ class maintainer
     var $sMaintainReason;
     var $bSuperMaintainer;
     var $aSubmitTime; //FIXME: should be 'sSubmitTime'
-    var $bQueued; //FIXME: Should be sQueued
+    var $sState;
     var $sReplyText;
 
     // parameters used in the queued data notification system
@@ -191,7 +191,7 @@ class maintainer
             $this->sMaintainReason = $oRow->maintainReason;
             $this->bSuperMaintainer = $oRow->superMaintainer;
             $this->aSubmitTime = $oRow->submitTime;
-            $this->bQueued = $oRow->queued;
+            $this->sState = $oRow->state;
 
             $this->iNotificationLevel = $oRow->notificationLevel;
             $this->sNotificationTime = $oRow->notificationTime;
@@ -215,16 +215,16 @@ class maintainer
 
         if($oApp->objectGetState() != 'accepted' ||
            (!$this->bSuperMaintainer && $oVersion->objectGetState() != 'accepted'))
-            $this->sQueued = "pending";
+            $this->sState = "pending";
         else
-            $this->sQueued = $this->mustBeQueued() ? "true" : "false";
+            $this->sState = $this->mustBeQueued() ? 'queued' : 'accepted';
 
         $hResult = query_parameters("INSERT INTO appMaintainers (appId, versionId, ".
-                                    "userId, maintainReason, superMaintainer, submitTime, queued) ".
+                                    "userId, maintainReason, superMaintainer, submitTime, state) ".
                                     "VALUES ('?', '?', '?', '?', '?', ?, '?')",
                                     $this->iAppId, $this->iVersionId,
                                     $this->iUserId, $this->sMaintainReason,
-                                    $this->bSuperMaintainer, "NOW()", $this->sQueued);
+                                    $this->bSuperMaintainer, "NOW()", $this->sState);
 
         /* this objects id is the insert id returned by the database */
         $this->iMaintainerId = query_appdb_insert_id();
@@ -250,7 +250,7 @@ class maintainer
            ((!$this->bSuperMaintainer && !$oUser->isMaintainer($this->iVersionId)) || $this->bSuperMaintainer))
         {
             /* unqueue the maintainer entry */
-            $hResult = query_parameters("UPDATE appMaintainers SET queued='false' WHERE userId = '?' AND maintainerId = '?'",
+            $hResult = query_parameters("UPDATE appMaintainers SET state='accepted' WHERE userId = '?' AND maintainerId = '?'",
                                         $this->iUserId, $this->iMaintainerId);
 
             if($hResult)
@@ -285,7 +285,7 @@ class maintainer
         } else
         {
             /* Delete entry, but only if queued */
-            query_parameters("DELETE from appMaintainers WHERE userId = '?' AND maintainerId = '?' AND queued = 'true'", $this->iUserId, $this->iMaintainerId);
+            query_parameters("DELETE from appMaintainers WHERE userId = '?' AND maintainerId = '?' AND state = 'queued'", $this->iUserId, $this->iMaintainerId);
 
             if($oUser->isSuperMaintainer($this->iAppId) && !$this->bSuperMaintainer)
                 $sStatusMessage = "<p>User is already a super maintainer of this application</p>\n";
@@ -394,10 +394,10 @@ class maintainer
         return $hResult;
     }
 
-    function ObjectGetEntries($bQueued, $bRejected, $iRows = 0, $iStart = 0)
+    function ObjectGetEntries($sState, $iRows = 0, $iStart = 0)
     {
         /* Not implemented */
-        if($bRejected)
+        if($sState == 'rejected')
             return FALSE;
 
         $sLimit = "";
@@ -410,24 +410,24 @@ class maintainer
             /* Selecting 0 rows makes no sense, so we assume the user wants to select all of them
                after an offset given by iStart */
             if(!$iRows)
-                $iRows = maintainer::objectGetEntriesCount($bQueued, $bRejected);
+                $iRows = maintainer::objectGetEntriesCount($sState);
         }
 
         /* Excluding requests for queued apps and versions, as these will be
            handled automatically */
         $sQuery = "SELECT * FROM appMaintainers WHERE
-            appMaintainers.queued = '?'$sLimit";
+            appMaintainers.state = '?'$sLimit";
 
-        if($bQueued)
+        if($sState != 'accepted')
         {
             if($_SESSION['current']->hasPriv("admin"))
             {
                 if($sLimit)
                 {
-                    return query_parameters($sQuery, $bQueued ? "true" : "false", $iStart, $iRows);
+                    return query_parameters($sQuery, $sState, $iStart, $iRows);
                 } else
                 {
-                    return query_parameters($sQuery, $bQueued ? "true" : "false");
+                    return query_parameters($sQuery, $sState);
                 }
             } else
             {
@@ -437,10 +437,10 @@ class maintainer
         {
             if($sLimit)
             {
-                return query_parameters($sQuery, $bQueued ? "true" : "false", $iStart, $iRows);
+                return query_parameters($sQuery, $sState, $iStart, $iRows);
             } else
             {
-                return query_parameters($sQuery, $bQueued ? "true" : "false");
+                return query_parameters($sQuery, $sState);
             }
         }
     }
@@ -456,8 +456,8 @@ class maintainer
     function getMaintainerCountForUser($oUser, $bSuperMaintainer)
     {
         $sQuery = "SELECT count(*) as cnt from appMaintainers WHERE userid = '?' AND superMaintainer = '?'".
-                  " AND queued ='?'";
-        $hResult = query_parameters($sQuery, $oUser->iUserId, $bSuperMaintainer ? "1" : "0", "false");
+                  " AND state ='?'";
+        $hResult = query_parameters($sQuery, $oUser->iUserId, $bSuperMaintainer ? "1" : "0", 'accepted');
         if(!$hResult)
             return 0;
         $oRow = query_fetch_object($hResult);
@@ -472,8 +472,8 @@ class maintainer
         /* retrieve the list of application and order them by application name */
         $hResult = query_parameters("SELECT appMaintainers.appId, versionId, superMaintainer, appName FROM ".
                                     "appFamily, appMaintainers WHERE appFamily.appId = appMaintainers.appId ".
-                                    "AND userId = '?' AND appMaintainers.queued = '?' ORDER BY appName",
-                                    $oUser->iUserId, "false");
+                                    "AND userId = '?' AND appMaintainers.state = '?' ORDER BY appName",
+                                    $oUser->iUserId, 'accepted');
         if(!$hResult || query_num_rows($hResult) == 0)
             return NULL;
 
@@ -488,18 +488,18 @@ class maintainer
         return $aAppsMaintained;
     }
 
-    function objectGetEntriesCount($bQueued, $bRejected)
+    function objectGetEntriesCount($sState)
     {
         /* Not implemented */
-        if($bRejected)
+        if($sState == 'rejected')
             return FALSE;
 
         /* Excluding requests for queued apps and versions, as these are handled 
            automatically.  One SELECT for super maintainers, one for maintainers. */
        $sQuery = "SELECT COUNT(maintainerId) as count FROM appMaintainers WHERE
-            appMaintainers.queued = '?'";
+            appMaintainers.state = '?'";
 
-        if(!($hResult = query_parameters($sQuery, $bQueued ? "true" : "false")))
+        if(!($hResult = query_parameters($sQuery, $sState)))
             return FALSE;
 
         if($oRow = query_fetch_object($hResult))
@@ -508,15 +508,6 @@ class maintainer
             $iCount = 0;
 
         return $iCount;
-    }
-
-    /* see how many maintainer entries we have in the database */
-    function getMaintainerCount()
-    {
-        $sQuery = "SELECT count(*) as maintainers FROM appMaintainers where queued='false'";
-        $hResult = query_parameters($sQuery);
-        $oRow = query_fetch_object($hResult);
-        return $oRow->maintainers;
     }
 
     /* see how many unique maintainers we actually have */
@@ -536,12 +527,12 @@ class maintainer
         /* otherwise check if we maintain this specific version */
         if($iVersionId)
         {
-            $sQuery = "SELECT * FROM appMaintainers WHERE userId = '?' AND versionId = '?' AND queued = '?'";
-            $hResult = query_parameters($sQuery, $oUser->iUserId, $iVersionId, "false");
+            $sQuery = "SELECT * FROM appMaintainers WHERE userId = '?' AND versionId = '?' AND state = '?'";
+            $hResult = query_parameters($sQuery, $oUser->iUserId, $iVersionId, 'accepted');
         } else // are we maintaining any version ?
         {
-            $sQuery = "SELECT * FROM appMaintainers WHERE userId = '?' AND queued = '?'";
-            $hResult = query_parameters($sQuery, $oUser->iUserId, "false");
+            $sQuery = "SELECT * FROM appMaintainers WHERE userId = '?' AND state = '?'";
+            $hResult = query_parameters($sQuery, $oUser->iUserId, 'accepted');
         }
         if(!$hResult)
             return false;
@@ -553,12 +544,12 @@ class maintainer
     {
         if($iAppId)
         {
-            $sQuery = "SELECT * FROM appMaintainers WHERE userid = '?' AND appId = '?' AND superMaintainer = '1' AND queued = '?'";
-            $hResult = query_parameters($sQuery, $oUser->iUserId, $iAppId, "false");
+            $sQuery = "SELECT * FROM appMaintainers WHERE userid = '?' AND appId = '?' AND superMaintainer = '1' AND state = '?'";
+            $hResult = query_parameters($sQuery, $oUser->iUserId, $iAppId, 'accepted');
         } else /* are we super maintainer of any applications? */
         {
-            $sQuery = "SELECT * FROM appMaintainers WHERE userid = '?' AND superMaintainer = '1' AND queued = '?'";
-            $hResult = query_parameters($sQuery, $oUser->iUserId, "false");
+            $sQuery = "SELECT * FROM appMaintainers WHERE userid = '?' AND superMaintainer = '1' AND state'?'";
+            $hResult = query_parameters($sQuery, $oUser->iUserId, 'accepted');
         }
         if(!$hResult)
             return false;
@@ -575,7 +566,7 @@ class maintainer
         {
             $hResult = query_parameters("SELECT userId from appMaintainers, appVersion
                 WHERE
-                    appMaintainers.queued = 'false'
+                    appMaintainers.state = 'accepted'
                     AND
                     appVersion.versionId = '?'
                     AND
@@ -595,7 +586,7 @@ class maintainer
         {
             $hResult = query_parameters("SELECT userId 
                                  FROM appMaintainers
-                                 WHERE appId = '?' AND queued = 'false'",
+                                 WHERE appId = '?' AND state = 'accepted'",
                                         $iAppId);
         }
 
@@ -609,8 +600,8 @@ class maintainer
     {
         $sQuery = "SELECT userId FROM ".
             "appMaintainers WHERE appId = '?' " .
-            "AND superMaintainer = '1' AND queued='?';";
-        $hResult = query_parameters($sQuery, $iAppId, "false");
+            "AND superMaintainer = '1' AND state='?';";
+        $hResult = query_parameters($sQuery, $iAppId, 'accepted');
         $aUserIds = array();
         $c = 0;
         while($oRow = query_fetch_object($hResult))
@@ -909,7 +900,7 @@ class maintainer
     {
         $oSubmitter = new user($this->iSubmitterId);
 
-        $sVerb = $this->sQueued == "true" ? "rejected" : "removed";
+        $sVerb = $this->sState == 'queued' ? 'rejected' : 'removed';
 
         if($this->bSuperMaintainer)
         {
@@ -929,7 +920,7 @@ class maintainer
             {
                 case "delete":
                     $sSubject = "Maintainership for $sFor $sVerb";
-                    if($this->sQueued == "true")
+                    if($this->sState == 'queued')
                     {
                         $sMsg = "Your request to be a maintainer of '$sFor'".
                                     " has been denied.";
@@ -949,7 +940,7 @@ class maintainer
                     if(!$bParentAction)
                     {
                         $sSubject = "Maintainership for $sFor $sVerb";
-                        if($this->bQueued == "false")
+                        if($this->sState == 'accepted')
                         {
                             $sMsg = $oSubmitter->sRealName." has been removed as a ".
                                         "maintainer of $sFor.";
@@ -1340,7 +1331,7 @@ class maintainer
     function notifyMaintainersOfQueuedData()
     {
       // retrieve all of the maintainers
-      $hResult = maintainer::objectGetEntries(false, false);
+      $hResult = maintainer::objectGetEntries('accepted');
 
       //      echo "Processing ".query_num_rows($hResult)." maintainers\n";
 

@@ -48,7 +48,7 @@ class Bug
             $this->iLinkId = $oRow->linkId;
             $this->iBug_id = $oRow->bug_id;
             $this->iVersionId = $oRow->versionId;
-            $this->bQueued = ($oRow->queued=="true") ? true : false;
+            $this->bQueued = ($oRow->state=='queued') ? true : false;
             $this->sSubmitTime = $oRow->submitTime;
             $this->iSubmitterId = $oRow->submitterId;
             /* lets fill in some blanks */ 
@@ -125,12 +125,12 @@ class Bug
 
         /* passed the checks so lets insert the puppy! */
         $hResult = query_parameters("INSERT INTO buglinks (versionId, bug_id, ".
-                                    "submitTime, submitterId, queued) ".
+                                    "submitTime, submitterId, state) ".
                                     "VALUES('?', '?', ?, '?', '?')",
                                     $this->iVersionId, $this->iBug_id,
                                     "NOW()",
                                     $_SESSION['current']->iUserId,
-                                    $this->bQueued ? "true":"false");
+                                    $this->bQueued ? 'queued' : 'accepted');
         if($hResult)
         {
             $this->iLinkId = query_appdb_insert_id();
@@ -286,7 +286,7 @@ class Bug
     /* Get a list of bugs submitted by a given user */
     function listSubmittedBy($iUserId, $bQueued = true)
     {
-        $hResult = query_parameters("SELECT appFamily.appName, buglinks.versionId, appVersion.versionName, buglinks.submitTime, buglinks.bug_id, buglinks.linkId FROM buglinks, appFamily, appVersion WHERE appFamily.appId = appVersion.appId AND buglinks.versionId = appVersion.versionId AND buglinks.queued = '?' AND buglinks.submitterId = '?' ORDER BY buglinks.versionId", $bQueued ? "true" : "false", $iUserId);
+        $hResult = query_parameters("SELECT appFamily.appName, buglinks.versionId, appVersion.versionName, buglinks.submitTime, buglinks.bug_id, buglinks.linkId FROM buglinks, appFamily, appVersion WHERE appFamily.appId = appVersion.appId AND buglinks.versionId = appVersion.versionId AND buglinks.state = '?' AND buglinks.submitterId = '?' ORDER BY buglinks.versionId", $bQueued ? 'queued' : 'accepted', $iUserId);
 
         if(!$hResult || !query_num_rows($hResult))
             return FALSE;
@@ -365,7 +365,7 @@ class Bug
         return $this->iLinkId;
     }
 
-    function objectGetEntries($bQueued, $bRejected, $iRows = 0, $iStart = 0)
+    function objectGetEntries($sState, $iRows = 0, $iStart = 0)
     {
         $sLimit = "";
         
@@ -373,19 +373,17 @@ class Bug
          wants to select all of them
          after an offset given by iStart */
         if(!$iRows)
-          $iRows = bug::objectGetEntriesCount($bQueued, $bRejected);
+          $iRows = bug::objectGetEntriesCount($sState);
 
-        $sQueued = objectManager::getQueueString($bQueued, $bRejected);
-        $sQuery = "select * from buglinks where queued = '?' LIMIT ?, ?";
-        $hResult = query_parameters($sQuery, $sQueued, $iStart, $iRows);
+        $sQuery = "select * from buglinks where state = '?' LIMIT ?, ?";
+        $hResult = query_parameters($sQuery, $sState, $iStart, $iRows);
         return $hResult;
     }
 
-    function objectGetEntriesCount($bQueued, $bRejected)
+    function objectGetEntriesCount($sState)
     {
-        $sQueued = objectManager::getQueueString($bQueued, $bRejected);
-        $sQuery = "select count(*) as cnt from buglinks where queued = '?'";
-        $hResult = query_parameters($sQuery, $sQueued);
+        $sQuery = "select count(*) as cnt from buglinks where state = '?'";
+        $hResult = query_parameters($sQuery, $sState);
         $oRow = mysql_fetch_object($hResult);
         return $oRow->cnt;
     }

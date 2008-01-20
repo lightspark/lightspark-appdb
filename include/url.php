@@ -44,7 +44,7 @@ class Url {
             $this->iAppId = $oRow->appId;
             $this->iVersionId = $oRow->versionId;
             $this->sUrl = Url::normalize($oRow->url);
-            $this->bQueued = $oRow->queued;
+            $this->bQueued = ($oRow->state == 'accepted') ? false : true;
             $this->sSubmitTime = $oRow->submitTime;
             $this->iSubmitterId = $oRow->submitterId;
         }
@@ -65,10 +65,10 @@ class Url {
             $this->bQueued = true;
 
         $hResult = query_parameters("INSERT INTO appData (appId, versionId, type,
-            description, queued, submitTime, submitterId, url)
+            description, state, submitTime, submitterId, url)
                 VALUES ('?', '?', '?', '?', '?', ?, '?', '?')",
                     $iAppId, $iVersionId, "url", $sDescription,
-                    $this->bQueued ? "true" : "false",
+                    $this->bQueued ? 'queued' : 'accepted',
                     "NOW()", $_SESSION['current']->iUserId, $sUrl);
 
         if(!$hResult)
@@ -117,8 +117,8 @@ class Url {
         if(!$this->bQueued)
             return false;
 
-        if(query_parameters("UPDATE appData SET queued = '?' WHERE id='?'",
-                       "false", $this->iUrlId))
+        if(query_parameters("UPDATE appData SET state '?' WHERE id='?'",
+                       'accepted', $this->iUrlId))
         {
             // we send an e-mail to interested people
             $this->mailSubmitter();

@@ -283,14 +283,14 @@ class ObjectManager
             /* Has the user chosen a particular field to sort by?  If not we want to use the default */
             if($this->oSortInfo->sCurrentSort)
             {
-                $hResult = $oObject->objectGetEntries($this->getIsQueue(), $this->sState == 'rejected',
+                $hResult = $oObject->objectGetEntries($this->sState,
                                                       $this->oMultiPage->iItemsPerPage,
                                                       $this->oMultiPage->iLowerLimit,
                                                       $this->oSortInfo->sCurrentSort,
                                                       $this->oSortInfo->bAscending);
             } else
             {
-                $hResult = $oObject->objectGetEntries($this->getIsQueue(), $this->sState == 'rejected',
+                $hResult = $oObject->objectGetEntries($this->sState,
                                                       $this->oMultiPage->iItemsPerPage,
                                                       $this->oMultiPage->iLowerLimit);
             }
@@ -299,12 +299,12 @@ class ObjectManager
             /* Has the user chosen a particular field to sort by?  If not we want to use the default */
             if($this->oSortInfo->sCurrentSort)
             {
-                $hResult = $oObject->objectGetEntries($this->getIsQueue(), $this->sState == 'rejected',
+                $hResult = $oObject->objectGetEntries($this->sState,
                                                       $this->oSortInfo->sCurrentSort,
                                                       $this->oSortInfo->bAscending);
             } else
             {
-                $hResult = $oObject->objectGetEntries($this->getIsQueue(), $this->sState == 'rejected');
+                $hResult = $oObject->objectGetEntries($this->sState);
             }
         }
 
@@ -783,7 +783,7 @@ class ObjectManager
 
         $oObject = $this->getObject();
 
-        $hResult = $oObject->objectGetEntries(true, true);
+        $hResult = $oObject->objectGetEntries('rejected');
 
         if(!$hResult)
         {
@@ -899,7 +899,7 @@ class ObjectManager
         }
 
         /* We only allow moving to non-queued objects */
-        if(!$hResult = $oObject->objectGetEntries(false, false))
+        if(!$hResult = $oObject->objectGetEntries('accepted'))
         {
             echo "Failed to get list of objects.<br />\n";
             return FALSE;
@@ -1381,7 +1381,7 @@ class ObjectManager
             $sControls .= "</form></p>";
         }
 
-        $iTotalEntries = $oObject->objectGetEntriesCount($this->getIsQueue(), $this->sState == 'rejected');
+        $iTotalEntries = $oObject->objectGetEntriesCount($this->sState);
         $iNumPages = ceil($iTotalEntries / $iItemsPerPage);
         if($iNumPages == 0)
             $iNumPages = 1;

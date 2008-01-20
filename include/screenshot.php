@@ -57,7 +57,7 @@ class screenshot
             $this->iAppId = $oRow->appId;
             $this->iVersionId = $oRow->versionId;
             $this->sUrl = $oRow->url;
-            $this->bQueued = ($oRow->queued=="true")?true:false;
+            $this->bQueued = ($oRow->state=='queued')?true:false;
             $this->sSubmitTime = $oRow->submitTime;
             $this->iSubmitterId = $oRow->submitterId;
             $this->hFile = null;
@@ -71,11 +71,11 @@ class screenshot
     function create()
     {
         $hResult = query_parameters("INSERT INTO appData
-                (versionId, type, description, queued, submitTime, submitterId)
+                (versionId, type, description, state, submitTime, submitterId)
                                     VALUES('?', '?', '?', '?', ?, '?')",
                                     $this->iVersionId, "screenshot", 
                                     $this->sDescription,
-                                    $this->mustBeQueued() ? "true" : "false",
+                                    $this->mustBeQueued() ? 'queued' : 'accepted',
                                     "NOW()",
                                     $_SESSION['current']->iUserId);
         if($hResult)
@@ -173,8 +173,8 @@ class screenshot
         if(!$this->bQueued)
             return false;
 
-        if(query_parameters("UPDATE appData SET queued = '?' WHERE id='?'",
-                            "false", $this->iScreenshotId))
+        if(query_parameters("UPDATE appData SET state = '?' WHERE id='?'",
+                            'accepted', $this->iScreenshotId))
         {
             $this->bQueued = false;
             // we send an e-mail to interested people
@@ -479,7 +479,7 @@ class screenshot
                                WHERE appData.versionId = appVersion.versionId
                                AND appVersion.appId = '?' 
                                AND type = 'screenshot' 
-                               AND appData.queued = 'false' 
+                               AND appData.state = 'accepted' 
                                ORDER BY rand", $iAppId);
         } else if ($iVersionId) // we want a random screenshot for this version
         {
@@ -487,7 +487,7 @@ class screenshot
                                 FROM appData 
                                 WHERE versionId = '?' 
                                 AND type = 'screenshot' 
-                                AND queued = 'false' 
+                                AND state = 'accepted' 
                                 ORDER BY rand", $iVersionId);
         }
 
@@ -545,7 +545,7 @@ class screenshot
                                  WHERE appVersion.versionId = appData.versionId
                                  AND type = 'screenshot'
                                  AND appVersion.appId = '?'
-                                 AND appData.queued = '?'", $iAppId, $bQueued);
+                                 AND appData.state = '?'", $iAppId, ($bQueued == 'false') ? 'accepted' : 'queued');
         }
         /*
          * We want all screenshots for this version.
@@ -557,7 +557,7 @@ class screenshot
                                  WHERE appVersion.versionId = appData.versionId
                                  AND type = 'screenshot'
                                  AND appData.versionId = '?'
-                                 AND appData.queued = '?'", $iVersionId, $bQueued);
+                                 AND appData.state = '?'", $iVersionId, ($bQueued == 'false') ? 'accepted' : 'queued');
         } else
         {
             return false;
@@ -649,16 +649,15 @@ class screenshot
         echo "</tr></table></div><br />\n";
     }
 
-    function objectGetEntries($bQueued, $bRejected, $iRows = 0, $iStart = 0)
+    function objectGetEntries($sState, $iRows = 0, $iStart = 0)
     {
-        return appData::objectGetEntries($bQueued, $bRejected, $iRows, $iStart,
+        return appData::objectGetEntries($sState, $iRows, $iStart,
                                          "screenshot");
     }
 
-    function objectGetEntriesCount($bQueued, $bRejected, $iRows = 0, $iStart = 0)
+    function objectGetEntriesCount($sState, $iRows = 0, $iStart = 0)
     {
-        return appData::objectGetEntriesCount($bQueued, $bRejected,
-                                              'screenshot');
+        return appData::objectGetEntriesCount($sState, 'screenshot');
     }
 
     function objectGetHeader()

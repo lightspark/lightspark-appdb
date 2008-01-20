@@ -360,7 +360,7 @@ class Comment {
             } else
             {
                 echo "<li><a href=\"commentview.php?iAppId={$oRow->appId}&amp;iVersionId=".
-                     "{$oRow->versionId}&iThreadId={$oRow->parentId}\" ".
+                     "{$oRow->versionId}&amp;iThreadId={$oRow->parentId}\" ".
                      "name=\"Comment-{$oRow->commentId}\"> ".
                      $oRow->subject.' </a> by '.forum_lookup_user($oRow->userId).' on '.$oRow->time.' </li>'."\n";
             }

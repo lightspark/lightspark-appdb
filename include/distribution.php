@@ -496,15 +496,15 @@ class distribution {
     }
 
     /* Get the total number of Distributions in the database */
-    function objectGetEntriesCount($bQueued, $bRejected)
+    function objectGetEntriesCount($sState)
     {
         /* Not implemented */
-        if($bRejected)
+        if($sState == 'rejected')
             return FALSE;
 
         $hResult = query_parameters("SELECT count(distributionId) as num_dists FROM
                                      distributions WHERE state='?'",
-                                    $bQueued ? 'queued' : 'accepted');
+                                    $sState);
 
         if($hResult)
         {
@@ -555,27 +555,27 @@ class distribution {
         return array('name');
     }
 
-    function objectGetEntries($bQueued, $bRejected, $iRows = 0, $iStart = 0, $sOrderBy = "name", $bAscending = TRUE)
+    function objectGetEntries($sState, $iRows = 0, $iStart = 0, $sOrderBy = "name", $bAscending = TRUE)
     {
         /* Not implemented */
-        if($bRejected)
+        if($sState == 'rejected')
             return FALSE;
 
         /* Only users with edit privileges are allowed to view queued
            items, so return NULL in that case */
-        if($bQueued && !distribution::canEdit())
+        if($sState != 'accepted' && !distribution::canEdit())
             return NULL;
 
         $sOrder = $bAscending ? "ASC" : "DESC";
 
         /* If row limit is 0 we want to fetch all rows */
         if(!$iRows)
-            $iRows = distribution::objectGetEntriesCount($bQueued, $bRejected);
+            $iRows = distribution::objectGetEntriesCount($sState);
 
         $sQuery = "SELECT * FROM distributions
                        WHERE state = '?' ORDER BY $sOrderBy $sOrder LIMIT ?,?";
 
-        return query_parameters($sQuery, $bQueued ? 'queued' : 'accepted',
+        return query_parameters($sQuery, $sState,
                                 $iStart, $iRows);
     }
 

@@ -137,14 +137,14 @@ class testData_queue
         $this->oTestData->objectDisplayAddItemHelp();
     }
 
-    function objectGetEntries($bQueued, $bRejected, $iRows = 0, $iStart = 0, $sOrderBy = "testingId")
+    function objectGetEntries($sState, $iRows = 0, $iStart = 0, $sOrderBy = "testingId")
     {
-        return $this->oTestData->objectGetEntries($bQueued, $bRejected, $iRows, $iStart, $sOrderBy);
+        return $this->oTestData->objectGetEntries($sState, $iRows, $iStart, $sOrderBy);
     }
 
-    function objectGetEntriesCount($bQueued, $bRejected)
+    function objectGetEntriesCount($sState)
     {
-        return testData::objectGetEntriesCount($bQueued, $bRejected);
+        return testData::objectGetEntriesCount($sState);
     }
 
     function objectGetHeader()

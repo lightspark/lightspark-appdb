@@ -1421,16 +1421,14 @@ class version {
         return $sLink;
     }
 
-    public static function objectGetEntriesCount($bQueued, $bRejected)
+    public static function objectGetEntriesCount($sState)
     {
-        $sState = objectManager::getStateString($bQueued, $bRejected);
-
         $oVersion = new version();
-        if($bQueued && !$oVersion->canEdit())
+        if($sState != 'accepted' && !$oVersion->canEdit())
         {
             /* Users should see their own rejected entries, but maintainers should
                not be able to see rejected entries for versions they maintain */
-            if($bRejected)
+            if($sState == 'rejected')
                 $sQuery = "SELECT COUNT(DISTINCT appVersion.versionId) as count FROM
                         appVersion WHERE
                         appVersion.submitterId = '?'
@@ -1445,7 +1443,7 @@ class version {
                         AND
                         appMaintainers.userId = '?'
                         AND
-                        appMaintainers.queued = 'false'
+                        appMaintainers.state = 'accepted'
                         AND
                         appVersion.state = '?'";
 
@@ -1546,10 +1544,8 @@ class version {
         return array($aItemsPerPage, $iDefaultPerPage);
     }
 
-    public static function objectGetEntries($bQueued, $bRejected, $iRows = 0, $iStart = 0, $sOrderBy = "versionId")
+    public static function objectGetEntries($sState, $iRows = 0, $iStart = 0, $sOrderBy = "versionId")
     {
-        $sState = objectManager::getStateString($bQueued, $bRejected);
-
         $sLimit = "";
 
         /* Should we add a limit clause to the query? */
@@ -1560,14 +1556,14 @@ class version {
             /* Selecting 0 rows makes no sense, so we assume the user wants to select all of them
                after an offset given by iStart */
             if(!$iRows)
-                $iRows = maintainer::objectGetEntriesCount($bQueued, $bRejected);
+                $iRows = version::objectGetEntriesCount($sState);
         }
 
-        if($bQueued && !version::canEdit())
+        if($sState != 'accepted' && !version::canEdit())
         {
             /* Users should see their own rejected entries, but maintainers should
                not be able to see rejected entries for versions they maintain */
-            if($bRejected)
+            if($sState == 'rejected')
                 $sQuery = "SELECT * FROM appVersion WHERE
                         appVersion.submitterId = '?'
                         AND
@@ -1581,7 +1577,7 @@ class version {
                         AND
                         appMaintainers.userId = '?'
                         AND
-                        appMaintainers.queued = 'false'
+                        appMaintainers.state = 'accepted'
                         AND
                         appVersion.state = '?' ORDER BY ?$sLimit";
 

@@ -378,14 +378,14 @@ class application_queue
         return $this->oApp->objectGetItemsPerPage($sState);
     }
 
-    function objectGetEntriesCount($bQueued, $bRejected)
+    function objectGetEntriesCount($sState)
     {
-        return $this->oApp->objectGetEntriesCount($bQueued, $bRejected);
+        return $this->oApp->objectGetEntriesCount($sState);
     }
 
-    function objectGetEntries($bQueued, $bRejected, $iRows = 0, $iStart = 0, $sOrderBy = "appId", $bAscending = TRUE)
+    function objectGetEntries($sState, $iRows = 0, $iStart = 0, $sOrderBy = "appId", $bAscending = TRUE)
     {
-        return $this->oApp->objectGetEntries($bQueued, $bRejected, $iRows, $iStart,
+        return $this->oApp->objectGetEntries($sState, $iRows, $iStart,
                                              $sOrderBy, $bAscending);
     }
 

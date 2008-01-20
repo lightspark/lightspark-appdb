@@ -25,7 +25,7 @@ class downloadurl
         if(!$oRow)
         {
             $hResult = query_parameters("SELECT id, versionId, description, url,
-                submitTime, submitterId, queued FROM appData WHERE id = '?'",
+                submitTime, submitterId, state FROM appData WHERE id = '?'",
                     $iId);
 
             if($hResult && query_num_rows($hResult))
@@ -40,7 +40,7 @@ class downloadurl
             $this->sUrl = $oRow->url;
             $this->sSubmitTime = $oRow->submitTime;
             $this->iSubmitterId = $oRow->submitterId;
-            $this->bQueued = ($oRow->queued == "true") ? TRUE : FALSE;
+            $this->bQueued = ($oRow->state == 'queued') ? TRUE : FALSE;
         }
     }
 
@@ -321,11 +321,11 @@ class downloadurl
             return FALSE;
 
         $hResult = query_parameters("INSERT INTO appData (versionId, type,
-            description, url, queued, submitTime, submitterId)
+            description, url, state, submitTime, submitterId)
                 VALUES('?', '?', '?', '?', '?', ?, '?')",
                     $this->iVersionId, "downloadurl", $this->sDescription,
                     $this->sUrl,
-                    downloadurl::canEdit($this->iVersionId) ? "false" : "true",
+                    downloadurl::canEdit($this->iVersionId) ? 'accepted' : 'queued',
                     "NOW()",
                     $_SESSION['current']->iUserId);
 
@@ -427,10 +427,9 @@ class downloadurl
         return $oAppData->reject();
     }
 
-    function objectGetEntries($bQueued, $bRejected, $iRows = 0, $iStart = 0)
+    function objectGetEntries($sState, $iRows = 0, $iStart = 0)
     {
-        return appData::objectGetEntries($bQueued, $bRejected, $iRows, $iStart,
-                                         "downloadurl");
+        return appData::objectGetEntries($sState, $iRows, $iStart, 'downloadurl');
     }
 
     function objectGetHeader()

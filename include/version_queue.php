@@ -225,14 +225,14 @@ class version_queue
         return $this->oVersion->objectGetItemsPerPage($sState);
     }
 
-    function objectGetEntriesCount($bQueued, $bRejected)
+    function objectGetEntriesCount($sState)
     {
-        return $this->oVersion->objectGetEntriesCount($bQueued, $bRejected);
+        return $this->oVersion->objectGetEntriesCount($sState);
     }
 
-    function objectGetEntries($bQueued, $bRejected, $iRows = 0, $iStart = 0, $sOrderBy = "versionId")
+    function objectGetEntries($sState, $iRows = 0, $iStart = 0, $sOrderBy = "versionId")
     {
-        return $this->oVersion->objectGetEntries($bQueued, $bRejected, $iRows, $iStart,
+        return $this->oVersion->objectGetEntries($sState, $iRows, $iStart,
                                                  $sOrderBy);
     }
  

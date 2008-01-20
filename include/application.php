@@ -931,7 +931,7 @@ class Application {
         return $sLink;
     }
 
-    public static function objectGetEntries($bQueued, $bRejected, $iRows = 0, $iStart = 0, $sOrderBy = "appId", $bAscending = TRUE)
+    public static function objectGetEntries($sState, $iRows = 0, $iStart = 0, $sOrderBy = "appId", $bAscending = TRUE)
     {
         $sLimit = "";
         $sOrdering = $bAscending ? "ASC" : "DESC";
@@ -944,7 +944,7 @@ class Application {
             /* Selecting 0 rows makes no sense, so we assume the user wants to select all of them
                after an offset given by iStart */
             if(!$iRows)
-                $iRows = maintainer::objectGetEntriesCount($bQueued, $bRejected);
+                $iRows = application::objectGetEntriesCount($sState);
         }
 
         $sQuery = "SELECT appFamily.*, vendor.vendorName AS vendorName FROM appFamily, vendor WHERE
@@ -952,12 +952,10 @@ class Application {
                      AND
                      appFamily.state = '?'";
 
-        $sState = objectManager::getStateString($bQueued, $bRejected);
-
-        if($bQueued && !application::canEdit())
+        if($sState != 'accepted' && !application::canEdit())
         {
             /* Without global edit rights a user can only view his rejected apps */
-            if(!$bRejected)
+            if($sState != 'rejected')
                 return FALSE;
 
             $sQuery .= " AND appFamily.submitterId = '?' ORDER BY ? ?$sLimit";
@@ -1106,11 +1104,9 @@ class Application {
         }
     }
 
-    public static function objectGetEntriesCount($bQueued, $bRejected)
+    public static function objectGetEntriesCount($sState)
     {
-        $sState = objectManager::getStateString($bQueued, $bRejected);
-
-        if($bQueued && !application::canEdit())
+        if($sState != 'accepted' && !application::canEdit())
         {
             /* Without edit rights users can only resubmit their rejected entries */
             if(!$bRejected)

@@ -1139,13 +1139,13 @@ class testData{
         return $oRow->cnt;
     }
 
-    function objectGetEntriesCount($bQueued, $bRejected)
+    function objectGetEntriesCount($sState)
     {
         $oTest = new testData();
-        $sState = objectManager::getStateString($bQueued, $bRejected);
+
         if($bQueued && !$oTest->canEdit())
         {
-            if($bRejected)
+            if($sState == 'rejected')
             {
                 $sQuery = "SELECT COUNT(testingId) AS count FROM
                         testResults WHERE
@@ -1160,7 +1160,7 @@ class testData{
                             AND
                             appMaintainers.userId = '?'
                             AND
-                            appMaintainers.queued = 'false'
+                            appMaintainers.state = 'accepted'
                             AND
                             (
                                 (
@@ -1197,10 +1197,9 @@ class testData{
         return $oRow->count;
     }
 
-    function objectGetEntries($bQueued, $bRejected, $iRows = 0, $iStart = 0, $sOrderBy = "testingId")
+    function objectGetEntries($sState, $iRows = 0, $iStart = 0, $sOrderBy = "testingId")
     {
         $oTest = new testData();
-        $sState = objectManager::getStateString($bQueued, $bRejected);
 
         $sLimit = "";
 
@@ -1212,12 +1211,12 @@ class testData{
             /* Selecting 0 rows makes no sense, so we assume the user wants to select all of them
                after an offset given by iStart */
             if(!$iRows)
-                $iRows = testData::objectGetEntriesCount($bQueued, $bRejected);
+                $iRows = testData::objectGetEntriesCount($sState);
         }
 
-        if($bQueued && !$oTest->canEdit())
+        if($sState != 'accepted' && !$oTest->canEdit())
         {
-            if($bRejected)
+            if($sState == 'rejected')
             {
                 $sQuery = "SELECT testResults.* FROM testResults WHERE
                         testResults.submitterId = '?'
@@ -1245,7 +1244,7 @@ class testData{
                                 )
                             )
                             AND
-                            appMaintainers.queued = 'false'
+                            appMaintainers.state = 'accepted'
                             AND
                             testResults.state = '?' ORDER BY ?$sLimit";
             }

@@ -288,7 +288,7 @@ class Monitor {
         return "";
     }
 
-    function objectGetEntries($bQueued, $bRejected)
+    function objectGetEntries($sState)
     {
         $hResult = query_parameters("SELECT * FROM appMonitors");
 
@@ -298,7 +298,7 @@ class Monitor {
         return $hResult;
     }
 
-    function objectGetEntriesCount($bQueued, $bRejected)
+    function objectGetEntriesCount($sState)
     {
         $hResult = query_parameters("SELECT COUNT(DISTINCT monitorId) as count
                                     FROM appMonitors");

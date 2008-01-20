@@ -49,7 +49,7 @@ class appData
             $this->iVersionId = $oRow->versionId;
             $this->sSubmitTime = $oRow->submitTime;
             $this->iId = $iId;
-            $this->bQueued = ($oRow->sQueued == "false") ? false : true;
+            $this->bQueued = ($oRow->sState == 'accepted') ? false : true;
             $this->sDescription = $oRow->description;
         }
     }
@@ -79,8 +79,8 @@ class appData
         if(!$this->canEdit())
             return FALSE;
 
-        $sQuery = "UPDATE appData SET queued = '?' WHERE id = '?'";
-        $hResult = query_parameters($sQuery, "true", $this->iId);
+        $sQuery = "UPDATE appData SET state = '?' WHERE id = '?'";
+        $hResult = query_parameters($sQuery, 'queued', $this->iId);
 
         if(!$hResult)
             return FALSE;
@@ -93,8 +93,8 @@ class appData
         if(!$this->canEdit())
             return FALSE;
 
-        $sQuery = "UPDATE appData SET queued = '?' WHERE id = '?'";
-        $hResult = query_parameters($sQuery, "rejected", $this->iId);
+        $sQuery = "UPDATE appData SET state = '?' WHERE id = '?'";
+        $hResult = query_parameters($sQuery, 'rejected', $this->iId);
 
         if(!$hResult)
             return FALSE;
@@ -123,9 +123,9 @@ class appData
         $hResult = query_parameters("SELECT * FROM appData WHERE
                 appData.submitterId = '?'
                 AND
-                appData.queued = '?'
+                appData.state = '?'
                     ORDER BY appData.id",
-                        $iUserId, $bQueued ? "true" : "false");
+                        $iUserId, $bQueued ? 'queued' : 'accepted');
 
         if(!$hResult || !query_num_rows($hResult))
             return false;
@@ -194,11 +194,11 @@ class appData
         else
             $iAppId = $iId;
 
-        $sQueued = objectManager::getQueueString($bQueued, $bRejected);
+        $sState = objectManager::getStateString($bQueued, $bRejected);
 
         $hResult = query_parameters("SELECT * FROM appData WHERE appId = '?' AND
-                                     versionId = '?' AND TYPE = '?' AND queued = '?'",
-                                    $iAppId, $iVersionId, $sType, $sQueued);
+                                     versionId = '?' AND TYPE = '?' AND state = '?'",
+                                    $iAppId, $iVersionId, $sType, $sState);
 
         if(!$hResult || !query_num_rows($hResult))
             return FALSE;
@@ -206,26 +206,22 @@ class appData
         return $hResult;
     }
 
-    function objectGetEntriesCount($sQueued, $bRejected, $sType = null)
+    function objectGetEntriesCount($sState, $sType = null)
     {
         /* Not implemented for appData */
-        if($bRejected)
+        if($sState == 'rejected')
             return FALSE;
-
-        /* Compatibility with objectManager */
-        if($sQueued === true)
-            $sQueued = "true";
-        if($sQueued === false)
-            $sQueued = "false";
 
         $sSelectType = "";
 
-        if(($sQueued == "true" || $sQueued == "all") &&
+        if(($sState != 'accepted') &&
             !$_SESSION['current']->hasPriv("admin"))
         {
            $sQuery = "SELECT COUNT(DISTINCT appData.id) as count FROM appData,
            appMaintainers, appVersion, appFamily WHERE
                 appFamily.appId = appVersion.appId
+                AND
+                appMaintainers.state = 'accepted'
                 AND
                 appMaintainers.userId = '?'
                 AND
@@ -261,8 +257,8 @@ class appData
                 AND
                 appFamily.state = 'accepted'";
 
-            if($sQueued == "true")
-                $sQuery .= " AND appData.queued = 'true'";
+            if($sState != 'all')
+                $sQuery .= " AND appData.state = 'true'";
 
             if($sType)
             {
@@ -275,8 +271,8 @@ class appData
             }
         } else
         {
-            if($sQueued == "true" || $sQueued == "false")
-                $sAppDataQueued = " AND appData.queued = '$sQueued'";
+            if($sState != 'all')
+                $sAppDataQueued = " AND appData.state = '$sState'";
             else
                 $sAppDataQueued = '';
 
@@ -330,20 +326,23 @@ class appData
         return $oTableRow;
     }
 
-    function objectGetEntries($bQueued, $bRejected, $iRows = 0, $iStart = 0, $sType)
+    function objectGetEntries($sState, $iRows = 0, $iStart = 0, $sType)
     {
         /* Not implemented for appData */
-        if($bRejected)
+        if($sState == 'rejected')
             return FALSE;
 
         $sSelectType = "";
         $sLimit = "";
 
-        if($bQueued && !$_SESSION['current']->hasPriv("admin"))
+        if($sState != 'accepted' && !$_SESSION['current']->hasPriv("admin"))
         {
             $sQuery = "SELECT DISTINCT appData.* FROM appData, appMaintainers,
                 appVersion, appFamily WHERE
                 appFamily.appId = appVersion.appId
+                AND
+                AND
+                appMaintainers.state = 'accepted'
                 AND
                 appMaintainers.userId = '?'
                 AND
@@ -381,22 +380,21 @@ class appData
                 AND
                 appFamily.state = 'accepted'
                 AND
-                appData.queued = '?'
+                appData.state = '?'
                 AND
                 appData.type = '?'
                 ORDER BY appFamily.appName";
             if(!$iRows && !$iStart)
             {
                 $hResult = query_parameters($sQuery, $_SESSION['current']->iUserId,
-                                        $bQueued ? "true" : "false", $sType);
+                                            $sState, $sType);
             } else
             {
                 if(!$iRows)
-                    $iRows = appData::objectGetEntriesCount($bQueued ? "true" : "false",
-                                                            $bRejected, $sType);
+                    $iRows = appData::objectGetEntriesCount($sState, $sType);
                 $sQuery .= " LIMIT ?,?";
                 $hResult = query_parameters($sQuery, $_SESSION['current']->iUserId,
-                                            $bQueued ? "true" : "false", $sType,
+                                            $sState, $sType,
                                             $iStart, $iRows);
             }
         } else
@@ -416,7 +414,7 @@ class appData
                       AND
                       appFamily.state = 'accepted'
                       AND
-                      appData.queued = '?'
+                      appData.state = '?'
                       AND
                       appData.type = '?' ORDER BY appFamily.appName $sLimit
                     )
@@ -434,22 +432,21 @@ class appData
                       AND
                       appFamily.state = 'accepted'
                       AND
-                      appData.queued = '?'
+                      appData.state = '?'
                       AND
                       appData.type = '?' ORDER BY appFamily.appName $sLimit
                     )";
             if(!$iRows && !$iStart)
             {
-                $hResult = query_parameters($sQuery, $bQueued ? "true" : "false", $sType,
-                                           $bQueued ? "true" : "false", $sType);
+                $hResult = query_parameters($sQuery, $sState, $sType,
+                                            $sState, $sType);
             } else
             {
                 if(!$iRows)
-                    $iRows = appData::objectGetEntriesCount($bQueued ? "true" : "false",
-                                                            $bRejected, $sType);
-                $hResult = query_parameters($sQuery, $bQueued ? "true" : "false", $sType,
+                    $iRows = appData::objectGetEntriesCount($sState, $sType);
+                $hResult = query_parameters($sQuery, $sState, $sType,
                                             $iStart, $iRows,
-                                            $bQueued ? "true" : "false", $sType,
+                                            $sState, $sType,
                                             $iStart, $iRows);
             }
         }
