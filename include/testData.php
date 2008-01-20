@@ -1143,7 +1143,7 @@ class testData{
     {
         $oTest = new testData();
 
-        if($bQueued && !$oTest->canEdit())
+        if($sState != 'accepted' && !$oTest->canEdit())
         {
             if($sState == 'rejected')
             {

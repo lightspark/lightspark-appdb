@@ -40,7 +40,7 @@ function global_sidebar_login() {
         }
 
         /* Display the user's rejected applications */
-        $iAppsRejected = application::objectGetEntriesCount(true, true);
+        $iAppsRejected = application::objectGetEntriesCount('rejected');
         if($iAppsRejected && !$_SESSION['current']->hasPriv("admin"))
         {
           $g->add("Review Rejected Apps ($iAppsRejected)", BASE."objectManager.php?".
@@ -49,7 +49,7 @@ function global_sidebar_login() {
         }
 
         /* Display the user's rejected versions */
-        $iVersionsRejected = version::objectGetEntriesCount(true, true);
+        $iVersionsRejected = version::objectGetEntriesCount('rejected');
         if($iVersionsRejected && !$_SESSION['current']->hasPriv("admin"))
         {
             $g->add("Review Rejected Versions ($iVersionsRejected)",
@@ -58,7 +58,7 @@ function global_sidebar_login() {
         }
 
         /* Display the user's rejected test results */
-        $iTestDataRejected = testData::objectGetEntriesCount(true, true);
+        $iTestDataRejected = testData::objectGetEntriesCount('rejected');
         if($iTestDataRejected && !$_SESSION['current']->hasPriv("admin"))
             $g->add("Review Rejected Test Results ($iTestDataRejected)",
                     BASE."objectManager.php?sClass=testData_queue&".
