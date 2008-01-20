@@ -359,10 +359,12 @@ class Comment {
                 Comment::view_app_comment($oRow);
             } else
             {
-                echo '<li><a href="commentview.php?iAppId='.$oRow->appId.'&amp;iVersionId='.$oRow->versionId.'&iThreadId='.$oRow->parentId.'"> '.
-                    $oRow->subject.' </a> by '.forum_lookup_user($oRow->userId).' on '.$oRow->time.' </li>'."\n";
+                echo "<li><a href=\"commentview.php?iAppId={$oRow->appId}&amp;iVersionId=".
+                     "{$oRow->versionId}&iThreadId={$oRow->parentId}\" ".
+                     "name=\"Comment-{$oRow->commentId}\"> ".
+                     $oRow->subject.' </a> by '.forum_lookup_user($oRow->userId).' on '.$oRow->time.' </li>'."\n";
             }
-        
+
             $hResult2 = Comment::grab_comments($oRow->versionId, $oRow->commentId);
             if ($hResult2 && query_num_rows($hResult2))
             {
