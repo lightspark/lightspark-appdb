@@ -384,12 +384,12 @@ class downloadurl
 
     function unQueue()
     {
-        if(!$this->canEdit($this->iVersionId))
+        if($this->mustBeQueued())
             return FALSE;
 
-        $hResult = query_parameters("UPDATE appData SET queued = '?'
+        $hResult = query_parameters("UPDATE appData SET state = '?'
                    WHERE id = '?'",
-                       "false", $this->iId);
+                       'accepted', $this->iId);
 
         if(!$hResult)
             return FALSE;
