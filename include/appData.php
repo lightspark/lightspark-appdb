@@ -341,7 +341,6 @@ class appData
                 appVersion, appFamily WHERE
                 appFamily.appId = appVersion.appId
                 AND
-                AND
                 appMaintainers.state = 'accepted'
                 AND
                 appMaintainers.userId = '?'

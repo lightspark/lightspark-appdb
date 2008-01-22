@@ -652,10 +652,10 @@ class screenshot
     function objectGetEntries($sState, $iRows = 0, $iStart = 0)
     {
         return appData::objectGetEntries($sState, $iRows, $iStart,
-                                         "screenshot");
+                                         'screenshot');
     }
 
-    function objectGetEntriesCount($sState, $iRows = 0, $iStart = 0)
+    function objectGetEntriesCount($sState)
     {
         return appData::objectGetEntriesCount($sState, 'screenshot');
     }
