@@ -14,6 +14,9 @@ class application_queue
     {
         $this->oApp = new application($iAppId, $oRow);
 
+        $iVersionId = null;
+        $iVendorId = null;
+
         /* If this is an existing application then there must be a version
            accompanying it */
         if($this->oApp->iAppId)
@@ -35,11 +38,6 @@ class application_queue
                 }
             }
             $iVendorId = $this->oApp->iVendorId;
-        }
-        else
-        {
-            $iVersionId = null;
-            $iVendorId = null;
         }
 
         $this->oVendor = new vendor($iVendorId);
