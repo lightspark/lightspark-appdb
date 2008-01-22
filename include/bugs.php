@@ -175,8 +175,8 @@ class Bug
         if(!$this->bQueued)
             return false;
 
-        if(query_parameters("UPDATE buglinks SET queued = '?' WHERE linkId='?'",
-                            "false", $this->iLinkId))
+        if(query_parameters("UPDATE buglinks SET state = '?' WHERE linkId='?'",
+                            'accepted', $this->iLinkId))
         {
             $this->bQueued = false;
             // we send an e-mail to interested people
