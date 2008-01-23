@@ -114,6 +114,8 @@ class Vendor {
         if(!$hResult)
             return FALSE;
 
+        $this->sState = 'accepted';
+
         return TRUE;
     }
 
