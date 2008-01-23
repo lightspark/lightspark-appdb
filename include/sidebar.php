@@ -29,8 +29,8 @@ function global_sidebar_menu()
             "sTitle=Submit+Application&sAction=add");
     $g->add("Help &amp; Documentation", BASE."help/");
     $g->add("Statistics", BASE."appdbStats.php");
-    $g->add("Distributions (".distribution::objectGetEntriesCount(false, false).")", BASE.'objectManager.php?sClass=distribution&sTitle=View%20Distributions');
-    $g->add("Vendors (".vendor::objectGetEntriesCount(false, false).")", BASE.'objectManager.php?sClass=vendor&sTitle=View%20Vendors');
+    $g->add('Distributions ('.distribution::objectGetEntriesCount('accepted').')', BASE.'objectManager.php?sClass=distribution&sTitle=View%20Distributions');
+    $g->add('Vendors ('.vendor::objectGetEntriesCount('accepted').')', BASE.'objectManager.php?sClass=vendor&sTitle=View%20Vendors');
     $g->add("Email your suggestions for improving the AppDB", "mailto:appdb@winehq.org");
     $g->done();
 
