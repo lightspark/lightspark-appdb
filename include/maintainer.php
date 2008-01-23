@@ -281,6 +281,7 @@ class maintainer
 
                     mail_appdb($sEmail, $sSubject ,$sMsg);
                 }
+                $this->sState = 'accepted';
             }
         } else
         {
