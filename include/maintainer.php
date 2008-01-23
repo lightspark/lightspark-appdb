@@ -514,7 +514,7 @@ class maintainer
     /* see how many unique maintainers we actually have */
     function getNumberOfMaintainers()
     {
-        $hResult = query_parameters("SELECT DISTINCT userId FROM appMaintainers WHERE queued='false';");
+        $hResult = query_parameters("SELECT DISTINCT userId FROM appMaintainers WHERE state='accepted';");
         return query_num_rows($hResult);
     }
 

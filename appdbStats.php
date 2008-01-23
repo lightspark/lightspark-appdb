@@ -60,13 +60,13 @@ echo "</tr>\n\n";
 /* Display the number of application familes */
 echo "<tr class=color4>\n";
 echo "    <td>Application families:</td>\n";
-echo "    <td>".application::objectGetEntriesCount(false, false)."</td>\n";
+echo "    <td>".application::objectGetEntriesCount('accepted')."</td>\n";
 echo "</tr>\n\n";
 
 /* Display the number of versions */
 echo "<tr class=color4>\n";
 echo "    <td>Versions:</td>\n";
-echo "    <td>".version::objectGetEntriesCount(false, false)."</td>\n";
+echo "    <td>".version::objectGetEntriesCount('accepted')."</td>\n";
 echo "</tr>\n\n";
 
 /* Display the number of application maintainers */
@@ -75,16 +75,16 @@ echo "    <td>Application maintainers:</td>\n";
 echo "    <td>".Maintainer::getNumberOfMaintainers()."</td>\n";
 echo "</tr>\n\n";
 
-/* Display the number of testing reports */
+/* Display the number of test reports */
 echo "<tr class=color4>\n";
-echo "    <td>Testing reports:</td>\n";
-echo "    <td>".testData::objectGetEntriescount(false, false)."</td>\n";
+echo "    <td>Test reports:</td>\n";
+echo "    <td>".testData::objectGetEntriescount('accepted')."</td>\n";
 echo "</tr>\n\n";
 
 /* Display the number of images */
 echo "<tr class=color4>\n";
 echo "    <td>Screenshots:</td>\n";
-echo "    <td>".appData::objectGetEntriesCount("false", false, "screenshot")."</td>\n";
+echo "    <td>".screenshot::objectGetEntriesCount('accepted')."</td>\n";
 echo "</tr>\n\n";
 	
 echo "</table>\n\n";
