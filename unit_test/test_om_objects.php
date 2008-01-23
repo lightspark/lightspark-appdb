@@ -111,13 +111,12 @@ function test_class($sClassName, $aTestMethods)
                 {
                     error("Got $iReceived instead of >= $iExpected");
                     error("FAILED\t\t$sClassName::$sMethod");
-                    $oTestObject->purge();
+                    cleanup_and_purge($oTestObject, $oUser);
                     return FALSE;
                 }
 
                 /* Class specific clean-up */
-                cleanup($oTestObject);
-                $oTestObject->purge();
+                cleanup_and_purge($oTestObject, $oUser);
 
                 echo "PASSED\t\t$sClassName::$sMethod\n";
             break;
@@ -181,6 +180,18 @@ function cleanup($oObject)
             $oApp->purge();
         break;
     }
+}
+
+function cleanup_and_purge($oObject, $oUser)
+{
+    $bWasAdmin = $oUser->hasPriv('admin');
+
+    $oUser->addPriv('admin');
+    cleanup($oObject);
+    $oObject->purge();
+
+    if(!$bWasAdmin)
+        $oUser->delPriv('admin');
 }
 
 function create_object($sClassName, $oUser, $bAsAdmin = true)
