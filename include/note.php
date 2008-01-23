@@ -327,6 +327,20 @@ class Note {
         return $hResult;
     }
 
+    function objectGetEntriesCount($sState)
+    {
+        $sQuery = "SELECT COUNT(DISTINCT noteId) as count FROM appNotes";
+        $hResult = query_parameters($sQuery);
+
+        if(!$hResult)
+            return false;
+
+        if(($oRow = mysql_fetch_object($hResult)))
+            return $oRow->count;
+
+        return false;
+    }
+
     //TODO: not sure how to best let users view a table of notes
     //      since the note contents could be very long we would only
     //      want to show a small amount of the text. Implement this

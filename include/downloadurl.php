@@ -437,6 +437,11 @@ class downloadurl
         return appData::objectGetEntries($sState, $iRows, $iStart, 'downloadurl');
     }
 
+    function objectGetEntriesCount($sState)
+    {
+        return appData::objectGetEntriesCount($sState, 'downloadurl');
+    }
+
     function objectGetHeader()
     {
         return appData::objectGetHeader("downloadurl");

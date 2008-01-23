@@ -97,9 +97,7 @@ function test_class($sClassName, $aTestMethods)
     {
         switch($sMethod)
         {
-            /* Should also test for queued entries, but vendor does not support
-               queueing yet */
-            case "objectGetEntries":
+            case 'objectGetEntries':
                 if(!$oTestObject = create_object($sClassName, $oUser))
                     return FALSE;
 
@@ -115,8 +113,38 @@ function test_class($sClassName, $aTestMethods)
                     return FALSE;
                 }
 
+                /* Create an object as a regular user */
+                $oTestObject2 = create_object($sClassName, $oUser, false);
+
+                /* objectGetEntries() and objectGetEntriesCount() should return matching results */
+                $iExpected = mysql_num_rows($oTestObject2->objectGetEntries('accepted'));
+                $iReceived = $oTestObject2->objectGetEntriesCount('accepted');
+                if($iExpected != $iReceived)
+                {
+                    error("ObjectGetEntriesCount returned $iReceived, objectGetEntries fetched $iExpected rows\n");
+                    error("FAILED\t\t$sClassName::$sMethod");
+                    cleanup_and_purge($oTestObject, $oUser);
+                    cleanup_and_purge($oTestObject2, $oUser);
+                    return false;
+                }
+
+                /* Now test for queued objects, as admin */
+                $oUser->addPriv('admin');
+                $iExpected = mysql_num_rows($oTestObject2->objectGetEntries('queued'));
+                $iReceived = $oTestObject2->objectGetEntriesCount('queued');
+                $oUser->delPriv('admin');
+                if($iExpected != $iReceived)
+                {
+                    error("ObjectGetEntriesCount returned $iReceived, objectGetEntries fetched $iExpected rows\n");
+                    error("FAILED\t\t$sClassName::$sMethod");
+                    cleanup_and_purge($oTestObject, $oUser);
+                    cleanup_and_purge($oTestObject2, $oUser);
+                    return false;
+                }
+
                 /* Class specific clean-up */
                 cleanup_and_purge($oTestObject, $oUser);
+                cleanup_and_purge($oTestObject2, $oUser);
 
                 echo "PASSED\t\t$sClassName::$sMethod\n";
             break;
@@ -190,6 +218,14 @@ function cleanup_and_purge($oObject, $oUser)
     cleanup($oObject);
     $oObject->purge();
 
+    switch(get_class($oObject))
+    {
+        case 'application':
+            $oVendor = new vendor($oObject->iVendorId);
+            $oVendor->purge();
+        break;
+    }
+
     if(!$bWasAdmin)
         $oUser->delPriv('admin');
 }
@@ -203,6 +239,13 @@ function create_object($sClassName, $oUser, $bAsAdmin = true)
     /* Set up one test entry, depending on class */
     switch($sClassName)
     {
+        // Some application functions require a vendor to be set
+        case 'application':
+            $oVendor = new vendor();
+            $oVendor->create();
+            $oTestObject->iVendorId = $oVendor->objectGetId();
+        break;
+
         case "bug":
           // create a bug in the bugzilla database, we need a valid
           // bug id to create a bug entry
@@ -304,6 +347,7 @@ function test_object_methods()
                           "mustBeQueued",
                           "objectGetChildren",
                           "objectGetEntries",
+                          'objectGetEntriesCount',
                           "objectGetHeader",
                           "objectGetId",
                           "objectGetMail",
