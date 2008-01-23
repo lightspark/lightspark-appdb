@@ -462,6 +462,11 @@ class Bug
         return $sLink;
     }
 
+    function objectGetState()
+    {
+        return ($this->bQueued) ? 'queued' : 'accepted';
+    }
+
     function canEdit()
     {
         if($_SESSION['current']->hasPriv("admin"))

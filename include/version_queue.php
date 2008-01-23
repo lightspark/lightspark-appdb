@@ -205,6 +205,11 @@ class version_queue
         return $sErrors;
     }
 
+    function objectGetState()
+    {
+        return $this->oVersion->objectGetState();
+    }
+
     function canEdit()
     {
         return $this->oVersion->canEdit();

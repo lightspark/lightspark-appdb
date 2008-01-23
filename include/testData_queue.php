@@ -122,6 +122,11 @@ class testData_queue
         return $this->oTestData->checkOutputEditorInput($aClean);
     }
 
+    function objectGetState()
+    {
+        return $this->oTestData->objectGetState();
+    }
+
     function canEdit()
     {
         return $this->oTestData->canEdit();

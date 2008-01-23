@@ -249,6 +249,11 @@ class downloadurl
         return TRUE;
     }
 
+    function objectGetState()
+    {
+        return ($this->bQueued) ? 'queued' : 'accepted';
+    }
+
     function canEdit($iVersionId = NULL)
     {
         if($_SESSION['current']->hasPriv("admin") ||

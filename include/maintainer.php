@@ -675,6 +675,11 @@ class maintainer
         echo "</td></tr></table></div>\n\n";    
     }
 
+    function objectGetState()
+    {
+        return $this->sState;
+    }
+
     function canEdit()
     {
         if($_SESSION['current']->hasPriv("admin") || $this->iUserId == $_SESSION['current']->iUserId)

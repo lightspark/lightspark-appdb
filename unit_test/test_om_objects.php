@@ -121,6 +121,30 @@ function test_class($sClassName, $aTestMethods)
 
                 echo "PASSED\t\t$sClassName::$sMethod\n";
             break;
+            case 'unQueue':
+                $bSuccess = true;
+                $oTestObject = create_object($sClassName, $oUser, false);
+
+                $oUser->addPriv('admin');
+                $oTestObject->unQueue();
+
+                $iReceived = $oTestObject->objectGetState();
+                $iExpected = 'accepted';
+                if($iReceived != $iExpected)
+                {
+                    error("Got queue state of $iReceived instead of $iExpected\n");
+                    error("FAILED\t\t$sClassName::$sMethod");
+                    $bSuccess = false;
+                }
+                cleanup($oTestObject);
+                $oTestObject->purge();
+                $oUser->delPriv('admin');
+
+                if(!$bSuccess)
+                    return $bSuccess;
+
+                echo "PASSED\t\t$sClassName::$sMethod\n";
+            break;
         }
     }
 
@@ -159,9 +183,11 @@ function cleanup($oObject)
     }
 }
 
-function create_object($sClassName, $oUser)
+function create_object($sClassName, $oUser, $bAsAdmin = true)
 {
-    $oUser->addPriv("admin");
+    if($bAsAdmin)
+        $oUser->addPriv("admin");
+
     $oTestObject = new $sClassName();
     /* Set up one test entry, depending on class */
     switch($sClassName)
@@ -188,7 +214,15 @@ function create_object($sClassName, $oUser)
             $oTestObject->iVersionId = create_version_and_parent_app("create_object_downloadurl");
         break;
         case "maintainer":
+            /* We create the version as admin anyway to avoid the maintainer entry getting a state of 'pending' */
+            if(!$bAsAdmin)
+                $oUser->addPriv('admin');
+
             $iVersionId = create_version_and_parent_app("create_object_maintainer");
+
+            if(!$bAsAdmin)
+                $oUser->delPriv('admin');
+
             $oVersion = new version($iVersionId);
             $oTestObject->iUserId = $oUser->iUserId;
             $oTestObject->iAppId = $oVersion->iAppId;
@@ -242,6 +276,9 @@ function create_object($sClassName, $oUser)
         $oTestObject->iScreenshotId = query_appdb_insert_id();
     }
 
+    if($bAsAdmin)
+        $oUser->delPriv('admin');
+
     return $oTestObject;
 }
 
@@ -260,12 +297,14 @@ function test_object_methods()
                           "objectGetId",
                           "objectGetMail",
                           "objectGetMailOptions",
+                          'objectGetState',
                           "objectGetSubmitterId",
                           "objectGetTableRow",
                           "objectMakeLink",
                           "objectMakeUrl",
                           "outputEditor",
-                          "purge"
+                          'purge',
+                          'unQueue'
                          );
 
     $aTestClasses = array("application",

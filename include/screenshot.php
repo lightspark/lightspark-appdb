@@ -665,6 +665,11 @@ class screenshot
         return appData::objectGetHeader("screenshot");
     }
 
+    function objectGetState()
+    {
+        return ($this->bQueued) ? 'queued' : 'accepted';
+    }
+
     function canEdit()
     {
         if($this)

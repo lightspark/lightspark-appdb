@@ -107,6 +107,11 @@ class Monitor {
         return TRUE;
     }
 
+    function unQueue()
+    {
+        return true; // We don't queue monitors
+    }
+
     function objectGetSubmitterId()
     {
         return $this->iUserId;
@@ -224,6 +229,12 @@ class Monitor {
         $sEmail = User::get_notify_email_address_list(null, $this->iVersionId);
         if($sEmail)
             mail_appdb($sEmail, $sSubject ,$sMsg);
+    }
+
+    function objectGetState()
+    {
+        // We don't queue monitors
+        return 'accepted';
     }
 
     function canEdit()

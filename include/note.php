@@ -77,6 +77,11 @@ class Note {
     }
 
 
+    function unQueue()
+    {
+        return true; // We don't queue notes
+    }
+
     /**
      * Update note.
      * Returns true on success and false on failure.
@@ -370,6 +375,11 @@ class Note {
         $sLink = "<a href=\"".$this->objectMakeUrl()."\">".
                  $this->sTitle."</a>";
         return $sLink;
+    }
+
+    function objectGetState()
+    {
+        return 'accepted'; // We don't queue notes
     }
 
     // users can edit the note if they:

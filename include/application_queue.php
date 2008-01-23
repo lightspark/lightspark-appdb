@@ -259,6 +259,11 @@ class application_queue
         return $sErrors;
     }
 
+    function objectGetState()
+    {
+        return $this->oApp->objectGetState();
+    }
+
     function canEdit()
     {
         return $this->oApp->canEdit();
