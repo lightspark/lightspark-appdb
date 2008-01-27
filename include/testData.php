@@ -183,9 +183,6 @@ class testData{
                     $oOldTest->sTestedRelease." to $this->sTestedRelease.\n";
         }
 
-        if($bUpdateRatingInfo && $this->sState == 'accepted')
-            $oVersion->updateRatingInfo();
-
         if($this->iVersionId != $oOldTest->iVersionId)
         {
             $sWhatChanged .= 'Moved from '.version::fullName($oOldTest->iVersionId).' to '.version::fullName($this->iVersionId)."\n";
@@ -228,6 +225,9 @@ class testData{
                             $this->sState,
                             $this->iTestingId))
         {
+            if($bUpdateRatingInfo && $this->sState == 'accepted')
+                $oVersion->updateRatingInfo();
+
             if(!$bSilent)
                 $this->SendNotificationMail("edit", $sWhatChanged);
             return true;
