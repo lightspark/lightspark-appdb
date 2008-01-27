@@ -59,7 +59,7 @@ class version_queue
     {
         $oApp = new application($this->oVersion->iAppId);
 
-        if($oApp->sQueued == "false")
+        if($oApp->objectGetState() == 'accepted')
             $this->oVersion->reject();
 
         if($this->oDownloadUrl->iId)
