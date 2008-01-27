@@ -58,7 +58,7 @@ if(!$_SESSION['current']->isLoggedIn())
 ?>
 <?php
 
-    $iNumApps = version::objectGetEntriesCount(false, false);
+    $iNumApps = version::objectGetEntriesCount('accepted');
 
     $voteQuery = "SELECT appVotes.versionId, count(userId) as count ".
         "FROM appVotes ".
