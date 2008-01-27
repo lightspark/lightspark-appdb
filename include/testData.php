@@ -613,13 +613,12 @@ class testData{
         $oTableRow->AddTextCell($oSubmitter->objectMakeLink().'&nbsp');
         if ($this->iTestingId && $_SESSION['current']->hasAppVersionModifyPermission($oVersion))
         {
-            $oObject = new objectManager("testData");
-            $oTableRow->AddTextCell('<a href="'.$oObject->makeUrl("edit", $this->iTestingId,
-                                    "Edit Test Results").'">'.
-                                    'Edit</a> &nbsp; ',"\n".
-                                    '<a href="objectManager.php?sClass=testData&bIsQueue=false&sAction='.
-                                    'delete&iId='.$this->iTestingId.'&sTitle=Delete+Test+Results'.
-                                    '">Delete</a></td>',"\n");
+            $oObject = new objectManager('testData');
+            $oTableRow->AddTextCell('<a href="'.$oObject->makeUrl('edit', $this->iTestingId,
+                                    'Edit Test Results').'&sReturnTo='.urlencode($_SERVER['REQUEST_URI']).'">'.
+                                    'Edit</a> &nbsp; '."\n".
+                                    '<a href="'.$oObject->makeUrl('delete', $this->iTestingId, 'Delete+Test+Results').
+                                    '&sReturnTo='.urlencode($_SERVER['REQUEST_URI']).'">Delete</a></td>'."\n");
         }
 
         // if this is a clickable row, set the appropriate property
