@@ -79,7 +79,7 @@ function query_parameters()
     if(!is_resource($hAppdbLink))
     {
         // The last argument makes sure we are really opening a new connection
-        $hAppdbLink = mysql_connect(APPS_DBHOST, APPS_DBUSER, APPS_DBPASS, true);
+        $hAppdbLink = mysql_connect(APPS_DBHOST, APPS_DBUSER, APPS_DBPASS, true) or die('Database error, please try again soon: '.mysql_error());
         mysql_select_db(APPS_DB, $hAppdbLink);
     }
 
