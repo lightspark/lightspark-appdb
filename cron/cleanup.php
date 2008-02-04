@@ -34,7 +34,7 @@ removeScreenshotsWithMissingFiles();
 maintainerCheck();
 
 /* Updates the rating info for all versions based on test results */
-updateRatings();
+//updateRatings();
 
 /*
  * Warn users that have been inactive for some number of months
