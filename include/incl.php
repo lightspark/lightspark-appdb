@@ -268,16 +268,18 @@ function purgeSessionMessages()
 function dumpmsgbuffer()
 {
     $GLOBALS['session']->dumpmsgbuffer();
-
-    echo html_frame_start("","300","",5);
-    foreach ($GLOBALS['session']->msg as $msg)
+    if (is_array($GLOBALS['session']->msg) and count($GLOBALS['session']->msg) > 0)
     {
-        if ($msg['color'] == "red")
-           $msg['color'] = "{$msg['color']};text-decoration:blink";
-        echo "<div align=\"center\" style=\"font-color:{$msg['color']};\"> {$msg['msg']} </div>";
+        echo html_frame_start("","300","",5);
+        foreach ($GLOBALS['session']->msg as $msg)
+        {
+            if ($msg['color'] == "red")
+               $msg['color'] = "{$msg['color']};text-decoration:blink";
+            echo "<div align=\"center\" style=\"font-color:{$msg['color']};\"> {$msg['msg']} </div>";
+        }
+        echo html_frame_end("&nbsp;");
+        echo "<br>\n";
     }
-    echo html_frame_end("&nbsp;");
-    echo "<br>\n";
 }
 
 /**
