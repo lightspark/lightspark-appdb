@@ -2,25 +2,36 @@
 
 /*
  * session.php - session handler functions
- * sessions are stored in a database table
+ * sessions are stored in memcached
+ * http://www.danga.com/memcached/
  */
-
-/* the number of days a session cookie is flaged to last */
-define("SESSION_DAYS_TO_EXPIRE", 2);
 
 class session
 {
+    // defines
+    var $_server;
+    var $_expire;
+    var $_db;
+    var $name;
+    var $msg;
+    
     // create session object
-    function session ($name)
+    function session ($name, $server = "127.0.0.1", $expire = 2)
     {
+        // set the connection server
+        $this->_server = $server;
+        
+        // set the session and cookie expiration time in days (default 30 days)
+        $this->_expire = (60 * 60 * 24 * $expire);
+
         // set name for this session
         $this->name = $name;
 
         // define options for sessions
         ini_set('session.name', $this->name);
         ini_set('session.use_cookies', true);
-        ini_set('session.use_only_cookies', true);	
-
+        ini_set('session.use_only_cookies', true);
+        
         // setup session object
         session_set_save_handler(
                                  array(&$this, "_open"), 
@@ -31,14 +42,20 @@ class session
                                  array(&$this, "_gc")
                                 );
         
-        // default lifetime on session cookie (SESSION_DAYS_TO_EXPIRE days)
+        // default lifetime on session cookie
         session_set_cookie_params(
-                                  (60*60*24*SESSION_DAYS_TO_EXPIRE),
+                                  $this->_expire,
                                   '/'
                                  );
         
         // start the loaded session
-        session_start();   
+        session_start();
+        
+        // make sure we have a valid memcache server connection
+        if (!$this->_db->getVersion())
+        {
+            trigger_error("Unable to Connect to Session Server", E_USER_ERROR);
+        }
     }
 
     // register variables into session (dynamic load and save of vars)
@@ -57,52 +74,91 @@ class session
     // destroy session
     function destroy ()
     {
-        if(session_id() != "")
-            session_destroy();
+        session_destroy();
     }
-    
-    // open session file (not needed for DB access)        
-    function _open ($save_path, $session_name) { return true; }
 
-    // close session file (not needed for DB access)
-    function _close () { return true; }
-    
-    // read session
-    function _read ($key)
+    // add alert message to buffer that will be displayed on the Next page view of the same user in html class
+    function addmsg ($text, $color = "black")
     {
-        $result = query_parameters("SELECT data FROM session_list WHERE session_id = '?'", $key);
-        if (!$result) { return null; }
-        $oRow = query_fetch_object($result);
-        if($oRow)
-            return $oRow->data; 
+        if (!isset($_SESSION['_msg']))
+            $_SESSION['_msg'] = array();
+        $_SESSION['_msg'][] = array(
+                                     'msg'   => $text,
+                                     'color' => $color
+                                    );
+    }
+
+    // add alert message that will be displayed on the current page output in html class
+    function alert ($text, $color = "black")
+    {
+        $this->msg[] = array(
+                             'msg'   => $text,
+                             'color' => $color
+                            );
+    }
+
+    // clear session messages
+    function purgemsg ()
+    {
+        $this->msg[] = array();
+        $_SESSION['_msg'][] = array();
+    }
+
+    // output msg_buffer and clear it.
+    function dumpmsgbuffer ()
+    {
+        if (isset($_SESSION['_msg']) and is_array($_SESSION['_msg']))
+        {
+            foreach ($_SESSION['_msg'] as $alert)
+            {
+                $this->msg[] = $alert;
+            }
+        }
+        $_SESSION['_msg'] = array();
+    }
+
+    // connect to session
+    function _open ($save_path, $session_name)
+    {
+        $this->_db = new Memcache;
+        return $this->_db->connect($this->_server, "11211");
+    }
+
+    // close the session
+    function _close ()
+    {
+        return $this->_db->close();
+    }
+
+    // restore a session from memory
+    function _read ($id)
+    {
+        return $this->_db->get($id);
+    }
+
+    // write the session
+    function _write ($id, $data)
+    {
+        if ($this->_db->get($id))
+        {
+            $this->_db->replace($id, $data, null, $this->_expire);
+        }
         else
-            return NULL;
+        {
+            $this->_db->set($id, $data, null, $this->_expire);
+        }
+        return true;
     }
-    
-    // write session to DB
-    function _write ($key, $value)
-    {
-        $messages = "";
-        if(isset($GLOBALS['msg_buffer']))
-            $messages = implode("|", $GLOBALS['msg_buffer']);
 
-        query_parameters("REPLACE session_list VALUES ('?', '?', '?', '?', '?', ?)",
-                         $key, $_SESSION['current']->iUserId, get_remote(), $value, $messages, "NOW()");
-        return true;
-    }
-    
-    // delete current session
-    function _destroy ($key)
+    // Delete the Session
+    function _destroy ($id)
     {
-        query_parameters("DELETE FROM session_list WHERE session_id = '?'", $key);
-        return true;
+        return $this->_db->delete($id);
     }
-    
-    // clear old sessions (moved into a separate cron process)
+
+    // Garbage Collector (Not Needed for MemCache)
     function _gc ($maxlifetime)
     {
-        query_parameters("DELETE FROM session_list WHERE to_days(now()) - to_days(stamp) >= '?'",
-                         SESSION_DAYS_TO_EXPIRE);
         return true;
     }
 

@@ -104,7 +104,6 @@ class table_counts
                                       'testResults',
                                       'user_list',
                                       'user_privs',
-                                      'sessionMessages',
                                       'vendor');
 
         $this->update_counts();

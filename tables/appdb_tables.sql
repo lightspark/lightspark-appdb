@@ -13,7 +13,6 @@ drop table if exists appData;
 drop table if exists appBundle;
 drop table if exists appVotes;
 drop table if exists appNotes;
-drop table if exists sessionMessages;
 
 
 /*
@@ -176,15 +175,3 @@ create table appNotes (
 	key(noteId)
 );
 
-
-/*
- *
- */
-create table sessionMessages (
-	id		int not null auto_increment,
-	time		datetime,
-	sessionId	varchar(32),
-	message		text,
-	key(id),
-	index(sessionId)
-);

@@ -16,12 +16,6 @@ inactiveUserCheck();
 /* check to see if there are orphaned versions in the database */
 orphanVersionCheck();
 
-/* check and purge any orphaned messages stuck in sessionMessages table */
-orphanSessionMessagesCheck();
-
-/* check and purge any expired sessions from the session_list table */
-orphanSessionListCheck();
-
 /* report error log entries to admins and flush the error log after doing so */
 reportErrorLogEntries();
 
@@ -195,65 +189,6 @@ function orphanVersionCheck()
     $sEmail = User::get_notify_email_address_list(null, null); /* get list admins */
     if($sEmail)
         mail_appdb($sEmail, $sSubject, $sMsg);
-}
-
-/* this function checks to see if we have any orphaned session messages */
-/* These orphaned messages are an indication that we've put a message into */
-/* the system without displaying it and it becomes effectively lost forever */
-/* so we'll want to purge them here after reporting how many we have */
-function orphanSessionMessagesCheck()
-{
-    global $sEmailSubject;
-
-    $iSessionMessageDayLimit = 1; /* the number of days a session message must be stuck before being purges */
-
-    /* get a count of the messages older than $iSessionMessageDayLimit */
-    $sQuery = "SELECT count(*) as cnt from sessionMessages where TO_DAYS(NOW()) - TO_DAYS(time) > ?";
-    $hResult = query_parameters($sQuery, $iSessionMessageDayLimit);
-
-    $oRow = query_fetch_object($hResult);
-    $iMessages = $oRow->cnt;
-
-    $sMsg = "Found ".$iMessages." that have been orphaned in the sessionMessages table for longer than ".$iSessionMessageDayLimit." days\r\n";
-    $sMsg.= " Purging these messages.\r\n";
-
-    $sSubject = $sEmailSubject."Orphaned session messages cleanup\r\n";
-
-    $sEmail = User::get_notify_email_address_list(null, null); /* get list admins */
-    if($sEmail)
-        mail_appdb($sEmail, $sSubject, $sMsg);
-
-    /* purge the messages older than $iSessionMessageDayLimit */
-    $sQuery = "DELETE from sessionMessages where TO_DAYS(NOW()) - TO_DAYS(time) > ?";
-    $hResult = query_parameters($sQuery, $iSessionMessageDayLimit);
-}
-
-/* this function checks to see if we have any orphaned sessions */
-/* sessions need to be expired or the session_list table will grow */
-/* by one row each time a user logs */
-function orphanSessionListCheck()
-{
-    global $sEmailSubject;
-
-    /* get a count of the messages older than $iSessionListDayLimit */
-    $sQuery = "SELECT count(*) as cnt from session_list where TO_DAYS(NOW()) - TO_DAYS(stamp) > ?";
-    $hResult = query_parameters($sQuery, SESSION_DAYS_TO_EXPIRE + 2);
-
-    $oRow = query_fetch_object($hResult);
-    $iMessages = $oRow->cnt;
-
-    $sMsg = "Found ".$iMessages." sessions that have expired after ".(SESSION_DAYS_TO_EXPIRE + 2)." days\r\n";
-    $sMsg.= " Purging these sessions.\r\n";
-
-    $sSubject = $sEmailSubject."Orphan sessions being expired\r\n";
-
-    $sEmail = User::get_notify_email_address_list(null, null); /* get list admins */
-    if($sEmail)
-        mail_appdb($sEmail, $sSubject, $sMsg);
-
-    /* purge the messages older than $iSessionMessageDayLimit */
-    $sQuery = "DELETE from session_list where TO_DAYS(NOW()) - TO_DAYS(stamp) > ?";
-    $hResult = query_parameters($sQuery, SESSION_DAYS_TO_EXPIRE + 2);
 }
 
 // report the database error log entries to the mailing list
