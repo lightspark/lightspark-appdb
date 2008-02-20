@@ -252,22 +252,13 @@ function pHttpDate($sDate) {
  */
 function addmsg($shText, $color = "black")
 {
-    if($color)
-        $shText = "<font color='$color'> $shText </font>\n";
-
-    $sQuery = "INSERT INTO sessionMessages VALUES (null, ?, '?', '?')";
-    if (!query_parameters($sQuery, "NOW()", session_id(), $shText))
-    {
-        echo "An error has occurred in addmsg()";
-        echo $shText;
-    }
+    $GLOBALS['session']->addmsg($shText, $color);
 }
 
 
 function purgeSessionMessages()
 {
-  $sQuery = "truncate sessionMessages";
-  query_parameters($sQuery);
+  $GLOBALS['session']->purgemsg();
 }
 
 
@@ -276,19 +267,19 @@ function purgeSessionMessages()
  */
 function dumpmsgbuffer()
 {
-    $hResult = query_parameters("SELECT * FROM sessionMessages WHERE sessionId = '?'", session_id());
-    if(!$hResult)
-        return;
-
-    while($oRow = query_fetch_object($hResult))
+    $GLOBALS['session']->dumpmsgbuffer();
+    if (is_array($GLOBALS['session']->msg) and count($GLOBALS['session']->msg) > 0)
     {
         echo html_frame_start("","300","",5);
-        echo "<div align=center> $oRow->message </div>";
+        foreach ($GLOBALS['session']->msg as $msg)
+        {
+            if ($msg['color'] == "red")
+               $msg['color'] = "{$msg['color']};text-decoration:blink";
+            echo "<div align=\"center\" style=\"font-color:{$msg['color']};\"> {$msg['msg']} </div>";
+        }
         echo html_frame_end("&nbsp;");
         echo "<br>\n";
     }
-
-    query_parameters("DELETE FROM sessionMessages WHERE sessionId = '?'", session_id());
 }
 
 /**

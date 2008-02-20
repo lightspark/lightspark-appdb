@@ -5,12 +5,12 @@ echo NOTE: It is ok for this to fail if the user already exists
 echo       there does not appear to be a way to create a user only
 echo       if they do not exist so we have to live with a potential
 echo       error after we try.
-mysql -p -u root < create_user.sql
+mysql -p -u root apidb < create_user.sql
 
 echo Create the apidb database, and tables
 cat create_apidb_base.sql appdb_tables.sql \
     prefs_list.sql user_list.sql user_prefs.sql \
-    user_privs.sql session_list.sql app_category.sql \
+    user_privs.sql app_category.sql \
     maintainers.sql buglinks.sql monitors.sql \
     error_log.sql distributions.sql testResults.sql \
- | mysql -p -u root
+ | mysql -p -u root apidb
