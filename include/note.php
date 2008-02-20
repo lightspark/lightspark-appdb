@@ -201,12 +201,12 @@ class Note {
         switch($this->sTitle)
         {
         case 'WARNING':
-            $sColor = 'red';
+            $sClass = 'warning';
             $sTitle = 'Warning';
             break;
 
         case 'HOWTO':
-            $sColor = 'green';
+            $sClass = 'howto';
             $sTitle = 'HOWTO';
             break;
 
@@ -216,7 +216,7 @@ class Note {
             else 
                 $sTitle = 'Note';
             
-            $sColor = 'blue';
+            $sClass = 'defaultnote';
         }
 
         $oVersion = new version($this->iVersionId);
@@ -224,7 +224,7 @@ class Note {
         $shOutput = html_frame_start("","98%",'',0);
 
         $shOutput .= "<table width=\"100%\" border=\"0\" cellspacing=\"0\">\n";
-        $shOutput .= "<tr bgcolor=\"".$sColor."\" align=\"center\" valign=\"top\"><td><b>".$sTitle."</b></td></tr>\n";
+        $shOutput .= "<tr class=\"".$sClass."\" align=\"center\" valign=\"top\"><td><b>".$sTitle."</b></td></tr>\n";
         $shOutput .= "<tr><td class=\"note\">\n";
         $shOutput .= $this->shDescription;
         $shOutput .= "</td></tr>\n";
