@@ -224,7 +224,7 @@ class Note {
         $shOutput = html_frame_start("","98%",'',0);
 
         $shOutput .= "<table width=\"100%\" border=\"0\" cellspacing=\"0\">\n";
-        $shOutput .= "<tr class=\"".$sClass."\" align=\"center\" valign=\"top\"><td><b>".$sTitle."</b></td></tr>\n";
+        $shOutput .= "<tr class=\"".$sClass."\" align=\"center\" valign=\"top\"><td>&nbsp;</td></tr><tr class=\"notetitle\" valign=\"top\" align=\"center\"><td>".$sTitle."</td></tr>\n";
         $shOutput .= "<tr><td class=\"note\">\n";
         $shOutput .= $this->shDescription;
         $shOutput .= "</td></tr>\n";

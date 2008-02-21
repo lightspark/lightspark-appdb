@@ -57,7 +57,7 @@ tr.garbage          { background-color: #999966; }
 tr.warning          { background-color: #ff3333; } /* novascotia salmon */
 tr.howto            { background-color: green;   }
 tr.defaultnote      { background-color: #0066CC; } /* mid-light blue */
-
+tr.notetitle	    { background-color: #cccccc; font-weight: bold; }
 /* classes for the version info pane */
 /* version info pane is the right hand pane at the top of the version page */
 div.version_info_pane p { margin:0px; }
