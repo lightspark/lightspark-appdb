@@ -278,8 +278,6 @@ class application_queue
     {
         echo "<b>Like matches</b>\n";
         $this->displayDuplicateTable(searchForApplication($this->oApp->sName));
-        echo "<br /><b>Fuzzy matches</b>\n";
-        $this->displayDuplicateTable(searchForApplicationFuzzy($this->oApp->sName, 60));
     }
 
     function displayDuplicateTable($hResult)

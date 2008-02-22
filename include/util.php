@@ -441,68 +441,6 @@ function searchForApplication($search_words)
     return $hResult;
 }
 
-function searchForApplicationFuzzy($search_words, $minMatchingPercent)
-{
-    /* cleanup search words */
-    $search_words = cleanupSearchWords($search_words);
-
-    $foundAValue = false;
-    $excludeAppIdArray = array();
-    $appIdArray = array();
-
-    /* add on all of the like matches that we can find */
-    $hResult = searchForApplication($search_words);
-    while($oRow = query_fetch_object($hResult))
-    {
-        array_push($excludeAppIdArray, $oRow->appId);
-    }
-
-    /* add on all of the fuzzy matches we can find */
-    $sQuery = "SELECT appName, appId FROM appFamily WHERE state = 'accepted'";
-    foreach ($excludeAppIdArray as $key=>$value)
-    {
-        $sQuery.=" AND appId != '".query_escape_string($value)."'";
-    }
-    $sQuery.=";";
-
-    /* capitalize the search words */
-    $search_words = strtoupper($search_words);
-
-    $hResult = query_appdb($sQuery);
-    while($oRow = query_fetch_object($hResult))
-    {
-        $oRow->appName = strtoupper($oRow->appName); /* convert the appname to upper case */
-        similar_text($oRow->appName, $search_words, $similarity_pst);
-        if(number_format($similarity_pst, 0) > $minMatchingPercent)
-        {
-            $foundAValue = true;
-            array_push($appIdArray, $oRow->appId);
-        }
-    }
-
-    if($foundAValue == false)
-        return null;
-
-    $sQuery = "SELECT * from appFamily WHERE ";
-
-    $firstEntry = true;
-    foreach ($appIdArray as $key=>$value)
-    {
-        if($firstEntry == true)
-        {
-            $sQuery.="appId='".query_escape_string($value)."'";
-            $firstEntry = false;
-        } else
-        {
-            $sQuery.=" OR appId='".query_escape_string($value)."'";
-        }
-    }
-    $sQuery.=" ORDER BY appName;";
-
-    $hResult = query_appdb($sQuery);
-    return $hResult;
-}
-
 function outputSearchTableForhResult($search_words, $hResult)
 {
     if(($hResult == null) || (query_num_rows($hResult) == 0))
@@ -583,11 +521,6 @@ function perform_search_and_output_results($search_words)
 
     echo "<center><b>Like matches</b></center>";
     $hResult = searchForApplication($search_words);
-    outputSearchTableForhResult($search_words, $hResult);
-
-    $minMatchingPercent = 60;
-    echo "<center><b>Fuzzy matches - minimum ".$minMatchingPercent."% match</b></center>";
-    $hResult = searchForApplicationFuzzy($search_words, $minMatchingPercent);
     outputSearchTableForhResult($search_words, $hResult);
 }
 
