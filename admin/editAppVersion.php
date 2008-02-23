@@ -37,12 +37,12 @@ if(!empty($aClean['sSubmit']))
         $oVersion->outputEditor(false, true); /* false = not allowing the user to modify the parent application */
         
     echo '<table border=0 cellpadding=2 cellspacing=0 width="100%">',"\n";
-    echo '<tr><td colspan=2 align=center class=color2><input type="submit" name="sSubmit" value="Update Database" /></td></tr>',"\n";
+    echo '<tr><td colspan=2 align=center class=color2><input type="submit" name="sSubmit" value="Update Database"></td></tr>',"\n";
     echo html_table_end();
 
     echo "</form>";
 
-    echo "<br/><br/>\n";
+    echo "<br><br>\n";
 
     /* URL editor */
     echo url::outputEditor("editAppVersion.php", $oVersion);
@@ -59,8 +59,8 @@ if(!empty($aClean['sSubmit']))
     {
         // move version form
         echo '<form enctype="multipart/form-data" action="moveAppVersion.php" method="post">',"\n";
-        echo '<input type="hidden" name="iAppId" value="'.$oVersion->iAppId.'" />';
-        echo '<input type="hidden" name="iVersionId" value="'.$oVersion->iVersionId.'" />';
+        echo '<input type="hidden" name="iAppId" value="'.$oVersion->iAppId.'">';
+        echo '<input type="hidden" name="iVersionId" value="'.$oVersion->iVersionId.'">';
         echo html_frame_start("Move version to another application","90%","",0);
         echo '<center><input type="submit" name="sView" value="Move this version"></center>',"\n";
         echo html_frame_end();

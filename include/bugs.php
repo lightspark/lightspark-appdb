@@ -522,8 +522,8 @@ class Bug
     function outputEditor()
     {
         $this->display();
-        echo '<input type="hidden" name="iBuglinkId" value="'.$this->iBug_id.'" />';
-        echo '<input type="hidden" name="iVersionId" value="'.$this->iVersionId.'" />';
+        echo '<input type="hidden" name="iBuglinkId" value="'.$this->iBug_id.'">';
+        echo '<input type="hidden" name="iVersionId" value="'.$this->iVersionId.'">';
     }
 
     function getOutputEditorValues($aClean)
@@ -603,10 +603,10 @@ function view_version_bugs($iVersionId = null, $aBuglinkIds)
             {
                 $oM = new objectManager("bug");
                 $oM->setReturnTo($oVersion->objectMakeUrl());
-                echo "<td align=center>[<a href='".$oM->makeUrl("delete", $oBuglink->iLinkId)."&sSubmit=delete'>delete</a>]</td>\n";
+                echo "<td align=center>[<a href='".$oM->makeUrl("delete", $oBuglink->iLinkId)."&amp;sSubmit=delete'>delete</a>]</td>\n";
                 if ($oBuglink->bQueued)
                 {
-                    echo "<td align=center>[<a href='".$oM->makeUrl("edit", $oBuglink->iLinkId)."&sSubmit=Submit&bIsQueue=true'>OK</a>]</td>\n";
+                    echo "<td align=center>[<a href='".$oM->makeUrl("edit", $oBuglink->iLinkId)."&amp;sSubmit=Submit&amp;bIsQueue=true'>OK</a>]</td>\n";
                 } else
                 {
                     echo "<td align=center>Yes</td>\n";
@@ -626,9 +626,9 @@ function view_version_bugs($iVersionId = null, $aBuglinkIds)
         echo '<tr class=color3><td align=center>',"\n";
         $sBuglinkId = isset($aClean['buglinkId']) ? $aClean['buglinkId'] : '';
         echo '<input type="text" name="iBuglinkId" value="'.$sBuglinkId.'" size="8"></td>',"\n";
-        echo '<input type="hidden" name="sSubmit" value="Submit" />',"\n";
-        echo '<input type="hidden" name="sClass" value="bug" />',"\n";
-        echo '<input type="hidden" name="sReturnTo" value="'.$oVersion->objectMakeUrl().'" />',"\n";
+        echo '<input type="hidden" name="sSubmit" value="Submit">',"\n";
+        echo '<input type="hidden" name="sClass" value="bug">',"\n";
+        echo '<input type="hidden" name="sReturnTo" value="'.$oVersion->objectMakeUrl().'">',"\n";
         echo '<td><input type="submit" name="sSub" value="Submit a new bug link."></td>',"\n";
         echo '<td colspan=6></td></tr></form>',"\n";
     }
@@ -638,13 +638,13 @@ function view_version_bugs($iVersionId = null, $aBuglinkIds)
     if ( isset( $aClean['sAllBugs'] ) )
     {
         $sURL = str_replace( '&sAllBugs', '', $_SERVER['REQUEST_URI'] );
-        $sLink = '<a href="' . $sURL . '">Show Open Bugs</a>';
+        $sLink = '<a href="' . htmlentities($sURL) . '">Show Open Bugs</a>';
     }
     // show all link
     else
     {
         $sURL = $_SERVER['REQUEST_URI'] . '&sAllBugs';
-        $sLink = '<a href="' . $sURL . '">Show All Bugs</a>';
+        $sLink = '<a href="' . htmlentities($sURL) . '">Show All Bugs</a>';
     }
     
     echo '<div style="text-align:right;">' . $sLink .'</div>';

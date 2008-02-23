@@ -9,7 +9,7 @@ echo '<form method="post" name="sFlogin" action="account.php">',"\n";
 echo html_frame_start("Login to Application DB","400","",0);
 /* Pass on the URL we should return to after log-in */
 global $aClean;
-echo '<input type="hidden" name="sReturnTo" value="' . (isset($aClean['sReturnTo']) ? $aClean['sReturnTo'] : '') . '" />';
+echo '<input type="hidden" name="sReturnTo" value="' . (isset($aClean['sReturnTo']) ? $aClean['sReturnTo'] : '') . '">';
 ?>
 
 <!-- start of login form -->

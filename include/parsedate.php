@@ -15,7 +15,7 @@ function parsedate($datestr)
     $dp = explode(' ', $datestr);
     while(list($idx, $part) = each($dp))
     {
-        //echo "PART($part)<br />";
+        //echo "PART($part)<br>";
 
         /* 23:59:59 */
         if(ereg("^([0-9]+):([0-9]+):([0-9]+)$", $part, $arr))
@@ -74,7 +74,7 @@ function parsedate($datestr)
             continue;
         }
 	    
-        //echo "Unparsed: '$part'<br />\n";
+        //echo "Unparsed: '$part'<br>\n";
 
     }
 

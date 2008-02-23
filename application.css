@@ -1,4 +1,4 @@
-/***********************************************************************/
+;/***********************************************************************/
 /* The following styles are used for application description and notes */
 /***********************************************************************/
 
@@ -76,3 +76,7 @@ div.note_title { font-weight: bold; border-bottom: 1px solid; padding: 4px;
 div.rating_header { padding: 8px; }
 div.rating_title { padding-bottom: 4px; font-weight: bold; font-size: 160%; }
 div.topx_style { padding:7px; margin:6px; border:2px solid; }
+div.imgarea { text-align:center;    text-align:center;
+    margin-top:0px;
+    margin-bottom:0px;
+    padding:0px;}

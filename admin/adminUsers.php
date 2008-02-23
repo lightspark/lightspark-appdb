@@ -66,8 +66,8 @@ if ( isset($aClean['sOrderBy']) )
         <tr>
             <td class="color1">Pattern</td>
             <td>
-            <input type="text" name="sSearch" value="<?php echo $aClean['sSearch'];?>"/>
-            <br /><small>(leave blank to match all)</small>
+            <input type="text" name="sSearch" value="<?php echo $aClean['sSearch'];?>">
+            <br><small>(leave blank to match all)</small>
             </td>
         </tr>
         <tr>

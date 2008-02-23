@@ -159,19 +159,19 @@ class TableCell
     $sStr = "<td";
 
     if($this->sClass)
-      $sStr.=" class=\"".$this->sClass."\";";
+      $sStr.=" class=\"".$this->sClass."\"";
 
     if($this->sStyle)
-      $sStr.=" style=\"".$this->sStyle."\";";
+      $sStr.=" style=\"".$this->sStyle."\"";
 
     if($this->sAlign)
-      $sStr.=" align=\"".$this->sAlign."\";";
+      $sStr.=" align=\"".$this->sAlign."\"";
 
     if($this->sValign)
-      $sStr.=" valign=\"".$this->sValign."\";";
+      $sStr.=" valign=\"".$this->sValign."\"";
 
     if($this->sWidth)
-      $sStr.=" width=\"".$this->sWidth."\";";
+      $sStr.=" width=\"".$this->sWidth."\"";
 
     $sStr.=">";
 
@@ -355,7 +355,7 @@ class TableRowSortable extends TableRow
                 }
 
                 $sAscending = $bAscending == TRUE ? 'true': 'false';
-                $this->aTableCells[$i]->SetCellLink($oSortInfo->shUrl."sOrderBy=$sSortVar&bAscending=$sAscending");
+                $this->aTableCells[$i]->SetCellLink($oSortInfo->shUrl."sOrderBy=$sSortVar&amp;bAscending=$sAscending");
             }
         }
     }

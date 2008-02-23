@@ -239,20 +239,20 @@ class Comment {
 
         // message header
         echo "<tr bgcolor=\"#E0E0E0\"><td><a name=Comment-".$this->iCommentId."></a>\n";
-        echo " <b>".$this->sSubject."</b><br />\n";
-        echo " by  ".forum_lookup_user($this->oOwner->iUserId)." on ".$this->sDateCreated."<br />\n";
+        echo " <b>".$this->sSubject."</b><br>\n";
+        echo " by  ".forum_lookup_user($this->oOwner->iUserId)." on ".$this->sDateCreated."<br>\n";
         echo "</td></tr><tr><td>\n";
     
         // body
-        echo htmlify_urls($this->sBody), "<br /><br />\n";
+        echo htmlify_urls($this->sBody), "<br><br>\n";
     
         $oVersion = new version($this->iVersionId);
         $oM = new objectManager("comment", "Post new ocmment");
         $oM->setReturnTo($oVersion->objectMakeUrl());
         // reply post buttons
-        echo "	[<a href=\"".$oM->makeUrl("add")."&amp;iVersionId=$this->iVersionId\"><small>post new</small></a>] \n";
-        echo "	[<a href=\"".$oM->makeUrl("add")."&amp;iVersionId=$this->iVersionId".
-                "&amp;iThread=$this->iCommentId\"><small>reply to this</small></a>] \n";
+        echo "	[<a href=\"".$oM->makeUrl("add")."&iVersionId=$this->iVersionId\"><small>post new</small></a>] \n";
+        echo "	[<a href=\"".$oM->makeUrl("add")."&iVersionId=$this->iVersionId".
+                "&iThread=$this->iCommentId\"><small>reply to this</small></a>] \n";
 
         echo "</td></tr>\n";
 
@@ -261,12 +261,12 @@ class Comment {
         {
             echo "<tr>";
             echo "<td><form method=\"post\" name=\"sMessage\" action=\"".BASE."objectManager.php\"><input type=\"submit\" value=\"Delete\" class=\"button\">\n";
-            echo "<input type=\"hidden\" name=\"iId\" value=\"$this->iCommentId\" />";
-            echo "<input type=\"hidden\" name=\"sClass\" value=\"comment\" />";
-            echo "<input type=\"hidden\" name=\"bQueued\" value=\"false\" />";
-            echo "<input type=\"hidden\" name=\"sAction\" value=\"delete\" />";
-            echo "<input type=\"hidden\" name=\"sTitle\" value=\"Delete comment\" />";
-            echo "<input type=\"hidden\" name=\"sReturnTo\" value=\"".$oVersion->objectMakeUrl()."\" />";
+            echo "<input type=\"hidden\" name=\"iId\" value=\"$this->iCommentId\">";
+            echo "<input type=\"hidden\" name=\"sClass\" value=\"comment\">";
+            echo "<input type=\"hidden\" name=\"bQueued\" value=\"false\">";
+            echo "<input type=\"hidden\" name=\"sAction\" value=\"delete\">";
+            echo "<input type=\"hidden\" name=\"sTitle\" value=\"Delete comment\">";
+            echo "<input type=\"hidden\" name=\"sReturnTo\" value=\"".$oVersion->objectMakeUrl()."\">";
             echo "</form>\n";
             echo "</td></tr>";
         }
@@ -533,7 +533,7 @@ class Comment {
 
         // post new message button
         echo '<td><form method="post" name="sMessage" action="objectManager.php">';
-        echo '<input type="hidden" name="sAction" value="add" />';
+        echo '<input type="hidden" name="sAction" value="add">';
         echo $oM->makeUrlFormData();
         echo '<input type="submit" value="Post new comment" class="button"> ',"\n";
         echo '<input type="hidden" name="iVersionId" value="'.$versionId.'"></form></td>',"\n";
@@ -619,7 +619,7 @@ class Comment {
             {
                 $sMesTitle = "<b>Replying To ...</b> $oRow->subject\n";
                 echo html_frame_start($oRow->subject,500);
-                echo htmlify_urls($oRow->body), "<br /><br />\n";
+                echo htmlify_urls($oRow->body), "<br><br>\n";
                 echo html_frame_end();
 
                 /* Set default reply subject */
@@ -644,15 +644,15 @@ class Comment {
         echo "<tr class=\"color0\"><td align=right><b>From:</b>&nbsp;</td>\n";
         echo "	<td>&nbsp;".$_SESSION['current']->sRealname."</td></tr>\n";
         echo "<tr class=\"color0\"><td align=right><b>Subject:</b>&nbsp;</td>\n";
-        echo "	<td>&nbsp;<input type=\"text\" size=\"35\" name=\"sSubject\" value=\"".$this->sSubject."\" /> </td></tr>\n";
+        echo "	<td>&nbsp;<input type=\"text\" size=\"35\" name=\"sSubject\" value=\"".$this->sSubject."\"> </td></tr>\n";
         echo "<tr class=\"color1\"><td colspan=2><textarea name=\"sBody\" cols=\"70\" rows=\"15\" wrap=\"virtual\">".$this->sBody."</textarea></td></tr>\n";
 
         echo "</table>\n";
 
         echo html_frame_end();
 
-        echo "<input type=\"hidden\" name=\"iThread\" value=\"".$aClean['iThread']."\" />\n";
-        echo "<input type=\"hidden\" name=\"iVersionId\" value=\"".$aClean['iVersionId']."\" />\n";
+        echo "<input type=\"hidden\" name=\"iThread\" value=\"".$aClean['iThread']."\">\n";
+        echo "<input type=\"hidden\" name=\"iVersionId\" value=\"".$aClean['iVersionId']."\">\n";
     }
 
     function objectShowPreview()

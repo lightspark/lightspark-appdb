@@ -12,7 +12,7 @@ Application Database.</p>
 <p><b>A:</b> The Application Database is a repository for
 Windows application compatibility information with Wine.
 In particular it provides the following information:<br>
-(see the <a href="/objectManager.php?sClass=application&iId=296">Visual FoxPro</a> entry for an
+(see the <a href="/objectManager.php?sClass=application&amp;iId=296">Visual FoxPro</a> entry for an
 example)<p>
 <ul>
   <li>Whether a given application works at all with Wine.</li>

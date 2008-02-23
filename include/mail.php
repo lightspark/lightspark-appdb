@@ -28,11 +28,11 @@ function mail_appdb($sEmailList,$sSubject,$sMsg)
        option is set.  Output in purple to distinguish it from other messages */
     if(defined("PRINT_EMAIL"))
     {
-        $sMsg = str_replace("\n", "<br />", $sMsg);
-        addmsg("This mail would have been sent<br /><br />".
-               "To: $sEmailList<br />".
-               "Subject: $sSubject<br /><br />".
-               "Body:<br />$sMsg", "purple");
+        $sMsg = str_replace("\n", "<br>", $sMsg);
+        addmsg("This mail would have been sent<br><br>".
+               "To: $sEmailList<br>".
+               "Subject: $sSubject<br><br>".
+               "Body:<br>$sMsg", "purple");
         return;
     }
 

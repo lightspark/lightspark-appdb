@@ -735,9 +735,9 @@ class maintainer
             echo "<input type=hidden name='iSuperMaintainer' value=$iSuperMaintainer>";
 
             if($iSuperMaintainer)
-                echo '<tr valign=top><td class=color0><b>Why you want to and should<br />be an application super maintainer</b></td><td><textarea name="sMaintainReason" rows=15 cols=70></textarea></td></tr>',"\n";
+                echo '<tr valign=top><td class=color0><b>Why you want to and should<br>be an application super maintainer</b></td><td><textarea name="sMaintainReason" rows=15 cols=70></textarea></td></tr>',"\n";
             else
-                echo '<tr valign=top><td class=color0><b>Why you want to and should<br />be an application maintainer</b></td><td><textarea name="sMaintainReason" rows=15 cols=70></textarea></td></tr>',"\n";
+                echo '<tr valign=top><td class=color0><b>Why you want to and should<br>be an application maintainer</b></td><td><textarea name="sMaintainReason" rows=15 cols=70></textarea></td></tr>',"\n";
 
             echo '</table>',"\n";
         } else
@@ -747,7 +747,7 @@ class maintainer
             echo html_frame_start("New Maintainer Form",600,"",0);
             echo "<table width='100%' border=0 cellpadding=2 cellspacing=0>\n";
             echo "<input type=\"hidden\" name=\"iMaintainerId\" ".
-                "value=\"$this->iMaintainerId\" />";
+                "value=\"$this->iMaintainerId\">";
 
             /* User name */
             $oSubmitter = new user($this->iUserId);
@@ -783,7 +783,7 @@ class maintainer
                     // we need to exclude these from the list of maintainers that we are
                     // building
                     if(!maintainer::isUserSuperMaintainer($oUser, $oVersion->iAppId))
-                        echo "$oUser->sRealname<br />\n";
+                        echo "$oUser->sRealname<br>\n";
                 }
             }
 
@@ -794,7 +794,7 @@ class maintainer
                 while(list($index, $iUserId) = each($aOtherSuperMaintainers))
                 {
                     $oUser = new User($iUserId);
-                    echo "$oUser->sRealname*<br />\n";
+                    echo "$oUser->sRealname*<br>\n";
                 }
             }
 
@@ -817,9 +817,9 @@ class maintainer
                     $oApp = new Application($iAppIdOther);
 
                     if($bSuperMaintainerOther)
-                        echo $oApp->objectMakeLink()."*<br />\n";
+                        echo $oApp->objectMakeLink()."*<br>\n";
                     else
-                        echo $oVersion->fullNameLink($iVersionIdOther)."<br />\n";
+                        echo $oVersion->fullNameLink($iVersionIdOther)."<br>\n";
                 }
             } else
             {
@@ -831,8 +831,8 @@ class maintainer
             $oApp = new Application($this->iAppId);
             $oVersion = new Version($this->iVersionId);
 
-            echo "<input type=\"hidden\" name=\"iAppId\" value=\"".$oApp->iAppId."\" />\n";
-            echo "<input type=\"hidden\" name=\"iVersionId\" value=\"".$oVersion->iVersionId."\" />\n";
+            echo "<input type=\"hidden\" name=\"iAppId\" value=\"".$oApp->iAppId."\">\n";
+            echo "<input type=\"hidden\" name=\"iVersionId\" value=\"".$oVersion->iVersionId."\">\n";
 
             //app name
             echo '<tr valign=top><td class=color0 style=\'text-align:right\'><b>App Name:</b></td>',"\n";
@@ -1119,7 +1119,7 @@ class maintainer
       {
         // FIXME: should use a function to generate these urls and use it here and
         // in sidebar_maintainer.php and sidebar_admin.php
-        $sMsg = 'Please visit the version queue ('.APPDB_ROOT."objectManager.php?sClass=version_queue&bIsQueue=true&sTitle=".
+        $sMsg = 'Please visit the version queue ('.APPDB_ROOT."objectManager.php?sClass=version_queue&amp;bIsQueue=true&amp;sTitle=".
           'Version%20Queue) to process queued versions for applications you maintain.'."\n";
       }
 
@@ -1160,8 +1160,8 @@ class maintainer
         // FIXME: should use a function to generate these urls and use it here and
         // in sidebar_maintainer.php and sidebar_admin.php
         $sMsg .= 'Please visit the AppDB Test Data Queue'.
-          '('.APPDB_ROOT.'objectManager.php?sClass=testData_queue&'.
-          'bIsQueue=true&sTitle=Test%20Results%20Queue)'.
+          '('.APPDB_ROOT.'objectManager.php?sClass=testData_queue&amp;'.
+          'bIsQueue=true&amp;sTitle=Test%20Results%20Queue)'.
           ' to process queued test data for versions you maintain.'."\n";
       }
       // queued testdata
@@ -1202,7 +1202,7 @@ class maintainer
         // FIXME: should use a function to generate these urls and use it here and
         // in sidebar_maintainer.php and sidebar_admin.php
         $sMsg.= 'Please visit the screenshot queue(';
-        $sMsg.= APPDB_ROOT.'objectManager.php?sClass=screenshot&bIsQueue=true&sTitle=Screenshot%20Queue) ';
+        $sMsg.= APPDB_ROOT.'objectManager.php?sClass=screenshot&amp;bIsQueue=true&amp;sTitle=Screenshot%20Queue) ';
         $sMsg.= 'to process queued screenshots for versions you maintain.'."\n";
       }
 

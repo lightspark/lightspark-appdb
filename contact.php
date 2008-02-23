@@ -44,8 +44,8 @@ if(!$aClean['sSubmit'])
     if($_SESSION['current']->hasPriv("admin"))
     {
         echo "<p><a href=\"".BASE."preferences.php?iUserId=".
-                $oRecipient->iUserId."&sSearch=Administrator&iLimit".
-                "=100&sOrderBy=email\">User manager</a></p>";
+                $oRecipient->iUserId."&amp;sSearch=Administrator&amp;iLimit".
+                "=100&amp;sOrderBy=email\">User manager</a></p>";
     }
 
     echo "<p>E-mail $oRecipient->sRealname.</p>";
@@ -60,7 +60,7 @@ if(!$aClean['sSubmit'])
     $oTableRow->SetClass("color4");
     $oTableRow->AddTextCell("Subject");
     $oTableCell = new TableCell("<input type=\"text\" name=\"sSubject\" size=\"71\"".
-                                " value=\"".$aClean['sSubject']."\" />");
+                                " value=\"".$aClean['sSubject']."\">");
     $oTableRow->AddCell($oTableCell);
     $oTable->AddRow($oTableRow);
 
@@ -76,14 +76,14 @@ if(!$aClean['sSubmit'])
 
     $oTableRow = new TableRow();
     $oTableRow->AddTextCell("");
-    $oTableRow->AddTextCell("<input type=\"submit\" value=\"Submit\" name=\"sSubmit\" />");
+    $oTableRow->AddTextCell("<input type=\"submit\" value=\"Submit\" name=\"sSubmit\">");
     $oTable->AddRow($oTableRow);
 
     // output the table
     echo $oTable->GetString();
 
     echo "<input type=\"hidden\" name=\"iRecipientId\" ".
-    "value=\"$oRecipient->iUserId\" />";
+    "value=\"$oRecipient->iUserId\">";
 
     echo "</form>\n";
 
@@ -99,7 +99,7 @@ if(!$aClean['sSubmit'])
 
     $sMsg = "The following message was sent to you from $oUser->sRealname ";
     $sMsg .= "through the Wine AppDB contact form.\nTo Reply, visit ";
-    $sMsg .= APPDB_ROOT."contact.php?iRecipientId=$oUser->iUserId&sSubject=";
+    $sMsg .= APPDB_ROOT."contact.php?iRecipientId=$oUser->iUserId&amp;sSubject=";
     $sMsg .= $sSubjectRe."\n\n";
     $sMsg .= $aClean['sMessage'];
 

@@ -283,8 +283,8 @@ class Url {
             $sReturn .= html_tr(array(
                 "&nbsp;",
                 "<input type=\"text\" size=\"45\" name=\"".
-                "sDescriptionNew\" />",
-                "<input type=\"text\" size=\"45\" name=\"sUrlNew\" />"),
+                "sDescriptionNew\">",
+                "<input type=\"text\" size=\"45\" name=\"sUrlNew\">"),
                 "color4");
 
         if($hResult)
@@ -293,11 +293,11 @@ class Url {
             {
                 $sReturn .= html_tr(array(
                     "<input type=\"checkbox\" name=\"bRemove$oRow->id\" ".
-                    "value=\"true\" />",
+                    "value=\"true\">",
                     "<input type=\"text\" size=\"45\" name=\"".
-                    "sDescription$oRow->id\" value=\"$oRow->description\" />",
+                    "sDescription$oRow->id\" value=\"$oRow->description\">",
                     "<input type=\"text\" size=\"45\" name=\"sUrl$oRow->id\" ".
-                    "value=\"$oRow->url\" />"),
+                    "value=\"$oRow->url\">"),
                     ($i % 2) ? "color0" : "color4");
             }
         }
@@ -309,14 +309,14 @@ class Url {
 
         $sReturn .= html_table_end();
         $sReturn .= "<div align=\"center\"><input type=\"submit\" value=\"".
-                    "Update URLs\" name=\"sSubmit\" /></div>\n";
+                    "Update URLs\" name=\"sSubmit\"></div>\n";
 
         if($oVersion)
             $sReturn .=" <input type=\"hidden\" name=\"iVersionId\" ".
-                    "value=\"$oVersion->iVersionId\" />\n";
+                    "value=\"$oVersion->iVersionId\">\n";
 
         $sReturn .= "<input type=\"hidden\" name=\"iAppId\" ".
-                    "value=\"$iAppId\" />\n";
+                    "value=\"$iAppId\">\n";
         $sReturn .= "</form>\n";
         $sReturn .= html_frame_end("&nbsp;");
 

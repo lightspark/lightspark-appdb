@@ -164,18 +164,18 @@ class version_queue
             $oTableRow = new TableRow();
             $oTableRow->AddTextCell('&nbsp;');
             $oTableRow->AddTextCell("<input type=\"radio\" $sRequestMaintainerChecked".
-                                     "name=\"iMaintainerRequest\" value=\"".MAINTAINER_REQUEST."\" /> ".
+                                     "name=\"iMaintainerRequest\" value=\"".MAINTAINER_REQUEST."\"> ".
                                      "Request being a maintainer for this version, allowing you to edit it later");
             $oTable->AddRow($oTableRow);
             $oTableRow = new TableRow();
             $oTableRow->AddTextCell('&nbsp;');
             $oTableRow->AddTextCell("<input type=\"radio\" $sRequestMonitorChecked".
-                                     "name=\"iMaintainerRequest\" value=\"".MONITOR_REQUEST."\" /> ".
+                                     "name=\"iMaintainerRequest\" value=\"".MONITOR_REQUEST."\"> ".
                                      "Monitor changes to this version, also after it has been accepted");
             $oTable->AddRow($oTableRow);
             $oTableRow = new TableRow();
             $oTableRow->AddTextCell('&nbsp;');
-            $oTableRow->AddTextCell('<input type="radio" name="iMaintainerRequest" value="0" /> '.
+            $oTableRow->AddTextCell('<input type="radio" name="iMaintainerRequest" value="0"> '.
                                     'None of the above');
             $oTable->AddRow($oTableRow);
 
@@ -306,10 +306,10 @@ class version_queue
                         array(Comment::get_comment_count_for_versionid(
                             $oVersion->iVersionId), 'align="center"'),
                         html_ahref("Move here",
-                          "objectManager.php?sClass=version_queue&bIsQueue=true&".
-                          "sAction=moveChildren&iId=".
-                          $this->oVersion->iVersionId."&iNewId=".
-                          $oVersion->iVersionId."&sTitle=Version+Queue"),
+                          "objectManager.php?sClass=version_queue&amp;bIsQueue=true&amp;".
+                          "sAction=moveChildren&amp;iId=".
+                          $this->oVersion->iVersionId."&amp;iNewId=".
+                          $oVersion->iVersionId."&amp;sTitle=Version+Queue"),
                                   ),
                             ($i % 2) ? "color0" : "color1");
 

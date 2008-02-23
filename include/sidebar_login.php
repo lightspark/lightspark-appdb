@@ -44,7 +44,7 @@ function global_sidebar_login() {
         if($iAppsRejected && !$_SESSION['current']->hasPriv("admin"))
         {
           $g->add("Review Rejected Apps ($iAppsRejected)", BASE."objectManager.php?".
-                  "sClass=application_queue&bIsQueue=true&bIsRejected=true&sTitle=".
+                  "sClass=application_queue&amp;bIsQueue=true&amp;bIsRejected=true&amp;sTitle=".
                   "Rejected+Applications", "center");
         }
 
@@ -53,16 +53,16 @@ function global_sidebar_login() {
         if($iVersionsRejected && !$_SESSION['current']->hasPriv("admin"))
         {
             $g->add("Review Rejected Versions ($iVersionsRejected)",
-                    BASE."objectManager.php?sClass=version_queue&bIsRejected=true".
-                    "&bIsQueue=true&sTitle=Rejected+Versions", "center");
+                    BASE."objectManager.php?sClass=version_queue&amp;bIsRejected=true".
+                    "&amp;bIsQueue=true&amp;sTitle=Rejected+Versions", "center");
         }
 
         /* Display the user's rejected test results */
         $iTestDataRejected = testData::objectGetEntriesCount('rejected');
         if($iTestDataRejected && !$_SESSION['current']->hasPriv("admin"))
             $g->add("Review Rejected Test Results ($iTestDataRejected)",
-                    BASE."objectManager.php?sClass=testData_queue&".
-                    "sAction=view&bIsQueue=true&bIsRejected=true&sTitle=".
+                    BASE."objectManager.php?sClass=testData_queue&amp;".
+                    "sAction=view&amp;bIsQueue=true&amp;bIsRejected=true&amp;sTitle=".
                     "Rejected+Test+Results", "center");
 
         $aMonitored = Monitor::getVersionsMonitored($_SESSION['current']);

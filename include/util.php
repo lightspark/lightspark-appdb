@@ -554,9 +554,9 @@ function display_page_range($iCurrentPage=1, $iPageRange=1, $iTotalPages=1, $sLi
 
     if($iCurrentPage != 1)
     {
-        echo "<a href='".$sLinkurl."&iPage=1'>|&lt</a>&nbsp;";
+        echo "<a href='".$sLinkurl."&amp;iPage=1'>|&lt</a>&nbsp;";
         $iPreviousPage = $iCurrentPage - 1;
-        echo "<a href='".$sLinkurl."&iPage=$iPreviousPage'>&lt</a>&nbsp;";
+        echo "<a href='".$sLinkurl."&amp;iPage=$iPreviousPage'>&lt</a>&nbsp;";
     } else
     {
         echo "|&lt &lt ";
@@ -565,7 +565,7 @@ function display_page_range($iCurrentPage=1, $iPageRange=1, $iTotalPages=1, $sLi
     for($iPg = $iStartPage; $iPg <= $iEndPage; $iPg++)
     {
         if($iPg != $iCurrentPage)
-            echo "<a href='".$sLinkurl."&iPage=".$iPg."'>$iPg</a> ";
+            echo "<a href='".$sLinkurl."&amp;iPage=".$iPg."'>$iPg</a> ";
         else
             echo "$iPg ";
     }
@@ -573,8 +573,8 @@ function display_page_range($iCurrentPage=1, $iPageRange=1, $iTotalPages=1, $sLi
     if($iCurrentPage < $iTotalPages)
     {
         $iNextPage = $iCurrentPage + 1;
-        echo "<a href='".$sLinkurl."&iPage=$iNextPage'>&gt</a> ";
-        echo "<a href='".$sLinkurl."&iPage=$iTotalPages'>&gt|</a> ";
+        echo "<a href='".$sLinkurl."&amp;iPage=$iNextPage'>&gt</a> ";
+        echo "<a href='".$sLinkurl."&amp;iPage=$iTotalPages'>&gt|</a> ";
     } else
     {
         echo "&gt &gt|";
@@ -847,7 +847,7 @@ function login_url()
        and we don't want two.  Besides, there is little point in redirecting to the login page
        after login. */
     if(!strpos($sCurrentUrl, "sReturnTo") && !strpos($sCurrentUrl, "account.php"))
-        $sLoginUrl .= "&sReturnTo=".$sCurrentUrl;
+        $sLoginUrl .= "&amp;sReturnTo=".$sCurrentUrl;
 
     return $sLoginUrl;
 }

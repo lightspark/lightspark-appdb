@@ -51,7 +51,7 @@ if(!is_numeric($aClean['iBugId']))
             {
                 while($oDownloadUrl = query_fetch_object($hDownloadUrls))
                     $sDownloadUrls .= "<a href=\"$oDownloadUrl->url\">".
-                            "$oDownloadUrl->description</a><br />";
+                            "$oDownloadUrl->description</a><br>";
             }
 
             // set row color
@@ -71,11 +71,11 @@ if(!is_numeric($aClean['iBugId']))
 
     // allow users to search for other apps
     echo '<tr class=color2>',"\n";
-    echo '    <td align=center colspan=5>&nbsp</td>',"\n";
+    echo '    <td align=center colspan=5>&nbsp;</td>',"\n";
     echo '</tr>',"\n";
 
     echo '<tr class=color4>',"\n";
-    echo '    <td colspan=4 >&nbsp Bug #</td>',"\n";
+    echo '    <td colspan=4 >&nbsp; Bug #</td>',"\n";
     echo '</tr>',"\n";
 
     echo '<tr class=color3>',"\n";

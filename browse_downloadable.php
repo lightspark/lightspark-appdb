@@ -50,11 +50,11 @@ $iLimitLower = ($aClean['iPage'] - 1) * $aClean['iNumVersions'];
 
 /* Page selection */
 echo "<div align=\"center\">\n";
-echo "<b>Page ".$aClean['iPage']." of $iNumPages</b><br />\n";
+echo "<b>Page ".$aClean['iPage']." of $iNumPages</b><br>\n";
 // $iPageRange is non-existent here? creating it
 $iPageRange = 10;
 display_page_range($aClean['iPage'], $iPageRange, $iNumPages,
-    $_SERVER['PHP_SELF']."?iNumVersions=".$aClean['iNumVersions']."&sLicense=".
+    $_SERVER['PHP_SELF']."?iNumVersions=".$aClean['iNumVersions']."&amp;sLicense=".
     $sLicenseString);
 
 /* Selector for how many versions to display */
@@ -78,8 +78,8 @@ echo "<b>Filter by license</b>\n";
 $oVersion = new Version();
 echo $oVersion->makeLicenseList($sLicense);
 
-echo " <input type=\"submit\" value=\"Refresh\" />\n";
-echo "</form></div>\n<br />\n";
+echo " <input type=\"submit\" value=\"Refresh\">\n";
+echo "</form></div>\n<br>\n";
 
 if(!isset($num))
 {

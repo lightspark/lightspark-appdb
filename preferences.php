@@ -84,7 +84,7 @@ function show_user_fields($oUser)
       $oTableRow->AddTextCell("&nbsp; Administrator");
       $oTableRow->AddTextCell("<input type=\"checkbox\"".
                               " name=\"bIsAdmin\" value=\"true\" ".
-                              "$sAdminChecked />");
+                              "$sAdminChecked>");
 
       $aTableRows[] = $oTableRow;
     }
@@ -166,8 +166,8 @@ if(isset($aClean['sSubmit']) && $aClean['sSubmit'] == "Update")
             else 
                 $oUser->delPriv("admin");
             util_redirect_and_exit(BASE."admin/adminUsers.php?iUserId=".$oUser->iUserId.
-                    "&sSearch=".$aClean['sSearch']."&iLimit=".$aClean['iLimit'].
-                    "&sOrderBy=".$aClean['sOrderBy']."&sSubmit=true");
+                    "&amp;sSearch=".$aClean['sSearch']."&amp;iLimit=".$aClean['iLimit'].
+                    "&amp;sOrderBy=".$aClean['sOrderBy']."&amp;sSubmit=true");
         }
     }
     else
@@ -222,7 +222,7 @@ if( !isset($aClean['iUserId']) || $oUser->iUserId != $aClean['iUserId'])
 echo $oTable->GetString();
 
 echo html_frame_end();
-echo "<br /> <div align=center> <input type=\"submit\" name='sSubmit' value=\"Update\" /> </div> <br />\n";
+echo "<br> <div align=center> <input type=\"submit\" name='sSubmit' value=\"Update\"> </div> <br>\n";
 echo "</form>\n";
 
 echo "</div>\n";

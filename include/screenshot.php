@@ -450,7 +450,7 @@ class screenshot
         /* skip it for IE */
         if(strpos($_SERVER['HTTP_USER_AGENT'], "MSIE") === false)
         {
-            $sZoomIcon = '<img class="zoom_overlay" src="'.BASE.'images/xmag_32.png" alt="" />';
+            $sZoomIcon = '<img class="zoom_overlay" src="'.BASE.'images/xmag_32.png" alt="">';
         }
         else
             $sZoomIcon = "";
@@ -496,11 +496,11 @@ class screenshot
 
         if(!$hResult || !query_num_rows($hResult))
         {
-            $sImgFile.= '<img src="images/no_screenshot.png" alt="No Screenshot" />';
+            $sImgFile.= '<img src="images/no_screenshot.png" alt="No Screenshot">';
         } else
         {
             $oRow = query_fetch_object($hResult);
-            $sImgFile.= '<img src="appimage.php?bThumbnail=true&amp;iId='.$oRow->id.'" alt="'.$oRow->description.'" />';
+            $sImgFile.= '<img src="appimage.php?bThumbnail=true&amp;iId='.$oRow->id.'" alt="'.$oRow->description.'">';
         }
 
         if($bFormatting)
@@ -516,19 +516,19 @@ class screenshot
         if($hResult && query_num_rows($hResult))
         {
             if($iVersionId)
-                $sImg .= "<a href='screenshots.php?iAppId=$iAppId&amp;iVersionId=$iVersionId'>".$sImgFile.$sZoomIcon."<center>View/Submit&nbsp;Screenshot</center></a>";
+                $sImg .= "<div class=\"imgarea\"><a href='screenshots.php?iAppId=$iAppId&amp;iVersionId=$iVersionId'>".$sImgFile.$sZoomIcon."View/Submit&nbsp;Screenshot</a></div>";
             else
-                $sImg .= "<a href='screenshots.php?iAppId=$iAppId&amp;iVersionId=$iVersionId'>".$sImgFile.$sZoomIcon."<center>View&nbsp;Screenshot</center></a>";
+                $sImg .= "<div class=\"imgarea\"><a href='screenshots.php?iAppId=$iAppId&amp;iVersionId=$iVersionId'>".$sImgFile.$sZoomIcon."View&nbsp;Screenshot</a></div>";
         } else if($iVersionId) /* we are asking for a specific app version but it has no screenshots */
         {
-            $sImg .= "<a href='screenshots.php?iAppId=$iAppId&amp;iVersionId=$iVersionId'>".$sImgFile.$sZoomIcon."<center>Submit&nbsp;Screenshot</center></a>";
+            $sImg .= "<div class=\"imgarea\"><a href='screenshots.php?iAppId=$iAppId&amp;iVersionId=$iVersionId'>".$sImgFile.$sZoomIcon."<br>Submit&nbsp;Screenshot</a></div>";
         } else /* we have no screenshots and we aren't a specific version, we don't allow adding screenshots for an app */
         {
             $sImg .= $sImgFile.$sZoomIcon; 
         }
 
         if($bFormatting)
-            $sImg .= html_frame_end()."<br />";
+            $sImg .= html_frame_end()."<br>";
 
         return $sImg;
     }
@@ -572,7 +572,7 @@ class screenshot
         $sRandName = User::generate_passwd(5);
         // set img tag        
         $shImgSRC  = '<img src="'.apidb_fullurl("appimage.php").
-            '?bThumbnail=true&iId='.$this->iScreenshotId.'" alt="'.$this->sDescription.
+            '?bThumbnail=true&amp;iId='.$this->iScreenshotId.'" alt="'.$this->sDescription.
             '" width="'.$this->get_thumbnail_width().
             '" height="'.$this->get_thumbnail_height().'">';
         $shImg = '<a href="'.apidb_fullurl("appimage.php").
@@ -636,9 +636,9 @@ class screenshot
             echo $shImg;
             echo "<div align=center>". substr($oRow->description,0,20). "\n";
 
-            echo "<br />[".$oApp->objectMakeLink()."]";
+            echo "<br>[".$oApp->objectMakeLink()."]";
 
-            echo "<br />[".$oVersion->objectMakeLink()."]";
+            echo "<br>[".$oVersion->objectMakeLink()."]";
 
             echo "</div></td>\n";
             // end row if counter of 3
@@ -646,7 +646,7 @@ class screenshot
                 echo "</tr><tr>\n";
         }
 
-        echo "</tr></table></div><br />\n";
+        echo "</tr></table></div><br>\n";
     }
 
     function objectGetEntries($sState, $iRows = 0, $iStart = 0)
@@ -712,18 +712,18 @@ class screenshot
         echo '<td>';
         $imgSRC = '<img width="'.$this->get_thumbnail_width().'" height="'.
                 $this->get_thumbnail_height().'" src="'.BASE.
-                'appimage.php?bQueued=true&iId='.$this->iScreenshotId.'" />';
+                'appimage.php?bQueued=true&amp;iId='.$this->iScreenshotId.'" />';
         // generate random tag for popup window
         $randName = User::generate_passwd(5);
         // set image link based on user pref
-        $img = '<a href="javascript:openWin(\''.BASE.'appimage.php?bQueued=true&iId='.
+        $img = '<a href="javascript:openWin(\''.BASE.'appimage.php?bQueued=true&amp;iId='.
                 $this->iScreenshotId.'\',\''.$randName.'\','.$this->get_screenshot_width()
                 .','.($this->get_screenshot_height()+4).');">'.$imgSRC.'</a>';
         if ($_SESSION['current']->isLoggedIn())
         {
             if ($_SESSION['current']->getpref("window:screenshot") == "no")
             {
-                $img = '<a href="'.BASE.'appimage.php?bQueued=true&iId='.
+                $img = '<a href="'.BASE.'appimage.php?bQueued=true&amp;iId='.
                         $this->iScreenshotId.'">'.$imgSRC.'</a>';
             }
         }

@@ -21,16 +21,16 @@ require_once(BASE."include/objectManager.php");
 /* to track down */
 if(get_magic_quotes_gpc())
 {
-    echo "<b>Please disable the magic quotes GPC PHP setting. See <a href=\"http://us2.php.net/manual/en/ref.info.php#ini.magic-quotes-gpc\"> this page</a> for more information</b><br/><br/>";
-    echo "AppDB php code assumes magic quotes are disabled.<br/><br/>";
-    echo "Magic quotes are a bad idea for a few reasons.<br/><br/>";
+    echo "<b>Please disable the magic quotes GPC PHP setting. See <a href=\"http://us2.php.net/manual/en/ref.info.php#ini.magic-quotes-gpc\"> this page</a> for more information</b><br><br>";
+    echo "AppDB php code assumes magic quotes are disabled.<br><br>";
+    echo "Magic quotes are a bad idea for a few reasons.<br><br>";
     echo "First is that php calls <b>addslashes()</b> on all \$_POST, \$_REQUEST and cookie variables ";
     echo "if magic quotes is enabled. ";
-    echo "Ooooooh you say.<br/>";
-    echo "<i>\"Aren't magic quotes a convienent way to protect my php code from sql injection attacks?\"</i><br/><br/>";
+    echo "Ooooooh you say.<br>";
+    echo "<i>\"Aren't magic quotes a convienent way to protect my php code from sql injection attacks?\"</i><br><br>";
     echo "No!  <b>addslashes()</b> isn't adequate.  You should use <b>query_escape_string()</b> or some other function";
     echo " that will handle multi-byte characters.  See <a href=\"http://shiflett.org/archive/184\">this article</a>";
-    echo " for a way to exploit <b>addslash()</b>ed parameters.<br/><br/>";
+    echo " for a way to exploit <b>addslash()</b>ed parameters.<br><br>";
     echo "A second reason is that with magic quotes enabled, due to the use of <b>query_escape_string()</b> to";
     echo " protect from sql injection attacks we'll end up with variables that have been addslash()ed and";
     echo " <b>query_escape_string()</b>ed.  So you end up having to call stripslashes() on EVERY variable. ";

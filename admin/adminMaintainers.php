@@ -63,13 +63,13 @@ if (isset($aClean['sSub']))
                 echo "<tr class=color4>\n";
                 echo "    <td style=\"$style;border-left:thin solid\">Maintainer summary</td>\n";
                 if($oUser->sRealname == "")
-                    echo "    <td style=\"$style\"><a href=\"mailto:".$oUser->sEmail."\">&nbsp</a></td>\n";
+                    echo "    <td style=\"$style\"><a href=\"mailto:".$oUser->sEmail."\">&nbsp;</a></td>\n";
                 else
                     echo "    <td style=\"$style\"><a href=\"mailto:".$oUser->sEmail."\">".$oUser->sRealname."</a></td>\n";
 
                 $count = Maintainer::getMaintainerCountForUser($oUser, true);
                 if($count == 0)
-                    echo "    <td style=\"$style\">&nbsp</td>\n";
+                    echo "    <td style=\"$style\">&nbsp;</td>\n";
                 else if($count <= 1)
                     echo "    <td style=\"$style\">".$count." app</td>\n";
                 else
@@ -78,13 +78,13 @@ if (isset($aClean['sSub']))
 
                 $count = Maintainer::getMaintainerCountForUser($oUser, false);
                 if($count == 0)
-                    echo "    <td style=\"$style\">&nbsp</td>\n";
+                    echo "    <td style=\"$style\">&nbsp;</td>\n";
                 else if($count <= 1)
                     echo "    <td style=\"$style\">".$count." version</td>\n";
                 else
                     echo "    <td style=\"$style\">".$count." versions</td>\n";
 
-                echo "    <td align=\"center\" style=\"$style;border-right:thin solid\">&nbsp</td>\n";
+                echo "    <td align=\"center\" style=\"$style;border-right:thin solid\">&nbsp;</td>\n";
                 echo "</tr>\n\n";
 
                 $oldUserId = $oRow->userId;
@@ -102,7 +102,7 @@ if (isset($aClean['sSub']))
                 $oVersion = new version($oRow->versionId);
                 echo "    <td>".$oVersion->objectMakeLink()."</td>\n";
             }
-            echo "    <td align=\"center\">[<a href='".BASE."objectManager.php?sClass=maintainer&iId=$oRow->maintainerId&bIsQueue=false&sTitle=Admin%20Maintainers&sAction=delete&sReturnTo=".APPDB_ROOT."admin/adminMaintainers.php'>delete</a>]</td>\n";
+            echo "    <td align=\"center\">[<a href='".BASE."objectManager.php?sClass=maintainer&amp;iId=$oRow->maintainerId&amp;bIsQueue=false&amp;sTitle=Admin%20Maintainers&amp;sAction=delete&amp;sReturnTo=".APPDB_ROOT."admin/adminMaintainers.php'>delete</a>]</td>\n";
             echo "</tr>\n\n";
             $c++;
         }

@@ -151,16 +151,16 @@ if (empty($aClean['sRating']))
 
     /* display page selection links */
     echo "<center>";
-    echo "<b>Page $iCurrentPage of $iTotalPages</b><br />";
+    echo "<b>Page $iCurrentPage of $iTotalPages</b><br>";
         display_page_range($iCurrentPage, $iPageRange, $iTotalPages,
-                  $_SERVER['PHP_SELF']."?sRating=".$aClean['sRating']."&iItemsPerPage=".$iItemsPerPage);
-    echo "<br />";
-    echo "<br />";
+                  $_SERVER['PHP_SELF']."?sRating=".$aClean['sRating']."&amp;iItemsPerPage=".$iItemsPerPage);
+    echo "<br>";
+    echo "<br>";
     
     /* display the option to choose how many applications per-page to display */
     echo '<form method="get" name="message" action="'.$_SERVER['PHP_SELF'].'">';
     echo '<b>Number of Applications per page:</b>';
-    echo "&nbsp<select name='iItemsPerPage'>";
+    echo "&nbsp;<select name='iItemsPerPage'>";
 
     $iItemsPerPageArray = array(50, 100, 150, 200, 250, 300, 350, 400, 450, 500);
     foreach($iItemsPerPageArray as $i => $value)
@@ -174,7 +174,7 @@ if (empty($aClean['sRating']))
 
     echo "<input type=hidden name=iPage value=$iCurrentPage>";
     echo "<input type=hidden name=sRating value=".$aClean['sRating'].">";
-    echo "&nbsp<input type=submit value='Refresh'>";
+    echo "&nbsp;<input type=submit value='Refresh'>";
     echo "</form>";
     echo "</center>";
 
@@ -237,7 +237,7 @@ if (empty($aClean['sRating']))
     echo html_frame_end();
     echo "<center>";
     display_page_range($iCurrentPage, $iPageRange, $iTotalPages,
-                  $_SERVER['PHP_SELF']."?sRating=".$aClean['sRating']."&iItemsPerPage=".$iItemsPerPage);    
+                  $_SERVER['PHP_SELF']."?sRating=".$aClean['sRating']."&amp;iItemsPerPage=".$iItemsPerPage);    
     echo "</center>";
 }
 

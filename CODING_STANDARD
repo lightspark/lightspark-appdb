@@ -6,9 +6,8 @@ WineHQ Application Database Coding Practice
 - Respect html coding standards. The current doctype is HTML 4.01 transitional (http://www.w3.org/TR/REC-html40/)
 Try to make your content validate nicely (http://validator.w3.org/)
 
-- Think about upward compatibility. Some day we might choose another doctype like XHTML 1.0
-(i.e. <br /> instead of <br>, avoid using style tags and properties (bgcolor, borders & co) and use stylesheets instead)
-
+Avoid using implicitly closed elements eg. <br/> in HTML 4.01 transitional, as it can lead to validation errors.
+http://www.w3.org/TR/html401/struct/text.html#edef-BR
 
 /**
  * Variables naming

@@ -117,10 +117,10 @@ if($subs)
     }
 }
 echo '</select>';
-echo '<input type="submit" value="Refresh" />';
+echo '<input type="submit" value="Refresh">';
 echo '</form>';
-echo '<br />';
-echo '<br />';
+echo '<br>';
+echo '<br>';
 
 /***************************************************/
 /* build a list of the apps in the chosen category */

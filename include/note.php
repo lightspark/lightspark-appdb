@@ -232,7 +232,7 @@ class Note {
         if((!$aVars || $aVars['bEditing'] != "true") && $this->canEdit())
         {
             $shOutput .= "<tr class=\"color1\" align=\"center\" valign=\"top\"><td>";
-            $shOutput .= "<form method=\"post\" name=\"message\" action=\"objectManager.php?sClass=note&sAction=edit&iId=".$this->iNoteId."&sReturnTo=".urlencode($oVersion->objectMakeUrl())."\">";
+            $shOutput .= "<form method=\"post\" name=\"message\" action=\"objectManager.php?sClass=note&amp;sAction=edit&amp;iId=".$this->iNoteId."&amp;sReturnTo=".urlencode($oVersion->objectMakeUrl())."\">";
             $shOutput .= '<input type="submit" value="Edit Note" class="button">';
             $shOutput .= '</form></td></tr>';
         }
@@ -274,9 +274,9 @@ class Note {
         echo html_frame_start("Edit Application Note {$aClean['noteId']}", "90%","",0);
         echo html_table_begin("width='100%' border=0 align=left cellpadding=6 cellspacing=0 class='box-body'");
 
-        echo '<input type="hidden" name="bEditing" value="true" />';
-        echo '<input type="hidden" name="iNoteId" value="'.$this->iNoteId.'" />';
-        echo '<input type="hidden" name="iVersionId" value="'.$this->iVersionId.'" />';
+        echo '<input type="hidden" name="bEditing" value="true">';
+        echo '<input type="hidden" name="iNoteId" value="'.$this->iNoteId.'">';
+        echo '<input type="hidden" name="iVersionId" value="'.$this->iVersionId.'">';
 
         echo '<tr><td class=color1>Title</td>'."\n";
         echo '    <td class=color0><input size=80% type="text" name="sNoteTitle" type="text" value="'.$this->sTitle.'"></td></tr>',"\n";

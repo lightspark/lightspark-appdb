@@ -84,7 +84,7 @@ if(!$_SESSION['current']->isLoggedIn())
     }
 ?>
 
-<br /><br />
+<br><br>
 
 <div class="topx_style platinum">
   <div class="rating_header">
@@ -104,7 +104,7 @@ if(!$_SESSION['current']->isLoggedIn())
     </table>
   </div>
 </div>
-<br />
+<br>
 
 <div class="topx_style gold">
   <div class="rating_header">
@@ -124,7 +124,7 @@ if(!$_SESSION['current']->isLoggedIn())
     </table>
   </div>
 </div>
-<br />
+<br>
 
 <div class="topx_style silver">
   <div class="rating_header">
@@ -145,12 +145,12 @@ if(!$_SESSION['current']->isLoggedIn())
   </div>
 </div>
 
-<br /><br />
+<br><br>
 
 <h2>Other Wine Application Compatibility Sites</h2>
 <p>
 <a href="http://frankscorner.org"><b>Frank's Corner</b></a>:  Frank has a fantastic Wine
-application site, with tips and how-to's on getting listed apps to run.<br />
+application site, with tips and how-to's on getting listed apps to run.<br>
 <a href="http://wine-review.blogspot.com/"><b>Wine-Review</b></a>: Is a Wine application and game 
 Blog, with tips and how-to's on getting listed applications and games to run. 
 </p>

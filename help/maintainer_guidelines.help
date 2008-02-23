@@ -25,10 +25,10 @@ You will:
 <li>Be able to modify all aspects of your application(s) and version(s), including the description, screenshots, how-tos, notes, comments, etc.</li>
 </ul>
 
-<br />
+<br>
 
 <h4>Application overview page guidlines</h4>
-<p><i>N.B. Only super maintainers can change the general description of an application.</i><br />
+<p><i>N.B. Only super maintainers can change the general description of an application.</i><br>
 You can edit an application overview page by clicking on the "Edit Application" button in the application overview page. You will be then presented with a form whose fields are explained thereafter.
 <ul>
 <li>
@@ -57,7 +57,7 @@ You can edit a version page by clicking on the "Edit Version" button in any vers
 Version name should be checked against official version name. However if you feel that two minor revisions of an application will share the same problems or success, you are encouraged to use wildcards in the version number to avoid cluttering the database with hundreds of versions. For example if you know that Adobe Acrobat 6.0, 6.01 and 6.1 are about the same application, just choose 6.x as a version name. You can however use the full version name in an history table in the description field (see below).
 </li>
 <li>
-Description should describe the application version and not be a repetition of the application description. Please use a short sentence as the first line of your description to describe what this version is, and then add a carriage return after this first sentence as it will be used when showing version summary, in the application page for example. <br />
+Description should describe the application version and not be a repetition of the application description. Please use a short sentence as the first line of your description to describe what this version is, and then add a carriage return after this first sentence as it will be used when showing version summary, in the application page for example. <br>
 </li>
 <li>
 Rating lets you rate how this version ran with the latest Wine version you tested. For rating definitions, please see this <a href="index.php?sTopic=maintainer_ratings">page</a>.
@@ -101,8 +101,8 @@ As a maintainer you are entitled to delete comments. Use this feature wisely and
 
 <h4>Using the HTML editor</h4>
 <p>
-Here you'll find informations and hints about the HTML editor used when editing informations in the Application Database.<br />
+Here you'll find informations and hints about the HTML editor used when editing informations in the Application Database.<br>
 At this time detailed informations are not available. Please check back later.
 </p>
-<br />
+<br>
 <p>If you have additionnal questions, please do not hesitate to contact us on <a href="mailto:appdb@winehq.org">appdb@winehq.org</a>.</p>

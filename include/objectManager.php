@@ -102,7 +102,7 @@ class ObjectManager
             return;
 
         $this->oSortInfo = null;
-        $this->oSortInfo = new TableSortInfo($this->makeUrl().'&');
+        $this->oSortInfo = new TableSortInfo($this->makeUrl().'&amp;');
 
         if($aClean)
             $this->oSortInfo->ParseArray($aClean, $this->getObject()->objectGetSortableFields());
@@ -327,7 +327,7 @@ class ObjectManager
 
             if($this->GetOptionalSetting("objectShowAddEntry", FALSE))
             {
-                echo "<br /><center><a href=\"".
+                echo "<br><center><a href=\"".
                      $this->makeUrl("add", false,
                      "Add $this->sClass entry").
                      "\">Add an entry?</a></center>";
@@ -340,7 +340,7 @@ class ObjectManager
         {
             echo '<div align="center">';
             $oM = new objectManager($this->sClass, 'Purge Rejected Entries');
-            echo '<a href="'.$oM->makeUrl('purgeRejected').'">Purge rejected entries</a><br /><br />';
+            echo '<a href="'.$oM->makeUrl('purgeRejected').'">Purge rejected entries</a><br><br>';
             echo '</div>';
         }
 
@@ -356,7 +356,7 @@ class ObjectManager
         $oObject = new $this->sClass();
         if($oObject->canEdit() && $this->GetOptionalSetting("objectShowAddEntry", FALSE))
         {
-            echo "<br /><br /><a href=\"".$this->makeUrl("add", false,
+            echo "<br><br><a href=\"".$this->makeUrl("add", false,
                     "Add $this->sClass")."\">Add entry</a>\n";
         }
 
@@ -437,7 +437,7 @@ class ObjectManager
                 /////////////////////////////////////////////////
                 // output radio buttons for some common responses
                 echo '<tr valign=top><td class="color0"></td><td class="color0">'.
-                '<b>Common replies</b><br/> Email <a href="mailto:'.APPDB_OWNER_EMAIL.'">'.
+                '<b>Common replies</b><br> Email <a href="mailto:'.APPDB_OWNER_EMAIL.'">'.
                 APPDB_OWNER_EMAIL.'</a> if you want to suggest a new common reply.</td></tr>',"\n";
 
                 // NOTE: We use the label tag so the user can click anywhere in
@@ -448,7 +448,7 @@ class ObjectManager
                 {
                 echo '<tr valign=top><td class="color0"></td>',"\n";
                 echo '<td class="color0"><label for="'.$iIndex.'"><input'.
-                    ' type="radio" name="sOMCommonReply" id="'.$iIndex.'" value="'.$sReply.'"/>'.
+                    ' type="radio" name="sOMCommonReply" id="'.$iIndex.'" value="'.$sReply.'">'.
                     $sReply.'</label></td>',"\n";
                 echo '</tr>',"\n";
                 }
@@ -460,21 +460,21 @@ class ObjectManager
             /* buttons for operations we can perform on this entry */
             echo '<tr valign=top><td class=color3 align=center colspan=2>' ,"\n";
             echo '<input name="sSubmit" type="submit" value="Submit" class="button" '. 
-                 '/>',"\n";
+                 '>',"\n";
             if(!$this->getOptionalSetting("objectHideDelete", FALSE))
             {
                 echo '<input name="sSubmit" type="submit" value="Delete" '.
-                     'class="button" />',"\n";
+                     'class="button">',"\n";
             }
 
             if($this->sState != 'rejected' && !$this->getOptionalSetting("objectHideReject", FALSE))
             {
                 echo '<input name="sSubmit" type="submit" value="Reject" class="button" '.
-                    '/>',"\n";
+                    '>',"\n";
             }
 
             echo '<input name="sSubmit" type="submit" value="Cancel" class="button" '.
-                 '/>',"\n";
+                 '>',"\n";
             echo '</td></tr>',"\n";
             echo '</table>';
             echo html_frame_end();
@@ -485,8 +485,8 @@ class ObjectManager
 
             echo '<tr valign=top><td class=color3 align=center colspan=2>',"\n";
             echo '<input name="sSubmit" type="submit" value="Submit" class="button">'.
-                 '&nbsp',"\n";
-            echo '<input name="sSubmit" type="submit" value="Delete" class="button" />'."\n";
+                 '&nbsp;',"\n";
+            echo '<input name="sSubmit" type="submit" value="Delete" class="button">'."\n";
             $this->handle_preview_button();
             echo "</td></tr>\n";
         }
@@ -545,16 +545,16 @@ class ObjectManager
         "Confirm deletion".
         "</div>".
         '<div class="info_contents">'.
-        "Are you sure you wish to delete this entry".$sSubmitter."?<br />".
+        "Are you sure you wish to delete this entry".$sSubmitter."?<br>".
         $shWhyComment.
         "</div>".
         "</div>".
 
         '<form method="post" action="'.$this->makeUrl().'">'.
         $this->makeUrlFormData().
-        '<input type="hidden" name="iId" value="'.$this->iId.'" />'.
-        '<textarea rows="15" cols="50" name="sReplyText"></textarea><br /><br />'.
-        '<input type="submit" value="Delete" name="sSubmit" class="button" />'.
+        '<input type="hidden" name="iId" value="'.$this->iId.'">'.
+        '<textarea rows="15" cols="50" name="sReplyText"></textarea><br><br>'.
+        '<input type="submit" value="Delete" name="sSubmit" class="button">'.
         "</form>".
         "</div>");
         echo $oTable->getString();
@@ -844,13 +844,13 @@ class ObjectManager
         }
 
         echo '<form action="objectManager.php" action="post" />';
-        echo 'Purge rejected entries of this type<br />';
-        echo '<input type="checkbox" value="true" name="bTimeLimit" /> ';
+        echo 'Purge rejected entries of this type<br>';
+        echo '<input type="checkbox" value="true" name="bTimeLimit"> ';
         echo 'Only entries submitted before ';
-        echo '<input type="text" name="sSubmittedBefore" size="25" value="'.date('Y-m-d H:i:s').'" /><br /><br />';
-        echo '<input type="hidden" name="sAction" value="doPurgeRejected" />';
+        echo '<input type="text" name="sSubmittedBefore" size="25" value="'.date('Y-m-d H:i:s').'"><br><br>';
+        echo '<input type="hidden" name="sAction" value="doPurgeRejected">';
         echo $this->makeUrlFormData();
-        echo '<input type="submit" value="Purge" />';
+        echo '<input type="submit" value="Purge">';
         echo '</form>';
     }
 
@@ -894,14 +894,14 @@ class ObjectManager
         $oObject = new $this->sClass($this->iId);
         if(!$oObject->canEdit())
         {
-            echo "Insufficient privileges.<br />\n";
+            echo "Insufficient privileges.<br>\n";
             return FALSE;
         }
 
         /* We only allow moving to non-queued objects */
         if(!$hResult = $oObject->objectGetEntries('accepted'))
         {
-            echo "Failed to get list of objects.<br />\n";
+            echo "Failed to get list of objects.<br>\n";
             return FALSE;
         }
 
@@ -927,7 +927,7 @@ class ObjectManager
             echo html_tr(array(
                     $oCandidate->objectMakeLink(),
                     "<a href=\"".$this->makeUrl("moveChildren", $this->iId).
-                    "&iNewId=".$oCandidate->objectGetId()."\">Move here</a>"),
+                    "&amp;iNewId=".$oCandidate->objectGetId()."\">Move here</a>"),
                         ($i % 2) ? "color0" : "color1");
         }
         echo "</table>\n";
@@ -993,7 +993,7 @@ class ObjectManager
         $this->oObject = $oObject;
         echo "<div align=\"center\">";
         echo "<input type=\"submit\" class=\"button\" value=\"Submit\" ". 
-        "name=\"sSubmit\" />\n";
+        "name=\"sSubmit\">\n";
         $this->handle_preview_button();
         echo "</div></form>\n";
         echo html_back_link(1);
@@ -1011,7 +1011,7 @@ class ObjectManager
         if(!$oObject->objectShowPreview())
             return;
 
-        echo '<input type="submit" name="sSubmit" class="button" value="Preview" />';
+        echo '<input type="submit" name="sSubmit" class="button" value="Preview">';
     }
 
     public function handle_anonymous_submission()
@@ -1230,36 +1230,36 @@ class ObjectManager
         $sIsQueue = $this->getIsQueue() ? "true" : "false";
         $sUrl .= "bIsQueue=$sIsQueue";
         $sIsRejected = $this->sState == 'rejected' ? "true" : "false";
-        $sUrl .= "&bIsRejected=$sIsRejected";
+        $sUrl .= "&amp;bIsRejected=$sIsRejected";
 
-        $sUrl .= "&sClass=".$this->sClass;
+        $sUrl .= "&amp;sClass=".$this->sClass;
         if($iId)
-            $sUrl .= "&iId=$iId";
+            $sUrl .= "&amp;iId=$iId";
 
         if($sAction)
-            $sUrl .= "&sAction=$sAction";
+            $sUrl .= "&amp;sAction=$sAction";
 
         if($this->sReturnTo)
-            $sUrl .= "&sReturnTo=".urlencode($this->sReturnTo);
+            $sUrl .= "&amp;sReturnTo=".urlencode($this->sReturnTo);
 
         if(!$sTitle)
             $sTitle = $this->sTitle;
 
         if($this->sReturnToTitle)
-            $sUrl .= "&sReturnToTitle=".$this->sReturnToTitle;
+            $sUrl .= "&amp;sReturnToTitle=".$this->sReturnToTitle;
 
-        $sUrl .= "&sTitle=".urlencode($sTitle);
+        $sUrl .= "&amp;sTitle=".urlencode($sTitle);
 
         if($this->oMultiPage->bEnabled)
         {
-            $sUrl .= "&iItemsPerPage=".$this->oMultiPage->iItemsPerPage;
-            $sUrl .= "&iPage=".$this->oMultiPage->iPage;
+            $sUrl .= "&amp;iItemsPerPage=".$this->oMultiPage->iItemsPerPage;
+            $sUrl .= "&amp;iPage=".$this->oMultiPage->iPage;
         }
 
         if($this->oSortInfo && $this->oSortInfo->sCurrentSort)
         {
-            $sUrl .= "&sOrderBy={$this->oSortInfo->sCurrentSort}";
-            $sUrl .= '&bAscending='.($this->oSortInfo->bAscending ? 'true' : 'false');
+            $sUrl .= "&amp;sOrderBy={$this->oSortInfo->sCurrentSort}";
+            $sUrl .= '&amp;bAscending='.($this->oSortInfo->bAscending ? 'true' : 'false');
         }
 
         return $sUrl;
@@ -1272,28 +1272,28 @@ class ObjectManager
         $sIsQueue = $this->getIsQueue() ? "true" : "false";
         $sIsRejected = $this->sState == 'rejected' ? "true" : "false";
 
-        $sReturn = "<input type=\"hidden\" name=\"bIsQueue\" value=\"$sIsQueue\" />\n";
-        $sReturn .= "<input type=\"hidden\" name=\"bIsRejected\" value=\"$sIsRejected\" />\n";
-        $sReturn .= "<input type=\"hidden\" name=\"sClass\" value=\"".$this->sClass."\" />\n";
-        $sReturn .= "<input type=\"hidden\" name=\"sTitle\" value=\"".$this->sTitle."\" />\n";
-        $sReturn .= "<input type=\"hidden\" name=\"sReturnTo\" value=\"".$this->sReturnTo."\" />\n";
-        $sReturn .= "<input type=\"hidden\" name=\"iId\" value=\"".$this->iId."\" />\n";
+        $sReturn = "<input type=\"hidden\" name=\"bIsQueue\" value=\"$sIsQueue\">\n";
+        $sReturn .= "<input type=\"hidden\" name=\"bIsRejected\" value=\"$sIsRejected\">\n";
+        $sReturn .= "<input type=\"hidden\" name=\"sClass\" value=\"".$this->sClass."\">\n";
+        $sReturn .= "<input type=\"hidden\" name=\"sTitle\" value=\"".$this->sTitle."\">\n";
+        $sReturn .= "<input type=\"hidden\" name=\"sReturnTo\" value=\"".$this->sReturnTo."\">\n";
+        $sReturn .= "<input type=\"hidden\" name=\"iId\" value=\"".$this->iId."\">\n";
 
         if($this->oMultiPage->bEnabled)
         {
             $sReturn .= "<input type=\"hidden\" name=\"iItemsPerPage\" value=\"".
-                    $this->oMultiPage->iItemsPerPage."\" />\n";
+                    $this->oMultiPage->iItemsPerPage."\">\n";
             $sReturn .= "<input type=\"hidden\" name=\"iPage\" value=\"".
-                    $this->oMultiPage->iPage."\" />\n";
+                    $this->oMultiPage->iPage."\">\n";
         }
 
         if($this->sReturnToTitle)
-            $sReturn .= "<input type=\"hidden\" name=\"sReturnToTitle\" value=\"".$this->sReturnToTitle."\" />\n";
+            $sReturn .= "<input type=\"hidden\" name=\"sReturnToTitle\" value=\"".$this->sReturnToTitle."\">\n";
 
         if($this->oSortInfo && $this->oSortInfo->sCurrentSort)
         {
-            $sReturn .= "<input type=\"hidden\" name=\"sOrderBy\" value=\"{$this->oSortInfo->sCurrentSort}\" />";
-            $sReturn .= "<input type=\"hidden\" name=\"bAscending\" value=\"".($this->oSortInfo->bAscending ? 'true' : 'false')."\" />";
+            $sReturn .= "<input type=\"hidden\" name=\"sOrderBy\" value=\"{$this->oSortInfo->sCurrentSort}\">";
+            $sReturn .= "<input type=\"hidden\" name=\"bAscending\" value=\"".($this->oSortInfo->bAscending ? 'true' : 'false')."\">";
         }
 
         return $sReturn;
@@ -1369,7 +1369,7 @@ class ObjectManager
             /* Fill in form data for the objectManager URL */
             $sControls .= $this->makeUrlFormData();
             $sControls .= "<p><b>&nbsp;Items per page</b>";
-            $sControls .= "<select name=\"iItemsPerPage\" />";
+            $sControls .= "<select name=\"iItemsPerPage\">";
 
             foreach($aItemsPerPage as $iNum)
             {
@@ -1377,8 +1377,8 @@ class ObjectManager
                 $sControls .= "<option$sSelected>$iNum</option>";
             }
             $sControls .= "</select>";
-            $sControls .= " &nbsp; <input type=\"submit\" value=\"Update\" />";
-            $sControls .= "</form></p>";
+            $sControls .= " &nbsp; <input type=\"submit\" value=\"Update\">";
+            $sControls .= "</form>";
         }
 
         $iTotalEntries = $oObject->objectGetEntriesCount($this->sState);
@@ -1397,12 +1397,12 @@ class ObjectManager
 
         /* Display selectors and info */
         echo '<div align="center">';
-        echo "<b>Page $iPage of $iNumPages</b><br />";
+        echo "<b>Page $iPage of $iNumPages</b><br>";
 
         /* Page controls */
         $iPageRange = 7; // the number of page links we want to display
         display_page_range($iPage, $iPageRange, $iNumPages,
-                           $this->makeUrl()."&iItemsPerPage=$iItemsPerPage");
+                           $this->makeUrl()."&amp;iItemsPerPage=$iItemsPerPage");
 
         echo $sControls;
         echo "</div>\n";
@@ -1457,9 +1457,9 @@ class ObjectManager
                 return TRUE;
 
             echo "<font color=\"red\">\n";
-            echo "The following errors were found<br />\n";
+            echo "The following errors were found<br>\n";
             echo "<ul>$sErrors</ul>\n";
-            echo "</font><br />";
+            echo "</font><br>";
             return TRUE;
         } else
         {

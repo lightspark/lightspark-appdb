@@ -63,7 +63,7 @@ if($hResult && query_num_rows($hResult))
         //set row color
         if ($c % 2 == 1) { $bgcolor = 'color0'; } else { $bgcolor = 'color1'; }
 		    
-        $delete_link = "[<a href='editBundle.php?sCmd=delete&iBundleId=".$aClean['iBundleId']."&iAppId=$oRow->appId'>delete</a>]";
+        $delete_link = "[<a href='editBundle.php?sCmd=delete&amp;iBundleId=".$aClean['iBundleId']."&amp;iAppId=$oRow->appId'>delete</a>]";
 
         echo "<tr class=$bgcolor>\n";
         echo "    <td>$oRow->appName &nbsp;</td>\n";

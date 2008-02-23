@@ -34,8 +34,8 @@ if(!empty($aClean['sAction']))
 
     echo "<form method=post action='moveAppVersion.php'>\n";
     echo html_frame_start("Move ".$oApp->sName." ".$oVersion->sName, "90%","",0);
-    echo '<input type="hidden" name="iAppId" value="'.$oVersion->iAppId.'" />';
-    echo '<input type="hidden" name="iVersionId" value="'.$oVersion->iVersionId.'" />';
+    echo '<input type="hidden" name="iAppId" value="'.$oVersion->iAppId.'">';
+    echo '<input type="hidden" name="iVersionId" value="'.$oVersion->iVersionId.'">';
 
 
     /* build a table of applications and their versions */
@@ -58,7 +58,7 @@ if(!empty($aClean['sAction']))
             echo '<tr style="background: #CCDDFF; border: thin solid; font-weight:bold;"><td align="left" style="padding-left:20px;">';
             $sUrl = $oApp->objectMakeUrl();
             echo '<a href="'.$sUrl.'">'.substr($oRow->appName, 0, 30).'</a></td><td> - '.$oRow->appId.'</td>';
-            echo "<td style='padding-left:20px;'><a href='moveAppVersion.php?sAction=move&iVersionId=$oVersion->iVersionId&iAppId=$oRow->appId'>Move here</a></td></tr>";
+            echo "<td style='padding-left:20px;'><a href='moveAppVersion.php?sAction=move&amp;iVersionId=$oVersion->iVersionId&amp;iAppId=$oRow->appId'>Move here</a></td></tr>";
             echo '<tr style="border-left: thin solid; border-right:thin solid; background: #FAFBE2;"><td style="padding-left:40px;" colspan="3" align="left">'.$oRow->versionName.'</td></tr>';
         } else /* just add another version */
         {

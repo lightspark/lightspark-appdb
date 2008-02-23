@@ -647,15 +647,15 @@ class distribution {
         if ($this->sUrl) 
         {
             echo " (".$this->sUrl.")";
-            echo "</a> <br />\n";
+            echo "</a> <br>\n";
         } else 
         {
-            echo "<br />\n";
+            echo "<br>\n";
         }
 
         if($this->aTestingIds)
         {
-            echo '<p><span class="title">Test Results for '.$this->sName.'</span><br />',"\n";
+            echo '<p><span class="title">Test Results for '.$this->sName.'</span><br>',"\n";
             echo '<table width="100%" border="1">',"\n";
             echo '<thead class="historyHeader">',"\n";
             echo '<tr>',"\n";
@@ -683,7 +683,7 @@ class distribution {
                     continue;
 
                 echo '<tr class='.$bgcolor.'>',"\n";
-                echo '<td><a href="'.$oVersion->objectMakeUrl().'&iTestingId='.$oTest->iTestingId.'">',"\n";
+                echo '<td><a href="'.$oVersion->objectMakeUrl().'&amp;iTestingId='.$oTest->iTestingId.'">',"\n";
                 echo version::fullName($oVersion->iVersionId).'</a></td>',"\n";
                 echo '<td>',"\n";
                 if($_SESSION['current']->isLoggedIn())
@@ -696,10 +696,10 @@ class distribution {
                     echo $oSubmitter->sRealname;
                 echo '</td>',"\n";
                 echo '<td>'.date("M d Y", mysqldatetime_to_unixtimestamp($oTest->sSubmitTime)).'</td>',"\n";
-                echo '<td>'.$oTest->sTestedRelease.'&nbsp</td>',"\n";
-                echo '<td>'.$oTest->sInstalls.'&nbsp</td>',"\n";
-                echo '<td>'.$oTest->sRuns.'&nbsp</td>',"\n";
-                echo '<td>'.$oTest->sTestedRating.'&nbsp</td>',"\n";
+                echo '<td>'.$oTest->sTestedRelease.'&nbsp;</td>',"\n";
+                echo '<td>'.$oTest->sInstalls.'&nbsp;</td>',"\n";
+                echo '<td>'.$oTest->sRuns.'&nbsp;</td>',"\n";
+                echo '<td>'.$oTest->sTestedRating.'&nbsp;</td>',"\n";
                 if ($_SESSION['current']->hasAppVersionModifyPermission($oVersion))
                 {
                     echo '<td><a href="'.$oTest->objectMakeUrl().'">',"\n";

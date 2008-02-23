@@ -264,13 +264,13 @@ class Category {
                 <tr>
                 <td width=\"15%\" class=\"box-label\"><b>Category name</b></td>
                 <td class=\"box-body\">
-                <input type=\"text\" size=\"50\" name=\"sName\" value=\"".$this->sName."\" /> 
+                <input type=\"text\" size=\"50\" name=\"sName\" value=\"".$this->sName."\"> 
                 </td>
                 </tr>
                 <tr>
                 <td width=\"15%\" class=\"box-label\"><b>Description</b></td>
                 <td class=\"box-body\">
-                <input type=\"text\" size=\"50\" name=\"sDescription\" value=\"".$this->sDescription."\" /> 
+                <input type=\"text\" size=\"50\" name=\"sDescription\" value=\"".$this->sDescription."\"> 
                 </td>
                 </tr>
                 <tr>
@@ -311,7 +311,7 @@ class Category {
     {
         $sCatFullPath = Category::make_cat_path($this->getCategoryPath(), $appId, $versionId);
         echo html_frame_start("",'98%','',2);
-        echo "<p><b>Category: ". $sCatFullPath ."</b><br />\n";
+        echo "<p><b>Category: ". $sCatFullPath ."</b><br>\n";
         echo html_frame_end();
     }
 }

@@ -457,7 +457,7 @@ class version {
                 $sMsg .= "Clicking on the link in this email will allow you to modify and resubmit the version. ";
                 $sMsg .= "A link to your queue of applications and versions will also show up on the left hand side of the Appdb site once you have logged in. ";
                 $sMsg .= APPDB_ROOT."objectManager.php?sClass=version_queue".
-                        "&bIsQueue=true&bIsRejected=true&iId=".$this->iVersionId."&".
+                        "&amp;bIsQueue=true&amp;bIsRejected=true&amp;iId=".$this->iVersionId."&amp;".
                         "sTitle=Edit+Version\n";
             break;
             }
@@ -524,7 +524,7 @@ class version {
             case "reject":
                 $sSubject = "Version '".$this->sName."' of '".$oApp->sName."' has been rejected by ".$_SESSION['current']->sRealname;
                 $sMsg .= APPDB_ROOT."objectManager.php?sClass=version_queue".
-                        "&bIsQueue=true&bIsRejected=true&iId=".$this->iVersionId."&".
+                        "&amp;bIsQueue=true&amp;bIsRejected=true&amp;iId=".$this->iVersionId."&amp;".
                         "sTitle=Edit+Version\n";
 
                 // if sReplyText is set we should report the reason the version was rejected 
@@ -574,7 +574,7 @@ class version {
         $sMsg .= "to be running a version compatible with the server. ";
         $sMsg .= "If this is such an application, and this version is no longer usable, ";
         $sMsg .= "you can mark it as obsolete and move its current votes to a usable ";
-        $sMsg .= "version instead.<br /><br />";
+        $sMsg .= "version instead.<br><br>";
 
         $sMsg .= $sContent;
 
@@ -592,7 +592,7 @@ class version {
         HtmlAreaLoaderScript(array("version_editor"));
         echo html_frame_start("Version Form", "90%", "", 0);
 
-        echo '<input type="hidden" name="iVersionId" value="'.$this->iVersionId.'" />';
+        echo '<input type="hidden" name="iVersionId" value="'.$this->iVersionId.'">';
 
         $oTable = new Table();
         $oTable->SetClass("color0");
@@ -627,7 +627,7 @@ class version {
             $oTable->AddRow($oTableRow);
         } else
         {
-            echo '<input type="hidden" name="iAppId" value="'.$this->iAppId.'" />';
+            echo '<input type="hidden" name="iAppId" value="'.$this->iAppId.'">';
         }
 
         // version name
@@ -681,12 +681,12 @@ class version {
 
             if($oVersionInDB->iObsoleteBy)
             {
-                $sObsoleteTxt = "<input type=\"checkbox\" name=\"bObsolete\" value=\"true\" checked=\"checked\" />";
+                $sObsoleteTxt = "<input type=\"checkbox\" name=\"bObsolete\" value=\"true\" checked=\"checked\">";
                 $sObsoleteTxt .= " This version is obsolete";
                 echo $this->makeObsoleteFrame($sObsoleteTxt);
 
                 echo "<input type=\"hidden\" name=\"iObsoleteBy\" value=\"".
-                     $oVersionInDB->iObsoleteBy."\" type=\"hidden\" />\n";
+                     $oVersionInDB->iObsoleteBy."\" type=\"hidden\" >\n";
             } else if(sizeof($oApp->getVersions(FALSE)) > 1)
             {
                 if($this->iObsoleteBy)
@@ -694,7 +694,7 @@ class version {
                 else
                     $sObsolete = "";
 
-                $sObsoleteTxt = "<input type=\"checkbox\" name=\"bObsolete\" value=\"true\"$sObsolete />";
+                $sObsoleteTxt = "<input type=\"checkbox\" name=\"bObsolete\" value=\"true\"$sObsolete >";
                 $sObsoleteTxt .= "Mark as obsolete and move votes to \n";
                 $sObsoleteTxt .= $oApp->makeVersionDropDownList("iObsoleteBy", $this->iObsoleteBy, $this->iVersionId, FALSE);
 
@@ -702,8 +702,8 @@ class version {
             }
         } else
         {
-            echo '<input type="hidden" name="sMaintainerRating" value="'.$this->sTestedRating.'" />';
-            echo '<input type="hidden" name="sMaintainerRelease" value="'.$this->sTestedRelease.'" />';
+            echo '<input type="hidden" name="sMaintainerRating" value="'.$this->sTestedRating.'">';
+            echo '<input type="hidden" name="sMaintainerRelease" value="'.$this->sTestedRelease.'">';
         }
     }
 
@@ -843,7 +843,7 @@ class version {
             $oM->setReturnTo($this->objectMakeUrl());
 
             if($_SESSION['current']->isLoggedIn())
-                $shVoteLink = ' &nbsp; <a href="'.$oM->makeUrl("edit", $_SESSION['current']->iUserId).'&iVersionId='.$this->iVersionId.'">Vote</a>';
+                $shVoteLink = ' &nbsp; <a href="'.$oM->makeUrl("edit", $_SESSION['current']->iUserId).'&amp;iVersionId='.$this->iVersionId.'">Vote</a>';
             else
                 $shVoteLink = '';
 
@@ -927,7 +927,7 @@ class version {
                     echo "</form>\n";
                 } else /* nope */
                 {
-                    echo '<form method="post" name="sMessage" action="objectManager.php?sClass=maintainer&sAction=add&iVersionId='.$this->iVersionId.'&sTitle='.urlencode("Be a Maintainer for ".version::fullName($this->iVersionId)).'&sReturnTo='.urlencode($this->objectMakeUrl()).'">'."\n";
+                    echo '<form method="post" name="sMessage" action="objectManager.php?sClass=maintainer&amp;sAction=add&amp;iVersionId='.$this->iVersionId.'&amp;sTitle='.urlencode("Be a Maintainer for ".version::fullName($this->iVersionId)).'&amp;sReturnTo='.urlencode($this->objectMakeUrl()).'">'."\n";
                     echo "\t".'<input type="submit" value="Be a Maintainer for This Version" class="button" title="Click here to know more about maintainers.">'."\n";
                     echo "\t"."<input type=hidden name=\"iAppId\" value=\"".$oApp->iAppId."\">\n";
                     echo "\t"."<input type=hidden name=\"iVersionId\" value=\"".$this->iVersionId."\">\n";
@@ -939,14 +939,14 @@ class version {
                         echo '<form method="post" name="sMessage" action="'.
                                  APPDB_ROOT."objectManager.php\">\n";
                         echo "\t<input type=\"hidden\" name=\"iAppId\" value=\"".
-                                $this->iAppId."\" />\n";
+                                $this->iAppId."\" >\n";
                         echo "\t<input type=\"hidden\" name=\"iVersionId\" value=\"".
-                                $this->iVersionId."\" />\n";
-                        echo "\t<input type=\"hidden\" name=\"sSubmit\" value=\"Submit\" />\n";
-                        echo "\t<input type=\"hidden\" name=\"sClass\" value=\"monitor\" />\n";
+                                $this->iVersionId."\" >\n";
+                        echo "\t<input type=\"hidden\" name=\"sSubmit\" value=\"Submit\" >\n";
+                        echo "\t<input type=\"hidden\" name=\"sClass\" value=\"monitor\" >\n";
                         echo "\t<input type=\"hidden\" name=\"sReturnTo\" value=\"".
-                                $this->objectMakeUrl()."\" />\n";
-                        echo "\t".'<input type=submit value="Monitor Changes" class="button" />'."\n";
+                                $this->objectMakeUrl()."\" >\n";
+                        echo "\t".'<input type=submit value="Monitor Changes" class="button">'."\n";
                         echo "</form>\n";
                     }
                 }
@@ -964,25 +964,25 @@ class version {
 
         if ($_SESSION['current']->hasPriv("admin") || $_SESSION['current']->isMaintainer($this->iVersionId) || $_SESSION['current']->isSuperMaintainer($this->iAppId))
         {
-            $shAdd = '<form method="post" name="sMessage" action="objectManager.php?sClass=note&sAction=add&iVersionId='.$this->iVersionId.'&sReturnTo='.urlencode($this->objectMakeUrl());
+            $shAdd = '<form method="post" name="sMessage" action="objectManager.php?sClass=note&amp;sAction=add&amp;iVersionId='.$this->iVersionId.'&amp;sReturnTo='.urlencode($this->objectMakeUrl());
             echo '<tr><td colspan="2" align="center">'."\n";
             echo '<form method="post" name="sMessage" action="admin/editAppVersion.php">'."\n";
-            echo "\t".'<input type="hidden" name="iAppId" value="'.$oApp->iAppId.'" />'."\n";
-            echo "\t".'<input type="hidden" name="iVersionId" value="'.$this->iVersionId.'" />'."\n";
-            echo "\t".'<input type=submit value="Edit Version" class="button" />'."\n";
+            echo "\t".'<input type="hidden" name="iAppId" value="'.$oApp->iAppId.'">'."\n";
+            echo "\t".'<input type="hidden" name="iVersionId" value="'.$this->iVersionId.'">'."\n";
+            echo "\t".'<input type=submit value="Edit Version" class="button">'."\n";
             echo '</form>'."\n";
-            $url = BASE."objectManager.php?sClass=version&sAction=delete&bQueued=false&sTitle=Delete%20".version::fullName($this->iVersionId)."&iId=".$this->iVersionId;
+            $url = BASE."objectManager.php?sClass=version&amp;sAction=delete&amp;bQueued=false&amp;sTitle=Delete%20".version::fullName($this->iVersionId)."&amp;iId=".$this->iVersionId;
             echo "<form method=\"post\" name=\"sDelete\" action=\"javascript:self.location = '".$url."'\">\n";
-            echo "\t".'<input type=submit value="Delete Version" class="button" />'."\n";
+            echo "\t".'<input type=submit value="Delete Version" class="button">'."\n";
             echo '</form>'."\n";
             echo $shAdd.'" />';
-            echo "\t".'<input type="submit" value="Add Note" class="button" />'."\n";
+            echo "\t".'<input type="submit" value="Add Note" class="button">'."\n";
             echo '</form>'."\n";
-            echo $shAdd.'&sNoteTitle=HOWTO" />';
-            echo "\t".'<input type=submit value="Add How To" class="button" />'."\n";
+            echo $shAdd.'&amp;sNoteTitle=HOWTO" />';
+            echo "\t".'<input type=submit value="Add How To" class="button">'."\n";
             echo '</form>'."\n";
-            echo $shAdd.'&sNoteTitle=WARNING" />';
-            echo "\t".'<input type=submit value="Add Warning" class="button" />'."\n";
+            echo $shAdd.'&amp;sNoteTitle=WARNING" />';
+            echo "\t".'<input type=submit value="Add Warning" class="button">'."\n";
             echo '</form>';
             echo "</td></tr>";
         }
@@ -995,12 +995,12 @@ class version {
             echo '<form method="post" name="sMessage" action="'.
                     APPDB_ROOT."objectManager.php\">\n";
             echo "\t<input type=\"hidden\" name=\"iId\" value=\"".
-                    $oMonitor->iMonitorId."\" />\n";
-            echo "\t<input type=\"hidden\" name=\"sSubmit\" value=\"Delete\" />\n";
-            echo "\t<input type=\"hidden\" name=\"sClass\" value=\"monitor\" />\n";
+                    $oMonitor->iMonitorId."\">\n";
+            echo "\t<input type=\"hidden\" name=\"sSubmit\" value=\"Delete\">\n";
+            echo "\t<input type=\"hidden\" name=\"sClass\" value=\"monitor\">\n";
             echo "\t<input type=\"hidden\" name=\"sReturnTo\" value=\"".
-                    $this->objectMakeUrl()."\" />\n";
-            echo '<input type=submit value="Stop Monitoring Version" class="button" />'."\n";
+                    $this->objectMakeUrl()."\">\n";
+            echo '<input type=submit value="Stop Monitoring Version" class="button" >'."\n";
             echo "</form>\n";
             echo "</td></tr>\n";
         } 
@@ -1085,7 +1085,7 @@ class version {
                   and encourage the user to take action */
         {
             echo html_note('No Test Results',
-                           'This version has no test results, please consider submitting some.<br />'.
+                           'This version has no test results, please consider submitting some.<br>'.
                            'They may be part of the '.
                            'version or application description. If they are, please '.
                            'consider becoming a maintainer and remove them, submitting '.
@@ -1101,7 +1101,7 @@ class version {
         // show the test results table
         if($oTest->iTestingId)
         {
-            $oTest->ShowVersionsTestingTable($this->objectMakeUrl()."&iTestingId=", 5);
+            $oTest->ShowVersionsTestingTable($this->objectMakeUrl()."&amp;iTestingId=", 5);
         } else if($oTest) /* We are previewing the version */
         {
             $oTable = $oTest->CreateTestTable();
@@ -1112,10 +1112,10 @@ class version {
         if($_SESSION['current']->isLoggedIn())
         {
             echo '<form method=post name=sMessage action=objectManager.php?'.
-                    'sClass=testData_queue&sAction=add&iVersionId='.$this->iVersionId.
-                    '&sTitle=Add+Test+Data&sReturnTo='.
+                    'sClass=testData_queue&amp;sAction=add&amp;iVersionId='.$this->iVersionId.
+                    '&amp;sTitle=Add+Test+Data&amp;sReturnTo='.
                     urlencode($this->objectMakeUrl()).'>'."\n";
-            echo "\t".'<input type=submit value="Add Test Data" class="button" />'."\n";
+            echo "\t".'<input type=submit value="Add Test Data" class="button" >'."\n";
             echo '</form>'."\n";
         } else
         {
@@ -1411,7 +1411,7 @@ class version {
 
     public function objectMakeUrl()
     {
-        return APPDB_ROOT."objectManager.php?sClass=version&iId=$this->iVersionId";
+      return APPDB_ROOT."objectManager.php?sClass=version&amp;iId=$this->iVersionId";
     }
 
     public function objectMakeLink()

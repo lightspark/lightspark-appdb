@@ -188,10 +188,10 @@ class application_queue
             echo "Application name:\n";
             echo "</div>\n";
             echo "<div style='padding:5px;'>\n";
-            echo "<center><input type=\"text\" name=\"sAppName\" style='width:485px;' /></center>\n";
+            echo "<center><input type=\"text\" name=\"sAppName\" style='width:485px;'></center>\n";
             echo "</div>\n";
-            echo "<input type=\"hidden\" name=\"sSub\" value=\"view\" />\n";
-            echo "<input type=\"hidden\" name=\"sAppType\" value=\"application\" />\n";
+            echo "<input type=\"hidden\" name=\"sSub\" value=\"view\">\n";
+            echo "<input type=\"hidden\" name=\"sAppType\" value=\"application\">\n";
             echo "</div>\n";
         } else
         {
@@ -234,8 +234,8 @@ class application_queue
             else
                 $shPreviewApp = ' checked="checked"';
 
-            echo "<input type=\"radio\" name=\"bPreviewVersion\"$shPreviewApp value=\"false\" /> Preview application<br />\n";
-            echo "<input type=\"radio\" name=\"bPreviewVersion\"$shPreviewVersion value=\"true\" /> Preview version\n";
+            echo "<input type=\"radio\" name=\"bPreviewVersion\"$shPreviewApp value=\"false\"> Preview application<br>\n";
+            echo "<input type=\"radio\" name=\"bPreviewVersion\"$shPreviewVersion value=\"true\"> Preview version\n";
             echo html_frame_end();
         }
     }
@@ -289,7 +289,7 @@ class application_queue
         /* There's no point in displaying an empty table */
         if($hResult === null || (query_num_rows($hResult) == 0))
         {
-            echo "No matches.<br />\n";
+            echo "No matches.<br>\n";
             return;
         }
 
@@ -324,9 +324,9 @@ class application_queue
 
             if($bCanMove)
             {
-                $aCells[] = "<a href=\"objectManager.php?sClass=application_queue&".
-                        "bIsQueue=true&sAction=moveChildren&iId=".
-                        $this->oApp->iAppId."&iNewId=".$oApp->iAppId.
+                $aCells[] = "<a href=\"objectManager.php?sClass=application_queue&amp;".
+                        "bIsQueue=true&amp;sAction=moveChildren&amp;iId=".
+                        $this->oApp->iAppId."&amp;iNewId=".$oApp->iAppId.
                         "\">Move data</a>";
             }
             echo html_tr($aCells, ($i % 2) ? "color0" : "color1");

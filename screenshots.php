@@ -108,8 +108,8 @@ if($hResult && query_num_rows($hResult))
           )
         {
             $oM = new objectManager("screenshot");
-            $oM->setReturnTo("screenshots.php?iAppId=".$oScreenshot->iAppId."&iVersionId=".$oScreenshot->iVersionId);
-            echo '<br />[<a href="'.$oM->makeUrl("delete", $oScreenshot->iScreenshotId, "Delete Screenshot").'">Delete</a>]';
+            $oM->setReturnTo("screenshots.php?iAppId=".$oScreenshot->iAppId."&amp;iVersionId=".$oScreenshot->iVersionId);
+            echo '<br>[<a href="'.$oM->makeUrl("delete", $oScreenshot->iScreenshotId, "Delete Screenshot").'">Delete</a>]';
         }
 
         echo "</div></td>\n";
@@ -119,14 +119,14 @@ if($hResult && query_num_rows($hResult))
 
         $c++;
     }
-    echo "</tr></table></div><br />\n";
+    echo "</tr></table></div><br>\n";
 
     echo html_frame_end(); // close the current version we are displaying
     echo html_frame_end(); // close the "Screenshot Gallary..." html frame
 } else
 {
  echo "<p align=\"center\">There are currently no screenshots for the selected version of this application.";
- echo "<br />Please consider submitting a screenshot for the selected version yourself.</p>";
+ echo "<br>Please consider submitting a screenshot for the selected version yourself.</p>";
 }
 
 // let's show the screenshot uploading box, but only
@@ -134,8 +134,8 @@ if($hResult && query_num_rows($hResult))
 if($aClean['iVersionId'] && $_SESSION['current']->isLoggedIn())
 {
     echo "<p align=\"center\">When submitting screenshots please ensure that the focus is on the application running inside Wine.";
-    echo "<br />This means if the application is running in a window then please crop the image so that only the application is shown and not your desktop.";
-    echo "<br />Do not upload screenshots of error messages, installers, game menus etc.</p>";
+    echo "<br>This means if the application is running in a window then please crop the image so that only the application is shown and not your desktop.";
+    echo "<br>Do not upload screenshots of error messages, installers, game menus etc.</p>";
 
     echo '<form enctype="multipart/form-data" action="screenshots.php" name="sImageForm" method="post">',"\n";
     echo html_frame_start("Upload Screenshot","400","",0);
@@ -147,9 +147,9 @@ if($aClean['iVersionId'] && $_SESSION['current']->isLoggedIn())
     echo '<tr><td colspan=2 align=center class=color3><input type="submit" value="Send File"></td></tr>',"\n";
     echo '</table>',"\n";
     echo html_frame_end();
-    echo '<input type="hidden" name="MAX_FILE_SIZE" value="4000000" />',"\n";
-    echo '<input type="hidden" name="sCmd" value="screenshot_upload" />',"\n";
-    echo '<input type="hidden" name="iVersionId" value="'.$aClean['iVersionId'].'"></form />',"\n";
+    echo '<input type="hidden" name="MAX_FILE_SIZE" value="4000000">',"\n";
+    echo '<input type="hidden" name="sCmd" value="screenshot_upload">',"\n";
+    echo '<input type="hidden" name="iVersionId" value="'.$aClean['iVersionId'].'"></form>',"\n";
 } else if(!$_SESSION['current']->isLoggedIn()) // else let the person know that if they log in they can submit screenshots
 {
   echo '<div align="center"><a href="'.login_url().'">';
@@ -157,7 +157,7 @@ if($aClean['iVersionId'] && $_SESSION['current']->isLoggedIn())
 } else
 {
     echo html_frame_start("Upload Screenshot", "30%");
-    echo 'If you would like to submit screenshots, please select an application version below.<br />';
+    echo 'If you would like to submit screenshots, please select an application version below.<br>';
     echo '<ul>';
     foreach($oApp->getVersions() as $oVersion)
         echo '<li><a href="'.BASE.'screenshots.php?iVersionId='.$oVersion->objectGetId().'">'.$oVersion->sName.'</a></li>';

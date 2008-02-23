@@ -26,7 +26,7 @@ if($sResult = testData::listSubmittedBy($oUser->iUserId))
     echo html_frame_end("&nbsp;");
 }
 else
-    echo "You have no queued test results.<br /><br />\n";
+    echo "You have no queued test results.<br><br>\n";
 
 /* Applications */
 if($sResult = Application::listSubmittedBy($oUser->iUserId))
@@ -35,7 +35,7 @@ if($sResult = Application::listSubmittedBy($oUser->iUserId))
     echo $sResult;
     echo html_frame_end("&nbsp;");
 } else
-    echo "You have no queued applications.<br /><br />\n";
+    echo "You have no queued applications.<br><br>\n";
 
 /* Versions */
 if($sResult = Version::listSubmittedBy($oUser->iUserId))
@@ -44,7 +44,7 @@ if($sResult = Version::listSubmittedBy($oUser->iUserId))
     echo $sResult;
     echo html_frame_end("&nbsp;");
 } else
-    echo "You have no queued versions.<br /><br />\n";
+    echo "You have no queued versions.<br><br>\n";
 
 /* Bug links */
 if($sResult = bug::listSubmittedBy($oUser->iUserId))
@@ -53,7 +53,7 @@ if($sResult = bug::listSubmittedBy($oUser->iUserId))
     echo $sResult;
     echo html_frame_end("&nbsp;");
 } else
-    echo "You have no queued bugs.<br /><br />\n";
+    echo "You have no queued bugs.<br><br>\n";
 
 /* Application data */
 if($sResult = appData::listSubmittedBy($oUser->iUserId))
@@ -62,7 +62,7 @@ if($sResult = appData::listSubmittedBy($oUser->iUserId))
     echo $sResult;
     echo html_frame_end("&nbsp;");
 } else
-    echo "You have no queued application data.<br /><br />\n";
+    echo "You have no queued application data.<br><br>\n";
 
 apidb_footer();
 

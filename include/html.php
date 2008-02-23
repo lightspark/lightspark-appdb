@@ -141,8 +141,8 @@ function html_imagebutton($text, $url, $extra = "")
     static $i = 1;
 
     $i++;
-    $img1 = apidb_url("util/button.php?text=".urlencode($text)."&pressed=0");
-    $img2 = apidb_url("util/button.php?text=".urlencode($text)."&pressed=1");
+    $img1 = apidb_url("util/button.php?text=".urlencode($text)."&amp;pressed=0");
+    $img2 = apidb_url("util/button.php?text=".urlencode($text)."&amp;pressed=1");
 
     $java  = "onMouseDown = 'document.img$i.src = \"$img2\"; return true;' ";
     $java .= "onMouseUp = 'document.img$i.src = \"$img1\"; return true;' ";
@@ -238,7 +238,7 @@ function html_back_link($howmany = 1, $url = "")
     {
         $url = 'javascript:history.back('.$howmany.');';
     }
-    return '<p>&nbsp;&nbsp; <a href="'.$url.'">&lt;&lt; Back</a></p>'."\n";
+    return '<p>&nbsp;&nbsp; <a href="'.htmlentities($url).'">&lt;&lt; Back</a></p>'."\n";
 }
 
 

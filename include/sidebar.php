@@ -18,19 +18,19 @@ function global_sidebar_menu()
     $g->done();
 
     $g = new htmlmenu("AppDB");
-    $g->add("Screenshots", BASE."objectManager.php?sClass=screenshot&sTitle=View+Screenshots");
+    $g->add("Screenshots", BASE."objectManager.php?sClass=screenshot&amp;sTitle=View+Screenshots");
     $g->add("Browse Apps", BASE."appbrowse.php");
-    $g->add("Browse Newest Apps", BASE."objectManager.php?sClass=application&".
-            'sTitle=Newest%20apps&sOrderBy=appId&bAscending=false');
+    $g->add("Browse Newest Apps", BASE."objectManager.php?sClass=application&amp;".
+            'sTitle=Newest%20apps&amp;sOrderBy=appId&amp;bAscending=false');
     $g->add("Downloadable Apps", BASE."browse_downloadable.php");
     $g->add("Browse Apps by Rating", BASE."browse_by_rating.php");
     $g->add("Top 25", BASE."votestats.php");
-    $g->add("Submit Application", BASE."objectManager.php?sClass=application_queue&".
-            "sTitle=Submit+Application&sAction=add");
+    $g->add("Submit Application", BASE."objectManager.php?sClass=application_queue&amp;".
+            "sTitle=Submit+Application&amp;sAction=add");
     $g->add("Help &amp; Documentation", BASE."help/");
     $g->add("Statistics", BASE."appdbStats.php");
-    $g->add('Distributions ('.distribution::objectGetEntriesCount('accepted').')', BASE.'objectManager.php?sClass=distribution&sTitle=View%20Distributions');
-    $g->add('Vendors ('.vendor::objectGetEntriesCount('accepted').')', BASE.'objectManager.php?sClass=vendor&sTitle=View%20Vendors');
+    $g->add('Distributions ('.distribution::objectGetEntriesCount('accepted').')', BASE.'objectManager.php?sClass=distribution&amp;sTitle=View%20Distributions');
+    $g->add('Vendors ('.vendor::objectGetEntriesCount('accepted').')', BASE.'objectManager.php?sClass=vendor&amp;sTitle=View%20Vendors');
     $g->add("Email your suggestions for improving the AppDB", "mailto:appdb@winehq.org");
     $g->done();
 
@@ -51,11 +51,11 @@ function app_search_box($q = '')
 <!-- Google CSE Search Box Begins -->
   <script type="text/javascript">
   document.write(\'<form id=\"searchbox_013271970634691685804:bc-56dvxydi\" action=\"http://appdb.winehq.org/search_results.php\">\')
-    document.write(\'<input type="hidden" name="cx" value="013271970634691685804:bc-56dvxydi" />\')
-    document.write(\'<input type=\"hidden\" name=\"cof" value=\"FORID:11\" />\')
-    document.write(\'<input name=\"q\" type=\"text\" size=\"20\" />\')
-    document.write(\'<input type=\"submit\" name=\"sa\" value=\"Search\" />\')
-  document.write(\'</form>\')
+    document.write(\'<input type="hidden" name="cx" value="013271970634691685804:bc-56dvxydi" >\')
+    document.write(\'<input type=\"hidden\" name=\"cof" value=\"FORID:11\" >\')
+    document.write(\'<input name=\"q\" type=\"text\" size=\"20\" >\')
+    document.write(\'<input type=\"submit\" name=\"sa\" value=\"Search\" >\')
+  document.write(\'<\/form>\')
   </script>
   <script type="text/javascript" src="http://www.google.com/coop/cse/brand?form=searchbox_013271970634691685804%3Abc-56dvxydi"></script>
 <!-- Google CSE Search Box Ends -->
@@ -65,8 +65,8 @@ function app_search_box($q = '')
     $shSearchStr .= '
   <noscript>
     <form method="post" action="search.php">
-    <input type="text" size="20" name="sSearchQuery" />
-    <input type="submit" value="Search" />
+    <input type="text" size="20" name="sSearchQuery">
+    <input type="submit" value="Search">
     </form>
   </noscript>
 ';

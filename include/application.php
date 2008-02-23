@@ -432,7 +432,7 @@ class Application {
                 $sMsg .= "Clicking on the link in this email will allow you to modify and resubmit the application. ";
                 $sMsg .= "A link to your queue of applications and versions will also show up on the left hand side of the Appdb site once you have logged in. ";
                 $sMsg .= APPDB_ROOT."objectManager.php?sClass=application_queue".
-                        "&bIsQueue=true&bIsRejected=true&iId=".$this->iAppId."&sTitle=".
+                        "&amp;bIsQueue=true&amp;bIsRejected=true&amp;iId=".$this->iAppId."&amp;sTitle=".
                         "Edit+Application\n";
                 $sMsg .= "Reason given:\n";
             break;
@@ -521,7 +521,7 @@ class Application {
             case "reject":
                 $sSubject = $this->sName." has been rejected by ".$_SESSION['current']->sRealname;
                 $sMsg .= APPDB_ROOT."objectManager.php?sClass=application_queue".
-                        "&bIsQueue=true&bIsRejected=true&iId=".$this->iAppId."&sTitle=".
+                        "&amp;bIsQueue=true&amp;bIsRejected=true&amp;iId=".$this->iAppId."&amp;sTitle=".
                         "Edit+Application\n";
 
                 // if sReplyText is set we should report the reason the application was rejected 
@@ -553,7 +553,7 @@ class Application {
 
         /* Used to distinguish between the first step of entering an application
            name and the full editor displayed here */
-        echo '<input type="hidden" name="bMainAppForm" value="true" />'."\n";
+        echo '<input type="hidden" name="bMainAppForm" value="true">'."\n";
 
         echo html_frame_start("Application Form", "90%", "", 0);
         echo "<table class='color0' width='100%' border=0 cellpadding=2 cellspacing=0>\n";
@@ -609,14 +609,14 @@ class Application {
         if(!$this->iAppId)
         {
             $sMaintainerOptions = 
-                "<input type=\"radio\" name=\"iMaintainerRequest\" value=\"0\" />".
-                "I would not like to become a maintainer<br />\n".
+                "<input type=\"radio\" name=\"iMaintainerRequest\" value=\"0\">".
+                "I would not like to become a maintainer<br>\n".
                 "<input type=\"radio\" name=\"iMaintainerRequest\" ". 
-                "value=\"".MAINTAINER_REQUEST."\" />".
-                "I would like to be a maintainer of the new version only<br />\n".
+                "value=\"".MAINTAINER_REQUEST."\">".
+                "I would like to be a maintainer of the new version only<br>\n".
                 "<input type=\"radio\" name=\"iMaintainerRequest\" ". 
-                "value=\"".SUPERMAINTAINER_REQUEST."\" />".
-                "I would like to be a maintainer of the entire application<br />\n";
+                "value=\"".SUPERMAINTAINER_REQUEST."\">".
+                "I would like to be a maintainer of the entire application<br>\n";
 
             $sMaintainerOptionsSelected = str_replace(
                 "value=\"$this->iMaintainerRequest\"",
@@ -796,7 +796,7 @@ class Application {
                 echo '        <form method="post" name="sMessage" action="maintainerdelete.php"><input type=submit value="Remove yourself as a super maintainer" class="button">';
             } else /* nope */
             {
-                echo '        <form method="post" name="sMessage" action="objectManager.php?sClass=maintainer&iAppId='.$this->iAppId.'&sAction=add&sTitle='.urlencode("Be a Super Maintainer for ".$this->sName).'&sReturnTo='.urlencode($this->objectMakeUrl()).'"><input type="submit" value="Be a super maintainer of this app" class="button" title="Click here to know more about super maintainers.">';
+                echo '        <form method="post" name="sMessage" action="objectManager.php?sClass=maintainer&amp;iAppId='.$this->iAppId.'&amp;sAction=add&amp;sTitle='.urlencode("Be a Super Maintainer for ".$this->sName).'&sReturnTo='.urlencode($this->objectMakeUrl()).'"><input type="submit" value="Be a super maintainer of this app" class="button" title="Click here to know more about super maintainers.">';
             }
 
             echo "        <input type=\"hidden\" name=\"iAppId\" value=\"".$this->iAppId."\">";
@@ -810,14 +810,14 @@ class Application {
             if($_SESSION['current']->isLoggedIn())
             {
                 echo '<form method="post" name="sMessage" action="'.
-                        'objectManager.php?sClass=version_queue&iAppId='.$this->iAppId
-                        .'&sTitle=Submit+New+Version&sAction=add">';
+                        'objectManager.php?sClass=version_queue&amp;iAppId='.$this->iAppId
+                        .'&amp;sTitle=Submit+New+Version&amp;sAction=add">';
                 echo '<input type=submit value="Submit new version" class="button">';
                 echo '</form>';
             }
             if($_SESSION['current']->hasPriv("admin"))
             {
-                $url = BASE."objectManager.php?sClass=application&bIsQueue=false&sAction=delete&sTitle=Delete%20".$this->sName."&iId=".$this->iAppId;
+                $url = BASE."objectManager.php?sClass=application&amp;bIsQueue=false&amp;sAction=delete&amp;sTitle=Delete%20".$this->sName."&amp;iId=".$this->iAppId;
                 echo "        <form method=\"post\" name=\"sEdit\" action=\"javascript:self.location = '".$url."'\"><input type=\"submit\" value=\"Delete App\" class=\"button\"></form>";
                 echo '        <form method="post" name="sEdit" action="admin/editBundle.php"><input type="hidden" name="iBundleId" value="'.$this->iAppId.'"><input type="submit" value="Edit Bundle" class="button"></form>';
             }
@@ -920,7 +920,7 @@ class Application {
 
     public function objectMakeUrl()
     {
-        $sUrl = APPDB_ROOT."objectManager.php?sClass=application&iId=$this->iAppId";
+        $sUrl = APPDB_ROOT."objectManager.php?sClass=application&amp;iId=$this->iAppId";
         return $sUrl;
     }
 

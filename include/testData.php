@@ -439,7 +439,7 @@ class testData{
                 $sSubject =  "Submitted testing data accepted";
                 $sMsg  = "The testing data you submitted for '$sName' has been ".
                         "accepted by ".$_SESSION['current']->sRealname.".\n";
-                $sMsg .= $oVersion->objectMakeUrl()."&iTestingId=".$this->iTestingId."\n";
+                $sMsg .= $oVersion->objectMakeUrl()."&amp;iTestingId=".$this->iTestingId."\n";
                 $sMsg .= "Administrators response:\n";
             break;
             case "reject":
@@ -465,7 +465,7 @@ class testData{
 
         $oVersion = new Version($this->iVersionId);
         $oApp = new Application($oVersion->iAppId);
-        $sBacklink = $oVersion->objectMakeUrl()."&iTestingId=".$this->iTestingId."\n";
+        $sBacklink = $oVersion->objectMakeUrl()."&amp;iTestingId=".$this->iTestingId."\n";
 
         switch($sAction)
         {
@@ -519,13 +519,13 @@ class testData{
  
     function ShowTestResult()
     {
-        echo '<p><b>What works</b><br />',"\n";
+        echo '<p><b>What works</b><br>',"\n";
         echo $this->shWhatWorks,"\n";
-        echo '<p><br /><b>What does not</b><br />',"\n";
+        echo '<p><br><b>What does not</b><br>',"\n";
         echo $this->shWhatDoesnt,"\n";
-        echo '<p><br /><b>What was not tested</b><br />',"\n";
+        echo '<p><br><b>What was not tested</b><br>',"\n";
         echo $this->shWhatNotTested,"\n";
-        echo '<p><br /><b>Additional Comments</b><br />',"\n";
+        echo '<p><br><b>Additional Comments</b><br>',"\n";
         echo $this->sComments,"\n";
     }
 
@@ -606,19 +606,19 @@ class testData{
 
         $oTableRow->AddTextCell($oDistribution->objectMakeLink());
         $oTableRow->AddTextCell(date("M d Y", mysqldatetime_to_unixtimestamp($this->sTestedDate)));
-        $oTableRow->AddTextCell($this->sTestedRelease.'&nbsp');
-        $oTableRow->AddTextCell($this->sInstalls.'&nbsp');
-        $oTableRow->AddTextCell($this->sRuns.'&nbsp');
-        $oTableRow->AddTextCell($this->sTestedRating.'&nbsp');
-        $oTableRow->AddTextCell($oSubmitter->objectMakeLink().'&nbsp');
+        $oTableRow->AddTextCell($this->sTestedRelease.'&nbsp;');
+        $oTableRow->AddTextCell($this->sInstalls.'&nbsp;');
+        $oTableRow->AddTextCell($this->sRuns.'&nbsp;');
+        $oTableRow->AddTextCell($this->sTestedRating.'&nbsp;');
+        $oTableRow->AddTextCell($oSubmitter->objectMakeLink().'&nbsp;');
         if ($this->iTestingId && $_SESSION['current']->hasAppVersionModifyPermission($oVersion))
         {
             $oObject = new objectManager('testData');
             $oTableRow->AddTextCell('<a href="'.$oObject->makeUrl('edit', $this->iTestingId,
-                                    'Edit Test Results').'&sReturnTo='.urlencode($_SERVER['REQUEST_URI']).'">'.
+                                    'Edit Test Results').'&amp;sReturnTo='.urlencode($_SERVER['REQUEST_URI']).'">'.
                                     'Edit</a> &nbsp; '."\n".
                                     '<a href="'.$oObject->makeUrl('delete', $this->iTestingId, 'Delete+Test+Results').
-                                    '&sReturnTo='.urlencode($_SERVER['REQUEST_URI']).'">Delete</a></td>'."\n");
+                                    '&amp;sReturnTo='.urlencode($_SERVER['REQUEST_URI']).'">Delete</a></td>'."\n");
         }
 
         // if this is a clickable row, set the appropriate property
@@ -677,7 +677,7 @@ class testData{
 
         echo $oTable->GetString();
 
-        echo '<br />',"\n"; // put a space after the test results table and the button
+        echo '<br>',"\n"; // put a space after the test results table and the button
 
         echo '<form method=get action="objectManager.php">'."\n";
 
@@ -687,14 +687,14 @@ class testData{
         } else
         {
             $sShowButtonText = "Show All Tests";
-            echo '<input type="hidden" name="bShowAll" value="true" />';
+            echo '<input type="hidden" name="bShowAll" value="true">';
         }
 
         $oManager = new objectManager("version", null, $this->iVersionId);
 
         echo $oManager->makeUrlFormData();
 
-        echo "\t".'<input class="button" type=submit value="'.$sShowButtonText.'" />'."\n";
+        echo "\t".'<input class="button" type=submit value="'.$sShowButtonText.'">'."\n";
 
         echo '</form>'."\n";
 
@@ -889,7 +889,7 @@ class testData{
                                      "review it in the form below or replace ".
                                      "it with one from the list.";
             }
-            $sDistributionHelp .= "<br />\n";
+            $sDistributionHelp .= "<br>\n";
         }
 
         echo '<tr valign=top><td class="color0"><b>Distribution</b></td class="color0">',"\n";
@@ -909,7 +909,7 @@ class testData{
         echo "<li>If you are testing with an older release than listed please";
         echo " upgrade and test with a newer release.</li>\n";
         echo "<li><b>NOTE: 'CVS' was recently removed as a version because we simply can't track";
-        echo " exactly which CVS version was used.<br/> If you haven't tested with one of the";
+        echo " exactly which CVS version was used.<br> If you haven't tested with one of the";
         echo " listed versions please retest with a recent release and resubmit.</li>\n";
         echo "</ul>\n";
         echo '</td></tr>',"\n";
@@ -942,13 +942,13 @@ class testData{
             if(getInput('bConfirmTestedVersionChange', $aClean) != 'true')
             {
                 echo '<tr><td class="color1">&nbsp;</td><td class="color0">';
-                echo 'You have changed the Wine version of the report.  Are you sure you want to do this?  Please submit a new test report for every Wine version you test; this is useful for tracking Wine&#8217;s progress.<br />';
-                echo '<input type="checkbox" name="bConfirmTestedVersionChange" value="true" /> ';
+                echo 'You have changed the Wine version of the report.  Are you sure you want to do this?  Please submit a new test report for every Wine version you test; this is useful for tracking Wine&#8217;s progress.<br>';
+                echo '<input type="checkbox" name="bConfirmTestedVersionChange" value="true"> ';
                 echo 'Yes, I want to change the Wine version';
                 echo '</td></tr>';
             } else
             {
-                echo '<input type="hidden" name="bConfirmTestedVersionChange" value="true" />';
+                echo '<input type="hidden" name="bConfirmTestedVersionChange" value="true">';
             }
         }
 

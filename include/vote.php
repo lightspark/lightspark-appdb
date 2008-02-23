@@ -106,7 +106,7 @@ class voteManager
         {
             $sVersionText = $this->aVotes[$i]->iVersionId ? version::fullNameLink($this->aVotes[$i]->iVersionId) : "No app selected";
             $oTableRow = new tableRow();
-            $oTableRow->addTextCell('<input type="checkbox" name="iSlot'.$i.'" value="'.$aClean['iVersionId'].'" />');
+            $oTableRow->addTextCell('<input type="checkbox" name="iSlot'.$i.'" value="'.$aClean['iVersionId'].'">');
             $oTableRow->addTextCell($sVersionText);
             $oTable->addRow($oTableRow);
         }

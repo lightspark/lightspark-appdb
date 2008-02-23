@@ -17,12 +17,12 @@ function admin_menu()
     global $aClean;
 
     $m = new htmlmenu("Admin");
-    $m->add('Edit this Category', BASE."objectManager.php?iId=${aClean[iCatId]}&sClass=category&sAction=edit");
+    $m->add('Edit this Category', BASE."objectManager.php?iId=${aClean[iCatId]}&amp;sClass=category&amp;sAction=edit");
 
     /* We only allow deletion of the category if it is empty */
     $oCat = new category($aClean['iCatId']);
     if(!sizeof($oCat->aApplicationsIds))
-        $m->add('Delete this Category', BASE."objectManager.php?iId=${aClean[iCatId]}&sClass=category&sAction=delete");
+        $m->add('Delete this Category', BASE."objectManager.php?iId=${aClean[iCatId]}&amp;sClass=category&amp;sAction=delete");
 
     $m->done();
 }
@@ -45,7 +45,7 @@ echo "<div class='default_container'>\n";
 if($subs)
 {
     echo html_frame_start("",'98%','',2);
-    echo "<p><b>Category: ". $sCatFullPath ."</b><br />\n";
+    echo "<p><b>Category: ". $sCatFullPath ."</b><br>\n";
     echo html_frame_end();
     
     echo html_frame_start("","98%","",0);
@@ -110,7 +110,7 @@ $apps = $oCat->aApplicationsIds;
 if($apps)
 {
     echo html_frame_start("",'98%','',2);
-    echo "<p><b>Category: ". $sCatFullPath ."</b><br />\n";
+    echo "<p><b>Category: ". $sCatFullPath ."</b><br>\n";
     echo html_frame_end();
     
     echo html_frame_start("","98%","",0);

@@ -357,21 +357,21 @@ class Vendor {
         echo 'Vendor Name: '.$this->sName,"\n";
         if($this->canEdit())
         {
-            echo "[<a href=\"".$_SERVER['PHP_SELF']."?sClass=vendor&sAction=edit&".
-                 "iId=$this->iVendorId&sTitle=Edit%20Vendor\">edit</a>]";
+            echo "[<a href=\"".$_SERVER['PHP_SELF']."?sClass=vendor&amp;sAction=edit&amp;".
+                 "iId=$this->iVendorId&amp;sTitle=Edit%20Vendor\">edit</a>]";
         }
 
-        echo '<br />',"\n";
+        echo '<br>',"\n";
         if ($this->sWebpage)
         {
             echo 'Vendor URL:  <a href="'.$this->sWebpage.'">'.
-                 $this->sWebpage.'</a> <br />',"\n";
+                 $this->sWebpage.'</a> <br>',"\n";
         }
 
 
         if($this->aApplicationsIds)
         {
-            echo '<br />Applications by '.$this->sName.'<br /><ol>',"\n";
+            echo '<br>Applications by '.$this->sName.'<br><ol>',"\n";
             foreach($this->aApplicationsIds as $iAppId)
             {
                 $oApp  = new Application($iAppId);
