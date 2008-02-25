@@ -463,11 +463,14 @@ class Application {
     public static function getWithRating($sRating, $iOffset, $iItemsPerPage)
     {
         $aApps = array();
-        $sQuery = "SELECT DISTINCT appId 
-                       FROM appVersion
-                       WHERE rating = '?'
-                       AND state = 'accepted'
-                       ORDER BY appId ASC LIMIT ?, ?";
+        $sQuery = "SELECT DISTINCT appVersion.appId, appName 
+                       FROM appVersion, appFamily WHERE
+                           appVersion.appId = appFamily.appId
+                       AND
+                           rating = '?'
+                       AND
+                           appVersion.state = 'accepted'
+                       ORDER BY appName ASC LIMIT ?, ?";
         
         if($hResult = query_parameters($sQuery, $sRating, $iOffset, $iItemsPerPage))
         {
