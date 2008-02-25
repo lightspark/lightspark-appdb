@@ -6,7 +6,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
-    <title>Wine Application DB <?php echo $title; ?></title>
+    <title>Wine AppDB <?php echo $title; ?></title>
     <meta http-equiv="Expires" content="Mon, 06 Jan 1990 00:00:01 GMT">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
