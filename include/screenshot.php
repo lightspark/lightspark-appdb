@@ -516,7 +516,7 @@ class screenshot
         if($hResult && query_num_rows($hResult))
         {
             if($iVersionId)
-                $sImg .= "<div class=\"imgarea\"><a href='screenshots.php?iAppId=$iAppId&amp;iVersionId=$iVersionId'>".$sImgFile.$sZoomIcon."View/Submit&nbsp;Screenshot</a></div>";
+                $sImg .= "<div class=\"imgarea\"><a href='screenshots.php?iAppId=$iAppId&amp;iVersionId=$iVersionId'>".$sImgFile.$sZoomIcon."<br>View/Submit&nbsp;Screenshot</a></div>";
             else
                 $sImg .= "<div class=\"imgarea\"><a href='screenshots.php?iAppId=$iAppId&amp;iVersionId=$iVersionId'>".$sImgFile.$sZoomIcon."View&nbsp;Screenshot</a></div>";
         } else if($iVersionId) /* we are asking for a specific app version but it has no screenshots */
