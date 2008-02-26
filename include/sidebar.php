@@ -11,10 +11,11 @@ function global_sidebar_menu()
     global $aClean;
 
     $g = new htmlmenu(APPDB_OWNER." Menu");
-    $g->add("AppDB", BASE);
     $g->add(APPDB_OWNER, APPDB_OWNER_URL);
+    $g->add("AppDB", BASE);
     $g->add("Bugzilla", BUGZILLA_ROOT);
     $g->add("Wine Wiki", "http://wiki.winehq.org");
+    $g->add("Wine Forum", "http://forum.winehq.org");
     $g->done();
 
     $g = new htmlmenu("AppDB");
