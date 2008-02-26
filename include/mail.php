@@ -36,6 +36,7 @@ function mail_appdb($sEmailList,$sSubject,$sMsg)
         return;
     }
 
+    $sMsg = html_entity_decode($sMsg);
     $bResult = mail(APPDB_SENDER_EMAIL, "[AppDB] ".$sSubject, $sMsg, $sHeaders,
                     "-f".APPDB_SENDER_EMAIL);
     if($bResult)
