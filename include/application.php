@@ -719,7 +719,7 @@ class Application {
         switch($sAction)
         {
             case "view":
-                return "Viewing App: ".$this->sName;
+                return $this->sName;
 
             default:
                 return null;

@@ -746,7 +746,7 @@ class version {
         switch($sAction)
         {
             case "view":
-                return "Viewing App: ".version::fullName($this->iVersionId);
+                return version::fullName($this->iVersionId);
 
             default:
                 return null;
