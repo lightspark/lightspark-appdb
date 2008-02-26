@@ -20,7 +20,7 @@ function util_show_error_page_and_exit($text = null, $message = null)
  */
 function util_redirect_and_exit($url)
 {
-    header("Location: ".$url); 
+    header("Location: ".html_entity_decode($url)); 
     exit;
 }
 
