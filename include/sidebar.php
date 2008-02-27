@@ -35,7 +35,7 @@ function global_sidebar_menu()
     $g->add("Email your suggestions for improving the AppDB", "mailto:appdb@winehq.org");
     $g->done();
 
-    $g = new htmlmenu("Search");
+    $g = new htmlmenu('Search the AppDB');
     $g->addmisc(app_search_box(!empty($aClean['sSearchQuery']) ? $aClean['sSearchQuery'] : ''));
     $g->done();
 
