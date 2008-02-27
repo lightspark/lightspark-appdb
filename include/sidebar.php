@@ -19,6 +19,7 @@ function global_sidebar_menu()
     $g->done();
 
     $g = new htmlmenu("AppDB");
+    $g->add('Home', BASE.'index.php');
     $g->add("Screenshots", BASE."objectManager.php?sClass=screenshot&amp;sTitle=View+Screenshots");
     $g->add("Browse Apps", BASE."appbrowse.php");
     $g->add("Browse Newest Apps", BASE."objectManager.php?sClass=application&amp;".
