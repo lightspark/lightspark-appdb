@@ -192,6 +192,7 @@ class testData{
 
             if($this->sState == 'accepted')
             {
+                $oOldVersion = new version($oOldTest->iVersionId);
                 $oOldVersion->updateRatingInfo();
                 $oNewVersion->updateRatingInfo();
             }
