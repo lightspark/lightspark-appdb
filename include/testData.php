@@ -190,12 +190,7 @@ class testData{
             if($oNewVersion->objectGetState() == 'accepted' && $this->sState == 'pending')
                 $this->sState = 'queued';
 
-            if($this->sState == 'accepted')
-            {
-                $oOldVersion = new version($oOldTest->iVersionId);
-                $oOldVersion->updateRatingInfo();
-                $oNewVersion->updateRatingInfo();
-            }
+                $bUpdateRatingInfo = true;
         }
 
         if(query_parameters("UPDATE testResults SET 
@@ -227,7 +222,14 @@ class testData{
                             $this->iTestingId))
         {
             if($bUpdateRatingInfo && $this->sState == 'accepted')
+            {
+                if($this->iVersionId != $oOldTest->iVersionId)
+                {
+                    $oNewVersion = new version($this->iVersionId);
+                    $oNewVersion->updateRatingInfo();
+                }
                 $oVersion->updateRatingInfo();
+            }
 
             if(!$bSilent)
                 $this->SendNotificationMail("edit", $sWhatChanged);
