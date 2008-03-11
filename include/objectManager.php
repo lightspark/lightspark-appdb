@@ -148,10 +148,7 @@ class ObjectManager
     /* Check whether the associated class has the given method */
     public function checkMethod($sMethodName, $bEnableOutput)
     {
-        // NOTE: we only 'new' here because php4 requires an instance
-        //       of an object as the first argument to method_exists(), php5
-        //       doesn't
-        if(!method_exists(new $this->sClass(), $sMethodName))
+        if(!method_exists($this->sClass, $sMethodName))
         {
             if($bEnableOutput) echo "class '".$this->sClass."' lacks method '".$sMethodName."'\n";
             return false;
