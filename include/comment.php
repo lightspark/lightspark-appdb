@@ -247,7 +247,7 @@ class Comment {
         echo htmlify_urls($this->sBody), "<br><br>\n";
     
         $oVersion = new version($this->iVersionId);
-        $oM = new objectManager("comment", "Post new ocmment");
+        $oM = new objectManager("comment", "Post new comment");
         $oM->setReturnTo($oVersion->objectMakeUrl());
         // reply post buttons
         echo "	[<a href=\"".$oM->makeUrl("add")."&iVersionId=$this->iVersionId\"><small>post new</small></a>] \n";
