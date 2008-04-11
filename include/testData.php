@@ -967,7 +967,10 @@ class testData{
         if (empty($aValues['shWhatWorks']))
             $errors .= "<li>Please enter what worked.</li>\n";
 
-        if (empty($aValues['shWhatDoesnt']))
+        /* The 'what doesn't work' field can be empty if the rating is Platinum,
+           because then an app should run flawlessly */
+        if (!getInput('shWhatDoesnt', $aValues) &&
+            getInput('sTestedRating', $aValues) != PLATINUM_RATING)
             $errors .= "<li>Please enter what did not work.</li>\n";
 
         if (empty($aValues['shWhatNotTested']))
