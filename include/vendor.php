@@ -242,6 +242,11 @@ class Vendor {
         return array('vendorName');
     }
 
+    public static function objectGetDefaultSort()
+    {
+        return 'vendorName';
+    }
+
     function objectGetEntries($sState, $iRows = 0, $iStart = 0, $sOrderBy = 'vendorName', $bAscending = TRUE)
     {
         /* Not implemented */

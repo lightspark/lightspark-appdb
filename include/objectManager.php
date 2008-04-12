@@ -271,39 +271,18 @@ class ObjectManager
         /* Set the sort info */
         $this->setSortInfo($aClean);
 
+        if(!$this->oSortInfo->sCurrentSort)
+            $this->oSortInfo->sCurrentSort = $this->getOptionalSetting('objectGetDefaultSort', '');
+
         /* query the class for its entries */
         /* We pass in queue states to tell the object */
         /* if we are requesting a list of its queued objects or */
         /* all of its objects */
-        if($this->oMultiPage->bEnabled)
-        {
-            /* Has the user chosen a particular field to sort by?  If not we want to use the default */
-            if($this->oSortInfo->sCurrentSort)
-            {
-                $hResult = $oObject->objectGetEntries($this->sState,
-                                                      $this->oMultiPage->iItemsPerPage,
-                                                      $this->oMultiPage->iLowerLimit,
-                                                      $this->oSortInfo->sCurrentSort,
-                                                      $this->oSortInfo->bAscending);
-            } else
-            {
-                $hResult = $oObject->objectGetEntries($this->sState,
-                                                      $this->oMultiPage->iItemsPerPage,
-                                                      $this->oMultiPage->iLowerLimit);
-            }
-        } else
-        {
-            /* Has the user chosen a particular field to sort by?  If not we want to use the default */
-            if($this->oSortInfo->sCurrentSort)
-            {
-                $hResult = $oObject->objectGetEntries($this->sState,
-                                                      $this->oSortInfo->sCurrentSort,
-                                                      $this->oSortInfo->bAscending);
-            } else
-            {
-                $hResult = $oObject->objectGetEntries($this->sState);
-            }
-        }
+        $hResult = $oObject->objectGetEntries($this->sState,
+                                              $this->oMultiPage->iItemsPerPage,
+                                              $this->oMultiPage->iLowerLimit,
+                                              $this->oSortInfo->sCurrentSort,
+                                              $this->oSortInfo->bAscending);
 
         /* did we get any entries? */
         if(!$hResult || query_num_rows($hResult) == 0)

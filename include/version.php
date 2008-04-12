@@ -1544,7 +1544,12 @@ class version {
         return array($aItemsPerPage, $iDefaultPerPage);
     }
 
-    public static function objectGetEntries($sState, $iRows = 0, $iStart = 0, $sOrderBy = "versionId")
+    public static function objectGetDefaultSort()
+    {
+        return 'versionId';
+    }
+
+    public static function objectGetEntries($sState, $iRows = 0, $iStart = 0, $sOrderBy = "versionId", $bAscending = true)
     {
         $sLimit = "";
 

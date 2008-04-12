@@ -1202,7 +1202,12 @@ class testData{
         return $oRow->count;
     }
 
-    function objectGetEntries($sState, $iRows = 0, $iStart = 0, $sOrderBy = "testingId")
+    public static function objectGetDefaultSort()
+    {
+        return 'testingId';
+    }
+
+    function objectGetEntries($sState, $iRows = 0, $iStart = 0, $sOrderBy = "testingId", $bAscending = true)
     {
         $oTest = new testData();
 

@@ -326,7 +326,7 @@ class appData
         return $oTableRow;
     }
 
-    function objectGetEntries($sState, $iRows = 0, $iStart = 0, $sType)
+    function objectGetEntries($sState, $iRows = 0, $iStart = 0, $sOrderBy = '', $bAscending = true, $sType = null)
     {
         /* Not implemented for appData */
         if($sState == 'rejected')

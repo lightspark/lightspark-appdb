@@ -299,7 +299,7 @@ class Monitor {
         return "";
     }
 
-    function objectGetEntries($sState)
+    function objectGetEntries($sState, $iRows = 0, $iStart = 0, $sOrderBy = '', $bAscending = true)
     {
         $hResult = query_parameters("SELECT * FROM appMonitors");
 

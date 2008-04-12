@@ -934,6 +934,11 @@ class Application {
         return $sLink;
     }
 
+    public static function objectGetDefaultSort()
+    {
+        return 'appId';
+    }
+
     public static function objectGetEntries($sState, $iRows = 0, $iStart = 0, $sOrderBy = "appId", $bAscending = TRUE)
     {
         $sLimit = "";

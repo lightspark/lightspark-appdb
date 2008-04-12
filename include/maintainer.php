@@ -395,7 +395,7 @@ class maintainer
         return $hResult;
     }
 
-    function ObjectGetEntries($sState, $iRows = 0, $iStart = 0)
+    function ObjectGetEntries($sState, $iRows = 0, $iStart = 0, $sOrderBy = '', $bAscending = true)
     {
         /* Not implemented */
         if($sState == 'rejected')

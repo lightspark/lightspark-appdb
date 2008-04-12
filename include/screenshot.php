@@ -649,9 +649,9 @@ class screenshot
         echo "</tr></table></div><br>\n";
     }
 
-    function objectGetEntries($sState, $iRows = 0, $iStart = 0)
+    function objectGetEntries($sState, $iRows = 0, $iStart = 0, $sOrderBy = '', $bAscending = true)
     {
-        return appData::objectGetEntries($sState, $iRows, $iStart,
+        return appData::objectGetEntries($sState, $iRows, $iStart, $sOrderBy, $bAscending,
                                          'screenshot');
     }
 

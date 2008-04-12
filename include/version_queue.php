@@ -235,10 +235,15 @@ class version_queue
         return $this->oVersion->objectGetEntriesCount($sState);
     }
 
-    function objectGetEntries($sState, $iRows = 0, $iStart = 0, $sOrderBy = "versionId")
+    public static function objectGetDefaultSort()
+    {
+        return version::objectGetDefaultSort();
+    }
+
+    function objectGetEntries($sState, $iRows = 0, $iStart = 0, $sOrderBy = "versionId", $bAscending = true)
     {
         return $this->oVersion->objectGetEntries($sState, $iRows, $iStart,
-                                                 $sOrderBy);
+                                                 $sOrderBy, $bAscending);
     }
  
     function objectGetHeader()

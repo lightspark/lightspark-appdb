@@ -555,6 +555,11 @@ class distribution {
         return array('name');
     }
 
+    public static function objectGetDefaultSort()
+    {
+        return 'name';
+    }
+
     function objectGetEntries($sState, $iRows = 0, $iStart = 0, $sOrderBy = "name", $bAscending = TRUE)
     {
         /* Not implemented */

@@ -365,7 +365,7 @@ class Bug
         return $this->iLinkId;
     }
 
-    function objectGetEntries($sState, $iRows = 0, $iStart = 0)
+    function objectGetEntries($sState, $iRows = 0, $iStart = 0, $sOrderBy = '', $bAscending = true)
     {
         $sLimit = "";
         

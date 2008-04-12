@@ -432,9 +432,9 @@ class downloadurl
         return $oAppData->reject();
     }
 
-    function objectGetEntries($sState, $iRows = 0, $iStart = 0)
+    function objectGetEntries($sState, $iRows = 0, $iStart = 0, $sOrderBy = '', $bAscending = true)
     {
-        return appData::objectGetEntries($sState, $iRows, $iStart, 'downloadurl');
+        return appData::objectGetEntries($sState, $iRows, $iStart, $sOrderBy, $bAscending, 'downloadurl');
     }
 
     function objectGetEntriesCount($sState)

@@ -384,6 +384,11 @@ class application_queue
         return $this->oApp->objectGetEntriesCount($sState);
     }
 
+    public static function objectGetDefaultSort()
+    {
+        return application::objectGetDefaultSort();
+    }
+
     function objectGetEntries($sState, $iRows = 0, $iStart = 0, $sOrderBy = "appId", $bAscending = TRUE)
     {
         return $this->oApp->objectGetEntries($sState, $iRows, $iStart,

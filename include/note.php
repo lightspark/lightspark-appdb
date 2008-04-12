@@ -320,7 +320,7 @@ class Note {
     //       do not support queuing at this point
     // TODO: we have no permissions scope on retrieving entries
     //       as notes are typically only added to unqueued versions
-    function objectGetEntries($sState)
+    function objectGetEntries($sState, $iRows = 0, $iStart = 0, $sOrderBy = '', $bAscending = true)
     {
         $sQuery = "select * from appNotes";
         $hResult = query_parameters($sQuery);

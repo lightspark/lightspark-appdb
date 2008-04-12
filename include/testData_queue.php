@@ -142,9 +142,14 @@ class testData_queue
         $this->oTestData->objectDisplayAddItemHelp();
     }
 
-    function objectGetEntries($sState, $iRows = 0, $iStart = 0, $sOrderBy = "testingId")
+    public static function objectGetDefaultSort()
     {
-        return $this->oTestData->objectGetEntries($sState, $iRows, $iStart, $sOrderBy);
+        return testData::objectGetDefaultSort();
+    }
+
+    function objectGetEntries($sState, $iRows = 0, $iStart = 0, $sOrderBy = "testingId", $bAscending = true)
+    {
+        return $this->oTestData->objectGetEntries($sState, $iRows, $iStart, $sOrderBy, $bAscending);
     }
 
     function objectGetEntriesCount($sState)
