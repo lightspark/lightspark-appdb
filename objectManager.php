@@ -23,6 +23,7 @@ require_once(BASE.'include/application_queue.php');
 require_once(BASE.'include/version_queue.php');
 require_once(BASE.'include/testData_queue.php');
 require_once(BASE.'include/bugs.php');
+require_once(BASE.'include/db_filter_ui.php');
 
 /* if we have no valid class name we should abort */
 if(!isset($aClean['sClass']))
@@ -59,6 +60,7 @@ if(isset($aClean['sReturnTo']))
 
 $oObject->getMultiPageDataFromInput($aClean);
 $oObject->setSortInfo($aClean);
+$oObject->getFilterInfoFromInput($aClean);
 
 $sClass = $oObject->getClass();
 $oOtherObject = new $sClass($oObject->getId());

@@ -10,6 +10,10 @@
 
 require_once('db_filter.php');
 
+define(FILTER_VALUES_NORMAL, 1);
+define(FILTER_VALUES_ENUM, 2);
+define(FILTER_VALUES_BOOL, 3);
+
 /* Info describing an available filter: what column it applies to,
     and what comparison options are available */
 class FilterInfo
@@ -17,12 +21,22 @@ class FilterInfo
     private $sColumn;
     private $sDisplayName;
     private $aTypes; // Available filters for this column
+    private $iValueType; // Normal, enum ...
+    private $aValueTypeData; // List of enums
+    private $aValueTypeDataDisplay; // Optional display names for enums
 
-    public function FilterInfo($sColumn, $sDisplayName, $aTypes)
+    public function FilterInfo($sColumn, $sDisplayName, $aTypes, $iValueType = FILTER_VALUES_NORMAL, $aValueTypeData = array(), $aValueTypeDisplay = array())
     {
         $this->sColumn = $sColumn;
         $this->sDisplayName = $sDisplayName;
         $this->aTypes = $aTypes;
+        $this->iValueType = $iValueType;
+        $this->aValueTypeData = $aValueTypeData;
+
+        if(sizeof($aValueTypeData) && !sizeof($aValueTypeDisplay))
+            $this->aValueTypeDataDisplay = $aValueTypeData;
+        else
+            $this->aValueTypeDataDisplay = $aValueTypeDisplay;
     }
 
     public function getColumn()
@@ -33,6 +47,21 @@ class FilterInfo
     public function getDisplayName()
     {
         return $this->sDisplayName;
+    }
+
+    public function getValueType()
+    {
+        return $this->iValueType;
+    }
+
+    public function getValueTypeData()
+    {
+        return $this->aValueTypeData;
+    }
+
+    public function getValueTypeDataDisplay()
+    {
+        return $this->aValueTypeDataDisplay;
     }
 
     public function getTypes()
@@ -65,11 +94,15 @@ class FilterInterface
 {
     private $aFilterInfo;
     private $oFilterSet;
+    private $aEscapeChars;
+    private $aEscapeCharsWith;
 
     public function FilterInterface($sTableName = '')
     {
         $this->aFilterInfo = array();
-        $this->oFilterSet = new FilterSet(mysql_real_escape_string($sTableName));
+        $this->oFilterSet = new FilterSet(query_escape_string($sTableName));
+        $this->aEscapeChars = array('.');
+        $this->aEscapeCharsWith = array('-');
     }
 
     public function AddFilterObject(Filter $oFilter)
@@ -83,15 +116,53 @@ class FilterInterface
     }
 
     /* Convenience function to add a filter option */
-    public function AddFilterInfo($sColumn, $sDisplayName, $aTypes)
+    public function AddFilterInfo($sColumn, $sDisplayName, $aTypes, $iValueType = VALUE_TYPE_NORMAL, $aValueTypeData = array(), $aValueTypeDisplay = array())
     {
-        $this->aFilterInfo[$sColumn] = new FilterInfo($sColumn, $sDisplayName, $aTypes);
+        $this->aFilterInfo[$sColumn] = new FilterInfo($sColumn, $sDisplayName, $aTypes, $iValueType, $aValueTypeData, $aValueTypeDisplay);
     }
+
+    /* We can't use some special chars in variable names, such as '.' */
+    public function escapeChars($sIn)
+    {
+        return str_replace($this->aEscapeChars, $this->aEscapeCharsWith, $sIn);
+    }
+
+    public function unescapeChars($sIn)
+    {
+        return str_replace($this->aEscapeWith, $this->aEscape, $sIn);
+    }
+
+    public function getUrlElement($iId, Filter $oFilter)
+    {
+        $sColumn = $this->escapeChars($oFilter->getColumn());
+        $oColumn = $this->aFilterInfo[$sColumn];
+
+        $sId = $iId;
+
+        $shEditor = "&i{$sColumn}Op$sId={$oFilter->getOperatorId()}";
+        $shEditor .= "&s{$sColumn}Data$sId={$oFilter->getData()}";
+
+        return $shEditor;
+    }
+
+    public function getHiddenInputTag($iId, Filter $oFilter)
+    {
+        $sColumn = $this->escapeChars($oFilter->getColumn());
+        $oColumn = $this->aFilterInfo[$sColumn];
+
+        $sId = $iId;
+
+        $shEditor = "<input type=\"hidden\" name=\"i{$sColumn}Op$sId\" value=\"{$oFilter->getOperatorId()}\">";
+        $shEditor .= "<input type=\"hidden\" name=\"s{$sColumn}Data$sId\" value=\"{$oFilter->getData()}\" />";
+
+        return $shEditor;
+    }
+
 
     public function getItemEditor($iId, Filter $oFilter)
     {
-        $sColumn = $oFilter->getColumn();
-        $oColumn = $this->aFilterInfo[$sColumn];
+        $sColumn = $this->escapeChars($oFilter->getColumn());
+        $oColumn = $this->aFilterInfo[$oFilter->getColumn()];
 
         $sId = ($iId == -1) ? '' : $iId;
         $shEditor = $oColumn->getDisplayName();
@@ -121,7 +192,90 @@ class FilterInterface
 
         $shEditor .= '</select> ';
 
-        $shEditor .= "<input type='text' value=\"{$oFilter->getData()}\" name='s{$sColumn}Data$sId' size='30' />";
+        switch($oColumn->getValueType())
+        {
+            case FILTER_VALUES_NORMAL:
+                $shEditor .= "<input type='text' value=\"{$oFilter->getData()}\" name='s{$sColumn}Data$sId' size='30' />";
+            break;
+            case FILTER_VALUES_ENUM:
+                $shEditor .= $this->getEnumEditor($oColumn, $oFilter, $sId);
+            break;
+        }
+
+        return $shEditor;
+    }
+
+    public function getEnumEditor($oColumn, $oFilter, $sId)
+    {
+        $sColumn = $this->escapeChars($oFilter->getColumn());
+        $aOptions = $oColumn->getValueTypeData();
+        $aOptionNames = $oColumn->getValueTypeDataDisplay();
+
+        $sData = $oFilter->getData();
+
+        $shEditor .= "<select name=\"s{$sColumn}Data$sId\">";
+
+        if($sData)
+            $shEditor .= "<option value=\"\">-- remove --</option>";
+        else
+            $shEditor .= "<option value=\"\">-- select --</option>";
+
+        for($i = 0; $i < sizeof($aOptions); $i++)
+        {
+            $sOption = $aOptions[$i];
+            $sSelected = '';
+            if($sData == $sOption)
+                $sSelected = ' selected="selected"';
+            $shEditor .= "<option value=\"$sOption\"$sSelected>{$aOptionNames[$i]}</option>";
+        }
+
+        $shEditor .= "</select>";
+
+        return $shEditor;
+    }
+
+    /* Get filter data formatted to fit in a URL */
+    public function getUrlData()
+    {
+        $shEditor = '';
+        $aCounts = array();
+
+        foreach($this->oFilterSet->getFilters() as $oFilter)
+        {
+            $sColumn = $oFilter->getColumn();
+
+            if(!array_key_exists($sColumn, $aCounts))
+                $aCounts[$sColumn] = 0;
+
+            $shEditor .= $this->getUrlElement($aCounts[$sColumn], $oFilter);
+
+            $shEditor .= '<br />';
+
+            $aCounts[$sColumn]++;
+        }
+
+        return $shEditor;
+    }
+
+    /* Get a list of hidden input tags to preserve form data */
+    public function getHiddenFormData()
+    {
+        $shEditor = '';
+        $aCounts = array();
+
+        foreach($this->oFilterSet->getFilters() as $oFilter)
+        {
+            $sColumn = $oFilter->getColumn();
+
+            if(!array_key_exists($sColumn, $aCounts))
+                $aCounts[$sColumn] = 0;
+
+            $shEditor .= $this->getHiddenInputTag($aCounts[$sColumn], $oFilter);
+
+            $shEditor .= '<br />';
+
+            $aCounts[$sColumn]++;
+        }
 
         return $shEditor;
     }
@@ -131,16 +285,18 @@ class FilterInterface
         $shEditor = '';
         $aCounts = array();
 
-        $shEditor .= 'Add new filter<br />';
+        $shEditor .= '<b>Add new filter</b> <i>(You don&#8217;t have to fill out all rows.)</i><br />';
         foreach($this->aFilterInfo as $oOption)
         {
             $oDummyFilter = new Filter($oOption->getColumn(), 0, '');
-            $shEditor .= $this->getItemEditor(-1, $oDummyFilter);
+            $aTypes = $oOption->getTypes();
+
+              $shEditor .= $this->getItemEditor(-1, $oDummyFilter);
             $shEditor .= '<br />';
         }
 
         if(sizeof($this->oFilterSet->getFilters()))
-             $shEditor .= '<br />Active filters<br />';
+             $shEditor .= '<br /><b>Active filters</b><br />';
         foreach($this->oFilterSet->getFilters() as $oFilter)
         {
             $sColumn = $oFilter->getColumn();
@@ -167,23 +323,26 @@ class FilterInterface
     {
         $aReturn = array();
 
-        for($i = 0; array_key_exists('i'.$oOption->getColumn()."Op$i", $aClean); $i++)
+        for($i = 0; array_key_exists('i'.$this->escapeChars($oOption->getColumn())."Op$i", $aClean); $i++)
         {
-            $sData = mysql_real_escape_string($aClean["s{$oOption->getColumn()}Data$i"]);
-            $iOp = $aClean["i{$oOption->getColumn()}Op$i"];
+            $sColumn = $this->escapeChars($oOption->getColumn());
+            $sData = query_escape_string($aClean["s{$sColumn}Data$i"]);
+            $iOp = $aClean["i{$sColumn}Op$i"];
 
             if(!$iOp)
                 continue;
 
             $oFilter = new Filter($oOption->getColumn(), $iOp, $sData);
+
             $aReturn[] = $oFilter;
         }
 
-        if(array_key_exists('i'.$oOption->getColumn()."Op", $aClean))
+        if(array_key_exists('i'.$this->escapeChars($oOption->getColumn())."Op", $aClean))
         {
+            $sColumn = $this->escapeChars($oOption->getColumn());
             $i = sizeof($aReturn);
-            $sData = $aClean["s{$oOption->getColumn()}Data"];
-            $iOp = $aClean["i{$oOption->getColumn()}Op"];
+            $sData = $aClean["s{$sColumn}Data"];
+            $iOp = $aClean["i{$sColumn}Op"];
 
             if($iOp)
             {
@@ -208,17 +367,22 @@ class FilterInterface
 
     public function loadTable($sTableName)
     {
-        $this->oFilterSet->loadTable(mysql_real_escape_string($sTableName));
+        $this->oFilterSet->loadTable($sTableName);
     }
 
     public function saveTable($sTableName)
     {
-        $this->oFilterSet->saveTable(mysql_real_escape_string($sTableName));
+        $this->oFilterSet->saveTable($sTableName);
     }
 
     public function getFilterCount()
     {
         return $this->oFilterSet->getFilterCount();
+    }
+
+    public function getWhereClause()
+    {
+        return $this->oFilterSet->getWhereClause();
     }
 
     public function getTable($sTable, $iLimit = 0)

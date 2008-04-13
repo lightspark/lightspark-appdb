@@ -14,6 +14,7 @@ define('FILTER_GREATER_THAN', 3);
 define('FILTER_LESS_THAN', 4);
 define('FILTER_NOT_EQUALS', 5);
 define('FILTER_NOT_LIKE', 6);
+define('FILTER_ENUM', 7);
 
 /* A filter as part of an SQL query, such as something = 'somevalue' */
 class Filter

@@ -14,6 +14,7 @@ class ObjectManager
     private $sReturnTo;
     private $sReturnToTitle; /* Used to preserve the title when processing entries from a queue list, for instance */
     private $oMultiPage;
+    private $oFilters; /* Currently active filters in table view */
     private $oTableRow;
     private $oSortInfo; /* Contains sort info used when displaying tables */
     private $oObject; /* Store an instance of the object of the class
@@ -61,6 +62,12 @@ class ObjectManager
     public function getState()
     {
         return $this->sState;
+    }
+
+    public function getFilterInfoFromInput($aClean)
+    {
+        if($this->oFilters)
+            $this->oFilters->readInput($aClean);
     }
 
     public function setState($sState)
@@ -126,6 +133,7 @@ class ObjectManager
         $this->oMultiPage = new MultiPage(FALSE);
         $this->oTableRow = new OMTableRow(null);
         $this->sState = 'accepted';
+        $this->oFilters = $this->getOptionalSetting('objectGetFilterInfo', FALSE);
 
         // initialize the common responses array
         $this->aCommonResponses = array();
@@ -278,6 +286,8 @@ class ObjectManager
         if(!$this->oSortInfo->sCurrentSort)
             $this->oSortInfo->sCurrentSort = $this->getOptionalSetting('objectGetDefaultSort', '');
 
+        $this->handleFilterControls($aClean);
+
         /* query the class for its entries */
         /* We pass in queue states to tell the object */
         /* if we are requesting a list of its queued objects or */
@@ -286,23 +296,30 @@ class ObjectManager
                                               $this->oMultiPage->iItemsPerPage,
                                               $this->oMultiPage->iLowerLimit,
                                               $this->oSortInfo->sCurrentSort,
-                                              $this->oSortInfo->bAscending);
+                                              $this->oSortInfo->bAscending,
+                                              $this->oFilters);
 
         /* did we get any entries? */
         if(!$hResult || query_num_rows($hResult) == 0)
         {
-            switch($this->getQueueString($this->getIsQueue(), $this->sState == 'rejected'))
+            if($this->oFilters->getFilterCount())
             {
-                case "true":
-                    echo "<center>The queue for '$this->sClass' is empty</center>";
-                break;
-                case "false":
-                    echo "<center>No entries of '$this->sClass' are present</center>";
-                break;
-                case "rejected":
-                    echo "<center>No rejected entries of '$this->sClass' are ".
-                            "present</center>";
-                break;
+                echo '<center>No matches found</center>';
+            } else
+            {
+                switch($this->getQueueString($this->getIsQueue(), $this->sState == 'rejected'))
+                {
+                    case "true":
+                        echo "<center>The queue for '$this->sClass' is empty</center>";
+                    break;
+                    case "false":
+                        echo "<center>No entries of '$this->sClass' are present</center>";
+                    break;
+                    case "rejected":
+                        echo "<center>No rejected entries of '$this->sClass' are ".
+                                "present</center>";
+                    break;
+                }
             }
 
             if($this->GetOptionalSetting("objectShowAddEntry", FALSE))
@@ -1236,6 +1253,9 @@ class ObjectManager
             $sUrl .= "&amp;iPage=".$this->oMultiPage->iPage;
         }
 
+        if($this->oFilters)
+            $sUrl .= $this->oFilters->getUrlData();
+
         if($this->oSortInfo && $this->oSortInfo->sCurrentSort)
         {
             $sUrl .= "&amp;sOrderBy={$this->oSortInfo->sCurrentSort}";
@@ -1266,6 +1286,9 @@ class ObjectManager
             $sReturn .= "<input type=\"hidden\" name=\"iPage\" value=\"".
                     $this->oMultiPage->iPage."\">\n";
         }
+
+        if($this->oFilters)
+            $sReturn .= $this->oFilters->getHiddenFormData();
 
         if($this->sReturnToTitle)
             $sReturn .= "<input type=\"hidden\" name=\"sReturnToTitle\" value=\"".$this->sReturnToTitle."\">\n";
@@ -1308,6 +1331,20 @@ class ObjectManager
             $oTableRow->SetSortInfo($this->oSortInfo);
 
         echo $oTableRow->GetString();
+    }
+
+    private function handleFilterControls($aClean)
+    {
+        /* Show filter info */
+        if($this->oFilters)
+        {
+            echo "<form method=\"post\" action=\"".$this->makeUrl()."\" >";
+
+             echo $this->oFilters->getEditor();
+
+            echo "<br><input type='submit' value='Submit' name='sSubmit' >";
+            echo "</form>";
+        }
     }
 
     private function handleMultiPageControls($aClean, $bItemsPerPageSelector = TRUE)
@@ -1361,7 +1398,7 @@ class ObjectManager
             $sControls .= "</form>";
         }
 
-        $iTotalEntries = $oObject->objectGetEntriesCount($this->sState);
+        $iTotalEntries = $oObject->objectGetEntriesCount($this->sState, $this->oFilters);
         $iNumPages = ceil($iTotalEntries / $iItemsPerPage);
         if($iNumPages == 0)
             $iNumPages = 1;

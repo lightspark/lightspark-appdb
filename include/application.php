@@ -11,6 +11,7 @@ require_once(BASE."include/util.php");
 require_once(BASE."include/mail.php");
 require_once(BASE."include/maintainer.php");
 require_once(BASE."include/tableve.php");
+require_once(BASE."include/db_filter_ui.php");
 
 define("PLATINUM_RATING", "Platinum");
 define("GOLD_RATING", "Gold");
@@ -939,11 +940,18 @@ class Application {
         return 'appId';
     }
 
-    public static function objectGetEntries($sState, $iRows = 0, $iStart = 0, $sOrderBy = "appId", $bAscending = TRUE)
+    public static function objectGetEntries($sState, $iRows = 0, $iStart = 0, $sOrderBy = "appId", $bAscending = TRUE, $oFilters = null)
     {
         $sLimit = "";
         $sOrdering = $bAscending ? "ASC" : "DESC";
 
+        $sExtraTables = '';
+        $sWhereFilter = $oFilters ? $oFilters->getWhereClause() : '';
+        if($sWhereFilter)
+        {
+            $sExtraTables = ',appVersion';
+            $sWhereFilter = " AND appVersion.appId = appFamily.appId AND $sWhereFilter";
+        }
         /* Should we add a limit clause to the query? */
         if($iRows || $iStart)
         {
@@ -955,10 +963,10 @@ class Application {
                 $iRows = application::objectGetEntriesCount($sState);
         }
 
-        $sQuery = "SELECT appFamily.*, vendor.vendorName AS vendorName FROM appFamily, vendor WHERE
+        $sQuery = "SELECT DISTINCT(appFamily.appId), appFamily.*, vendor.vendorName AS vendorName FROM appFamily, vendor$sExtraTables WHERE
                      appFamily.vendorId = vendor.vendorId
                      AND
-                     appFamily.state = '?'";
+                     appFamily.state = '?'$sWhereFilter";
 
         if($sState != 'accepted' && !application::canEdit())
         {
@@ -995,6 +1003,14 @@ class Application {
             return FALSE;
 
         return $hResult;
+    }
+
+    public static function objectGetFilterInfo()
+    {
+        $oFilter = new FilterInterface();
+
+        $oFilter->AddFilterInfo('appVersion.rating', 'Rating', array(FILTER_EQUALS, FILTER_LESS_THAN, FILTER_GREATER_THAN), FILTER_VALUES_ENUM, array('Platinum', 'Gold', 'Silver', 'Bronze', 'Garbage'));
+        return $oFilter;
     }
 
     public static function objectGetSortableFields()
@@ -1112,23 +1128,31 @@ class Application {
         }
     }
 
-    public static function objectGetEntriesCount($sState)
+    public static function objectGetEntriesCount($sState, $oFilters = null)
     {
+        $sExtraTables = '';
+        $sWhereFilter = $oFilters ? $oFilters->getWhereClause() : '';
+        if($sWhereFilter)
+        {
+            $sExtraTables = ',appVersion';
+            $sWhereFilter = " AND appVersion.appId = appFamily.appId AND $sWhereFilter";
+        }   
+
         if($sState != 'accepted' && !application::canEdit())
         {
             /* Without edit rights users can only resubmit their rejected entries */
             if(!$bRejected)
                 return FALSE;
 
-            $sQuery = "SELECT COUNT(appId) as count FROM appFamily WHERE
+            $sQuery = "SELECT COUNT(DISTINCT(appFamily.appId)) as count FROM appFamily$sExtraTables WHERE
                     submitterId = '?'
                     AND
-                    state = '?'";
+                    appFamily.state = '?'$sWhereFilter";
             $hResult = query_parameters($sQuery, $_SESSION['current']->iUserId,
                                         $sState);
         } else
         {
-            $sQuery = "SELECT COUNT(appId) as count FROM appFamily WHERE state = '?'";
+            $sQuery = "SELECT COUNT(DISTINCT(appFamily.appId)) as count FROM appFamily$sExtraTables WHERE appFamily.state = '?'$sWhereFilter";
             $hResult = query_parameters($sQuery, $sState);
         }
 
