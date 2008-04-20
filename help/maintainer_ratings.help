@@ -40,7 +40,7 @@ Application works, but it has some issues, even for normal use; a game may not r
 <p>
 An application gets this rating if it cannot be used for the purpose it was designed for.
 There should be at least one bug report in Bugzilla if it gets this rating.
-Application does not start, or starts but has so many errors that it is nearly impossible to use it.
+Application cannot be installed, does not start, or starts but has so many errors that it is nearly impossible to use it.
 </p>
 
 </ul>
