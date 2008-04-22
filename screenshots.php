@@ -133,9 +133,12 @@ if($hResult && query_num_rows($hResult))
 // if the user is logged in
 if($aClean['iVersionId'] && $_SESSION['current']->isLoggedIn())
 {
-    echo "<p align=\"center\">When submitting screenshots please ensure that the focus is on the application running inside Wine.";
-    echo "<br>This means if the application is running in a window then please crop the image so that only the application is shown and not your desktop.";
-    echo "<br>Do not upload screenshots of error messages, installers, game menus etc.</p>";
+    echo "<p align=\"center\">";
+    echo "<table><tr><th>Please follow these simple rules</th></tr>";
+    echo "<tr><td><ul>";
+    echo "<li>Do not upload screenshots of error messages, installers, game menus etc.</li>";
+    echo "<li>Crop the image so that only the application is shown and not your desktop.</li>";
+    echo "</ul></td></tr></table></p>";
 
     echo '<form enctype="multipart/form-data" action="screenshots.php" name="sImageForm" method="post">',"\n";
     echo html_frame_start("Upload Screenshot","400","",0);
