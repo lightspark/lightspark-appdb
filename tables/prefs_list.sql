@@ -22,3 +22,4 @@ INSERT INTO prefs_list VALUES (0, 'query:mode', 'view', 'view|edit', 'Default AP
 INSERT INTO prefs_list VALUES (0, 'query:hide_header', 'no', 'yes|no', 'Hide apidb header in query results');
 INSERT INTO prefs_list VALUES (0, 'query:hide_sidebar', 'no', 'yes|no', 'Hide apidb sidebar in query results');
 INSERT INTO prefs_list VALUES (0, 'send_email', 'yes', 'yes|no', 'Send email notifications');
+INSERT INTO prefs_list VALUES (0, 'htmleditor', 'for supported browsers', 'always|for supported browsers|never', 'Display a graphical HTML editor in certain text fields');

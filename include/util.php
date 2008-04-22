@@ -628,6 +628,22 @@ function HtmlAreaLoaderScript($aTextareas)
 {
     static $outputIndex = 0;
 
+    /* Check if the user wants to display the HTML editor (always, for supported browsers or never) */
+    switch($_SESSION['current']->getPref('htmleditor', 'for supported browsers'))
+    {
+        case 'never':
+            return;
+        case 'for supported browsers':
+            if(strstr($_SERVER['HTTP_USER_AGENT'], 'Opera') ||
+               strstr($_SERVER['HTTP_USER_AGENT'], 'Konqueror'))
+            {
+                return;
+            }
+            break;
+        case 'always':
+            break;
+    }
+
     echo '
   <script type="text/javascript">';
     // You must set _editor_url to the URL (including trailing slash) where
