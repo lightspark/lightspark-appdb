@@ -55,7 +55,7 @@ if (empty($aClean['sRating']))
     $aRating = array(PLATINUM_RATING, GOLD_RATING, SILVER_RATING,
                      BRONZE_RATING, GARBAGE_RATING);
     $aRatingText = array("Applications that install and run out of the box",
-                         "Applications that work flawlessly with some DLL overrides or other settings, crack etc.",
+                         "Applications that work flawlessly with some DLL overrides, other settings or third party software.",
                          "Applications that work excellently for 'normal use'",
                          "Applications that work but have some issues, even for 'normal use'",
                          "Applications that don't work as intended, there should be at least one bug report if an app gets this rating");
