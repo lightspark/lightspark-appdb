@@ -3,20 +3,20 @@
 <h3>Application Voting System Help</h3>
 
 <p>
-The Application Database features a voting system that allows you to pick which <b>3</b> application verions
+The Application Database features a voting system that allows you to pick which <b>3</b> application versions
 you would MOST like to see running in Wine.
 </p>
 
 <p><b>Step by Step Help on Voting</b></p>
 <ol>
 
-<li>Log into the Application Database.</li><p>
+<li>Log into the Application Database.</li>
 
-<li>Browse to the application version you wish to add to your vote list.</li><p>
+<li><p>Browse to the application version you wish to add to your vote list.</li>
 
-<li>In the sidebar, click one of the 3 available slots, and click Vote.</li><p>
+<li><p>In the sidebar, click one of the 3 available slots, and click Vote.</li>
 
-<li>Done!</li></p>
+<li><p>Done!</li>
 
 </ol>
 
@@ -25,11 +25,11 @@ you would MOST like to see running in Wine.
 
 <ul>
 
-   <li><i>Please</i> seriously only vote for applications which will benefit the
-   community.  Don&#8217;t vote for applications that are known to be working well. 
+   <li><i>Please</i> vote for applications which will benefit the
+   community.  Don't vote for applications that are known to be working well. 
    We know Solitaire works.  Voting for it would not make much sense.</li>
 
-   <li>You can clear your vote at anytime. Simply browse to any application
+   <li>You can clear your vote at any time. Simply browse to any application
    version in the database, select the slot you want to clear, and click the Clear
    button.</li>
 
