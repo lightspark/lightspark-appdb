@@ -16,18 +16,18 @@ You are expected to:
 <ul>
 <li>Keep the application comments clean, all stale data should be removed</li>
 <li>Be an active user of that application and version</li>
-<li>Keep up-to-date with all Wine releases, if there are regressions they should be reported to <a href="mailto:wine-devel@winehq.org">wine-devel@winehq.org</a> and <a href="http://bugs.winehq.org">Bugzilla</a></li>
+<li>Keep up-to-date with all Wine releases, if there are regressions they should filed as bugs in <a href="http://bugs.winehq.org">Bugzilla</a> if there are not bugs already filed.</li>
 </ul>
 
 You will:
 <ul>
-<li>Receive an email anytime a comment is posted or deleted for the application or the application information is modified</li>
-<li>Be able to modify all aspects of your application(s) and version(s), including the description, screenshots, how-tos, notes, comments, etc.</li>
+<li>Receive an email when a comment is posted or deleted for the application or the application information is modified</li>
+<li>Be able to modify all aspects of your application(s) and version(s), including the description, screenshots, HOWTOs, notes, comments, etc.</li>
 </ul>
 
 <br>
 
-<h4>Application overview page guidlines</h4>
+<h4>Application overview page guidelines</h4>
 <p><i>N.B. Only super maintainers can change the general description of an application.</i><br>
 You can edit an application overview page by clicking on the "Edit Application" button in the application overview page. You will be then presented with a form whose fields are explained thereafter.
 <ul>
@@ -41,15 +41,15 @@ Application vendor should be set correctly. If the vendor is missing, please con
 Keywords are used by the search engine. You don't need to repeat the application's name but you are encouraged to provide some keywords in this field.
 </li>
 <li>
-Description should describe the application in a general manner (what it does). The Wine and version specific considerations go in version-specific pages (described below). If you want to add more than a short sentence, please add a cariage return after the first sentence as it will be used when showing the application summary in the search engine, top-25 page and so on.
+Description should describe the application in a general manner (what it does). The Wine and version specific considerations go in version-specific pages (described below). If you want to add more than a short sentence, please add a carriage return after the first sentence as it will be used when showing the application summary in the search engine, top-25 page and so on.
 </li>
 <li>
 Webpage should contain the home page for this application. Please remember that a URL starts with http://.
 </li>
 </ul>
-</p>
 
-<h4>Version page guidlines</h4>
+
+<h4>Version page guidelines</h4>
 <p>
 You can edit a version page by clicking on the "Edit Version" button in any version page for which you are a (super) maintainer. You will then be presented with a form whose fields are explained thereafter.
 <ul>
@@ -67,42 +67,43 @@ Release is the latest release of Wine you tested this version with.
 </li>
 </ul>
 
-<h4>Additional URLs guidlines</h4>
+<h4>Additional URLs guidelines</h4>
 <p>
 In both application and version editing pages you can add additional URLs. These URLs can, for example, help the user find native alternatives for this application (in application overview page) or find specific dlls (in version page).
 </p>
 
-<h4>Screenshots guidlines</h4>
+<h4>Screenshots guidelines</h4>
 <p>
 As a maintainer you are encouraged to provide screenshots for the versions you tested under Wine. To add a screenshot, simply click on the screenshot thumbnail in the version page.
 </p>
 
-<h4>Notes guidlines</h4>
+<h4>Notes guidelines</h4>
 <p>
 In the version page you can add, edit and delete notes for the versions you maintain. Just click on the "Add note" button.
 </p>
 
 
-<h4>How-to guidlines</h4>
+<h4>HOWTO guidelines</h4>
 <p>
-How-tos are just a special kind of notes. You can provide step-by-step explanations on how to install or run a specific version of the current application here. Please try to keep How-to's up to date (for example some steps might not be needed anymore using a more recent version of Wine).
+HOWTOs are just a special kind of notes. You can provide step-by-step explanations on how to install or run a specific version of the current application here. Please try to keep HOWTOs up to date (for example some steps might no longer be needed if using a more recent version of Wine).
 </p>
 
-<h4>Warnings guidlines</h4>
+<h4>Warnings guidelines</h4>
 <p>
-Warnings are just a special kind of note. Warnings appear in red to catch the attention of the reader. They can be used to warning users against potential data corruption for instance. Please keep the warning up-to-date, especially if it is not true anymore using a recent Wine version (in this case you might choose to keep the warning and tell users that since Wine X.Y, this has been fixed).
+Warnings are just a special kind of note. Warnings appear in red to catch the attention of the reader. They can be used to warning users against potential data corruption for instance. Please keep the warning up-to-date, especially if it is not true when using a recent Wine version (in this case you might choose to keep the warning and tell users that since Wine X.Y, this has been fixed).
 </p>
 
-<h4>Comments guidlines</h4>
+<h4>Comments guidelines</h4>
 <p>
 As a maintainer you are entitled to delete comments. Use this feature wisely and always explain why you deleted a comment. If a comment is useless or is not true anymore, you can safely delete it. Whenever you can, extract how-tos, other peoples tests (for your test history table for example) from the comments and put it in your versions page and how-to notes.
+<p>
+If users paste large amounts of debug/crash output from wine, it might be a good idea to delete their comment and depending on whether or not a bug report as been filed for the problem, ask them to file a report and attach the information.
 </p>
 
 
 <h4>Using the HTML editor</h4>
 <p>
-Here you'll find informations and hints about the HTML editor used when editing informations in the Application Database.<br>
-At this time detailed informations are not available. Please check back later.
+The HTML editor allows users of the AppDB to write richer descriptions, guides or warnings by providing a WYSIWYG HTML editor.  The HTML editor can be disabled in your Preferences which will allow you to edit the html source of various fields.
 </p>
 <br>
-<p>If you have additionnal questions, please do not hesitate to contact us on <a href="mailto:appdb@winehq.org">appdb@winehq.org</a>.</p>
+<p>If you have additional questions, please do not hesitate to contact us on <a href="mailto:appdb@winehq.org">appdb@winehq.org</a>.</p>
