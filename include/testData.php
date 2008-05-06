@@ -911,8 +911,7 @@ class testData{
         echo " check back tomorrow, sometimes it takes us a day to update the list.</li>\n";
         echo "<li>If you are testing with an older release than listed please";
         echo " upgrade and test with a newer release.</li>\n";
-        echo "<li><b>NOTE: 'CVS' was recently removed as a version because we simply can't track";
-        echo " exactly which CVS version was used.<br> If you haven't tested with one of the";
+        echo "<li>If you haven't tested with one of the";
         echo " listed versions please retest with a recent release and resubmit.</li>\n";
         echo "</ul>\n";
         echo '</td></tr>',"\n";
