@@ -1,34 +1,36 @@
 <!--TITLE: General help on running appliations under Wine -->
 
-This is meant as generic instructions in case an AppDB entry
-for a certain program doesn't exist.
+<center>This is meant as a general guide in case an AppDB entry
+for a certain program hasn't been created.</center>
 
 <ol>
 
-<li> Make sure your Wine release is recent.</li><p>
+<li> Make sure your Wine release is recent.<p>
 
   <ul>
-   <li><a href="http://www.winehq.org/site/download"> Official WineHQ builds</a>
-          for Linux Red Hat, Mandrake, SuSE, Slackware and FreeBSD, hosted by 
+    <li><a href="http://www.winehq.org/site/download"> Official WineHQ builds</a>
+          for all the popular platforms and distributions, hosted by 
        <a href="http://sourceforge.net/project/showfiles.php?group_id=6241">SourceForge.net</a>.</li>
-   <li><a href="http://www.winehq.org/site/cvs">Official WineHQ Source</a> for information on how to
-          build and install Wine via source read over the 
-       <a href="http://www.winehq.org/site/howto"> Wine HowTo</a>.</li>
-       </ul>
-	<p>
+    <li>Consult <a href="http://www.winehq.org/site/git">the git instructions</a> for information on obtaining the latest source.  
+     <p>For how to build and install Wine via source consult the README or for building Wine on a 64bit GNU/Linux read over the 
+       <a href="http://wiki.winehq.org/WineOn64bit">WineOn64bit wiki entry</a>.</li>
+  </ul>
+</li>
+<li><p>Run your program by changing into the directory where it is located, and then type 'wine yourprogram.exe'. 
+    <br>Alternately your file manager should know to open .exe files with 'wine').</li>
 
-<li> Run your program (something like &#8216;wine yourprogram.exe&#8217;, or tell your file manager to open .exe files with 'wine').</li><p>
+<li><p>If there is an an error about missing files, or does not start at all, make sure you are in the directory where it was installed.</li>
 
-<li> If it gives an error about missing files, or does not start at all, try running it from the directory where it was installed.</li><p>
+<li><p> Many newer games contain copy protection, which is sometimes not supported in Wine.  <br>Third party applications may be able to circumvent this,
+ when this is required an application cannot be rated higher than Gold</li>
 
-<li> Many newer games contain copy protection, which is often not supported in Wine.  Cracks are available from sites such as <a href="http://www.megagames.com/trainers.html" target="_blank">MegaGames</a>.</li><p>
-
-<li> In case of failure, try different builtin, native DLL settings:
-Run Wine with &#8216;WINEDEBUG=+loaddll wine yourprogram.exe&#8217; to find out which
+<li><p> In case of failure, try different builtin, native DLL settings:
+Run Wine with 'WINEDEBUG=+loaddll wine yourprogram.exe' to find out which
 DLLs are loaded as native or builtin.
-Then make sure appropriate native versions are in the
-c:\windows\system32 directory as configured in Winecfg&#8217;s DLL overrides tab. There are four options you can choose from when setting
-dll overrides.</li><p>
+<br>Then make sure appropriate native versions are in the
+c:\windows\system32 directory as configured in winecfg's DLL overrides tab. 
+<br>There are four options you can choose from when setting
+dll overrides.<p>
 
 <pre>
 (native, builtin)
@@ -36,20 +38,19 @@ dll overrides.</li><p>
 (native)
 (builtin)
 </pre>
+</li>
+<li><p> For sound problems, run &#8216;winecfg&#8217; and look at the audio tab.</li>
 
-<li> For sound problems, run &#8216;winecfg&#8217; and look at the audio tab.</li><p>
-
-<li> In case of persisting failure, you may want to read over the
+<li><p> In case of persisting failure, you may want to read over the
 <a href="http://www.winehq.org/site/documentation">Wine Documentation</a>
 and you may also want to read the
-<a href="http://www.winehq.org/site/docs/wine-faq/index">Wine FAQ</a>.</li><p>
+<a href="http://www.winehq.org/site/docs/wine-faq/index">Wine FAQ</a>.</li>
 
-<li> The Wine <a href="http://winehq.org/site/getting_help">'Getting Help'</a> page shows the current methods of getting help with Wine.</li><p>
+<li><p> The Wine <a href="http://www.winehq.org/site/getting_help">'Getting Help'</a> page shows the current methods of getting help with Wine.</li>
 
-<li> If you have more questions, please contact us
-at <a href="mailto:appdb@winehq.org">appdb@winehq.org</a>.</li></p>
+<li><p> If you have more questions, please contact us
+at <a href="mailto:appdb@winehq.org">appdb@winehq.org</a>.</li>
 
 </ol>
 
 <p>&nbsp;</p>
-
