@@ -10,37 +10,38 @@ users by giving a rating based on an &#8216;expert&#8217;s&#8217; experience.
 
 <ul>
 
-<li class="platinum">Platinum</li>
+<li class="platinum">Platinum
 
 <p>
 An application can be rated as Platinum if it installs and runs flawlessly &#8216;out of the box&#8217;.  No changes required in winecfg.
 </p>
-
-<li class="gold">Gold</li>
+</li>
+<li class="gold">Gold
 
 <p>
 Application works flawlessly with some DLL overrides, other settings or third party software.
 </p>
-
-<li class="silver">Silver</li>
+</li>
+<li class="silver">Silver
 
 <p>
 Application works excellently for &#8216;normal&#8217; use; a game works fine in single-player but not 
 in multi-player, Windows Media Player works fine as a plug-in and stand-alone player, but cannot handle DRM etc.
 </p>
+</li>
 
-<li class="Bronze">Bronze</li>
+<li class="Bronze">Bronze
 
 <p>
 Application works, but it has some issues, even for normal use; a game may not redraw properly or display fonts in wrong colours, be much slower than it should etc.
 </p>
-
-<li class="Garbage">Garbage</li>
+</li>
+<li class="Garbage">Garbage
 
 <p>
 An application gets this rating if it cannot be used for the purpose it was designed for.
 There should be at least one bug report in Bugzilla if it gets this rating.
 Application cannot be installed, does not start, or starts but has so many errors that it is nearly impossible to use it.
 </p>
-
+</li>
 </ul>
