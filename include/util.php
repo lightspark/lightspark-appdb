@@ -304,6 +304,7 @@ function outputTopXRowAppsFromRating($sRating, $iNumApps)
            FROM appVotes, appVersion
            WHERE appVersion.rating = '?'
            AND appVersion.versionId = appVotes.versionId
+           AND appVersion.state = 'accepted'
            GROUP BY appVotes.versionId
            ORDER BY c DESC
            LIMIT ?";
