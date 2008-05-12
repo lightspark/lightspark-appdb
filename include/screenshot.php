@@ -708,7 +708,7 @@ class screenshot
         $oAppData = new appData($this->iScreenshotId, null, $this);
         $oAppData->outputEditorGeneric();
 
-        echo '<tr valign=top><td class=color0><b>Submited screenshot</b></td>',"\n";
+        echo '<tr valign=top><td class=color0><b>Submitted screenshot</b></td>',"\n";
         echo '<td>';
         $imgSRC = '<img width="'.$this->get_thumbnail_width().'" height="'.
                 $this->get_thumbnail_height().'" src="'.BASE.
