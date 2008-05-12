@@ -730,14 +730,14 @@ class maintainer
             }
 
             $iSuperMaintainer = $aClean['iVersionId'] ? 0 : 1;
-            echo "<input type=hidden name='iAppId' value={$aClean['iAppId']}>";
-            echo "<input type=hidden name='iVersionId' value='{$aClean['iVersionId']}'>";
-            echo "<input type=hidden name='iSuperMaintainer' value=$iSuperMaintainer>";
+            echo "<input type='hidden' name='iAppId' value='{$aClean['iAppId']}'>";
+            echo "<input type='hidden' name='iVersionId' value='{$aClean['iVersionId']}'>";
+            echo "<input type='hidden' name='iSuperMaintainer' value='$iSuperMaintainer'>";
 
             if($iSuperMaintainer)
-                echo '<tr valign=top><td class=color0><b>Why you want to and should<br>be an application super maintainer</b></td><td><textarea name="sMaintainReason" rows=15 cols=70></textarea></td></tr>',"\n";
+                echo '<tr valign="top"><td class="color0"><b>Why you want to and should<br>be an application super maintainer</b></td><td><textarea name="sMaintainReason" rows="15" cols="70"></textarea></td></tr>',"\n";
             else
-                echo '<tr valign=top><td class=color0><b>Why you want to and should<br>be an application maintainer</b></td><td><textarea name="sMaintainReason" rows=15 cols=70></textarea></td></tr>',"\n";
+                echo '<tr valign="top"><td class="color0"><b>Why you want to and should<br>be an application maintainer</b></td><td><textarea name="sMaintainReason" rows="15" cols="70"></textarea></td></tr>',"\n";
 
             echo '</table>',"\n";
         } else
