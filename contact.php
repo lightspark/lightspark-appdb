@@ -17,11 +17,40 @@ if(!$oUser->isLoggedIn())
     exit;
 }
 
+$oRecipient = null;
+$sRecipientText = '';
+$iRecipientId = null;
+$sRecipientGroup = getInput('sRecipientGroup', $aClean);
+$sRecipients = '';
 
-$oRecipient = new User($aClean['iRecipientId']);
+if($sRecipientGroup)
+{
+    if(!$oUser->hasPriv('admin'))
+        util_show_error_page_and_exit("Only admins can do this");
 
-if(!User::exists($oRecipient->sEmail))
-    util_show_error_page_and_exit("User not found");
+    switch($sRecipientGroup)
+    {
+        case 'maintainers':
+            $sRecipientText = 'all maintainers';
+            $sRecipients = maintainer::getSubmitterEmails();
+            if($sRecipients === FALSE)
+            util_show_error_page_and_exit("Failed to get list of maintainers");
+            break;
+
+        default:
+            util_show_error_page_and_exit("Invalid recipient group");
+    }
+} else
+{
+    $oRecipient = new User($aClean['iRecipientId']);
+    $iRecipientId = $oRecipient->iUserId;
+    $sRecipients = $oRecipient->sEmail;
+
+    if(!User::exists($oRecipient->sEmail))
+        util_show_error_page_and_exit("User not found");
+
+    $sRecipientText = $oRecipient->sRealname;
+}
 
 /* Check for errors */
 if((!$aClean['sMessage'] || !$aClean['sSubject']) && $aClean['sSubmit'])
@@ -34,28 +63,29 @@ if((!$aClean['sMessage'] || !$aClean['sSubject']) && $aClean['sSubmit'])
 /* Display the feedback form if nothing else is specified */
 if(!$aClean['sSubmit'])
 {
-    apidb_header("E-mail $oRecipient->sRealname");
-    echo html_frame_start("Send us your suggestions",400,"",0);
+    apidb_header("E-mail $sRecipientText");
+    echo '&nbsp';
+    echo html_frame_start("Composer",400,"",0);
 
     echo $error;
     echo "<form action=\"".$_SERVER['PHP_SELF']."\" method=\"post\">";
 
     /* User manager */
-    if($_SESSION['current']->hasPriv("admin"))
+    if($_SESSION['current']->hasPriv("admin") && $oRecipient)
     {
         echo "<p><a href=\"".BASE."preferences.php?iUserId=".
                 $oRecipient->iUserId."&amp;sSearch=Administrator&amp;iLimit".
                 "=100&amp;sOrderBy=email\">User manager</a></p>";
     }
 
-    echo "<p>E-mail $oRecipient->sRealname.</p>";
-    
+    echo "<p>E-mail $sRecipientText.</p>";
+
     $oTable = new Table();
     $oTable->SetWidth("100%");
     $oTable->SetBorder(0);
     $oTable->SetCellPadding(2);
     $oTable->SetCellSpacing(2);
-    
+
     $oTableRow = new TableRow();
     $oTableRow->SetClass("color4");
     $oTableRow->AddTextCell("Subject");
@@ -83,7 +113,10 @@ if(!$aClean['sSubmit'])
     echo $oTable->GetString();
 
     echo "<input type=\"hidden\" name=\"iRecipientId\" ".
-    "value=\"$oRecipient->iUserId\">";
+    "value=\"$iRecipientId\">";
+
+    echo "<input type=\"hidden\" name=\"sRecipientGroup\" ".
+    "value=\"$sRecipientGroup\">";
 
     echo "</form>\n";
 
@@ -91,19 +124,26 @@ if(!$aClean['sSubmit'])
 
 } else if ($aClean['sSubject'] && $aClean['sMessage'])
 {
-    $sSubjectRe = $aClean['sSubject'];
-    if(substr($sSubjectRe, 0, 4) != "Re: ")
-        $sSubjectRe = "Re: $sSubjectRe";
+    if($oRecipient)
+    {
+        $sSubjectRe = $aClean['sSubject'];
+        if(substr($sSubjectRe, 0, 4) != "Re: ")
+            $sSubjectRe = "Re: $sSubjectRe";
 
-    $sSubjectRe = urlencode($sSubjectRe);
+        $sSubjectRe = urlencode($sSubjectRe);
 
-    $sMsg = "The following message was sent to you from $oUser->sRealname ";
-    $sMsg .= "through the Wine AppDB contact form.\nTo Reply, visit ";
-    $sMsg .= APPDB_ROOT."contact.php?iRecipientId=$oUser->iUserId&amp;sSubject=";
-    $sMsg .= $sSubjectRe."\n\n";
-    $sMsg .= $aClean['sMessage'];
+        $sMsg = "The following message was sent to you from $oUser->sRealname ";
+        $sMsg .= "through the Wine AppDB contact form.\nTo Reply, visit ";
+        $sMsg .= APPDB_ROOT."contact.php?iRecipientId=$oUser->iUserId&amp;sSubject=";
+        $sMsg .= $sSubjectRe."\n\n";
+        $sMsg .= $aClean['sMessage'];
+    } else
+    {
+        $sMsg = "The following message was sent to you by the AppDB admins:\n\n";
+        $sMsg .= $aClean['sMessage'];
+    }
 
-    mail_appdb($oRecipient->sEmail, $aClean['sSubject'], $sMsg);
+    mail_appdb($sRecipients, $aClean['sSubject'], $sMsg);
 
     util_redirect_and_exit(BASE."index.php");
 }

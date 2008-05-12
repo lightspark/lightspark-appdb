@@ -395,6 +395,25 @@ class maintainer
         return $hResult;
     }
 
+    function getSubmitterEmails()
+    {
+        $sRecipients = '';
+        $sQuery = "SELECT DISTINCT(user_list.email) FROM appMaintainers, user_list WHERE
+                appMaintainers.userId = user_list.userId
+                AND
+                appMaintainers.state = 'accepted'";
+        $hResult = query_parameters($sQuery);
+        if(!$hResult)
+            return FALSE;
+        for($i = 0; $oRow = query_fetch_object($hResult); $i++)
+        {
+            if($i)
+                $sRecipients .= ' ';
+            $sRecipients = $oRow->email;
+        }
+        return $sRecipients;
+    }
+
     function ObjectGetEntries($sState, $iRows = 0, $iStart = 0, $sOrderBy = '', $bAscending = true)
     {
         /* Not implemented */
