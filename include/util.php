@@ -325,8 +325,9 @@ function outputTopXRowAppsFromRating($sRating, $iNumApps)
            FROM appVersion, appData
            WHERE appVersion.rating = '$sRating'
            AND appVersion.versionId = appData.versionId
+           AND appVersion.state = 'accepted'
            AND appData.type = 'screenshot'
-           AND appData.queued = 'false'";
+           AND appData.state = 'accepted'";
 
     /* make sure we exclude any apps we've already output */
     foreach($aVersionId as $key=>$value)
