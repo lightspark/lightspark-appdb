@@ -22,7 +22,7 @@ if (isset($aClean['sSub']))
 {
     // get available maintainers
     $sQuery = "SELECT * FROM appMaintainers, user_list where appMaintainers.userId = user_list.userid";
-    $sQuery.= " AND queued='false' ORDER BY realname;";
+    $sQuery.= " AND state='accepted' ORDER BY realname;";
     $hResult = query_parameters($sQuery);
 
     if(!$hResult || !query_num_rows($hResult))
