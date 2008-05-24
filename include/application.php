@@ -603,7 +603,7 @@ class Application {
         echo '<tr valign=top><td class="color0"><b>Keywords</b></td>',"\n";
         echo '<td><input size="75%" type="text" name="sAppKeywords" value="'.$this->sKeywords.'"></td></tr>',"\n";
 
-        echo '<tr valign=top><td class="color0"><b>Application description</b></td>',"\n";
+        echo '<tr valign=top><td class="color0"><b>Application description (In your own words)</b></td>',"\n";
         echo '<td><p><textarea cols="80" rows="20" id="app_editor" name="shAppDescription">';
 
         echo $this->sDescription.'</textarea></p></td></tr>',"\n";
