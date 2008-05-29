@@ -130,8 +130,12 @@ class ObjectManager
         // initialize the common responses array
         $this->aCommonResponses = array();
         $this->aCommonResponses[] = "Thank you for your submission.";
-        $this->aCommonResponses[] = "Please move crash/debug output to a bug".
-          " in Wine's Bugzilla at http://bugs.winehq.org and resubmit.";
+	$this->aCommonResponses[] = "Please consider filing a bug for the ".
+	"problem you have with this app, if there are not bugs filed already".
+	" at http://bugs.winehq.org.  If you want some advice or guidance on".
+	" this, please visit http://forum.winehq.org";
+        $this->aCommonResponses[] = "Please do not paste debug output in the AppDB,".
+	" it belongs only as an attachment on bugzilla.";
         $this->aCommonResponses[] = "We appreciate your submission but it".
           " needs to be more detailed before it will be most useful to other users of".
           " the Application Database.".
