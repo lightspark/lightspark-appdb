@@ -224,6 +224,20 @@ class Comment {
     }
 
     /**
+     * Displays the body of one comment.
+     */
+    function view_comment_body($iCommentId)
+    {
+        $hResult = Comment::grab_comment($iCommentId);
+
+        if ($hResult)
+        {
+            $oRow = query_fetch_object($hResult);
+            Comment::view_app_comment($oRow);
+        }     
+    }
+
+    /**
      * display a single comment (in $oRow)
      */
     function view_app_comment($oRow)
@@ -274,6 +288,27 @@ class Comment {
         echo "</table>\n";
 
         echo html_frame_end();   
+    }
+
+    /**
+     * grab single comment for commentId
+     */
+    function grab_comment($iCommentId)
+    {
+        $iCommentId = query_escape_string($iCommentId);
+
+        if($iCommentId)
+        {
+          $sQuery = "SELECT from_unixtime(unix_timestamp(appComments.time), \"%W %M %D %Y, %k:%i\") as time, ".
+              "appComments.commentId, appComments.parentId, appComments.versionId, appComments.userId, appComments.subject, appComments.body, appVersion.appId ".
+              "FROM appComments, appVersion WHERE appComments.commentId = '$iCommentId'";
+
+          $hResult = query_appdb($sQuery);
+
+          return $hResult;
+        } 
+
+        return null;
     }
 
     /**
@@ -344,6 +379,25 @@ class Comment {
     }
 
     /**
+     * Generates the link to show the comment.
+     */
+    function comment_link($oRow)
+    {
+        $sLink = "commentview.php?iAppId={$oRow->appId}&iVersionId=".
+            "{$oRow->versionId}&iThreadId={$oRow->parentId}";
+
+        $sOnClick = "showComment('{$oRow->commentId}');";
+
+        /**
+         * The return false line in the onClick is used to handle javascript 
+         * being disabled so we can fail gracefully to the old style.
+         */
+        return "<li><a href=\"$sLink\" onclick=\"$sOnClick return false;\">$oRow->subject</a>". 
+            ' by '.forum_lookup_user($oRow->userId)." on 
+             {$oRow->time}<div id=\"{$oRow->commentId}\"></div></li>\n";
+    }
+
+    /**
      * display threaded comments
      * handle is a db result set
      */
@@ -351,7 +405,7 @@ class Comment {
     {
         if (!$is_main)
             echo "<ul>\n";
-        
+
         while ($oRow = query_fetch_object($hResult))
         {
             if ($is_main)
@@ -359,15 +413,13 @@ class Comment {
                 Comment::view_app_comment($oRow);
             } else
             {
-                echo "<li><a href=\"commentview.php?iAppId={$oRow->appId}&amp;iVersionId=".
-                     "{$oRow->versionId}&amp;iThreadId={$oRow->parentId}\" ".
-                     "name=\"Comment-{$oRow->commentId}\"> ".
-                     $oRow->subject.' </a> by '.forum_lookup_user($oRow->userId).' on '.$oRow->time.' </li>'."\n";
+               $link = Comment::comment_link($oRow);
+               echo "$link";
             }
 
             $hResult2 = Comment::grab_comments($oRow->versionId, $oRow->commentId);
             if ($hResult2 && query_num_rows($hResult2))
-            {
+            { 
                 echo "<blockquote>\n";
                 Comment::do_display_comments_threaded($hResult2, 0);
                 echo "</blockquote>\n";

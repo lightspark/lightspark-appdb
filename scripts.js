@@ -40,3 +40,30 @@ function DoNav(sUrl)
 {
     document.location.href = sUrl;
 }
+
+/**
+ * commentId is the uniquely identifying comment id from the database.
+ * It is also used as the div id for the comment body.
+ */
+function showComment(commentid)
+{
+  elem = $(commentid);
+  if(elem.visible() && !elem.empty())
+  {
+    elem.hide();
+  }
+  else
+  {
+   // Cache the contents of the comment body so we don't need to hit db again.
+    if(elem.empty())
+    {
+      new Ajax.Updater(commentid, 'comment_body.php', { 
+        method: 'get',
+        parameters: {
+          iCommentId: commentid    
+        }
+      });
+    }
+    elem.show();
+  }
+}
