@@ -1015,8 +1015,11 @@ class testData{
 
         // Basic checking of logic.  Runs? can obviously only be 'Not Installable'
         // if the application does not install
-        if (($aValues['sInstalls'] != "No") && ($aValues['sRuns'] == "Not Installable"))
-            $errors .= "<li>You can only set Runs? to &#8216;Not Installable&#8217; if the applicatino&#8217;s installer does not work</li>\n";
+        if (($aValues['sInstalls'] != "No") && ($aValues['sRuns'] == "Not installable"))
+            $errors .= "<li>You can only set Runs? to &#8216;Not installable&#8217; if the application's installer does not work</li>\n";
+	    
+	if (($aValues['sInstalls'] == "No") && ($aValues['sRuns'] != "Not installable"))
+            $errors .= "<li>You can only set Runs? to &#8216;Not installable&#8217;' if the application's installer does not work</li>\n";
 
         return $errors;
 
