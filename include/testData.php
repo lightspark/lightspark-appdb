@@ -944,7 +944,7 @@ class testData{
             if(getInput('bConfirmTestedVersionChange', $aClean) != 'true')
             {
                 echo '<tr><td class="color1">&nbsp;</td><td class="color0">';
-                echo 'You have changed the Wine version of the report.  Are you sure you want to do this?  Please submit a new test report for every Wine version you test; this is useful for tracking Wine&#8217;s progress.<br>';
+                echo 'You have changed the Wine version of the report.  Are you sure you want to do this?  Please submit a new test report for every Wine version you test; this is useful for tracking Wine's progress.<br>';
                 echo '<input type="checkbox" name="bConfirmTestedVersionChange" value="true"> ';
                 echo 'Yes, I want to change the Wine version';
                 echo '</td></tr>';
@@ -988,7 +988,7 @@ class testData{
            getInput('bConfirmTestedVersionChange', $aValues) != 'true')
         {
             $errors .= '<li>Are you sure you want to change the Wine version of the report? Please submit a new '.
-                        'test report for every Wine version you test; this is useful for tracking Wine&#8217;s progress. '.
+                        'test report for every Wine version you test; this is useful for tracking Wine's progress. '.
                         'Tick the box above the submit button if you want to proceed</li>';
         }
 

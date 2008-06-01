@@ -501,7 +501,7 @@ class ObjectManager
         /* Why the user should write an explanation for the deletion */
         if($oObject->objectGetSubmitterId() != $_SESSION['current']->iUserId)
         {
-            $shWhyComment = "Please enter a reason why so that you don&#8217;t hurt the submitter&#8217;s".
+            $shWhyComment = "Please enter a reason why so that you don't hurt the submitter's".
                             " feelings.";
 
             $oUser = new user($oObject->objectGetSubmitterId());
@@ -597,7 +597,7 @@ class ObjectManager
 
         if(!$oOriginalObject->canEdit())
         {
-            addmsg("You don&#8217;t have permission to delete this entry", "red");
+            addmsg("You don't have permission to delete this entry", "red");
             return FALSE;
         }
 

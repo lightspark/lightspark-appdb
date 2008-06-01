@@ -1096,7 +1096,7 @@ class Application {
             echo "   as possible test results in the version template provided below</li>\n";
             echo "</ul></p>";
             echo "<p>Having app descriptions just sponsoring the app\n";
-            echo "(yes, some vendors want to use the appdb for this) or saying &#8216;I haven&#8217;t tried this app with Wine&#8217; ";
+            echo "(yes, some vendors want to use the appdb for this) or saying &#8216;I haven't tried this app with Wine&#8217; ";
             echo "will not help Wine development or Wine users. Application descriptions should be exactly that and only that, \n";
             echo "they should not contain any information about how well the app works, just what the app is. The same applies to the \n";
             echo "version information, it should be only information on what is unique or different about that version of the application, \n";
