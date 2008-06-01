@@ -190,7 +190,18 @@ function query_num_rows($hResult)
 
 function query_escape_string($sString)
 {
-    return mysql_real_escape_string($sString);
+    global $hAppdbLink;
+
+    if(!is_resource($hAppdbLink))
+    {
+        // The last argument makes sure we are really opening a new connection
+        $hAppdbLink = mysql_connect(APPS_DBHOST, APPS_DBUSER, APPS_DBPASS, true);
+        if(!$hAppdbLink)
+          die("Database error, please try again soon.");
+        mysql_select_db(APPS_DB, $hAppdbLink);
+    }
+
+    return mysql_real_escape_string($sString, $hAppdbLink);
 }
 
 function query_field_type($hResult, $iFieldOffset)
