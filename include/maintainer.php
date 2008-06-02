@@ -409,7 +409,7 @@ class maintainer
         {
             if($i)
                 $sRecipients .= ' ';
-            $sRecipients = $oRow->email;
+            $sRecipients .= $oRow->email;
         }
         return $sRecipients;
     }
