@@ -217,7 +217,7 @@ function make_bugzilla_version_list($sVarname, $sSelectedValue)
 // returns a string containing the html for the maintainer rating list
 function make_maintainer_rating_list($varname, $cvalue)
 {
-    $sTxt =  "<select name='$varname'>\n";
+    $sTxt = "<select id='ratingSelect' onchange='showHint(this)' name='$varname'>\n";
     $sTxt .= "<option value=\"\">Choose ...</option>\n";
     $aRating = array("Platinum", "Gold", "Silver", "Bronze", "Garbage");
     $iMax = count($aRating);
@@ -229,7 +229,7 @@ function make_maintainer_rating_list($varname, $cvalue)
         else
             $sTxt .= "<option class=$aRating[$i] value=$aRating[$i]>$aRating[$i]\n";
     }
-    $sTxt .= "</select>\n";
+    $sTxt .= "</select>&nbsp;<span id='hint'></span>&nbsp;\n";
 
     return $sTxt;
 }

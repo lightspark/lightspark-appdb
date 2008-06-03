@@ -67,3 +67,32 @@ function showComment(commentid)
     elem.show();
   }
 }
+/* provide a hint to the user about the selected rating */
+var ratingdesc=[
+		"",
+		" Works flawlessly out of the box - no problems ",
+		" Works flawlessly with DLL overrides, third party software or other settings ",
+		" Works excellently for normal use;works fine in singleplayer but not multi ",
+		" Works but has issues for normal use ",
+		" Does not run or cannot be installed with Wine "
+		];
+var ratingstyle =[
+		  "",
+		  "platinum",
+		  "gold",
+		  "silver",
+		  "bronze",
+		  "garbage"
+		  ];
+function showHint(o){
+    if(o)
+	{
+	    $('hint').innerHTML=ratingdesc[o.selectedIndex];
+	    $w($('hint').className).map( function(x){ $('hint').removeClassName(x); }) 
+	    $('hint').addClassName(ratingstyle[o.selectedIndex]);
+	}
+}
+/* executed when document is ready */
+document.observe("dom:loaded", function() {
+	showHint($('ratingSelect'));
+    });
