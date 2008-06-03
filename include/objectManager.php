@@ -302,7 +302,7 @@ class ObjectManager
         /* did we get any entries? */
         if(!$hResult || query_num_rows($hResult) == 0)
         {
-            if($this->oFilters->getFilterCount())
+            if($this->oFilters && $this->oFilters->getFilterCount())
             {
                 echo '<center>No matches found</center>';
             } else
