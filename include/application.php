@@ -719,6 +719,8 @@ class Application {
     {
         switch($sAction)
         {
+            case 'delete':
+                return 'Delete '.$this->sName;
             case "view":
                 return $this->sName;
 
@@ -821,7 +823,7 @@ class Application {
             }
             if($_SESSION['current']->hasPriv("admin"))
             {
-                $url = BASE."objectManager.php?sClass=application&amp;bIsQueue=false&amp;sAction=delete&amp;sTitle=Delete%20".$this->sName."&amp;iId=".$this->iAppId;
+                $url = BASE."objectManager.php?sClass=application&amp;bIsQueue=false&amp;sAction=delete&amp;iId=".$this->iAppId;
                 echo "        <form method=\"post\" name=\"sEdit\" action=\"javascript:self.location = '".$url."'\"><input type=\"submit\" value=\"Delete App\" class=\"button\"></form>";
                 echo '        <form method="post" name="sEdit" action="admin/editBundle.php"><input type="hidden" name="iBundleId" value="'.$this->iAppId.'"><input type="submit" value="Edit Bundle" class="button"></form>';
             }

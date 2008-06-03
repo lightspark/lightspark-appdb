@@ -745,6 +745,8 @@ class version {
     {
         switch($sAction)
         {
+            case 'delete':
+                return 'Delete '.version::fullName($this->iVersionId);
             case "view":
                 return version::fullName($this->iVersionId);
 
@@ -971,7 +973,7 @@ class version {
             echo "\t".'<input type="hidden" name="iVersionId" value="'.$this->iVersionId.'">'."\n";
             echo "\t".'<input type=submit value="Edit Version" class="button">'."\n";
             echo '</form>'."\n";
-            $url = BASE."objectManager.php?sClass=version&amp;sAction=delete&amp;bQueued=false&amp;sTitle=Delete%20".version::fullName($this->iVersionId)."&amp;iId=".$this->iVersionId;
+            $url = BASE."objectManager.php?sClass=version&amp;sAction=delete&amp;bQueued=false&amp;iId=".$this->iVersionId;
             echo "<form method=\"post\" name=\"sDelete\" action=\"javascript:self.location = '".$url."'\">\n";
             echo "\t".'<input type=submit value="Delete Version" class="button">'."\n";
             echo '</form>'."\n";
