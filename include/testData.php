@@ -930,7 +930,7 @@ class testData{
         echo '<a href="'.BASE.'/help/?sTopic=maintainer_ratings" target="_blank">Rating definitions</a></td></tr>',"\n";
         // extra comments
         echo '<tr valign=top><td class="color1"><b>Extra comments</b></td>',"\n";
-        echo '<td class="color0"><textarea name="sComments" rows=10 cols=65>';
+        echo '<td class="color0"><textarea name="sComments" id="extra_comments" rows=10 cols=65>';
         echo $this->sComments.'</textarea></td></tr>',"\n";
 
         echo '<input type="hidden" name="iVersionId" value="'.$this->iVersionId.'" >';

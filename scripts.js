@@ -92,7 +92,29 @@ function showHint(o){
 	    $('hint').addClassName(ratingstyle[o.selectedIndex]);
 	}
 }
+/* too many people still call Wine "WINE" */
+function bind_tolowerWINE()
+{
+    [
+     $('app_editor'),
+     $('version_editor'),
+     $('Test1'), 
+     $('Test2'), 
+     $('Test3'),
+     $('extra_comments')].map( function(x) 
+			       { 
+				 if(x) 
+				   { 
+				    x.observe('change', tolowerWINE);
+				   }
+			       });
+}
+function tolowerWINE(o)
+      {
+	o.element().value = o.element().value.replace(/WINE([^A-Z]+)|(WINE)$/g,"Wine$1");
+      }
 /* executed when document is ready */
 document.observe("dom:loaded", function() {
 	showHint($('ratingSelect'));
+	bind_tolowerWINE();
     });
