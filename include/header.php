@@ -12,7 +12,8 @@
     <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
     <link rel="stylesheet" href="<?php echo BASE; ?>apidb.css" type="text/css">
     <link rel="stylesheet" href="<?php echo BASE; ?>application.css" type="text/css">
-    <script src="<?php echo BASE; ?>prototype-1.6.0.2.js" type="text/javascript"></script>
+    <script type="text/javascript" 
+    src="http://ajax.googleapis.com/ajax/libs/prototype/1.6.0.2/prototype.js"></script>
     <script src="<?php echo BASE; ?>scripts.js" type="text/javascript"></script>
 </head>
 
