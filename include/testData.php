@@ -919,7 +919,7 @@ class testData{
         // Installs
         echo '<tr><td class=color0><b>Installs?</b></td><td class=color0>',"\n";
         testData::make_Installs_list("sInstalls", $this->sInstalls);
-        echo '</td></tr>',"\n";
+        echo '&nbsp; Installing is an important part of testing under Wine. Select N/A if there is no installer.</td></tr>',"\n";
         // Runs
         echo '<tr><td class=color1><b>Runs?</b></td><td class=color0>',"\n";
         testData::make_Runs_list("sRuns", $this->sRuns);
