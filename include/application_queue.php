@@ -400,9 +400,9 @@ class application_queue
         return application::objectGetSortableFields();
     }
 
-    function objectGetHeader()
+    function objectGetHeader($sState)
     {
-        return $this->oApp->objectGetHeader();
+        return $this->oApp->objectGetHeader($sState);
     }
 
     function objectGetTableRow()

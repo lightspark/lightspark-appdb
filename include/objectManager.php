@@ -1315,7 +1315,7 @@ class ObjectManager
     private function outputHeader($sClass)
     {
         $oObject = new $this->sClass();
-        $oTableRow = $oObject->objectGetHeader();
+        $oTableRow = $oObject->objectGetHeader($this->sState);
 
         /* Add an action column if the user can edit this class, or if it is a queue.
            Even though a user annot process items, he can edit his queued submissions */

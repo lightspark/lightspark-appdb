@@ -1030,11 +1030,14 @@ class Application {
         return array('submitTime', 'appName', 'appId', 'userName', 'vendorName');
     }
 
-    public static function objectGetHeader()
+    public static function objectGetHeader($sState)
     {
         $oTableRow = new TableRowSortable();
         $oTableRow->AddSortableTextCell('Submission Date', 'submitTime');
-        $oTableRow->AddTextCell('Submitter');
+
+        /* Only show submitter when processing queued entries */
+        if($sState != 'accepted')
+            $oTableRow->AddTextCell('Submitter');
         $oTableRow->AddSortableTextCell('Vendor', 'vendorName');
         $oTableRow->AddSortableTextCell('Application', 'appName');
         return $oTableRow;
@@ -1049,7 +1052,10 @@ class Application {
 
         $oTableRow = new TableRow();
         $oTableRow->AddTextCell(print_date(mysqldatetime_to_unixtimestamp($this->sSubmitTime)));
-        $oTableRow->AddTextCell($oUser->objectMakeLink());
+
+        /* Only show submitter when processing queued entries */
+        if($this->sState != 'accepted')
+            $oTableRow->AddTextCell($oUser->objectMakeLink());
         $oTableRow->AddTextCell($sVendor);
         $oTableRow->AddTextCell(($this->sState == 'accepted') ? $this->objectMakeLink() : $this->sName);
 
