@@ -21,11 +21,9 @@ function global_sidebar_menu()
     $g = new htmlmenu("AppDB");
     $g->add('Home', BASE.'index.php');
     $g->add("Screenshots", BASE."objectManager.php?sClass=screenshot&amp;sTitle=View+Screenshots");
-    $g->add("Browse Apps", BASE."appbrowse.php");
-    $g->add("Browse Newest Apps", BASE."objectManager.php?sClass=application&amp;".
-            'sTitle=Newest%20apps&amp;sOrderBy=appId&amp;bAscending=false');
+    $g->add("Browse Apps", BASE."objectManager.php?sClass=application&amp;".
+            'sTitle=Browse%20Applications&amp;sOrderBy=appId&amp;bAscending=false');
     $g->add("Downloadable Apps", BASE."browse_downloadable.php");
-    $g->add("Browse Apps by Rating", BASE."browse_by_rating.php");
     $g->add("Top 25", BASE."votestats.php");
     $g->add("Submit Application", BASE."objectManager.php?sClass=application_queue&amp;".
             "sTitle=Submit+Application&amp;sAction=add");
