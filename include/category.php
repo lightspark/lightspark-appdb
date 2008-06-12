@@ -135,6 +135,38 @@ class Category {
                 return array();
     }
 
+    /* Get a category's subcategory objects.  Names are indented according
+       to subcategory level */
+    function getSubCatList($iLevel)
+    {
+        $aOut = array();
+        $iId = $this->iCatId ? $this->iCatId : 0;
+
+        $sIndent = '';
+        for($i = 0; $i < $iLevel; $i++)
+            $sIndent .= '&nbsp; &nbsp;';
+
+        $hResult = query_parameters("SELECT * FROM appCategory WHERE catParent = '?'
+                                     ORDER BY catName", $iId);
+
+        while($oRow = mysql_fetch_object($hResult))
+        {
+            $oCat = new category($oRow->catId);
+            $oCat->sName = $sIndent.$oCat->sName;
+            $aOut[] = $oCat;
+            $aOut = array_merge($aOut, $oCat->getSubCatList($iLevel + 1));
+        }
+        return $aOut;
+    }
+
+    /* Get all category objects, ordered and with category names indented
+       according to subcategory level */
+    static function getOrderedList()
+    {
+        $oCat = new category();
+        return $oCat->getSubCatList(0);
+    }
+
     function objectGetMail($sAction, $bMailSubmitter, $bParentAction)
     {
         /* We don't send notification mails */

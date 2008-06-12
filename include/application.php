@@ -1010,8 +1010,18 @@ class Application {
     public static function objectGetFilterInfo()
     {
         $oFilter = new FilterInterface();
+        $aCategories = category::getOrderedList();
+        $aCatNames = array();
+        $aCatIds = array();
+
+        foreach($aCategories as $oCategory)
+        {
+            $aCatNames[] = $oCategory->sName;
+            $aCatIds[] = $oCategory->objectGetId();
+        }
 
         $oFilter->AddFilterInfo('appVersion.rating', 'Rating', array(FILTER_EQUALS, FILTER_LESS_THAN, FILTER_GREATER_THAN), FILTER_VALUES_ENUM, array('Platinum', 'Gold', 'Silver', 'Bronze', 'Garbage'));
+        $oFilter->AddFilterInfo('appFamily.catId', 'Category', array(FILTER_EQUALS), FILTER_VALUES_ENUM, $aCatIds, $aCatNames);
         return $oFilter;
     }
 
@@ -1138,7 +1148,7 @@ class Application {
         {
             $sExtraTables = ',appVersion';
             $sWhereFilter = " AND appVersion.appId = appFamily.appId AND $sWhereFilter";
-        }   
+        }
 
         if($sState != 'accepted' && !application::canEdit())
         {
