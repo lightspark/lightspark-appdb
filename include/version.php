@@ -1368,6 +1368,13 @@ class version {
         return $oTable->GetString();
     }
 
+    /* Returns an array containg the different software licences */
+    public function getLicenses()
+    {
+        return array(LICENSE_RETAIL, LICENSE_OPENSOURCE, LICENSE_FREETOUSE,
+                     LICENSE_FREETOSHARE, LICENSE_DEMO, LICENSE_SHAREWARE);
+    }
+
     // returns a string containing the html for a selection list
     public function makeLicenseList($sLicense = NULL)
     {
@@ -1376,8 +1383,7 @@ class version {
 
         $sReturn = "<select name=\"sLicense\">\n";
         $sReturn .= "<option value=\"\">Choose . . .</option>\n";
-        $aLicense = array(LICENSE_RETAIL, LICENSE_OPENSOURCE, LICENSE_FREETOUSE,
-                          LICENSE_FREETOSHARE, LICENSE_DEMO, LICENSE_SHAREWARE);
+        $aLicense = version::getLicences();
         $iMax = count($aLicense);
 
         for($i = 0; $i < $iMax; $i++)

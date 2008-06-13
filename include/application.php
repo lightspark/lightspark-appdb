@@ -1020,8 +1020,11 @@ class Application {
             $aCatIds[] = $oCategory->objectGetId();
         }
 
+        $aLicenses = version::getLicenses();
+
         $oFilter->AddFilterInfo('appVersion.rating', 'Rating', array(FILTER_EQUALS, FILTER_LESS_THAN, FILTER_GREATER_THAN), FILTER_VALUES_ENUM, array('Platinum', 'Gold', 'Silver', 'Bronze', 'Garbage'));
         $oFilter->AddFilterInfo('appFamily.catId', 'Category', array(FILTER_EQUALS), FILTER_VALUES_ENUM, $aCatIds, $aCatNames);
+        $oFilter->AddFilterInfo('appVersion.license', 'License', array(FILTER_EQUALS), FILTER_VALUES_ENUM, $aLicenses);
         return $oFilter;
     }
 
@@ -1044,7 +1047,7 @@ class Application {
             $oTableRow->AddSortableTextCell('Submission Date', 'submitTime');
 
             /* Only show submitter when processing queued entries */
-                $oTableRow->AddTextCell('Submitter');
+            $oTableRow->AddTextCell('Submitter');
             $oTableRow->AddSortableTextCell('Vendor', 'vendorName');
             $oTableRow->AddSortableTextCell('Application', 'appName');
         }
