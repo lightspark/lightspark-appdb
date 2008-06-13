@@ -165,32 +165,45 @@ class FilterInterface
         $oColumn = $this->aFilterInfo[$oFilter->getColumn()];
 
         $sId = ($iId == -1) ? '' : $iId;
-        $shEditor = $oColumn->getDisplayName();
+        $shEditor = $oColumn->getDisplayName().' ';
 
-        $shEditor .= " <select name='i{$sColumn}Op$sId'>";
+        $aTypes = $oColumn->getTypes();
 
-        if($iId == -1)
+        /* It doesn't make sense to show a dropdown menu of choices if there is only one
+           If the filter is already active then there are more than one; one to remove */
+        if($iId == -1 && sizeof($aTypes) == 1)
         {
-            $sText = 'select';
-            $sSel = " selected='selected'";
+            echo "<input type=\"hidden\" name=\"i{$sColumn}Op$sId\" value=\"{$aTypes[0]}\" />";
+
+            /* Printing 'equal to' sounds weird if it is the only choice */
+            if($aTypes[0] != FILTER_EQUALS)
+                $shEditor .= $oColumn->getOpName($aTypes[0]);
         } else
         {
-            $sSel = '';
-            $sText = 'remove';
-        }
+            $shEditor .= "<select name='i{$sColumn}Op$sId'>";
 
-        $shEditor .= "<option value='0'$sSel>-- $sText --</option>";
-
-        foreach($oColumn->getTypes() as $iType)
-        {
-            if($oFilter->getOperatorId() == $iType)
+            if($iId == -1)
+            {
+                $sText = 'select';
                 $sSel = " selected='selected'";
-            else
+            } else
+            {
                 $sSel = '';
-            $shEditor .= "<option value='$iType'$sSel>".$oColumn->getOpName($iType).'</option><br />';
-        }
+                $sText = 'remove';
+            }
 
-        $shEditor .= '</select> ';
+            $shEditor .= "<option value='0'$sSel>-- $sText --</option>";
+
+            foreach($aTypes as $iType)
+            {
+                if($oFilter->getOperatorId() == $iType)
+                    $sSel = " selected='selected'";
+                else
+                    $sSel = '';
+                $shEditor .= "<option value='$iType'$sSel>".$oColumn->getOpName($iType).'</option><br />';
+            }
+            $shEditor .= '</select> ';
+        }
 
         switch($oColumn->getValueType())
         {
@@ -344,7 +357,7 @@ class FilterInterface
             $sData = $aClean["s{$sColumn}Data"];
             $iOp = $aClean["i{$sColumn}Op"];
 
-            if($iOp)
+            if($iOp && $sData)
             {
                 $oFilter = new Filter($oOption->getColumn(), $iOp, $sData);
                 $aReturn[] = $oFilter;
