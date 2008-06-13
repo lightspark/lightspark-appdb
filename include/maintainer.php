@@ -7,7 +7,7 @@ require_once(BASE."include/version.php");
 require_once(BASE."include/user.php");
 
 //FIXME: when we have php5 move this into the maintainer class as a constant var
-define('iNotificationIntervalDays', 7); // days between each notification level
+define('iNotificationIntervalDays', 2); // days between each notification level
 
 // class that can retrieve the queued entries for a given maintainer instance
 class queuedEntries
@@ -1294,15 +1294,17 @@ class maintainer
         $oNotificationUpdate->sMsg.= " If the queued entries are not processsed within";
         $oNotificationUpdate->sMsg.= " the next ".iNotificationIntervalDays. " days we will";
         $oNotificationUpdate->sMsg.= " remove your maintainership for this application/version";
-        $oNotificationUpdate->sMsg.= " so a more active person can fill the spot.";
+        $oNotificationUpdate->sMsg.= " so a more active person can fill the spot.".
+				     " It's important to process queued items in a timely manner".
+				     " to provide a good user experience.";
         break;
       case 3: // remove their maintainership and notify the maintainer why we are doing so
         $oNotificationUpdate->sMsg.= "\nThis your third notification of queued entries.";
         $oNotificationUpdate->sMsg.= " Because your queued entries have not been processed";
         $oNotificationUpdate->sMsg.= " after two notifications we are removing your maintainer";
         $oNotificationUpdate->sMsg.= " role for this application/version. Removing inactive";
-        $oNotificationUpdate->sMsg.= " maintainers lets us free up slots for other potential";
-        $oNotificationUpdate->sMsg.= " maintainers.\n";
+        $oNotificationUpdate->sMsg.= " maintainers makes our job easier, since we want to know"
+				     ." not to wait for a maintainer to oversee submissions.";
         $oNotificationUpdate->sMsg.= " If you are still interested in being a maintainer please";
         $oNotificationUpdate->sMsg.= " submit a maintainer request.";
         $this->delete(); // delete ourselves from the database
