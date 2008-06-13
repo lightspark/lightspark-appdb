@@ -1033,13 +1033,21 @@ class Application {
     public static function objectGetHeader($sState)
     {
         $oTableRow = new TableRowSortable();
-        $oTableRow->AddSortableTextCell('Submission Date', 'submitTime');
 
-        /* Only show submitter when processing queued entries */
-        if($sState != 'accepted')
-            $oTableRow->AddTextCell('Submitter');
-        $oTableRow->AddSortableTextCell('Vendor', 'vendorName');
-        $oTableRow->AddSortableTextCell('Application', 'appName');
+        if($sState == 'accepted')
+        {
+            $oTableRow->AddSortableTextCell('Application', 'appName');
+            $oTableRow->AddSortableTextCelL('Entry#', 'appId');
+            $oTableRow->AddTextCell('Description');
+        } else
+        {
+            $oTableRow->AddSortableTextCell('Submission Date', 'submitTime');
+
+            /* Only show submitter when processing queued entries */
+                $oTableRow->AddTextCell('Submitter');
+            $oTableRow->AddSortableTextCell('Vendor', 'vendorName');
+            $oTableRow->AddSortableTextCell('Application', 'appName');
+        }
         return $oTableRow;
     }
 
@@ -1051,13 +1059,19 @@ class Application {
         $sVendor = $oVendor->objectMakeLink();
 
         $oTableRow = new TableRow();
-        $oTableRow->AddTextCell(print_date(mysqldatetime_to_unixtimestamp($this->sSubmitTime)));
 
-        /* Only show submitter when processing queued entries */
-        if($this->sState != 'accepted')
+        if($this->sState == 'accepted')
+        {
+            $oTableRow->AddTextCell($this->objectMakeLink());
+            $oTableRow->AddTextCell($this->iAppId);
+            $oTableRow->AddTextCell(util_trim_description($this->sDescription));
+        } else
+        {
+            $oTableRow->AddTextCell(print_date(mysqldatetime_to_unixtimestamp($this->sSubmitTime)));
             $oTableRow->AddTextCell($oUser->objectMakeLink());
-        $oTableRow->AddTextCell($sVendor);
-        $oTableRow->AddTextCell(($this->sState == 'accepted') ? $this->objectMakeLink() : $this->sName);
+            $oTableRow->AddTextCell($sVendor);
+            $oTableRow->AddTextCell( $this->sName);
+        }
 
         $oOMTableRow = new OMTableRow($oTableRow);
         return $oOMTableRow;
