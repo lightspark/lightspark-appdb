@@ -14,7 +14,7 @@ define('FILTER_GREATER_THAN', 3);
 define('FILTER_LESS_THAN', 4);
 define('FILTER_NOT_EQUALS', 5);
 define('FILTER_NOT_LIKE', 6);
-define('FILTER_ENUM', 7);
+define('FILTER_OPTION_BOOL', 7);
 
 /* A filter as part of an SQL query, such as something = 'somevalue' */
 class Filter
@@ -72,8 +72,13 @@ class Filter
         }
     }
 
-    public function getFilter()
+    /* Gets an SQL expression representing the current filter, for use in a WHERE clause */
+    public function getExpression()
     {
+        /* We let callers handle options themselves, so don't include them in the WHERE clause */
+        if($this->iType == FILTER_OPTION_BOOL)
+            return '';
+
         $sOp = $this->getOperator();
 
         return "{$this->sColumn} $sOp '{$this->sData}'";
@@ -150,18 +155,18 @@ class FilterSet
 
     public function getWhereClause()
     {
-        $sFilter = '';
+        $aFilters = array();
         for($i = 0; $i < sizeof($this->aFilters); $i++)
         {
             $oFilter = $this->aFilters[$i];
 
-            $sFilter .= $oFilter->getFilter();
+            $sThisFilter = $oFilter->getExpression();
 
-            if($i < sizeof($this->aFilters) - 1)
-                $sFilter .= ' AND ';
+            if($sThisFilter)
+                $aFilters[] = $sThisFilter;
         }
 
-        return $sFilter;
+        return implode($aFilters, ' AND ');
     }
 
     function getQuery($sTable, $iLimit = 0)

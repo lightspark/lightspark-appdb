@@ -949,10 +949,20 @@ class Application {
 
         $sExtraTables = '';
         $sWhereFilter = $oFilters ? $oFilters->getWhereClause() : '';
-        if($sWhereFilter)
+        $aOptions = $oFilters ? $oFilters->getOptions() : array('onlyDownloadable' => 'false');
+
+        if($sWhereFilter || $aOptions['onlyDownloadable'] == 'true')
         {
             $sExtraTables = ',appVersion';
-            $sWhereFilter = " AND appVersion.appId = appFamily.appId AND $sWhereFilter";
+            if($sWhereFilter)
+                $sWhereFilter = " AND $sWhereFilter";
+            $sWhereFilter = " AND appVersion.state = 'accepted' AND appVersion.appId = appFamily.appId $sWhereFilter";
+        }
+
+        if($aOptions['onlyDownloadable'] == 'true')
+        {
+            $sExtraTables .= ',appData';
+            $sWhereFilter .= " AND appData.type = 'downloadurl' AND appData.versionId = appVersion.versionId AND appData.state = 'accepted'";
         }
         /* Should we add a limit clause to the query? */
         if($iRows || $iStart)
@@ -1025,6 +1035,7 @@ class Application {
         $oFilter->AddFilterInfo('appVersion.rating', 'Rating', array(FILTER_EQUALS, FILTER_LESS_THAN, FILTER_GREATER_THAN), FILTER_VALUES_ENUM, array('Platinum', 'Gold', 'Silver', 'Bronze', 'Garbage'));
         $oFilter->AddFilterInfo('appFamily.catId', 'Category', array(FILTER_EQUALS), FILTER_VALUES_ENUM, $aCatIds, $aCatNames);
         $oFilter->AddFilterInfo('appVersion.license', 'License', array(FILTER_EQUALS), FILTER_VALUES_ENUM, $aLicenses);
+        $oFilter->AddFilterInfo('onlyDownloadable', 'Only show downloadable apps', array(FILTER_OPTION_BOOL), FILTER_VALUES_OPTION_BOOL, array('false','true'));
         return $oFilter;
     }
 
@@ -1167,10 +1178,20 @@ class Application {
     {
         $sExtraTables = '';
         $sWhereFilter = $oFilters ? $oFilters->getWhereClause() : '';
-        if($sWhereFilter)
+        $aOptions = $oFilters ? $oFilters->getOptions() : array('onlyDownloadable' => 'false');
+
+        if($sWhereFilter || $aOptions['onlyDownloadable'] == 'true')
         {
             $sExtraTables = ',appVersion';
-            $sWhereFilter = " AND appVersion.appId = appFamily.appId AND $sWhereFilter";
+            if($sWhereFilter)
+                $sWhereFilter = " AND $sWhereFilter";
+            $sWhereFilter = " AND appVersion.appId = appFamily.appId $sWhereFilter";
+        }
+
+        if($aOptions['onlyDownloadable'] == 'true')
+        {
+            $sExtraTables .= ',appData';
+            $sWhereFilter .= " AND appData.type = 'downloadurl' AND appData.versionId = appVersion.versionId";
         }
 
         if($sState != 'accepted' && !application::canEdit())

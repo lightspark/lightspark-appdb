@@ -1220,7 +1220,7 @@ class ObjectManager
     }
 
     /* Make an objectManager URL based on the object and optional parameters */
-    public function makeUrl($sAction = false, $iId = false, $sTitle = false)
+    public function makeUrl($sAction = false, $iId = false, $sTitle = false, $bOmitFilters = false)
     {
         $sUrl = APPDB_ROOT."objectManager.php?";
 
@@ -1253,7 +1253,10 @@ class ObjectManager
             $sUrl .= "&amp;iPage=".$this->oMultiPage->iPage;
         }
 
-        if($this->oFilters)
+        /* Some times it is necessary to omit the filter data, for instance when using
+           makeUrl() to form the action element of a form tag.  This is because having
+           filter data present may prevent clearing a filter */
+        if($this->oFilters && !$bOmitFilters)
             $sUrl .= $this->oFilters->getUrlData();
 
         if($this->oSortInfo && $this->oSortInfo->sCurrentSort)
@@ -1338,9 +1341,9 @@ class ObjectManager
         /* Show filter info */
         if($this->oFilters)
         {
-            echo "<form method=\"post\" action=\"".$this->makeUrl()."\" >";
+            echo "<form method=\"post\" action=\"".$this->makeUrl(false, false, false, true)."\" >";
 
-             echo $this->oFilters->getEditor();
+            echo $this->oFilters->getEditor();
 
             echo "<br><input type='submit' value='Submit' name='sSubmit' >";
             echo "</form>";
