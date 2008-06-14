@@ -906,14 +906,7 @@ class testData{
         echo '<tr><td class=color1><b>Tested release</b></td><td class=color0>',"\n";
         echo make_bugzilla_version_list("sTestedRelease", $this->sTestedRelease);
         // Give the user some information about our available versions
-        echo "<ul>\n";
-        echo "<li>If you are testing with a newer release than listed please";
-        echo " check back tomorrow, sometimes it takes us a day to update the list.</li>\n";
-        echo "<li>If you are testing with an older release than listed please";
-        echo " upgrade and test with a newer release.</li>\n";
-        echo "<li>If you haven't tested with one of the";
-        echo " listed versions please retest with a recent release and resubmit.</li>\n";
-        echo "</ul>\n";
+        echo "<span>Version not listed?  Your Wine is too old, <a href=\"http://winehq.org/download\">upgrade!</a></span>";
         echo '</td></tr>',"\n";
 
         // Installs
