@@ -9,12 +9,15 @@
 */
 
 define('FILTER_LIKE', 1);
-define('FILTER_EQUALS', 2);
-define('FILTER_GREATER_THAN', 3);
-define('FILTER_LESS_THAN', 4);
-define('FILTER_NOT_EQUALS', 5);
-define('FILTER_NOT_LIKE', 6);
-define('FILTER_OPTION_BOOL', 7);
+define('FILTER_CONTAINS', 2); // Same as LIKE, but value is wrapped by wildcards
+define('FILTER_STARTS_WITH', 3); // Same as LIKE, but with a prepended wildcard
+define('FILTER_ENDS_WITH', 4); // Same as LIKE, but with an appended wildcard
+define('FILTER_EQUALS', 5);
+define('FILTER_GREATER_THAN', 6);
+define('FILTER_LESS_THAN', 7);
+define('FILTER_NOT_EQUALS', 8);
+define('FILTER_NOT_LIKE', 9);
+define('FILTER_OPTION_BOOL', 10);
 
 /* A filter as part of an SQL query, such as something = 'somevalue' */
 class Filter
@@ -55,6 +58,9 @@ class Filter
         switch($this->iType)
         {
             case FILTER_LIKE:
+            case FILTER_CONTAINS:
+            case FILTER_STARTS_WITH:
+            case FILTER_ENDS_WITH:
                 return 'LIKE';
             case FILTER_EQUALS:
                 return '=';
@@ -79,9 +85,25 @@ class Filter
         if($this->iType == FILTER_OPTION_BOOL)
             return '';
 
+        $sData = $this->sData;
+
+        /* Add wildcards if required */
+        switch($this->iType)
+        {
+            case FILTER_CONTAINS:
+                $sData = "%$sData%";
+                break;
+            case FILTER_STARTS_WITH:
+                $sData = "$sData%";
+                break;
+            case FILTER_ENDS_WITH:
+                $sData = "%$sData";
+                break;
+        }
+
         $sOp = $this->getOperator();
 
-        return "{$this->sColumn} $sOp '{$this->sData}'";
+        return "{$this->sColumn} $sOp '$sData'";
     }
 }
 

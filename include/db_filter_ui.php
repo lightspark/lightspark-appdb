@@ -10,10 +10,10 @@
 
 require_once('db_filter.php');
 
-define(FILTER_VALUES_NORMAL, 1);
-define(FILTER_VALUES_ENUM, 2);
-define(FILTER_VALUES_BOOL, 3);
-define(FILTER_VALUES_OPTION, 4);
+define('FILTER_VALUES_NORMAL', 1);
+define('FILTER_VALUES_ENUM', 2);
+define('FILTER_VALUES_BOOL', 3);
+define('FILTER_VALUES_OPTION', 4);
 
 /* Info describing an available filter: what column it applies to,
     and what comparison options are available */
@@ -78,6 +78,12 @@ class FilterInfo
                 return 'equal to';
             case FILTER_LIKE:
                 return 'like';
+            case FILTER_CONTAINS:
+                return 'contains';
+            case FILTER_STARTS_WITH:
+                return 'starts with';
+            case FILTER_ENDS_WITH:
+                return 'ends with';
             case FILTER_NOT_LIKE:
                 return 'not like';
             case FILTER_NOT_EQUALS:
@@ -216,7 +222,7 @@ class FilterInterface
 
             if($iId == -1)
             {
-                $sText = 'select';
+                $sText = 'criteria';
                 $sSel = " selected='selected'";
             } else
             {
