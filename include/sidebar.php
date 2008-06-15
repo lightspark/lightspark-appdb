@@ -23,13 +23,13 @@ function global_sidebar_menu()
     $g->add("Screenshots", BASE."objectManager.php?sClass=screenshot&amp;sTitle=View+Screenshots");
     $g->add("Browse Apps", BASE."objectManager.php?sClass=application&amp;".
             'sTitle=Browse%20Applications&amp;sOrderBy=appName&amp;bAscending=true');
+    $g->add('Browse by Developer', BASE.'objectManager.php?sClass=vendor&amp;sTitle=Browse%20by%20Developer');
     $g->add("Top 25", BASE."votestats.php");
     $g->add("Submit Application", BASE."objectManager.php?sClass=application_queue&amp;".
             "sTitle=Submit+Application&amp;sAction=add");
     $g->add("Help &amp; Documentation", BASE."help/");
     $g->add("Statistics", BASE."appdbStats.php");
     $g->add('Distributions ('.distribution::objectGetEntriesCount('accepted').')', BASE.'objectManager.php?sClass=distribution&amp;sTitle=View%20Distributions');
-    $g->add('Vendors ('.vendor::objectGetEntriesCount('accepted').')', BASE.'objectManager.php?sClass=vendor&amp;sTitle=View%20Vendors');
     $g->add("Email your suggestions for improving the AppDB", "mailto:appdb@winehq.org");
     $g->done();
 
