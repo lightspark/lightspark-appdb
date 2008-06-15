@@ -1032,7 +1032,7 @@ class Application {
 
         $aLicenses = version::getLicenses();
 
-        $oFilter->AddFilterInfo('appVersion.rating', 'Rating', array(FILTER_EQUALS, FILTER_LESS_THAN, FILTER_GREATER_THAN), FILTER_VALUES_ENUM, array('Platinum', 'Gold', 'Silver', 'Bronze', 'Garbage'));
+        $oFilter->AddFilterInfo('appVersion.rating', 'Rating', array(FILTER_EQUALS), FILTER_VALUES_ENUM, array('Platinum', 'Gold', 'Silver', 'Bronze', 'Garbage'));
         $oFilter->AddFilterInfo('appFamily.catId', 'Category', array(FILTER_EQUALS), FILTER_VALUES_ENUM, $aCatIds, $aCatNames);
         $oFilter->AddFilterInfo('appVersion.license', 'License', array(FILTER_EQUALS), FILTER_VALUES_ENUM, $aLicenses);
         $oFilter->AddFilterInfo('onlyDownloadable', 'Only show downloadable apps', array(FILTER_OPTION_BOOL), FILTER_VALUES_OPTION_BOOL, array('false','true'));
