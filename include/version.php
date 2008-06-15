@@ -1383,7 +1383,7 @@ class version {
 
         $sReturn = "<select name=\"sLicense\">\n";
         $sReturn .= "<option value=\"\">Choose . . .</option>\n";
-        $aLicense = version::getLicences();
+        $aLicense = version::getLicenses();
         $iMax = count($aLicense);
 
         for($i = 0; $i < $iMax; $i++)
