@@ -1389,7 +1389,7 @@ class ObjectManager
             /* Fill in form data for the objectManager URL */
             $sControls .= $this->makeUrlFormData();
             $sControls .= "<p><b>&nbsp;Items per page</b>";
-            $sControls .= "<select name=\"iItemsPerPage\">";
+            $sControls .= " <select name=\"iItemsPerPage\">";
 
             foreach($aItemsPerPage as $iNum)
             {
