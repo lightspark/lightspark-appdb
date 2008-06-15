@@ -541,11 +541,10 @@ class distribution {
 
         $oTableRow->AddSortableTextCell("Distribution name", "name");
 
-        $oTableRow->AddTextCell("Distribution url");
-
-        $oTableCell = new TableCell("Linked Tests");
-        $oTableCell->SetAlign("right");
+        $oTableCell = new TableCell("Test reports");
         $oTableRow->AddCell($oTableCell);
+
+        $oTableRow->AddTextCell("Distribution url");
 
         return $oTableRow;
     }
@@ -590,13 +589,13 @@ class distribution {
 
         $oTableRow->AddTextCell($this->objectMakeLink());
 
+        $oTableCell = new TableCell(sizeof($this->aTestingIds));
+        $oTableRow->AddCell($oTableCell);
+
         $oTableCell = new TableCell("$this->sUrl");
         $oTableCell->SetCellLink($this->sUrl);
         $oTableRow->AddCell($oTableCell);
 
-        $oTableCell = new TableCell(sizeof($this->aTestingIds));
-        $oTableCell->SetAlign("right");
-        $oTableRow->AddCell($oTableCell);
 
         // enable the 'delete' action if this distribution has no testing results
         $bDeleteLink = sizeof($this->aTestingIds) ? FALSE : TRUE;
