@@ -258,9 +258,9 @@ class Vendor {
         if(!$iRows)
             $iRows = Vendor::objectGetEntriesCount($sState);
 
-        $hResult = query_parameters("SELECT * FROM vendor
-                       ORDER BY $sOrderBy $sOrder LIMIT ?,?",
-                           $iStart, $iRows);
+        $hResult = query_parameters("SELECT * FROM vendor WHERE state = '?'
+                                     ORDER BY $sOrderBy $sOrder LIMIT ?,?",
+                                     $sState, $iStart, $iRows);
 
         if(!$hResult)
             return FALSE;
@@ -407,7 +407,8 @@ class Vendor {
         if($sState == 'rejected')
             return FALSE;
 
-        $hResult = query_parameters("SELECT COUNT(vendorId) as count FROM vendor");
+        $hResult = query_parameters("SELECT COUNT(vendorId) as count FROM vendor WHERE state = '?'",
+                                     $sState);
 
         if(!$hResult)
             return FALSE;
