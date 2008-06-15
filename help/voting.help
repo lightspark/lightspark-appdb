@@ -10,13 +10,15 @@ you would MOST like to see running in Wine.
 <p><b>Step by Step Help on Voting</b></p>
 <ol>
 
-<li>Log into the Application Database.</li>
+<li><p>Log in to the Application Database.</p></li>
 
-<li><p>Browse to the application version you wish to add to your vote list.</li>
+<li><p>Browse to the application version you wish to add to your vote list.</p></li>
 
-<li><p>In the sidebar, click one of the 3 available slots, and click Vote.</li>
+<li><p>In the table showing name, license, rating etc., click on &#8216;Vote&#8217;.</p></li>
 
-<li><p>Done!</li>
+<li><p>Select the slots you wish to use, and press &#8216;Submit&#8217;</p></li>
+
+<li><p>Done!</p></li>
 
 </ol>
 
@@ -29,9 +31,8 @@ you would MOST like to see running in Wine.
    community.  Don't vote for applications that are known to be working well. 
    We know Solitaire works.  Voting for it would not make much sense.</li>
 
-   <li>You can clear your vote at any time. Simply browse to any application
-   version in the database, select the slot you want to clear, and click the Clear
-   button.</li>
+   <li>You can clear your vote at any time. Browse to any application
+   version, select &#8216;Vote&#8217; from the table showing name, license, rating etc., then choose the slots you wish to clear and press &#8216;Delete&#8217;.</p></li>
 
 </ul>
 
