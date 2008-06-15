@@ -1345,7 +1345,7 @@ class ObjectManager
 
             echo $this->oFilters->getEditor();
 
-            echo "<br><input type='submit' value='Submit' name='sSubmit' >";
+            echo "<br><input type='submit' value='Update filter' name='sFilterSubmit' >";
             echo "</form>";
         }
     }
