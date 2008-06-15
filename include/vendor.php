@@ -271,14 +271,13 @@ class Vendor {
     function objectGetHeader()
     {
         $oTableRow = new TableRowSortable();
-        
+
         $oTableRow->AddSortableTextCell('Name', 'vendorName');
 
-        $oTableRow->AddTextCell("Website");
-
-        $oTableCell = new TableCell("Linked apps");
-        $oTableCell->SetAlign("right");
+        $oTableCell = new TableCell('Applications');
         $oTableRow->AddCell($oTableCell);
+
+        $oTableRow->AddTextCell("Website");
 
         return $oTableRow;
     }
@@ -292,12 +291,11 @@ class Vendor {
         $oTableRow = new TableRow();
         $oTableRow->AddTextCell($this->objectMakeLink());
 
-        $oTableCell = new TableCell($this->sWebpage);
-        $oTableCell->SetCellLink($this->sWebpage);
+        $oTableCell = new TableCell(sizeof($this->aApplicationsIds));
         $oTableRow->AddCell($oTableCell);
 
-        $oTableCell = new TableCell(sizeof($this->aApplicationsIds));
-        $oTableCell->SetAlign("right");
+        $oTableCell = new TableCell($this->sWebpage);
+        $oTableCell->SetCellLink($this->sWebpage);
         $oTableRow->AddCell($oTableCell);
 
         // create the object manager specific row
