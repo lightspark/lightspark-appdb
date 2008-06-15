@@ -22,7 +22,7 @@ function global_sidebar_menu()
     $g->add('Home', BASE.'index.php');
     $g->add("Screenshots", BASE."objectManager.php?sClass=screenshot&amp;sTitle=View+Screenshots");
     $g->add("Browse Apps", BASE."objectManager.php?sClass=application&amp;".
-            'sTitle=Browse%20Applications&amp;sOrderBy=appId&amp;bAscending=false');
+            'sTitle=Browse%20Applications&amp;sOrderBy=appName&amp;bAscending=true');
     $g->add("Top 25", BASE."votestats.php");
     $g->add("Submit Application", BASE."objectManager.php?sClass=application_queue&amp;".
             "sTitle=Submit+Application&amp;sAction=add");
