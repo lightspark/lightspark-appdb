@@ -163,6 +163,27 @@ function get_xml_tag ($file, $mode = null)
 }
 
 /* bugzilla functions */
+
+// Returns an array containg the Wine versions stored in our Bugzilla DB
+function get_bugzilla_versions()
+{
+    $aVersions = array();
+    $sTable = BUGZILLA_DB.".versions";
+    $sWhere = "WHERE product_id=".BUGZILLA_PRODUCT_ID;
+    $sQuery = "SELECT value FROM $sTable $sWhere ORDER BY id desc limit 6";
+
+    $hResult = query_bugzilladb($sQuery);
+    if(!$hResult) return $aVersions; // empty
+
+    // build the list of versions
+    while(list($sValue) = query_fetch_row($hResult))
+    {
+        $aVersions[] = $sValue;
+    }
+
+    return $aVersions;
+}
+
 // $sVarname - name of the selection array that this function will output
 //             this is the name to use to retrieve the selection on the form postback
 // $sSelectedValue - the currently selected entry
@@ -171,19 +192,8 @@ function make_bugzilla_version_list($sVarname, $sSelectedValue)
 {
     $sStr = "";
 
-    $sTable = BUGZILLA_DB.".versions";
-    $sWhere = "WHERE product_id=".BUGZILLA_PRODUCT_ID;
-    $sQuery = "SELECT value FROM $sTable $sWhere ORDER BY id desc limit 6";
-
-    $hResult = query_bugzilladb($sQuery);
-    if(!$hResult) return;
-
     // build the list of versions
-    $aVersions = array();
-    while(list($sValue) = query_fetch_row($hResult))
-    {
-        $aVersions[] = $sValue;
-    }
+    $aVersions = get_bugzilla_versions();
 
     // build the selection array
     $sStr.= "<select name='$sVarname'>\n";
