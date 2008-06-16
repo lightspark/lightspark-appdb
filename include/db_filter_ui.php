@@ -222,7 +222,7 @@ class FilterInterface
 
             if($iId == -1)
             {
-                $sText = 'criteria';
+                $sText = 'criterion';
                 $sSel = " selected='selected'";
             } else
             {
