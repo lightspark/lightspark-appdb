@@ -173,6 +173,7 @@ class User {
             $retval = $this->login($sEmail, $sPassword);
             if($retval == SUCCESS)
                 $this->setPref("comments:mode", "threaded"); /* set the users default comments:mode to threaded */
+            $this->logout();
 
             return $retval;
         }

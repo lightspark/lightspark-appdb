@@ -96,16 +96,6 @@ function cmd_do_new()
         retry("new", "Invalid email address");
         return;
     }
-    if(strlen($aClean['sUserPassword']) < 5)
-    {
-        retry("new", "Password must be at least 5 characters");
-        return;
-    }
-    if($aClean['sUserPassword'] != $aClean['sUserPassword2'])
-    {
-        retry("new", "Passwords don't match");
-        return;
-    }
     if(empty($aClean['sUserRealname']))
     {
         retry("new", "You don't have a Real name?");
@@ -113,16 +103,14 @@ function cmd_do_new()
     }
    
     $oUser = new User();
-
-    $iResult = $oUser->create($aClean['sUserEmail'], $aClean['sUserPassword'],
+    $sPassword =  substr(base_convert(rand(0, PHP_INT_MAX),10, 36), 0, 9);
+    $iResult = $oUser->create($aClean['sUserEmail'], $sPassword,
                               $aClean['sUserRealname'], $aClean['sWineRelease'] );
 
     if($iResult == SUCCESS)
     {
-        /* if we can log the user in, log them in automatically */
-        $oUser->login($aClean['sUserEmail'], $aClean['sUserPassword']);
-
-        addmsg("Account created! (".$aClean['sUserEmail'].")", "green");
+        mail_appdb($oUser->sEmail, "New account", "Your password is ".$sPassword);
+        addmsg("Account created! Check your email for your password. (".$aClean['sUserEmail'].")", "green");
         util_redirect_and_exit(apidb_fullurl());
     }
     else if($iResult == USER_CREATE_EXISTS)
