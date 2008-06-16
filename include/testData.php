@@ -1407,9 +1407,6 @@ class testData{
         echo "<p>Please be as detailed as you can but do not paste large \n";
         echo "chunks of output from the terminal. Type out your report \n";
         echo "clearly and in proper English so that it is easily readable.</p>\n";
-        echo "<p>If you cannot find your distribution in the list of existing ";
-        echo "distributions, please add it in the \n";
-        echo "provided field.</p>\n\n";
     }
 
     function mustBeQueued()
