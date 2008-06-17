@@ -89,7 +89,7 @@ if(!$_SESSION['current']->isLoggedIn())
 <div class="topx_style platinum">
   <div class="rating_header">
     <div class="rating_title">
-      Top-10 <a href="browse_by_rating.php?sRating=Platinum">Platinum</a> List
+      Top-10 <a href="objectManager.php?sClass=application&sTitle=Browse+Applications&iappVersion-ratingOp0=5&sappVersion-ratingData0=Platinum&sOrderBy=appName&bAscending=true">Platinum</a> List
     </div>
     Applications which install and run flawlessly on an out-of-the-box Wine installation
   </div>
@@ -109,7 +109,7 @@ if(!$_SESSION['current']->isLoggedIn())
 <div class="topx_style gold">
   <div class="rating_header">
     <div class="rating_title">
-      Top-10 <a href="browse_by_rating.php?sRating=Gold">Gold</a> List
+      Top-10 <a href="objectManager.php?sClass=application&sTitle=Browse+Applications&iappVersion-ratingOp0=5&sappVersion-ratingData0=Gold&sOrderBy=appName&bAscending=true">Gold</a> List
     </div>
     Applications that work flawlessly with some special configuration
   </div>
@@ -129,7 +129,7 @@ if(!$_SESSION['current']->isLoggedIn())
 <div class="topx_style silver">
   <div class="rating_header">
     <div class="rating_title">
-      Top-10 <a href="browse_by_rating.php?sRating=Silver">Silver</a> List
+      Top-10 <a href="objectManager.php?sClass=application&sTitle=Browse+Applications&iappVersion-ratingOp0=5&sappVersion-ratingData0=Silver&sOrderBy=appName&bAscending=true">Silver</a> List
     </div>
     Applications with minor issues that do not affect typical usage
   </div>
