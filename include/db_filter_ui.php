@@ -15,6 +15,8 @@ define('FILTER_VALUES_ENUM', 2);
 define('FILTER_VALUES_BOOL', 3);
 define('FILTER_VALUES_OPTION', 4);
 
+define('MAX_FILTERS', 50);
+
 /* Info describing an available filter: what column it applies to,
     and what comparison options are available */
 class FilterInfo
@@ -436,10 +438,18 @@ class FilterInterface
        The given TableFilterSet defines available options */
     public function readInput($aClean)
     {
+        $iCount = 0; // We set a maximum for how many filters a user can add,
+                     // otherwise we may get a too long SQL query
+
         foreach($this->getFilterInfo() as $oOption)
         {
             foreach($this->readInputForColumn($aClean, $oOption) as $oNewFilter)
+            {
+                $iCount ++;
                 $this->AddFilterObject($oNewFilter);
+                if($iCount > MAX_FILTERS)
+                    break;
+            }
         }
     }
 
