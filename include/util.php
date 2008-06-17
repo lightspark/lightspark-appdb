@@ -462,12 +462,12 @@ function searchForApplication($search_words)
            FROM appFamily
            WHERE appName != 'NONAME'
            AND appFamily.state = 'accepted'
-           AND (appName LIKE '%" . $search_words . "%'
-           OR keywords LIKE '%" . $search_words . "%'";
+           AND (appName LIKE '%?%'
+           OR keywords LIKE '%?%'";
 
     $sQuery.=" ) ORDER BY appName";
 
-    $hResult = query_appdb($sQuery);
+    $hResult = query_parameters($sQuery, $search_words, $search_words);
     return $hResult;
 }
 
