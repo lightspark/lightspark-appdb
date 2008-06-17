@@ -412,6 +412,34 @@ function cleanupSearchWords($search_words)
     return $search_words;
 }
 
+/* A common error for users is to submit a new app entry for a new app version,
+   such as C&C Red Alert 2 Yuri's Revenge when we already have C&C Red Alert 2.
+   Search for the first word in the search query */
+function searchForApplicationPartial($sSearchWords)
+{
+    $sSearchWords = cleanupSearchWords($sSearchWords);
+    $aWords = explode(' ', $sSearchWords);
+    $sSearchString = '';
+
+    for($i = 0; $i < sizeof($aWords); $i++)
+    {
+        if($i)
+            $sSearchString .= '%';
+        $sSearchString .= $aWords[$i];
+        if(strlen($aWords[$i]) > 4)
+        {
+            if($i < (sizeof($aWords) - 1))
+                $sSearchString .= ' ';
+            break;
+        }
+    }
+
+    $hResult = query_parameters("SELECT * FROM appFamily WHERE state = 'accepted' AND
+                                 appName LIKE '?%'", $sSearchString);
+
+    return $hResult;
+}
+
 /* search the database and return a hResult from the query_appdb() */
 function searchForApplication($search_words)
 {
@@ -523,6 +551,10 @@ function perform_search_and_output_results($search_words)
 
     echo "<center><b>Like matches</b></center>";
     $hResult = searchForApplication($search_words);
+    outputSearchTableForhResult($search_words, $hResult);
+
+    echo "<center><b>Partial matches</b></center>";
+    $hResult = searchForApplicationPartial($search_words);
     outputSearchTableForhResult($search_words, $hResult);
 }
 
