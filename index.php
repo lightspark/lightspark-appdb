@@ -149,7 +149,7 @@ if(!$_SESSION['current']->isLoggedIn())
 
 <h2>Other Wine Application Compatibility Sites</h2>
 <p>
-<a href="http://wine-review.blogspot.com/"><b>Wine-Review</b></a>: Is a Wine application and game 
+<a href="http://www.wine-reviews.net/"><b>Wine-Reviews</b></a>: Is a Wine application and game
 Blog, with tips and how-to's on getting listed applications and games to run. 
 </p>
 </div>
