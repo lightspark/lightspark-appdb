@@ -923,7 +923,7 @@ class maintainer
 
     function objectGetMail($sAction, $bMailSubmitter, $bParentAction)
     {
-        $oSubmitter = new user($this->iSubmitterId);
+        $oSubmitter = new user($this->iUserId);
 
         $sVerb = $this->sState == 'queued' ? 'rejected' : 'removed';
 
@@ -967,11 +967,11 @@ class maintainer
                         $sSubject = "Maintainership for $sFor $sVerb";
                         if($this->sState == 'accepted')
                         {
-                            $sMsg = $oSubmitter->sRealName." has been removed as a ".
+                            $sMsg = $oSubmitter->sRealname." has been removed as a ".
                                         "maintainer of $sFor.";
                         } else
                         {
-                            $sMsg = $oSubmitter->sRealName." request to be a maintainer ".
+                            $sMsg = $oSubmitter->sRealname."'s request to be a maintainer ".
                                         " of $sFor has been rejected.";
                         }
                     }
