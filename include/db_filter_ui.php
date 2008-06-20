@@ -105,6 +105,7 @@ class FilterInterface
     private $oFilterSet;
     private $aEscapeChars;
     private $aEscapeCharsWith;
+    private $sErrors; // Used to inform the user about errors (and to give advice)
 
     public function FilterInterface($sTableName = '')
     {
@@ -112,6 +113,7 @@ class FilterInterface
         $this->oFilterSet = new FilterSet(query_escape_string($sTableName));
         $this->aEscapeChars = array('.');
         $this->aEscapeCharsWith = array('-');
+        $this->sErrors = '';
     }
 
     public function AddFilterObject(Filter $oFilter)
@@ -358,6 +360,11 @@ class FilterInterface
         }
 
         $shNewItemsEditor .= '<b>Add new filter</b> <i>(You don&#8217;t have to fill out all rows.)</i><br />';
+
+        /* Show errors, if any */
+        if($this->sErrors)
+            $shNewItemsEditor .= "<font color=\"red\">{$this->sErrors}</font>";
+
         foreach($this->aFilterInfo as $oOption)
         {
             $oDummyFilter = new Filter($oOption->getColumn(), 0, '');
@@ -428,6 +435,11 @@ class FilterInterface
             {
                 $oFilter = new Filter($oOption->getColumn(), $iOp, $sData);
                 $aReturn[] = $oFilter;
+            } else if(!$iOp && $sData)
+            {
+                /* The user probably meant to add a filter, but forgot to seelect
+                   a filter criterion */
+                $this->sErrors .= 'You need to select a filter criterion from the drop-down list<br />';
             }
         }
 
