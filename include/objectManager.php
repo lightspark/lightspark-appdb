@@ -525,7 +525,7 @@ class ObjectManager
             $sSubmitter = " (submitted by ".$oUser->objectMakeLink().")";
         } else
         {
-            $shWhyComment = "Although you submitted it it might be useful for other users to know why ".
+            $shWhyComment = "Although you submitted it, it might be useful for other users to know why ".
                             "you are deleting it.";
 
             $sSubmitter = "";

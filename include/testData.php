@@ -439,15 +439,15 @@ class testData{
             switch($sAction)
             {
             case "add":
-                $sSubject =  "Submitted testing data accepted";
-                $sMsg  = "The testing data you submitted for '$sName' has been ".
+                $sSubject =  "Submitted test data accepted";
+                $sMsg  = "The test data you submitted for '$sName' has been ".
                         "accepted by ".$_SESSION['current']->sRealname.".\n";
                 $sMsg .= $oVersion->objectMakeUrl()."&amp;iTestingId=".$this->iTestingId."\n";
                 $sMsg .= "Administrators response:\n";
             break;
             case "reject":
-                $sSubject =  "Submitted testing data rejected";
-                $sMsg  = "The testing data you submitted for '$sName' has ".
+                $sSubject =  "Submitted test data rejected";
+                $sMsg  = "The test data you submitted for '$sName' has ".
                         "been rejected by ".$_SESSION['current']->sRealname.".";
                 $sMsg .= $this->objectMakeUrl()."\n";
                 $sMsg .= "Reason given:\n";

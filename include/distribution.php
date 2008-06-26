@@ -597,7 +597,7 @@ class distribution {
         $oTableRow->AddCell($oTableCell);
 
 
-        // enable the 'delete' action if this distribution has no testing results
+        // enable the 'delete' action if this distribution has no test results
         $bDeleteLink = sizeof($this->aTestingIds) ? FALSE : TRUE;
 
         $oOMTableRow = new OMTableRow($oTableRow);

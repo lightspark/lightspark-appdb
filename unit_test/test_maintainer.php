@@ -393,7 +393,7 @@ function test_maintainer_unQueue()
         return FALSE;
     }
 
-    // Now that the super maintainer entry was unqueued the the maintainer
+    // Now that the super maintainer entry was unqueued, the maintainer
     // entry should have been deleted
     $iExpected = 0;
     $iReceived = maintainer::getMaintainerCountForUser($oSecondUser, FALSE);

@@ -19,10 +19,10 @@ for a certain program hasn't been created.</center>
 <li><p>Run your program by changing into the directory where it is located, and then type 'wine yourprogram.exe'. 
     <br>Alternately your file manager should know to open .exe files with 'wine').</li>
 
-<li><p>If there is an an error about missing files, or does not start at all, make sure you are in the directory where it was installed.</li>
+<li><p>If there is an error about missing files, or it does not start at all, make sure you are in the directory where it was installed.</li>
 
 <li><p> Many newer games contain copy protection, which is sometimes not supported in Wine.  <br>Third party applications may be able to circumvent this,
- when this is required an application cannot be rated higher than Gold</li>
+ when this is required an application cannot be rated higher than Gold.</li>
 
 <li><p> In case of failure, try different builtin, native DLL settings:
 Run Wine with 'WINEDEBUG=+loaddll wine yourprogram.exe' to find out which

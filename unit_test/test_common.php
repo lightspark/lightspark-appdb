@@ -45,7 +45,7 @@ function delete_version_and_parent_app($iVersionId)
         echo __FUNCTION__."() oApp->purge() failed, returned false!\n";
     }
 
-    // remove the admin privleges only if the user didn't
+    // remove the admin privileges only if the user didn't
     // have them to begin with
     if(!$bWasAdmin)
         $_SESSION['current']->delPriv("admin");

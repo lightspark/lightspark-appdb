@@ -1320,7 +1320,7 @@ class Application {
                 return FALSE;
         }
 
-        /* If no errors occured we return the number of moved children */
+        /* If no errors occurred we return the number of moved children */
         return $iCount;
     }
 

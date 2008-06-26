@@ -305,7 +305,7 @@ class Note {
         return false;
     }
 
-    // NOTE: notes can not be queued at this point
+    // NOTE: notes cannot be queued at this point
     function mustBeQueued()
     {
         return false;

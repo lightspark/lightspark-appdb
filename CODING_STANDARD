@@ -74,7 +74,7 @@ function do_foo($sVar)
 5) do not use vars that require register_globals to be on as:
  a) it is off by default in php 4.1+
  b) it is more secure
- c) it makes it easier to understand where your vars are comming from (forms, session, etc.)
+ c) it makes it easier to understand where your vars are coming from (forms, session, etc.)
 
 
 /**

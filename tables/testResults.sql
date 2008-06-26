@@ -3,7 +3,7 @@ use apidb;
 drop table if exists testResults;
 
 /*
- * Version Testing results
+ * Version Test results
  */
 create table testResults (
         testingId       int not null auto_increment,
