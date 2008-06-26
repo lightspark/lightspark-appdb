@@ -71,7 +71,7 @@ class application_queue
 
     function update()
     {
-        $bSucess = TRUE;
+        $bSuccess = TRUE;
 
         /* If the vendor was already un-queued then the edit vendor form would not
            have been displayed, and so the vendor name will not be set.  Thus only
