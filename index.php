@@ -27,9 +27,9 @@ $str_benefits="
         <li>Ability to customize the layout and behavior of the AppDB and comments system</li>
         <li>Take credit for your witty posts</li>
         <li>Ability to sign up to be an <a href=\"".BASE."help/?sTopic=maintainer_guidelines\"
-            title=\"information about application maintainers\"  style=\"cursor: help\">application maintainer</a>.</li>
-        <li>Submit new applications and versions.</li>
-        <li>Submit new screenshots.</li>
+            title=\"information about application maintainers\"  style=\"cursor: help\">application maintainer</a></li>
+        <li>Submit new applications and versions</li>
+        <li>Submit new screenshots</li>
     </ul>
 ";
 if(!$_SESSION['current']->isLoggedIn()) 
@@ -40,7 +40,7 @@ if(!$_SESSION['current']->isLoggedIn())
 
     $str_benefits
 
-    <p>So what are you waiting for, [<a href=\"".login_url()."\">log in</a>]
+    <p>So, what are you waiting for? [<a href=\"".login_url()."\">Log in</a>]
     or [<a href=\"account.php?sCmd=new\">register</a>] now! Your help in
     stomping out Wine issues will be greatly appreciated.</p>";
 } else 
@@ -66,7 +66,7 @@ if(!$_SESSION['current']->isLoggedIn())
     $hResult = query_parameters($voteQuery);
     $oRow = query_fetch_object($hResult);
 
-    echo "There are <b>$iNumApps</b> applications currently in the database";
+    echo "There are <b>$iNumApps</b> applications currently in the database,";
 
     // don't mention the top application if there are no votes yet
     if( !empty($oRow) )
