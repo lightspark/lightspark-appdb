@@ -1529,7 +1529,7 @@ class mail
 {
     var $sSubject;
     var $sMessage;
-    var $aRecipients;
+    var $sRecipients;
 
     function mail($aInput, $iRecipientId = null)
     {
@@ -1539,7 +1539,7 @@ class mail
         /* $aInput is returned from objectGetMail(); an array with the following members
            0: Mail subject
            1: Mail text
-           2: Array of recipients
+           2: Space-separated list of recipients
            If iRecipientId is set the third array member is ignored. */
         $this->sSubject = $aInput[0];
         $this->sMessage = $aInput[1];
@@ -1547,10 +1547,10 @@ class mail
         if($iRecipientId)
         {
             $oRecipient = new user($iRecipientId);
-            $this->aRecipients = array($oRecipient->sEmail);
+            $this->sRecipients = $oRecipient->sEmail;
         } else
         {
-            $this->aRecipients = $aInput[2];
+            $this->sRecipients = $aInput[2];
         }
     }
 
@@ -1573,7 +1573,7 @@ class mail
 
         $this->sMessage .= $sReplyText;
 
-        mail_appdb($this->aRecipients, $this->sSubject, $this->sMessage);
+        mail_appdb($this->sRecipients, $this->sSubject, $this->sMessage);
     }
 }
 
