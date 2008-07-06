@@ -62,6 +62,7 @@ $oVersion = new Version($aClean['iVersionId']);
 
 if($hResult && query_num_rows($hResult))
 {
+    echo '&nbsp'; // Add some space between title bars
     echo html_frame_start("Screenshot Gallery for ".$oApp->sName, 500);
 
     // display thumbnails
@@ -72,6 +73,8 @@ if($hResult && query_num_rows($hResult))
     $bUserIsMaintainerOfVersion = false;
 
     echo "<div align=center><table><tr>\n";
+    echo '&nbsp'; // Add some space between title bars
+
     while($oRow = query_fetch_object($hResult))
     {
         // if the current version changed then update the current version
