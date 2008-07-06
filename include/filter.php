@@ -66,6 +66,8 @@ function filter_gpc()
                     $aClean[$aKeys[$i]] = $_REQUEST[$aKeys[$i]];
                 else if(empty($_REQUEST[$aKeys[$i]]))
                     $aClean[$aKeys[$i]] = 0;
+                else if(is_numeric(trim($_REQUEST[$aKeys[$i]]))) // try clearing whitespace
+                    $aClean[$aKeys[$i]] = trim($_REQUEST[$aKeys[$i]]);
                 else
                     return "Fatal error: ".$aKeys[$i]." should be a numeric value. ".
                            $sErrorSuggestion;
