@@ -143,7 +143,7 @@ if(!$aClean['sSubmit'])
         $sMsg .= $aClean['sMessage'];
     }
 
-    mail_appdb($sRecipients, $aClean['sSubject'], $sMsg);
+    mail_appdb($sRecipients, '[PM] '.$aClean['sSubject'], $sMsg);
 
     util_redirect_and_exit(BASE."index.php");
 }
