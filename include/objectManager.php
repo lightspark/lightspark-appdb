@@ -1564,14 +1564,20 @@ class mail
 
         $this->sMessage .= "The action was performed by ".$_SESSION['current']->sRealname."\n";
 
-        switch($sAction)
+        if($sReplyText)
         {
-            case "delete":
-                $this->sMessage .= "Reasons given\n";
-            break;
-        }
+            switch($sAction)
+            {
+                case "delete":
+                    $this->sMessage .= "Reasons given\n";
+                break;
+            }
 
-        $this->sMessage .= $sReplyText;
+            $this->sMessage .= $sReplyText;
+        } else
+        {
+            $this->sMessage .= 'No reasons given';
+        }
 
         mail_appdb($this->sRecipients, $this->sSubject, $this->sMessage);
     }
