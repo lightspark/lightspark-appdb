@@ -11,7 +11,7 @@ create table buglinks (
 	versionId       int not null,
 	submitTime	datetime NOT NULL,
 	submitterId	int(11) NOT NULL default '0',
-	queued		enum('true','false') NOT NULL default 'false',
+	state 		enum('accepted','queued') NOT NULL default 'accepted',
         key(linkId),
 	index(bug_id),
 	index(versionId)

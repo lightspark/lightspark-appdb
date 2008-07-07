@@ -44,7 +44,6 @@ create table appFamily (
 	key(appId)
 );
 
-
 /*
  * a version of an application
  */
@@ -140,13 +139,11 @@ create table appData (
 	url             varchar(255) default NULL,
 	submitTime      datetime NOT NULL,
 	submitterId     int(11) NOT NULL default '0',
-	queued          enum('true','false','rejected') NOT NULL default 'false',
+	state           enum('accepted','queued','rejected') NOT NULL default 'accepted',
 	KEY id (id),
 	KEY versionId (versionId)
 );
  
-
-
 /*
  * allow users to vote for apps, as in, request that an app gets better support
  */

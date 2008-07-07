@@ -17,9 +17,9 @@ create table appMaintainers (
     versionId           int,
     userId              int,
     maintainReason      text,
-    superMaintainer     bool,
+    superMaintainer     tinyint(1),
     submitTime          datetime,
-    queued              enum('true','false','rejected','pending') NOT NULL default 'false',
+    state               enum('accepted','queued','pending') NOT NULL default 'accepted',
     notificationLevel   int not null default '0',
     notificationTime    datetime,
     key(maintainerId)
