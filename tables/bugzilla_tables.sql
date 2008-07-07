@@ -3,8 +3,7 @@ create database if not exists bugs;
 use bugs;
 
 /* make sure the wineowner user has access to the bugs database */
-grant all on bugs.* to wineowner;
-
+grant all on bugs.* to 'wineowner'@'localhost';
 drop table if exists versions;
 
 
