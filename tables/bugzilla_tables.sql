@@ -129,6 +129,31 @@ INSERT INTO `versions` VALUES ('0.9.40.',1,102);
 INSERT INTO `versions` VALUES ('0.9.41.',1,103);
 INSERT INTO `versions` VALUES ('0.9.42.',1,104);
 INSERT INTO `versions` VALUES ('0.9.43.',1,105);
+INSERT INTO `versions` VALUES ('0.9.44.',1,106);
+INSERT INTO `versions` VALUES ('0.9.45.',1,107);
+INSERT INTO `versions` VALUES ('0.9.46.',1,108);
+INSERT INTO `versions` VALUES ('0.9.47.',1,109);
+INSERT INTO `versions` VALUES ('0.9.48.',1,110);
+INSERT INTO `versions` VALUES ('0.9.49.',1,111);
+INSERT INTO `versions` VALUES ('0.9.50.',1,112);
+INSERT INTO `versions` VALUES ('0.9.51.',1,113);
+INSERT INTO `versions` VALUES ('0.9.52.',1,114);
+INSERT INTO `versions` VALUES ('0.9.53.',1,115);
+INSERT INTO `versions` VALUES ('0.9.54.',1,116);
+INSERT INTO `versions` VALUES ('0.9.55.',1,117);
+INSERT INTO `versions` VALUES ('0.9.56.',1,118);
+INSERT INTO `versions` VALUES ('0.9.57.',1,119);
+INSERT INTO `versions` VALUES ('0.9.58.',1,120);
+INSERT INTO `versions` VALUES ('0.9.59.',1,121);
+INSERT INTO `versions` VALUES ('0.9.60.',1,122);
+INSERT INTO `versions` VALUES ('0.9.61.',1,123);
+INSERT INTO `versions` VALUES ('1.0.rc1.',1,124);
+INSERT INTO `versions` VALUES ('1.0.rc2.',1,125);
+INSERT INTO `versions` VALUES ('1.0.rc3.',1,126);
+INSERT INTO `versions` VALUES ('1.0.rc4.',1,127);
+INSERT INTO `versions` VALUES ('1.0.rc5.',1,128);
+INSERT INTO `versions` VALUES ('1.0.0.',1,129);
+INSERT INTO `versions` VALUES ('1.1.0.',1,130);
 
 --
 -- Table structure for table `bugs`
