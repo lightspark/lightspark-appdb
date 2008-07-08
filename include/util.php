@@ -430,6 +430,8 @@ function searchForApplicationPartial($sSearchWords)
     $sSearchWords = cleanupSearchWords($sSearchWords);
     $aWords = explode(' ', $sSearchWords);
     $sSearchString = '';
+    $sEnsureExactWord = ''; // Used to ensure we don't match partial words when prepending
+                            // a wildcard to the search string
 
     for($i = 0; $i < sizeof($aWords); $i++)
     {
@@ -439,13 +441,13 @@ function searchForApplicationPartial($sSearchWords)
         if(strlen($aWords[$i]) > 4)
         {
             if($i < (sizeof($aWords) - 1))
-                $sSearchString .= ' ';
+                $sEnsureExactWord = ' ';
             break;
         }
     }
 
     $hResult = query_parameters("SELECT * FROM appFamily WHERE state = 'accepted' AND
-                                 appName LIKE '?%'", $sSearchString);
+                                 (appName LIKE '?%' OR appName LIKE '?')", $sSearchString.$sEnsureExactWord, $sSearchString);
 
     return $hResult;
 }
