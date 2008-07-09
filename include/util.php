@@ -427,7 +427,16 @@ function cleanupSearchWords($search_words)
    Search for the first word in the search query */
 function searchForApplicationPartial($sSearchWords)
 {
+    /* This would yield too many results and stress MySQL */
+    if(strlen($sSearchWords) < 4)
+        return null;
+
     $sSearchWords = cleanupSearchWords($sSearchWords);
+
+    /* The search string may have gotten shorter; even empty */
+    if(strlen($sSearchWords) < 4)
+        return null;
+
     $aWords = explode(' ', $sSearchWords);
     $sSearchString = '';
     $sEnsureExactWord = ''; // Used to ensure we don't match partial words when prepending
@@ -455,8 +464,16 @@ function searchForApplicationPartial($sSearchWords)
 /* search the database and return a hResult from the query_appdb() */
 function searchForApplication($search_words)
 {
+    /* This would yield too many results and stress MySQL */
+    if(strlen($search_words) < 4)
+        return null;
+
     /* cleanup search words */
     $search_words = cleanupSearchWords($search_words);
+
+    /* The search string may have gotten shorter; even empty */
+    if(strlen($search_words) < 4)
+        return null;
 
     /* remove any search words less than 4 letters */
     $split_words = array();
