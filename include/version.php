@@ -687,7 +687,7 @@ class version {
 
                 echo "<input type=\"hidden\" name=\"iObsoleteBy\" value=\"".
                      $oVersionInDB->iObsoleteBy."\" type=\"hidden\" >\n";
-            } else if(sizeof($oApp->getVersions(FALSE)) > 1)
+            } else if(sizeof($oApp->getVersions(TRUE, FALSE)) > 1)
             {
                 if($this->iObsoleteBy)
                     $sObsolete = "checked=\"checked\"";

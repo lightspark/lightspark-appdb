@@ -165,7 +165,7 @@ if($aClean['iVersionId'] && $_SESSION['current']->isLoggedIn())
     echo html_frame_start("Upload Screenshot", "30%");
     echo 'If you would like to submit screenshots, please select an application version below.<br>';
     echo '<ul>';
-    foreach($oApp->getVersions() as $oVersion)
+    foreach($oApp->getVersions(true) as $oVersion)
         echo '<li><a href="'.BASE.'screenshots.php?iVersionId='.$oVersion->objectGetId().'">'.$oVersion->sName.'</a></li>';
 
     echo '</ul>';

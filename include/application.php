@@ -101,20 +101,20 @@ class Application {
         }
     }
 
-    private function _internal_retrieve_all_versions($bIncludeObsolete = TRUE, $bIncludeDeleted = false)
+    private function _internal_retrieve_all_versions($bOnlyAccepted = false, $bIncludeObsolete = TRUE, $bIncludeDeleted = false)
     {
-        if(!$bIncludeObsolete)
-            $sObsolete = " AND obsoleteBy = '0'";
-        else
-            $sObsolete = "";
+        $sExtraTerms = '';
 
-        if($bIncludeDeleted)
-            $sExcludeDeleted = "";
-        else
-            $sExcludeDeleted = " AND state != 'deleted'";
+        if(!$bIncludeObsolete)
+            $sExtraTerms .= " AND obsoleteBy = '0'";
+
+        if($bOnlyAccepted)
+            $sExtraTerms .= " AND state = 'accepted'";
+        else if(!$bIncludeDeleted)
+            $sExtraTerms .= " AND state != 'deleted'";
 
         $sQuery = "SELECT versionId FROM appVersion WHERE
-                appId = '?'$sObsolete$sExcludeDeleted ORDER by versionName";
+                appId = '?'$sExtraTerms ORDER by versionName";
         $hResult  = query_parameters($sQuery, $this->iAppId);
         return $hResult;
     }
@@ -1224,7 +1224,7 @@ class Application {
         return $oRow->count;
     }
 
-    public function getVersions($bIncludeObsolete = TRUE, $bIncludeDeleted = false)
+    public function getVersions($bOnlyAccepted = false, $bIncludeObsolete = TRUE, $bIncludeDeleted = false)
     {
         /* If no id is set we cannot query for the versions, but perhaps objects are already cached? */
         if(!$this->iAppId)
@@ -1232,7 +1232,7 @@ class Application {
 
         $aVersions = array();
 
-        $hResult = $this->_internal_retrieve_all_versions($bIncludeObsolete, $bIncludeDeleted);
+        $hResult = $this->_internal_retrieve_all_versions($bOnlyAccepted, $bIncludeObsolete, $bIncludeDeleted);
 
         while($oRow = mysql_fetch_object($hResult))
             $aVersions[] = new version($oRow->versionId);
@@ -1268,7 +1268,7 @@ class Application {
         $aChildren = array();
 
         /* Get versions */
-                foreach($this->getVersions(true, $bIncludeDeleted) as $oVersion)
+                foreach($this->getVersions(false, true, $bIncludeDeleted) as $oVersion)
         {
             $aChildren += $oVersion->objectGetChildren($bIncludeDeleted);
             $aChildren[] = $oVersion;
