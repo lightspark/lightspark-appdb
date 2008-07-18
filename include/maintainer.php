@@ -825,7 +825,10 @@ class maintainer
             echo "</td></tr>\n";
 
             // Show which other apps the user maintains
-            echo '<tr valign="top"><td class="color0" style=\'text-align:right\'><b>This user also maintains these apps:</b></td><td>',"\n";
+            echo '<tr valign="top"><td class="color0" style=\'text-align:right\'><b>This user also maintains these apps:</b>';
+            echo "<br /><a href=\"".BASE."objectManager.php?sClass=maintainerView".
+                 "&iId={$this->iUserId}&sTitle=Maintained+Apps\">Detailed view</a>";
+            echo '</td><td>',"\n";
 
             $oUser = new User($this->iUserId);
             $aOtherApps = Maintainer::getAppsMaintained($oUser);

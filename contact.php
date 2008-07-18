@@ -78,6 +78,12 @@ if(!$aClean['sSubmit'])
                 "=100&amp;sOrderBy=email\">User manager</a></p>";
     }
 
+    if($oRecipient)
+    {
+        echo "<p><a href=\"".BASE."objectManager.php?sClass=maintainerView&iId=".
+             "{$oRecipient->iUserId}&sTitle=Maintained+Apps\">Maintained apps</a>";
+    }
+
     echo "<p>E-mail $sRecipientText.</p>";
 
     $oTable = new Table();

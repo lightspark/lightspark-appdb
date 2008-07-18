@@ -24,6 +24,7 @@ require_once(BASE.'include/version_queue.php');
 require_once(BASE.'include/testData_queue.php');
 require_once(BASE.'include/bugs.php');
 require_once(BASE.'include/db_filter_ui.php');
+require_once(BASE.'include/maintainerView.php');
 
 /* if we have no valid class name we should abort */
 if(!isset($aClean['sClass']))

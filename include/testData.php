@@ -1074,6 +1074,27 @@ class testData{
         echo "</select>\n";
     }
 
+    function getTestResultsForUser($iUserId, $iVersionId)
+    {
+        $hResult = query_parameters("SELECT * FROM testResults WHERE
+                                     submitterId = '?'
+                                     AND versionId = '?'
+                                     ORDER BY testingId DESC", $iUserId, $iVersionId);
+
+        if(!$hResult)
+            return null;
+
+        $aRet = array();
+
+        if(!mysql_num_rows($hResult))
+            return $aRet;
+
+        while(($oRow = mysql_fetch_object($hResult)))
+            $aRet[] = new testData(0, $oRow);
+
+        return $aRet;
+    }
+
     /* List test data submitted by a given user.  Ignore test results for queued applications/versions */
     function listSubmittedBy($iUserId, $bQueued = true)
     {

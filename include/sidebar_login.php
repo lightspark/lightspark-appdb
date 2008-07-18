@@ -23,8 +23,12 @@ function global_sidebar_login() {
         $apps_user_maintains = Maintainer::getAppsMaintained($_SESSION['current']);
         if($apps_user_maintains)
         {
+            $g->add('Maintainership Overview', BASE.'objectManager.php?sClass=maintainerView&iId='.
+                                               $_SESSION['current']->iUserId.'&sTitle=Your+Maintained+Apps');
+
             $g->addmisc("");
             $g->addmisc("You maintain:\n");
+
             while(list($index, list($appId, $versionId, $superMaintainer)) = each($apps_user_maintains))
             {
                 $oApp = new application($appId);
