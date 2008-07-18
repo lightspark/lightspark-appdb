@@ -62,10 +62,8 @@ else
 
             echo "<tr class=color4>\n";
             echo "    <td style=\"$style;border-left:thin solid\">Maintainer summary</td>\n";
-            if($oUser->sRealname == "")
-                echo "    <td style=\"$style\"><a href=\"mailto:".$oUser->sEmail."\">&nbsp;</a></td>\n";
-            else
-                echo "    <td style=\"$style\"><a href=\"mailto:".$oUser->sEmail."\">".$oUser->sRealname."</a></td>\n";
+
+            echo "    <td style=\"$style\">".$oUser->objectMakeLink()."</td>\n";
 
             $count = Maintainer::getMaintainerCountForUser($oUser, true);
             if($count == 0)
