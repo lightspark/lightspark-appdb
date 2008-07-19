@@ -35,7 +35,7 @@ class maintainerView
         $oTableRow->AddCell($oTableCell);
 
         /* Get test reports submitted by the user */
-        $aTestData = testData::getTestResultsForUser($_SESSION['current']->iUserId,
+        $aTestData = testData::getTestResultsForUser($this->iUserId,
                                                      $oVersion->iVersionId);
 
         if(sizeof($aTestData))
@@ -63,10 +63,9 @@ class maintainerView
        including last tested release & rating */
     function display()
     {
-        if(!$this->bViewingSelf)
-            $oUser = new user($this->iUserId);
+        $oUser = new user($this->iUserId);
 
-        $aMaintainedApps = maintainer::getAppsMaintained($_SESSION['current']);
+        $aMaintainedApps = maintainer::getAppsMaintained($oUser);
         if(!$aMaintainedApps || !sizeof($aMaintainedApps))
         {
             if($this->bViewingSelf)
