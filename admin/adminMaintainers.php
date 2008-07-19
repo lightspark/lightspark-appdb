@@ -90,7 +90,7 @@ else
 
         echo "<tr class=$bgcolor>\n";
         echo "    <td>".print_date(mysqldatetime_to_unixtimestamp($oRow->submitTime))." &nbsp;</td>\n";
-        echo "    <td><a href=\"mailto:".$oUser->sEmail."\">".$oUser->sRealname."</a></td>\n";
+        echo "    <td>".$oUser->objectMakeLink()."</a></td>\n";
         echo "    <td>".$oApp->objectMakeLink()."</td>\n";
         if($oRow->superMaintainer)
         {
