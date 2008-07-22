@@ -1493,7 +1493,7 @@ class version {
             if(maintainer::isUserMaintainer($_SESSION['current'], $this->iVersionId))
                 return TRUE;
 
-            if($this->iSubmitterId == $_SESSION['current']->iUserId)
+            if($this->sState != 'accepted' && $this->iSubmitterId == $_SESSION['current']->iUserId)
                 return TRUE;
 
             return FALSE;
