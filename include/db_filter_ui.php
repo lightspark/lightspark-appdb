@@ -224,17 +224,13 @@ class FilterInterface
         {
             $shEditor .= "<select name='i{$sColumn}Op$sId'>";
 
-            if($iId == -1)
-            {
-                $sText = 'criterion';
-                $sSel = " selected='selected'";
-            } else
+            if($iId != -1)
             {
                 $sSel = '';
                 $sText = 'remove';
-            }
 
-            $shEditor .= "<option value='0'$sSel>-- $sText --</option>";
+                $shEditor .= "<option value='0'$sSel>-- $sText --</option>";
+            }
 
             foreach($aTypes as $iType)
             {
