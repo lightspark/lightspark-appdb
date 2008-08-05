@@ -184,6 +184,23 @@ function get_bugzilla_versions()
     return $aVersions;
 }
 
+// Returns an array containing the IDs of the Wine versions stored in Bugzilla
+function get_bugzilla_version_ids()
+{
+    $aIds = array();
+    $hResult = query_bugzilladb("SELECT id FROM ".BUGZILLA_DB.".versions WHERE
+                                 product_id = '".BUGZILLA_PRODUCT_ID."'
+                                 ORDER BY id DESC LIMIT 6");
+
+    if(!$hResult)
+        return $aIds;
+
+    while(list($sId) = mysql_fetch_row($hResult))
+        $aIds[] = $sId;
+
+    return $aIds;
+}
+
 // $sVarname - name of the selection array that this function will output
 //             this is the name to use to retrieve the selection on the form postback
 // $sSelectedValue - the currently selected entry

@@ -953,10 +953,24 @@ class Application {
 
         if($sWhereFilter || $aOptions['onlyDownloadable'] == 'true')
         {
-            $sExtraTables = ',appVersion';
+            $sExtraTables = ",appVersion";
+            $sBugzillaQuery = '';
+
+            /* We only query the bugzilla table when necessary; these queries
+               will hide apps without test results */
+            if(strstr($sWhereFilter, 'versions.id'))
+            {
+                $sExtraTables .= ','.BUGZILLA_DB.'.versions';
+                $sBugzillaQuery = ' AND versions.value = appVersion.ratingRelease 
+                                    AND versions.product_id = '.BUGZILLA_PRODUCT_ID.' ';
+            }
+
             if($sWhereFilter)
                 $sWhereFilter = " AND $sWhereFilter";
-            $sWhereFilter = " AND appVersion.state = 'accepted' AND appVersion.appId = appFamily.appId $sWhereFilter";
+            $sWhereFilter = " AND appVersion.state = 'accepted'
+                              AND appVersion.appId = appFamily.appId
+                              $sBugzillaQuery
+                              $sWhereFilter";
         }
 
         if($aOptions['onlyDownloadable'] == 'true')
@@ -1032,9 +1046,10 @@ class Application {
 
         $aLicenses = version::getLicenses();
         $aWineVersions = get_bugzilla_versions();
+        $aWineVersionIds = get_bugzilla_version_ids();
 
         $oFilter->AddFilterInfo('appVersion.rating', 'Rating', array(FILTER_EQUALS), FILTER_VALUES_ENUM, array('Platinum', 'Gold', 'Silver', 'Bronze', 'Garbage'));
-        $oFilter->AddFilterInfo('appVersion.ratingRelease', 'Wine version', array(FILTER_EQUALS), FILTER_VALUES_ENUM, $aWineVersions);
+        $oFilter->AddFilterInfo('versions.id', 'Wine version', array(FILTER_EQUALS,FILTER_LESS_THAN,FILTER_GREATER_THAN), FILTER_VALUES_ENUM, $aWineVersionIds, $aWineVersions);
         $oFilter->AddFilterInfo('appFamily.catId', 'Category', array(FILTER_EQUALS), FILTER_VALUES_ENUM, $aCatIds, $aCatNames);
         $oFilter->AddFilterInfo('appVersion.license', 'License', array(FILTER_EQUALS), FILTER_VALUES_ENUM, $aLicenses);
         $oFilter->AddFilterInfo('appFamily.appName', 'Name', array(FILTER_CONTAINS, FILTER_STARTS_WITH, FILTER_ENDS_WITH), FILTER_VALUES_NORMAL);
@@ -1186,9 +1201,22 @@ class Application {
         if($sWhereFilter || $aOptions['onlyDownloadable'] == 'true')
         {
             $sExtraTables = ',appVersion';
+            $sBugzillaQuery = '';
+
+            /* We only query the bugzilla table when necessary; these queries
+               will hide apps without test results */
+            if(strstr($sWhereFilter, 'versions.id'))
+            {
+                $sExtraTables .= ','.BUGZILLA_DB.'.versions';
+                $sBugzillaQuery = ' AND versions.value = appVersion.ratingRelease 
+                                    AND versions.product_id = '.BUGZILLA_PRODUCT_ID.' ';
+            }
+
             if($sWhereFilter)
                 $sWhereFilter = " AND $sWhereFilter";
-            $sWhereFilter = " AND appVersion.appId = appFamily.appId $sWhereFilter";
+            $sWhereFilter = " AND appVersion.appId = appFamily.appId 
+                              $sBugzillaQuery
+                              $sWhereFilter";
         }
 
         if($aOptions['onlyDownloadable'] == 'true')
