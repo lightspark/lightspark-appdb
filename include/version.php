@@ -822,7 +822,7 @@ class version {
         $oCategory->display($oApp->iAppId, $this->iVersionId);
   
         // set URL
-        $appLinkURL = ($oApp->sWebpage) ? "<a href=\"".$oApp->sWebpage."\">".substr(stripslashes($oApp->sWebpage),0,30)."</a>": "&nbsp;";
+        $appLinkURL = ($oApp->sWebpage) ? trimmed_link($oApp->sWebpage,30) : "&nbsp;";
 
         // start version display
         echo html_frame_start("","98%","",0);

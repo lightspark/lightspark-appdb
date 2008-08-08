@@ -744,7 +744,7 @@ class Application {
         $oVendor = new Vendor($this->iVendorId);
 
         // set URL
-        $appLinkURL = ($this->sWebpage) ? "<a href=\"".$this->sWebpage."\">".substr(stripslashes($this->sWebpage),0,30)."</a>": "&nbsp;";
+        $appLinkURL = ($this->sWebpage) ? trimmed_link($this->sWebpage,30) : "&nbsp;";
   
         // start display application
         echo html_frame_start("","98%","",0);

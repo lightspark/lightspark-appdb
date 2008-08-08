@@ -917,6 +917,22 @@ function HtmlAreaLoaderScript($aTextareas)
 }
 
 /**
+ * Cuts the link text to the specified number of chars if it's longer,
+ * and adds an ellipsis
+ */
+function trimmed_link($shUrl, $iLength)
+{
+    $shText = $shUrl;
+    $shEnd = '';
+    if(strlen($shUrl) > $iLength)
+    {
+        $shText = substr($shUrl, 0, $iLength);
+        $shText .= '...';
+    }
+    return "<a href=\"$shUrl\">$shText</a>";
+}
+
+/**
  * Remove html formatting from description and extract the first part of the description only.
  * This is to be used for search results, application summary tables, etc.
  */ 
