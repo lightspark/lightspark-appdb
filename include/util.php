@@ -922,14 +922,19 @@ function HtmlAreaLoaderScript($aTextareas)
  */ 
 function util_trim_description($sDescription)
 {
-    // 1) let's take the first line of the description:
-    $aDesc = explode("\n",trim($sDescription),2);
-    // 2) maybe it's an html description and lines are separated with <br> or </p><p>
-    $aDesc = explode("<br>",$aDesc[0],2);
-    $aDesc = explode("<br />",$aDesc[0],2);
-    $aDesc = explode("</p><p>",$aDesc[0],2);
-    $aDesc = explode("</p><p /><p>",$aDesc[0],2);
-    return trim(strip_tags($aDesc[0]));
+    // 1) maybe it's an html description and lines are separated with tags
+    $aReplace = array('<br>','<br />','</p><p>');
+    $sDescription = str_replace($aReplace, "\n", $sDescription);
+
+    // 2) let's split the dsecription into lines
+    $aDesc = explode("\n",trim($sDescription));
+
+    // 3) Avoid empty lines
+    for($i = 0; $i < sizeof($aDesc); $i++)
+        if(($sText = trim(strip_tags($aDesc[$i]))))
+            return $sText;
+
+    return '';
 }
 
 /* This allows us to pass on the current URL to the login form so that the user is returned
