@@ -258,7 +258,7 @@ class appData
                 appFamily.state = 'accepted'";
 
             if($sState != 'all')
-                $sQuery .= " AND appData.state = 'true'";
+                $sQuery .= " AND appData.state = '$sState'";
 
             if($sType)
             {
