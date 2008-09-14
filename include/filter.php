@@ -94,17 +94,16 @@ function filter_gpc()
                 }
             break;
             case "a": // array
-                 if(!is_array($_REQUEST[$aKeys[$i]]))
-                     return "Fatal error: ".$aKeys[$i]." should be an array. ".
-                            $sErrorSuggestion;
+                // store the value if it is an array
+                if(is_array($_REQUEST[$aKeys[$i]]))
+                    $aClean[$aKeys[$i]] = $_REQUEST[$aKeys[$i]];
             break;
             default:
-                return "Fatal error: type of variable ".$aKeys[$i]." is not recognized.".
-                       $sErrorSuggestion;
+                // type not recognized, skip it
                 break;
         }
     }
-    
+
     /* null out all input data so we can be assured that */
     /* no unfiltered values are being used */
     $_REQUEST = array();
