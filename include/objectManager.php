@@ -322,7 +322,7 @@ class ObjectManager
                 }
             }
 
-            if($this->GetOptionalSetting("objectShowAddEntry", FALSE))
+            if($this->GetOptionalSetting("objectShowAddEntry", FALSE) && $oObject->canEdit())
             {
                 echo "<br><center><a href=\"".
                      $this->makeUrl("add", false,
