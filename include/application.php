@@ -911,7 +911,7 @@ class Application {
 
             if($bQueued)
             {
-                $oM = new objectManager('application');
+                $oM = new objectManager('application_queue');
                 $oM->setReturnTo(array_key_exists('REQUEST_URI', $_SERVER) ? $_SERVER['REQUEST_URI'] : "");
                 $shDeleteLink = '<a href="'.$oM->makeUrl("delete", $oApp->iAppId, "Delete entry").'">delete</a>';
                 $shEditLink = '<a href="'.$oM->makeUrl("edit", $oApp->iAppId, "Edit entry").'">edit</a>';
