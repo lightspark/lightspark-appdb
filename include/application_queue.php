@@ -23,11 +23,13 @@ class application_queue
         {
             /* Normal users do not get a aVersionsIds property, so we have to fetch
                the versionId manually.  Normal users only have access to rejected
-               applications */
+               applications, unless they submitted them */
             if($_SESSION['current']->hasPriv("admin"))
             {
                 $iVersionId = $this->oApp->aVersionsIds[0];
-            } else if($this->oApp->objectGetState() == 'rejected')
+            } else if($this->oApp->objectGetState() == 'rejected' ||
+                      ($this->oApp->objectGetState() == 'queued' &&
+                       $this->oApp->objectGetSubmitterId() == $_SESSION['current']->iUserId))
             {
                 $sQuery = "SELECT versionId FROM appVersion WHERE appId = '?' LIMIT 1";
                 $hResult = query_parameters($sQuery, $this->oApp->iAppId);

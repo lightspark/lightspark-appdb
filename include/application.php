@@ -580,9 +580,17 @@ class Application {
                                 "using the form below.";
             } else
             {
-                $sVendorHelp .= "The user added a new one; review ".
-                                "it in the vendor form below or ". 
-                                "replace it with an existing one.";
+                if($this->iSubmitterId != $_SESSION['current']->iUserId)
+                {
+                    $sVendorHelp .= "The user added a new one; review ".
+                                    "it in the vendor form below or ". 
+                                    "replace it with an existing one.";
+                } else
+                {
+                    $sVendorHelp .= 'You added a new one; it can be edited '.
+                                    'using the form below, or replaced with '.
+                                    'one from this list.';
+                }
             }
         }
         // vendor name
