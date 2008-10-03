@@ -351,6 +351,12 @@ class downloadurl
         if(!$this->bQueued && !$this->canEdit($this->iVersionId))
             return FALSE;
 
+        if(!$this->sDescription && !$this->sUrl)
+        {
+            $this->delete();
+            return true;
+        }
+
         $hResult = query_parameters("UPDATE appData SET
                    description = '?', url = '?' WHERE id = '?'",
                        $this->sDescription, $this->sUrl, $this->iId);
