@@ -46,9 +46,8 @@ class version_queue
 
         $this->oTestDataQueue->oTestData->iVersionId = $this->oVersion->iVersionId;
         $this->oTestDataQueue->create();
-        $this->oDownloadUrl->processFormSingle($this->oVersion->iVersionId,
-                                               $aClean,
-                                               $this->oVersion->canEdit());
+        $this->oDownloadUrl->objectSetParent($this->oVersion->objectGetId());
+        $this->oDownloadUrl->create();
 
         return TRUE;
     }

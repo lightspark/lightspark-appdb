@@ -361,37 +361,6 @@ class downloadurl
         return TRUE;
     }
 
-    /* Process a form made only for submitting one URL */
-    function processFormSingle($iVersionId, $aValues, $bUnQueue = FALSE)
-    {
-        /* Calling this function without suitable input data is perfectly valid,
-           but in that case there is nothing to do here */
-        if(empty($aValues['sDownloadUrlDescription']) || 
-                empty($aValues['sDownloadUrlUrl']))
-            return;
-
-        $iId = null;
-        if($hResult = appData::getData($iVersionId, "downloadurl", TRUE, TRUE))
-        {
-            $oObject = query_fetch_object($hResult);
-            $iId = $oObject->id;
-        }
-
-        $oDownloadurl = new downloadurl($iId);
-
-        $oDownloadurl->sDescription = $aValues['sDownloadUrlDescription'];
-        $oDownloadurl->sUrl = $aValues['sDownloadUrlUrl'];
-        $oDownloadurl->iVersionId = $iVersionId;
-
-        if($iId)
-            $oDownloadurl->update();
-        else
-            $oDownloadurl->create();
-
-        if($bUnQueue)
-            $oDownloadurl->unQueue();
-    }
-
     function unQueue()
     {
         if($this->mustBeQueued())
