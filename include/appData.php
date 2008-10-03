@@ -120,10 +120,14 @@ class appData
 
     function listSubmittedBy($iUserId, $bQueued = true)
     {
+        $sExtra = '';
+        if($bQueued) // downloadurls are only queued together with versions
+            $sExtra = " AND appData.type != 'downloadurl' ";
+
         $hResult = query_parameters("SELECT * FROM appData WHERE
                 appData.submitterId = '?'
                 AND
-                appData.state = '?'
+                appData.state = '?' $sExtra
                     ORDER BY appData.id",
                         $iUserId, $bQueued ? 'queued' : 'accepted');
 

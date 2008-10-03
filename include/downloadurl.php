@@ -330,7 +330,7 @@ class downloadurl
                 VALUES('?', '?', '?', '?', '?', ?, '?')",
                     $this->iVersionId, "downloadurl", $this->sDescription,
                     $this->sUrl,
-                    downloadurl::canEdit($this->iVersionId) ? 'accepted' : 'queued',
+                    $this->mustBeQueued() ? 'queued' : 'accepted',
                     "NOW()",
                     $_SESSION['current']->iUserId);
 

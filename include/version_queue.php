@@ -69,6 +69,7 @@ class version_queue
     function update()
     {
         $this->oVersion->update();
+        $this->oDownloadUrl->update();
         $this->oTestDataQueue->update();
     }
 
@@ -195,6 +196,7 @@ class version_queue
     {
         $this->oVersion->iAppId = $aClean['iAppId'];
         $this->oVersion->getOutputEditorValues($aClean);
+        $this->oDownloadUrl->getOutputEditorValues($aClean);
         $this->oTestDataQueue->getOutputEditorValues($aClean);
     }
 
