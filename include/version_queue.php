@@ -33,6 +33,9 @@ class version_queue
 
         $this->oTestDataQueue = new testData_queue($iTestingId);
         $this->oDownloadUrl = new downloadurl($iDownloadUrlId);
+
+        if(!$this->oDownloadUrl->objectGetId() && $iVersionId)
+            $this->oDownloadUrl->objectSetParent($iVersionId);
     }
 
     function create()
@@ -69,7 +72,13 @@ class version_queue
     function update()
     {
         $this->oVersion->update();
-        $this->oDownloadUrl->update();
+
+        /* A downloadurl is optional and can thus be added later */
+        if($this->oDownloadUrl->objectGetId())
+            $this->oDownloadUrl->update();
+        else
+            $this->oDownloadUrl->create();
+
         $this->oTestDataQueue->update();
     }
 

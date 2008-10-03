@@ -63,6 +63,11 @@ class downloadurl
         return $sReturn;
     }
 
+    public function objectSetParent($iId, $sClass = 'version')
+    {
+        $this->iVersionId = $iId;
+    }
+
     function objectGetChildren($bIncludeDeleted = false)
     {
         /* We have none */
