@@ -690,14 +690,9 @@ class distribution {
                 echo '<td><a href="'.$oVersion->objectMakeUrl().'&amp;iTestingId='.$oTest->iTestingId.'">',"\n";
                 echo version::fullName($oVersion->iVersionId).'</a></td>',"\n";
                 echo '<td>',"\n";
-                if($_SESSION['current']->isLoggedIn())
-                {
-                    echo $oSubmitter->sEmail ? "<a href=\"mailto:".$oSubmitter->sEmail."\">":"";
-                    echo $oSubmitter->sRealname;
-                    echo $oSubmitter->sEmail ? "</a>":"";
-                }
-                else
-                    echo $oSubmitter->sRealname;
+		
+                echo $oSubmitter->objectMakeLink();
+
                 echo '</td>',"\n";
                 echo '<td>'.date("M d Y", mysqldatetime_to_unixtimestamp($oTest->sSubmitTime)).'</td>',"\n";
                 echo '<td>'.$oTest->sTestedRelease.'&nbsp;</td>',"\n";
