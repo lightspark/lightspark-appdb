@@ -1156,10 +1156,8 @@ class Application {
 
     public function objectDisplayQueueProcessingHelp()
     {
-        echo "<p>This is the list of applications waiting for your approval, ".
-             "or to be rejected.</p>\n";
-        echo "<p>To view a submission, click on its name. ".
-             "From that page you can edit, delete or approve it into the AppDB.</p>\n";
+        echo "<p>This is the list of application entries waiting to be processed.</p>\n";
+        echo "<p>To view and process an entry, use the links under &#8216;Action&#8217;</p>";
     }
 
     public function objectDisplayAddItemHelp()

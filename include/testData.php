@@ -1362,12 +1362,10 @@ class testData{
             return FALSE;
     }
 
-    function objectDisplayQueueProcessingHelp()
+    public function objectDisplayQueueProcessingHelp()
     {
-        echo "<p>This is the list of test results waiting for submission, ".
-             "rejection or deletion.</p>\n";
-        echo "<p>To view a submission, click on its name. From that page ".
-             "you can submit it into the AppDB, reject it or delete it.</p>\n";
+        echo "<p>This is the list of test results waiting to be processed.</p>\n";
+        echo "<p>To view and process an entry, use the links under &#8216;Action&#8217;</p>";
     }
 
     function objectShowPreview()
