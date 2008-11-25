@@ -495,15 +495,28 @@ class distribution {
         $this->sUrl = $aValues['sUrl'];
     }
 
+    function objectGetFilterInfo()
+    {
+	$oFilter = new FilterInterface();
+
+	$oFilter->AddFilterInfo('name', 'Name', array(FILTER_CONTAINS, FILTER_STARTS_WITH, FILTER_ENDS_WITH), FILTER_VALUES_NORMAL);
+	return $oFilter;
+    }
+
     /* Get the total number of Distributions in the database */
-    function objectGetEntriesCount($sState)
+    function objectGetEntriesCount($sState, $oFilter = null)
     {
         /* Not implemented */
         if($sState == 'rejected')
             return FALSE;
 
+	$sWhereFilter = $oFilter ? $oFilter->getWhereClause() : '';
+
+	if($sWhereFilter)
+	    $sWhereFilter = " AND $sWhereFilter";
+
         $hResult = query_parameters("SELECT count(distributionId) as num_dists FROM
-                                     distributions WHERE state='?'",
+                                     distributions WHERE state='?' $sWhereFilter",
                                     $sState);
 
         if($hResult)
@@ -559,7 +572,7 @@ class distribution {
         return 'name';
     }
 
-    function objectGetEntries($sState, $iRows = 0, $iStart = 0, $sOrderBy = "name", $bAscending = TRUE)
+    function objectGetEntries($sState, $iRows = 0, $iStart = 0, $sOrderBy = "name", $bAscending = TRUE, $oFilter = null)
     {
         /* Not implemented */
         if($sState == 'rejected')
@@ -574,10 +587,15 @@ class distribution {
 
         /* If row limit is 0 we want to fetch all rows */
         if(!$iRows)
-            $iRows = distribution::objectGetEntriesCount($sState);
+            $iRows = distribution::objectGetEntriesCount($sState, $oFilter);
+
+	$sWhereFilter = $oFilter ? $oFilter->getWhereClause() : '';
+
+	if($sWhereFilter)
+	    $sWhereFilter = " AND $sWhereFilter";
 
         $sQuery = "SELECT * FROM distributions
-                       WHERE state = '?' ORDER BY $sOrderBy $sOrder LIMIT ?,?";
+                       WHERE state = '?' $sWhereFilter ORDER BY $sOrderBy $sOrder LIMIT ?,?";
 
         return query_parameters($sQuery, $sState,
                                 $iStart, $iRows);
