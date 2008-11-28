@@ -416,79 +416,63 @@ class ObjectManager
 
         $this->oObject = $oObject;
 
-        /* if this is a queue add a dialog for replying to the submitter of the
-           queued entry */
-        if($this->getIsQueue() || ($oObject->objectGetSubmitterId() && $oObject->objectGetSubmitterId() != $_SESSION['current']->iUserId))
+        /* If it isn't implemented, that means there is no default text */
+        $sDefaultReply = $this->getOptionalSetting("getDefaultReply", "");
+
+        echo html_frame_start("Reply text", "90%", "", 0);
+        echo "<table width='100%' border=0 cellpadding=2 cellspacing=0>\n";
+        echo '<tr valign=top><td class="color0"><b>email Text</b></td>',"\n";
+        echo '<td><textarea name="sReplyText" style="width: 100%" cols="80" '. 
+                'rows="10">'.$sDefaultReply.'</textarea></td></tr>',"\n";
+
+        if($this->getIsQueue())
         {
-            /* If it isn't implemented, that means there is no default text */
-            $sDefaultReply = $this->getOptionalSetting("getDefaultReply", "");
+            /////////////////////////////////////////////////
+            // output radio buttons for some common responses
+            echo '<tr valign=top><td class="color0"></td><td class="color0">'.
+            '<b>Common replies</b><br> Email <a href="mailto:'.APPDB_OWNER_EMAIL.'">'.
+            APPDB_OWNER_EMAIL.'</a> if you want to suggest a new common reply.</td></tr>',"\n";
 
-            echo html_frame_start("Reply text", "90%", "", 0);
-            echo "<table width='100%' border=0 cellpadding=2 cellspacing=0>\n";
-            echo '<tr valign=top><td class="color0"><b>email Text</b></td>',"\n";
-            echo '<td><textarea name="sReplyText" style="width: 100%" cols="80" '. 
-                 'rows="10">'.$sDefaultReply.'</textarea></td></tr>',"\n";
-
-            if($this->getIsQueue())
+            // NOTE: We use the label tag so the user can click anywhere in
+            // the text of the radio button to select the radio button.
+            // Otherwise the user has to click on the very small circle portion
+            // of the button to select it
+            foreach($this->aCommonResponses as $iIndex => $sReply)
             {
-                /////////////////////////////////////////////////
-                // output radio buttons for some common responses
-                echo '<tr valign=top><td class="color0"></td><td class="color0">'.
-                '<b>Common replies</b><br> Email <a href="mailto:'.APPDB_OWNER_EMAIL.'">'.
-                APPDB_OWNER_EMAIL.'</a> if you want to suggest a new common reply.</td></tr>',"\n";
-
-                // NOTE: We use the label tag so the user can click anywhere in
-                // the text of the radio button to select the radio button.
-                // Otherwise the user has to click on the very small circle portion
-                // of the button to select it
-                foreach($this->aCommonResponses as $iIndex => $sReply)
-                {
-                echo '<tr valign=top><td class="color0"></td>',"\n";
-                echo '<td class="color0"><label for="'.$iIndex.'"><input'.
-                    ' type="radio" name="sOMCommonReply" id="'.$iIndex.'" value="'.$sReply.'">'.
-                    $sReply.'</label></td>',"\n";
-                echo '</tr>',"\n";
-                }
-                // end output radio buttons for common responses
-                /////////////////////////////////////////////////
+            echo '<tr valign=top><td class="color0"></td>',"\n";
+            echo '<td class="color0"><label for="'.$iIndex.'"><input'.
+                ' type="radio" name="sOMCommonReply" id="'.$iIndex.'" value="'.$sReply.'">'.
+                $sReply.'</label></td>',"\n";
+            echo '</tr>',"\n";
             }
-
-
-            /* buttons for operations we can perform on this entry */
-            echo '<tr valign=top><td class=color3 align=center colspan=2>' ,"\n";
-            echo '<input name="sSubmit" type="submit" value="Submit" class="button" '. 
-                 '>',"\n";
-            if(!$this->getOptionalSetting("objectHideDelete", FALSE))
-            {
-                echo '<input name="sSubmit" type="submit" value="Delete" '.
-                     'class="button">',"\n";
-            }
-
-            if($this->sState == 'queued' && !$this->getOptionalSetting("objectHideReject", FALSE))
-            {
-                echo '<input name="sSubmit" type="submit" value="Reject" class="button" '.
-                    '>',"\n";
-            }
-
-	    echo $this->handle_preview_button();
-
-            echo '<input name="sSubmit" type="submit" value="Cancel" class="button" '.
-                 '>',"\n";
-            echo '</td></tr>',"\n";
-            echo '</table>';
-            echo html_frame_end();
-        } else
-        {
-            // display the move children entry
-            $this->displayMoveChildren($oObject);
-
-            echo '<tr valign=top><td class=color3 align=center colspan=2>',"\n";
-            echo '<input name="sSubmit" type="submit" value="Submit" class="button">'.
-                 '&nbsp;',"\n";
-            echo '<input name="sSubmit" type="submit" value="Delete" class="button">'."\n";
-            $this->handle_preview_button();
-            echo "</td></tr>\n";
+            // end output radio buttons for common responses
+            /////////////////////////////////////////////////
         }
+
+
+        /* buttons for operations we can perform on this entry */
+        echo '<tr valign=top><td class=color3 align=center colspan=2>' ,"\n";
+        echo '<input name="sSubmit" type="submit" value="Submit" class="button" '. 
+                '>',"\n";
+        if(!$this->getOptionalSetting("objectHideDelete", FALSE))
+        {
+            echo '<input name="sSubmit" type="submit" value="Delete" '.
+                    'class="button">',"\n";
+        }
+
+        if($this->sState == 'queued' && !$this->getOptionalSetting("objectHideReject", FALSE))
+        {
+            echo '<input name="sSubmit" type="submit" value="Reject" class="button" '.
+                '>',"\n";
+        }
+
+        echo $this->handle_preview_button();
+
+        echo '<input name="sSubmit" type="submit" value="Cancel" class="button" '.
+                '>',"\n";
+        echo '</td></tr>',"\n";
+        echo '</table>';
+        echo html_frame_end();
 
         echo '</form>';
 
