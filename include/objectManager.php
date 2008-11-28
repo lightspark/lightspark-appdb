@@ -464,11 +464,13 @@ class ObjectManager
                      'class="button">',"\n";
             }
 
-            if($this->sState != 'rejected' && !$this->getOptionalSetting("objectHideReject", FALSE))
+            if($this->sState == 'queued' && !$this->getOptionalSetting("objectHideReject", FALSE))
             {
                 echo '<input name="sSubmit" type="submit" value="Reject" class="button" '.
                     '>',"\n";
             }
+
+	    echo $this->handle_preview_button();
 
             echo '<input name="sSubmit" type="submit" value="Cancel" class="button" '.
                  '>',"\n";
