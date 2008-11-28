@@ -1376,13 +1376,18 @@ class testData{
     function display()
     {
         $this->ShowTestResult();
-        $this->iSubmitterId = $_SESSION['current']->iUserId;
+        $iOldSubmitterId = $this->iSubmitterId;
+
+        if(!$this->iSubmitterId)
+	    $this->iSubmitterId = $_SESSION['current']->iUserId;
 
         $oTable = $this->CreateTestTable();
 
         $oTable->AddRow($this->CreateTestTableRow($this->iTestingId, ""));
 
         echo $oTable->GetString();
+
+	$this->iSubmitterId = $iOldSubmitterId;
     }
 
 
