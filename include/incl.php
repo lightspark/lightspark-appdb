@@ -138,14 +138,7 @@ function apidb_header($title = 0)
     include(BASE."include/header.php");
 
     // Display Sidebar
-    echo "<table width='100%' border=0 cellspacing=0 cellpadding=0>\n";
-    echo "<tr valign='top'>\n";
-    echo "<td width=150>\n";
     apidb_sidebar();
-    echo "</td>\n";
-    echo "<td width='100%'>\n";
-
-    echo html_frame_start($page_title, '100%');
 
     // Display Status Messages
     dumpmsgbuffer();
@@ -157,11 +150,6 @@ function apidb_header($title = 0)
  */
 function apidb_footer()
 {
-    echo html_frame_end();
-
-    //Close Sidebar and Content Well
-    echo "<br></td></tr></table>\n";
-
     // grab the end of the page generating time
     global $sPageGeneratingStartTime;
     $sPageGeneratingEndTime = microtime();
@@ -173,7 +161,7 @@ function apidb_footer()
 
     // Display Footer
     if(!isset($header_disabled))
-    include(BASE."include/"."footer.php");
+        include(BASE."include/"."footer.php");
 }
 
 /*
@@ -182,6 +170,11 @@ function apidb_footer()
 function apidb_sidebar()
 {
     global $sidebar_func_list;
+
+echo '
+<div id="sidebar">
+    <ul>
+';
 
     //TURN on GLOBAL ADMIN MENU
     if ($_SESSION['current']->hasPriv("admin"))
@@ -208,6 +201,12 @@ function apidb_sidebar()
         $func = $sidebar_func_list[$i];
         $func();
     }
+
+echo '
+    </ul>
+</div>
+';
+
 }
 
 

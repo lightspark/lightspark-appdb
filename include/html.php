@@ -165,19 +165,7 @@ $str .= '
 <tr><td>
     <table width="100%" border="0" cellpadding="0" cellspacing="0" class="topMenu">
       <tr>
-        <td valign="top" align="left"><img src="'.BASE.'images/winehq_border_top_left.gif" width="6" height="9" alt=""></td>
-        <td rowspan="3" valign="middle" align="left"><img src="'.BASE.'images/winehq_border_dot_left.gif" width="12" height="3" alt=""></td>
         <td width="100%" rowspan="3" align="center"><span class="menuTitle">'.$title.'</span></td>
-        <td rowspan="3" valign="middle" align="right"><img src="'.BASE.'images/winehq_border_dot_right.gif" width="12" height="3" alt=""></td>
-        <td valign="top" align="left"><img src="'.BASE.'images/winehq_border_top_right.gif" width="6" height="9" alt=""></td>
-      </tr>
-      <tr>
-        <td><img src="'.BASE.'images/blank.gif" width="1" height="1" alt=""></td>
-        <td><img src="'.BASE.'images/blank.gif" width="1" height="1" alt=""></td>
-      </tr>
-      <tr>
-        <td valign="bottom" align="right"><img src="'.BASE.'images/winehq_border_bottom_left.gif" width="6" height="9" alt=""></td>
-        <td valign="bottom" align="right"><img src="'.BASE.'images/winehq_border_bottom_right.gif" width="6" height="9" alt=""></td>
       </tr>
     </table>
 </td></tr>
