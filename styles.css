@@ -6,7 +6,7 @@ BODY                {
                      background-repeat: no-repeat;
                      font-family: "bitstream vera sans", "verdana", "arial", "helvetica", sans-serif;
                      margin: 0;
-                     font-size: small;
+                     font-size: 10pt;
                     }
 
 /* wine logo image */
@@ -39,7 +39,7 @@ BODY                {
                      z-index: 4;
                      top: 92px;
                      left: 130px;
-                     font-size: small;
+                     font-size: 12px;
                      color: #999999;
                     }
 
@@ -82,7 +82,7 @@ BODY                {
 #tabs LI.s          { background-image: url('images/tab_s.png'); }
 #tabs LI.s A        { font-weight: bold; }
 #tabs LI:hover      { background-image: url('images/tab_h.png'); }
-#tabs A             { font-size: large; color: white; text-decoration: none; }
+#tabs A             { font-size: 16px; color: white; text-decoration: none; }
 
 /* sidebar navigation */
 #sidebar            {
@@ -107,7 +107,7 @@ BODY                {
                      padding: 5px 0 0 0;
                      background-image: url('images/side_menu_bg.png');
                      background-repeat: repeat-y;
-                     font-size: x-small;
+                     font-size: 10px;
                      color: white;
                     }
 #sidebar LI P       { margin: 0; padding: 0 0 0 15px; }
@@ -118,7 +118,7 @@ BODY                {
                      background-image: url('images/side_menu_top.png');
                      background-repeat: no-repeat;
                      font-weight: bold;
-                     font-size: small;
+                     font-size: 10px;
                     }
 #sidebar LI.top P   { margin: 0; padding: 10px 0 0 5px; }
 #sidebar LI.bot     {
@@ -128,8 +128,8 @@ BODY                {
                      background-image: url('images/side_menu_bot.png');
                      background-repeat: no-repeat;
                     }
-#sidebar A          { font-size: x-small; color: white; text-decoration: none; }
-#sidebar A:hover    { font-size: x-small; color: #ffcfcf; text-decoration: underline; font-weight: bold; }
+#sidebar A          { font-size: 10px; color: white; text-decoration: none; }
+#sidebar A:hover    { font-size: 10px; color: #ffcfcf; text-decoration: underline; font-weight: bold; }
 
 /* main content well */
 #main_content       {
@@ -154,6 +154,17 @@ BODY                {
                      display: inline;
                     }
 
+/* Language Select */
+#langsel            {
+                     clear: both;
+                     color: #ffffff;
+                     text-align: left;
+                     margin: 0 0 0 110px;
+                     font-size: 8pt;
+                    }
+#langsel A          { color: #ffffff; text-decoration: none; }
+#langsel A:hover    { color: red; text-decoration: underline; }
+
 /* footer */
 #footer             {
                      clear: both;
@@ -174,35 +185,17 @@ BODY                {
     color: #c0c0c0;
     background-color: #090909;
     overflow: auto;
-    font-size: small;
+    font-size: 10px;
 }
 
 /* header text */
 H1.title            { color: #A50D0D; border-bottom: 1px solid #A50D0D; margin: 0px; }
 H3.title            { color: #A50D0D; border-bottom: 1px solid #A50D0D; margin: 0px; }
-P.newsdate          { color: #4e4e4e; font-size: x-small; text-align: right; margin: 0 5px 10px 0;}
-P.newstitle         { color: #4e4e4e; font-size: medium; font-weight: bold; border-bottom: 1px solid #C0C0C0; margin-bottom: 5px; }
+P.newsdate          { color: #4e4e4e; font-size: 10pt; text-align: right; margin: 0 5px 10px 0;}
+P.newstitle         { color: #4e4e4e; font-size: 12pt; font-weight: bold; border-bottom: 1px solid #C0C0C0; margin-bottom: 5px; }
 P.newstitle A       { color: #4e4e4e; text-decoration: none; }
 P.newstitle A:hover { color: #FF6666; text-decoration: none; }
 DIV.newsblock       { margin: 0 5px 25px 10px; padding: 0; }
-
-/* winehq main page menu */
-ul.winehq_menu                     { list-style-type: none; margin: 20px 0px 0px 0px; }
-ul.winehq_menu li                  { margin: 0px 0px 25px 0px; padding: 5px 0 0 45px; cursor: pointer; }
-ul.winehq_menu li.info             { background-image: url('images/main_info.png'); background-repeat: no-repeat }
-ul.winehq_menu li.info:hover       { background-image: url('images/main_info_s.png'); background-repeat: no-repeat }
-ul.winehq_menu li.dl               { background-image: url('images/main_dl.png'); background-repeat: no-repeat }
-ul.winehq_menu li.dl:hover         { background-image: url('images/main_dl_s.png'); background-repeat: no-repeat }
-ul.winehq_menu li.help             { background-image: url('images/main_help.png'); background-repeat: no-repeat }
-ul.winehq_menu li.help:hover       { background-image: url('images/main_help_s.png'); background-repeat: no-repeat }
-ul.winehq_menu li.devel            { background-image: url('images/main_devel.png'); background-repeat: no-repeat }
-ul.winehq_menu li.devel:hover      { background-image: url('images/main_devel_s.png'); background-repeat: no-repeat }
-ul.winehq_menu li.donate           { background-image: url('images/main_donate.png'); background-repeat: no-repeat }
-ul.winehq_menu li.donate:hover     { background-image: url('images/main_donate_s.png'); background-repeat: no-repeat }
-ul.winehq_menu li a                { text-decoration: none; }
-ul.winehq_menu li a:hover .title   { text-decoration: underline; color: red; }
-ul.winehq_menu span.title          { font-size: x-large; color:  maroon; padding-left: 20px; margin-top: 10px; }
-ul.winehq_menu span.subtitle       { font-size: medium; color: #4e4e4e; padding-left: 35px; }
 
 /* stuff */
 img                 { border: 0; }
@@ -215,22 +208,22 @@ A:active            { color: #FF0000; }
 A.hidden            { text-decoration: none; color: #000000; }
 
 /* General fonts and sizes */
-OL,UL,P             { font-size: small; }
-TD,TR,TH            { font-size: small; }
-INPUT               { font-size: small; }
+OL,UL,P             { font-size: 10pt; }
+TD,TR,TH            { font-size: 10pt; }
+INPUT               { font-size: 10pt; }
 PRE                 {
-                     font-family: monospace; font-size: medium;
+                     font-family: monospace; font-size: 10pt;
                      white-space: pre-wrap;
                      white-space: -moz-pre-wrap !important;
                     }
-.small              { font-size: xx-small; }
+.small              { font-size: 8pt; }
 
 /* Hn Sizes */
-H1                  { font-size: xx-large; }
-H2                  { font-size: x-large; }
-H3                  { font-size: large; }
-H4                  { font-size: medium; }
-H5                  { font-size: small; }
+H1                  { font-size: 20pt; }
+H2                  { font-size: 18pt; }
+H3                  { font-size: 14pt; }
+H4                  { font-size: 12pt; }
+H5                  { font-size: 10pt; }
 
 /* HR */
 hr
@@ -255,7 +248,7 @@ div.rbox div.content                  { margin: 0; background-color: #FFFFFF; }
 
 /* WWN Colors */
 .wwn TABLE          { margin: 0px; padding: 0px; border-spacing: 0; }
-.wwn TH             { color: #A50D0D; border-bottom: 1px solid #A50D0D; font-size: large; margin: 5px 0 5px 0; padding: 5px 0 5px 0; text-align: left; }
+.wwn TH             { color: #A50D0D; border-bottom: 1px solid #A50D0D; margin: 5px 0 5px 0; padding: 5px 0 5px 0; text-align: left; }
 .wwnQuote           { color: #A8003C; }
 p.indent            { padding-left: 1em; padding-right: 1em;}
 
@@ -271,7 +264,7 @@ ul.rss li {
   height: 18px;
 }
 ul.rss li a {
-  font-size: x-small;
+  font-size: 8pt;
   padding: 0 0 0 18px;
 }
 
@@ -328,5 +321,4 @@ ul.rss li a {
 /* App Support status */
 .gold               { background-color: wheat; }
 .silver             { background-color: silver; }
-
 
