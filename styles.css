@@ -110,7 +110,6 @@ BODY                {
                     }
 #sidebar LI         {
                      width: 156px;
-                     height: 20px;
                      margin: 0;
                      padding: 5px 0 0 0;
                      background-image: url('images/side_menu_bg.png');
@@ -118,7 +117,7 @@ BODY                {
                      font-size: 10px;
                      color: white;
                     }
-#sidebar LI P       { margin: 0; padding: 0 0 0 15px; }
+#sidebar LI P       { margin: 0; padding: 0 15px 5px 15px; }
 #sidebar LI.top     {
                      height: 33px;
                      margin: 0;

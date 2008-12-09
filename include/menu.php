@@ -30,7 +30,7 @@ class htmlmenu {
 
     function addmisc($sStuff, $sAlign = "left")
     {
-        echo "<div align=\"$sAlign\">$sStuff</div>\n";
+        echo "<li><p style=\"text-align: $sAlign\">$sStuff</p></li>\n";
     }
 
     function done($form = null)
