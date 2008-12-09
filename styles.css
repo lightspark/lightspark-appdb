@@ -137,7 +137,7 @@ BODY                {
                      background-repeat: no-repeat;
                     }
 #sidebar A          { font-size: 10px; color: white; text-decoration: none; }
-#sidebar A:hover    { font-size: 10px; color: #ffcfcf; text-decoration: underline; font-weight: bold; }
+#sidebar A:hover    { font-size: 10px; text-decoration: underline; }
 
 /* main content well */
 #main_content       {
@@ -181,20 +181,6 @@ BODY                {
                      padding-right: 20px;
                     }
 #footer IMG         { vertical-align: middle; }
-
-/* debug log */
-#debug_log
-{
-    clear: both;
-    height: 150px;
-    margin: 10px;
-    border: 2px inset #999999;
-    font-family: monospace, sans-serif; 
-    color: #c0c0c0;
-    background-color: #090909;
-    overflow: auto;
-    font-size: 10px;
-}
 
 /* header text */
 H1.title            { color: #A50D0D; border-bottom: 1px solid #A50D0D; margin: 0px; }
@@ -253,28 +239,6 @@ div.rbox b.r2                         { margin: 0 3px; }
 div.rbox b.r3                         { margin: 0 2px; }
 div.rbox b.rtop b.r4, b.rbottom b.r4  { margin: 0 1px; height: 2px}
 div.rbox div.content                  { margin: 0; background-color: #FFFFFF; }
-
-/* WWN Colors */
-.wwn TABLE          { margin: 0px; padding: 0px; border-spacing: 0; }
-.wwn TH             { color: #A50D0D; border-bottom: 1px solid #A50D0D; margin: 5px 0 5px 0; padding: 5px 0 5px 0; text-align: left; }
-.wwnQuote           { color: #A8003C; }
-p.indent            { padding-left: 1em; padding-right: 1em;}
-
-/* RSS Feed Links */
-ul.rss {
-  list-style: none;
-  padding: 0 0 0 2px;
-  margin: 0;
-}
-ul.rss li {
-  background: url("./images/feed.gif") no-repeat 0 1px;
-  padding: 0px 0 0px 0px;
-  height: 18px;
-}
-ul.rss li a {
-  font-size: 8pt;
-  padding: 0 0 0 18px;
-}
 
 /* template navigation links */
 .link-container     { position: relative; height: 1.2em; }
