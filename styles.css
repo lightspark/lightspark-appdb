@@ -84,7 +84,13 @@ BODY                {
 #tabs LI.s          { background-image: url('images/tab_s.png'); }
 #tabs LI.s A        { font-weight: bold; }
 #tabs LI:hover      { background-image: url('images/tab_h.png'); }
-#tabs A             { font-size: 16px; color: white; text-decoration: none; }
+#tabs A             {
+                     display: block;
+                     width: 108px;
+                     height: 23px;
+                     padding-top: 3px;
+                     font-size: 16px; color: white; text-decoration: none;
+                    }
 
 /* sidebar navigation */
 #sidebar            {
