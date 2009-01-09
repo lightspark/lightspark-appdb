@@ -227,31 +227,31 @@ class Bug
     {
         $sAppName = version::fullName($this->iVersionId);
         $oVersion = new version($this->iVersionId);
+
+        //show the application version URL and the bug URL
+        $sMsg = $oVersion->objectMakeUrl()."\n\n";
+        $sMsg .= BUGZILLA_ROOT."show_bug.cgi?id=".$this->iBug_id."\n";
+
         if(!$bDeleted)
         {
             if(!$this->bQueued)
             {
                 $sSubject = "Link between Bug ".$this->iBug_id." and ".$sAppName." added by ".$_SESSION['current']->sRealname;
-                $sMsg  = $oVersion->objectMakeUrl()."\n";
                 if($this->iSubmitterId)
                 {
                     $oSubmitter = new User($this->iSubmitterId);
-                    $sMsg .= "This Bug Link has been submitted by ".$oSubmitter->sRealname.".";
-                    $sMsg .= "\n";
+                    $sMsg .= "This Bug Link has been submitted by ".$oSubmitter->sRealname.".\n";
                 }
                 addmsg("The Bug Link was successfully added into the database.", "green");
             } else // Bug Link queued.
             {
                 $sSubject = "Link between Bug ".$this->iBug_id." and ".$sAppName." submitted by ".$_SESSION['current']->sRealname;
-                $sMsg  = $oVersion->objectMakeUrl()."\n";
-                $sMsg .= "This Bug Link has been queued.";
-                $sMsg .= "\n";
+                $sMsg .= "This Bug Link has been queued.\n";
                 addmsg("The Bug Link you submitted will be added to the database after being reviewed.", "green");
             }
         } else // Bug Link deleted.
         {
             $sSubject = "Link between Bug ".$this->iBug_id." and ".$sAppName." deleted by ".$_SESSION['current']->sRealname;
-            $sMsg  = $oVersion->objectMakeUrl()."\n";
             addmsg("Bug Link deleted.", "green");
         }
 
