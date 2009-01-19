@@ -528,8 +528,9 @@ class testData{
         echo $this->shWhatDoesnt,"\n";
         echo '<p><br><b>What was not tested</b><br>',"\n";
         echo $this->shWhatNotTested,"\n";
-        echo '<p><br><b>Additional Comments</b><br>',"\n";
+        echo '<p><br><b>Additional Comments</b><br><pre>',"\n";
         echo $this->sComments,"\n";
+        echo '</pre>',"\n";
     }
 
     function CreateTestTable()
