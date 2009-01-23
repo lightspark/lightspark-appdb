@@ -1061,7 +1061,7 @@ class ObjectManager
             return null;
 
         foreach($aVarNames as $sVar)
-            $aVars[$sVar] = $aClean[$sVar];
+            $aVars[$sVar] = getInput($sVar, $aClean);
 
         return $aVars;
     }
