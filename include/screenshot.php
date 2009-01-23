@@ -700,7 +700,9 @@ class screenshot
 
     function objectDisplayQueueProcessingHelp()
     {
-        return appData::objectDisplayQueueProcessingHelp();
+	$shRet = "<p>This is the list of screenshots waiting to be processed</p>";
+	$shRet .= "<p>To view and process an entry, use the links under &#8216;Action&#8217;</p>";
+        return $shRet;
     }
 
     function outputEditor()
