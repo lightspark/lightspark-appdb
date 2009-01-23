@@ -42,7 +42,7 @@ if(!class_exists($aClean['sClass']))
 
 $aClean['iId'] = isset($aClean['iId']) ? $aClean['iId'] : 0;
 
-$oObject = new objectManager($aClean['sClass'], $aClean['sTitle'], $aClean['iId']);
+$oObject = new objectManager(getInput('sClass', $aClean), getInput('sTitle', $aClean), getInput('iId', $aClean));
 
 if(getInput('sState', $aClean))
     $oObject->setState($aClean['sState']);
