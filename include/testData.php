@@ -641,7 +641,7 @@ class testData{
         $sLink = query_escape_string($sLink);
         $iDisplayLimit = query_escape_string($iDisplayLimit);
 
-        $bShowAll = ($aClean['bShowAll'] == "true") ? true : false;
+        $bShowAll = (getInput('bShowAll', $aClean) == 'true') ? true : false;
 
         $sQuery = "SELECT * 
                    FROM testResults, ?.versions
