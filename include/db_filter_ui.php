@@ -263,7 +263,7 @@ class FilterInterface
 
         $sData = $oFilter->getData();
 
-        $shEditor .= "<select name=\"s{$sColumn}Data$sId\">";
+        $shEditor = "<select name=\"s{$sColumn}Data$sId\">";
 
         if($sData)
             $shEditor .= "<option value=\"\">-- remove --</option>";
