@@ -1073,6 +1073,10 @@ class ObjectManager
 
         $oObject = new $this->sClass($this->iId);
 
+        /* Check that the entry exists */
+        if(!$oObject->objectGetId())
+            $this->error_exit("Entry not found (class: {$this->sClass}, id: {$this->iId})");
+
         $aVars = $this->get_custom_vars($aClean, "view");
 
         if(!$aVars)
