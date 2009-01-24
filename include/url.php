@@ -475,6 +475,7 @@ class Url {
                 return FALSE;
         }
 
+        $sReturn = '';
         for($i = 0; $oRow = query_fetch_object($hResult); $i++)
         {
             // create a url object
