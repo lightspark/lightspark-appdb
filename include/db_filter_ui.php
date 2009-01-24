@@ -12,8 +12,7 @@ require_once('db_filter.php');
 
 define('FILTER_VALUES_NORMAL', 1);
 define('FILTER_VALUES_ENUM', 2);
-define('FILTER_VALUES_BOOL', 3);
-define('FILTER_VALUES_OPTION', 4);
+define('FILTER_VALUES_OPTION_BOOL', 3);
 
 define('MAX_FILTERS', 50);
 
