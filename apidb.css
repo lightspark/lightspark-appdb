@@ -31,6 +31,12 @@ TR.buttons { background-color: #BDDAE5 }
 TD.button { background-color: #BDDAE5 }
 TD.button2 { background-color: #ABB2D5; }
 
+/* misc table styles */
+.rowtitle { background-color: black; color: white; font-weight: bold; }
+
+/* misc backgrounds from color name */
+.white { background-color: #FFFFFF; }
+
 /* query row colors */
 .color0 { background-color: #E0E0E0 }
 .color1 { background-color: #C0C0C0 }
