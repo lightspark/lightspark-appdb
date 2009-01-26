@@ -22,7 +22,7 @@ class maintainerView
             $this->bViewingSelf = false;
     }
 
-    static function objectGetId()
+    function objectGetId()
     {
         return $this->iUserId;
     }
