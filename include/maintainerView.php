@@ -22,6 +22,11 @@ class maintainerView
             $this->bViewingSelf = false;
     }
 
+    static function objectGetId()
+    {
+        return $this->iUserId;
+    }
+
     function addVersionRatingInfo($oTableRow, $oVersion)
     {
         $oTableRow->AddTextCell($oVersion->objectMakeLink());
