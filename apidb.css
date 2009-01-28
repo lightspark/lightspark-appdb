@@ -45,7 +45,11 @@ TD.button2 { background-color: #ABB2D5; }
 .color4 { background-color: #999999 }
 
 /* Colors for supported apps table */
-.gold { background-color: #daa520 }
+.platinum {background-color: #ECECEC; }
+.gold { background-color: #FFF600 }
+.silver { background-color: silver; }
+.bronze { background-color: #FCBA0A; }
+.garbage { background-color: #999966; }
 
 /* box */
 .box-title { background-color: #AAAAAA; color: #FFFFFF; font-weight: bold }
