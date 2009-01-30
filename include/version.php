@@ -1035,11 +1035,20 @@ class version {
         // Show test data
 
         $iNewestId = 0;
+        $oTest = null;
 
         /* Set if the use chose to display a particular test report */
         if($iTestingId)
+	{
             $oTest = new testData($iTestingId);
-        else if($this->iVersionId) /* Let's query for the latest rest report */
+	    $oTestParent = $oTest->objectGetParent();
+
+	    /* Check that the test report doesn't belong to another version */
+	    if($oTestParent->objectGetId() && $oTestParent->objectGetId() != $this->objectGetId())
+		$oTest = null;
+	}
+
+        if(!$oTest && $this->iVersionId) /* Let's query for the latest rest report */
         {
             $iNewestId = testData::getNewestTestIdFromVersionId($this->iVersionId);
             $iTestingId = $iNewestId;
@@ -1047,7 +1056,7 @@ class version {
             if($iTestingId) /* We want all entries to have test data, but old versions might lack
                                it, or data may have been deleted */
                 $oTest = new testData($iTestingId);
-        } else /* Perhaps we have a cached entry? There should be */
+        } else if(!$oTest) /* Perhaps we have a cached entry? There should be */
         {
             $aTests = $this->getTestResults();
 

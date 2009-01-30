@@ -1413,6 +1413,11 @@ class testData{
         return ((mktime() - mysqltimestamp_to_unixtimestamp($this->sSubmitTime)) > (60 * 60 * 24  * 175));
     }
 
+    function objectGetParent()
+    {
+	return new version($this->iVersionId);
+    }
+
     function objectGetChildren($bIncludeDeleted = false)
     {
         /* We have none */
