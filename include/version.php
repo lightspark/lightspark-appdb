@@ -1110,14 +1110,17 @@ class version {
 
         //////////////////////////////
         // show the test results table
-        if($oTest->iTestingId)
-        {
-            $oTest->ShowVersionsTestingTable($this->objectMakeUrl()."&amp;iTestingId=", 5);
-        } else if($oTest) /* We are previewing the version */
-        {
-            $oTable = $oTest->CreateTestTable();
-            $oTable->AddRow($oTest->CreateTestTableRow(0, ""));
-            echo $oTable->GetString();
+	if($oTest)
+	{
+            if($oTest->iTestingId)
+            {
+                $oTest->ShowVersionsTestingTable($this->objectMakeUrl()."&amp;iTestingId=", 5);
+            } else /* We are previewing the version */
+            {
+                $oTable = $oTest->CreateTestTable();
+                $oTable->AddRow($oTest->CreateTestTableRow(0, ""));
+                echo $oTable->GetString();
+            }
         }
 
         if($_SESSION['current']->isLoggedIn())
