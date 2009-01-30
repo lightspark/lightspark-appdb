@@ -419,7 +419,12 @@ class ObjectManager
         /* If it isn't implemented, that means there is no default text */
         $sDefaultReply = $this->getOptionalSetting("getDefaultReply", "");
 
-        echo html_frame_start("Reply text", "90%", "", 0);
+        if($this->getIsQueue())
+            $sReplyFieldHeader = 'Reply Text';
+        else
+            $sReplyFieldHeader = 'Comment';
+
+        echo html_frame_start($sReplyFieldHeader, "90%", "", 0);
         echo "<table width='100%' border=0 cellpadding=2 cellspacing=0>\n";
         echo '<tr valign=top><td class="color0"><b>email Text</b></td>',"\n";
         echo '<td><textarea name="sReplyText" style="width: 100%" cols="80" '. 
