@@ -742,7 +742,14 @@ class Application {
     {
         /* is this user supposed to view this version? */
         if(!$_SESSION['current']->canViewApplication($this))
-            objectManager::error_exit("You do not have permission to view this entry");
+        {
+            $sError = 'You do not have permission to view this entry';
+
+            if($this->objectGetState() == 'deleted')
+                $sError = 'This entry has been deleted; it\'s contents may have been moved to another entry';
+
+            objectManager::error_exit($sError);
+        }
 
         // cat display
         $oCategory = new Category($this->iCatId);
