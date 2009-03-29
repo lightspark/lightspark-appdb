@@ -186,15 +186,15 @@ class Comment {
         $hResult = query_parameters("DELETE FROM appComments WHERE commentId = '?'", $this->iCommentId);
         if ($hResult)
         {
-            /* fixup the child comments so the parentId points to a valid parent comment */
-            $hResult = query_parameters("UPDATE appComments set parentId = '?' WHERE parentId = '?'",
-                                        $this->iParentId, $this->iCommentId);
+            $aChildren = $this->objectGetChildren();
+
+            foreach($aChildren as $oComment)
+                $oComment->delete();
 
             return true;
-        } else
-        {
-            return false;
         }
+
+        return false;
     }
 
     function get_comment_count_for_versionid($iVersionId)
@@ -525,7 +525,20 @@ class Comment {
 
     function objectGetChildren($bIncludeDeleted = false)
     {
-        return array();
+        $aObjects = array();
+        $hResult = comment::grab_comments($this->iVersionId, $this->iCommentId);
+
+        if(!$hResult)
+            return $aObjects;
+
+        while($oRow = mysql_fetch_object($hResult))
+        {
+            $oComment = new comment(null, $oRow);
+            $aObjects += $oComment->objectGetChildren();
+            $aObjects[] = $oComment;
+        }
+
+        return $aObjects;
     }
 
     function display_comments_threaded($versionId, $threadId = 0)
