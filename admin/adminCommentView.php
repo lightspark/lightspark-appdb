@@ -60,7 +60,7 @@ while ($oRow = query_fetch_object($commentIds))
     $hResult = query_parameters($sQuery, $oRow->commentId);
     /* call view_app_comment to display the comment */
     $oComment_row = query_fetch_object($hResult);
-    Comment::view_app_comment($oComment_row);
+    Comment::view_app_comment($oComment_row, true);
 }
 
 /* display page selection links */

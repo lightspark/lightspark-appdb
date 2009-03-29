@@ -240,13 +240,13 @@ class Comment {
     /**
      * display a single comment (in $oRow)
      */
-    function view_app_comment($oRow)
+    function view_app_comment($oRow, $bShowAppName = false)
     {
         $oComment = new comment(null, $oRow);
-        $oComment->display();
+        $oComment->output_comment($bShowAppName);
     }
 
-    function display()
+    private function output_comment($bShowAppName = false)
     {
         echo html_frame_start('','98%');
         echo '<table width="100%" border="0" cellpadding="2" cellspacing="1">',"\n";
@@ -254,6 +254,10 @@ class Comment {
         // message header
         echo "<tr bgcolor=\"#E0E0E0\"><td><a name=Comment-".$this->iCommentId."></a>\n";
         echo " <b>".$this->sSubject."</b><br>\n";
+
+        if($bShowAppName)
+            echo 'Application: ' . version::fullNameLink($this->iVersionId) . "<br>\n";
+
         echo " by  ".forum_lookup_user($this->oOwner->iUserId)." on ".$this->sDateCreated."<br>\n";
         echo "</td></tr><tr><td>\n";
     
@@ -264,8 +268,8 @@ class Comment {
         $oM = new objectManager("comment", "Post new comment");
         $oM->setReturnTo($oVersion->objectMakeUrl());
         // reply post buttons
-        echo "	[<a href=\"".$oM->makeUrl("add")."&iVersionId=$this->iVersionId\"><small>post new</small></a>] \n";
-        echo "	[<a href=\"".$oM->makeUrl("add")."&iVersionId=$this->iVersionId".
+        echo " [<a href=\"".$oM->makeUrl("add")."&iVersionId=$this->iVersionId\"><small>post new</small></a>] \n";
+        echo " [<a href=\"".$oM->makeUrl("add")."&iVersionId=$this->iVersionId".
                 "&iThread=$this->iCommentId\"><small>reply to this</small></a>] \n";
 
         echo "</td></tr>\n";
@@ -288,6 +292,11 @@ class Comment {
         echo "</table>\n";
 
         echo html_frame_end();   
+    }
+
+    function display()
+    {
+        $this->output_comment();
     }
 
     /**
