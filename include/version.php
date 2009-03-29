@@ -811,7 +811,14 @@ class version {
     {
         /* is this user supposed to view this version? */
         if(!$_SESSION['current']->canViewVersion($this))
-            util_show_error_page_and_exit("Something went wrong with the application or version id");
+        {
+            $sError = 'You do not have permission to view this entry';
+
+            if($this->objectGetState() == 'deleted')
+                $sError = 'This entry has been deleted; it\'s contents may have been moved to another entry';
+
+            objectManager::error_exit($sError);
+        }
 
         $iTestingId = $aVars['iTestingId'] ? $aVars['iTestingId'] : 0;
 
