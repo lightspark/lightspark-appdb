@@ -274,7 +274,7 @@ function dumpmsgbuffer()
         {
             if ($msg['color'] == "red")
                $msg['color'] = "{$msg['color']};text-decoration:blink";
-            echo "<div align=\"center\" style=\"font-color:{$msg['color']};\"> {$msg['msg']} </div>";
+            echo "<div align=\"center\" class=\"session_note\" style=\"font-color:{$msg['color']};\"> {$msg['msg']} </div>";
         }
         echo html_frame_end("&nbsp;");
         echo "<br>\n";
