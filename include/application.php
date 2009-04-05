@@ -964,7 +964,7 @@ class Application {
 
         $sExtraTables = '';
         $sWhereFilter = $oFilters ? $oFilters->getWhereClause() : '';
-        $aOptions = $oFilters ? $oFilters->getOptions() : array('onlyDownloadable' => 'false');
+        $aOptions = $oFilters ? $oFilters->getOptions() : array('onlyDownloadable' => 'false', 'appCategory' => null);
 
         if($sWhereFilter || $aOptions['onlyDownloadable'] == 'true')
         {
@@ -1221,7 +1221,7 @@ class Application {
     {
         $sExtraTables = '';
         $sWhereFilter = $oFilters ? $oFilters->getWhereClause() : '';
-        $aOptions = $oFilters ? $oFilters->getOptions() : array('onlyDownloadable' => 'false');
+        $aOptions = $oFilters ? $oFilters->getOptions() : array('onlyDownloadable' => 'false', 'appCategory' => null);
 
         if($sWhereFilter || $aOptions['onlyDownloadable'] == 'true')
         {
