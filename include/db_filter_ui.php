@@ -415,6 +415,9 @@ class FilterInterface
                 $bChangedOption = true;
             }
 
+            if(!$sData)
+                continue;
+
             $aReturn[] = $oFilter;
         }
 
