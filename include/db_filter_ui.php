@@ -455,7 +455,7 @@ class FilterInterface
             $iOp = $aClean["i{$sColumn}Op"];
 
 
-            if($iOp && $sData && ($oOption->getValueType() != FILTER_VALUES_OPTON_BOOL || !$bChangedOoption))
+            if($iOp && $sData && ($oOption->getValueType() != FILTER_VALUES_OPTION_BOOL || !$bChangedOoption))
             {
                 $oFilter = new Filter($oOption->getColumn(), $iOp, $sData);
                 $aReturn[] = $oFilter;
