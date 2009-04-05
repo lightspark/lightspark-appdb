@@ -159,7 +159,6 @@ class FilterInterface
     public function getUrlElement($iId, Filter $oFilter)
     {
         $sColumn = $this->escapeChars($oFilter->getColumn());
-        $oColumn = $this->aFilterInfo[$sColumn];
 
         $sId = $iId;
 
@@ -172,8 +171,6 @@ class FilterInterface
     public function getHiddenInputTag($iId, Filter $oFilter)
     {
         $sColumn = $this->escapeChars($oFilter->getColumn());
-        $oColumn = $this->aFilterInfo[$sColumn];
-
         $sId = $iId;
 
         $shEditor = "<input type=\"hidden\" name=\"i{$sColumn}Op$sId\" value=\"{$oFilter->getOperatorId()}\">";
