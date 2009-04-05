@@ -1353,6 +1353,7 @@ class ObjectManager
            per page values and the second contains the default value.
            If the function does not exist we assume no multi-page behaviour */
         $oObject = new $this->sClass();
+        $sControls = '';
 
         if(!method_exists($oObject, "objectGetItemsPerPage") ||
           $oObject->objectGetItemsPerPage($this->sState) === FALSE)
