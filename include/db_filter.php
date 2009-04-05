@@ -18,6 +18,7 @@ define('FILTER_LESS_THAN', 7);
 define('FILTER_NOT_EQUALS', 8);
 define('FILTER_NOT_LIKE', 9);
 define('FILTER_OPTION_BOOL', 10);
+define('FILTER_OPTION_ENUM', 11);
 
 /* A filter as part of an SQL query, such as something = 'somevalue' */
 class Filter
@@ -82,7 +83,7 @@ class Filter
     public function getExpression()
     {
         /* We let callers handle options themselves, so don't include them in the WHERE clause */
-        if($this->iType == FILTER_OPTION_BOOL)
+        if($this->isOption())
             return '';
 
         $sData = $this->sData;
@@ -104,6 +105,19 @@ class Filter
         $sOp = $this->getOperator();
 
         return "{$this->sColumn} $sOp '$sData'";
+    }
+
+    public function IsOption()
+    {
+        switch($this->iType)
+        {
+            case FILTER_OPTION_BOOL:
+            case FILTER_OPTION_ENUM:
+                return true;
+
+            default:
+                return false;
+        }
     }
 }
 

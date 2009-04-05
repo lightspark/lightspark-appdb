@@ -13,6 +13,7 @@ require_once('db_filter.php');
 define('FILTER_VALUES_NORMAL', 1);
 define('FILTER_VALUES_ENUM', 2);
 define('FILTER_VALUES_OPTION_BOOL', 3);
+define('FILTER_VALUES_OPTION_ENUM', 4);
 
 define('MAX_FILTERS', 50);
 
@@ -69,6 +70,19 @@ class FilterInfo
     public function getTypes()
     {
         return $this->aTypes;
+    }
+
+    public function isOption()
+    {
+        switch($this->iValueType)
+        {
+            case FILTER_VALUES_OPTION_BOOL:
+            case FILTER_VALUES_OPTION_ENUM:
+                return true;
+
+            default:
+                return false;
+        }
     }
 
     public static function getOpName($iOpId)
@@ -219,7 +233,7 @@ class FilterInterface
             /* Printing 'equal to' sounds weird if it is the only choice */
             if($aTypes[0] != FILTER_EQUALS)
                 $shEditor .= $oColumn->getOpName($aTypes[0]);
-        } else
+        } else if ($aTypes[0] != FILTER_OPTION_ENUM)
         {
             $shEditor .= "<select name='i{$sColumn}Op$sId'>";
 
@@ -240,6 +254,9 @@ class FilterInterface
                 $shEditor .= "<option value='$iType'$sSel>".$oColumn->getOpName($iType).'</option><br />';
             }
             $shEditor .= '</select> ';
+        } else
+        {
+            echo "<input type=\"hidden\" name=\"i{$sColumn}Op$sId\" value=\"{$aTypes[0]}\" />";
         }
 
         switch($oColumn->getValueType())
@@ -248,6 +265,7 @@ class FilterInterface
                 $shEditor .= "<input type='text' value=\"{$oFilter->getData()}\" name='s{$sColumn}Data$sId' size='30' />";
             break;
             case FILTER_VALUES_ENUM:
+            case FILTER_VALUES_OPTION_ENUM:
                 $shEditor .= $this->getEnumEditor($oColumn, $oFilter, $sId);
             break;
         }
@@ -369,11 +387,16 @@ class FilterInterface
             {
                 if(!array_key_exists($oOption->getColumn(), $aCounts))
                     $shNewItemsEditor .= $this->getOptionBoolEditor(-1, $oDummyFilter);
+                $shNewItemsEditor .= '<br />';
             } else
             {
-                $shNewItemsEditor .= $this->getItemEditor(-1, $oDummyFilter);
+                /* Make necessary checks for filters that are only supposed to be shown once */
+                if($oOption->getValueType() != FILTER_VALUES_OPTION_ENUM || !array_key_exists($oOption->getColumn(), $aCounts))
+                {
+                    $shNewItemsEditor .= $this->getItemEditor(-1, $oDummyFilter);
+                    $shNewItemsEditor .= '<br />';
+                }
             }
-            $shNewItemsEditor .= '<br />';
         }
 
         return $shNewItemsEditor.$shCurrentItemsEditor;
@@ -403,14 +426,20 @@ class FilterInterface
 
             /* Only show an option as an active filter if it has been changed
                from the default */
-            if($oOption->getValueType() == FILTER_VALUES_OPTION_BOOL)
+            if($oOption->getValueType() == FILTER_VALUES_OPTION_BOOL || $oOption->getValueType() == FILTER_VALUES_OPTION_ENUM)
             {
-                /* The default option is the first entry in the list of choices */
-                $aChoices = $oOption->getValueTypeData();
-                $sDefault = $aChoices[0];
-                if(!$sData)
-                    $sData = 'false';
-                if($sData == $sDefault)
+                if($oOption->getValueType() == FILTER_VALUES_OPTION_BOOL)
+                {
+                    /* The default option is the first entry in the list of choices */
+                    $aChoices = $oOption->getValueTypeData();
+                    $sDefault = $aChoices[0];
+                    if(!$sData)
+                        $sData = 'false';
+
+                    if($sData == $sDefault)
+                        continue;
+                }
+                if($i > 0)
                     continue;
                 $bChangedOption = true;
             }
@@ -485,16 +514,21 @@ class FilterInterface
         $aOptions = array();
         foreach($this->oFilterSet->getFilters() as $oFilter)
         {
-            if($oFilter->getOperatorId() == FILTER_OPTION_BOOL)
+            if($oFilter->isOption())
                 $aOptions[$oFilter->getColumn()] = $oFilter->getData();
         }
         foreach($this->aFilterInfo as $oFilterInfo)
         {
-            if($oFilterInfo->getValueType() == FILTER_VALUES_OPTION_BOOL &&
+            if($oFilterInfo->isOption() &&
                !array_key_exists($oFilterInfo->getColumn(), $aOptions))
             {
                 $aTypes = $oFilterInfo->getTypes();
-                $sDefault = $aTypes[0];
+
+                if($oFilterInfo->getValueType() == FILTER_VALUES_OPTION_BOOL)
+                    $sDefault = $aTypes[0];
+                else
+                    $sDefault = '';
+
                 $aOptions[$oFilterInfo->getColumn()] = $sDefault;
             }
         }

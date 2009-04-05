@@ -993,6 +993,18 @@ class Application {
             $sExtraTables .= ',appData';
             $sWhereFilter .= " AND appData.type = 'downloadurl' AND appData.versionId = appVersion.versionId AND appData.state = 'accepted'";
         }
+        if($aOptions['appCategory'])
+        {
+            $oCategory = new Category($aOptions['appCategory']);
+            $aSubCats = $oCategory->getSubCatList();
+            $sWhereFilter .= " AND ( catId = '{$aOptions['appCategory']}' ";
+            foreach($aSubCats as $oCat)
+            {
+                $iCatId = $oCat->objectGetId();
+                $sWhereFilter .= " OR catId = '$iCatId' ";
+            }
+            $sWhereFilter .= ") ";
+        }
         /* Should we add a limit clause to the query? */
         if($iRows || $iStart)
         {
@@ -1065,7 +1077,7 @@ class Application {
 
         $oFilter->AddFilterInfo('appVersion.rating', 'Rating', array(FILTER_EQUALS), FILTER_VALUES_ENUM, array('Platinum', 'Gold', 'Silver', 'Bronze', 'Garbage'));
         $oFilter->AddFilterInfo('versions.id', 'Wine version', array(FILTER_EQUALS,FILTER_LESS_THAN,FILTER_GREATER_THAN), FILTER_VALUES_ENUM, $aWineVersionIds, $aWineVersions);
-        $oFilter->AddFilterInfo('appFamily.catId', 'Category', array(FILTER_EQUALS), FILTER_VALUES_ENUM, $aCatIds, $aCatNames);
+        $oFilter->AddFilterInfo('appCategory', 'Category', array(FILTER_OPTION_ENUM), FILTER_VALUES_OPTION_ENUM, $aCatIds, $aCatNames);
         $oFilter->AddFilterInfo('appVersion.license', 'License', array(FILTER_EQUALS), FILTER_VALUES_ENUM, $aLicenses);
         $oFilter->AddFilterInfo('appFamily.appName', 'Name', array(FILTER_CONTAINS, FILTER_STARTS_WITH, FILTER_ENDS_WITH), FILTER_VALUES_NORMAL);
         $oFilter->AddFilterInfo('onlyDownloadable', 'Only show downloadable apps', array(FILTER_OPTION_BOOL), FILTER_VALUES_OPTION_BOOL, array('false','true'));
@@ -1236,6 +1248,18 @@ class Application {
         {
             $sExtraTables .= ',appData';
             $sWhereFilter .= " AND appData.type = 'downloadurl' AND appData.versionId = appVersion.versionId";
+        }
+        if($aOptions['appCategory'])
+        {
+            $oCategory = new Category($aOptions['appCategory']);
+            $aSubCats = $oCategory->getSubCatList();
+            $sWhereFilter .= " AND ( catId = '{$aOptions['appCategory']}' ";
+            foreach($aSubCats as $oCat)
+            {
+                $iCatId = $oCat->objectGetId();
+                $sWhereFilter .= " OR catId = '$iCatId' ";
+            }
+            $sWhereFilter .= ") ";
         }
 
         if($sState != 'accepted' && !application::canEdit())

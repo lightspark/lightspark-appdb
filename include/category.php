@@ -137,7 +137,7 @@ class Category {
 
     /* Get a category's subcategory objects.  Names are indented according
        to subcategory level */
-    function getSubCatList($iLevel)
+    function getSubCatList($iLevel = 0)
     {
         $aOut = array();
         $iId = $this->iCatId ? $this->iCatId : 0;
