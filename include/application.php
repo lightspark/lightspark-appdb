@@ -1330,14 +1330,23 @@ class Application {
 
     public function objectGetChildren($bIncludeDeleted = false)
     {
+        return $this->objectGetChildrenClassSpecific('', $IncludeDeleted);
+    }
+
+    public function objectGetChildrenClassSpecific($sClass = '', $bIncludeDeleted = false)
+    {
         $aChildren = array();
 
         /* Get versions */
-                foreach($this->getVersions(false, true, $bIncludeDeleted) as $oVersion)
+        foreach($this->getVersions(false, true, $bIncludeDeleted) as $oVersion)
         {
-            $aChildren += $oVersion->objectGetChildren($bIncludeDeleted);
+            if($sClass != 'version')
+                $aChildren += $oVersion->objectGetChildren($bIncludeDeleted);
             $aChildren[] = $oVersion;
         }
+
+        if($sClass == 'version')
+            return $aChildren;
 
         /* Get urls */
         $sQuery = "SELECT * FROM appData WHERE type = '?' AND appId = '?'";

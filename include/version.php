@@ -775,7 +775,7 @@ class version {
     }
 
     /* Not standard OM function yet, but will be in the future */
-    public function objectGetParent()
+    public function objectGetParent($sClass = '')
     {
         /* No id so we can't query the DB, but perhaps an entry is cached? */
         if(!$this->iAppId)
@@ -1697,6 +1697,11 @@ class version {
     }
 
     public function objectGetChildren($bIncludeDeleted = false)
+    {
+        return $this->objectGetChildrenClassSpecific('', $bIncludeDeleted);
+    }
+
+    public function objectGetChildrenClassSpecific($sClass = '', $bIncludeDeleted = false)
     {
         $aChildren = array();
 

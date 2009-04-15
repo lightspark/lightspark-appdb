@@ -886,13 +886,6 @@ class ObjectManager
             return FALSE;
         }
 
-        /* We only allow moving to non-queued objects */
-        if(!$hResult = $oObject->objectGetEntries('accepted'))
-        {
-            echo "Failed to get list of objects.<br>\n";
-            return FALSE;
-        }
-
         /* Display some help text */
         echo "<p>Move all child objects of ".$oObject->objectMakeLink()." to the entry ";
         echo "selected below, and delete ".$oObject->objectMakeLink()." afterwards.</p>\n";
@@ -903,21 +896,52 @@ class ObjectManager
                 "Move here"),
                     "color4");
 
-        for($i = 0; $oRow = query_fetch_object($hResult); $i++)
+        if(method_exists($oObject, 'objectGetParent'))
         {
-            $oCandidate = new $this->sClass(null, $oRow);
-            if($oCandidate->objectGetId() == $this->iId)
+            $oParent = $oObject->objectGetParent();
+
+            $aParentChildren = $oParent->objectGetChildrenClassSpecific($this->sClass);
+
+            echo "Children of " . $oParent->objectMakeLink() . " <br />";
+
+            $i = 0;
+            foreach($aParentChildren as $oCandidate)
             {
+                if($oCandidate->objectGetState() != 'accepted')
+                    continue;
+
+                echo html_tr(array($oCandidate->objectMakeLink(), 
+                                   "<a href=\"".$this->makeUrl("moveChildren", $this->iId). "&amp;iNewId=".$oCandidate->objectGetId()."\">Move here</a>"),
+                             ($i % 2) ? "color0" : "color1");
                 $i++;
-                continue;
+            }
+        } else
+        {
+            /* We only allow moving to non-queued objects */
+            if(!$hResult = $oObject->objectGetEntries('accepted'))
+            {
+                echo "Failed to get list of objects.<br>\n";
+                return FALSE;
             }
 
-            echo html_tr(array(
-                    $oCandidate->objectMakeLink(),
-                    "<a href=\"".$this->makeUrl("moveChildren", $this->iId).
-                    "&amp;iNewId=".$oCandidate->objectGetId()."\">Move here</a>"),
-                        ($i % 2) ? "color0" : "color1");
+            for($i = 0; $oRow = query_fetch_object($hResult); $i++)
+            {
+                $oCandidate = new $this->sClass(null, $oRow);
+                if($oCandidate->objectGetId() == $this->iId)
+                {
+                    $i++;
+                    continue;
+                }
+
+                echo html_tr(array(
+                        $oCandidate->objectMakeLink(),
+                        "<a href=\"".$this->makeUrl("moveChildren", $this->iId).
+                        "&amp;iNewId=".$oCandidate->objectGetId()."\">Move here</a>"),
+                            ($i % 2) ? "color0" : "color1");
+            }
         }
+
+
         echo "</table>\n";
     }
 
