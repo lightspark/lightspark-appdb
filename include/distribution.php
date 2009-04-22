@@ -692,6 +692,10 @@ class distribution {
             foreach($this->aTestingIds as $iTestingId)
             {
                 $oTest = new testData($iTestingId);
+
+                if($oTest->objectGetState() != $this->objectGetState())
+                    continue;
+
                 $oVersion = new Version($oTest->iVersionId);
                 $oApp  = new Application($oVersion->iAppId);
                 $oSubmitter = new User($oTest->iSubmitterId);
