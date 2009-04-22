@@ -273,8 +273,8 @@ function dumpmsgbuffer()
         foreach ($GLOBALS['session']->msg as $msg)
         {
             if ($msg['color'] == "red")
-               $msg['color'] = "{$msg['color']};text-decoration:blink";
-            echo "<div align=\"center\" class=\"session_note\" style=\"font-color:{$msg['color']};\"> {$msg['msg']} </div>";
+               $msg['color'] = "{$msg['color']}; text-decoration: blink;";
+            echo "<div align=\"center\" class=\"session_note\" style=\"color: {$msg['color']};\"> {$msg['msg']} </div>";
         }
         echo html_frame_end("&nbsp;");
         echo "<br>\n";
