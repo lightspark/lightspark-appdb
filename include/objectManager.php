@@ -1125,6 +1125,7 @@ class ObjectManager
         }
     }
 
+    /* Returns true if the link was displayed */
     private function displayMoveChildren($oObject)
     {
         /* Display a link to the move child objects page if the class has the necessary
@@ -1134,7 +1135,10 @@ class ObjectManager
         {
             echo "<a href=\"".$this->makeUrl("showMoveChildren", $this->iId,
                  "Move Child Objects")."\">Move child objects</a>\n";
+            return true;
         }
+
+        return false;
     }
 
     /* Gets the title of the page to be displayed. Classes can set
@@ -1202,9 +1206,10 @@ class ObjectManager
         else
             $oObject->display($aVars);
 
+        echo '<br />';
         // display the move children entry
-        $this->displayMoveChildren($oObject);
-        echo " &nbsp; &nbsp; ";
+        if($this->displayMoveChildren($oObject))
+            echo " &nbsp; &nbsp; ";
         $this->displayChangeParent($oObject);
 
         echo html_back_link(1, $sBackLink);
