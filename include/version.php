@@ -774,6 +774,11 @@ class version {
         return TRUE;
     }
 
+    public function objectSetParent($iNewId, $sClass = '')
+    {
+        $this->iAppId = $iNewId;
+    }
+
     /* Not standard OM function yet, but will be in the future */
     public function objectGetParent($sClass = '')
     {

@@ -842,6 +842,33 @@ class ObjectManager
         echo '</form>';
     }
 
+    /* Move the object to another parent entry */
+    public function change_parent($iNewId)
+    {
+        $oObject = new $this->sClass($this->iId);
+        $oParent = $oObject->objectGetParent();
+        $sParentClass = get_class($oParent);
+        $oNewParent = new $sParentClass($iNewId);
+
+        /* The user needs to have edit rights to both the old and the new object
+           If you have edit rights to an object then you should have edit rights
+           to its child objects as well */
+        if(!$oObject->canEdit() || !$oParent->canEdit() || !$oNewParent->canEdit())
+            return FALSE;
+
+        $oObject->objectSetParent($oNewParent->objectGetId());
+
+        if($oObject->update())
+        {
+            addmsg('The entry was moved successfully', 'green');
+        } else
+        {
+            addmsg('Failed to move the entry', 'red');
+        }
+
+        $this->return_to_url(APPDB_ROOT);
+    }
+
     /* Move all the object's children to another object of the same type, and
        delete the original object afterwards */
     public function move_children($iNewId)
@@ -873,6 +900,56 @@ class ObjectManager
 
         /* The argument is the reply text */
         $this->delete_entry("Duplicate entry");
+    }
+
+    /* Display a page where the user can move the current object to another parent */
+    public function display_change_parent()
+    {
+        $oObject = new $this->sClass($this->iId);
+        if(!$oObject->canEdit())
+        {
+            echo "Insufficient privileges.<br>\n";
+            return FALSE;
+        }
+
+        /* Display some help text */
+        echo "<p>Move ".$oObject->objectMakeLink()." to the parent entry ";
+        echo "selected below:</p>\n";
+
+        echo "<table width=\"50%\" cellpadding=\"3\">\n";
+        echo html_tr(array(
+                "Name",
+                "Move here"),
+                    "color4");
+
+        $oParent = $oObject->objectGetParent();
+
+        /* We only allow moving to non-queued objects */
+        if(!$hResult = $oParent->objectGetEntries('accepted'))
+        {
+            echo "Failed to get list of objects.<br>\n";
+            return FALSE;
+        }
+
+        for($i = 0; $oRow = query_fetch_object($hResult); $i++)
+        {
+            $sParentClass = get_class($oParent);
+            $oCandidate = new $sParentClass(null, $oRow);
+            if($oCandidate->objectGetId() == $oParent->objectGetId())
+            {
+                $i++;
+                continue;
+            }
+
+            echo html_tr(array(
+                    $oCandidate->objectMakeLink(),
+                    "<a href=\"".$this->makeUrl('changeParent', $this->iId).
+                    "&amp;iNewId=".$oCandidate->objectGetId()."\">Move here</a>"),
+                        ($i % 2) ? "color0" : "color1");
+        }
+
+
+        echo "</table>\n";
     }
 
     /* Display a page where the user can select which object the children of the current
@@ -1036,6 +1113,18 @@ class ObjectManager
         exit;
     }
 
+    private function displayChangeParent($oObject)
+    {
+        /* Display a link to the move child objects page if the class has the necessary
+           functions and the user has edit rights.  Not all classes have child objects. */
+        if(method_exists($oObject, "objectSetParent") &&
+           method_exists($oObject, "objectGetId") && $oObject->canEdit())
+        {
+            echo "<a href=\"".$this->makeUrl("showChangeParent", $this->iId,
+                 "Move to another parent entry")."\">Move to another parent entry</a>\n";
+        }
+    }
+
     private function displayMoveChildren($oObject)
     {
         /* Display a link to the move child objects page if the class has the necessary
@@ -1115,6 +1204,8 @@ class ObjectManager
 
         // display the move children entry
         $this->displayMoveChildren($oObject);
+        echo " &nbsp; &nbsp; ";
+        $this->displayChangeParent($oObject);
 
         echo html_back_link(1, $sBackLink);
     }

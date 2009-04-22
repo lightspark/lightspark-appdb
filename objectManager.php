@@ -85,6 +85,13 @@ if($sAction)
             $oObject->handle_anonymous_submission();
             break;
 
+        case 'changeParent':
+            /* Provided the necessary values are present, an object may be moved
+            to another parent without any confirmation */
+            if($oObject->getId() && getInput('iNewId', $aClean))
+                $oObject->change_parent($aClean['iNewId']);
+            break;
+
         case 'moveChildren':
             /* Provided the necessary values are present, an object's children may be moved
             without any confirmation */
@@ -119,6 +126,10 @@ if($oObject->getId() && $sAction != "add")
 
         case "edit":
         $oObject->display_entry_for_editing($aClean, $sErrors);
+        break;
+
+        case 'showChangeParent':
+        $oObject->display_change_parent();
         break;
 
         case "showMoveChildren":

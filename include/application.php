@@ -957,10 +957,18 @@ class Application {
         return 'appId';
     }
 
-    public static function objectGetEntries($sState, $iRows = 0, $iStart = 0, $sOrderBy = "appId", $bAscending = TRUE, $oFilters = null)
+    public static function objectGetEntries($sState, $iRows = 0, $iStart = 0, $sOrderBy = 'default', $bAscending = TRUE, $oFilters = null)
     {
         $sLimit = "";
         $sOrdering = $bAscending ? "ASC" : "DESC";
+
+        if($sOrderBy == 'default')
+        {
+            if($sState == 'queued')
+                $sOrderBy = 'appId';
+            else
+                $sOrderBy = 'appName';
+        }
 
         $sExtraTables = '';
         $sWhereFilter = $oFilters ? $oFilters->getWhereClause() : '';
