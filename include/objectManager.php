@@ -1201,6 +1201,14 @@ class ObjectManager
 
         $aVars = $this->get_custom_vars($aClean, "view");
 
+        echo "<br />";
+        // display the move children entry
+        if($this->displayMoveChildren($oObject))
+            echo " &nbsp; &nbsp; ";
+        $this->displayChangeParent($oObject);
+
+        echo "<br /><br />";
+
         if(!$aVars)
             $oObject->display();
         else
@@ -1211,6 +1219,8 @@ class ObjectManager
         if($this->displayMoveChildren($oObject))
             echo " &nbsp; &nbsp; ";
         $this->displayChangeParent($oObject);
+
+        echo "<br /><br />";
 
         echo html_back_link(1, $sBackLink);
     }
