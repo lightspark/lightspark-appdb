@@ -699,9 +699,9 @@ class distribution {
 
                 /* make sure the user can view the versions we list in the table */
                 /* otherwise skip over displaying the entries in this table */
-                if(!$_SESSION[current]->canViewApplication($oApp))
+                if(!$_SESSION['current']->canViewApplication($oApp))
                     continue;
-                if(!$_SESSION[current]->canViewVersion($oVersion))
+                if(!$_SESSION['current']->canViewVersion($oVersion))
                     continue;
 
                 echo '<tr class='.$bgcolor.'>',"\n";
