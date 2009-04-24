@@ -923,29 +923,53 @@ class ObjectManager
                     "color4");
 
         $oParent = $oObject->objectGetParent();
+        $oGrandFather = $oParent->objectGetParent();
 
-        /* We only allow moving to non-queued objects */
-        if(!$hResult = $oParent->objectGetEntries('accepted'))
+        if($oGrandFather)
         {
-            echo "Failed to get list of objects.<br>\n";
-            return FALSE;
-        }
+            $aParentSiblings = $oGrandFather->objectGetChildrenClassSpecific(get_class($oParent));
 
-        for($i = 0; $oRow = query_fetch_object($hResult); $i++)
-        {
-            $sParentClass = get_class($oParent);
-            $oCandidate = new $sParentClass(null, $oRow);
-            if($oCandidate->objectGetId() == $oParent->objectGetId())
+            echo "Children of " . $oGrandFather->objectMakeLink() . " <br />";
+
+            $i = 0;
+            foreach($aParentSiblings as $oCandidate)
             {
+                if($oCandidate->objectGetState() != 'accepted')
+                    continue;
+
+                if($oCandidate->objectGetId() == $oParent->objectGetId())
+                    continue;
+
+                echo html_tr(array($oCandidate->objectMakeLink(), 
+                                   "<a href=\"".$this->makeUrl('changeParent', $this->iId). "&amp;iNewId=".$oCandidate->objectGetId()."\">Move here</a>"),
+                             ($i % 2) ? "color0" : "color1");
                 $i++;
-                continue;
+            }
+        } else
+        {
+            /* We only allow moving to non-queued objects */
+            if(!$hResult = $oParent->objectGetEntries('accepted'))
+            {
+                echo "Failed to get list of objects.<br>\n";
+                return FALSE;
             }
 
-            echo html_tr(array(
-                    $oCandidate->objectMakeLink(),
-                    "<a href=\"".$this->makeUrl('changeParent', $this->iId).
-                    "&amp;iNewId=".$oCandidate->objectGetId()."\">Move here</a>"),
-                        ($i % 2) ? "color0" : "color1");
+            for($i = 0; $oRow = query_fetch_object($hResult); $i++)
+            {
+                $sParentClass = get_class($oParent);
+                $oCandidate = new $sParentClass(null, $oRow);
+                if($oCandidate->objectGetId() == $oParent->objectGetId())
+                {
+                    $i++;
+                    continue;
+                }
+
+                echo html_tr(array(
+                        $oCandidate->objectMakeLink(),
+                        "<a href=\"".$this->makeUrl('changeParent', $this->iId).
+                        "&amp;iNewId=".$oCandidate->objectGetId()."\">Move here</a>"),
+                            ($i % 2) ? "color0" : "color1");
+            }
         }
 
 
@@ -1113,7 +1137,7 @@ class ObjectManager
         exit;
     }
 
-    private function displayChangeParent($oObject)
+    private function displayChangeParent($oObject, $sLinkText = 'Move to another parent entry')
     {
         /* Display a link to the move child objects page if the class has the necessary
            functions and the user has edit rights.  Not all classes have child objects. */
@@ -1121,7 +1145,7 @@ class ObjectManager
            method_exists($oObject, "objectGetId") && $oObject->canEdit())
         {
             echo "<a href=\"".$this->makeUrl("showChangeParent", $this->iId,
-                 "Move to another parent entry")."\">Move to another parent entry</a>\n";
+                 "Move to another parent entry")."\">$sLinkText</a>\n";
         }
     }
 

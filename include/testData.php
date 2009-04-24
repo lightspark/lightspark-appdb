@@ -621,6 +621,7 @@ class testData{
             $oTableRow->AddTextCell('<a href="'.$oObject->makeUrl('edit', $this->iTestingId,
                                     'Edit Test Results').'&amp;sReturnTo='.urlencode($_SERVER['REQUEST_URI']).'">'.
                                     'Edit</a> &nbsp; '."\n".
+                                    '<a href="'.$oObject->makeUrl('showChangeParent', $this->iTestingId, 'Move test report to another version').'&amp;sReturnTo='.urlencode($_SERVER['REQUEST_URI']).'">Move</a>'."\n".
                                     '<a href="'.$oObject->makeUrl('delete', $this->iTestingId, 'Delete+Test+Results').
                                     '&amp;sReturnTo='.urlencode($_SERVER['REQUEST_URI']).'">Delete</a></td>'."\n");
         }
@@ -1400,8 +1401,8 @@ class testData{
 
     function objectMakeLink()
     {
-        /* STUB */
-        return TRUE;
+        $oObject = new objectManager("testData", "Edit Test Results", $this->iTestingId);
+        return '<a href="'.$oObject->makeUrl("edit", $this->iTestingId).'">test report</a>';
     }
 
     public function isOld()
@@ -1411,6 +1412,11 @@ class testData{
             return false;
 
         return ((mktime() - mysqltimestamp_to_unixtimestamp($this->sSubmitTime)) > (60 * 60 * 24  * 175));
+    }
+
+    public function objectSetParent($iNewId, $sClass = 'version')
+    {
+        $this->iVersionId = $iNewId;
     }
 
     function objectGetParent()
