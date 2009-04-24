@@ -1011,6 +1011,9 @@ class ObjectManager
                 if($oCandidate->objectGetState() != 'accepted')
                     continue;
 
+                if($oCandidate->objectGetId() == $this->iId)
+                    continue;
+
                 echo html_tr(array($oCandidate->objectMakeLink(), 
                                    "<a href=\"".$this->makeUrl("moveChildren", $this->iId). "&amp;iNewId=".$oCandidate->objectGetId()."\">Move here</a>"),
                              ($i % 2) ? "color0" : "color1");
