@@ -618,10 +618,15 @@ class testData{
         if ($this->iTestingId && $_SESSION['current']->hasAppVersionModifyPermission($oVersion))
         {
             $oObject = new objectManager('testData');
+            if($oApp->canEdit())
+                $shChangeParentLink = '<a href="'.$oObject->makeUrl('showChangeParent', $this->iTestingId, 'Move test report to another version').'&amp;sReturnTo='.urlencode($_SERVER['REQUEST_URI']).'">Move</a>'."\n";
+            else
+                $shChangeParentLink = '';
+
             $oTableRow->AddTextCell('<a href="'.$oObject->makeUrl('edit', $this->iTestingId,
                                     'Edit Test Results').'&amp;sReturnTo='.urlencode($_SERVER['REQUEST_URI']).'">'.
                                     'Edit</a> &nbsp; '."\n".
-                                    '<a href="'.$oObject->makeUrl('showChangeParent', $this->iTestingId, 'Move test report to another version').'&amp;sReturnTo='.urlencode($_SERVER['REQUEST_URI']).'">Move</a>'."\n".
+                                    $shChangeParentLink.
                                     '<a href="'.$oObject->makeUrl('delete', $this->iTestingId, 'Delete+Test+Results').
                                     '&amp;sReturnTo='.urlencode($_SERVER['REQUEST_URI']).'">Delete</a></td>'."\n");
         }
