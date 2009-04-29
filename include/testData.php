@@ -1429,6 +1429,12 @@ class testData{
 	return new version($this->iVersionId);
     }
 
+    /* Only show children of (grand)parents in the Move Child Objects and Change Parent lists */
+    public static function objectRestrictMoveObjectListsToParents()
+    {
+        return true;
+    }
+
     function objectGetChildren($bIncludeDeleted = false)
     {
         /* We have none */

@@ -923,9 +923,18 @@ class ObjectManager
                     "color4");
 
         $oParent = $oObject->objectGetParent();
-        $oGrandFather = $oParent->objectGetParent();
 
-        if($oGrandFather)
+        if(method_exists($oParent, 'objectGetParent'))
+        {
+            $oGrandFather = $oParent->objectGetParent();
+            $oParentOM = new objectManager(get_class($oParent), '', $oParent->objectGetId());
+        } else
+        {
+            $oGrandFather = null;
+            $oParentOM = null;
+        }
+
+        if($oGrandFather && $oParentOM->GetOptionalSetting('objectRestrictMoveObjectListsToParents', false))
         {
             $aParentSiblings = $oGrandFather->objectGetChildrenClassSpecific(get_class($oParent));
 
@@ -997,7 +1006,7 @@ class ObjectManager
                 "Move here"),
                     "color4");
 
-        if(method_exists($oObject, 'objectGetParent'))
+        if($this->GetOptionalSetting('objectRestrictMoveObjectListsToParents', false))
         {
             $oParent = $oObject->objectGetParent();
 

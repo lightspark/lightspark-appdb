@@ -789,6 +789,12 @@ class version {
         return new application($this->iAppId);
     }
 
+    /* Only show children of (grand)parents in the Move Child Objects and Change Parent lists */
+    public static function objectRestrictMoveObjectListsToParents()
+    {
+        return true;
+    }
+
     public function getRatingInfo()
     {
         return testData::getRatingInfoForVersionId($this->iVersionId);
