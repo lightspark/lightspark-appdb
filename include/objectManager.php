@@ -912,8 +912,13 @@ class ObjectManager
             return FALSE;
         }
 
+        $oParent = $oObject->objectGetParent();
+        $oParentOM = new objectManager(get_class($oParent), '', $oParent->objectGetId());
+
+        $sClassDisplayName = $oParentOM->GetOptionalSetting('objectGetClassDisplayName', 'parent entry');
+
         /* Display some help text */
-        echo "<p>Move ".$oObject->objectMakeLink()." to the parent entry ";
+        echo "<p>Move ".$oObject->objectMakeLink()." to the $sClassDisplayName ";
         echo "selected below:</p>\n";
 
         echo "<table width=\"50%\" cellpadding=\"3\">\n";
@@ -922,16 +927,12 @@ class ObjectManager
                 "Move here"),
                     "color4");
 
-        $oParent = $oObject->objectGetParent();
-
         if(method_exists($oParent, 'objectGetParent'))
         {
             $oGrandFather = $oParent->objectGetParent();
-            $oParentOM = new objectManager(get_class($oParent), '', $oParent->objectGetId());
         } else
         {
             $oGrandFather = null;
-            $oParentOM = null;
         }
 
         if($oGrandFather && $oParentOM->GetOptionalSetting('objectRestrictMoveObjectListsToParents', false))
@@ -1149,13 +1150,23 @@ class ObjectManager
         exit;
     }
 
-    private function displayChangeParent($oObject, $sLinkText = 'Move to another parent entry')
+    private function displayChangeParent($oObject, $sLinkText = 'default')
     {
         /* Display a link to the move child objects page if the class has the necessary
            functions and the user has edit rights.  Not all classes have child objects. */
         if(method_exists($oObject, "objectSetParent") &&
            method_exists($oObject, "objectGetId") && $oObject->canEdit())
         {
+            if($sLinkText == 'default')
+            {
+                $oParent = $oObject->objectGetParent();
+                $oParentOM = new objectManager(get_class($oParent), '', $oParent->objectGetId());
+                $sClassName = $oParentOM->getOptionalSetting('objectGetClassDisplayName', false);
+                if($sClassName)
+                    $sLinkText = "Move to another $sClassName";
+                else
+                    $sLinkText = 'Move to another parent entry';
+            }
             echo "<a href=\"".$this->makeUrl("showChangeParent", $this->iId,
                  "Move to another parent entry")."\">$sLinkText</a>\n";
         }

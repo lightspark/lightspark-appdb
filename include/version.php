@@ -1447,6 +1447,11 @@ class version {
         return FALSE;
     }
 
+    public function objectGetClassDisplayName()
+    {
+        return 'version';
+    }
+
     public function objectMakeUrl()
     {
       return APPDB_ROOT."objectManager.php?sClass=version&amp;iId=$this->iVersionId";

@@ -939,6 +939,11 @@ class Application {
         return $oTable->GetString();
     }
 
+    public function objectGetClassDisplayName()
+    {
+        return 'application';
+    }
+
     public function objectMakeUrl()
     {
         $sUrl = APPDB_ROOT."objectManager.php?sClass=application&amp;iId=$this->iAppId";

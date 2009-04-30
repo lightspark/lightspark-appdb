@@ -398,6 +398,11 @@ class Vendor {
         }
     }
 
+    public function objectGetClassDisplayName()
+    {
+        return 'developer';
+    }
+
     /* Make a URL for viewing the specified vendor */
     function objectMakeUrl()
     {
