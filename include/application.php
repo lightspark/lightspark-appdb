@@ -1336,6 +1336,16 @@ class Application {
         return $sMsg;
     }
 
+    public function objectSetParent($iNewId, $sClass = '')
+    {
+        $this->iVendorId = $iNewId;
+    }
+
+    public function objectGetParent($sClass = '')
+    {
+        return new vendor($this->iVendorId);
+    }
+
     public function objectGetChildren($bIncludeDeleted = false)
     {
         return $this->objectGetChildrenClassSpecific('', $IncludeDeleted);
