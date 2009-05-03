@@ -105,9 +105,6 @@ class Vendor {
      */
     function unQueue()
     {
-        if(!$this->canEdit())
-            return FALSE;
-
         $hResult = query_parameters("UPDATE vendor SET state = '?' WHERE vendorId = '?'",
                                        'accepted', $this->iVendorId);
 

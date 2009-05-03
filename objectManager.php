@@ -128,6 +128,10 @@ if($oObject->getId() && $sAction != "add")
         $oObject->display_entry_for_editing($aClean, $sErrors);
         break;
 
+        case 'moveToNewParent':
+        $oObject->move_to_new_parent($aClean, $sErrors);
+        break;
+
         case 'showChangeParent':
         $oObject->display_change_parent();
         break;

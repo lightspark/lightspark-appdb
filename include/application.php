@@ -1341,6 +1341,11 @@ class Application {
         return $sMsg;
     }
 
+    public function objectAllowCreatingParents()
+    {
+        return true;
+    }
+
     public function objectSetParent($iNewId, $sClass = '')
     {
         $this->iVendorId = $iNewId;

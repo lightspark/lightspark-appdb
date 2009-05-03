@@ -917,6 +917,8 @@ class ObjectManager
 
         $sClassDisplayName = $oParentOM->GetOptionalSetting('objectGetClassDisplayName', 'parent entry');
 
+        echo '<p><a href="'.$this->makeUrl('moveToNewParent', $this->iId)."\">Create and move to a new $sClassDisplayName</a></p>\n";
+
         /* Display some help text */
         echo "<p>Move ".$oObject->objectMakeLink()." to the $sClassDisplayName ";
         echo "selected below:</p>\n";
@@ -1127,6 +1129,61 @@ class ObjectManager
         echo "</div>\n";
     }
 
+    public function move_to_new_parent($aClean, $sErrors = '')
+    {
+        $oObject = new $this->sClass($this->iId);
+        $oOldParent = $oObject->objectGetParent();
+        $sParentClass = get_class($oOldParent);
+        $oParent = new $sParentClass();
+        $oParentOM = new objectManager($sParentClass);
+
+        echo "<div class='default_container'>\n";
+
+        echo '<p>Move '.$oObject->objectMakeLink().' to a new entry:</p>';
+
+        /* Display errors, if any, and fetch form data */
+        if($this->displayErrors($sErrors))
+        {
+            global $aClean;
+            $oParent->getOutputEditorValues($aClean);
+
+            if($sErrors === PREVIEW_ENTRY)
+                $this->show_preview($oParent, $aClean);
+        }
+
+        /* Display help if it exists */
+        if(method_exists($oParent, "objectDisplayAddItemHelp"))
+        {
+            $aVars = $this->get_custom_vars($aClean, "addHelp");
+
+            if($aVars)
+                $oParent->objectDisplayAddItemHelp($aClean);
+            else
+                $oParent->objectDisplayAddItemHelp();
+        }
+
+        echo "<form method=\"post\" action=\"".$this->makeUrl('moveToNewParent', $this->iId)."\">\n";
+
+        echo $this->makeUrlFormData();
+
+        $aVars = $oParentOM->get_custom_vars($aClean, 'add');
+
+        if($aVars)
+            $oParent->outputEditor($aVars);
+        else
+            $oParent->outputEditor();
+
+        $this->oObject = $oObject;
+        echo "<div align=\"center\">";
+        echo "<input type=\"submit\" class=\"button\" value=\"Move to new parent\" ". 
+        "name=\"sSubmit\">\n";
+        $this->handle_preview_button();
+        echo "</div></form>\n";
+        echo html_back_link(1);
+
+        echo "</div>\n";
+    }
+
     private function handle_preview_button()
     {
         $oObject = $this->getObject();
@@ -1290,6 +1347,14 @@ class ObjectManager
         $this->iId = $this->getIdFromInput($aClean);
 
         $oObject = new $this->sClass($this->iId);
+
+        if($aClean['sSubmit'] == 'Move to new parent')
+        {
+            $oOldParent = $oObject->objectGetParent();
+            $sParentClass = get_class($oOldParent);
+            $oObject = new $sParentClass();
+        }
+
         $oOriginalObject = new $this->sClass($this->iId);  /* Prevent possible security hole if users change key
                                                               variables, making the permission checks run on
                                                               the wrong criteria */
@@ -1314,7 +1379,7 @@ class ObjectManager
 
         /* Check input, if necessary */
         if($aClean['sSubmit'] != "Delete" &&
-                method_exists(new $this->sClass, "checkOutputEditorInput"))
+                method_exists($oObject, "checkOutputEditorInput"))
         {
             $sErrors = $oObject->checkOutputEditorInput($aClean);
         }
@@ -1328,6 +1393,27 @@ class ObjectManager
         {
             case "Preview":
                 return PREVIEW_ENTRY;
+
+            case 'Move to new parent':
+                if(!$this->iId)
+                    return FALSE;
+
+                if($sErrors)
+                    return $sErrors;
+
+                if(!$oOriginalObject->canEdit())
+                    return FALSE;
+
+                if(!$this->getOptionalSetting('objectAllowCreatingParents', false))
+                    return FALSE;
+
+                $oObject->create();
+                if($oObject->objectGetState() != 'accepted')
+                    $oObject->unQueue();
+
+                $oOriginalObject->objectSetParent($oObject->objectGetId());
+                $oOriginalObject->update();
+                break;
 
             case "Submit":
                 // if we have errors, return them
