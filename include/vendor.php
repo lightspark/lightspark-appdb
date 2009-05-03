@@ -194,6 +194,12 @@ class Vendor {
         return false;
     }
 
+    function checkOutputEditorInput($aClean)
+    {
+        if(!getInput('sVendorName', $aClean))
+            return '<li>You need to enter the developer\'s name</li>';
+    }
+
     function outputEditor()
     {
       $oTable = new Table();
