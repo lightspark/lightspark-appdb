@@ -169,16 +169,27 @@ function get_bugzilla_versions()
 {
     $aVersions = array();
     $sTable = BUGZILLA_DB.".versions";
-    $sWhere = "WHERE product_id=".BUGZILLA_PRODUCT_ID;
-    $sQuery = "SELECT value FROM $sTable $sWhere ORDER BY id desc limit 6";
 
-    $hResult = query_bugzilladb($sQuery);
-    if(!$hResult) return $aVersions; // empty
+    // The empty string will fetch the most recent versions
+    $aBranches = array('');
 
-    // build the list of versions
-    while(list($sValue) = query_fetch_row($hResult))
+    // Get a list of stable branches
+    if(STABLE_BRANCHES)
+        $aBranches = array_merge($aBranches, explode(',', STABLE_BRANCHES));
+
+    foreach($aBranches as $sBranch)
     {
-        $aVersions[] = $sValue;
+        $sWhere = "WHERE product_id =".BUGZILLA_PRODUCT_ID." AND value LIKE '$sBranch%'";
+        $sQuery = "SELECT value FROM $sTable $sWhere ORDER BY id desc limit 6";
+        $hResult = query_bugzilladb($sQuery);
+        if($hResult)
+        {
+            while(list($sValue) = query_fetch_row($hResult))
+            {
+                if(!in_array($sValue, $aVersions))
+                    $aVersions[] = $sValue;
+            }
+        }
     }
 
     return $aVersions;
