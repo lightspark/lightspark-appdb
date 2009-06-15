@@ -165,8 +165,10 @@ function get_xml_tag ($file, $mode = null)
 /* bugzilla functions */
 
 // Returns an array containg the Wine versions stored in our Bugzilla DB
-function get_bugzilla_versions()
+// If bReturnIds is true, version ids are returned instead of names
+function get_bugzilla_versions($bReturnIds = false)
 {
+    $sFetchColumn = $bReturnIds ? 'id' : 'value';
     $aVersions = array();
     $sTable = BUGZILLA_DB.".versions";
 
@@ -180,7 +182,7 @@ function get_bugzilla_versions()
     foreach($aBranches as $sBranch)
     {
         $sWhere = "WHERE product_id =".BUGZILLA_PRODUCT_ID." AND value LIKE '$sBranch%'";
-        $sQuery = "SELECT value FROM $sTable $sWhere ORDER BY id desc limit 6";
+        $sQuery = "SELECT $sFetchColumn FROM $sTable $sWhere ORDER BY id desc limit 6";
         $hResult = query_bugzilladb($sQuery);
         if($hResult)
         {
@@ -198,18 +200,7 @@ function get_bugzilla_versions()
 // Returns an array containing the IDs of the Wine versions stored in Bugzilla
 function get_bugzilla_version_ids()
 {
-    $aIds = array();
-    $hResult = query_bugzilladb("SELECT id FROM ".BUGZILLA_DB.".versions WHERE
-                                 product_id = '".BUGZILLA_PRODUCT_ID."'
-                                 ORDER BY id DESC LIMIT 6");
-
-    if(!$hResult)
-        return $aIds;
-
-    while(list($sId) = mysql_fetch_row($hResult))
-        $aIds[] = $sId;
-
-    return $aIds;
+    return get_bugzilla_versions(true);
 }
 
 // $sVarname - name of the selection array that this function will output
