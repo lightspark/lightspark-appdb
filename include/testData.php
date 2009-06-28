@@ -562,7 +562,7 @@ class testData{
     }
 
     /* Creates and returns a table row for a test result table */
-    function CreateTestTableRow($iCurrentId, $sLink)
+    function CreateTestTableRow($iCurrentId, $sLink, $bShowAll)
     {
         $oVersion = new Version($this->iVersionId);
         $oApp  = new Application($oVersion->iAppId);
@@ -595,6 +595,9 @@ class testData{
             $oTableRowHighlight = new TableRowHighlight($oHighlightColor, $oInactiveColor);
 
             $sUrl = $sLink.$this->iTestingId;
+
+            if($bShowAll)
+                $sUrl .= '&bShowAll=true';
 
             $oTableRowClick = new TableRowClick($sUrl);
             $oTableRowClick->SetHighlight($oTableRowHighlight);
@@ -678,7 +681,7 @@ class testData{
         while($oRow = query_fetch_object($hResult))
         {
             $oTest = new testData($oRow->testingId);
-            $oTableRow = $oTest->CreateTestTableRow($this->iTestingId, $sLink);
+            $oTableRow = $oTest->CreateTestTableRow($this->iTestingId, $sLink, $bShowAll);
             // add the row to the table
             $oTable->AddRow($oTableRow);
 
