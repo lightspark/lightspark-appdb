@@ -443,8 +443,9 @@ function cleanupSearchWords($search_words)
 
 /* A common error for users is to submit a new app entry for a new app version,
    such as C&C Red Alert 2 Yuri's Revenge when we already have C&C Red Alert 2.
-   Search for the first word in the search query */
-function searchForApplicationPartial($sSearchWords)
+   Search for the first word in the search query.
+   iExcludeAppId can be useful when showing a list of duplicate entries */
+function searchForApplicationPartial($sSearchWords, $iExcludeAppId = null)
 {
     /* This would yield too many results and stress MySQL */
     if(strlen($sSearchWords) < 4)
@@ -474,14 +475,18 @@ function searchForApplicationPartial($sSearchWords)
         }
     }
 
+    $sExcludeApps = '';
+    if($iExcludeAppId && is_numeric($iExcludeAppId))
+        $sExcludeApps = " AND appId != '$iExcludeAppId' ";
+
     $hResult = query_parameters("SELECT * FROM appFamily WHERE state = 'accepted' AND
-                                 (appName LIKE '?%' OR appName LIKE '?')", $sSearchString.$sEnsureExactWord, $sSearchString);
+                                 (appName LIKE '?%' OR appName LIKE '?')$sExcludeApps", $sSearchString.$sEnsureExactWord, $sSearchString);
 
     return $hResult;
 }
 
 /* search the database and return a hResult from the query_appdb() */
-function searchForApplication($search_words)
+function searchForApplication($search_words, $iExcludeAppId = null)
 {
     /* This would yield too many results and stress MySQL */
     if(strlen($search_words) < 4)
@@ -505,6 +510,10 @@ function searchForApplication($search_words)
 
     $search_words = str_replace(' ', '%', query_escape_string($search_words));
 
+    $sExcludeApps = '';
+    if($iExcludeAppId && is_numeric($iExcludeAppId))
+        $sExcludeApps = " AND appId != '$iExcludeAppId' ";
+
     /* base query */
     $sQuery = "SELECT *
            FROM appFamily
@@ -513,7 +522,7 @@ function searchForApplication($search_words)
            AND (appName LIKE '%?%'
            OR keywords LIKE '%?%'";
 
-    $sQuery.=" ) ORDER BY appName";
+    $sQuery.=" ) $sExcludeApps ORDER BY appName";
 
     $hResult = query_parameters($sQuery, $search_words, $search_words);
     return $hResult;

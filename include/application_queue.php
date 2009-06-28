@@ -291,10 +291,10 @@ class application_queue
     function displayDuplicates()
     {
         echo "<b>Like matches</b><br />\n";
-        $this->displayDuplicateTable(searchForApplication($this->oApp->sName));
+        $this->displayDuplicateTable(searchForApplication($this->oApp->sName, $this->oApp->objectGetId()));
         echo "<br />\n";
         echo "<b>Partial matches</b><br />\n";
-        $this->displayDuplicateTable(searchForApplicationPartial($this->oApp->sName));
+        $this->displayDuplicateTable(searchForApplicationPartial($this->oApp->sName, $this->oApp->objectGetId()));
     }
 
     function displayDuplicateTable($hResult)
