@@ -99,6 +99,18 @@ class application_queue
 
         $this->oApp->unQueue();
         $this->oVersionQueue->unQueue();
+
+        /* Has anyone submitted new versions while the app was queued?
+           If so we need to change their state from pending to queued */
+        $aOtherVersions = $this->oApp->objectGetChildrenClassSpecific('version');
+        foreach($aOtherVersions as $oVersion)
+        {
+            if($oVersion->objectGetState() == 'pending')
+            {
+                $oVersion->objectSetState('queued');
+                $oVersion->update();
+            }
+        }
     }
 
     function reQueue()

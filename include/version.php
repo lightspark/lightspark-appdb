@@ -247,6 +247,9 @@ class version {
             }
         }
 
+        if($this->objectGetState() != $oVersion->objectGetState())
+            query_parameters("UPDATE appVersion SET state = '?' WHERE versionId = '?'", $this->objectGetState(), $this->objectGetId());
+
         if($sWhatChanged and !$bSilent)
             $this->SendNotificationMail("edit",$sWhatChanged);
         return true;
