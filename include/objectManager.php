@@ -1303,6 +1303,10 @@ class ObjectManager
         if(!$oObject->objectGetId())
             $this->error_exit("Entry not found (class: {$this->sClass}, id: {$this->iId})");
 
+        /* Check if the entry has been deleted */
+        if($oObject->objectGetState() == 'deleted')
+            $this->error_exit("This entry has been deleted (class: {$this->sClass}, id: {$this->iId})<br />Its content may have been moved to another entry");
+
         $aVars = $this->get_custom_vars($aClean, "view");
 
         echo "<br />";

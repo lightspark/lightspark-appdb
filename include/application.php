@@ -745,9 +745,6 @@ class Application {
         {
             $sError = 'You do not have permission to view this entry';
 
-            if($this->objectGetState() == 'deleted')
-                $sError = 'This entry has been deleted; it\'s contents may have been moved to another entry';
-
             objectManager::error_exit($sError);
         }
 
