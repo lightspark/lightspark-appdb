@@ -1307,6 +1307,26 @@ class ObjectManager
         if($oObject->objectGetState() == 'deleted')
             $this->error_exit("This entry has been deleted (class: {$this->sClass}, id: {$this->iId})<br />Its content may have been moved to another entry");
 
+        /* Show a note if the entry is queued or rejected */
+        if($oObject->objectGetState() != 'accepted')
+        {
+            $sSentence = 'This entry ';
+            switch($oObject->objectGetState())
+            {
+                case 'queued':
+                case 'pending':
+                    $sVerb = 'Queued';
+                    $sSentence .= 'is currently queued';
+                    break;
+                case 'rejected':
+                    $sVerb = 'Rejected';
+                    $sSentence .= 'has been rejected';
+                    break;
+            }
+            $sSentence .= ', and may not be visible to all users.';
+            echo html_note("$sVerb Entry", $sSentence);
+        }
+
         $aVars = $this->get_custom_vars($aClean, "view");
 
         echo "<br />";
