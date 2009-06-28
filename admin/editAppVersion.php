@@ -54,20 +54,8 @@ if(!empty($aClean['sSubmit']))
     /* Download URL editor */
     echo downloadurl::outputEditor($oVersion, "editAppVersion.php");
 
-    /* only admins can move versions */
-    if($_SESSION['current']->hasPriv("admin"))
-    {
-        // move version form
-        echo '<form enctype="multipart/form-data" action="moveAppVersion.php" method="post">',"\n";
-        echo '<input type="hidden" name="iAppId" value="'.$oVersion->iAppId.'">';
-        echo '<input type="hidden" name="iVersionId" value="'.$oVersion->iVersionId.'">';
-        echo html_frame_start("Move version to another application","90%","",0);
-        echo '<center><input type="submit" name="sView" value="Move this version"></center>',"\n";
-        echo html_frame_end();
-    }
-
     echo html_back_link(1,$oVersion->objectMakeUrl());
-    
+
     echo "</div>\n";
 
     apidb_footer();
