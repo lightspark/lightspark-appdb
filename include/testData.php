@@ -1083,10 +1083,12 @@ class testData{
 
     function getTestResultsForUser($iUserId, $iVersionId)
     {
+        $oVersion = new version($iVersionId);
         $hResult = query_parameters("SELECT * FROM testResults WHERE
                                      submitterId = '?'
                                      AND versionId = '?'
-                                     ORDER BY testingId DESC", $iUserId, $iVersionId);
+                                     AND state = '?'
+                                     ORDER BY testingId DESC", $iUserId, $iVersionId, $oVersion->objectGetState());
 
         if(!$hResult)
             return null;
