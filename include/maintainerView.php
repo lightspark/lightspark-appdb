@@ -27,6 +27,12 @@ class maintainerView
         return $this->iUserId;
     }
 
+    /* We don't queue this class or process it in any way */
+    function objectGetState()
+    {
+        return 'accepted';
+    }
+
     function addVersionRatingInfo($oTableRow, $oVersion)
     {
         $oTableRow->AddTextCell($oVersion->objectMakeLink());
