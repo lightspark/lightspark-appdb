@@ -169,7 +169,7 @@ class downloadurl
             return FALSE;
 
         if(!($hResult = query_parameters("SELECT COUNT(*) as num FROM appData 
-            WHERE TYPE = '?' AND versionId = '?'",
+            WHERE TYPE = '?' AND versionId = '?' AND state = 'accepted'",
                 "downloadurl", $aValues["iVersionId"])))
             return FALSE;
 
