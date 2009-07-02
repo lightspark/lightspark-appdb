@@ -160,11 +160,20 @@ class Category {
     }
 
     /* Get all category objects, ordered and with category names indented
-       according to subcategory level */
-    static function getOrderedList()
+       according to subcategory level.
+       Optionally includes the 'Main' top category. */
+    static function getOrderedList($bIncludeMain = false)
     {
         $oCat = new category();
-        return $oCat->getSubCatList(0);
+
+        if(!$bIncludeMain)
+            return $oCat->getSubCatList(0);
+
+        $oCat->sName = 'Main';
+        $aCats = array($oCat);
+        $aCats += $oCat->getSubCatList(1);
+
+        return $aCats;
     }
 
     function objectGetMail($sAction, $bMailSubmitter, $bParentAction)
@@ -278,18 +287,14 @@ class Category {
 
     function outputEditor()
     {
-        $sQuery = "SELECT catId, catName FROM appCategory WHERE catId!='?'";
-        $hResult = query_parameters($sQuery, $this->iCatId);
+        $aCategories = category::getOrderedList(true);
+        $aCatNames = array();
+        $aCatIds = array();
 
-        /* Add the virtual 'Main' category */
-        $aCatIds = array(0);
-        $aCatNames = array('Main');
-
-        /* Add the rest from the database */
-        while($oRow = query_fetch_object($hResult))
+        foreach($aCategories as $oCategory)
         {
-            $aCatIds[] = $oRow->catId;
-            $aCatNames[] = $oRow->catName;
+            $aCatNames[] = $oCategory->sName;
+            $aCatIds[] = $oCategory->objectGetId();
         }
 
         echo "<table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"2\">
