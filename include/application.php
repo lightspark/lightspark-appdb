@@ -565,9 +565,20 @@ class Application {
         echo '<td><input size="20" type="text" name="sAppName" value="'.$this->sName.'"></td></tr>',"\n";
 
         // app Category
-        $w = new TableVE("view");
         echo '<tr valign=top><td class="color0"><b>Category</b></td><td>',"\n";
-        echo $w->make_option_list("iAppCatId", $this->iCatId,"appCategory","catId","catName");
+
+        $aCategories = category::getOrderedList(true);
+        $aCatNames = array();
+        $aCatIds = array();
+
+        foreach($aCategories as $oCategory)
+        {
+            $aCatNames[] = $oCategory->sName;
+            $aCatIds[] = $oCategory->objectGetId();
+        }
+
+        echo html_select("iAppCatId",$aCatIds,$this->iCatId, $aCatNames);
+
         echo '</td></tr>',"\n";
 
         $oVendor = new vendor($this->iVendorId);
