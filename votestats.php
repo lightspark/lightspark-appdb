@@ -131,7 +131,8 @@ if(empty($aClean['iCategoryId']))
                        count(userId) as count
                            FROM appVotes, appFamily, appVersion
                            WHERE appVotes.versionId = appVersion.versionId AND
-                           appFamily.appId = appVersion.appId
+                           appFamily.appId = appVersion.appId AND
+                           appVersion.state = 'accepted'
                            GROUP BY appVotes.versionId ORDER BY count DESC LIMIT ?", 
                                $aClean['iTopNumber']);
 } else
@@ -149,6 +150,7 @@ if(empty($aClean['iCategoryId']))
                   FROM appFamily AS f, appCategory AS c, appVotes AS v, appVersion
                   WHERE appVersion.appId = f.appId
                   AND appVersion.versionId = v.versionId
+                  AND appVersion.state = 'accepted'
                   AND f.catId = c.catId
                   AND (
                         c.catId = '?'
