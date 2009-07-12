@@ -562,7 +562,7 @@ class testData{
     }
 
     /* Creates and returns a table row for a test result table */
-    function CreateTestTableRow($iCurrentId, $sLink, $bShowAll)
+    function CreateTestTableRow($iCurrentId, $sLink, $bShowAll = false)
     {
         $oVersion = new Version($this->iVersionId);
         $oApp  = new Application($oVersion->iAppId);
