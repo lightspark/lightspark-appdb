@@ -167,7 +167,7 @@ function orphanVersionCheck()
 {
     global $sEmailSubject;
 
-    $sQuery = "select versionId, versionName from appVersion where appId = 0";
+    $sQuery = "select versionId, versionName from appVersion where appId = 0 and state != 'deleted'";
     $hResult = query_appdb($sQuery);
     $found_orphans = false;
 
