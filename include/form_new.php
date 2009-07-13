@@ -11,6 +11,7 @@ echo html_frame_start("Create New Application DB Account","400","",0)
 ?>
 
 <!-- start of new account form -->
+The password will be sent to your e-mail
 <table border=0 width="100%" cellspacing=0 cellpadding=20>
     <tr>
         <td class=color1> E-mail </td>

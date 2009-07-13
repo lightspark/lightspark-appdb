@@ -110,7 +110,6 @@ function cmd_do_new()
     if($iResult == SUCCESS)
     {
         mail_appdb($oUser->sEmail, "New account", "Your password is ".$sPassword);
-        addmsg("Account created! Check your email for your password. (".$aClean['sUserEmail'].")", "green");
         util_redirect_and_exit(apidb_fullurl());
     }
     else if($iResult == USER_CREATE_EXISTS)
