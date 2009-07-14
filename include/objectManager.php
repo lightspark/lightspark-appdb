@@ -899,7 +899,7 @@ class ObjectManager
         }
 
         /* The argument is the reply text */
-        $this->delete_entry("Duplicate entry");
+        $this->delete_entry("This entry was merged with an existing one, which can be found at\n" . $oNewObject->objectMakeUrl());
     }
 
     /* Display a page where the user can move the current object to another parent */
