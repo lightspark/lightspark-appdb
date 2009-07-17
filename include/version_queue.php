@@ -285,7 +285,7 @@ class version_queue
 
     function objectMakeLink()
     {
-        return TRUE;
+        return $this->oVersion->objectMakeLink();
     }
 
     function displayMoveTestTable()

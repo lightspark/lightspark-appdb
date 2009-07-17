@@ -388,7 +388,7 @@ class application_queue
 
     function objectMakeLink()
     {
-        return TRUE;
+        return $this->oApp->objectMakeLink();
     }
 
     function objectGetItemsPerPage($sState = 'accepted')
