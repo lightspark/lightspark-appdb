@@ -383,7 +383,7 @@ class application_queue
 
     function objectMakeUrl()
     {
-        return TRUE;
+        return $this->oApp->objectMakeUrl();
     }
 
     function objectMakeLink()

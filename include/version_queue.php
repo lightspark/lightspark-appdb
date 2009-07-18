@@ -280,7 +280,7 @@ class version_queue
 
     function objectMakeUrl()
     {
-        return TRUE;
+        return $this->oVersion->objectMakeUrl();
     }
 
     function objectMakeLink()
