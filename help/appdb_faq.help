@@ -51,12 +51,7 @@ work in Wine, and also what are the tricks to get it working best.<p>
 
 <p><b>Q: How does a new application get added to the database?</b></p>
 <blockquote>
-<p><b>A:</b> In order to ensure consistency, only authorized application database
-maintainers are permitted to add new applications to the database.
-Any application database can comment on a particular application.</p>
-<p>Anyone can request that an application be added to the database,
-but the application is not actually added until after it has been
-reviewed by a maintainer or administrator.</p>
+<p><b>A:</b> Any registered user can submit an application. Use the <a href="../objectManager.php?sClass=application_queue&sTitle=Submit+Application&sAction=add">Submit App</a> link in the AppDB sidebar to add an entry; it will be processed by an admin before becoming visible to all users. You can make changes to your queued entries by visiting the <a href="../queueditems.php">Your Queued Items</a> page.</p>
 </blockquote>
 
 <p><b>Q: How can I submit screenshots?</b></p>
