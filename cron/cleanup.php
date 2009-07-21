@@ -17,7 +17,8 @@ inactiveUserCheck();
 orphanVersionCheck();
 
 /* report error log entries to admins and flush the error log after doing so */
-reportErrorLogEntries();
+// temporarily disabled - it apperas we have too many errors
+// reportErrorLogEntries();
 
 /* remove screenshots that are missing their screenshot and thumbnail files */
 removeScreenshotsWithMissingFiles();
