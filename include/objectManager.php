@@ -1217,12 +1217,18 @@ class ObjectManager
             if($sLinkText == 'default')
             {
                 $oParent = $oObject->objectGetParent();
-                $oParentOM = new objectManager(get_class($oParent), '', $oParent->objectGetId());
-                $sClassName = $oParentOM->getOptionalSetting('objectGetClassDisplayName', false);
-                if($sClassName)
-                    $sLinkText = "Move to another $sClassName";
-                else
-                    $sLinkText = 'Move to another parent entry';
+                if(!$oParent)
+                {
+                    echo html_note('Failed to find parent entry', 'No parent entry could be found, even though it is supposed to exist.');
+                } else
+                {
+                    $oParentOM = new objectManager(get_class($oParent), '', $oParent->objectGetId());
+                    $sClassName = $oParentOM->getOptionalSetting('objectGetClassDisplayName', false);
+                    if($sClassName)
+                        $sLinkText = "Move to another $sClassName";
+                    else
+                        $sLinkText = 'Move to another parent entry';
+                }
             }
             echo "<a href=\"".$this->makeUrl("showChangeParent", $this->iId,
                  "Move to another parent entry")."\">$sLinkText</a>\n";
