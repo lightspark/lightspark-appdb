@@ -1217,10 +1217,11 @@ class ObjectManager
             if($sLinkText == 'default')
             {
                 $oParent = $oObject->objectGetParent();
-                if(!$oParent)
+                if(!$oParent || !$oParent->objectGetId())
                 {
                     echo html_note('Failed to find parent entry', 'No parent entry could be found, even though it is supposed to exist.');
-                } else
+                }
+                if($oParent)
                 {
                     $oParentOM = new objectManager(get_class($oParent), '', $oParent->objectGetId());
                     $sClassName = $oParentOM->getOptionalSetting('objectGetClassDisplayName', false);
