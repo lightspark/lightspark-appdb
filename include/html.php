@@ -288,21 +288,4 @@ function html_note($shTitle, $shBody)
     return $shRet;
 }
 
-function html_radiobuttons($aIds, $aOptions, $sName, $sDefault = '')
-{
-    $shRet = '';
-
-    for($i = 0; $i < sizeof($aIds); $i++)
-    {
-        if($aIds[$i] == $sDefault)
-            $shChecked = ' checked="checked"';
-        else
-            $shChecked = '';
-
-        $shRet .= '<input type="radio" name="'.$sName.'" value="'.$aIds[$i]."\"$shChecked> " . $aOptions[$i].'<br />';
-    }
-
-    return $shRet;
-}
-
 ?>
