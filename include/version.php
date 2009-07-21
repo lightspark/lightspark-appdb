@@ -786,7 +786,7 @@ class version {
     public function objectGetParent($sClass = '')
     {
         /* No id so we can't query the DB, but perhaps an entry is cached? */
-        if(!$this->iAppId)
+        if(!$this->iAppId && $this->oApp)
             return $this->oApp;
 
         return new application($this->iAppId);
