@@ -7,12 +7,17 @@ require_once(BASE."include/version.php");
 /************************************/
 
 
+define('APPNOTE_SHOW_FOR_ALL', -1);
+define('APPNOTE_SHOW_FOR_VERSIONS', -2);
+define('APPNOTE_SHOW_FOR_APP', -3);
+
 /**
  * Note class for handling notes
  */
 class Note {
     var $iNoteId;
     var $iVersionId;
+    var $iAppId;
     var $sTitle;
     var $shDescription;
     var $iSubmitterId;
@@ -38,6 +43,7 @@ class Note {
         {
             $this->iNoteId = $oRow->noteId;
             $this->iVersionId = $oRow->versionId;
+            $this->iAppId = $oRow->appId;
             $this->sTitle = $oRow->noteTitle;
             $this->shDescription = $oRow->noteDesc;
             $this->sSubmitTime = $oRow->submitTime;
@@ -54,11 +60,11 @@ class Note {
     function create()
     {
         $hResult = query_parameters("INSERT INTO appNotes (versionId, ".
-                                    "noteTitle, noteDesc, submitterId, ".
+                                    "appId, noteTitle, noteDesc, submitterId, ".
                                     "submitTime) ".
-                                    "VALUES('?', '?', '?', '?', ?)",
-                                    $this->iVersionId, $this->sTitle,
-                                    $this->shDescription,
+                                    "VALUES('?', '?', '?', '?', '?', ?)",
+                                    $this->iVersionId, $this->iAppId,
+                                    $this->sTitle, $this->shDescription,
                                     $_SESSION['current']->iUserId,
                                     "NOW()");
 
@@ -152,9 +158,18 @@ class Note {
 
     function SendNotificationMail($sAction="add",$sMsg=null)
     {
-        $oVersion = new version($this->iVersionId);
-        $sAppName = version::fullName($this->iVersionId);
-        $sMsg .= $oVersion->objectMakeUrl()."\n";
+        if(!$this->iAppId)
+        {
+            $oVersion = new version($this->iVersionId);
+            $sAppName = version::fullName($this->iVersionId);
+            $sMsg .= $oVersion->objectMakeUrl()."\n";
+        } else
+        {
+            $oApp = new application($this->iAppId);
+            $sAppName = $oApp->sName;
+            $sMsg .= $oApp->objectMakeUrl()."\n";
+        }
+
         switch($sAction)
         {
             case "add":
@@ -219,7 +234,14 @@ class Note {
             $sClass = 'defaultnote';
         }
 
-        $oVersion = new version($this->iVersionId);
+        if(!$aVars || !getInput('shReturnTo', $aVars))
+        {
+            $oVersion = new version($this->iVersionId);
+            $shReturnTo = $oVersion->objectMakeUrl();
+        } else
+        {
+            $shReturnTo = $aVars['shReturnTo'];
+        }
 
         $shOutput = html_frame_start("","98%",'',0);
 
@@ -232,7 +254,7 @@ class Note {
         if((!$aVars || $aVars['bEditing'] != "true") && $this->canEdit())
         {
             $shOutput .= "<tr class=\"color1\" align=\"center\" valign=\"top\"><td>";
-            $shOutput .= "<form method=\"post\" name=\"message\" action=\"objectManager.php?sClass=note&amp;sAction=edit&amp;iId=".$this->iNoteId."&amp;sReturnTo=".urlencode($oVersion->objectMakeUrl())."\">";
+            $shOutput .= "<form method=\"post\" name=\"message\" action=\"objectManager.php?sClass=note&amp;sAction=edit&amp;iId=".$this->iNoteId."&amp;sReturnTo=".urlencode($shReturnTo)."\">";
             $shOutput .= '<input type="submit" value="Edit Note" class="button">';
             $shOutput .= '</form></td></tr>';
         }
@@ -243,6 +265,37 @@ class Note {
         echo $shOutput;
     }
 
+    function displayNotesForEntry($iVersionId, $iAppId = null)
+    {
+        if($iVersionId)
+        {
+            $oVersion = new version($iVersionId);
+            $oApp = $oVersion->objectGetParent();
+            $hResult = query_parameters("SELECT noteId FROM appNotes WHERE versionId  = '?' OR (appId = '?' AND (versionId = '?' OR versionId = '?'))", $iVersionId, $oApp->objectGetId(), APPNOTE_SHOW_FOR_ALL, APPNOTE_SHOW_FOR_VERSIONS);
+        } else if($iAppId)
+        {
+            $hResult = query_parameters("SELECT noteId FROM appNotes WHERE appId = '?' AND versionId = '?' OR versionId = '?'", $iAppId, APPNOTE_SHOW_FOR_ALL, APPNOTE_SHOW_FOR_APP);
+        }
+
+        if(!$hResult)
+            return;
+
+        if($iVersionId)
+            $oVersion = new version($iVersionId);
+        else
+            $oApp = new application($iAppId);
+
+        while($oRow = mysql_fetch_object($hResult))
+        {
+            $oNote = new note($oRow->noteId);
+
+            $shReturnTo = $iVersionId ? $oVersion->objectMakeUrl() : $oApp->objectMakeUrl();
+
+            $aVars = array('shReturnTo' => $shReturnTo, 'bEditing' => 'false');
+            $oNote->display($aVars);
+        }
+    }
+
     function objectGetCustomVars($sAction)
     {
         switch($sAction)
@@ -251,7 +304,7 @@ class Note {
                 return array("bEditing");
 
             case "add":
-                return array("iVersionId","sNoteTitle");
+                return array('iVersionId','iAppId','sNoteTitle');
 
             default:
                 return null;
@@ -265,6 +318,12 @@ class Note {
             if(!$this->iVersionId)
                 $this->iVersionId = $aValues['iVersionId'];
 
+            if(!$this->iAppId)
+                $this->iAppId = getInput('iAppId', $aValues);
+
+            if($this->iAppId && !$this->iVersionId)
+                $this->iVersionId = APPNOTE_SHOW_FOR_ALL;
+
             if(!$this->sTitle)
                 $this->sTitle = $aValues['sNoteTitle'];
         }
@@ -276,7 +335,9 @@ class Note {
 
         echo '<input type="hidden" name="bEditing" value="true">';
         echo '<input type="hidden" name="iNoteId" value="'.$this->iNoteId.'">';
-        echo '<input type="hidden" name="iVersionId" value="'.$this->iVersionId.'">';
+        if(!$this->iAppId)
+            echo '<input type="hidden" name="iVersionId" value="'.$this->iVersionId.'">';
+        echo '<input type="hidden" name="iAppId" value="'.$this->iAppId.'">';
 
         echo '<tr><td class=color1>Title</td>'."\n";
         echo '    <td class=color0><input size=80% type="text" name="sNoteTitle" type="text" value="'.$this->sTitle.'"></td></tr>',"\n";
@@ -285,6 +346,14 @@ class Note {
         echo '<textarea cols="80" rows="20" id="editor" name="shNoteDesc">'.$this->shDescription.'</textarea>',"\n";
         echo '</p>';
         echo '</td></tr>'."\n";
+        if($this->iAppId)
+        {
+            $aIds = array(APPNOTE_SHOW_FOR_ALL, APPNOTE_SHOW_FOR_VERSIONS, APPNOTE_SHOW_FOR_APP);
+            $aOptions = array('Show on both application and version pages', 'Show on version pages only', 'Show on application page only');
+            echo '<tr><td class="color1">Display mode</td>'."\n";
+            echo '<td class="color0">'.html_radiobuttons($aIds, $aOptions, 'iVersionId', $this->iVersionId);
+            echo '</td></tr>';
+        }
         echo '<tr><td colspan="2" align="center" class="color3">',"\n";
 
         echo html_table_end();
@@ -295,7 +364,8 @@ class Note {
     /* $aValues can be $_REQUEST or any array with the values from outputEditor() */
     function GetOutputEditorValues($aValues)
     {
-        $this->iVersionId = $aValues['iVersionId'];
+        $this->iVersionId = getInput('iVersionId', $aValues);
+        $this->iAppId = getInput('iAppId', $aValues);
         $this->sTitle = $aValues['sNoteTitle'];
         $this->shDescription = $aValues['shNoteDesc'];
     }
@@ -403,16 +473,11 @@ class Note {
     function canEdit()
     {
         if($_SESSION['current']->hasPriv("admin"))
-        {
-          return true;
-        } else if($this->iVersionId)
-        {
-          if(maintainer::isUserMaintainer($_SESSION['current'],
-                                          $this->iVersionId))
-          {
             return true;
-          }
-        }
+        else if($this->iVersionId && !$this->iAppId)
+            return maintainer::isUserMaintainer($_SESSION['current'], $this->iVersionId);
+        else if($this->iAppId)
+            return maintainer::isUserSuperMaintainer($_SESSION['current'], $this->iAppId);
 
         return false;
     }

@@ -1171,15 +1171,7 @@ class version {
 
         view_version_bugs($this->iVersionId, $this->get_buglink_ids());    
 
-        /* display the notes for the application */
-        $hNotes = query_parameters("SELECT noteId FROM appNotes WHERE versionId = '?'",
-                                   $this->iVersionId);
-    
-        while( $oRow = query_fetch_object($hNotes) )
-        {
-            $oNote = new Note($oRow->noteId);
-            $oNote->display();
-        }
+        echo note::displayNotesForEntry($this->iVersionId);
 
         // Comments Section
         if($this->iVersionId)

@@ -835,6 +835,9 @@ class Application {
             if($_SESSION['current']->isSuperMaintainer($this->iAppId) || $_SESSION['current']->hasPriv("admin"))
             {
                 echo '        <form method="post" name="sEdit" action="admin/editAppFamily.php"><input type="hidden" name="iAppId" value="'.$this->iAppId.'"><input type="submit" value="Edit Application" class="button"></form>';
+                echo '<form method="post" action="objectManager.php?sClass=note&sAction=add&sTitle=Add+note&iAppId='.$this->iAppId.'&sNoteTitle=HOWTO&sReturnTo='.urlencode($this->objectMakeUrl()).'">';
+                echo '<input type="submit" value="Add note / how-to" />';
+                echo '</form>';
             }
             if($_SESSION['current']->isLoggedIn())
             {
@@ -877,6 +880,8 @@ class Application {
 
         // display bundle
         $this->displayBundle();
+
+        note::displayNotesForEntry(null, $this->iAppId);
     }
 
     public static function lookup_name($appId)
