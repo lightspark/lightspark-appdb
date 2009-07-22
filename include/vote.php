@@ -288,7 +288,8 @@ class voteInspector
         $oTableRow->AddTextCell('Created');
         $oTableRow->AddTextCell('Votes');
         $oTableRow->AddTextCell('Privileges');
-        $oTableRow->AddTextCell('# of test results');
+        $oTableRow->AddTextCell('Test data');
+        $oTableRow->AddTextcell('Comments');
         $oTable->AddRow($oTableRow);
 
         for($i = 0; $oRow = mysql_fetch_object($hResult); $i++)
@@ -317,6 +318,15 @@ class voteInspector
             $oTableRow->AddTextCell($sPrivs);
 
             $hSubResult = query_parameters("SELECT COUNT(testingId) AS count FROM testResults WHERE submitterId = '?' AND state != 'deleted'", $oVoter->iUserId);
+
+            if($hSubResult && ($oSubRow = mysql_fetch_object($hSubResult)))
+                $sSubmitted = $oSubRow->count;
+            else
+                $sSubmitted = 'DB failure';
+
+            $oTableRow->AddTextCell($sSubmitted);
+
+            $hSubResult = query_parameters("SELECT COUNT(commentId) as count FROM appComments WHERE userId = '?'", $oVoter->iUserId);
 
             if($hSubResult && ($oSubRow = mysql_fetch_object($hSubResult)))
                 $sSubmitted = $oSubRow->count;
