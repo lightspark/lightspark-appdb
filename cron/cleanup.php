@@ -28,6 +28,9 @@ removeScreenshotsWithMissingFiles();
 /* status since they aren't really maintaining the application/version */
 maintainerCheck();
 
+/* remove votes for versions that have been deleted */
+cleanupVotes();
+
 /* Updates the rating info for all versions based on test results */
 //updateRatings();
 
@@ -292,6 +295,45 @@ function removeScreenshotsWithMissingFiles()
 function maintainerCheck()
 {
   maintainer::notifyMaintainersOfQueuedData();
+}
+
+/* remove votes for versions that have been deleted */
+function cleanupVotes()
+{
+    $hResult = mysql_query("SELECT appVotes.* FROM appVotes,appVersion WHERE
+                            appVotes.versionId = appVersion.versionId
+                            AND appVersion.state = 'deleted'");
+
+    if(!$hResult)
+        return;
+
+    $iDeleted = 0;
+    $iFailed = 0;
+
+    while($oRow = mysql_fetch_object($hResult))
+    {
+        $oVote = new vote(null, $oRow);
+        if($oVote->delete())
+            $iDeleted++;
+        else
+            $iFailed++;
+    }
+
+    $sEmails = user::get_notify_email_address_list(null, null); // only admins
+
+    if($sEmails)
+    {
+        global $sEmailSubject;
+        $sSubject = $sEmailSubject . 'Vote Cleanup';
+        $sPlural = ($iDeleted == 1) ? '' : 's';
+        $sMsg = "Removed $iDeleted vote$sPlural cast for deleted versions\n";
+        if($iFailed)
+        {
+            $sPlural = ($iFailed == 1) ? '' : 's';
+            $sMsg .= "WARNING: Failed to delete $iFailed vote$sPlural\n";
+        }
+        mail_appdb($sEmails, $sSubject, $sMsg);
+    }
 }
 
 function updateRatings()
