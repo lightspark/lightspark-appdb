@@ -406,7 +406,12 @@ class screenshot
     {
         $oVersion = new version($this->iVersionId);
         $sAppName = version::fullName($this->iVersionId);
-        $sMsg = $oVersion->objectMakeUrl()."\n";
+
+        if(!$bDeleted)
+            $sMsg = $this->objectMakeUrl()."\n";
+        else
+            $sMsg = $oVersion->objectMakeUrl()."\n";
+
         if(!$bDeleted)
         {
             if(!$this->bQueued)
@@ -771,8 +776,7 @@ class screenshot
 
     function objectMakeUrl()
     {
-        /* STUB */
-        return TRUE;
+        return APPDB_ROOT."appimage.php?iId={$this->iScreenshotId}";
     }
 
     function allowAnonymousSubmissions()
