@@ -233,11 +233,14 @@ class voteManager
 class voteInspector
 {
     private $iVersionId;
+    private $aDeleteVoters;
 
     function voteInspector($iVersionId = null)
     {
         if(is_numeric($iVersionId))
             $this->iVersionId = $iVersionId;
+
+        $this->aDeleteVoters = array();
     }
 
     public function objectGetId()
@@ -255,16 +258,37 @@ class voteInspector
         return $_SESSION['current']->hasPriv('admin');
     }
 
+    public function objectGetSubmitterId()
+    {
+        return -1;
+    }
+
+    public function getVotes()
+    {
+        return query_parameters("SELECT userId, COUNT(userId) as count FROM appVotes WHERE
+                                 versionId = '?'
+                                 GROUP BY userId", $this->iVersionId);
+    }
+
+    public function getVoteCount()
+    {
+        return vote_count_version_total($this->iVersionId);
+    }
+
+    public function getVoterCount()
+    {
+        return mysql_num_rows($this->getVotes());
+    }
+
     public function outputEditor()
     {
         $oVersion = new version($this->iVersionId);
 
-        echo 'Inspecting votes for ' . version::fullNameLink($this->iVersionId);
-        echo '<br /><br />';
+        echo 'Inspecting votes for ' . version::fullNameLink($this->iVersionId).'<br />';
+        echo 'Total votes: '.$this->getVoteCount().'<br />';
+        echo 'To delete bogus user accounts, select them and press the Delete button below.<br /><br />';
 
-        $hResult = query_parameters("SELECT userId, COUNT(userId) as count FROM appVotes WHERE
-                                     versionId = '?'
-                                     GROUP BY userId", $this->iVersionId);
+        $hResult = $this->getVotes();
 
         if(!$hResult)
         {
@@ -283,6 +307,7 @@ class voteInspector
 
         $oTableRow = new TableRow();
         $oTableRow->setClass('color4');
+        $oTableRow->AddTextCell('Delete account');
         $oTableRow->AddTextCell('User');
         $oTableRow->AddTextCell('ID');
         $oTableRow->AddTextCell('Created');
@@ -297,6 +322,13 @@ class voteInspector
             $oVoter = new user($oRow->userId);
             $oTableRow = new TableRow();
             $oTableRow->setClass(($i % 2) ? 'color0' : 'color1');
+
+            if($oVoter->hasPriv('admin'))
+                $shDelete = '';
+            else
+                $shDelete = "<input type=\"checkbox\" name=\"iDelSlot$i\" value=\"{$oVoter->iUserId}\" />";
+
+            $oTableRow->AddTextCell($shDelete);
             $oTableRow->AddTextCell($oVoter->objectMakeLink());
             $oTableRow->AddTextCell($oVoter->iUserId);
             $oTableRow->AddTextCell($oVoter->sDateCreated);
@@ -342,7 +374,14 @@ class voteInspector
 
     public function getOutputEditorValues($aValues)
     {
-    
+        $iVoters = $this->getVoterCount();
+        $this->aDeleteVoters = array();
+
+        for($i = 0; $i < $iVoters; $i++)
+        {
+            if(($iVoterId = getInput("iDelSlot$i", $aValues)))
+                $this->aDeleteVoters[] = new user($iVoterId);
+        }
     }
 
     public function create()
@@ -353,6 +392,28 @@ class voteInspector
     public function update()
     {
         return true;
+    }
+
+    public function objectGetMail($sAction, $bMailSubmitter, $bParentAction)
+    {
+        $sSubject = '';
+        $sMsg = '';
+        $aMailTo = null;
+
+        return array($sSubject, $sMsg, $aMailTo);
+    }
+
+    public function delete()
+    {
+        $bSuccess = true;
+
+        foreach($this->aDeleteVoters as $oVoter)
+        {
+            if(!$oVoter->delete())
+                $bSuccess = false;
+        }
+
+        return $bSuccess;
     }
 }
 
