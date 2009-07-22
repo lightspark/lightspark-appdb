@@ -310,6 +310,7 @@ class voteInspector
         $oTableRow->AddTextCell('Delete account');
         $oTableRow->AddTextCell('User');
         $oTableRow->AddTextCell('ID');
+        $oTableRow->AddTextCell('E-mail');
         $oTableRow->AddTextCell('Created');
         $oTableRow->AddTextCell('Votes');
         $oTableRow->AddTextCell('Privileges');
@@ -331,6 +332,7 @@ class voteInspector
             $oTableRow->AddTextCell($shDelete);
             $oTableRow->AddTextCell($oVoter->objectMakeLink());
             $oTableRow->AddTextCell($oVoter->iUserId);
+            $oTableRow->AddTextCell($oVoter->sEmail);
             $oTableRow->AddTextCell($oVoter->sDateCreated);
             $oTableRow->AddTextCell($oRow->count);
 
