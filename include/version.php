@@ -875,7 +875,7 @@ class version {
             if($_SESSION['current']->hasPriv('admin'))
             {
                 $oMVoteInspector = new objectManager('voteInspector', 'Vote inspector');
-                $shVoteLink .= ' &nbsp; <a href="'.$oMVoteInspector->makeUrl('view',$this->iVersionId).'">Inspect</a>';
+                $shVoteLink .= ' &nbsp; <a href="'.$oMVoteInspector->makeUrl('edit',$this->iVersionId).'">Inspect</a>';
             }
 
             $shVoteText = vote_count_version_total($this->iVersionId).$shVoteLink;

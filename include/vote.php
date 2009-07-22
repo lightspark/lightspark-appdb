@@ -250,7 +250,12 @@ class voteInspector
         return 'accepted';
     }
 
-    public function display()
+    public function canEdit()
+    {
+        return $_SESSION['current']->hasPriv('admin');
+    }
+
+    public function outputEditor()
     {
         $oVersion = new version($this->iVersionId);
 
@@ -313,6 +318,21 @@ class voteInspector
         }
 
         echo $oTable->getString();
+    }
+
+    public function getOutputEditorValues($aValues)
+    {
+    
+    }
+
+    public function create()
+    {
+        return true;
+    }
+
+    public function update()
+    {
+        return true;
     }
 }
 
