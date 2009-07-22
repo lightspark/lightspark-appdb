@@ -378,6 +378,22 @@ class Note {
                 return array(null, null, null);
     }
 
+    public function objectGetParent($sClass = '')
+    {
+        if($this->iVersionId)
+            return new version($this->iVersionId);
+        else
+            return new application($this->iAppId);
+    }
+
+    public function objectSetParent($iNewId, $sClass = '')
+    {
+        if($this->iVersionId)
+            $this->iVersionId = $iNewId;
+        else
+            $this->iAppId = $iNewId;
+    }
+
     function objectGetChildren($bIncludeDeleted = false)
     {
         return array();

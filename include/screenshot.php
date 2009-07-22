@@ -294,6 +294,18 @@ class screenshot
         return $this->oScreenshotImage->get_width();
     }
 
+    public function objectGetParent($sClass = '')
+    {
+        $oAppData = new appData($this->iScreenshotId, null, $this);
+        return $oAppData->objectGetParent();
+    }
+
+    public function objectSetParent($iNewId, $sClass = '')
+    {
+        $oAppData = new appData($this->iScreenshotId, null, $this);
+        return $oAppData->objectSetParent($iNewId, $sClass);
+    }
+
     function objectGetChildren($bIncludeDeleted = false)
     {
         /* We have none */

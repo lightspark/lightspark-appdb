@@ -899,15 +899,52 @@ class maintainer
         return array($aItemsPerPage, $iDefaultPerPage);
     }
 
+    public function objectGetParent($sClass = '')
+    {
+        if($this->iVersionId)
+            return new version($this->iVersionId);
+        else
+            return new application($this->iAppId);
+    }
+
+    public function objectSetParent($iNewId, $sClass = '')
+    {
+        if($this->iVersionId)
+            $this->iVersionId = $iNewId;
+        else
+            $this->iAppId = $iNewId;
+    }
+
     function objectGetChildren($bIncludeDeleted = false)
     {
         /* We have none */
         return array();
     }
 
-    function update()
+    public function update()
     {
-        /* STUB: No updating possible at the moment */
+        $oMaintainer = new maintainer($this->iMaintainerId);
+
+        if($this->iVersionId && $oMaintainer->iVersionId != $this->iVersionId)
+        {
+            $hResult = query_parameters("UPDATE appMaintainers SET versionId = '?' 
+                                         WHERE maintainerId = '?'",
+                                         $this->iVersionId, $this->iMaintainerId);
+
+            if(!$hResult)
+                return FALSE;
+        }
+
+        if($this->iAppId && $oMaintainer->iAppId != $this->iAppId)
+        {
+            $hResult = query_parameters("UPDATE appMaintainers SET appId = '?' 
+                                         WHERE maintainerId = '?'",
+                                         $this->iAppId, $this->iMaintainerId);
+
+            if(!$hResult)
+                return FALSE;
+        }
+
         return TRUE;
     }
 

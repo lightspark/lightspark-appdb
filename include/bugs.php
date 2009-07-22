@@ -187,10 +187,20 @@ class Bug
         }
     }
 
-    //TODO: figure out what we might want to do here but lie and
-    // return true until then
     function update()
     {
+        $oBug = new bug($this->iLinkId);
+
+        if($this->iVersionId && $this->iVersionId != $oBug->iVersionId)
+        {
+            $hResult = query_parameters("UPDATE buglinks SET versionId = '?'
+                                         WHERE linkId = '?'",
+                                         $this->iVersionId, $this->iLinkId);
+
+            if(!$hResult)
+                return false;
+        }
+
         return true;
     }
 
@@ -276,6 +286,16 @@ class Bug
     {
         /* We don't do this at the moment */
                 return array(null, null, null);
+    }
+
+    public function objectGetParent($sClass = '')
+    {
+        return new version($this->iVersionId);
+    }
+
+    public function objectSetParent($iNewId, $sClass = '')
+    {
+        $this->iVersionId = $iNewId;
     }
 
     function objectGetChildren($bIncludeDeleted = false)

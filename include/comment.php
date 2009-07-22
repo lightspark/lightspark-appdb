@@ -136,13 +136,20 @@ class Comment {
      */
     function update($sSubject=null, $sBody=null, $iParentId=null, $iVersionId=null)
     {
+        $oComment = new comment($this->iCommentId);
+
+        if(!$iVersionId && $this->iVersionId != $oComment->iVersionId)
+            $iVersionId = $this->iVersionId;
+        if(!$iParentId && $this->iParentId != $oComment->iParentId)
+            $iParentId = $this->iParentId;
+
         if ($iParentId)
         {
             if (!query_parameters("UPDATE appComments SET parentId = '?' WHERE commentId = '?'",
                                   $iParentId, $this->iCommentId))
                 return false;
             $this->iParentId = $iParentId;
-        }     
+        }
 
         if ($iVersionId)
         {
@@ -521,6 +528,32 @@ class Comment {
             $aRecipients = User::get_notify_email_address_list($this->iAppId, $this->iVersionId);
         }
         return array($sSubject, $sMessage, $aRecipients);
+    }
+
+    public function objectGetParent($sClass = '')
+    {
+        switch($sClass)
+        {
+            case 'version':
+                return new version($this->iVersionId);
+
+            case 'comment':
+                return new comment($this->iParentId);
+        }
+    }
+
+    public function objectSetParent($iNewId, $sClass = '')
+    {
+        switch($sClass)
+        {
+            case 'version':
+                $this->iVersionId = $iNewId;
+                break;
+
+            case 'comment':
+                $this->iParentId = $iNewId;
+                break;
+        }
     }
 
     function objectGetChildren($bIncludeDeleted = false)

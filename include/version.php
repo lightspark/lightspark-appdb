@@ -1723,18 +1723,19 @@ class version {
         return $aTests;
     }
 
-    public function objectGetChildren($bIncludeDeleted = false)
+    public function objectGetChildren($bIncludeDeleted = false, $bRecursive = true)
     {
-        return $this->objectGetChildrenClassSpecific('', $bIncludeDeleted);
+        return $this->objectGetChildrenClassSpecific('', $bIncludeDeleted, $bRecursive);
     }
 
-    public function objectGetChildrenClassSpecific($sClass = '', $bIncludeDeleted = false)
+    public function objectGetChildrenClassSpecific($sClass = '', $bIncludeDeleted = false, $bRecursive = true)
     {
         $aChildren = array();
 
         foreach($this->getTestResults($bIncludeDeleted) as $oTest)
         {
-            $aChildren += $oTest->objectGetChildren($bIncludeDeleted);
+            if($bRecursive)
+                $aChildren += $oTest->objectGetChildren($bIncludeDeleted);
             $aChildren[] = $oTest;
         }
 
@@ -1748,7 +1749,9 @@ class version {
         while($oRow = mysql_fetch_object($hResult))
         {
             $oMaintainer = new maintainer(0, $oRow);
-            $aChildren += $oMaintainer->objectGetChildren($bIncludeDeleted);
+
+            if($bRecursive)
+                $aChildren += $oMaintainer->objectGetChildren($bIncludeDeleted);
             $aChildren[] = $oMaintainer;
         }
 
@@ -1762,7 +1765,9 @@ class version {
         while($oRow = mysql_fetch_object($hResult))
         {
             $oMonitor = new monitor(0, $oRow);
-            $aChildren += $oMonitor->objectGetChildren($bIncludeDeleted);
+
+            if($bRecursive)
+                $aChildren += $oMonitor->objectGetChildren($bIncludeDeleted);
             $aChildren[] = $oMonitor;
         }
 
@@ -1776,7 +1781,9 @@ class version {
         while($oRow = mysql_fetch_object($hResult))
         {
             $oNote = new note(0, $oRow);
-            $aChildren += $oNote->objectGetChildren($bIncludeDeleted);
+
+            if($bRecursive)
+                $aChildren += $oNote->objectGetChildren($bIncludeDeleted);
             $aChildren[] = $oNote;
         }
 
@@ -1790,7 +1797,9 @@ class version {
         while($oRow = mysql_fetch_object($hResult))
         {
             $oScreenshot = new screenshot(0, $oRow);
-            $aChildren += $oScreenshot->objectGetChildren($bIncludeDeleted);
+
+            if($bRecursive)
+                $aChildren += $oScreenshot->objectGetChildren($bIncludeDeleted);
             $aChildren[] = $oScreenshot;
         }
 
@@ -1798,7 +1807,9 @@ class version {
         foreach($this->get_buglink_ids() as $iBugId)
         {
             $oBug = new bug($iBugId);
-            $aChildren += $oBug->objectGetChildren($bIncludeDeleted);
+
+            if($bRecursive)
+                $aChildren += $oBug->objectGetChildren($bIncludeDeleted);
             $aChildren[] = $oBug;
         }
 
@@ -1812,7 +1823,8 @@ class version {
         while($oRow = mysql_fetch_object($hResult))
         {
             $oComment = new comment(0, $oRow);
-            $aChildren += $oComment->objectGetChildren($bIncludeDeleted);
+
+            /* No need to grab child comments since they're all part of the SQL result */
             $aChildren[] = $oComment;
         }
 
@@ -1826,7 +1838,9 @@ class version {
         while($oRow = mysql_fetch_object($hResult))
         {
             $oUrl = new url(0, $oRow);
-            $aChildren += $oUrl->objectGetChildren($bIncludeDeleted);
+
+            if($bRecursive)
+                $aChildren += $oUrl->objectGetChildren($bIncludeDeleted);
             $aChildren[] = $oUrl;
         }
 
@@ -1840,7 +1854,9 @@ class version {
         while($oRow = mysql_fetch_object($hResult))
         {
             $oDownload = new downloadurl(0, $oRow);
-            $aChildren += $oDownload->objectGetChildren($bIncludeDeleted);
+
+            if($bRecursive)
+                $aChildren += $oDownload->objectGetChildren($bIncludeDeleted);
             $aChildren[] = $oDownload;
         }
 
@@ -1852,38 +1868,16 @@ class version {
         /* Keep track of how many items we have updated */
         $iCount = 0;
 
-        /* Move test results */
-        $sQuery = "SELECT * FROM testResults WHERE versionId = '?'";
-        $hResult = query_parameters($sQuery, $this->iVersionId);
+        /* We also move entries marked as deleted */
+        $aChildren = $this->objectGetChildren(true, false);
 
-        if(!$hResult)
-            return FALSE;
-
-        while($oRow = query_fetch_object($hResult))
+        foreach($aChildren as $oChild)
         {
-            $oTestData = new testData($oRow->testingId);
-            $oTestData->iVersionId = $iNewId;
-            if($oTestData->update())
+            $oChild->objectSetParent($iNewId, 'version');
+            if($oChild->update())
                 $iCount++;
             else
-                return FALSE;
-        }
-
-        /* Move all app data */
-        $sQuery = "SELECT * FROM appData WHERE versionId = '?'";
-        $hResult = query_parameters($sQuery, $this->iVersionId);
-
-        if(!$hResult)
-            return FALSE;
-
-        while($oRow = query_fetch_object($hResult))
-        {
-            $oAppData = new appData($oRow->testingId);
-            $oAppData->iVersionId = $iNewId;
-            if($oAppData->update(TRUE))
-                $iCount++;
-            else
-                return FALSE;
+                return false;
         }
 
         /* Return the number of updated objects if everything was successful */

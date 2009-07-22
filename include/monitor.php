@@ -61,6 +61,22 @@ class Monitor {
         }
     }
 
+    public function objectGetParent($sClass = '')
+    {
+        if($this->iVersionId)
+            return new version($this->iVersionId);
+        else
+            return new application($this->iAppId);
+    }
+
+    public function objectSetParent($iNewId, $sClass = '')
+    {
+        if($this->iVersionId)
+            $this->iVersionId = $iNewId;
+        else
+            $this->iAppId = $iNewId;
+    }
+
     function objectGetChildren($bIncludeDeleted = false)
     {
         /* We have none */
@@ -103,7 +119,28 @@ class Monitor {
 
     function update()
     {
-        /* Stub */
+        $oMonitor = new monitor($this->iMonitorId);
+
+        if($this->iVersionId && $oMonitor->iVersionId != $this->iVersionId)
+        {
+            $hResult = query_parameters("UPDATE appMonitors SET versionId = '?' 
+                                         WHERE monitorId = '?'",
+                                         $this->iVersionId, $this->iMonitorId);
+
+            if(!$hResult)
+                return FALSE;
+        }
+
+        if($this->iAppId && $oMonitor->iAppId != $this->iAppId)
+        {
+            $hResult = query_parameters("UPDATE appMonitors SET appId = '?' 
+                                         WHERE monitorId = '?'",
+                                         $this->iAppId, $this->iMonitorId);
+
+            if(!$hResult)
+                return FALSE;
+        }
+
         return TRUE;
     }
 

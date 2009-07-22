@@ -63,9 +63,16 @@ class downloadurl
         return $sReturn;
     }
 
-    public function objectSetParent($iId, $sClass = 'version')
+    public function objectGetParent($sClass = '')
     {
-        $this->iVersionId = $iId;
+        $oAppData = new appData($this->iId, null, $this);
+        return $oAppData->objectGetParent();
+    }
+
+    public function objectSetParent($iNewId, $sClass = '')
+    {
+        $oAppData = new appData($this->iId, null, $this);
+        return $oAppData->objectSetParent($iNewId, $sClass);
     }
 
     function objectGetChildren($bIncludeDeleted = false)

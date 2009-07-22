@@ -511,6 +511,18 @@ class Url {
                 return array(null, null, null);
     }
 
+    public function objectGetParent($sClass = '')
+    {
+        $oAppData = new appData($this->iUrlId, null, $this);
+        return $oAppData->objectGetParent();
+    }
+
+    public function objectSetParent($iNewId, $sClass = '')
+    {
+        $oAppData = new appData($this->iUrlId, null, $this);
+        return $oAppData->objectSetParent($iNewId, $sClass);
+    }
+
     function objectGetChildren($bIncludeDeleted = false)
     {
         return array();
