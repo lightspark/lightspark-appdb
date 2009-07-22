@@ -393,6 +393,10 @@ class ObjectManager
             return;
         }
 
+        /* Only show the edit screen if the user has sufficient rights */
+        if(!$oObject->canEdit())
+            $this->error_exit('You do not have sufficient privileges to edit this entry');
+
         /* Display errors, if any, and fetch form data */
         if($this->displayErrors($sErrors))
         {
