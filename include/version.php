@@ -870,6 +870,14 @@ class version {
             else
                 $shVoteLink = '';
 
+            // Allow admins to see which users have voted, in order to identify
+            // bogus votes
+            if($_SESSION['current']->hasPriv('admin'))
+            {
+                $oMVoteInspector = new objectManager('voteInspector', 'Vote inspector');
+                $shVoteLink .= ' &nbsp; <a href="'.$oMVoteInspector->makeUrl('view',$this->iVersionId).'">Inspect</a>';
+            }
+
             $shVoteText = vote_count_version_total($this->iVersionId).$shVoteLink;
         } else
         {

@@ -228,6 +228,95 @@ class voteManager
 }
 
 /**
+ * used by admins to check whether votes for a version are legit
+ */
+class voteInspector
+{
+    private $iVersionId;
+
+    function voteInspector($iVersionId = null)
+    {
+        if(is_numeric($iVersionId))
+            $this->iVersionId = $iVersionId;
+    }
+
+    public function objectGetId()
+    {
+        return $this->iVersionId;
+    }
+
+    public function objectGetState()
+    {
+        return 'accepted';
+    }
+
+    public function display()
+    {
+        $oVersion = new version($this->iVersionId);
+
+        echo 'Inspecting votes for ' . version::fullNameLink($this->iVersionId);
+        echo '<br /><br />';
+
+        $hResult = query_parameters("SELECT userId, COUNT(userId) as count FROM appVotes WHERE
+                                     versionId = '?'
+                                     GROUP BY userId", $this->iVersionId);
+
+        if(!$hResult)
+        {
+            echo 'Failed to get list of votes';
+            return;
+        }
+
+        if(mysql_num_rows($hResult) == 0)
+        {
+            echo 'There are no votes for this version';
+            return;
+        }
+
+        $oTable = new Table();
+        $oTable->setCellPadding(3);
+
+        $oTableRow = new TableRow();
+        $oTableRow->setClass('color4');
+        $oTableRow->AddTextCell('User');
+        $oTableRow->AddTextCell('ID');
+        $oTableRow->AddTextCell('Created');
+        $oTableRow->AddTextCell('Votes');
+        $oTableRow->AddTextCell('Privileges');
+        $oTable->AddRow($oTableRow);
+
+        for($i = 0; $oRow = mysql_fetch_object($hResult); $i++)
+        {
+            $oVoter = new user($oRow->userId);
+            $oTableRow = new TableRow();
+            $oTableRow->setClass(($i % 2) ? 'color0' : 'color1');
+            $oTableRow->AddTextCell($oVoter->objectMakeLink());
+            $oTableRow->AddTextCell($oVoter->iUserId);
+            $oTableRow->AddTextCell($oVoter->sDateCreated);
+            $oTableRow->AddTextCell($oRow->count);
+
+            $sPrivs = '';
+            if($oVoter->hasPriv('admin'))
+                $sPrivs .= 'Admin<br />';
+
+            if($oVoter->isMaintainer($this->iVersionId))
+                $sPrivs .= 'Maintainer of this version<br />';
+
+            if($oVoter->isMaintainer())
+            {
+                $oM = new objectManager('maintainerView', 'View maintainership info');
+                $sPrivs .= '<a href="'.$oM->makeUrl('view',$oVoter->iUserId).'">Maintainer (other entries)</a><br />';
+            }
+
+            $oTableRow->AddTextCell($sPrivs);
+            $oTable->AddRow($oTableRow);
+        }
+
+        echo $oTable->getString();
+    }
+}
+
+/**
  * count the number of votes for appId by userId
  */
 function vote_count($iVersionId, $iUserId = null)
