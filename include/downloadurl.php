@@ -71,8 +71,10 @@ class downloadurl
 
     public function objectSetParent($iNewId, $sClass = '')
     {
-        $oAppData = new appData($this->iId, null, $this);
-        return $oAppData->objectSetParent($iNewId, $sClass);
+        if($this->iVersionId)
+            $this->iVersionId = $iNewId;
+        else
+            $this->iAppId = $iNewId;
     }
 
     function objectGetChildren($bIncludeDeleted = false)
@@ -365,8 +367,8 @@ class downloadurl
         }
 
         $hResult = query_parameters("UPDATE appData SET
-                   description = '?', url = '?' WHERE id = '?'",
-                       $this->sDescription, $this->sUrl, $this->iId);
+                   description = '?', url = '?', versionId = '?' WHERE id = '?'",
+                       $this->sDescription, $this->sUrl, $this->iVersionId, $this->iId);
 
         if(!$hResult)
             return FALSE;
