@@ -117,7 +117,6 @@ class Note {
             $sVersionBefore = Version::lookup_name($oNote->iVersionId);
             $sVersionAfter = Version::lookup_name($this->iVersionId);
             $sWhatChanged .= "Version was changed from ".$sVersionBefore." to ".$sVersionAfter.".\n\n";
-            $this->iVersionId = $iVersionId;
         }
         if($sWhatChanged)
             $this->SendNotificationMail("edit",$sWhatChanged);       
