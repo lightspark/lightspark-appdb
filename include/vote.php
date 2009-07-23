@@ -70,6 +70,62 @@ class vote
 
         return TRUE;
     }
+
+    public function getVotesForVersion($iVersionId)
+    {
+        $aRet = array();
+        $hResult = query_parameters("SELECT * FROM appVotes WHERE versionId = '?'", 
+                                     $iVersionId);
+
+        if(!$hResult)
+            return $aRet;
+
+        while($oRow = mysql_fetch_object($hResult))
+            $aRet[] = new vote(null, $oRow);
+
+        return $aRet;
+    }
+
+    public function objectGetId()
+    {
+        return $this->iVoteId;
+    }
+
+    public function objectGetSubmitterId()
+    {
+        return $this->iUserId;
+    }
+
+    public function objectGetParent($sClass = '')
+    {
+        return new version($this->iVersionId);
+    }
+
+    public function objectSetParent($iNewId, $sClass = '')
+    {
+        $this->iVersionId = $iNewId;
+    }
+
+    public function canEdit()
+    {
+        if($_SESSION['current']->iUserId == $this->iUserId)
+            return true;
+
+        $oVersion = new version($this->iVersionId);
+
+        return $oVersion->canEdit();
+    }
+
+    function objectGetMail($sAction, $bMailSubmitter, $bParentAction)
+    {
+        return array(null, null, null); /* No mail */
+    }
+
+    public static function objectGetMailOptions($sAction, $bMailSubmitter,
+                                                $bParentAction)
+    {
+        return new mailOptions();
+    }
 }
 
 class voteManager

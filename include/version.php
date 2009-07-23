@@ -1860,6 +1860,9 @@ class version {
             $aChildren[] = $oDownload;
         }
 
+        /* Get votes, include deleted ones */
+        $aChildren += vote::getVotesForVersion($this->iVersionId);
+
         return $aChildren;
     }
 
