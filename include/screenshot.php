@@ -302,8 +302,10 @@ class screenshot
 
     public function objectSetParent($iNewId, $sClass = '')
     {
-        $oAppData = new appData($this->iScreenshotId, null, $this);
-        return $oAppData->objectSetParent($iNewId, $sClass);
+        if($this->iVersionId)
+            $this->iVersionId = $iNewId;
+        else
+            $this->iAppId = $iNewId;
     }
 
     function objectGetChildren($bIncludeDeleted = false)
