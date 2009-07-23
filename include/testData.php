@@ -775,7 +775,7 @@ class testData{
 
         if($hResult)
         {
-            $iPrevVersion = 0;
+            $iPrevRelease = 0;
             $iIndex = -1;
             for($i = 0; $oRow = mysql_fetch_object($hResult); $i++)
             {
