@@ -138,6 +138,10 @@ class Url {
         if(!$this->iUrlId)
             return FALSE;
 
+        $oUrl = new url($this->iUrlId);
+
+        if($this->iVersionId && !$iVersionId)
+            $iVersionId = $this->iVersionId;
 
         $sWhatChanged = "";
 
@@ -159,7 +163,7 @@ class Url {
             $this->sUrl = $sUrl;
         }
 
-        if ($iVersionId && $iVersionId!=$this->iVersionId)
+        if ($iVersionId && $iVersionId!=$oUrl->iVersionId)
         {
             if (!query_parameters("UPDATE appData SET versionId = '?' WHERE id = '?'",
                                   $iVersionId, $this->iUrlId))
@@ -519,8 +523,10 @@ class Url {
 
     public function objectSetParent($iNewId, $sClass = '')
     {
-        $oAppData = new appData($this->iUrlId, null, $this);
-        return $oAppData->objectSetParent($iNewId, $sClass);
+        if($this->iVersionId)
+            $this->iVersionId = $iNewId;
+        else
+            $this->iAppId = $iNewId;
     }
 
     function objectGetChildren($bIncludeDeleted = false)
