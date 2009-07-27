@@ -1421,7 +1421,7 @@ class testData{
         if(!$this->iTestingId)
             return false;
 
-        return ((mktime() - mysqltimestamp_to_unixtimestamp($this->sSubmitTime)) > (60 * 60 * 24  * 175));
+        return ((mktime() - mysqltimestamp_to_unixtimestamp($this->sSubmitTime)) > (60 * 60 * 24  * TESTDATA_AGED_THRESHOLD));
     }
 
     public function objectSetParent($iNewId, $sClass = 'version')
