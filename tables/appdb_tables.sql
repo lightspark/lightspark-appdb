@@ -167,6 +167,7 @@ create table appNotes (
 	noteTitle       varchar(255),
 	noteDesc        text,
 	versionId       int not null,
+	appId           int not null,
 	submitterId	int not null,
 	submitTime	datetime not null,
 	key(noteId)
