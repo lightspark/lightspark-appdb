@@ -10,6 +10,7 @@ require_once(BASE."include/version.php");
 define('APPNOTE_SHOW_FOR_ALL', -1);
 define('APPNOTE_SHOW_FOR_VERSIONS', -2);
 define('APPNOTE_SHOW_FOR_APP', -3);
+define('DISPLAYMODE_COUNT', 3);
 
 /**
  * Note class for handling notes
@@ -121,17 +122,28 @@ class Note {
                                   $this->iVersionId, $this->iNoteId))
                 return false;
 
-            if(!$this->iAppId)
+            if(!$this->iAppId && !$oNote->iAppId) // Changed version only
             {
                 $sVersionBefore = Version::lookup_name($oNote->iVersionId);
                 $sVersionAfter = Version::lookup_name($this->iVersionId);
                 $sWhatChanged .= "Version was changed from ".$sVersionBefore." to ".$sVersionAfter.".\n\n";
-            } else
+            } else if(!$this->iAppId) // Moved from app to version
+            {
+                $sVersionAfter = Version::fullName($this->iVersionId);
+                $oApp = new application($oNote->iAppId);
+                $sOldApp = $oApp->sName;
+                $sWhatChanged .= "Moved from application $sOldApp to version $sVersionAfter.\n\n";
+            } else if($oNote->hasRealVersionId()) // Moved from version to app
             {
                 $oApp = new application($this->iAppId);
                 $sNewApp = $oApp->sName;
                 $sVersionBefore = version::fullName($oNote->iVersionId);
                 $sWhatChanged .= "Moved from version $sVersionBefore to application $sNewApp.\n\n"; 
+            } else // Change display mode for app note
+            {
+                $sOldMode = $oNote->getDisplayModeName();
+                $sNewMode = $this->getDisplayModeName();
+                $sWhatChanged .= "Display mode was changed from '$sOldMode' to '$sNewMode'.\n\n";
             }
         }
         if (($this->iAppId || $this->iVersionId) && $this->iAppId!=$oNote->iAppId)
@@ -336,6 +348,34 @@ class Note {
         return note::isRealVersionId($this->iVersionId);
     }
 
+    public static function getDisplayModeIds()
+    {
+        return array(APPNOTE_SHOW_FOR_ALL, APPNOTE_SHOW_FOR_VERSIONS, APPNOTE_SHOW_FOR_APP);
+    }
+
+    public static function getDisplayModeNames()
+    {
+        return array('Show on both application and version pages', 'Show on all version pages only', 'Show on application page only');
+    }
+
+    public function getDisplayModeName($iModeId = null)
+    {
+        if(!$iModeId)
+            $iModeId = $this->iVersionId;
+
+        $aNames = note::getDisplayModeNames();
+        $iIndex = 0;
+
+        foreach(note::getDisplayModeIds() as $iId)
+        {
+            if($iId == $iModeId)
+                return $aNames[$iIndex];
+            $iIndex++;
+        }
+
+        return '';
+    }
+
     function outputEditor($aValues = null)
     {
         if($aValues)
@@ -377,21 +417,27 @@ class Note {
         echo '</p>';
         echo '</td></tr>'."\n";
 
-        if($this->iAppId);
-            $oApp = new application($this->iAppId);
         if($this->iAppId || $oApp->canEdit())
         {
-            $aIds = array();
-            $aOptions = array();
-            if($this->isRealVersionId($this->iVersionId))
-            {
-                $aIds[] = $this->iVersionId;
-                $aOptions[] = 'Show for this version only';
-            }
-            $aIds = array_merge($aIds, array(APPNOTE_SHOW_FOR_ALL, APPNOTE_SHOW_FOR_VERSIONS, APPNOTE_SHOW_FOR_APP));
-            $aOptions = array_merge($aOptions, array('Show on both application and version pages', 'Show on all version pages only', 'Show on application page only'));;
+            $oApp = new application($this->iAppId);
+            $aIds =  $this->getDisplayModeIds();
+            $aOptions = $this->getDisplayModeNames();
+
             echo '<tr><td class="color1">Display mode</td>'."\n";
             echo '<td class="color0">'.html_radiobuttons($aIds, $aOptions, 'iVersionId', $this->iVersionId);
+
+            /* Allow the note to be moved to a single version */
+            $aIds = array();
+            $aOptions = array();
+            echo 'Show on one of the following version pages only:<br />';
+            foreach($oApp->getVersions(true) as $oAppVersion) // Only accepted versions
+            {
+                
+                $aIds[] = $oAppVersion->objectGetId();
+                $aOptions[] = $oAppVersion->objectMakeLink();
+            }
+            echo html_radiobuttons($aIds, $aOptions, 'iVersionId', $this->iVersionId);
+
             echo '</td></tr>';
         } else if(!$this->iAppId)
         {
