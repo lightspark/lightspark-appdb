@@ -115,14 +115,30 @@ class Note {
             $sWhatChanged .= "Description was changed from\n ".$oNote->shDescription."\n to \n".$this->shDescription.".\n\n";
         }
 
-        if ($this->iVersionId && $this->iVersionId!=$oNote->iVersionId)
+        if (($this->iVersionId || $this->iAppId) && $this->iVersionId!=$oNote->iVersionId)
         {
             if (!query_parameters("UPDATE appNotes SET versionId = '?' WHERE noteId = '?'",
                                   $this->iVersionId, $this->iNoteId))
                 return false;
+
             $sVersionBefore = Version::lookup_name($oNote->iVersionId);
-            $sVersionAfter = Version::lookup_name($this->iVersionId);
-            $sWhatChanged .= "Version was changed from ".$sVersionBefore." to ".$sVersionAfter.".\n\n";
+
+            if(!$this->iAppId)
+            {
+                $sVersionAfter = Version::lookup_name($this->iVersionId);
+                $sWhatChanged .= "Version was changed from ".$sVersionBefore." to ".$sVersionAfter.".\n\n";
+            } else
+            {
+                $oApp = new application($this->iAppId);
+                $sNewApp = $oApp->sName;
+                $sWhatChanged .= "Moved from version $shVersionBefore to application $sNewApp"; 
+            }
+        }
+        if (($this->iAppId || $this->iVersionId) && $this->iAppId!=$oNote->iAppId)
+        {
+            if(!query_parameters("UPDATE appNotes SET appId = '?' WHERE noteId = '?'",
+                                  $this->iAppId, $this->iNoteId))
+                return false;
         }
         if($sWhatChanged)
             $this->SendNotificationMail("edit",$sWhatChanged);       
@@ -310,22 +326,30 @@ class Note {
         }
     }
 
+    public static function isRealVersionId($iVersionId)
+    {
+        return $iVersionId > 0;
+    }
+
     function outputEditor($aValues = null)
     {
-        if($aValues)
+        if(!$this->iVersionId)
+            $this->iVersionId = getInput('iVersionId', $aValues);
+
+        if(!$this->iAppId)
+            $this->iAppId = getInput('iAppId', $aValues);
+
+        if($this->iAppId && !$this->iVersionId)
+            $this->iVersionId = APPNOTE_SHOW_FOR_ALL;
+
+        if(!$this->iAppId)
         {
-            if(!$this->iVersionId)
-                $this->iVersionId = $aValues['iVersionId'];
-
-            if(!$this->iAppId)
-                $this->iAppId = getInput('iAppId', $aValues);
-
-            if($this->iAppId && !$this->iVersionId)
-                $this->iVersionId = APPNOTE_SHOW_FOR_ALL;
-
-            if(!$this->sTitle)
-                $this->sTitle = $aValues['sNoteTitle'];
+            $oVersion = new version($this->iVersionId);
+            $this->iAppId = $oVersion->iAppId;
         }
+
+        if(!$this->sTitle)
+            $this->sTitle = getInput('sNoteTitle', $aValues);
 
         HtmlAreaLoaderScript(array("editor"));
 
@@ -334,8 +358,7 @@ class Note {
 
         echo '<input type="hidden" name="bEditing" value="true">';
         echo '<input type="hidden" name="iNoteId" value="'.$this->iNoteId.'">';
-        if(!$this->iAppId)
-            echo '<input type="hidden" name="iVersionId" value="'.$this->iVersionId.'">';
+
         echo '<input type="hidden" name="iAppId" value="'.$this->iAppId.'">';
 
         echo '<tr><td class=color1>Title</td>'."\n";
@@ -345,14 +368,28 @@ class Note {
         echo '<textarea cols="80" rows="20" id="editor" name="shNoteDesc">'.$this->shDescription.'</textarea>',"\n";
         echo '</p>';
         echo '</td></tr>'."\n";
-        if($this->iAppId)
+
+        if($this->iAppId);
+            $oApp = new application($this->iAppId);
+        if($this->iAppId || $oApp->canEdit())
         {
-            $aIds = array(APPNOTE_SHOW_FOR_ALL, APPNOTE_SHOW_FOR_VERSIONS, APPNOTE_SHOW_FOR_APP);
-            $aOptions = array('Show on both application and version pages', 'Show on version pages only', 'Show on application page only');
+            $aIds = array();
+            $aOptions = array();
+            if($this->isRealVersionId($this->iVersionId))
+            {
+                $aIds[] = $this->iVersionId;
+                $aOptions[] = 'Show for this version only';
+            }
+            $aIds = array_merge($aIds, array(APPNOTE_SHOW_FOR_ALL, APPNOTE_SHOW_FOR_VERSIONS, APPNOTE_SHOW_FOR_APP));
+            $aOptions = array_merge($aOptions, array('Show on both application and version pages', 'Show on all version pages only', 'Show on application page only'));;
             echo '<tr><td class="color1">Display mode</td>'."\n";
             echo '<td class="color0">'.html_radiobuttons($aIds, $aOptions, 'iVersionId', $this->iVersionId);
             echo '</td></tr>';
+        } else if(!$this->iAppId)
+        {
+            echo '<input type="hidden" name="iVersionId" value="'.$this->iVersionId.'">';
         }
+
         echo '<tr><td colspan="2" align="center" class="color3">',"\n";
 
         echo html_table_end();
@@ -364,7 +401,11 @@ class Note {
     function GetOutputEditorValues($aValues)
     {
         $this->iVersionId = getInput('iVersionId', $aValues);
-        $this->iAppId = getInput('iAppId', $aValues);
+
+        if(!$this->isRealVersionId($this->iVersionId))
+            $this->iAppId = getInput('iAppId', $aValues);
+        else
+            $this->iAppId = 0;
         $this->sTitle = $aValues['sNoteTitle'];
         $this->shDescription = $aValues['shNoteDesc'];
     }
