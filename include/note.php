@@ -289,7 +289,7 @@ class Note {
             $hResult = query_parameters("SELECT noteId FROM appNotes WHERE versionId  = '?' OR (appId = '?' AND (versionId = '?' OR versionId = '?'))", $iVersionId, $oApp->objectGetId(), APPNOTE_SHOW_FOR_ALL, APPNOTE_SHOW_FOR_VERSIONS);
         } else if($iAppId)
         {
-            $hResult = query_parameters("SELECT noteId FROM appNotes WHERE appId = '?' AND versionId = '?' OR versionId = '?'", $iAppId, APPNOTE_SHOW_FOR_ALL, APPNOTE_SHOW_FOR_APP);
+            $hResult = query_parameters("SELECT noteId FROM appNotes WHERE appId = '?' AND (versionId = '?' OR versionId = '?')", $iAppId, APPNOTE_SHOW_FOR_ALL, APPNOTE_SHOW_FOR_APP);
         }
 
         if(!$hResult)
