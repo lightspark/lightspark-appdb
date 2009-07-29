@@ -331,6 +331,11 @@ class Note {
         return $iVersionId > 0;
     }
 
+    public function hasRealVersionId()
+    {
+        return note::isRealVersionId($this->iVersionId);
+    }
+
     function outputEditor($aValues = null)
     {
         if($aValues)
@@ -493,7 +498,7 @@ class Note {
 
     public function objectGetParent($sClass = '')
     {
-        if($this->iVersionId)
+        if($this->hasRealVersionId())
             return new version($this->iVersionId);
         else
             return new application($this->iAppId);
@@ -501,7 +506,7 @@ class Note {
 
     public function objectSetParent($iNewId, $sClass = '')
     {
-        if($this->iVersionId)
+        if($this->hasRealVersionId())
             $this->iVersionId = $iNewId;
         else
             $this->iAppId = $iNewId;
