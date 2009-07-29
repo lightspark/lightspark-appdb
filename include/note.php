@@ -121,17 +121,17 @@ class Note {
                                   $this->iVersionId, $this->iNoteId))
                 return false;
 
-            $sVersionBefore = Version::lookup_name($oNote->iVersionId);
-
             if(!$this->iAppId)
             {
+                $sVersionBefore = Version::lookup_name($oNote->iVersionId);
                 $sVersionAfter = Version::lookup_name($this->iVersionId);
                 $sWhatChanged .= "Version was changed from ".$sVersionBefore." to ".$sVersionAfter.".\n\n";
             } else
             {
                 $oApp = new application($this->iAppId);
                 $sNewApp = $oApp->sName;
-                $sWhatChanged .= "Moved from version $shVersionBefore to application $sNewApp"; 
+                $sVersionBefore = version::fullName($oNote->iVersionId);
+                $sWhatChanged .= "Moved from version $sVersionBefore to application $sNewApp.\n\n"; 
             }
         }
         if (($this->iAppId || $this->iVersionId) && $this->iAppId!=$oNote->iAppId)
