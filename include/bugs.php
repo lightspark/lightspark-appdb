@@ -587,12 +587,12 @@ function view_version_bugs($iVersionId = null, $aBuglinkIds)
     echo "    <td>Description</td>\n";
     echo "    <td align=center width=\"80\">Status</td>\n";
     echo "    <td align=center width=\"80\">Resolution</td>\n";
-    echo "    <td align=center width=\"80\">Other Apps affected</td>\n";
+    echo "    <td align=center width=\"80\">Other apps affected</td>\n";
 
     if($bCanEdit == true)
     {
-        echo "    <td align=center width=\"80\">delete</td>\n";
-        echo "    <td align=center width=\"80\">checked</td>\n";
+        echo "    <td align=center width=\"80\">Delete</td>\n";
+        echo "    <td align=center width=\"80\">Checked</td>\n";
     }
     echo "</tr>\n\n";
 
@@ -658,13 +658,13 @@ function view_version_bugs($iVersionId = null, $aBuglinkIds)
     if ( isset( $aClean['sAllBugs'] ) )
     {
         $sURL = str_replace( '&sAllBugs', '', $_SERVER['REQUEST_URI'] );
-        $sLink = '<a href="' . htmlentities($sURL) . '">Show Open Bugs</a>';
+        $sLink = '<a href="' . htmlentities($sURL) . '">Show open bugs</a>';
     }
     // show all link
     else
     {
         $sURL = $_SERVER['REQUEST_URI'] . '&sAllBugs';
-        $sLink = '<a href="' . htmlentities($sURL) . '">Show All Bugs</a>';
+        $sLink = '<a href="' . htmlentities($sURL) . '">Show all bugs</a>';
     }
     
     echo '<div style="text-align:right;">' . $sLink .'</div>';

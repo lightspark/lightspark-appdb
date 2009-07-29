@@ -270,7 +270,7 @@ class Note {
         {
             $shOutput .= "<tr class=\"color1\" align=\"center\" valign=\"top\"><td>";
             $shOutput .= "<form method=\"post\" name=\"message\" action=\"objectManager.php?sClass=note&amp;sAction=edit&amp;iId=".$this->iNoteId."&amp;sReturnTo=".urlencode($shReturnTo)."\">";
-            $shOutput .= '<input type="submit" value="Edit Note" class="button">';
+            $shOutput .= '<input type="submit" value="Edit note" class="button">';
             $shOutput .= '</form></td></tr>';
         }
 

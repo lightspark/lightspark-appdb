@@ -617,8 +617,8 @@ class Comment {
             $sel[$_SESSION['current']->getPref("comments:mode", "threaded")] = 'selected';
             echo '<td><form method="post" name="sMode" action="'.
                     $oVersion->objectMakeUrl().'">',"\n";
-            echo "<b>Application Comments</b> $messageCount total comments ";
-            echo '<b>Mode</b> <select name="sCmode" onchange="document.sMode.submit();">',"\n";
+            echo "<b>Application comments:</b> $messageCount total comments ";
+            echo '<b>Mode:</b> <select name="sCmode" onchange="document.sMode.submit();">',"\n";
             echo '   <option value="flat" '.$sel['flat'].'>Flat</option>',"\n";
             echo '   <option value="threaded" '.$sel['threaded'].'>Threaded</option>',"\n";
             echo '   <option value="nested" '.$sel['nested'].'>Nested</option>',"\n";

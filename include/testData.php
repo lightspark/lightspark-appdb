@@ -696,10 +696,10 @@ class testData{
 
         if($rowsUsed >= $iDisplayLimit && $bShowAll)
         {
-            $sShowButtonText = "Limit to $iDisplayLimit Tests";
+            $sShowButtonText = "Limit to $iDisplayLimit tests";
         } else
         {
-            $sShowButtonText = "Show All Tests";
+            $sShowButtonText = "Show all tests";
             echo '<input type="hidden" name="bShowAll" value="true">';
         }
 

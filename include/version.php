@@ -1111,7 +1111,7 @@ class version {
             echo "<div class='info_container'>\n";
 
             echo "\t<div class='title_class'>\n";
-            echo "\t\tSelected test results <small><small>(selected in 'Test Results' table below)</small></small>\n";
+            echo "\t\tSelected Test Results <small><small>(selected in 'Test Results' table below)</small></small>\n";
             echo "\t</div>\n";
 
             echo "<div class='info_contents'>\n";
