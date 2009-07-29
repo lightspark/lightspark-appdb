@@ -356,7 +356,7 @@ class Note {
 
         HtmlAreaLoaderScript(array("editor"));
 
-        echo html_frame_start("Edit Application Note {$aClean['noteId']}", "90%","",0);
+        echo html_frame_start("Edit Application Note", "90%","",0);
         echo html_table_begin("width='100%' border=0 align=left cellpadding=6 cellspacing=0 class='box-body'");
 
         echo '<input type="hidden" name="bEditing" value="true">';
