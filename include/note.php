@@ -333,11 +333,17 @@ class Note {
 
     function outputEditor($aValues = null)
     {
-        if(!$this->iVersionId)
-            $this->iVersionId = getInput('iVersionId', $aValues);
+        if($aValues)
+        {
+            if(!$this->iVersionId)
+                $this->iVersionId = getInput('iVersionId', $aValues);
 
-        if(!$this->iAppId)
-            $this->iAppId = getInput('iAppId', $aValues);
+            if(!$this->iAppId)
+                $this->iAppId = getInput('iAppId', $aValues);
+
+            if(!$this->sTitle)
+                $this->sTitle = getInput('sNoteTitle', $aValues);
+        }
 
         if($this->iAppId && !$this->iVersionId)
             $this->iVersionId = APPNOTE_SHOW_FOR_ALL;
@@ -347,9 +353,6 @@ class Note {
             $oVersion = new version($this->iVersionId);
             $this->iAppId = $oVersion->iAppId;
         }
-
-        if(!$this->sTitle)
-            $this->sTitle = getInput('sNoteTitle', $aValues);
 
         HtmlAreaLoaderScript(array("editor"));
 
