@@ -958,8 +958,8 @@ class version {
                     echo "</form>\n";
                 } else /* nope */
                 {
-                    echo '<form method="post" name="sMessage" action="objectManager.php?sClass=maintainer&amp;sAction=add&amp;iVersionId='.$this->iVersionId.'&amp;sTitle='.urlencode("Be a Maintainer of ".version::fullName($this->iVersionId)).'&amp;sReturnTo='.urlencode($this->objectMakeUrl()).'">'."\n";
-                    echo "\t".'<input type="submit" value="Be a Maintainer of This Version" class="button" title="Click here to know more about maintainers.">'."\n";
+                    echo '<form method="post" name="sMessage" action="objectManager.php?sClass=maintainer&amp;sAction=add&amp;iVersionId='.$this->iVersionId.'&amp;sTitle='.urlencode("Be a maintainer of ".version::fullName($this->iVersionId)).'&amp;sReturnTo='.urlencode($this->objectMakeUrl()).'">'."\n";
+                    echo "\t".'<input type="submit" value="Be a maintainer of this version" class="button" title="Click here to know more about maintainers.">'."\n";
                     echo "\t"."<input type=hidden name=\"iAppId\" value=\"".$oApp->iAppId."\">\n";
                     echo "\t"."<input type=hidden name=\"iVersionId\" value=\"".$this->iVersionId."\">\n";
                     echo "</form>\n";
@@ -977,7 +977,7 @@ class version {
                         echo "\t<input type=\"hidden\" name=\"sClass\" value=\"monitor\" >\n";
                         echo "\t<input type=\"hidden\" name=\"sReturnTo\" value=\"".
                                 $this->objectMakeUrl()."\" >\n";
-                        echo "\t".'<input type=submit value="Monitor Changes" class="button">'."\n";
+                        echo "\t".'<input type=submit value="Monitor changes" class="button">'."\n";
                         echo "</form>\n";
                     }
                 }
@@ -1000,20 +1000,20 @@ class version {
             echo '<form method="post" name="sMessage" action="admin/editAppVersion.php">'."\n";
             echo "\t".'<input type="hidden" name="iAppId" value="'.$oApp->iAppId.'">'."\n";
             echo "\t".'<input type="hidden" name="iVersionId" value="'.$this->iVersionId.'">'."\n";
-            echo "\t".'<input type=submit value="Edit Version" class="button">'."\n";
+            echo "\t".'<input type=submit value="Edit version" class="button">'."\n";
             echo '</form>'."\n";
             $url = BASE."objectManager.php?sClass=version&amp;sAction=delete&amp;bQueued=false&amp;iId=".$this->iVersionId;
             echo "<form method=\"post\" name=\"sDelete\" action=\"javascript:self.location = '".$url."'\">\n";
-            echo "\t".'<input type=submit value="Delete Version" class="button">'."\n";
+            echo "\t".'<input type=submit value="Delete version" class="button">'."\n";
             echo '</form>'."\n";
             echo $shAdd.'" />';
-            echo "\t".'<input type="submit" value="Add Note" class="button">'."\n";
+            echo "\t".'<input type="submit" value="Add note" class="button">'."\n";
             echo '</form>'."\n";
             echo $shAdd.'&amp;sNoteTitle=HOWTO" />';
-            echo "\t".'<input type=submit value="Add How To" class="button">'."\n";
+            echo "\t".'<input type=submit value="Add how-to" class="button">'."\n";
             echo '</form>'."\n";
             echo $shAdd.'&amp;sNoteTitle=WARNING" />';
-            echo "\t".'<input type=submit value="Add Warning" class="button">'."\n";
+            echo "\t".'<input type=submit value="Add warning" class="button">'."\n";
             echo '</form>';
             echo "</td></tr>";
         }
@@ -1031,7 +1031,7 @@ class version {
             echo "\t<input type=\"hidden\" name=\"sClass\" value=\"monitor\">\n";
             echo "\t<input type=\"hidden\" name=\"sReturnTo\" value=\"".
                     $this->objectMakeUrl()."\">\n";
-            echo '<input type=submit value="Stop Monitoring Version" class="button" >'."\n";
+            echo '<input type=submit value="Stop monitoring version" class="button" >'."\n";
             echo "</form>\n";
             echo "</td></tr>\n";
         } 
@@ -1158,7 +1158,7 @@ class version {
                     'sClass=testData_queue&amp;sAction=add&amp;iVersionId='.$this->iVersionId.
                     '&amp;sTitle=Add+Test+Data&amp;sReturnTo='.
                     urlencode($this->objectMakeUrl()).'>'."\n";
-            echo "\t".'<input type=submit value="Add Test Data" class="button" >'."\n";
+            echo "\t".'<input type=submit value="Add test data" class="button" >'."\n";
             echo '</form>'."\n";
         } else
         {
