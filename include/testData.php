@@ -501,7 +501,6 @@ class testData{
             case "edit":
                 $sSubject = "Test Results modified for version ".$oVersion->sName." of ".$oApp->sName." by ".$_SESSION['current']->sRealname;
                 $sMsg  .= $sBacklink;
-                addmsg("test data modified.", "green");
             break;
             case "reject":
                 $sSubject = "Test Results rejected for version ".$oVersion->sName." of ".$oApp->sName." by ".$_SESSION['current']->sRealname;
