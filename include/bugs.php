@@ -181,6 +181,11 @@ class Bug
     {
         $oBug = new bug($this->iLinkId);
 
+        // There is no need to have two links to a bug.  The update is still
+        // considered successful
+        if($this->isDuplicate())
+            return $this->delete();
+
         if($this->iVersionId && $this->iVersionId != $oBug->iVersionId)
         {
             $hResult = query_parameters("UPDATE buglinks SET versionId = '?'
