@@ -1439,6 +1439,11 @@ class Application {
         return $iCount;
     }
 
+    public static function objectAllowMovingToNewParent()
+    {
+        return TRUE;
+    }
+
     public static function allowAnonymousSubmissions()
     {
         return FALSE;

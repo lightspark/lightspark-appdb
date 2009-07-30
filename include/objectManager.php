@@ -921,7 +921,8 @@ class ObjectManager
 
         $sClassDisplayName = $oParentOM->GetOptionalSetting('objectGetClassDisplayName', 'parent entry');
 
-        echo '<p><a href="'.$this->makeUrl('moveToNewParent', $this->iId)."\">Create and move to a new $sClassDisplayName</a></p>\n";
+        if($this->GetOptionalSetting('objectAllowMovingToNewParent', false))
+            echo '<p><a href="'.$this->makeUrl('moveToNewParent', $this->iId)."\">Create and move to a new $sClassDisplayName</a></p>\n";
 
         /* Display some help text */
         echo "<p>Move ".$oObject->objectMakeLink()." to the $sClassDisplayName ";
