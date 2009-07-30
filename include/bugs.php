@@ -106,21 +106,11 @@ class Bug
             return false;
         }
 
-        /* Check for Duplicates */
-
-        $sQuery = "SELECT *
-                   FROM buglinks 
-                   WHERE versionId = '?'";
-        if($hResult = query_parameters($sQuery, $this->iVersionId))
+        /* Check for duplicates */
+        if($this->isDuplicate())
         {
-            while($oRow = query_fetch_object($hResult))
-            {
-                if($oRow->bug_id == $this->iBug_id)
-                {
-                   addmsg("The Bug link has already been submitted.", "red");
-                   return false;
-                }
-            }
+           addmsg("The Bug link has already been submitted.", "red");
+           return false;
         }
 
         /* passed the checks so lets insert the puppy! */
@@ -202,6 +192,23 @@ class Bug
         }
 
         return true;
+    }
+
+    /* Checks whether the version already has a link for this bug */
+    public function isDuplicate()
+    {
+        $sQuery = "SELECT COUNT(linkId) as count
+                   FROM buglinks 
+                   WHERE versionId = '?'
+                   AND bug_id = '?'";
+        if($hResult = query_parameters($sQuery, $this->iVersionId, $this->iBug_id))
+        {
+            if(($oRow = query_fetch_object($hResult)))
+            {
+                return $oRow->count > 0;
+            }
+        }
+        return false;
     }
 
     function mailSubmitter($bRejected=false)
