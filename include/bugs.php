@@ -36,7 +36,7 @@ class Bug
         if(!$oRow)
         {
             $sQuery = "SELECT * FROM buglinks
-                       WHERE linkid = '?'";
+                       WHERE linkId = '?'";
             if($hResult = query_parameters($sQuery, $iLinkId))
             {
                 $oRow = query_fetch_object($hResult);
