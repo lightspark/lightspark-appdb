@@ -104,12 +104,11 @@ class ObjectManager
 
     public function setSortInfo($aClean = null)
     {
+        $this->oSortInfo = new TableSortInfo($this->makeUrl().'&amp;');
+
         /* No use to continue if there are no sortable fields */
         if(!$this->getOptionalSetting("objectGetSortableFields", FALSE))
             return;
-
-        $this->oSortInfo = null;
-        $this->oSortInfo = new TableSortInfo($this->makeUrl().'&amp;');
 
         if($aClean)
             $this->oSortInfo->ParseArray($aClean, $this->getObject()->objectGetSortableFields());
