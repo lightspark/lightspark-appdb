@@ -342,6 +342,8 @@ class ObjectManager
 
         $sQueued = $this->getQueueString($this->getIsQueue(),                                                                         $this->sState == 'rejected');
 
+        $this->showNumberOfResults($oObject);
+
         /* Should we let the class draw its own custom table? */
         if(method_exists($this->sClass, 'objectWantCustomDraw') && 
            $oObject->objectWantCustomDraw('table', $sQueued))
@@ -1643,6 +1645,21 @@ class ObjectManager
         }
     }
 
+    /* Shows how many entries we are displaying */
+    private function showNumberOfResults($oObject)
+    {
+        $iTotalEntries = $oObject->objectGetEntriesCount($this->sState, $this->oFilters);
+        if($this->oMultiPage->isEnabled())
+        {
+            $iShowingEntryFrom = $this->oMultiPage->iLowerLimit + 1;
+            $iShowingEntryTo = min($this->oMultiPage->iLowerLimit + $this->oMultiPage->iItemsPerPage, $iTotalEntries);
+            echo "Showing entry $iShowingEntryFrom to $iShowingEntryTo of $iTotalEntries<br /><br />\n";
+        } else
+        {
+            echo "Showing $iTotalEntries entries";
+        }
+    }
+
     private function handleMultiPageControls($aClean, $bItemsPerPageSelector = TRUE)
     {
         /* Display multi-page browsing controls (prev, next etc.) if applicable.
@@ -1794,6 +1811,11 @@ class MultiPage
         $this->bEnabled = $bEnabled;
         $this->iItemsPerPage = $iItemsPerPage;
         $this->iLowerLimit = $iLowerLimit;
+    }
+
+    public function isEnabled()
+    {
+        return $this->bEnabled;
     }
 
     function getDataFromInput($aClean)
