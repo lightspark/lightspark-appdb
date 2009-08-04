@@ -221,7 +221,7 @@ class application_queue
                are processing an application and the vendor is queued */
             if(!$this->oApp->iAppId || $this->oVendor->objectGetState() != 'accepted')
             {
-                echo html_frame_start("New Vendor", "90%");
+                echo html_frame_start("New Developer", "90%");
                 $this->oVendor->outputEditor();
                 echo html_frame_end();
             }

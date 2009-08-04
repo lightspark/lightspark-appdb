@@ -1576,7 +1576,7 @@ class version {
         $oTableRow = new TableRow();
         $oTableRow->AddTextCell("Submission Date");
         $oTableRow->AddTextCell("Submitter");
-        $oTableRow->AddTextCell("Vendor");
+        $oTableRow->AddTextCell("Developer");
         $oTableRow->AddTextCell("Application");
         $oTableRow->AddTextCell("Version");
         $oTableRow->AddTextCell("Has Maintainer");

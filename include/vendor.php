@@ -4,7 +4,7 @@
 /**********************************/
 
 /**
- * Vendor class for handling vendors.
+ * Vendor class for handling developers.
  */
 class Vendor {
     var $iVendorId;
@@ -94,7 +94,7 @@ class Vendor {
         }
         else
         {
-            addmsg("Error while creating a new vendor.", "red");
+            addmsg("Error while creating a new developer.", "red");
             return false;
         }
     }
@@ -208,7 +208,7 @@ class Vendor {
       // name
       $oTableRow = new TableRow();
 
-      $oTableCell = new TableCell("Vendor Name:");
+      $oTableCell = new TableCell("Developer name:");
       $oTableCell->SetAlign("right");
       $oTableCell->SetClass("color0");
       $oTableCell->SetBold(true);
@@ -223,7 +223,7 @@ class Vendor {
       // Url
       $oTableRow = new TableRow();
 
-      $oTableCell = new TableCell("Vendor URL:");
+      $oTableCell = new TableCell("Developer URL:");
       $oTableCell->SetAlign("right");
       $oTableCell->SetClass("color0");
       $oTableCell->SetBold(true);
@@ -372,17 +372,17 @@ class Vendor {
 
     function display()
     {
-        echo 'Vendor Name: '.$this->sName,"\n";
+        echo 'Developer name: '.$this->sName,"\n";
         if($this->canEdit())
         {
             echo "[<a href=\"".$_SERVER['PHP_SELF']."?sClass=vendor&amp;sAction=edit&amp;".
-                 "iId=$this->iVendorId&amp;sTitle=Edit%20Vendor\">edit</a>]";
+                 "iId=$this->iVendorId&amp;sTitle=Edit%20Developer\">edit</a>]";
         }
 
         echo '<br>',"\n";
         if ($this->sWebpage)
         {
-            echo 'Vendor URL:  <a href="'.$this->sWebpage.'">'.
+            echo 'Developer URL:  <a href="'.$this->sWebpage.'">'.
                  $this->sWebpage.'</a> <br>',"\n";
         }
 
@@ -409,7 +409,7 @@ class Vendor {
     /* Make a URL for viewing the specified vendor */
     function objectMakeUrl()
     {
-        $oManager = new objectManager("vendor", "View Vendor");
+        $oManager = new objectManager("vendor", "View Developer");
         return $oManager->makeUrl("view", $this->iVendorId);
     }
 

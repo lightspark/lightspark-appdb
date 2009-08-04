@@ -225,7 +225,7 @@ class Application {
                 return false;
             $oVendorBefore = new Vendor($oApp->iVendorId);
             $oVendorAfter = new Vendor($this->iVendorId);
-            $sWhatChanged .= "Vendor was changed from ".$oVendorBefore->sName." to ".$oVendorAfter->sName.".\n\n";
+            $sWhatChanged .= "Developer was changed from ".$oVendorBefore->sName." to ".$oVendorAfter->sName.".\n\n";
         }
 
         if ($this->iCatId && ($this->iCatId!=$oApp->iCatId))
@@ -594,7 +594,7 @@ class Application {
                 if($this->iSubmitterId != $_SESSION['current']->iUserId)
                 {
                     $sVendorHelp .= "The user added a new one; review ".
-                                    "it in the vendor form below or ". 
+                                    "it in the Developer form below or ". 
                                     "replace it with an existing one.";
                 } else
                 {
@@ -605,7 +605,7 @@ class Application {
             }
         }
         // vendor name
-        echo '<tr valign=top><td class="color0"><b>Vendor</b></td>',"\n";
+        echo '<tr valign=top><td class="color0"><b>Developer</b></td>',"\n";
         echo "<td>$sVendorHelp</td></tr>\n";
 
         // alt vendor
@@ -672,7 +672,7 @@ class Application {
 
         // No vendor entered, and nothing in the list is selected
         if (empty($aValues['sVendorName']) && !$aValues['iAppVendorId'])
-            $errors .= "<li>Please enter a vendor.</li>\n";
+            $errors .= "<li>Please enter a developer.</li>\n";
 
         if (empty($aValues['shAppDescription']))
             $errors .= "<li>Please enter a description of your application.</li>\n";
@@ -763,7 +763,7 @@ class Application {
         $oCategory = new Category($this->iCatId);
         $oCategory->display($this->iAppId);
 
-        // set Vendor
+        // set developer
         $oVendor = new Vendor($this->iVendorId);
 
         // set URL
@@ -777,7 +777,7 @@ class Application {
 
         echo '      <table width="250" border="0" cellpadding="3" cellspacing="1">',"\n";
         echo "        <tr class=color0 valign=top><td width=\"100\"><b>Name</b></td><td width='100%'> ".$this->sName." </td>\n";
-        echo "        <tr class=\"color1\"><td><b>Vendor</b></td><td> ".
+        echo "        <tr class=\"color1\"><td><b>Developer</b></td><td> ".
             $oVendor->objectMakeLink()."&nbsp;\n";
         echo "        </td></tr>\n";
     
@@ -792,7 +792,7 @@ class Application {
         $img = Screenshot::get_random_screenshot_img($this->iAppId, null, false);
         echo "<tr><td align=\"center\" colspan=\"2\">$img</td></tr>\n";
 
-        echo "      </table>\n"; /* close of name/vendor/bugs/url table */
+        echo "      </table>\n"; /* close of name/developer/bugs/url table */
 
         echo "    </td></tr>\n";
         echo "    <tr><td>\n";
@@ -916,7 +916,7 @@ class Application {
         $oTableRow = new TableRow();
         $oTableRow->AddTextCell("Application");
         $oTableRow->AddTextCell("Description");
-        $oTableRow->AddTextCell("Vendor");
+        $oTableRow->AddTextCell("Developer");
         $oTableRow->AddTextCell("Submission Date");
         $oTableRow->SetClass("color4");
         $oTable->SetHeader($oTableRow);
@@ -1130,7 +1130,7 @@ class Application {
 
             /* Only show submitter when processing queued entries */
             $oTableRow->AddTextCell('Submitter');
-            $oTableRow->AddSortableTextCell('Vendor', 'vendorName');
+            $oTableRow->AddSortableTextCell('Developer', 'vendorName');
             $oTableRow->AddSortableTextCell('Application', 'appName');
         }
         return $oTableRow;
