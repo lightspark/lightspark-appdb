@@ -188,6 +188,17 @@ class ObjectManager
         return TRUE;
     }
 
+    public function IsNullIdAllowed($sAction)
+    {
+        $oObject = new $this->sClass();
+        $bAllowed = method_exists($oObject, 'objectAllowNullId');
+
+        if($bAllowed)
+            $bAllowed = $oObject->objectAllowNullId($sAction);
+
+        return $bAllowed;
+    }
+
     public static function error_exit($shMessage)
     {
         echo '<div align="center"><p><font color="red"><b>'.$shMessage.'</b></font></p></div';
@@ -1313,7 +1324,7 @@ class ObjectManager
         $oObject = new $this->sClass($this->iId);
 
         /* Check that the entry exists */
-        if(!$oObject->objectGetId())
+        if(!$oObject->objectGetId() && !$this->isNullIdAllowed('view'))
             $this->error_exit("Entry not found (class: {$this->sClass}, id: {$this->iId})");
 
         /* Check if the entry has been deleted */

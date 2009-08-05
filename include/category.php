@@ -274,9 +274,37 @@ class Category {
         return $str;
     }
 
+    public function objectGetState()
+    {
+        // We currenly don't queue categories
+        return 'accepted';
+    }
+
     function objectGetId()
     {
         return $this->iCatId;
+    }
+
+    public function objectMakeLink()
+    {
+        return '<a href="'.$this->objectMakeUrl()."\">{$this->sName}</a>'";
+    }
+
+    public function objectMakeUrl()
+    {
+        return BASE."objectManager.php?sClass=category&sAction=view&iId={$this->iCatId}&sTitle=Browse+Applications";
+    }
+
+    public function objectAllowNullId($sAction)
+    {
+        switch($sAction)
+        {
+            case 'view':
+                return true;
+
+            default:
+                return false;
+        }
     }
 
     function objectGetSubmitterId()
@@ -344,12 +372,159 @@ class Category {
     /**
      * display the full path of the Category we are looking at
      */
-    function display($appId, $versionId = '')
+    function displayPath($appId, $versionId = '')
     {
         $sCatFullPath = Category::make_cat_path($this->getCategoryPath(), $appId, $versionId);
         echo html_frame_start("",'98%','',2);
         echo "<p><b>Category: ". $sCatFullPath ."</b><br>\n";
         echo html_frame_end();
+    }
+
+    public function display()
+    {
+        // list sub categories
+        $sCatFullPath = Category::make_cat_path($this->getCategoryPath());
+        $aSubs = $this->aSubcatsIds;
+
+        echo "<div class='default_container'>\n";
+
+        // Allow editing categories
+        if($this->canEdit())
+        {
+            $oM = new objectManager('category', '', $this->iCatId);
+            $oM->setReturnTo($this->objectMakeUrl());
+            echo "<p>\n";
+            echo '<a href="'.$oM->makeUrl('add', null, 'Add Category').'">Add</a>';
+            if($this->iCatId) // We can't edit the 'Main' category
+            {
+                echo ' &nbsp; &nbsp; ';
+                echo '<a href="'.$oM->makeUrl('edit', $this->iCatId, 'Edit Category').'">Edit</a>';
+                echo ' &nbsp; &nbsp; ';
+                echo '<a href="'.$oM->makeUrl('delete', $this->iCatId, 'Delete Category').'">Delete</a>';
+            }
+            echo "</p>\n";
+        }
+
+        if($aSubs)
+        {
+            echo html_frame_start("",'98%','',2);
+            echo "<p><b>Category: ". $sCatFullPath ."</b><br>\n";
+            echo html_frame_end();
+            
+            echo html_frame_start("","98%","",0);
+
+            $oTable = new Table();
+            $oTable->SetWidth("100%");
+            $oTable->SetBorder(0);
+            $oTable->SetCellPadding(3);
+            $oTable->SetCellSpacing(1);
+
+            $oTableRow = new TableRow();
+            $oTableRow->SetClass("color4");
+            $oTableRow->AddTextCell("Sub Category");
+            $oTableRow->AddTextCell("Description");
+            $oTableRow->AddTextCell("No. Apps");
+            $oTable->SetHeader($oTableRow);
+            
+            while(list($i,$iSubcatId) = each($aSubs))
+            {
+                $oSubCat= new Category($iSubcatId);
+
+                //set row color
+                $sColor = ($i % 2) ? "color0" : "color1"; 
+
+                $oTableRowHighlight = GetStandardRowHighlight($i);
+
+                $sUrl = $oSubCat->objectMakeUrl();
+
+                $oTableRowClick = new TableRowClick($sUrl);
+                $oTableRowClick->SetHighlight($oTableRowHighlight);
+
+                //get number of apps in this sub-category
+                $iAppcount = $oSubCat->getApplicationCount();
+
+                //format desc
+                $sDesc = substr(stripslashes($oSubCat->sDescription),0,70);
+
+                //display row
+                $oTableRow = new TableRow();
+                $oTableRow->SetClass($sColor);
+                $oTableRow->SetRowClick($oTableRowClick);
+
+                $oTableCell = new TableCell($oSubCat->sName);
+                $oTableCell->SetCellLink($sUrl);
+                $oTableRow->AddCell($oTableCell);
+                $oTableRow->AddTextCell("$sDesc &nbsp;");
+                $oTableRow->AddTextCell("$iAppcount &nbsp;");
+
+                $oTable->AddRow($oTableRow);
+            }
+
+            // output the table
+            echo $oTable->GetString();
+
+            echo html_frame_end( count($aSubs) . ' categories');
+        }
+
+
+
+        // list applications in this category
+        $aApps = $this->aApplicationsIds;
+        if($aApps)
+        {
+            echo html_frame_start("",'98%','',2);
+            echo "<p><b>Category: ". $sCatFullPath ."</b><br>\n";
+            echo html_frame_end();
+            
+            echo html_frame_start("","98%","",0);
+
+            $oTable = new Table();
+            $oTable->SetWidth("100%");
+            $oTable->SetBorder(0);
+            $oTable->SetCellPadding(3);
+            $oTable->SetCellSpacing(1);
+
+            $oTableRow = new TableRow();
+            $oTableRow->SetClass("color4");
+            $oTableRow->AddTextCell("Application name");
+            $oTableRow->AddTextCell("Description");
+            $oTableRow->AddTextCell("No. Versions");
+
+            $oTable->SetHeader($oTableRow);
+                    
+            while(list($i, $iAppId) = each($aApps))
+            {
+                $oApp = new Application($iAppId);
+
+                //set row color
+                $sColor = ($i % 2) ? "color0" : "color1";
+
+                $oTableRowHighlight = GetStandardRowHighlight($i);
+
+                $sUrl = $oApp->objectMakeUrl();
+
+                $oTableRowClick = new TableRowClick($sUrl);
+                $oTableRowClick->SetHighlight($oTableRowHighlight);
+                
+                //format desc
+                $sDesc = util_trim_description($oApp->sDescription);
+                
+                //display row
+                $oTableRow = new TableRow();
+                $oTableRow->SetRowClick($oTableRowClick);
+                $oTableRow->SetClass($sColor);
+                $oTableRow->AddTextCell($oApp->objectMakeLink());
+                $oTableRow->AddTextCell("$sDesc &nbsp;");
+                $oTableRow->AddTextCell(sizeof($oApp->aVersionsIds));
+
+                $oTable->AddRow($oTableRow);
+            }
+            
+            // output table
+            echo $oTable->GetString();
+
+            echo html_frame_end( count($aApps) . " applications in this category");
+        }
     }
 }
 

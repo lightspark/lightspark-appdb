@@ -761,7 +761,7 @@ class Application {
 
         // cat display
         $oCategory = new Category($this->iCatId);
-        $oCategory->display($this->iAppId);
+        $oCategory->displayPath($this->iAppId);
 
         // set developer
         $oVendor = new Vendor($this->iVendorId);

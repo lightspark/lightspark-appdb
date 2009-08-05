@@ -840,7 +840,7 @@ class version {
 
         // cat
         $oCategory = new Category($oApp->iCatId);
-        $oCategory->display($oApp->iAppId, $this->iVersionId);
+        $oCategory->displayPath($oApp->iAppId, $this->iVersionId);
   
         // set URL
         $appLinkURL = ($oApp->sWebpage) ? trimmed_link($oApp->sWebpage,30) : "&nbsp;";

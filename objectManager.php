@@ -116,7 +116,7 @@ if(!$sAction)
 apidb_header($oObject->get_title($sAction));
 
 /* display a particular element */
-if($oObject->getId() && $sAction != "add")
+if(($oObject->getId() || $oObject->IsNullIdAllowed($sAction)) && $sAction != "add")
 {
     switch($sAction)
     {
