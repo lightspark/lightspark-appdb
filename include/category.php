@@ -241,37 +241,37 @@ class Category {
     /**
      * create the Category: line at the top of appdb pages$
      */
-    function make_cat_path($path, $appId = '', $versionId = '')
+    function make_cat_path($aPath, $iAppId = '', $iVersionId = '')
     {
-        $str = "";
-        $catCount = 0;
-        while(list($iCatIdx, list($iCatId, $name)) = each($path))
+        $sStr = "";
+        $iCatCount = 0;
+        while(list($iCatIdx, list($iCatId, $sName)) = each($aPath))
         {
-            if($name == "ROOT")
-                $catname = "Main";
+            if($sName == "ROOT")
+                $sCatname = "Main";
             else
-                $catname = $name;
+                $sCatname = $sName;
 
-            if ($catCount > 0) $str .= " &gt; ";
-            $str .= html_ahref($catname,"appbrowse.php?catId=$iCatId");
-            $catCount++;
+            if ($iCatCount > 0) $sStr .= " &gt; ";
+            $sStr .= html_ahref($sCatname,"objectManager.php?sClass=category&iId=$iCatId&sAction=view&sTitle=Browse+Applications");
+            $iCatCount++;
         }
 
-        if(!empty($appId))
+        if($iAppId)
         {
-            $oApp = new Application($appId);
-            if(!empty($versionId))
+            $oApp = new Application($iAppId);
+            if($iVersionId)
             {
-                $oVersion = new Version($versionId);
-                $str .= " &gt; ".$oApp->objectMakeLink();
-                $str .= " &gt; ".$oVersion->sName;
+                $oVersion = new Version($iVersionId);
+                $sStr .= " &gt; ".$oApp->objectMakeLink();
+                $sStr .= " &gt; ".$oVersion->sName;
             } else
             {
-                $str .= " &gt; ".$oApp->sName;
+                $sStr .= " &gt; ".$oApp->sName;
             }
         }
 
-        return $str;
+        return $sStr;
     }
 
     public function objectGetState()
