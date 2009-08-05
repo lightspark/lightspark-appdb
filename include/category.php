@@ -171,7 +171,7 @@ class Category {
 
         $oCat->sName = 'Main';
         $aCats = array($oCat);
-        $aCats += $oCat->getSubCatList(1);
+        $aCats = array_merge($aCats, $oCat->getSubCatList(1));
 
         return $aCats;
     }
