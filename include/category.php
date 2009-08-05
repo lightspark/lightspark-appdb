@@ -405,12 +405,13 @@ class Category {
             echo "</p>\n";
         }
 
+        // Output sub-categories
         if($aSubs)
         {
             echo html_frame_start("",'98%','',2);
             echo "<p><b>Category: ". $sCatFullPath ."</b><br>\n";
             echo html_frame_end();
-            
+
             echo html_frame_start("","98%","",0);
 
             $oTable = new Table();
@@ -465,7 +466,6 @@ class Category {
 
             echo html_frame_end( count($aSubs) . ' categories');
         }
-
 
 
         // list applications in this category
@@ -524,6 +524,18 @@ class Category {
             echo $oTable->GetString();
 
             echo html_frame_end( count($aApps) . " applications in this category");
+        }
+
+        // Show a message if this category is empty
+        if(!$aApps && !$aSubs)
+        {
+            echo html_frame_start("",'98%','',2);
+            echo "<p><b>Category: ". $sCatFullPath ."</b><br>\n";
+            echo html_frame_end();
+
+            echo html_frame_start('','90%','',2);
+            echo 'This category has no sub-categories or applications';
+            echo html_frame_end();
         }
     }
 }
