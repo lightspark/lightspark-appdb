@@ -71,7 +71,7 @@ class downloadurl
 
     public function objectSetParent($iNewId, $sClass = '')
     {
-        if($this->iVersionId)
+        if($this->iVersionId || !$this->iAppId)
             $this->iVersionId = $iNewId;
         else
             $this->iAppId = $iNewId;
