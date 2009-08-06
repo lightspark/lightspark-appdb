@@ -1727,7 +1727,7 @@ class version {
         foreach($this->getTestResults($bIncludeDeleted) as $oTest)
         {
             if($bRecursive)
-                $aChildren += $oTest->objectGetChildren($bIncludeDeleted);
+                $aChildren = array_merge($aChildren, $oTest->objectGetChildren($bIncludeDeleted));
             $aChildren[] = $oTest;
         }
 
@@ -1743,7 +1743,7 @@ class version {
             $oMaintainer = new maintainer(0, $oRow);
 
             if($bRecursive)
-                $aChildren += $oMaintainer->objectGetChildren($bIncludeDeleted);
+                $aChildren = array_merge($aChildren, $oMaintainer->objectGetChildren($bIncludeDeleted));
             $aChildren[] = $oMaintainer;
         }
 
@@ -1759,7 +1759,7 @@ class version {
             $oMonitor = new monitor(0, $oRow);
 
             if($bRecursive)
-                $aChildren += $oMonitor->objectGetChildren($bIncludeDeleted);
+                $aChildren = array_merge($aChildren, $oMonitor->objectGetChildren($bIncludeDeleted));
             $aChildren[] = $oMonitor;
         }
 
@@ -1791,7 +1791,7 @@ class version {
             $oScreenshot = new screenshot(0, $oRow);
 
             if($bRecursive)
-                $aChildren += $oScreenshot->objectGetChildren($bIncludeDeleted);
+                $aChildren = array_merge($aChildren, $oScreenshot->objectGetChildren($bIncludeDeleted));
             $aChildren[] = $oScreenshot;
         }
 
@@ -1801,7 +1801,7 @@ class version {
             $oBug = new bug($iBugId);
 
             if($bRecursive)
-                $aChildren += $oBug->objectGetChildren($bIncludeDeleted);
+                $aChildren = array_merge($aChildren, $oBug->objectGetChildren($bIncludeDeleted));
             $aChildren[] = $oBug;
         }
 
@@ -1832,7 +1832,7 @@ class version {
             $oUrl = new url(0, $oRow);
 
             if($bRecursive)
-                $aChildren += $oUrl->objectGetChildren($bIncludeDeleted);
+                $aChildren = array_merge($aChildren, $oUrl->objectGetChildren($bIncludeDeleted));
             $aChildren[] = $oUrl;
         }
 
@@ -1848,12 +1848,12 @@ class version {
             $oDownload = new downloadurl(0, $oRow);
 
             if($bRecursive)
-                $aChildren += $oDownload->objectGetChildren($bIncludeDeleted);
+                $aChildren = array_merge($aChildren, $oDownload->objectGetChildren($bIncludeDeleted));
             $aChildren[] = $oDownload;
         }
 
         /* Get votes, include deleted ones */
-        $aChildren += vote::getVotesForVersion($this->iVersionId);
+        $aChildren = array_merge($aChildren, vote::getVotesForVersion($this->iVersionId));
 
         return $aChildren;
     }
