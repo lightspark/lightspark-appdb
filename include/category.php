@@ -313,11 +313,27 @@ class Category {
         return 0;
     }
 
-    function outputEditor()
+    function objectGetCustomVars($sAction)
+    {
+        switch($sAction)
+        {
+            case 'add':
+                return array('iParentId');
+
+            default:
+                return null;
+        }
+    }
+
+    function outputEditor($aValues = null)
     {
         $aCategories = category::getOrderedList(true);
         $aCatNames = array();
         $aCatIds = array();
+
+        $iParentId = $this->iParentId;
+        if(!$iParentId && $aValues)
+            $iParentId = getInput('iParentId', $aValues);
 
         foreach($aCategories as $oCategory)
         {
@@ -341,7 +357,7 @@ class Category {
                 <tr>
                 <td width=\"15%\" class=\"box-label\"><b>Parent</b></td>
                 <td class=\"box-body\">
-                ".html_select("iParentId",$aCatIds,$this->iParentId, $aCatNames)." 
+                ".html_select("iParentId",$aCatIds,$iParentId, $aCatNames)." 
                 </td>
                 </tr>
                 </table>";
@@ -394,7 +410,7 @@ class Category {
             $oM = new objectManager('category', '', $this->iCatId);
             $oM->setReturnTo($this->objectMakeUrl());
             echo "<p>\n";
-            echo '<a href="'.$oM->makeUrl('add', null, 'Add Category').'">Add</a>';
+            echo '<a href="'.$oM->makeUrl('add', null, 'Add Category')."&iParentId={$this->iCatId}\">Add</a>";;
             if($this->iCatId) // We can't edit the 'Main' category
             {
                 echo ' &nbsp; &nbsp; ';
