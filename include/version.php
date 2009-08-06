@@ -1764,7 +1764,7 @@ class version {
         }
 
         /* Find notes */
-        $sQuery = "SELECT * FROM appNotes WHERE versionId = '?'";
+        $sQuery = "SELECT * FROM appNotes WHERE versionId = '?' AND linkedWith = '0'";
         $hResult = query_parameters($sQuery, $this->iVersionId);
 
         if(!$hResult)
@@ -1774,8 +1774,8 @@ class version {
         {
             $oNote = new note(0, $oRow);
 
-            if($bRecursive)
-                $aChildren += $oNote->objectGetChildren($bIncludeDeleted);
+            // We always include notes' children, because they log the versionId
+            $aChildren = array_merge($aChildren, $oNote->objectGetChildren($bIncludeDeleted));
             $aChildren[] = $oNote;
         }
 

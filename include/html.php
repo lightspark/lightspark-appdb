@@ -305,4 +305,36 @@ function html_radiobuttons($aIds, $aOptions, $sName, $sDefault = '')
     return $shRet;
 }
 
+function html_checkbox($sName, $sValue, $shText, $bChecked)
+{
+    if($bChecked)
+        $sSelected = ' checked="checked"';
+    else
+        $sSelected = '';
+
+    return "<input type=\"checkbox\" name=\"$sName\" value=\"$sValue\"$sSelected /> $shText\n";
+}
+
+function html_checkboxes($sName, $aValues, $aTexts, $aSelected)
+{
+    $shRet = '';
+
+    for($i = 0; $i < sizeof($aValues); $i++)
+        $shRet .= html_checkbox($sName.$i, $aValues[$i], $aTexts[$i], $aSelected[$i]).'<br />';
+
+    return $shRet;
+}
+
+function html_read_input_series($sName, $aInput, $iCount)
+{
+    $aRet = array();
+
+    for($i = 0; $i < $iCount; $i++)
+    {
+        $aRet[] = getInput($sName.$i, $aInput);
+    }
+
+    return $aRet;
+}
+
 ?>

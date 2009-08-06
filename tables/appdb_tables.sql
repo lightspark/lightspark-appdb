@@ -170,6 +170,7 @@ create table appNotes (
 	appId           int not null,
 	submitterId	int not null,
 	submitTime	datetime not null,
+	linkedWith      int not null
 	key(noteId)
 );
 

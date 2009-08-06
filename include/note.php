@@ -10,7 +10,7 @@ require_once(BASE."include/version.php");
 define('APPNOTE_SHOW_FOR_ALL', -1);
 define('APPNOTE_SHOW_FOR_VERSIONS', -2);
 define('APPNOTE_SHOW_FOR_APP', -3);
-define('DISPLAYMODE_COUNT', 3);
+define('APPNOTE_SHOW_FOR_SPECIFIC_VERSIONS', -4);
 
 /**
  * Note class for handling notes
@@ -23,6 +23,8 @@ class Note {
     var $shDescription;
     var $iSubmitterId;
     var $sSubmitTime;
+    var $iLinkedWith;
+    var $aNoteLinks;
 
     /**
      * Constructor.
@@ -30,6 +32,8 @@ class Note {
      */
     function Note($iNoteId = null, $oRow = null)
     {
+        $this->aNoteLinks = array();
+
         if(!$iNoteId && !$oRow)
           return;
 
@@ -49,6 +53,8 @@ class Note {
             $this->shDescription = $oRow->noteDesc;
             $this->sSubmitTime = $oRow->submitTime;
             $this->iSubmitterId = $oRow->submitterId;
+            $this->iLinkedWith = $oRow->linkedWith;
+            $this->aNoteLinks = $this->objectGetChildren();
         }
     }
 
@@ -71,7 +77,17 @@ class Note {
 
         if($hResult)
         {
+            // We need to backup the noteLinks array
+            $aNoteLinks = $this->aNoteLinks;
             $this->note(query_appdb_insert_id());
+
+            foreach($aNoteLinks as $oLink)
+            {
+                $oLink->objectSetParent($this->iNoteId, 'note');
+                $this->aNoteLinks[] = $oLink;
+            }
+
+            $this->saveNoteLinks(true);
             $sWhatChanged = "Description is:\n".$this->shDescription.".\n\n";
             $this->SendNotificationMail("add", $sWhatChanged);
             return true;
@@ -116,6 +132,14 @@ class Note {
             $sWhatChanged .= "Description was changed from\n ".$oNote->shDescription."\n to \n".$this->shDescription.".\n\n";
         }
 
+        if($this->iVersionId == APPNOTE_SHOW_FOR_SPECIFIC_VERSIONS && (sizeof($this->aNoteLinks) == 1))
+        {
+            $oLink = $this->aNoteLinks[0];
+            $this->iVersionId = $oLink->objectGetParent('version');
+            $this->iAppId = 0;
+            $oLink->delete();
+        }
+
         if (($this->iVersionId || $this->iAppId) && $this->iVersionId!=$oNote->iVersionId)
         {
             if (!query_parameters("UPDATE appNotes SET versionId = '?' WHERE noteId = '?'",
@@ -152,6 +176,9 @@ class Note {
                                   $this->iAppId, $this->iNoteId))
                 return false;
         }
+
+        $this->saveNoteLinks();
+
         if($sWhatChanged)
             $this->SendNotificationMail("edit",$sWhatChanged);       
         return true;
@@ -319,7 +346,13 @@ class Note {
             $shReturnTo = $iVersionId ? $oVersion->objectMakeUrl() : $oApp->objectMakeUrl();
 
             $aVars = array('shReturnTo' => $shReturnTo, 'bEditing' => 'false');
-            $oNote->display($aVars);
+
+            $oLink = $oNote->getLink();
+
+            if($oLink)
+                $oLink->display($aVars);
+            else
+                $oNote->display($aVars);
         }
     }
 
@@ -350,12 +383,12 @@ class Note {
 
     public static function getDisplayModeIds()
     {
-        return array(APPNOTE_SHOW_FOR_ALL, APPNOTE_SHOW_FOR_VERSIONS, APPNOTE_SHOW_FOR_APP);
+        return array(APPNOTE_SHOW_FOR_ALL, APPNOTE_SHOW_FOR_VERSIONS, APPNOTE_SHOW_FOR_APP, APPNOTE_SHOW_FOR_SPECIFIC_VERSIONS);
     }
 
     public static function getDisplayModeNames()
     {
-        return array('Show on both application and version pages', 'Show on all version pages only', 'Show on application page only');
+        return array('Show on both application and version pages', 'Show on all version pages only', 'Show on application page only', 'Show on the following version pages only:');
     }
 
     public function getDisplayModeName($iModeId = null)
@@ -374,6 +407,104 @@ class Note {
         }
 
         return '';
+    }
+
+    public function findLink($iVersionId, $bQueryDB = true)
+    {
+        if($bQueryDB)
+        {
+            // If we don't have a noteId we can't be linked to anything
+            if(!$this->iNoteId)
+                return null;
+
+            $hResult = query_parameters("SELECT * FROM appNotes WHERE linkedWith = '?' AND versionId = '?'", $this->iNoteId, $iVersionId);
+
+            if(!$hResult || !($oRow = mysql_fetch_object($hResult)))
+                return null;
+
+            return new noteLink(null, $oRow);
+        }
+
+        foreach($this->aNoteLinks as $oLink)
+        {
+            if($oLink->objectGetParent('version') == $iVersionId)
+                return $oLink;
+        }
+
+        return null;
+    }
+
+    public function isLinkedWith($iVersionId, $bQueryDB = true)
+    {
+        $oLink = $this->findLink($iVersionId, $bQueryDB);
+
+        return $oLink != null;
+    }
+
+    public function getNoteLinksFromInput($aValues)
+    {
+        $oApp = new application($this->iAppId);
+        $iCount = sizeof($oApp->getVersions());
+        $aLinkedVersions = html_read_input_series('iVersionId', $aValues, $iCount);
+        $aLinks = array();
+
+        foreach($aLinkedVersions as $sLinkedVersionId)
+        {
+
+            if(!$sLinkedVersionId)
+                continue;
+
+            $iLinkedVersionId = (int)$sLinkedVersionId;
+            // See if we already have a DB entry for this link
+            $oExistingLink = $this->findLink($iLinkedVersionId);
+            if($oExistingLink)
+            {
+                $aLinks[] = $oExistingLink;
+                continue;
+            }
+            $oLink = new noteLink();
+
+            $oLink->objectSetParent($this->iNoteId, 'note');
+            $oLink->objectSetParent($iLinkedVersionId, 'version');
+            $aLinks[] = $oLink;
+        }
+
+        return $aLinks;
+    }
+
+    public function saveNoteLinks($bNewNote = false)
+    {
+        foreach($this->aNoteLinks as $oLink)
+        {
+            if($bNewNote || !$this->isLinkedWith($oLink->objectGetParent('version')))
+                $oLink->create();
+        }
+
+        // Check if we should delete any links
+        $aDBLinks = $this->objectGetChildren();
+
+        if(sizeof($this->aNoteLinks) != sizeof($aDBLinks))
+        {
+            foreach($aDBLinks as $oDBLink)
+            {
+                $bFound = false;
+                foreach($this->aNoteLinks as $oLink)
+                {
+                    if($oDBLink->objectGetParent('version') == $oLink->objectGetParent('version'))
+                        $bFound = true;
+                }
+                if(!$bFound)
+                    $oDBLink->delete();
+            }
+        }
+    }
+
+    public function getLink()
+    {
+        if($this->iLinkedWith)
+            return new noteLink($this->iNoteId);
+
+        return null;
     }
 
     function outputEditor($aValues = null)
@@ -419,6 +550,17 @@ class Note {
 
         if($this->iAppId || $oApp->canEdit())
         {
+            if($this->hasRealVersionId())
+            {
+                $oLink = new noteLink();
+                $oLink->objectSetParent($this->iNoteId, 'note');
+                $oLink->objectSetParent($this->iVersionId, 'version');
+                $this->aNoteLinks[] = $oLink;
+                $oVersion = new version($this->iVersionId);
+                $this->iAppId = $oVersion->iAppId;
+                $this->iVersionId = APPNOTE_SHOW_FOR_SPECIFIC_VERSIONS;
+            }
+
             $oApp = new application($this->iAppId);
             $aIds =  $this->getDisplayModeIds();
             $aOptions = $this->getDisplayModeNames();
@@ -426,17 +568,20 @@ class Note {
             echo '<tr><td class="color1">Display mode</td>'."\n";
             echo '<td class="color0">'.html_radiobuttons($aIds, $aOptions, 'iVersionId', $this->iVersionId);
 
-            /* Allow the note to be moved to a single version */
+           /* Allow the note to be shown for certain versions only */
             $aIds = array();
             $aOptions = array();
-            echo 'Show on one of the following version pages only:<br />';
+            $aSelected = array();
+
             foreach($oApp->getVersions(true) as $oAppVersion) // Only accepted versions
             {
                 
                 $aIds[] = $oAppVersion->objectGetId();
                 $aOptions[] = $oAppVersion->objectMakeLink();
+
+                $aSelected[] = $this->isLinkedWith($oAppVersion->objectGetId(), false);
             }
-            echo html_radiobuttons($aIds, $aOptions, 'iVersionId', $this->iVersionId);
+            echo html_checkboxes('iVersionId', $aIds, $aOptions, $aSelected);
 
             echo '</td></tr>';
         } else if(!$this->iAppId)
@@ -460,6 +605,19 @@ class Note {
             $this->iAppId = getInput('iAppId', $aValues);
         else
             $this->iAppId = 0;
+
+        if($this->iVersionId == APPNOTE_SHOW_FOR_SPECIFIC_VERSIONS)
+        {
+            $this->aNoteLinks = $this->getNoteLinksFromInput($aValues);
+
+            if(sizeof($this->aNoteLinks) == 1)
+            {
+                $oLink = $this->aNoteLinks[0];
+                $this->iVersionId = $oLink->objectGetParent('version');
+                $this->iAppId = 0;
+            }
+        }
+
         $this->sTitle = $aValues['sNoteTitle'];
         $this->shDescription = $aValues['shNoteDesc'];
     }
@@ -560,7 +718,20 @@ class Note {
 
     function objectGetChildren($bIncludeDeleted = false)
     {
-        return array();
+        $aRet = array();
+
+        if(!$this->iAppId)
+            return $aRet;
+
+        $hResult = query_parameters("SELECT * FROM appNotes WHERE linkedWith = '?'", $this->iNoteId);
+
+        if(!$hResult)
+            return $aRet;
+
+        while($oRow = mysql_fetch_object($hResult))
+            $aRet[] = new noteLink(null, $oRow);
+
+        return $aRet;
     }
 
     //TODO: not sure if we want to use sTitle here or what
@@ -592,4 +763,96 @@ class Note {
         return false;
     }
 }
+
+class noteLink
+{
+    private $iLinkId;
+    private $iNoteId;
+    private $iVersionId;
+
+    function noteLink($iLinkId = null, $oRow = null)
+    {
+        $this->iLinkId = $iLinkId;
+
+        if(!$oRow && $this->iLinkId)
+        {
+            $hResult = query_parameters("SELECT * FROM appNotes WHERE noteId = '?'", $this->iLinkId);
+        
+            if(!$hResult)
+                return;
+
+            $oRow = mysql_fetch_object($hResult);
+        }
+
+        if($oRow)
+        {
+            $this->iLinkId = $oRow->noteId;
+            $this->iNoteId = $oRow->linkedWith;
+            $this->iVersionId = $oRow->versionId;
+        }
+    }
+
+    public function create()
+    {
+        $hResult = query_parameters("INSERT INTO appNotes (linkedWith,versionId) VALUES('?','?')", $this->iNoteId, $this->iVersionId);
+
+        if(!$hResult)
+            return false;
+
+        return true;
+    }
+
+    public function isDuplicate()
+    {
+        $oNote = new note($this->iNoteId);
+        return $oNote->isLinkedWith($this->iVersionId);
+    }
+
+    public function update()
+    {
+        // Query the DB so we have something to compare against
+        $oLink = new noteLink($this->iLinkId);
+
+        if($this->objectGetParent('version') != $oLink->objectGetParent('version') && !$this->isDuplicate())
+        {
+            $hResult = query_parameters("UPDATE appNotes SET versionId = '?' WHERE noteId = '?'", $this->iVersionId, $this->iNoteId);
+            if(!$hResult)
+                return false;
+        }
+        return true;
+    }
+
+    public function delete()
+    {
+        $hResult = query_parameters("DELETE FROM appNotes WHERE noteId = '?'", $this->iLinkId);
+
+        if(!$hResult)
+            return false;
+
+        return true;
+    }
+
+    public function objectSetParent($iNewId, $sClass = '')
+    {
+        if(!$sClass || $sClass == 'note')
+            $this->iNoteId = $iNewId;
+        else if($sClass == 'version')
+            $this->iVersionId = $iNewId;
+    }
+
+    public function objectGetParent($sClass = '')
+    {
+        if(!$sClass || $sClass == 'note')
+            return $this->iNoteId;
+        if($sClass == 'version')
+            return $this->iVersionId;
+    }
+
+    function display($aValues = null)
+    {
+        $oNote = new note($this->iNoteId);
+        $oNote->display($aValues);
+    }
+}
+
 ?>
