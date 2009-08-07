@@ -610,11 +610,13 @@ class Note {
         {
             $this->aNoteLinks = $this->getNoteLinksFromInput($aValues);
 
+            // There's no need to use links if the note is only shown for one version
             if(sizeof($this->aNoteLinks) == 1)
             {
                 $oLink = $this->aNoteLinks[0];
                 $this->iVersionId = $oLink->objectGetParent('version');
                 $this->iAppId = 0;
+                $this->aNoteLinks = array();
             }
         }
 
