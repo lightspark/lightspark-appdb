@@ -443,7 +443,10 @@ class Note {
 
     public function getNoteLinksFromInput($aValues)
     {
-        $oApp = new application($this->iAppId);
+        $iAppId = $this->iAppId;
+        if(!$iAppId)
+            $iAppId = getInput('iAppId', $aValues);
+        $oApp = new application($iAppId);
         $iCount = sizeof($oApp->getVersions());
         $aLinkedVersions = html_read_input_series('iVersionId', $aValues, $iCount);
         $aLinks = array();
@@ -593,6 +596,20 @@ class Note {
 
         echo html_table_end();
         echo html_frame_end();
+    }
+
+    public function checkOutputEditorInput($aClean)
+    {
+        $shErrors = '';
+        $iVersionId = getInput('iVersionId', $aClean);
+
+        if($iVersionId == APPNOTE_SHOW_FOR_SPECIFIC_VERSIONS)
+        {
+            $aNoteLinks = $this->getNoteLinksFromInput($aClean);
+            if(!sizeof($aNoteLinks))
+                $shErrors .= '<li>You need to show the note for at least one version, or choose another display mode</li>';
+        }
+        return $shErrors;
     }
 
     /* retrieves values from $aValue that were output by outputEditor() */
