@@ -406,8 +406,10 @@ class ObjectManager
         }
 
         /* Only show the edit screen if the user has sufficient rights */
-        if(!$oObject->canEdit())
+        if(!$oObject->canEdit() && !getInput('sSubmit', $aClean))
             $this->error_exit('You do not have sufficient privileges to edit this entry');
+        else if(!$oObject->canEdit())
+            $this->show_form_help_session_timeout();
 
         /* Display errors, if any, and fetch form data */
         if($this->displayErrors($sErrors))
@@ -1214,11 +1216,23 @@ class ObjectManager
         echo '<input type="submit" name="sSubmit" class="button" value="Preview">';
     }
 
-    public function handle_anonymous_submission()
+    public function show_form_help_session_timeout()
+    {
+        $this->error_exit("Your session has timed out. <a target=\"_blank\" href=\"".BASE."account.php?sCmd=login\">Log in</a> and then <a href=\"javascript:location.reload();\">refresh thise page</a>.");
+    }
+
+    public function handle_anonymous_submission($aClean)
     {
         $oObject = new $this->sClass();
         if($oObject->allowAnonymousSubmissions() || $_SESSION['current']->isLoggedIn())
             return;
+
+        // Allow the user to continue filling out a form
+        if(getInput('sSubmit', $aClean))
+        {
+            apidb_header($this->get_title(getInput($sAction, $aClean)));
+            $this->show_form_help_session_timeout();
+        }
 
         login_form();
         exit;

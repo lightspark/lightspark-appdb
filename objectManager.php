@@ -82,7 +82,7 @@ if($sAction)
     switch($aClean['sAction'])
     {
         case 'add':
-            $oObject->handle_anonymous_submission();
+            $oObject->handle_anonymous_submission($aClean);
             break;
 
         case 'changeParent':
