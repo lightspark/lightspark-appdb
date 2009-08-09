@@ -1022,14 +1022,7 @@ class Application {
         if($aOptions['appCategory'])
         {
             $oCategory = new Category($aOptions['appCategory']);
-            $aSubCats = $oCategory->getSubCatList();
-            $sWhereFilter .= " AND ( catId = '{$aOptions['appCategory']}' ";
-            foreach($aSubCats as $oCat)
-            {
-                $iCatId = $oCat->objectGetId();
-                $sWhereFilter .= " OR catId = '$iCatId' ";
-            }
-            $sWhereFilter .= ") ";
+            $sWhereFilter .= ' AND ' . $oCategory->getSqlQueryPart();
         }
         /* Should we add a limit clause to the query? */
         if($iRows || $iStart)
@@ -1278,14 +1271,7 @@ class Application {
         if($aOptions['appCategory'])
         {
             $oCategory = new Category($aOptions['appCategory']);
-            $aSubCats = $oCategory->getSubCatList();
-            $sWhereFilter .= " AND ( catId = '{$aOptions['appCategory']}' ";
-            foreach($aSubCats as $oCat)
-            {
-                $iCatId = $oCat->objectGetId();
-                $sWhereFilter .= " OR catId = '$iCatId' ";
-            }
-            $sWhereFilter .= ") ";
+            $sWhereFilter .= ' AND ' . $oCategory->getSqlQueryPart();
         }
 
         if($sState != 'accepted' && !application::canEdit())

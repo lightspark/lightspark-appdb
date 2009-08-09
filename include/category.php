@@ -176,6 +176,23 @@ class Category {
         return $aCats;
     }
 
+    /* Returns an SQL statement that will match items in the current category
+       and all sub-categories */
+    public function getSqlQueryPart()
+    {
+        $sRet = '';
+        $aSubCats = $this->getSubCatList();
+        $sRet .= " ( catId = '{$this->iCatId}' ";
+        foreach($aSubCats as $oCat)
+        {
+            $iCatId = $oCat->objectGetId();
+            $sRet .= " OR catId = '$iCatId' ";
+        }
+        $sRet .= ") ";
+
+        return $sRet;
+    }
+
     function objectGetMail($sAction, $bMailSubmitter, $bParentAction)
     {
         /* We don't send notification mails */
