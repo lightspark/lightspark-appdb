@@ -687,13 +687,13 @@ class screenshot
         return $oFilter;
     }
 
-    function objectGetEntries($sState, $iRows = 0, $iStart = 0, $sOrderBy = '', $bAscending = true, $oFilters = true)
+    function objectGetEntries($sState, $iRows = 0, $iStart = 0, $sOrderBy = '', $bAscending = true, $oFilters = null)
     {
         return appData::objectGetEntries($sState, $iRows, $iStart, $sOrderBy, $bAscending,
                                          'screenshot', $oFilters);
     }
 
-    function objectGetEntriesCount($sState, $oFilters = true)
+    function objectGetEntriesCount($sState, $oFilters = null)
     {
         return appData::objectGetEntriesCount($sState, 'screenshot', $oFilters);
     }
