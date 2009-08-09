@@ -668,15 +668,34 @@ class screenshot
         echo "</tr></table></div><br>\n";
     }
 
-    function objectGetEntries($sState, $iRows = 0, $iStart = 0, $sOrderBy = '', $bAscending = true)
+    public function objectGetFilterInfo()
     {
-        return appData::objectGetEntries($sState, $iRows, $iStart, $sOrderBy, $bAscending,
-                                         'screenshot');
+        $oFilter = new filterInterface();
+
+        $aCatNames = array();
+        $aCatIds = array();
+
+        $aCategories = category::getOrderedList();
+        foreach($aCategories as $oCategory)
+        {
+            $aCatNames[] = $oCategory->sName;
+            $aCatIds[] = $oCategory->objectGetId();
+        }
+
+        $oFilter->addFilterInfo('appCategory', 'App category', array(FILTER_OPTION_ENUM), FILTER_VALUES_OPTION_ENUM, $aCatIds, $aCatNames);
+
+        return $oFilter;
     }
 
-    function objectGetEntriesCount($sState)
+    function objectGetEntries($sState, $iRows = 0, $iStart = 0, $sOrderBy = '', $bAscending = true, $oFilters = true)
     {
-        return appData::objectGetEntriesCount($sState, 'screenshot');
+        return appData::objectGetEntries($sState, $iRows, $iStart, $sOrderBy, $bAscending,
+                                         'screenshot', $oFilters);
+    }
+
+    function objectGetEntriesCount($sState, $oFilters = true)
+    {
+        return appData::objectGetEntriesCount($sState, 'screenshot', $oFilters);
     }
 
     function objectGetHeader()

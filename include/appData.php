@@ -226,13 +226,24 @@ class appData
         return $hResult;
     }
 
-    function objectGetEntriesCount($sState, $sType = null)
+    function objectGetEntriesCount($sState, $sType = null, $oFilters = null)
     {
         /* Not implemented for appData */
         if($sState == 'rejected')
             return FALSE;
 
         $sSelectType = "";
+        $sWhereFilter = '';
+
+        if($oFilters)
+        {
+            $aOptions = $oFilters->getOptions();
+            if($aOptions['appCategory'])
+            {
+                $oCategory =  new category($aOptions['appCategory']);
+                $sWhereFilter .= ' AND ' . $oCategory->getSqlQueryPart();
+            }
+        }
 
         if(($sState != 'accepted') &&
             !$_SESSION['current']->hasPriv("admin"))
@@ -275,7 +286,7 @@ class appData
                 AND
                 appVersion.state = 'accepted'
                 AND
-                appFamily.state = 'accepted'";
+                appFamily.state = 'accepted'$sWhereFilter";
 
             if($sState != 'all')
                 $sQuery .= " AND appData.state = '$sState'";
@@ -307,7 +318,7 @@ class appData
                         appData.versionId = '0'
                     )
                     AND
-                    appFamily.state = 'accepted'$sAppDataQueued$sSelectType) UNION
+                    appFamily.state = 'accepted'$sAppDataQueued$sSelectType$sWhereFilter) UNION
                     (
                     SELECT COUNT(DISTINCT appData.id) as count FROM appData,
                 appFamily, appVersion WHERE
@@ -319,7 +330,7 @@ class appData
                     AND
                     appVersion.state = 'accepted'
                     AND
-                    appFamily.state = 'accepted'$sAppDataQueued$sSelectType)";
+                    appFamily.state = 'accepted'$sAppDataQueued$sSelectType$sWhereFilter)";
 
             if($sType)
                 $hResult = query_parameters($sQuery, $sType, $sType);
@@ -346,7 +357,7 @@ class appData
         return $oTableRow;
     }
 
-    function objectGetEntries($sState, $iRows = 0, $iStart = 0, $sOrderBy = '', $bAscending = true, $sType = null)
+    function objectGetEntries($sState, $iRows = 0, $iStart = 0, $sOrderBy = '', $bAscending = true, $sType = null, $oFilters = null)
     {
         /* Not implemented for appData */
         if($sState == 'rejected')
@@ -354,6 +365,17 @@ class appData
 
         $sSelectType = "";
         $sLimit = "";
+        $sWhereFilter = '';
+
+        if($oFilters)
+        {
+            $aOptions = $oFilters->getOptions();
+            if($aOptions['appCategory'])
+            {
+                $oCategory =  new category($aOptions['appCategory']);
+                $sWhereFilter .= ' AND ' . $oCategory->getSqlQueryPart();
+            }
+        }
 
         if($sState != 'accepted' && !$_SESSION['current']->hasPriv("admin"))
         {
@@ -402,6 +424,7 @@ class appData
                 appData.state = '?'
                 AND
                 appData.type = '?'
+                $sWhereFilter
                 ORDER BY appFamily.appName";
             if(!$iRows && !$iStart)
             {
@@ -410,7 +433,7 @@ class appData
             } else
             {
                 if(!$iRows)
-                    $iRows = appData::objectGetEntriesCount($sState, $sType);
+                    $iRows = appData::objectGetEntriesCount($sState, $sType, $oFilters);
                 $sQuery .= " LIMIT ?,?";
                 $hResult = query_parameters($sQuery, $_SESSION['current']->iUserId,
                                             $sState, $sType,
@@ -435,7 +458,7 @@ class appData
                       AND
                       appData.state = '?'
                       AND
-                      appData.type = '?' ORDER BY appFamily.appName $sLimit
+                      appData.type = '?' $sWhereFilter ORDER BY appFamily.appName $sLimit
                     )
                     UNION
                     (
@@ -453,7 +476,7 @@ class appData
                       AND
                       appData.state = '?'
                       AND
-                      appData.type = '?' ORDER BY appFamily.appName $sLimit
+                      appData.type = '?' $sWhereFilter ORDER BY appFamily.appName $sLimit
                     )";
             if(!$iRows && !$iStart)
             {
@@ -462,7 +485,7 @@ class appData
             } else
             {
                 if(!$iRows)
-                    $iRows = appData::objectGetEntriesCount($sState, $sType);
+                    $iRows = appData::objectGetEntriesCount($sState, $sType, $oFilters);
                 $hResult = query_parameters($sQuery, $sState, $sType,
                                             $iStart, $iRows,
                                             $sState, $sType,
