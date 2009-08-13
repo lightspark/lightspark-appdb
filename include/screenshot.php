@@ -659,6 +659,12 @@ class screenshot
 
             echo "<br>[".$oVersion->objectMakeLink()."]";
 
+            if($oScreenshot->canEdit())
+            {
+                $oM = new objectManager('screenshot');
+                echo '<br />[<a href="'.$oM->makeUrl('delete', $oScreenshot->objectGetId(), 'Delete Screenshot').'">Delete</a>]';
+            }
+
             echo "</div></td>\n";
             // end row if counter of 3
             if($i % 3 == 0)
