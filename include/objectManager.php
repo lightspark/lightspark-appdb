@@ -64,8 +64,15 @@ class ObjectManager
         return $this->sState;
     }
 
+    private function initFilterInfo()
+    {
+        $this->oFilters = $this->getOptionalSetting('objectGetFilterInfo', FALSE);
+    }
+
     public function getFilterInfoFromInput($aClean)
     {
+        $this->initFilterInfo();
+
         if($this->oFilters)
             $this->oFilters->readInput($aClean);
     }
@@ -132,7 +139,7 @@ class ObjectManager
         $this->oMultiPage = new MultiPage(FALSE);
         $this->oTableRow = new OMTableRow(null);
         $this->sState = 'accepted';
-        $this->oFilters = $this->getOptionalSetting('objectGetFilterInfo', FALSE);
+        $this->oFilters = null; // We only fill this when needed, as it can be quite slow
 
         // initialize the common responses array
         $this->aCommonResponses = array();
