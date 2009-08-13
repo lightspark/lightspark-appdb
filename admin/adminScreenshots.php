@@ -59,8 +59,7 @@ $ItemsPerPage = isset($aClean['iItemsPerPage']) ? $aClean['iItemsPerPage'] : 6;
 $currentPage = isset($aClean['iPage']) ? $aClean['iPage'] : 1;
 
 $ItemsPerPage = min($ItemsPerPage,100);
-$totalPages = ceil(appData::objectGetEntriesCount("all", false,
-                    "screenshot")/$ItemsPerPage);
+$totalPages = ceil(screenshot::objectGetEntriesCount('accepted')/$ItemsPerPage);
 $currentPage = min($currentPage,$totalPages);
 $offset = (($currentPage-1) * $ItemsPerPage);
 
@@ -96,7 +95,8 @@ echo "</center>";
 
 /* query for all of the Screenshots in assending order */
 $Ids = query_parameters("SELECT * from appData 
-                    WHERE type = 'screenshot' 
+                    WHERE type = 'screenshot'
+                    AND state = 'accepted'
                     ORDER BY id ASC LIMIT ?, ?", $offset, $ItemsPerPage);
 $c = 1;
 echo "<div align=center><table><tr>\n";
