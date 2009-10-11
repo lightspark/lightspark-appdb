@@ -205,8 +205,8 @@ class Bug
         $sQuery = "SELECT COUNT(linkId) as count
                    FROM buglinks 
                    WHERE versionId = '?'
-                   AND bug_id = '?'";
-        if($hResult = query_parameters($sQuery, $this->iVersionId, $this->iBug_id))
+                   AND bug_id = '?' AND linkId != '?'";
+        if($hResult = query_parameters($sQuery, $this->iVersionId, $this->iBug_id, $this->iLinkId))
         {
             if(($oRow = query_fetch_object($hResult)))
             {
