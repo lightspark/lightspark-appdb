@@ -8,7 +8,7 @@ if(!$_SESSION['current']->hasPriv("admin"))
 
 function build_app_list()
 {
-    $hResult = query_parameters("SELECT appId, appName FROM appFamily ORDER BY appName");
+    $hResult = application::objectGetEntries('accepted');
     
     echo "<select name=iAppId size=5 onChange='this.form.submit()'>\n";
     while($oRow = query_fetch_object($hResult))
