@@ -21,6 +21,7 @@ class screenshot
     var $iVersionId;
     var $hFile;
     var $sDescription;
+    var $sTestedVersion;
 
     var $oScreenshotImage;
     var $oThumbnailImage;
@@ -54,6 +55,7 @@ class screenshot
         {
             $this->iScreenshotId = $oRow->id;
             $this->sDescription = $oRow->description;
+            $this->sTestedVersion = $oRow->testedVersion;
             $this->iAppId = $oRow->appId;
             $this->iVersionId = $oRow->versionId;
             $this->sUrl = $oRow->url;
@@ -71,10 +73,10 @@ class screenshot
     function create()
     {
         $hResult = query_parameters("INSERT INTO appData
-                (versionId, type, description, state, submitTime, submitterId)
-                                    VALUES('?', '?', '?', '?', ?, '?')",
+                (versionId, type, description, testedVersion, state, submitTime, submitterId)
+                                    VALUES('?', '?', '?', '?', '?', ?, '?')",
                                     $this->iVersionId, "screenshot", 
-                                    $this->sDescription,
+                                    $this->sDescription, $this->sTestedVersion,
                                     $this->mustBeQueued() ? 'queued' : 'accepted',
                                     "NOW()",
                                     $_SESSION['current']->iUserId);

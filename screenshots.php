@@ -40,6 +40,7 @@ if($aClean['sCmd'])
             $oScreenshot = new Screenshot();
             $oScreenshot->iVersionId = $aClean['iVersionId'];
             $oScreenshot->sDescription = $aClean['sScreenshotDesc'];
+            $oScreenshot->sTestedVersion = $aClean['sTestedVersion'];
             $oScreenshot->hFile = $_FILES['sImageFile'];
             $oScreenshot->create();
             $oScreenshot->free();
@@ -149,6 +150,7 @@ if($aClean['iVersionId'] && $_SESSION['current']->isLoggedIn())
       
     echo '<tr><td class=color1>Image</td><td class=color0><input name="sImageFile" type="file" size="24"></td></tr>',"\n";
     echo '<tr><td class="color1">Description</td><td class="color0"><input type="text" name="sScreenshotDesc" maxlength="20" size="24"></td></tr>',"\n";
+    echo '<tr><td class="color1">Wine version</td><td class="color0">'.make_bugzilla_version_list('sTestedVersion').'</td></tr>',"\n";
        
     echo '<tr><td colspan=2 align=center class=color3><input type="submit" value="Send File"></td></tr>',"\n";
     echo '</table>',"\n";
