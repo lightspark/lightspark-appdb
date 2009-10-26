@@ -207,7 +207,7 @@ function get_bugzilla_version_ids()
 //             this is the name to use to retrieve the selection on the form postback
 // $sSelectedValue - the currently selected entry
 // returns a string that contains the version list output
-function make_bugzilla_version_list($sVarname, $sSelectedValue)
+function make_bugzilla_version_list($sVarname, $sSelectedValue = '')
 {
     $sStr = "";
 
