@@ -102,7 +102,8 @@ if($hResult && query_num_rows($hResult))
         echo "<td>\n";
         echo $img;
         echo "<div align=center>". substr($oRow->description,0,20). "\n";
-        
+        echo '<br />Wine version: ';
+        echo $oScreenshot->sTestedVersion ? $oScreenshot->sTestedVersion : 'N/A';
         //show admin delete link
         if($_SESSION['current']->isLoggedIn() &&
             (
