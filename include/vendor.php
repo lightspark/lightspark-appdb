@@ -68,7 +68,7 @@ class Vendor {
     function create()
     {
         /* Check for duplicates */
-        $hResult = query_parameters("SELECT * FROM vendor WHERE vendorName = '?'",
+        $hResult = query_parameters("SELECT * FROM vendor WHERE vendorName = '?' AND state != 'deleted'",
                                    $this->sName);
         if($hResult && $oRow = query_fetch_object($hResult))
         {
