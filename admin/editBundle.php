@@ -41,7 +41,7 @@ if($aClean['sCmd'])
                                         $aClean['iBundleId'],
                                         $aClean['iAppId']);
             if($hResult)
-                addmsg("App $appId added to Bundle".$aClean['iBundleId'], "green");
+                addmsg("{$oApp->sName} added to bundle {$aClean['iBundleId']}", 'green');
         } else
         {
             addmsg("{$oApp->sName} is already in the bundle", 'red');
