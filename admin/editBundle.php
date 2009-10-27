@@ -44,7 +44,8 @@ if($aClean['sCmd'])
 apidb_header("Edit Application Bundle");
 
 $hResult = query_parameters("SELECT bundleId, appBundle.appId, appName FROM appBundle, appFamily ".
-                            "WHERE bundleId = '?' AND appFamily.appId = appBundle.appId",
+                            "WHERE bundleId = '?' AND appFamily.appId = appBundle.appId
+                            AND appFamily.state != 'deleted'",
                             $aClean['iBundleId']);
 
 echo html_frame_start("Apps in this Bundle","300",'',0);
