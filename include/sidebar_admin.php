@@ -39,7 +39,7 @@ function global_admin_menu() {
             BASE."objectManager.php?sClass=testData&amp;sTitle=".
             "View%20Test%20Results");
     $g->add("Users Management", BASE."admin/adminUsers.php");
-    $g->add("Comments Management", BASE."admin/adminCommentView.php");
+    $g->add('Comments Management', BASE.'objectManager.php?sClass=comment');
     $g->add("Screenshots Management", BASE."admin/adminScreenshots.php");
 
     $g->addmisc("&nbsp;");

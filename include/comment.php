@@ -296,6 +296,80 @@ class Comment {
         echo html_frame_end();   
     }
 
+    public function objectWantCustomDraw($sWhat, $sQueued)
+    {
+        switch($sWhat)
+        {
+            case 'table':
+                return true;
+        }
+
+        return false;
+    }
+
+    public static function objectGetEntries($sState, $iNumRows = 0, $iStart = 0, $sOrderBy = 'commentId')
+    {
+        $sLimit = '';
+
+        if($iNumRows)
+        {
+            $iStart = mysql_real_escape_string($iStart);
+            $iNumRows = mysql_real_escape_string($iNumRows);
+            $sLimit = " LIMIT $iStart,$iNumRows";
+        }
+
+        if($sOrderBy)
+            $sOrderBy = " ORDER BY ".mysql_real_escape_string($sOrderBy);
+
+        $hResult = query_parameters("SELECT * FROM appComments$sOrderBy$sLimit");
+
+        return $hResult;
+    }
+
+    public function objectGetDefaultSort()
+    {
+        return 'commentId';
+    }
+
+    public static function objectGetEntriesCount($sState)
+    {
+        $hResult = query_parameters("SELECT COUNT(commentId) as count FROM appComments");
+
+        if(!$hResult)
+            return null;
+
+        $oRow = mysql_fetch_object($hResult);
+
+        return $oRow->count;
+    }
+
+    public function objectGetItemsPerPage()
+    {
+        $aItemsPerPage = array(10, 20, 50, 100, 500);
+        $iDefaultPerPage = 10;
+
+        return array($aItemsPerPage, $iDefaultPerPage);
+    }
+
+    public function objectDrawCustomTable($hResult, $sQueued)
+    {
+        while($oRow = mysql_fetch_object($hResult))
+            comment::view_app_comment($oRow, true);
+    }
+
+    public function objectGetHeader()
+    {
+        return new TableRow();
+    }
+
+    public function objectGetTableRow()
+    {
+        $oTableRow = new TableRow();
+        $oOMRow = new OMTableRow($oTableRow);
+
+        return $oOMRow;
+    }
+
     function display()
     {
         $this->output_comment();
