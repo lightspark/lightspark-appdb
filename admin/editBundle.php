@@ -10,7 +10,7 @@ function build_app_list()
 {
     $hResult = application::objectGetEntries('accepted');
     
-    echo "<select name=iAppId size=5 onChange='this.form.submit()'>\n";
+    echo "<select name=iAppId size=5'>\n";
     while($oRow = query_fetch_object($hResult))
     {
         echo "<option value=$oRow->appId>$oRow->appName</option>\n";
@@ -95,12 +95,13 @@ echo html_frame_end();
 
 echo "<form method=post action=editBundle.php>\n";
 
-echo html_frame_start("Application List (double click to add)","",'',2);
+echo html_frame_start("Application list","",'',2);
 build_app_list();
 echo html_frame_end();
     
 echo "<input type=\"hidden\" name=\"iBundleId\"  value=\"".$aClean['iBundleId']."\">\n";
 echo "<input type=\"hidden\" name=\"sCmd\" value=\"add\">\n";
+echo "<input type=\"submit\" value=\"Add\" />\n";
 echo "</form>\n";
     
 apidb_footer();
