@@ -31,12 +31,21 @@ if($aClean['sCmd'])
     }
     if($aClean['sCmd'] == "add")
     {
-        $hResult = query_parameters("INSERT INTO appBundle (bundleId, appId) VALUES".
-                                    "('?', '?')",
-                                    $aClean['iBundleId'],
-                                    $aClean['iAppId']);
-        if($hResult)
-            addmsg("App $appId added to Bundle".$aClean['iBundleId'], "green");
+        $oApp = new application($aClean['iAppId']);
+        /* Check that the app hasn't already been added */
+        $hResult = query_parameters("SELECT * FROM appBundle WHERE bundleId = '?' AND appId = '?'", $aClean['iBundleId'], $aClean['iAppId']);
+        if($hResult && mysql_num_rows($hResult) == 0)
+        {
+            $hResult = query_parameters("INSERT INTO appBundle (bundleId, appId) VALUES".
+                                        "('?', '?')",
+                                        $aClean['iBundleId'],
+                                        $aClean['iAppId']);
+            if($hResult)
+                addmsg("App $appId added to Bundle".$aClean['iBundleId'], "green");
+        } else
+        {
+            addmsg("{$oApp->sName} is already in the bundle", 'red');
+        }
     }
 }
 
