@@ -230,7 +230,7 @@ class maintainer
         $this->iMaintainerId = query_appdb_insert_id();
 
         if(!$this->mustBeQueued())
-            $this->updateAppMaintainerState();
+            $this->updateMaintainerState();
 
         /* If this is a non-queued maintainer submission, remove the user's non-
            super maintainer entries for the application's versions.  This check is
@@ -260,7 +260,7 @@ class maintainer
             {
                 $sStatusMessage = "<p>The maintainer was successfully added into the database</p>\n";
 
-                $this->updateAppMaintainerState();
+                $this->updateMaintainerState();
 
                 //Send Status Email
                 $sEmail = $oUser->sEmail;
@@ -353,7 +353,7 @@ class maintainer
         if(!$hResult)
             return FALSE;
 
-        $this->updateAppMaintainerState();
+        $this->updateMaintainerState();
 
         return TRUE;
     }
@@ -424,10 +424,31 @@ class maintainer
         return $hResult;
     }
 
-    public function updateAppMaintainerState()
+    public function updateMaintainerState()
     {
-        $oApp = new application($this->iAppId);
+        if($this->bSuperMaintainer)
+        {
+            $this->updateAppMaintainerState($this->iAppId);
+            $oApp = new application($this->iAppId);
+            $aVersions = $oApp->objectGetChildrenClassSpecific('version');
+            foreach($aVersions as $oVersion)
+                $this->updateVersionMaintainerState($oVersion->objectGetId());
+        } else
+        {
+            $this->updateVersionMaintainerState($this->iVersionId);
+        }
+    }
+
+    public function updateAppMaintainerState($iAppId)
+    {
+        $oApp = new application($iAppId);
         $oApp->updateMaintainerState();
+    }
+
+    public function updateVersionMaintainerState($iVersionId)
+    {
+        $oVersion = new version($iVersionId);
+        $oVersion->updateMaintainerState();
     }
 
     function getSubmitterEmails()
@@ -615,6 +636,19 @@ class maintainer
     public function appHasMaintainer($iAppId)
     {
         $hResult = query_parameters("SELECT COUNT(maintainerId) as count FROM appMaintainers WHERE appId = '?' AND superMaintainer = '1' AND state = 'accepted'", $iAppId);
+
+        if(!$hResult)
+            return false;
+
+        $oRow = mysql_fetch_object($hResult);
+        return $oRow->count > 0;
+    }
+
+    /* Returns true if the given version has a maintainer, false otherwise */
+    public function versionHasMaintainer($iVersionId)
+    {
+        $oVersion = new version($iVersionId);
+        $hResult = query_parameters("SELECT COUNT(maintainerId) as count FROM appMaintainers WHERE (appId = '?' AND superMaintainer = '1') OR (versionId = '?') AND state = 'accepted'", $oVersion->iAppId, $iVersionId);
 
         if(!$hResult)
             return false;

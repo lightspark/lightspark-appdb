@@ -60,6 +60,7 @@ create table appVersion (
   license		enum('Retail','Open Source','Demo','Shareware','Free to use','Free to use and share'),
   obsoleteBy            int(11) NOT NULL default '0',
   state                 enum('accepted','queued','rejected','pending','deleted') NOT NULL default 'accepted',
+  hasMaintainer enum('true','false') NOT NULL default 'false',
   key(versionId),
   index(appId)
 );

@@ -36,6 +36,7 @@ class version {
     var $iSubmitterId;
     private $sState;
     var $sLicense;
+    var $bHasMaintainer;
     var $aTestResults; /* Array of test result objects. Especially useful when
                           we want to preview a version before submitting it;
                           in that case there is no data in the database */
@@ -81,6 +82,7 @@ class version {
             $this->sState = $oRow->state;
             $this->sLicense = $oRow->license;
             $this->iObsoleteBy = $oRow->obsoleteBy;
+            $this->bHasMaintainer = $oRow->hasMaintainer == 'true' ? true : false;
         }
     }
 
@@ -1530,6 +1532,13 @@ class version {
     public function objectSetState($sState)
     {
         $this->sState = $sState;
+    }
+
+    public function updateMaintainerState()
+    {
+        $this->bHasMaintainer = maintainer::versionHasMaintainer($this->iVersionId);
+
+        $hResult = query_parameters("UPDATE appVersion SET hasMaintainer = '?' WHERE versionId = '?'", $this->bHasMaintainer ? 'true' : 'false', $this->iVersionId);
     }
 
     public function canEdit()
