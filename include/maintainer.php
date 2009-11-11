@@ -232,7 +232,7 @@ class maintainer
         /* If this is a non-queued maintainer submission, remove the user's non-
            super maintainer entries for the application's versions.  This check is
            also done in unQueue() */
-        if(!$this->mustBeQueued() & $this->bSuperMaintainer)
+        if(!$this->mustBeQueued() && $this->bSuperMaintainer)
             $this->removeUserFromAppVersions();
 
         return $hResult;
