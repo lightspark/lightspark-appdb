@@ -33,7 +33,8 @@ if($aClean['iConfirmed'])
     if($aClean['iSuperMaintainer'])
     {
         apidb_header("You have resigned as super maintainer of ".$oApp->sName);
-        $result = Maintainer::deleteMaintainer($_SESSION['current'], $aClean['iAppId'], null);
+        $oMaintainer = maintainer::findAppMaintainer($_SESSION['current']->iUserId, $aClean['iAppId']);
+        $result = $oMaintainer->delete();
     } else
     {
         $oVersion = new Version($aClean['iVersionId']);

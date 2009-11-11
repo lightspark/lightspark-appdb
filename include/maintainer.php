@@ -351,6 +351,17 @@ class maintainer
         return TRUE;
     }
 
+    public function findAppMaintainer($iUserId, $iAppId)
+    {
+        $hResult = query_parameters("SELECT * FROM appMaintainers WHERE userId = '?' AND appId = '?' AND superMaintainer = '1'", $iUserId, $iAppId);
+
+        if(!$hResult)
+            return null;
+
+        $oRow = mysql_fetch_object($hResult);
+        return new maintainer(null, $oRow);
+    }
+
     function deleteMaintainer($oUser, $iAppId = null, $iVersionId = null)
     {
         /* remove supermaintainer */
