@@ -1668,15 +1668,13 @@ class version {
         $oApp = new application($this->iAppId);
         $oVendor = new vendor($oApp->iVendorId);
 
-        $aMaintainers = Maintainer::getSuperMaintainersUserIdsFromAppId($this->iAppId);
-
         $oTableRow = new TableRow();
         $oTableRow->AddTextCell(print_date(mysqldatetime_to_unixtimestamp($this->sSubmitTime)));
         $oTableRow->AddTextCell($oUser->objectMakeLink());
         $oTableRow->AddTextCell($oVendor->objectMakeLink());
         $oTableRow->AddTextCell($oApp->objectMakeLink());
         $oTableRow->AddTextCell($this->sName);
-        $oTableRow->AddTextCell(sizeof($aMaintainers) ? "YES" : "No");
+        $oTableRow->AddTextCell($oApp->bHasMaintainer ? "YES" : "No");
 
         $oOMTableRow = new OMTableRow($oTableRow);
         return $oOMTableRow;
