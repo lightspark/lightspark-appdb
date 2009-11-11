@@ -41,6 +41,7 @@ create table appFamily (
 	submitTime    datetime NOT NULL,
 	submitterId   int(11) NOT NULL default '0',
 	state         enum('accepted','queued','rejected','deleted') NOT NULL default 'accepted',
+	hasMaintainer enum('true','false') NOT NULL default 'false',
 	key(appId)
 );
 

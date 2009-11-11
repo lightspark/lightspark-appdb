@@ -39,6 +39,7 @@ class Application {
     var $sSubmitTime;
     var $iSubmitterId;
     var $aVersionsIds;  // an array that contains the versionId of every version linked to this app.
+    var $bHasMaintainer;
     var $aVersions; // Array of version objects belonging to this app
     var $iMaintainerRequest; /* Temporary variable for tracking maintainer
                                 requests on app submission.  Value denotes type of request */
@@ -78,6 +79,7 @@ class Application {
             // and return an id into the appData table here
             $this->sWebpage = Url::normalize($oRow->webPage);
             $this->sState = $oRow->state;
+            $this->bHasMaintainer = $oRow->hasMaintainer == 'true' ? true : false;
         }
 
         /* fetch versions of this application, if there are any */
@@ -240,6 +242,13 @@ class Application {
         if($sWhatChanged and !$bSilent)
             $this->SendNotificationMail("edit",$sWhatChanged);
         return true;
+    }
+
+    public function updateMaintainerState()
+    {
+        $this->bHasMaintainer = maintainer::appHasMaintainer($this->iAppId);
+
+        $hResult = query_parameters("UPDATE appFamily SET hasMaintainer = '?' WHERE appId = '?'", $this->bHasMaintainer ? 'true' : 'false', $this->iAppId);
     }
 
     /**

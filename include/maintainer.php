@@ -229,6 +229,9 @@ class maintainer
         /* this objects id is the insert id returned by the database */
         $this->iMaintainerId = query_appdb_insert_id();
 
+        if(!$this->mustBeQueued())
+            $this->updateAppMaintainerState();
+
         /* If this is a non-queued maintainer submission, remove the user's non-
            super maintainer entries for the application's versions.  This check is
            also done in unQueue() */
@@ -256,6 +259,8 @@ class maintainer
             if($hResult)
             {
                 $sStatusMessage = "<p>The maintainer was successfully added into the database</p>\n";
+
+                $this->updateAppMaintainerState();
 
                 //Send Status Email
                 $sEmail = $oUser->sEmail;
@@ -348,6 +353,8 @@ class maintainer
         if(!$hResult)
             return FALSE;
 
+        $this->updateAppMaintainerState();
+
         return TRUE;
     }
 
@@ -404,6 +411,12 @@ class maintainer
         $sQuery = "DELETE from appMaintainers WHERE appId='?'";
         $hResult = query_parameters($sQuery, $oApp->iAppId);
         return $hResult;
+    }
+
+    public function updateAppMaintainerState()
+    {
+        $oApp = new application($this->iAppId);
+        $oApp->updateMaintainerState();
     }
 
     function getSubmitterEmails()
@@ -585,6 +598,18 @@ class maintainer
         if(!$hResult)
             return false;
         return query_num_rows($hResult);
+    }
+
+    /* Returns true if the given app has a maintainer, false otherwise */
+    public function appHasMaintainer($iAppId)
+    {
+        $hResult = query_parameters("SELECT COUNT(maintainerId) as count FROM appMaintainers WHERE appId = '?' AND superMaintainer = '1' AND state = 'accepted'", $iAppId);
+
+        if(!$hResult)
+            return false;
+
+        $oRow = mysql_fetch_object($hResult);
+        return $oRow->count > 0;
     }
 
     /* if given an appid or a version id return a handle for a query that has */
