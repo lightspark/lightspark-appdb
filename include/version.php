@@ -1467,8 +1467,19 @@ class version {
         return $sLink;
     }
 
-    public static function objectGetEntriesCount($sState)
+    public static function objectGetEntriesCount($sState, $oFilters = null)
     {
+        $sExtraTables = '';
+        $aOptions = $oFilters ? $oFilters->getOptions() : array('onlyWithoutMaintainers' => 'false');
+        $sWhereFilter = '';
+
+        if($aOptions['onlyWithoutMaintainers'] == 'true')
+        {
+            $sExtraTables = ',appFamily';
+
+            $sWhereFilter .= " AND appFamily.hasMaintainer = 'false' AND appFamily.appId = appVersion.appId";
+        }
+
         $oVersion = new version();
         if($sState != 'accepted' && !$oVersion->canEdit())
         {
@@ -1476,13 +1487,13 @@ class version {
                not be able to see rejected entries for versions they maintain */
             if($sState == 'rejected')
                 $sQuery = "SELECT COUNT(DISTINCT appVersion.versionId) as count FROM
-                        appVersion WHERE
+                        appVersion$sExtraTables WHERE
                         appVersion.submitterId = '?'
                         AND
-                        appVersion.state = '?'";
+                        appVersion.state = '?'$sWhereFilter";
             else
                 $sQuery = "SELECT COUNT(DISTINCT appVersion.versionId) as count FROM
-                        appVersion, appMaintainers WHERE
+                        appVersion, appMaintainers$sExtraTables WHERE
                         appMaintainers.appId = appVersion.appId
                         AND
                         superMaintainer = '1'
@@ -1491,14 +1502,14 @@ class version {
                         AND
                         appMaintainers.state = 'accepted'
                         AND
-                        appVersion.state = '?'";
+                        appVersion.state = '?'$sWhereFilter";
 
             $hResult = query_parameters($sQuery, $_SESSION['current']->iUserId, $sState);
         } else
         {
             $sQuery = "SELECT COUNT(DISTINCT versionId) as count
-                    FROM appVersion WHERE
-                    appVersion.state = '?'";
+                    FROM appVersion$sExtraTables WHERE
+                    appVersion.state = '?'$sWhereFilter";
             $hResult = query_parameters($sQuery, $sState);
         }
 
@@ -1595,8 +1606,19 @@ class version {
         return 'versionId';
     }
 
-    public static function objectGetEntries($sState, $iRows = 0, $iStart = 0, $sOrderBy = "versionId", $bAscending = true)
+    public static function objectGetEntries($sState, $iRows = 0, $iStart = 0, $sOrderBy = "versionId", $bAscending = true, $oFilters = null)
     {
+        $sExtraTables = '';
+        $aOptions = $oFilters ? $oFilters->getOptions() : array('onlyWithoutMaintainers' => 'false');
+        $sWhereFilter = '';
+
+        if($aOptions['onlyWithoutMaintainers'] == 'true')
+        {
+            $sExtraTables = ',appFamily';
+
+            $sWhereFilter .= " AND appFamily.hasMaintainer = 'false' AND appFamily.appId = appVersion.appId";
+        }
+
         $sLimit = "";
 
         /* Should we add a limit clause to the query? */
@@ -1615,13 +1637,13 @@ class version {
             /* Users should see their own rejected entries, but maintainers should
                not be able to see rejected entries for versions they maintain */
             if($sState == 'rejected')
-                $sQuery = "SELECT * FROM appVersion WHERE
+                $sQuery = "SELECT * FROM appVersion$sExtraTables WHERE
                         appVersion.submitterId = '?'
                         AND
-                        appVersion.state = '?' ORDER BY ?$sLimit";
+                        appVersion.state = '?'$sWhereFilter ORDER BY ?$sLimit";
             else
                 $sQuery = "SELECT appVersion.* FROM
-                        appVersion, appMaintainers WHERE
+                        appVersion, appMaintainers$sExtraTables WHERE
                         appMaintainers.appId = appVersion.appId
                         and
                         superMaintainer = '1'
@@ -1630,7 +1652,7 @@ class version {
                         AND
                         appMaintainers.state = 'accepted'
                         AND
-                        appVersion.state = '?' ORDER BY ?$sLimit";
+                        appVersion.state = '?'$sWhereFilter ORDER BY ?$sLimit";
 
             if($sLimit)
             {
@@ -1643,8 +1665,8 @@ class version {
             }
         } else
         {
-            $sQuery = "SELECT * FROM appVersion WHERE
-                    appVersion.state = '?' ORDER BY ?$sLimit";
+            $sQuery = "SELECT * FROM appVersion$sExtraTables WHERE
+                    appVersion.state = '?'$sWhereFilter ORDER BY ?$sLimit";
 
             if($sLimit)
             {

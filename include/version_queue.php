@@ -240,9 +240,9 @@ class version_queue
         return $this->oVersion->objectGetItemsPerPage($sState);
     }
 
-    function objectGetEntriesCount($sState)
+    function objectGetEntriesCount($sState, $oFilters = null)
     {
-        return $this->oVersion->objectGetEntriesCount($sState);
+        return $this->oVersion->objectGetEntriesCount($sState, $oFilters);
     }
 
     public static function objectGetDefaultSort()
@@ -250,15 +250,23 @@ class version_queue
         return version::objectGetDefaultSort();
     }
 
-    function objectGetEntries($sState, $iRows = 0, $iStart = 0, $sOrderBy = "versionId", $bAscending = true)
+    function objectGetEntries($sState, $iRows = 0, $iStart = 0, $sOrderBy = "versionId", $bAscending = true, $oFilters = null)
     {
         return $this->oVersion->objectGetEntries($sState, $iRows, $iStart,
-                                                 $sOrderBy, $bAscending);
+                                                 $sOrderBy, $bAscending,
+                                                 $oFilters);
     }
  
     function objectGetHeader()
     {
         return $this->oVersion->objectGetHeader();
+    }
+
+    public function objectGetFilterInfo()
+    {
+        $oFilter = new FilterInterface();
+        $oFilter->AddFilterInfo('onlyWithoutMaintainers', 'Only show versions without maintainers', array(FILTER_OPTION_BOOL), FILTER_VALUES_OPTION_BOOL, array('false','true'));
+        return $oFilter;
     }
 
     function objectGetTableRow()
