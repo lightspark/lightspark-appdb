@@ -39,7 +39,8 @@ if($aClean['iConfirmed'])
     {
         $oVersion = new Version($aClean['iVersionId']);
         apidb_header("You have resigned as maintainer of ".$oApp->sName." ".$oVersion->sName);
-        $result = Maintainer::deleteMaintainer($_SESSION['current'], $oApp->iAppId, $oVersion->iVersionId);
+        $oMaintainer = maintainer::findVersionMaintainer($_SESSION['current']->iUserId, $aClean['iVersionId']);
+        $result = $oMaintainer->delete();
     }
 /*   echo html_frame_start("Removing",400,"",0);
 */

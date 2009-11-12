@@ -369,6 +369,17 @@ class maintainer
         return new maintainer(null, $oRow);
     }
 
+    public function findVersionMaintainer($iUserId, $iVersionId)
+    {
+        $hResult = query_parameters("SELECT * FROM appMaintainers WHERE userId = '?' AND versionId = '?'", $iUserId, $iVersionId);
+
+        if(!$hResult)
+            return null;
+
+        $oRow = mysql_fetch_object($hResult);
+        return new maintainer(null, $oRow);
+    }
+
     function deleteMaintainer($oUser, $iAppId = null, $iVersionId = null)
     {
         /* remove supermaintainer */
