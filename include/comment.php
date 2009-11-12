@@ -258,7 +258,12 @@ class Comment {
         echo " <b>".$this->sSubject."</b><br>\n";
 
         if($bShowAppName)
-            echo 'Application: ' . version::fullNameLink($this->iVersionId) . "<br>\n";
+        {
+            $oVersion = new version($this->iVersionId);
+            $sMaintainerText = $oVersion->bHasMaintainer ? 'has maintainer' : 'no maintainers';
+            echo 'Application: ' . version::fullNameLink($this->iVersionId);
+            echo " ($sMaintainerText)<br>\n";
+        }
 
         echo " by  ".forum_lookup_user($this->oOwner->iUserId)." on ".$this->sDateCreated."<br>\n";
         echo "</td></tr><tr><td>\n";
