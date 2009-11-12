@@ -1358,8 +1358,7 @@ class testData{
         $oApp = new application($oVersion->iAppId);
         $oUser = new user($this->iSubmitterId);
 
-        $hMaintainers = maintainer::getMaintainersForAppIdVersionId(null, $this->iVersionId);
-        $bHasMaintainer = (query_num_rows($hMaintainers) == 0) ? false : true;
+        $bHasMaintainer = $oVersion->bHasMaintainer;
 
         $oTableRow = new TableRow();
         $oTableRow->AddCell(new TableCell(print_date(mysqldatetime_to_unixtimestamp($this->sSubmitTime))));
