@@ -51,6 +51,10 @@ function build_prefs_list($oUser)
                         continue;
             }
 
+            /* Check if the permission only applies to a specific group */
+            if($r->show_for_group && !$_SESSION['current']->hasPriv($r->show_for_group))
+                continue;
+
             $input = html_select("pref_$r->name", explode('|', $r->value_list), 
                                  $oUser->getpref($r->name, $r->def_value));
 
