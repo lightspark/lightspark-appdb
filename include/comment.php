@@ -312,8 +312,27 @@ class Comment {
         return false;
     }
 
-    public static function objectGetEntries($sState, $iNumRows = 0, $iStart = 0, $sOrderBy = 'commentId')
+    public function objectGetFilterInfo()
     {
+        $oFilter = new FilterInterface();
+        $oFilter->AddFilterInfo('onlyWithoutMaintainers', 'Only show comments for versions without maintainers', array(FILTER_OPTION_BOOL), FILTER_VALUES_OPTION_BOOL, array('false','true'));
+        return $oFilter;
+    }
+
+
+    public static function objectGetEntries($sState, $iNumRows = 0, $iStart = 0, $sOrderBy = 'commentId', $bAscending = true, $oFilters = null)
+    {
+        $sExtraTables = '';
+        $aOptions = $oFilters ? $oFilters->getOptions() : array('onlyWithoutMaintainers' => 'false');
+        $sWhereFilter = '';
+
+        if($aOptions['onlyWithoutMaintainers'] == 'true')
+        {
+            $sExtraTables = ',appVersion';
+
+            $sWhereFilter .= " WHERE appVersion.hasMaintainer = 'false' AND appVersion.versionId = appComments.versionId";
+        }
+
         $sLimit = '';
 
         if($iNumRows)
@@ -326,7 +345,7 @@ class Comment {
         if($sOrderBy)
             $sOrderBy = " ORDER BY ".mysql_real_escape_string($sOrderBy);
 
-        $hResult = query_parameters("SELECT * FROM appComments$sOrderBy$sLimit");
+        $hResult = query_parameters("SELECT * FROM appComments$sExtraTables$sWhereFilter$sOrderBy$sLimit");
 
         return $hResult;
     }
@@ -336,9 +355,20 @@ class Comment {
         return 'commentId';
     }
 
-    public static function objectGetEntriesCount($sState)
+    public static function objectGetEntriesCount($sState, $oFilters = null)
     {
-        $hResult = query_parameters("SELECT COUNT(commentId) as count FROM appComments");
+        $sExtraTables = '';
+        $aOptions = $oFilters ? $oFilters->getOptions() : array('onlyWithoutMaintainers' => 'false');
+        $sWhereFilter = '';
+
+        if($aOptions['onlyWithoutMaintainers'] == 'true')
+        {
+            $sExtraTables = ',appVersion';
+
+            $sWhereFilter .= " WHERE appVersion.hasMaintainer = 'false' AND appVersion.versionId = appComments.versionId";
+        }
+
+        $hResult = query_parameters("SELECT COUNT(commentId) as count FROM appComments$sExtraTables$sWhereFilter");
 
         if(!$hResult)
             return null;
