@@ -1002,9 +1002,26 @@ class maintainer
         return array();
     }
 
+    public function isDuplicate()
+    {
+        $hResult = query_parameters("SELECT COUNT(maintainerId) as count FROM appMaintainers
+                                    WHERE versionId = '?' and appId = '?' AND userId = '?' AND maintainerId != '?'",
+                                    $this->iVersionId, $this->iAppId, $this->iUserId, $this->iMaintainerId);
+
+        if(!$hResult)
+            return false;
+
+        $oRow = mysql_fetch_object($hResult);
+
+        return $oRow->count > 0;
+    }
+
     public function update()
     {
         $oMaintainer = new maintainer($this->iMaintainerId);
+
+        if($this->isDuplicate())
+            return $this->delete();
 
         if($this->iVersionId && $oMaintainer->iVersionId != $this->iVersionId)
         {
