@@ -1286,7 +1286,7 @@ class Application {
         if($sState != 'accepted' && !application::canEdit())
         {
             /* Without edit rights users can only resubmit their rejected entries */
-            if(!$bRejected)
+            if($sState != 'rejected')
                 return FALSE;
 
             $sQuery = "SELECT COUNT(DISTINCT(appFamily.appId)) as count FROM appFamily$sExtraTables WHERE
