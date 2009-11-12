@@ -147,14 +147,19 @@ class testData_queue
         return testData::objectGetDefaultSort();
     }
 
-    function objectGetEntries($sState, $iRows = 0, $iStart = 0, $sOrderBy = "testingId", $bAscending = true)
+    public function objectGetFilterInfo()
     {
-        return $this->oTestData->objectGetEntries($sState, $iRows, $iStart, $sOrderBy, $bAscending);
+        return testData::objectGetFilterInfo();
     }
 
-    function objectGetEntriesCount($sState)
+    function objectGetEntries($sState, $iRows = 0, $iStart = 0, $sOrderBy = "testingId", $bAscending = true, $oFilters = null)
     {
-        return testData::objectGetEntriesCount($sState);
+        return $this->oTestData->objectGetEntries($sState, $iRows, $iStart, $sOrderBy, $bAscending, $oFilters);
+    }
+
+    function objectGetEntriesCount($sState, $oFilters = null)
+    {
+        return testData::objectGetEntriesCount($sState, $oFilters);
     }
 
     function objectGetHeader()

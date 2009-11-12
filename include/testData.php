@@ -1171,8 +1171,26 @@ class testData{
         return $oRow->cnt;
     }
 
-    function objectGetEntriesCount($sState)
+    public function objectGetFilterInfo()
     {
+        $oFilter = new FilterInterface();
+        $oFilter->AddFilterInfo('onlyWithoutMaintainers', 'Only show test data for versions without maintainers', array(FILTER_OPTION_BOOL), FILTER_VALUES_OPTION_BOOL, array('false','true'));
+        return $oFilter;
+    }
+
+    function objectGetEntriesCount($sState, $oFilters = null)
+    {
+        $sExtraTables = '';
+        $aOptions = $oFilters ? $oFilters->getOptions() : array('onlyWithoutMaintainers' => 'false');
+        $sWhereFilter = '';
+
+        if($aOptions['onlyWithoutMaintainers'] == 'true')
+        {
+            $sExtraTables = ',appVersion';
+
+            $sWhereFilter .= " AND appVersion.hasMaintainer = 'false' AND appVersion.versionId = testResults.versionId";
+        }
+
         $oTest = new testData();
 
         if($sState != 'accepted' && !$oTest->canEdit())
@@ -1180,10 +1198,10 @@ class testData{
             if($sState == 'rejected')
             {
                 $sQuery = "SELECT COUNT(testingId) AS count FROM
-                        testResults WHERE
+                        testResults$sExtraTables WHERE
                         testResults.submitterId = '?'
                         AND
-                        testResults.state = '?'";
+                        testResults.state = '?'$sWhereFilter";
             } else
             {
                 $sQuery = "SELECT COUNT(testingId) AS count FROM
@@ -1208,15 +1226,15 @@ class testData{
                                 )
                             )
                             AND
-                            testResults.state = '?'";
+                            testResults.state = '?'$sWhereFilter";
             }
 
             $hResult = query_parameters($sQuery, $_SESSION['current']->iUserId,
                                         $sState);
         } else
         {
-            $sQuery = "SELECT COUNT(testingId) as count FROM testResults WHERE
-                    testResults.state = '?'";
+            $sQuery = "SELECT COUNT(testingId) as count FROM testResults$sExtraTables WHERE
+                    testResults.state = '?'$sWhereFilter";
             $hResult = query_parameters($sQuery, $sState);
         }
 
@@ -1234,8 +1252,19 @@ class testData{
         return 'testingId';
     }
 
-    function objectGetEntries($sState, $iRows = 0, $iStart = 0, $sOrderBy = "testingId", $bAscending = true)
+    function objectGetEntries($sState, $iRows = 0, $iStart = 0, $sOrderBy = "testingId", $bAscending = true, $oFilters = null)
     {
+        $sExtraTables = '';
+        $aOptions = $oFilters ? $oFilters->getOptions() : array('onlyWithoutMaintainers' => 'false');
+        $sWhereFilter = '';
+
+        if($aOptions['onlyWithoutMaintainers'] == 'true')
+        {
+            $sExtraTables = ',appVersion';
+
+            $sWhereFilter .= " AND appVersion.hasMaintainer = 'false' AND appVersion.versionId = testResults.versionId";
+        }
+
         $oTest = new testData();
 
         $sLimit = "";
@@ -1255,10 +1284,10 @@ class testData{
         {
             if($sState == 'rejected')
             {
-                $sQuery = "SELECT testResults.* FROM testResults WHERE
+                $sQuery = "SELECT testResults.* FROM testResults$sExtraTables WHERE
                         testResults.submitterId = '?'
                         AND
-                        testResults.state = '?' ORDER BY ?$sLimit";
+                        testResults.state = '?'$sWhereFilter ORDER BY ?$sLimit";
             } else
             {
                 $sQuery = "SELECT testResults.* FROM testResults, appVersion,
@@ -1283,7 +1312,7 @@ class testData{
                             AND
                             appMaintainers.state = 'accepted'
                             AND
-                            testResults.state = '?' ORDER BY ?$sLimit";
+                            testResults.state = '?'$sWhereFilter ORDER BY ?$sLimit";
             }
             if($sLimit)
             {
@@ -1296,8 +1325,8 @@ class testData{
             }
         } else
         {
-            $sQuery = "SELECT testResults.* FROM testResults WHERE
-                    testResults.state = '?' ORDER by ?$sLimit";
+            $sQuery = "SELECT testResults.* FROM testResults$sExtraTables WHERE
+                    testResults.state = '?'$sWhereFilter ORDER by ?$sLimit";
             if($sLimit)
                 $hResult = query_parameters($sQuery, $sState, $sOrderBy, $iStart, $iRows);
             else
