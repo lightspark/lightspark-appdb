@@ -568,25 +568,32 @@ class Note {
             $aIds =  $this->getDisplayModeIds();
             $aOptions = $this->getDisplayModeNames();
 
-            echo '<tr><td class="color1">Display mode</td>'."\n";
-            echo '<td class="color0">'.html_radiobuttons($aIds, $aOptions, 'iVersionId', $this->iVersionId);
-
-           /* Allow the note to be shown for certain versions only */
-            $aIds = array();
-            $aOptions = array();
-            $aSelected = array();
-
-            foreach($oApp->getVersions(true) as $oAppVersion) // Only accepted versions
+            /* Version maintainers are not allowed to show a note app-wide */
+            if($oApp->canEdit())
             {
-                
-                $aIds[] = $oAppVersion->objectGetId();
-                $aOptions[] = $oAppVersion->objectMakeLink();
+                echo '<tr><td class="color1">Display mode</td>'."\n";
+                echo '<td class="color0">'.html_radiobuttons($aIds, $aOptions, 'iVersionId', $this->iVersionId);
 
-                $aSelected[] = $this->isLinkedWith($oAppVersion->objectGetId(), false);
+                /* Allow the note to be shown for certain versions only */
+                $aIds = array();
+                $aOptions = array();
+                $aSelected = array();
+
+                foreach($oApp->getVersions(true) as $oAppVersion) // Only accepted versions
+                {
+                    
+                    $aIds[] = $oAppVersion->objectGetId();
+                    $aOptions[] = $oAppVersion->objectMakeLink();
+
+                    $aSelected[] = $this->isLinkedWith($oAppVersion->objectGetId(), false);
+                }
+                echo html_checkboxes('iVersionId', $aIds, $aOptions, $aSelected);
+
+                echo '</td></tr>';
+            } else
+            {
+                echo "<input type=\"hidden\" name=\"iVersionId\" value=\"{$oVersion->iVersionId}\" />";
             }
-            echo html_checkboxes('iVersionId', $aIds, $aOptions, $aSelected);
-
-            echo '</td></tr>';
         } else if(!$this->iAppId)
         {
             echo '<input type="hidden" name="iVersionId" value="'.$this->iVersionId.'">';
