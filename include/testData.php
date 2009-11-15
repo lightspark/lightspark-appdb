@@ -1012,16 +1012,16 @@ class testData{
         if (($aValues['sRuns'] != "Yes") && ($aValues['sTestedRating'] != GARBAGE_RATING))
             $errors .= "<li>Applications that do not run should be rated &#8216;Garbage&#8217;.</li>\n";
 
-        if (($aValues['sInstalls'] == "No") && ($aValues['sTestedRating'] == PLATINUM_RATING))
+        if (($aValues['sInstalls'] == "No" || $aValues['sInstalls'] == 'No, but has workaround') && ($aValues['sTestedRating'] == PLATINUM_RATING))
             $errors .= "<li>An application can only get a Platinum rating if it installs and runs &#8216;out of the box&#8217;.</li>\n";
 
         // Basic checking of logic.  Runs? can obviously only be 'Not Installable'
         // if the application does not install
         if (($aValues['sInstalls'] != "No") && ($aValues['sRuns'] == "Not installable"))
-            $errors .= "<li>You can only set Runs? to &#8216;Not installable&#8217; if the application's installer does not work</li>\n";
+            $errors .= "<li>You can only set Runs? to &#8216;Not installable&#8217; if Installs? is set &#8216;No&#8217;</li>\n";
 	    
 	if (($aValues['sInstalls'] == "No") && ($aValues['sRuns'] != "Not installable"))
-            $errors .= "<li>You can only set Runs? to &#8216;Not installable&#8217;' if the application's installer does not work</li>\n";
+            $errors .= "<li>Runs? must be set to &#8216;Not installable&#8217; if there is no way to install the app</li>\n";
 
         return $errors;
 
@@ -1053,7 +1053,7 @@ class testData{
     {
         echo "<select name='$sVarname'>\n";
         echo "<option value=\"\">Choose ...</option>\n";
-        $aRating = array("Yes", "No", "N/A");
+        $aRating = array('Yes', 'No', 'No, but has workaround', 'N/A');
         $iMax = count($aRating);
 
         for($i=0; $i < $iMax; $i++)

@@ -14,7 +14,7 @@ create table testResults (
         testedDate      datetime not null,
         distributionId  int not null,
 	testedRelease 	tinytext,
-	installs	enum('Yes','No','N/A') NOT NULL default 'Yes',
+	installs	enum('Yes','No','No, but has workaround','N/A') NOT NULL default 'Yes',
 	runs		enum('Yes','No','Not Installable') NOT NULL default 'Yes',
 	testedRating  	enum('Platinum','Gold','Silver','Bronze','Garbage') NOT NULL,
         comments        text,
