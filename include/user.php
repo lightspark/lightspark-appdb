@@ -580,9 +580,12 @@ class User {
 
                  // if we didn't find this entry in the $aUserId
                  // array then we should add it if the admin has
-                 // enabled global emails
+                 // enabled global emails.
+                 // If both appId and versionId are null we are especially
+                 // requesting to email admins, so the mail should be sent
+                 // regardless of global emails setting
                  $oAdmin = new user($oRow->userid);
-                 if($i === false && ($oAdmin->getPref('disable_global_emails','no') == 'no'))
+                 if($i === false && ($oAdmin->getPref('disable_global_emails','no') == 'no' && ($iAppId || $iVersionId)))
                      $aUserId[] = $oRow->userid;
              }
          }
