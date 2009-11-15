@@ -1175,27 +1175,46 @@ class testData{
     {
         $oFilter = new FilterInterface();
         $oFilter->AddFilterInfo('onlyWithoutMaintainers', 'Only show test data for versions without maintainers', array(FILTER_OPTION_BOOL), FILTER_VALUES_OPTION_BOOL, array('false','true'));
+
+        /* Allow admins to only show entries for apps they maintain */
+        if($_SESSION['current']->hasPriv('admin'))
+            $oFilter->AddFilterInfo('onlyMyMaintainedEntries', 'Only show test data for versions you maintain', array(FILTER_OPTION_BOOL), FILTER_VALUES_OPTION_BOOL, array('false','true'));
+
         return $oFilter;
     }
 
     function objectGetEntriesCount($sState, $oFilters = null)
     {
         $sExtraTables = '';
-        $aOptions = $oFilters ? $oFilters->getOptions() : array('onlyWithoutMaintainers' => 'false');
+        $aOptions = $oFilters ? $oFilters->getOptions() : array('onlyWithoutMaintainers' => 'false', 'onlyMyMaintainedEntries' => 'false');
         $sWhereFilter = '';
+        $bOnlyMyMaintainedEntries = false;
 
-        if($aOptions['onlyWithoutMaintainers'] == 'true')
+        $oTest = new testData();
+
+        if(getInput('onlyMyMaintainedEntries', $aOptions) == 'true'
+           || ($sState != 'accepted' && !$oTest->canEdit()))
+        {
+            $bOnlyMyMaintainedEntries = true;
+        }
+
+        /* This combination doesn't make sense */
+        if(getInput('onlyWithoutMaintainers', $aOptions) == 'true'
+           && getInput('onlyMyMaintainedEntries', $aOptions) == 'true')
+        {
+            return false;
+        }
+
+        if(getInput('onlyWithoutMaintainers', $aOptions) == 'true')
         {
             $sExtraTables = ',appVersion';
 
             $sWhereFilter .= " AND appVersion.hasMaintainer = 'false' AND appVersion.versionId = testResults.versionId";
         }
 
-        $oTest = new testData();
-
-        if($sState != 'accepted' && !$oTest->canEdit())
+        if($bOnlyMyMaintainedEntries)
         {
-            if($sState == 'rejected')
+            if(!$oTest->canEdit() && $sState == 'rejected')
             {
                 $sQuery = "SELECT COUNT(testingId) AS count FROM
                         testResults$sExtraTables WHERE
@@ -1255,17 +1274,31 @@ class testData{
     function objectGetEntries($sState, $iRows = 0, $iStart = 0, $sOrderBy = "testingId", $bAscending = true, $oFilters = null)
     {
         $sExtraTables = '';
-        $aOptions = $oFilters ? $oFilters->getOptions() : array('onlyWithoutMaintainers' => 'false');
+        $aOptions = $oFilters ? $oFilters->getOptions() : array('onlyWithoutMaintainers' => 'false', 'onlyMyMaintainedEntries' => 'false');
         $sWhereFilter = '';
+        $bOnlyMyMaintainedEntries = false;
 
-        if($aOptions['onlyWithoutMaintainers'] == 'true')
+        $oTest = new testData();
+
+        if(getInput('onlyMyMaintainedEntries', $aOptions) == 'true'
+           || ($sState != 'accepted' && !$oTest->canEdit()))
+        {
+            $bOnlyMyMaintainedEntries = true;
+        }
+
+        /* This combination doesn't make sense */
+        if(getInput('onlyWithoutMaintainers', $aOptions) == 'true'
+           && getInput('onlyMyMaintainedEntries', $aOptions) == 'true')
+        {
+            return false;
+        }
+
+        if(getInput('onlyWithoutMaintainers', $aOptions) == 'true')
         {
             $sExtraTables = ',appVersion';
 
             $sWhereFilter .= " AND appVersion.hasMaintainer = 'false' AND appVersion.versionId = testResults.versionId";
         }
-
-        $oTest = new testData();
 
         $sLimit = "";
 
@@ -1280,9 +1313,9 @@ class testData{
                 $iRows = testData::objectGetEntriesCount($sState);
         }
 
-        if($sState != 'accepted' && !$oTest->canEdit())
+        if($bOnlyMyMaintainedEntries)
         {
-            if($sState == 'rejected')
+            if(!$oTest->canEdit() && $sState == 'rejected')
             {
                 $sQuery = "SELECT testResults.* FROM testResults$sExtraTables WHERE
                         testResults.submitterId = '?'
