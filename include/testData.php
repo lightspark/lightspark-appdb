@@ -1174,11 +1174,14 @@ class testData{
     public function objectGetFilterInfo()
     {
         $oFilter = new FilterInterface();
+
+        /* The following filters are only useful for admins */
+        if(!$_SESSION['current']->hasPriv('admin'))
+            return null;
+
         $oFilter->AddFilterInfo('onlyWithoutMaintainers', 'Only show test data for versions without maintainers', array(FILTER_OPTION_BOOL), FILTER_VALUES_OPTION_BOOL, array('false','true'));
 
-        /* Allow admins to only show entries for apps they maintain */
-        if($_SESSION['current']->hasPriv('admin'))
-            $oFilter->AddFilterInfo('onlyMyMaintainedEntries', 'Only show test data for versions you maintain', array(FILTER_OPTION_BOOL), FILTER_VALUES_OPTION_BOOL, array('false','true'));
+        $oFilter->AddFilterInfo('onlyMyMaintainedEntries', 'Only show test data for versions you maintain', array(FILTER_OPTION_BOOL), FILTER_VALUES_OPTION_BOOL, array('false','true'));
 
         return $oFilter;
     }
