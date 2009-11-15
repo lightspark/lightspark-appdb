@@ -9,12 +9,18 @@ class maintainerView
     var $iUserId;
     var $bViewingSelf;
 
-    function maintainerView($iUserId = null)
+    function maintainerView($iUserId = null, $oRow = null)
     {
-        if(!$iUserId)
-            $this->iUserId = $_SESSION['current']->iUserId;
-        else
-            $this->iUserId = $iUserId;
+        if(!$oRow)
+        {
+            if(!$iUserId)
+                $this->iUserId = $_SESSION['current']->iUserId;
+            else
+                $this->iUserId = $iUserId;
+        } else
+        {
+            $this->iUserId = $oRow->userId;
+        }
 
         if(!$iUserId || $this->iUserId == $_SESSION['current']->iUserId)
             $this->bViewingSelf = true;
@@ -31,6 +37,163 @@ class maintainerView
     function objectGetState()
     {
         return 'accepted';
+    }
+
+    public function objectGetHeader()
+    {
+        $oTableRow = new TableRow();
+        $oTableRow->AddTextCell('Submission date');
+        $oTableRow->AddTextCell('Maintainer');
+        $oTableRow->AddTextCell('Application');
+        $oTableRow->AddTextCell('Version');
+        $oTableRow->AddTextCell('Action');
+        $oTableRow->SetClass('color4');
+        $oTableRow->SetStyle('color: white;');
+
+        return $oTableRow;
+    }
+
+    public function canEdit()
+    {
+        return $_SESSION['current']->hasPriv('admin');
+    }
+
+    function objectWantCustomDraw($sWhat, $sQueued)
+    {
+        switch($sWhat)
+        {
+            case 'table':
+                if($sQueued == 'false')
+                    return true;
+                break;
+        }
+
+        return false;
+    }
+
+    public function objectGetTableRow()
+    {
+        $oRow = new TableRow();
+
+        return $oRow;
+    }
+
+    public function objectDrawCustomTable($hResult, $sQueued, $oM)
+    {
+        $oTable = new Table();
+        $oNewOM = new objectManager('maintainer');
+
+        $oTable->SetCellPadding(3);
+        $oTable->SetCellSpacing(0);
+
+        $oHeader = $this->objectGetHeader();
+        $oTable->AddRow($oHeader);
+
+        $shReturnTo = BASE.'objectManager.php?sClass=maintainerView&sTitle=View+Maintainers'.$oM->makeUrlPart();
+        $oNewOM->setReturnTo($shReturnTo);
+
+        while($oRow = mysql_fetch_object($hResult))
+        {
+            $oTableRow = new TableRow();
+            $oMaintainerView = new maintainerView(null, $oRow);
+            $oUser = new user($oMaintainerView->iUserId);
+            $sStyle = 'border-top: thin solid; border-bottom: thin solid;';
+
+            $oCell = new TableCell('Maintainer summary');
+            $oCell->SetStyle($sStyle.' border-left: thin solid;');
+            $oTableRow->AddCell($oCell);
+
+            $oCell = new TableCell($oUser->objectMakeLink());
+            $oCell->SetStyle($sStyle);
+            $oTableRow->AddCell($oCell);
+            
+            $iMaintainedApps = maintainer::GetMaintainerCountForUser($oUser, true);    
+            $sPlural = ($iMaintainedApps == 1) ? '' : 's';
+            $oCell = new TableCell($iMaintainedApps ? "$iMaintainedApps application$sPlural" : '&nbsp;');
+            $oCell->SetStyle($sStyle);
+            $oTableRow->AddCell($oCell);
+
+            $iMaintainedVersions = maintainer::GetMaintainerCountForUser($oUser, false);    
+            $sPlural = ($iMaintainedVersions == 1) ? '' : 's';
+            $oCell = new TableCell($iMaintainedVersions ? "$iMaintainedVersions version$sPlural" : '&nbsp;');
+            $oCell->SetStyle($sStyle);
+            $oTableRow->AddCell($oCell);
+
+            $oCell = new TableCell('&nbsp;');
+            $oCell->SetStyle($sStyle.' border-right: thin solid;'       );
+            $oTableRow->AddCell($oCell);
+
+            $oTableRow->SetClass('color4');
+            $oTable->AddRow($oTableRow);
+
+            /* Show all apps/versions that the user maintainers */
+            $hAppResult = query_parameters("SELECT * FROM appMaintainers WHERE userId = '?'", $oMaintainerView->iUserId);
+            for($i = 0; $oAppRow = mysql_fetch_object($hAppResult); $i++)
+            {
+                $oMaintainer = new maintainer(null, $oAppRow);
+                $oTableRow = new TableRow();
+
+                $oTableRow->SetClass($i % 2 ? 'color0' : 'color1');     
+
+                if($oMaintainer->bSuperMaintainer)
+                {
+                    $oApp = new application($oMaintainer->iAppId);
+                    $sVersionText = '*';
+                } else
+                {
+                    $oVersion = new version($oMaintainer->iVersionId);
+                    $oApp = new application($oVersion->iAppId);
+                    $sVersionText = $oVersion->sName;
+                }
+
+                $oTableRow->AddTextCell(print_date(mysqldatetime_to_unixtimestamp($oMaintainer->aSubmitTime)));
+                $oTableRow->AddTextCell($oUser->objectMakeLink());
+                $oTableRow->AddTextCell($oApp->objectMakeLink());
+                $oTableRow->AddTextCelL($sVersionText);
+
+                $oTableRow->AddTextCell('[<a href="'.$oNewOM->makeUrl('delete', $oMaintainer->objectGetId()).'">delete</a>]');
+
+                $oTable->AddRow($oTableRow);
+            }
+        }
+
+        echo $oTable->GetString();
+    }
+
+    function objectGetItemsPerPage($sState = 'accepted')
+    {
+        $aItemsPerPage = array(25, 50, 100, 200);
+        $iDefaultPerPage = 25;
+        return array($aItemsPerPage, $iDefaultPerPage);
+    }
+
+    public function objectGetEntries($sState, $iRows = null, $iStart = 0, $sOrderBy = '', $bAscending = true, $oFilters = null)
+    {
+        if(!$_SESSION['current']->hasPriv('admin'))
+            return false;
+
+        $sLimit = objectManager::getSqlLimitClause($iRows, $iStart, 'maintainerView');
+
+        $sQuery = "SELECT DISTINCT(userId) FROM appMaintainers WHERE state = '?'$sLimit";
+        $hResult = query_parameters($sQuery, $sState);
+
+        return $hResult;
+    }
+
+    public function objectGetEntriesCount($sState)
+    {
+        if(!$_SESSION['current']->hasPriv('admin'))
+            return false;
+
+        $sQuery = "SELECT COUNT(DISTINCT userId) as count FROM appMaintainers WHERE state = '?'";
+        $hResult = query_parameters($sQuery, $sState);
+
+        if(!$hResult)
+            return $hResult;
+
+        $oRow = mysql_fetch_object($hResult);
+
+        return $oRow->count;
     }
 
     function addVersionRatingInfo($oTableRow, $oVersion)

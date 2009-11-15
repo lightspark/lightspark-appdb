@@ -31,7 +31,7 @@ function global_admin_menu() {
     $g->addmisc("&nbsp;");
 
     $g->add("Maintainer Entries (".Maintainer::objectGetEntriesCount('accepted').")",
-            BASE."admin/adminMaintainers.php");
+            BASE."objectManager.php?sClass=maintainerView&sTitle=View+Maintainers");
     $g->add("Bug Links (".bug::objectGetEntriesCount('accepted').")",
             BASE."objectManager.php?sClass=bug&amp;sTitle=".
             "Bug%20Links");

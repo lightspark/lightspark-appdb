@@ -365,7 +365,7 @@ class ObjectManager
         /* Should we let the class draw its own custom table? */
         if(method_exists($this->sClass, 'objectWantCustomDraw') && 
            $oObject->objectWantCustomDraw('table', $sQueued))
-            $oObject->objectDrawCustomTable($hResult, $sQueued);
+            $oObject->objectDrawCustomTable($hResult, $sQueued, $this);
         else
             $this->drawTable($hResult);
 
@@ -1546,6 +1546,32 @@ class ObjectManager
         return TRUE;
     }
 
+    /* Makes a URL with selected information */
+    public function makeUrlPart($bMultiPage = true, $bSortInfo = true, $bFilters = true)
+    {
+        $sUrl = '';
+
+        if($this->oMultiPage->bEnabled && $bMultiPage)
+        {
+            $sUrl .= "&amp;iItemsPerPage=".$this->oMultiPage->iItemsPerPage;
+            $sUrl .= "&amp;iPage=".$this->oMultiPage->iPage;
+        }
+
+        /* Some times it is necessary to omit the filter data, for instance when using
+           makeUrl() to form the action element of a form tag.  This is because having
+           filter data present may prevent clearing a filter */
+        if($this->oFilters && $bFilters)
+            $sUrl .= $this->oFilters->getUrlData();
+
+        if($this->oSortInfo && $this->oSortInfo->sCurrentSort && $bSortInfo)
+        {
+            $sUrl .= "&amp;sOrderBy={$this->oSortInfo->sCurrentSort}";
+            $sUrl .= '&amp;bAscending='.($this->oSortInfo->bAscending ? 'true' : 'false');
+        }
+
+        return $sUrl;
+    }
+
     /* Make an objectManager URL based on the object and optional parameters */
     public function makeUrl($sAction = false, $iId = false, $sTitle = false, $bOmitFilters = false)
     {
@@ -1574,23 +1600,7 @@ class ObjectManager
 
         $sUrl .= "&amp;sTitle=".urlencode($sTitle);
 
-        if($this->oMultiPage->bEnabled)
-        {
-            $sUrl .= "&amp;iItemsPerPage=".$this->oMultiPage->iItemsPerPage;
-            $sUrl .= "&amp;iPage=".$this->oMultiPage->iPage;
-        }
-
-        /* Some times it is necessary to omit the filter data, for instance when using
-           makeUrl() to form the action element of a form tag.  This is because having
-           filter data present may prevent clearing a filter */
-        if($this->oFilters && !$bOmitFilters)
-            $sUrl .= $this->oFilters->getUrlData();
-
-        if($this->oSortInfo && $this->oSortInfo->sCurrentSort)
-        {
-            $sUrl .= "&amp;sOrderBy={$this->oSortInfo->sCurrentSort}";
-            $sUrl .= '&amp;bAscending='.($this->oSortInfo->bAscending ? 'true' : 'false');
-        }
+        $sUrl .= $this->makeUrlPart(true, true, !$bOmitFilters);
 
         return $sUrl;
     }
@@ -1788,6 +1798,32 @@ class ObjectManager
             $sQueueString = "false";
 
         return $sQueueString;
+    }
+
+    public function getSqlLimitClause($iRows, $iStart, $sClass)
+    {
+        $sLimit = '';
+
+        /* Should we add a limit clause to the query? */
+        if($iRows || $iStart)
+        {
+            /* Selecting 0 rows makes no sense, so we assume the user wants to select all of them
+               after an offset given by iStart */
+            if(!$iRows)
+            {
+                $oObject = new $sClass;
+                $iRows = $oObject->objectGetEntriesCount($sState);
+            } else
+            {
+                $iRows = mysql_real_escape_string($iRows);
+            }
+
+            $iStart = mysql_real_escape_string($iStart);
+
+            $sLimit = " LIMIT $iStart,$iRows";
+        }
+
+        return $sLimit;
     }
 
     public function getStateString($bQueued, $bRejected)
