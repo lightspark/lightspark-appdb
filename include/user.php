@@ -581,7 +581,7 @@ class User {
                  // if we didn't find this entry in the $aUserId
                  // array then we should add it if the admin has
                  // enabled global emails
-                 $oAdmin = new user($oRow->userId);
+                 $oAdmin = new user($oRow->userid);
                  if($i === false && ($oAdmin->getPref('disable_global_emails','no') == 'no'))
                      $aUserId[] = $oRow->userid;
              }
