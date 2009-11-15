@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/">
+<ShortName>AppDB</ShortName>
+<Description>AppDB Quick Search</Description>
+<Tags>AppDB</Tags>
+<Image height="16" width="16" type="image/png">http://appdb.winehq.org/images/winehq_logo_16.png</Image>
+<Url type="text/html" method="GET" template="http://appdb.winehq.org/objectManager.php?sClass=application&amp;bIsQueue=false&amp;bIsRejected=false&amp;sTitle=Browse%20Applications&amp;iItemsPerPage=25&amp;iPage=1&amp;iappFamily-appNameOp0=2&amp;sappFamily-appNameData0={searchTerms}" />
+<InputEncoding>UTF-8</InputEncoding>
+<OutputEncoding>UTF-8</OutputEncoding>
+</OpenSearchDescription>

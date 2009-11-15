@@ -25,6 +25,7 @@
     <script src="<?php echo BASE; ?>scripts.js" type="text/javascript"></script>
     <link rel="icon" type="image/png" href="<?php echo BASE; ?>images/winehq_logo_16.png">
     <link rel="shortcut icon" type="image/png" href="<?php echo BASE; ?>images/winehq_logo_16.png">
+    <link title="AppDB" type="application/opensearchdescription+xml" rel="search" href="<?php echo BASE; ?>opensearch.xml">
 </head>
 <body>
 
