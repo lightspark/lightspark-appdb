@@ -585,7 +585,7 @@ class User {
                  // requesting to email admins, so the mail should be sent
                  // regardless of global emails setting
                  $oAdmin = new user($oRow->userid);
-                 if($i === false && ($oAdmin->getPref('disable_global_emails','no') == 'no' && ($iAppId || $iVersionId)))
+                 if($i === false && ($oAdmin->getPref('disable_global_emails','no') == 'no' || (!$iAppId && !$iVersionId)))
                      $aUserId[] = $oRow->userid;
              }
          }
