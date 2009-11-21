@@ -85,7 +85,7 @@ function query_parameters()
 
     $aData = func_get_args();
     $sQuery = $aData[0];
-    $aTokens = split("[&?~]", $sQuery); /* NOTE: no need to escape characters inside of [] in regex */
+    $aTokens = preg_split("/[&?~]/", $sQuery); /* NOTE: no need to escape characters inside of [] in regex */
     $sPreparedquery = $aTokens[0];
     $iCount = strlen($aTokens[0]);
 
