@@ -271,6 +271,9 @@ class version_queue
             return null;
 
         $oFilter->AddFilterInfo('onlyWithoutMaintainers', 'Only show versions without maintainers', array(FILTER_OPTION_BOOL), FILTER_VALUES_OPTION_BOOL, array('false','true'));
+
+        $oFilter->AddFilterInfo('onlyMyMaintainedEntries', 'Only show versions for apps you maintain', array(FILTER_OPTION_BOOL), FILTER_VALUES_OPTION_BOOL, array('false','true'));
+
         return $oFilter;
     }
 

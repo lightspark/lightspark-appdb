@@ -1472,22 +1472,35 @@ class version {
     public static function objectGetEntriesCount($sState, $oFilters = null)
     {
         $sExtraTables = '';
-        $aOptions = $oFilters ? $oFilters->getOptions() : array('onlyWithoutMaintainers' => 'false');
+        $aOptions = $oFilters ? $oFilters->getOptions() : array('onlyWithoutMaintainers' => 'false', 'onlyMyMaintainedEntries' => 'false');
         $sWhereFilter = '';
+        $bOnlyMyMaintainedEntries = false;
 
-        if($aOptions['onlyWithoutMaintainers'] == 'true')
+        $oVersion = new version();
+
+        if(getInput('onlyMyMaintainedEntries', $aOptions) == 'true'
+           || ($sState != 'accepted' && !$oVersion->canEdit()))
+        {
+            $bOnlyMyMaintainedEntries = true;
+        }
+
+        /* This combination doesn't make sense */
+        if(getInput('onlyWithoutMaintainers', $aOptions) == 'true'
+           && getInput('onlyMyMaintainedEntries', $aOptions) == 'true')
+        {
+            return false;
+        }
+
+        if(getInput('onlyWithoutMaintainers', $aOptions) == 'true')
         {
             $sExtraTables = ',appFamily';
 
             $sWhereFilter .= " AND appFamily.hasMaintainer = 'false' AND appFamily.appId = appVersion.appId";
         }
 
-        $oVersion = new version();
-        if($sState != 'accepted' && !$oVersion->canEdit())
+        if($bOnlyMyMaintainedEntries)
         {
-            /* Users should see their own rejected entries, but maintainers should
-               not be able to see rejected entries for versions they maintain */
-            if($sState == 'rejected')
+            if(!$oVersion->canEdit() && $sState == 'rejected')
                 $sQuery = "SELECT COUNT(DISTINCT appVersion.versionId) as count FROM
                         appVersion$sExtraTables WHERE
                         appVersion.submitterId = '?'
@@ -1618,10 +1631,26 @@ class version {
     public static function objectGetEntries($sState, $iRows = 0, $iStart = 0, $sOrderBy = "versionId", $bAscending = true, $oFilters = null)
     {
         $sExtraTables = '';
-        $aOptions = $oFilters ? $oFilters->getOptions() : array('onlyWithoutMaintainers' => 'false');
+        $aOptions = $oFilters ? $oFilters->getOptions() : array('onlyWithoutMaintainers' => 'false', 'onlyMyMaintainedEntries' => 'false');
         $sWhereFilter = '';
+        $bOnlyMyMaintainedEntries = false;
 
-        if($aOptions['onlyWithoutMaintainers'] == 'true')
+        $oVersion = new version();
+
+        if(getInput('onlyMyMaintainedEntries', $aOptions) == 'true'
+           || ($sState != 'accepted' && !$oVersion->canEdit()))
+        {
+            $bOnlyMyMaintainedEntries = true;
+        }
+
+        /* This combination doesn't make sense */
+        if(getInput('onlyWithoutMaintainers', $aOptions) == 'true'
+           && getInput('onlyMyMaintainedEntries', $aOptions) == 'true')
+        {
+            return false;
+        }
+
+        if(getInput('onlyWithoutMaintainers', $aOptions) == 'true')
         {
             $sExtraTables = ',appFamily';
 
@@ -1641,11 +1670,9 @@ class version {
                 $iRows = version::objectGetEntriesCount($sState);
         }
 
-        if($sState != 'accepted' && !version::canEdit())
+        if($bOnlyMyMaintainedEntries)
         {
-            /* Users should see their own rejected entries, but maintainers should
-               not be able to see rejected entries for versions they maintain */
-            if($sState == 'rejected')
+            if(!$oVersion->canEdit() && $sState == 'rejected')
                 $sQuery = "SELECT * FROM appVersion$sExtraTables WHERE
                         appVersion.submitterId = '?'
                         AND
