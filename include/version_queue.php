@@ -265,6 +265,11 @@ class version_queue
     public function objectGetFilterInfo()
     {
         $oFilter = new FilterInterface();
+
+        /* The following filters are only useful for admins */
+        if(!$_SESSION['current']->hasPriv('admin'))
+            return null;
+
         $oFilter->AddFilterInfo('onlyWithoutMaintainers', 'Only show versions without maintainers', array(FILTER_OPTION_BOOL), FILTER_VALUES_OPTION_BOOL, array('false','true'));
         return $oFilter;
     }
