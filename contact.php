@@ -9,6 +9,7 @@ require_once(BASE."/include/incl.php");
  */
 
 $oUser = new User($_SESSION['current']->iUserId);
+$shError = '';
 
 /* Restrict error to logged-in users */
 if(!$oUser->isLoggedIn())
@@ -55,7 +56,7 @@ if($sRecipientGroup)
 /* Check for errors */
 if((!$aClean['sMessage'] || !$aClean['sSubject']) && $aClean['sSubmit'])
 {
-    $error = "<font color=\"red\">Please enter both a subject and a ".
+    $shError = "<font color=\"red\">Please enter both a subject and a ".
              "message.</font>";
     $aClean['sSubmit'] = "";
 }
@@ -67,7 +68,7 @@ if(!$aClean['sSubmit'])
     echo '&nbsp';
     echo html_frame_start("Composer",400,"",0);
 
-    echo $error;
+    echo $shError;
     echo "<form action=\"".$_SERVER['PHP_SELF']."\" method=\"post\">";
 
     /* User manager */
@@ -96,7 +97,7 @@ if(!$aClean['sSubmit'])
     $oTableRow->SetClass("color4");
     $oTableRow->AddTextCell("Subject");
     $oTableCell = new TableCell("<input type=\"text\" name=\"sSubject\" size=\"71\"".
-                                " value=\"".$aClean['sSubject']."\">");
+                                " value=\"".getInput('sSubject', $aClean)."\">");
     $oTableRow->AddCell($oTableCell);
     $oTable->AddRow($oTableRow);
 
@@ -106,7 +107,7 @@ if(!$aClean['sSubmit'])
     $oTableCell->SetValign("top");
     $oTableRow->AddCell($oTableCell);
     $oTableCell = new TableCell("<textarea name=\"sMessage\" rows=\"15\" cols=\"60\">"
-                                .$aClean['sMessage']."</textarea>");
+                                .getInput('sMessage', $aClean)."</textarea>");
     $oTableRow->AddCell($oTableCell);
     $oTable->AddRow($oTableRow);
 
