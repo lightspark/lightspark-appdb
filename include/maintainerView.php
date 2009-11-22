@@ -80,6 +80,8 @@ class maintainerView
 
     public function objectDrawCustomTable($hResult, $sQueued, $oM)
     {
+        echo '<div align="center"><a href="'.BASE.'contact.php?sRecipientGroup=maintainers">E-mail all maintainers</a></div>';
+
         $oTable = new Table();
         $oNewOM = new objectManager('maintainer');
 
