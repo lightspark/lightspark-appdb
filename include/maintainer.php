@@ -529,15 +529,21 @@ class maintainer
     }
 
     // returns the number of applications/versions a particular user maintains
-    function getMaintainerCountForUser($oUser, $bSuperMaintainer)
+    function getMaintainerCountForUserId($iUserId, $bSuperMaintainer)
     {
         $sQuery = "SELECT count(*) as cnt from appMaintainers WHERE userid = '?' AND superMaintainer = '?'".
                   " AND state ='?'";
-        $hResult = query_parameters($sQuery, $oUser->iUserId, $bSuperMaintainer ? "1" : "0", 'accepted');
+        $hResult = query_parameters($sQuery, $iUserId, $bSuperMaintainer ? "1" : "0", 'accepted');
         if(!$hResult)
             return 0;
         $oRow = query_fetch_object($hResult);
         return $oRow->cnt;
+    }
+
+    // returns the number of applications/versions a particular user maintains
+    function getMaintainerCountForUser($oUser, $bSuperMaintainer)
+    {
+        return getMaintainerCountForUserId($oUser->iUserId, $bSuperMaintainer);
     }
 
     /**

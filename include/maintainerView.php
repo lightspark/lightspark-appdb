@@ -96,6 +96,7 @@ class maintainerView
         {
             $oTableRow = new TableRow();
             $oMaintainerView = new maintainerView(null, $oRow);
+            $iUserId = $oMaintainerView->iUserId;
             $oUser = new user($oMaintainerView->iUserId);
             $sStyle = 'border-top: thin solid; border-bottom: thin solid;';
 
@@ -107,13 +108,13 @@ class maintainerView
             $oCell->SetStyle($sStyle);
             $oTableRow->AddCell($oCell);
             
-            $iMaintainedApps = maintainer::GetMaintainerCountForUser($oUser, true);    
+            $iMaintainedApps = maintainer::GetMaintainerCountForUserId($iUserId, true);    
             $sPlural = ($iMaintainedApps == 1) ? '' : 's';
             $oCell = new TableCell($iMaintainedApps ? "$iMaintainedApps application$sPlural" : '&nbsp;');
             $oCell->SetStyle($sStyle);
             $oTableRow->AddCell($oCell);
 
-            $iMaintainedVersions = maintainer::GetMaintainerCountForUser($oUser, false);    
+            $iMaintainedVersions = maintainer::GetMaintainerCountForUserId($iUserId, false);    
             $sPlural = ($iMaintainedVersions == 1) ? '' : 's';
             $oCell = new TableCell($iMaintainedVersions ? "$iMaintainedVersions version$sPlural" : '&nbsp;');
             $oCell->SetStyle($sStyle);
