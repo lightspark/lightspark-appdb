@@ -7,6 +7,8 @@ require_once('include/maintainer.php');
 if(!$_SESSION['current']->hasPriv('admin'))
     util_show_error_page_and_exit("Only admins are allowed in here");
 
+apidb_header('AppDB Control Center');
+
 function updateAppMaintainerStates()
 {
     $hResult = application::objectGetEntries('accepted');
@@ -39,8 +41,8 @@ function updateVersionMaintainerStates()
 
 function showChoices()
 {
-    echo '<a href="updateMaintainerStates.php?sAction=updateAppMaintainerStates">Update application maintainer states</a><br />';
-    echo '<a href="updateMaintainerStates.php?sAction=updateVersionMaintainerStates">Update version maintainer states</a>';
+    echo '<a href="admin.php?sAction=updateAppMaintainerStates">Update application maintainer states</a><br />';
+    echo '<a href="admin.php?sAction=updateVersionMaintainerStates">Update version maintainer states</a>';
 }
 
 switch(getInput('sAction', $aClean))
@@ -58,5 +60,6 @@ switch(getInput('sAction', $aClean))
         break;
 }
 
+apidb_footer();
 
 ?>

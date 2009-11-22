@@ -59,6 +59,7 @@ function global_admin_menu() {
     $g->add("Add Category", BASE."objectManager.php?sClass=category&amp;sAction=add&amp;sTitle=Add+Category");
     $g->add("Add Vendor", BASE."objectManager.php?sClass=vendor&amp;bQueue=".
     "false&amp;sAction=add&amp;sTitle=Add%20Vendor");
+    $g->add('Control Center', BASE.'admin.php');
 
     $g->done();
 }
