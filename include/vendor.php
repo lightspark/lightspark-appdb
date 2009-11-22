@@ -76,6 +76,9 @@ class Vendor {
             {
                 $this->vendor($oRow->vendorId);
 
+                if(!$this->mustBeQueued())
+                    $this->unQueue();
+
                 /* Even though we did not create a new vendor, the caller is provided
                 with an id and can proceed as normal, so we return TRUE */
                 return TRUE;
