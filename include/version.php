@@ -1547,6 +1547,11 @@ class version {
         $this->sState = $sState;
     }
 
+    public function hasMaintainer()
+    {
+        return $this->bHasMaintainer;
+    }
+
     public function updateMaintainerState()
     {
         $this->bHasMaintainer = maintainer::versionHasMaintainer($this->iVersionId);

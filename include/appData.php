@@ -350,10 +350,11 @@ class appData
     function objectGetHeader($sType)
     {
         $oTableRow = new TableRow();
-        $oTableRow->AddTextCell("Submission Date");
+        $oTableRow->AddTextCell("Submission date");
         $oTableRow->AddTextCell("Submitter");
         $oTableRow->AddTextCell("Application");
         $oTableRow->AddTextCell("Version");
+        $oTableRow->AddTextCell('Has maintainer');
         return $oTableRow;
     }
 
@@ -562,11 +563,14 @@ class appData
         $oApp = new Application($this->iAppId);
         $oUser = new User($this->iSubmitterId);
 
+        $bMaintained = $this->iVersionId ? $oVersion->hasMaintainer() : $oApp->hasMaintainer();
+
         $oTableRow = new TableRow();
         $oTableRow->AddTextCell(print_date(mysqldatetime_to_unixtimestamp($this->sSubmitTime)));
         $oTableRow->AddTextCell($oUser->objectMakeLink());
         $oTableRow->AddTextCell($oApp->objectMakeLink());
         $oTableRow->AddTextCell($this->iVersionId ? $oVersion->objectMakeLink() : "N/A");
+        $oTableRow->AddTextCell($bMaintained ? 'YES' : 'No');
 
         // create the object manager specific row
         $oOMTableRow = new OMTableRow($oTableRow);

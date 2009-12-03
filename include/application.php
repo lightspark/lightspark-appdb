@@ -244,6 +244,11 @@ class Application {
         return true;
     }
 
+    public function hasMaintainer()
+    {
+        return $this->bHasMaintainer;
+    }
+
     public function updateMaintainerState()
     {
         $this->bHasMaintainer = maintainer::appHasMaintainer($this->iAppId);
