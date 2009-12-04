@@ -692,6 +692,14 @@ class screenshot
 
         $oFilter->addFilterInfo('appCategory', 'App category', array(FILTER_OPTION_ENUM), FILTER_VALUES_OPTION_ENUM, $aCatIds, $aCatNames);
 
+        /* The following filters are only useful for admins */
+        if(!$_SESSION['current']->hasPriv('admin'))
+            return $oFilter;
+
+        $oFilter->AddFilterInfo('onlyWithoutVersionMaintainers', 'Only show screenshots for versions without maintainers', array(FILTER_OPTION_BOOL), FILTER_VALUES_OPTION_BOOL, array('false','true'));
+
+        $oFilter->AddFilterInfo('onlyMyMaintainedVersionEntries', 'Only show screenshots for versions you maintain', array(FILTER_OPTION_BOOL), FILTER_VALUES_OPTION_BOOL, array('false','true'));
+
         return $oFilter;
     }
 

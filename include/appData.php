@@ -233,20 +233,39 @@ class appData
             return FALSE;
 
         $sSelectType = "";
-        $sWhereFilter = '';
 
-        if($oFilters)
+        $aOptions = $oFilters ? $oFilters->getOptions() : array('onlyWithoutMaintainers' => 'false', 'onlyMyMaintainedEntries' => 'false');
+        $sWhereFilter = '';
+        $sVersionWhereFilter = '';
+        $bOnlyMyMaintainedEntries = false;
+
+        $oAppData = new appData();
+
+        if(getInput('onlyMyMaintainedVersionEntries', $aOptions) == 'true'
+           || ($sState != 'accepted' && !$oAppData->canEdit()))
         {
-            $aOptions = $oFilters->getOptions();
-            if($aOptions['appCategory'])
-            {
-                $oCategory =  new category($aOptions['appCategory']);
-                $sWhereFilter .= ' AND ' . $oCategory->getSqlQueryPart();
-            }
+            $bOnlyMyMaintainedEntries = true;
         }
 
-        if(($sState != 'accepted') &&
-            !$_SESSION['current']->hasPriv("admin"))
+        /* This combination doesn't make sense */
+        if(getInput('onlyWithoutVersionMaintainers', $aOptions) == 'true'
+           && getInput('onlyMyMaintainedVersionEntries', $aOptions) == 'true')
+        {
+            return false;
+        }
+
+        if(getInput('onlyWithoutVersionMaintainers', $aOptions) == 'true')
+        {
+            $sVersionWhereFilter .= " AND appVersion.hasMaintainer = 'false' AND appVersion.versionId = appData.versionId";
+        }
+
+        if(getInput('appCategory', $aOptions))
+        {
+            $oCategory =  new category($aOptions['appCategory']);
+            $sWhereFilter .= ' AND ' . $oCategory->getSqlQueryPart();
+        }
+
+        if($bOnlyMyMaintainedEntries)
         {
            $sQuery = "SELECT COUNT(DISTINCT appData.id) as count FROM appData,
            appMaintainers, appVersion, appFamily WHERE
@@ -286,7 +305,7 @@ class appData
                 AND
                 appVersion.state = 'accepted'
                 AND
-                appFamily.state = 'accepted'$sWhereFilter";
+                appFamily.state = 'accepted'$sVersionWhereFilter$sWhereFilter";
 
             if($sState != 'all')
                 $sQuery .= " AND appData.state = '$sState'";
@@ -330,7 +349,7 @@ class appData
                     AND
                     appVersion.state = 'accepted'
                     AND
-                    appFamily.state = 'accepted'$sAppDataQueued$sSelectType$sWhereFilter)";
+                    appFamily.state = 'accepted'$sVersionWhereFilter$sAppDataQueued$sSelectType$sWhereFilter)";
 
             if($sType)
                 $hResult = query_parameters($sQuery, $sType, $sType);
@@ -366,19 +385,39 @@ class appData
 
         $sSelectType = "";
         $sLimit = "";
-        $sWhereFilter = '';
 
-        if($oFilters)
+        $aOptions = $oFilters ? $oFilters->getOptions() : array('onlyWithoutMaintainers' => 'false', 'onlyMyMaintainedEntries' => 'false');
+        $sWhereFilter = '';
+        $sVersionWhereFilter = '';
+        $bOnlyMyMaintainedEntries = false;
+
+        $oAppData = new appData();
+
+        if(getInput('onlyMyMaintainedVersionEntries', $aOptions) == 'true'
+           || ($sState != 'accepted' && !$oAppData->canEdit()))
         {
-            $aOptions = $oFilters->getOptions();
-            if($aOptions['appCategory'])
-            {
-                $oCategory =  new category($aOptions['appCategory']);
-                $sWhereFilter .= ' AND ' . $oCategory->getSqlQueryPart();
-            }
+            $bOnlyMyMaintainedEntries = true;
         }
 
-        if($sState != 'accepted' && !$_SESSION['current']->hasPriv("admin"))
+        /* This combination doesn't make sense */
+        if(getInput('onlyWithoutVersionMaintainers', $aOptions) == 'true'
+           && getInput('onlyMyMaintainedVersionEntries', $aOptions) == 'true')
+        {
+            return false;
+        }
+
+        if(getInput('onlyWithoutVersionMaintainers', $aOptions) == 'true')
+        {
+            $sVersionWhereFilter .= " AND appVersion.hasMaintainer = 'false' AND appVersion.versionId = appData.versionId";
+        }
+
+        if(getInput('appCategory', $aOptions))
+        {
+            $oCategory =  new category($aOptions['appCategory']);
+            $sWhereFilter .= ' AND ' . $oCategory->getSqlQueryPart();
+        }
+
+        if($bOnlyMyMaintainedEntries)
         {
             $sQuery = "SELECT DISTINCT appData.* FROM appData, appMaintainers,
                 appVersion, appFamily WHERE
@@ -426,6 +465,7 @@ class appData
                 AND
                 appData.type = '?'
                 $sWhereFilter
+                $sVersionWhereFilter
                 ORDER BY appFamily.appName";
             if(!$iRows && !$iStart)
             {
@@ -477,7 +517,7 @@ class appData
                       AND
                       appData.state = '?'
                       AND
-                      appData.type = '?' $sWhereFilter ORDER BY appFamily.appName $sLimit
+                      appData.type = '?' $sVersionWhereFilter$sWhereFilter ORDER BY appFamily.appName $sLimit
                     )";
             if(!$iRows && !$iStart)
             {
