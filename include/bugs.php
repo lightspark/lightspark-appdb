@@ -430,17 +430,17 @@ class Bug
         $oTableCell->SetAlign("center");
         $oTableRow->AddCell($oTableCell);
 
-        $oTableRow->AddTextCell("Bug Description");
+        $oTableRow->AddTextCell("Bug description");
 
-        $oTableCell = new TableCell("Application Name");
-        $oTableCell->SetAlign("center");
-        $oTableRow->AddCell($oTableCell);
-
-        $oTableCell = new TableCell("Application Description");
+        $oTableCell = new TableCell("Application name");
         $oTableCell->SetAlign("center");
         $oTableRow->AddCell($oTableCell);
 
         $oTableCell = new TableCell("Version");
+        $oTableCell->SetAlign("center");
+        $oTableRow->AddCell($oTableCell);
+
+        $oTableCell = new TableCell("Has maintainer");
         $oTableCell->SetAlign("center");
         $oTableRow->AddCell($oTableCell);
 
@@ -468,9 +468,9 @@ class Bug
 
         $oTableRow->AddTextCell($oApp->objectMakeLink());
 
-        $oTableRow->AddTextCell(util_trim_description($oApp->sDescription));
-
         $oTableRow->AddTextCell($oVersion->objectMakeLink());
+
+        $oTableRow->AddTextCell($oVersion->hasMaintainer() ? 'YES' : 'No');
 
         $oOMTableRow = new OMTableRow($oTableRow);
 
