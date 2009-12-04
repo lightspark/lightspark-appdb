@@ -397,24 +397,59 @@ class Bug
         return $this->iLinkId;
     }
 
-    function objectGetEntries($sState, $iRows = 0, $iStart = 0, $sOrderBy = '', $bAscending = true)
+    public function objectGetFilterInfo()
     {
+        $oFilter = new FilterInterface();
+
+        /* The following filters are only useful for admins */
+        if(!$_SESSION['current']->hasPriv('admin'))
+            return null;
+
+        $oFilter->AddFilterInfo('onlyWithoutMaintainers', 'Only show bug links for versions without maintainers', array(FILTER_OPTION_BOOL), FILTER_VALUES_OPTION_BOOL, array('false','true'));
+
+        return $oFilter;
+    }
+
+    function objectGetEntries($sState, $iRows = 0, $iStart = 0, $sOrderBy = '', $bAscending = true, $oFilters = null)
+    {
+        $sExtraTables = '';
+        $aOptions = $oFilters ? $oFilters->getOptions() : array('onlyWithoutMaintainers' => 'false');
+        $sWhereFilter = '';
+
+        if(getInput('onlyWithoutMaintainers', $aOptions) == 'true')
+        {
+            $sExtraTables = ',appVersion';
+
+            $sWhereFilter .= " AND appVersion.hasMaintainer = 'false' AND appVersion.versionId = buglinks.versionId";
+        }
+
         $sLimit = "";
         
         /* Selecting 0 rows makes no sense, so we assume the user
          wants to select all of them
          after an offset given by iStart */
         if(!$iRows)
-          $iRows = bug::objectGetEntriesCount($sState);
+          $iRows = bug::objectGetEntriesCount($sState, $oFilters);
 
-        $sQuery = "select * from buglinks where state = '?' LIMIT ?, ?";
+        $sQuery = "select * from buglinks$sExtraTables where buglinks.state = '?'$sWhereFilter LIMIT ?, ?";
         $hResult = query_parameters($sQuery, $sState, $iStart, $iRows);
         return $hResult;
     }
 
-    function objectGetEntriesCount($sState)
+    function objectGetEntriesCount($sState, $oFilters = null)
     {
-        $sQuery = "select count(*) as cnt from buglinks where state = '?'";
+        $sExtraTables = '';
+        $aOptions = $oFilters ? $oFilters->getOptions() : array('onlyWithoutMaintainers' => 'false');
+        $sWhereFilter = '';
+
+        if(getInput('onlyWithoutMaintainers', $aOptions) == 'true')
+        {
+            $sExtraTables = ',appVersion';
+
+            $sWhereFilter .= " AND appVersion.hasMaintainer = 'false' AND appVersion.versionId = buglinks.versionId";
+        }
+
+        $sQuery = "select count(*) as cnt from buglinks$sExtraTables where buglinks.state = '?'$sWhereFilter";
         $hResult = query_parameters($sQuery, $sState);
         $oRow = mysql_fetch_object($hResult);
         return $oRow->cnt;
