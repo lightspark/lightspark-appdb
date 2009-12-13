@@ -295,6 +295,14 @@ class application_queue
         echo "<br />\n";
         echo "<b>Partial matches</b><br />\n";
         $this->displayDuplicateTable(searchForApplicationPartial($this->oApp->sName, $this->oApp->objectGetId()));
+        echo '<br /><br />';
+        if($this->oApp->iAppId && $this->oApp->canEdit())
+        {
+            echo "<a href=\"objectManager.php?sClass=application&amp;".
+                 "bIsQueue=true&amp;sAction=showMoveChildren&amp;iId=".
+                 $this->oApp->iAppId.
+                 "\">Merge with another application</a>";
+        }
     }
 
     function displayDuplicateTable($hResult)
