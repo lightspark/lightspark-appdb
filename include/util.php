@@ -404,7 +404,7 @@ function cleanupSearchWords($search_words)
     $filtered_search = "";
 
     /* search each word in $search_words */
-    $split_words = split(" ", $search_words);
+    $split_words = explode(" ", $search_words);
 
     $removed_words = '';
     foreach($split_words as $key=>$value)
@@ -501,7 +501,7 @@ function searchForApplication($search_words, $iExcludeAppId = null)
 
     /* remove any search words less than 4 letters */
     $split_words = array();
-    $split_search_words = split(" ", $search_words);
+    $split_search_words = explode(" ", $search_words);
     foreach($split_search_words as $key=>$value)
     {
         if(strlen($value) >= 4)
