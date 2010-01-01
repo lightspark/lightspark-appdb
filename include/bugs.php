@@ -406,6 +406,7 @@ class Bug
             return null;
 
         $oFilter->AddFilterInfo('onlyWithoutMaintainers', 'Only show bug links for versions without maintainers', array(FILTER_OPTION_BOOL), FILTER_VALUES_OPTION_BOOL, array('false','true'));
+        $oFilter->AddFilterInfo('onlyMyMaintainedEntries', 'Only show bug links for versions you maintain', array(FILTER_OPTION_BOOL), FILTER_VALUES_OPTION_BOOL, array('false','true'));
 
         return $oFilter;
     }
@@ -413,8 +414,24 @@ class Bug
     function objectGetEntries($sState, $iRows = 0, $iStart = 0, $sOrderBy = '', $bAscending = true, $oFilters = null)
     {
         $sExtraTables = '';
-        $aOptions = $oFilters ? $oFilters->getOptions() : array('onlyWithoutMaintainers' => 'false');
+        $aOptions = $oFilters ? $oFilters->getOptions() : array('onlyWithoutMaintainers' => 'false', 'onlyMyMaintainedEntries' => 'false');
         $sWhereFilter = '';
+        $bOnlyMyMaintainedEntries = false;
+
+        $oBug = new bug();
+
+        if(getInput('onlyMyMaintainedEntries', $aOptions) == 'true'
+           || ($sState != 'accepted' && !$oBug->canEdit()))
+        {
+            $bOnlyMyMaintainedEntries = true;
+        }
+
+        /* This combination doesn't make sense */
+        if(getInput('onlyWithoutMaintainers', $aOptions) == 'true'
+           && getInput('onlyMyMaintainedEntries', $aOptions) == 'true')
+        {
+            return false;
+        }
 
         if(getInput('onlyWithoutMaintainers', $aOptions) == 'true')
         {
@@ -423,24 +440,70 @@ class Bug
             $sWhereFilter .= " AND appVersion.hasMaintainer = 'false' AND appVersion.versionId = buglinks.versionId";
         }
 
-        $sLimit = "";
-        
         /* Selecting 0 rows makes no sense, so we assume the user
          wants to select all of them
          after an offset given by iStart */
         if(!$iRows)
           $iRows = bug::objectGetEntriesCount($sState, $oFilters);
 
-        $sQuery = "select * from buglinks$sExtraTables where buglinks.state = '?'$sWhereFilter LIMIT ?, ?";
-        $hResult = query_parameters($sQuery, $sState, $iStart, $iRows);
+        if($bOnlyMyMaintainedEntries)
+        {
+            $sQuery = "SELECT buglinks.* FROM buglinks, appVersion,
+                        appMaintainers WHERE
+                        buglinks.versionId = appVersion.versionId
+                        AND
+                        appMaintainers.userId = '?'
+                        AND
+                        (
+                            (
+                                appMaintainers.superMaintainer = '1'
+                                AND
+                                appMaintainers.appId = appVersion.appid
+                            )
+                            OR
+                            (
+                                appMaintainers.superMaintainer = '0'
+                                AND
+                                appMaintainers.versionId = appVersion.versionId
+                            )
+                        )
+                        AND
+                        appMaintainers.state = 'accepted'
+                        AND
+                        buglinks.state = '?'$sWhereFilter LIMIT ?,?";
+
+            $hResult = query_parameters($sQuery, $_SESSION['current']->iUserId,
+                                        $sState, $iStart, $iRows);
+        } else
+        {
+            $sQuery = "select * from buglinks$sExtraTables where buglinks.state = '?'$sWhereFilter LIMIT ?, ?";
+            $hResult = query_parameters($sQuery, $sState, $iStart, $iRows);
+        }
+
         return $hResult;
     }
 
     function objectGetEntriesCount($sState, $oFilters = null)
     {
         $sExtraTables = '';
-        $aOptions = $oFilters ? $oFilters->getOptions() : array('onlyWithoutMaintainers' => 'false');
+        $aOptions = $oFilters ? $oFilters->getOptions() : array('onlyWithoutMaintainers' => 'false', 'onlyMyMaintainedEntries' => 'false');
         $sWhereFilter = '';
+        $bOnlyMyMaintainedEntries = false;
+
+        $oBug = new bug();
+
+        if(getInput('onlyMyMaintainedEntries', $aOptions) == 'true'
+           || ($sState != 'accepted' && !$oBug->canEdit()))
+        {
+            $bOnlyMyMaintainedEntries = true;
+        }
+
+        /* This combination doesn't make sense */
+        if(getInput('onlyWithoutMaintainers', $aOptions) == 'true'
+           && getInput('onlyMyMaintainedEntries', $aOptions) == 'true')
+        {
+            return false;
+        }
 
         if(getInput('onlyWithoutMaintainers', $aOptions) == 'true')
         {
@@ -449,9 +512,42 @@ class Bug
             $sWhereFilter .= " AND appVersion.hasMaintainer = 'false' AND appVersion.versionId = buglinks.versionId";
         }
 
-        $sQuery = "select count(*) as cnt from buglinks$sExtraTables where buglinks.state = '?'$sWhereFilter";
-        $hResult = query_parameters($sQuery, $sState);
+        if($bOnlyMyMaintainedEntries)
+        {
+            $sQuery = "SELECT COUNT(buglinks.linkId) as cnt FROM buglinks, appVersion,
+                        appMaintainers WHERE
+                        buglinks.versionId = appVersion.versionId
+                        AND
+                        appMaintainers.userId = '?'
+                        AND
+                        (
+                            (
+                                appMaintainers.superMaintainer = '1'
+                                AND
+                                appMaintainers.appId = appVersion.appid
+                            )
+                            OR
+                            (
+                                appMaintainers.superMaintainer = '0'
+                                AND
+                                appMaintainers.versionId = appVersion.versionId
+                            )
+                        )
+                        AND
+                        appMaintainers.state = 'accepted'
+                        AND
+                        buglinks.state = '?'$sWhereFilter";
+
+            $hResult = query_parameters($sQuery, $_SESSION['current']->iUserId,
+                                        $sState);
+        } else
+        {
+            $sQuery = "select count(*) as cnt from buglinks$sExtraTables where buglinks.state = '?'$sWhereFilter";
+            $hResult = query_parameters($sQuery, $sState);
+        }
+
         $oRow = mysql_fetch_object($hResult);
+
         return $oRow->cnt;
     }
 
