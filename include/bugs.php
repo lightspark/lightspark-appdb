@@ -691,7 +691,8 @@ class Bug
 
     function getOutputEditorValues($aClean)
     {
-        $this->iBug_id = $aClean['iBuglinkId'];
+        if(getInput('iBuglinkId', $aClean))
+            $this->iBug_id = $aClean['iBuglinkId'];
 
         if($aClean['iVersionId'])
             $this->iVersionId = $aClean['iVersionId'];
