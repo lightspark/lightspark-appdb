@@ -1505,7 +1505,7 @@ class ObjectManager
                     $oObject->update();
                 } else
                 {
-                    $this->handle_anonymous_submission();
+                    $this->handle_anonymous_submission($aClean);
 
                     $oObject->create();
                 }
