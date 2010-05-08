@@ -968,6 +968,19 @@ class maintainer
         return $this->iMaintainerId;
     }
 
+    public function checkOutputEditorInput($aClean)
+    {
+        $shErrors = '';
+
+        if(!getInput('iAppId', $aClean) && !getInput('iVersionId', $aClean))
+            $shErrors .= '<li>No application or version has been selected. This should never happen; please contact <a href="mailto:'.APPDB_OWNER_EMAIL.'">'.APPDB_OWNER_EMAIL.'</a></li>';
+
+        if(!getInput('sMaintainReason', $aClean))
+            $shErrors .= '<li>You need to write a short text about why you should be a maintainer</li>';
+
+        return $shErrors;
+    }
+
     function getOutputEditorValues($aClean)
     {
         $this->iAppId = $aClean['iAppId'];
