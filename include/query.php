@@ -130,6 +130,12 @@ function query_bugzilladb($sQuery,$sComment="")
         $hBugzillaLink = mysql_connect(BUGZILLA_DBHOST, BUGZILLA_DBUSER, BUGZILLA_DBPASS, true);
         if(!$hBugzillaLink) return;
         mysql_select_db(BUGZILLA_DB, $hBugzillaLink);
+        // Tell MySQL to return UTF8-encoded results
+        $sQueryAskingForUtf8Results = "SET SESSION CHARACTER_SET_RESULTS = 'utf8'";
+        if (!mysql_query($sQueryAskingForUtf8Results, $hBugzillaLink))
+        {
+            query_error($sQueryAskingForUtf8Results, "", $hBugzillaLink);
+        }
     }
     
     $hResult = mysql_query($sQuery, $hBugzillaLink);
