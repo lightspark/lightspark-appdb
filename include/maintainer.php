@@ -543,7 +543,7 @@ class maintainer
     // returns the number of applications/versions a particular user maintains
     function getMaintainerCountForUser($oUser, $bSuperMaintainer)
     {
-        return getMaintainerCountForUserId($oUser->iUserId, $bSuperMaintainer);
+        return self::getMaintainerCountForUserId($oUser->iUserId, $bSuperMaintainer);
     }
 
     /**
