@@ -5,7 +5,10 @@
 require_once(BASE."include/util.php");
 
 /**
- * Url class for handling urls
+ * Class for handling URLs (aka Links) of applications and
+ * of application versions.
+ * 
+ * Uses the appData table to store the URLs in rows with type='url'.
  */
 class Url {
     var $iUrlId;
@@ -33,6 +36,8 @@ class Url {
                        WHERE type = 'url'
                        AND id = '?'";
             $hResult = query_parameters($sQuery, $iUrlId);
+            if(!$hResult)
+                return;
             $oRow = query_fetch_object($hResult);
         }
 
@@ -53,12 +58,14 @@ class Url {
 
     /**
      * Creates a new url.
+     * Writes the url into the appData table, then updates the object.
+     * 
+     * @param bSilent Whether to send a notification email.
+     * @return true if everything went fine.
      */
     function create($sDescription = null, $sUrl = null, $iVersionId = null,
                     $iAppId = null, $bSilent = false)
     {
-        global $aClean;
-
         // Security, if we are not an administrator or a maintainer, the url must be queued.
         if(($iAppId && !url::canEdit(NULL, $iAppId)) ||
         ($iVersionId && !url::canEdit($iVersionId)))
@@ -78,7 +85,7 @@ class Url {
         }
 
         $this->iUrlId = query_appdb_insert_id();
-        $this->url($this->iUrlId,$this->bQueued);
+        $this->Url($this->iUrlId);
 
         if(!$bSilent)
             $this->SendNotificationMail();
