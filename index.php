@@ -11,15 +11,14 @@
 require("path.php");
 require(BASE."include/incl.php");
 
-apidb_header("Wine Application Database");
+apidb_header("Lightspark Application Database");
 ?>
-    <img style="float:right;" src="images/appdb_montage.jpg" width=391 height=266 alt="Wine AppDB">
 
 <div class='default_container'>    
 <h1>Welcome</h1>
 
-<p>This is the Wine Application Database (AppDB). Here you can get information on application
-compatibility with Wine.</p>
+<p>This is the Lightspark Application Database (AppDB). Here you can get information on application
+compatibility with Lightspark.</p>
 <?php
 $str_benefits="
     <ul>
@@ -42,7 +41,7 @@ if(!$_SESSION['current']->isLoggedIn())
 
     <p>So, what are you waiting for? [<a href=\"".login_url()."\">Log in</a>]
     or [<a href=\"account.php?sCmd=new\">register</a>] now! Your help in
-    stomping out Wine issues will be greatly appreciated.</p>";
+    stomping out Lightspark issues will be greatly appreciated.</p>";
 } else 
 {
     echo "
@@ -51,7 +50,7 @@ if(!$_SESSION['current']->isLoggedIn())
     $str_benefits
 
     <p>We&#8217;d like to thank you for being a member and being logged in to the system. Your help in
-    stomping out Wine issues will be greatly appreciated.</p>";
+    stomping out Lightspark issues will be greatly appreciated.</p>";
 
 }
 
@@ -91,7 +90,7 @@ if(!$_SESSION['current']->isLoggedIn())
     <div class="rating_title">
       Top-10 <a href="objectManager.php?sClass=application&sTitle=Browse+Applications&iappVersion-ratingOp0=5&sappVersion-ratingData0=Platinum&sOrderBy=appName&bAscending=true">Platinum</a> List
     </div>
-    Applications which install and run flawlessly on an out-of-the-box Wine installation
+    Applications which install and run flawlessly on an out-of-the-box Lightspark installation
   </div>
   <div>
     <table class="platinum">
@@ -146,13 +145,6 @@ if(!$_SESSION['current']->isLoggedIn())
 </div>
 
 <br><br>
-
-<h2>Other Wine Application Compatibility Sites</h2>
-<p>
-<a href="http://www.wine-reviews.net/"><b>Wine-Reviews</b></a>: Is a Wine application and game
-Blog, with tips and how-to's on getting listed applications and games to run. 
-</p>
-</div>
 
 <?php
 

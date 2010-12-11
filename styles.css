@@ -1,9 +1,7 @@
 /* Body Document Defaults */
 BODY                {
-                     background-color: #000000;
+                     background-color: white;
                      color: #000000;
-                     background-image: url('images/bg.jpg');
-                     background-repeat: no-repeat;
                      font-family: "bitstream vera sans", "verdana", "arial", "helvetica", sans-serif;
                      margin: 0;
                      font-size: 10pt;
@@ -29,15 +27,15 @@ BODY                {
 #logo_text          {
                      position: absolute;
                      z-index: 3;
-                     top: 40px;
-                     left: 110px;
-                     width: 186px;
-                     height: 58px;
+                     top: 0px;
+                     left: 100px;
+                     width: 222px;
+                     height: 130px;
                     }
 #logo_blurb         {
                      position: absolute;
                      z-index: 4;
-                     top: 92px;
+                     top: 112px;
                      left: 130px;
                      font-size: 12px;
                      color: #999999;
@@ -96,7 +94,7 @@ BODY                {
 #sidebar            {
                      position: absolute;
                      z-index: 6;
-                     top: 200px;
+                     top: 150px;
                      left: 0px;
                      margin: 0px;
                      padding: 0px;
@@ -230,7 +228,7 @@ hr
 }
 
 /* Rounded Corner Box */
-div.rbox                              { display:block; margin: 0px; }
+div.rbox                              { display:block; margin: 0px; margin-top: 30px;}
 div.rbox b.rtop, b.rbottom            { display:block; margin: 0px;  }
 div.rbox b.rtop b, b.rbottom b        { display:block; height: 1px; overflow: hidden; background: #FFFFFF; }
 div.rbox b.r1                         { margin: 0 5px; }
