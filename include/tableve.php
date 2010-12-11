@@ -340,8 +340,8 @@ class TableVE {
 
         if($field->name == "apiname")
         {
-            echo html_imagebutton("Wine LXR", "http://twine.codeweavers.com/lxr/ident?i=$value");
-            echo html_imagebutton("Wine API", "http://www.winehq.com/WineAPI/$value.html");
+            echo html_imagebutton("Lightspark LXR", "http://twine.codeweavers.com/lxr/ident?i=$value");
+            echo html_imagebutton("Lightspark API", "http://www.winehq.com/LightsparkAPI/$value.html");
         }
     }
 

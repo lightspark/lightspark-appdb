@@ -550,7 +550,7 @@ class testData{
         $oTableRowHeader->AddTextCell("");
         $oTableRowHeader->AddTextCell("Distribution");
         $oTableRowHeader->AddTextCell("Test date");
-        $oTableRowHeader->AddTextCell("Wine version");
+        $oTableRowHeader->AddTextCell("Lightspark version");
         $oTableRowHeader->AddTextCell("Installs?");
         $oTableRowHeader->AddTextCell("Runs?");
         $oTableRowHeader->AddTextCell("Rating");
@@ -752,7 +752,7 @@ class testData{
 
     /* Gets rating info for the selected version: an array with the elements
        0 - Rating
-       1 - Wine version
+       1 - Lightspark version
        The $sDate parameter can be used to calculate the rating at a given point in time */
     public function getRatingInfoForVersionId($iVersionId, $sDate = 'NOW()')
     {
@@ -805,7 +805,7 @@ class testData{
 
             for($i = 0; $i < sizeof($aEntries); $i++)
             {
-                /* Discard the rating if it's the only one for that Wine version
+                /* Discard the rating if it's the only one for that Lightspark version
                    and its score is lower than previous averages */
                 if(($aEntries[$i][1] < 2) && sizeof($aEntries) > ($i+1) && ($aEntries[$i][0] < ($aEntries[$i+1][0] / $aEntries[$i+1][1])))
                     continue;
@@ -915,13 +915,13 @@ class testData{
         echo '<tr><td class=color1><b>Tested release</b></td><td class=color0>',"\n";
         echo make_bugzilla_version_list("sTestedRelease", $this->sTestedRelease);
         // Give the user some information about our available versions
-        echo "<span>Version not listed?  Your Wine is too old, <a href=\"http://winehq.org/download\">upgrade!</a></span>";
+        echo "<span>Version not listed?  Your Lightspark is too old, <a href=\"http://winehq.org/download\">upgrade!</a></span>";
         echo '</td></tr>',"\n";
 
         // Installs
         echo '<tr><td class=color0><b>Installs?</b></td><td class=color0>',"\n";
         testData::make_Installs_list("sInstalls", $this->sInstalls);
-        echo '&nbsp; Installing is an important part of testing under Wine. Select N/A if there is no installer.</td></tr>',"\n";
+        echo '&nbsp; Installing is an important part of testing under Lightspark. Select N/A if there is no installer.</td></tr>',"\n";
         // Runs
         echo '<tr><td class=color1><b>Runs?</b></td><td class=color0>',"\n";
         testData::make_Runs_list("sRuns", $this->sRuns);
@@ -939,16 +939,16 @@ class testData{
         echo '<input type="hidden" name="iTestingId" value="'.$this->iTestingId.'" >';
         echo '<input type="hidden" name="iTestDataId" value="'.$this->iTestingId.'" >';
 
-        // Display confirmation box for changing the Wine version
+        // Display confirmation box for changing the Lightspark version
         $oOldTest = new testData($this->iTestingId);
         if($this->iTestingId && $oOldTest->sTestedRelease != $this->sTestedRelease)
         {
             if(getInput('bConfirmTestedVersionChange', $aClean) != 'true')
             {
                 echo '<tr><td class="color1">&nbsp;</td><td class="color0">';
-                echo 'You have changed the Wine version of the report.  Are you sure you want to do this?  Please submit a new test report for every Wine version you test; this is useful for tracking Wine\'s progress.<br>';
+                echo 'You have changed the Lightspark version of the report.  Are you sure you want to do this?  Please submit a new test report for every Lightspark version you test; this is useful for tracking Lightspark\'s progress.<br>';
                 echo '<input type="checkbox" name="bConfirmTestedVersionChange" value="true"> ';
-                echo 'Yes, I want to change the Wine version';
+                echo 'Yes, I want to change the Lightspark version';
                 echo '</td></tr>';
             } else
             {
@@ -981,16 +981,16 @@ class testData{
             $errors .= "<li>Please enter the date and time when you tested.</li>\n";
 
         if (empty($aValues['sTestedRelease']))
-            $errors .= "<li>Please enter the version of Wine that you tested with.</li>\n";
+            $errors .= "<li>Please enter the version of Lightspark that you tested with.</li>\n";
 
-        // Ask for confirmation if changing the tested Wine versions, becase we want users
-        // to submit new reports instead of updating existing ones when testing new Wines
+        // Ask for confirmation if changing the tested Lightspark versions, becase we want users
+        // to submit new reports instead of updating existing ones when testing new Lightsparks
         $oOldTest = new testData($this->iTestingId);
         if($this->iTestingId && $oOldTest->sTestedRelease != getInput('sTestedRelease', $aValues) &&
            getInput('bConfirmTestedVersionChange', $aValues) != 'true')
         {
-            $errors .= '<li>Are you sure you want to change the Wine version of the report? Please submit a new '.
-                        'test report for every Wine version you test; this is useful for tracking Wine\'s progress. '.
+            $errors .= '<li>Are you sure you want to change the Lightspark version of the report? Please submit a new '.
+                        'test report for every Lightspark version you test; this is useful for tracking Lightspark\'s progress. '.
                         'Tick the box above the submit button if you want to proceed</li>';
         }
 
@@ -1122,7 +1122,7 @@ class testData{
         $oTableRow = new TableRow();
         $oTableRow->AddTextCell('Version');
         $oTableRow->AddTextCell('Rating');
-        $oTableRow->AddTextCell('Wine version');
+        $oTableRow->AddTextCell('Lightspark version');
         $oTableRow->AddTextCell('Submission date');
 
         if($bQueued)
@@ -1513,9 +1513,9 @@ class testData{
     {
         echo "<p>This is the screen for inputing test information so that others ";
         echo "looking at the database will know \n";
-        echo "what was working on a particular release of Wine.</p>\n";
-        echo "<p><b>Please DO NOT include crash or Wine debug output.\n";
-        echo " Instead report the crash as a bug in the Wine bugzilla at \n";
+        echo "what was working on a particular release of Lightspark.</p>\n";
+        echo "<p><b>Please DO NOT include crash or Lightspark debug output.\n";
+        echo " Instead report the crash as a bug in the Lightspark bugzilla at \n";
         echo "<a href=\"http://bugs.winehq.org\">http://bugs.winehq.org</a>.\n";
         echo "We ask that you use bugzilla because developers do not monitor the AppDB \n";
         echo "for bugs.</b></p>\n"; 

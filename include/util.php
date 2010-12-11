@@ -164,7 +164,7 @@ function get_xml_tag ($file, $mode = null)
 
 /* bugzilla functions */
 
-// Returns an array containg the Wine versions stored in our Bugzilla DB
+// Returns an array containg the Lightspark versions stored in our Bugzilla DB
 // If bReturnIds is true, version ids are returned instead of names
 function get_bugzilla_versions($bReturnIds = false)
 {
@@ -197,7 +197,7 @@ function get_bugzilla_versions($bReturnIds = false)
     return $aVersions;
 }
 
-// Returns an array containing the IDs of the Wine versions stored in Bugzilla
+// Returns an array containing the IDs of the Lightspark versions stored in Bugzilla
 function get_bugzilla_version_ids()
 {
     return get_bugzilla_versions(true);

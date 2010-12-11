@@ -1105,11 +1105,11 @@ class Application {
         }
 
         $aLicenses = version::getLicenses();
-        $aWineVersions = get_bugzilla_versions();
-        $aWineVersionIds = get_bugzilla_version_ids();
+        $aLightsparkVersions = get_bugzilla_versions();
+        $aLightsparkVersionIds = get_bugzilla_version_ids();
 
         $oFilter->AddFilterInfo('appVersion.rating', 'Rating', array(FILTER_EQUALS), FILTER_VALUES_ENUM, array('Platinum', 'Gold', 'Silver', 'Bronze', 'Garbage'));
-        $oFilter->AddFilterInfo('versions.id', 'Wine version', array(FILTER_EQUALS,FILTER_LESS_THAN,FILTER_GREATER_THAN), FILTER_VALUES_ENUM, $aWineVersionIds, $aWineVersions);
+        $oFilter->AddFilterInfo('versions.id', 'Lightspark version', array(FILTER_EQUALS,FILTER_LESS_THAN,FILTER_GREATER_THAN), FILTER_VALUES_ENUM, $aLightsparkVersionIds, $aLightsparkVersions);
         $oFilter->AddFilterInfo('appCategory', 'Category', array(FILTER_OPTION_ENUM), FILTER_VALUES_OPTION_ENUM, $aCatIds, $aCatNames);
         $oFilter->AddFilterInfo('appVersion.license', 'License', array(FILTER_EQUALS), FILTER_VALUES_ENUM, $aLicenses);
         $oFilter->AddFilterInfo('appFamily.appName', 'Name', array(FILTER_CONTAINS, FILTER_STARTS_WITH, FILTER_ENDS_WITH), FILTER_VALUES_NORMAL);
@@ -1228,14 +1228,14 @@ class Application {
             echo "<p><h2>Before continuing, please ensure that you have</h2>\n";
             echo "<ul>\n";
             echo " <li>Entered a valid version for this application.  This is the application\n";
-            echo "   version, NOT the Wine version (which goes in the test results section of the template)</li>\n";
-            echo " <li>Tested this application under Wine.  There are tens of thousands of applications\n";
+            echo "   version, NOT the Lightspark version (which goes in the test results section of the template)</li>\n";
+            echo " <li>Tested this application under Lightspark.  There are tens of thousands of applications\n";
             echo "   for Windows, we do not need placeholder entries in the database.  Please enter as complete \n";
             echo "   as possible test results in the version template provided below</li>\n";
             echo "</ul></p>";
             echo "<p>Having app descriptions just sponsoring the app\n";
-            echo "(yes, some vendors want to use the appdb for this) or saying &#8216;I haven't tried this app with Wine&#8217; ";
-            echo "will not help Wine development or Wine users. Application descriptions should be exactly that and only that, \n";
+            echo "(yes, some vendors want to use the appdb for this) or saying &#8216;I haven't tried this app with Lightspark&#8217; ";
+            echo "will not help Lightspark development or Lightspark users. Application descriptions should be exactly that and only that, \n";
             echo "they should not contain any information about how well the app works, just what the app is. The same applies to the \n";
             echo "version information, it should be only information on what is unique or different about that version of the application, \n";
             echo "not how well that version works or how great you think a new feature is.</p>\n";

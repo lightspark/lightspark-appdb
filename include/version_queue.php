@@ -316,7 +316,7 @@ class version_queue
                 array("Version", 'width="80"'),
                 "Description",
                 array("Rating", 'width="80"'),
-                array("Wine version", 'width="80"'),
+                array("Lightspark version", 'width="80"'),
                 array("Comments", 'width="40"'),
                 array("Move test results", 'width="80"')
                           ),

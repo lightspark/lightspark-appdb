@@ -140,7 +140,7 @@ if(!$aClean['sSubmit'])
         $sSubjectRe = urlencode($sSubjectRe);
 
         $sMsg = "The following message was sent to you from $oUser->sRealname ";
-        $sMsg .= "through the Wine AppDB contact form.\nTo Reply, visit ";
+        $sMsg .= "through the Lightspark AppDB contact form.\nTo Reply, visit ";
         $sMsg .= APPDB_ROOT."contact.php?iRecipientId=$oUser->iUserId&amp;sSubject=";
         $sMsg .= $sSubjectRe."\n\n";
         $sMsg .= $aClean['sMessage'];

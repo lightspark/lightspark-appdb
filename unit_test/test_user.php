@@ -94,7 +94,7 @@ function test_user_update_set_test($realname, $winerelease)
 
     /* modify the users realname and wine release */
     $oUser->sRealname = $realname;
-    $oUser->sWineRelease = $winerelease;
+    $oUser->sLightsparkRelease = $winerelease;
     $oUser->update(); /* save the changes */
 
     /* log the user in again */
@@ -113,9 +113,9 @@ function test_user_update_set_test($realname, $winerelease)
         return false;
     }
 
-    if($oUser->sWineRelease != $winerelease)
+    if($oUser->sLightsparkRelease != $winerelease)
     {
-        echo "Wine release of '".$oUser->sWineRelease."' doesn't match expected wine release of '".$winerelease."'\n";
+        echo "Lightspark release of '".$oUser->sLightsparkRelease."' doesn't match expected wine release of '".$winerelease."'\n";
         return false;
     }
 

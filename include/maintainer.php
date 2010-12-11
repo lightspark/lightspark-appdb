@@ -754,15 +754,15 @@ class maintainer
         echo "<p>This page is for submitting a request to become an application maintainer.\n";
         echo "An application maintainer is someone who runs the application \n";
         echo "regularly and who is willing to be active in reporting regressions with newer \n";
-        echo "versions of Wine and to help other users run this application under Wine.</p>";
+        echo "versions of Lightspark and to help other users run this application under Lightspark.</p>";
         echo "<p>Being an application maintainer comes with new rights and new responsibilities; please be sure to read the <a href=\"".BASE."/help/?sTopic=maintainer_guidelines\">maintainer's guidelines</a> before to proceed.</p> ";
         echo "<p>We ask that all maintainers explain why they want to be an application maintainer,\n";
         echo "why they think they will do a good job and a little about their experience\n";
-        echo "with Wine.  This is both to give you time to\n";
+        echo "with Lightspark.  This is both to give you time to\n";
         echo "think about whether you really want to be an application maintainer and also for the\n";
         echo "appdb admins to identify people that are best suited for the job.  Your request\n";
         echo "may be denied if there are already a handful of maintainers for this application or if you\n";
-        echo "don't have the experience with Wine that is necessary to help other users out.</p>\n";
+        echo "don't have the experience with Lightspark that is necessary to help other users out.</p>\n";
 
         if(!$aClean['iVersionId'])
         {

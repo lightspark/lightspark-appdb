@@ -102,7 +102,7 @@ if($hResult && query_num_rows($hResult))
         echo "<td>\n";
         echo $img;
         echo "<div align=center>". substr($oRow->description,0,20). "\n";
-        echo '<br />Wine version: ';
+        echo '<br />Lightspark version: ';
         echo $oScreenshot->sTestedVersion ? $oScreenshot->sTestedVersion : 'N/A';
         //show admin delete link
         if($_SESSION['current']->isLoggedIn() &&
@@ -151,7 +151,7 @@ if($aClean['iVersionId'] && $_SESSION['current']->isLoggedIn())
       
     echo '<tr><td class=color1>Image</td><td class=color0><input name="sImageFile" type="file" size="24"></td></tr>',"\n";
     echo '<tr><td class="color1">Description</td><td class="color0"><input type="text" name="sScreenshotDesc" maxlength="20" size="24"></td></tr>',"\n";
-    echo '<tr><td class="color1">Wine version</td><td class="color0">'.make_bugzilla_version_list('sTestedVersion').'</td></tr>',"\n";
+    echo '<tr><td class="color1">Lightspark version</td><td class="color0">'.make_bugzilla_version_list('sTestedVersion').'</td></tr>',"\n";
        
     echo '<tr><td colspan=2 align=center class=color3><input type="submit" value="Send File"></td></tr>',"\n";
     echo '</table>',"\n";

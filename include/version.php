@@ -903,7 +903,7 @@ class version {
 
         // rating Area
                 echo "<tr class=\"$sRatingColor\" valign=\"top\"><td><b>Rating</b></td><td>".$sRating."</td></tr>\n";
-        echo "<tr class=\"$sRatingColor\" valign=\"top\"><td><b>Wine Version</b></td><td>".$sRelease."</td></tr>\n";
+        echo "<tr class=\"$sRatingColor\" valign=\"top\"><td><b>Lightspark Version</b></td><td>".$sRelease."</td></tr>\n";
 
         // Download URLs
         if($sDownloadurls = downloadurl::display($this->iVersionId))
@@ -1101,11 +1101,11 @@ class version {
             {
                 if($iNewestId != $oTest->objectGetId())
                 {
-                    $sWarnOldText = 'The test results you have selected are very old and may not represent the current state of Wine.';
+                    $sWarnOldText = 'The test results you have selected are very old and may not represent the current state of Lightspark.';
                 } else
                 {
                     $sWarnOldText = 'The test results for this version are very old, and as such they may not represent '.
-                                    'the current state of Wine.  Please consider submitting a new test report.';
+                                    'the current state of Lightspark.  Please consider submitting a new test report.';
                 }
                 echo html_note('Old test results', $sWarnOldText);
             }
@@ -1252,7 +1252,7 @@ class version {
             $oTableCell->SetWidth("80");
             $oTableRow->AddCell($oTableCell);
 
-            $oTableCell = new TableCell("Wine version");
+            $oTableCell = new TableCell("Lightspark version");
             $oTableCell->SetWidth("80");
             $oTableRow->AddCell($oTableCell);
 

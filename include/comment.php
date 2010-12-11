@@ -756,7 +756,7 @@ class Comment {
 
         if( $messageCount > 0 )
         {
-            echo '<p align="center">The following comments are owned by whoever posted them. WineHQ is not responsible for what they say.</p>'."\n";
+            echo '<p align="center">The following comments are owned by whoever posted them. Lightspark is not responsible for what they say.</p>'."\n";
         }
 
         //start comments

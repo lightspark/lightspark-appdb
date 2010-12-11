@@ -10,7 +10,7 @@
  *  - sUserPassword2, new password confirmation
  *  - sUserEmail, e-mail address
  *  - sUserRealname, user's real name
- *  - sWineRelease, user's Wine release
+ *  - sLightsparkRelease, user's Lightspark release
  *  - bIsAdmin, true if user is an administrator
  * 
  * TODO:
@@ -75,7 +75,7 @@ function show_user_fields($oUser)
 {
     $aTableRows = array();
 
-    $sWineRelease = $oUser->sWineRelease;
+    $sLightsparkRelease = $oUser->sLightsparkRelease;
     if($oUser->hasPriv("admin"))
         $sAdminChecked = 'checked="true"';
     else
@@ -95,10 +95,10 @@ function show_user_fields($oUser)
 
 
     $oTableRow = new TableRow();
-    $oTableRow->AddTextCell("&nbsp; Wine version");
+    $oTableRow->AddTextCell("&nbsp; Lightspark version");
     
-    $sBugzillaVersionList = make_bugzilla_version_list("sWineRelease",
-                                                       $sWineRelease);
+    $sBugzillaVersionList = make_bugzilla_version_list("sLightsparkRelease",
+                                                       $sLightsparkRelease);
     $oTableRow->AddCell(new TableCell($sBugzillaVersionList));
     $aTableRows[] = $oTableRow;
 
@@ -148,7 +148,7 @@ if(isset($aClean['sSubmit']) && $aClean['sSubmit'] == "Update")
     /* update user data fields */
     $oUser->sEmail = $aClean['sUserEmail'];
     $oUser->sRealname = $aClean['sUserRealname'];
-    $oUser->sWineRelease = $aClean['sWineRelease'];
+    $oUser->sLightsparkRelease = $aClean['sLightsparkRelease'];
 
     /* if the password was empty in both cases then skip updating the users password */
     if($str_passwd != "")
