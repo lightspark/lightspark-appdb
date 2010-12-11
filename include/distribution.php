@@ -58,7 +58,7 @@ class distribution {
                             versions.product_id = '?'
                             AND
                             distributionId = '?'
-                            ORDER BY testedRating,bugs.versions.id DESC";
+                            ORDER BY testedRating, ?.versions.id DESC";
         } else /* only let users view test results that aren't queued and for apps that */
                 /* aren't queued or versions that aren't queued */
         {
@@ -74,10 +74,11 @@ class distribution {
                                 appFamily.state = 'accepted' AND
                                 appVersion.state = 'accepted' AND
                                 distributionId = '?'
-                            ORDER BY testedRating,bugs.versions.id DESC";
+                            ORDER BY testedRating, ?.versions.id DESC";
         }
 
-        if($hResult = query_parameters($sQuery, BUGZILLA_DB, BUGZILLA_PRODUCT_ID, $this->iDistributionId))
+        if($hResult = query_parameters($sQuery, BUGZILLA_DB, BUGZILLA_PRODUCT_ID,
+            $this->iDistributionId, BUGZILLA_DB))
         {
             while($oRow = query_fetch_object($hResult))
             {
@@ -684,7 +685,7 @@ class distribution {
             echo '<td>Application Version</td>',"\n";
             echo '<td>Submitter</td>',"\n";
             echo '<td>Date Submitted</td>',"\n";
-            echo '<td>Wine version</td>',"\n";
+            echo '<td>Lightspark version</td>',"\n";
             echo '<td>Installs?</td>',"\n";
             echo '<td>Runs?</td>',"\n";
             echo '<td>Rating</td>',"\n";
