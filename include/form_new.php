@@ -18,13 +18,21 @@ The password will be sent to your e-mail
         <td class=color0> <input type="text" name="sUserEmail" value='<?php if(!empty($aClean['sUserEmail'])) echo $aClean['sUserEmail']?>'> </td>
     </tr>
     <tr>
+        <td class=color1> Password </td>
+        <td class=color0> <input type="password" name="sPassword" value='<?php if(!empty($aClean['sPassword'])) echo $aClean['sPassword']?>'> </td>
+    </tr>
+    <tr>
+        <td class=color1> Repeat Password </td>
+        <td class=color0> <input type="password" name="sPasswordRepeat" value='<?php if(!empty($aClean['sPasswordRepeat'])) echo $aClean['sPasswordRepeat']?>'> </td>
+    </tr>
+    <tr>
         <td class=color1> Real Name </td>
         <td class=color0> <input type="text" name="sUserRealname" value='<?php if(!empty($aClean['sUserRealname'])) echo $aClean['sUserRealname']?>'> </td>
     </tr>
 <?php
 
-        echo "<tr><td class=color1>&nbsp; Wine version </td><td class=color0>";
-        echo make_bugzilla_version_list("sWineRelease", isset($aClean['sWineRelease']) ? $aClean['sWineRelease'] : '');
+        echo "<tr><td class=color1>&nbsp; Lightspark version </td><td class=color0>";
+        echo make_bugzilla_version_list("sLightsparkRelease", isset($aClean['sLightsparkRelease']) ? $aClean['sLightsparkRelease'] : '');
         echo "</td></tr>";
 
 ?>

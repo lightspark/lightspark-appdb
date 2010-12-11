@@ -10,7 +10,7 @@
  *  - sUserPassword2, new password confirmation
  *  - sUserEmail, e-mail address
  *  - sUserRealname, user's real name
- *  - sWineRelease, user's Wine release
+ *  - sLightsparkRelease, user's Lightspark release
  *
  * TODO:
  *  - replace sCmd with iAction and replace "new", "login", etc. with integer constants NEW, LOGIN, etc.
@@ -96,6 +96,16 @@ function cmd_do_new()
         retry("new", "Invalid email address");
         return;
     }
+    if(empty($aClean['sPassword']))
+    {
+        retry("new", "You don't need a password?");
+        return;
+    }
+    if($aClean['sPassword'] != $aClean['sPasswordRepeat'])
+    {
+        retry("new", "Passwords don't match");
+        return;
+    }
     if(empty($aClean['sUserRealname']))
     {
         retry("new", "You don't have a Real name?");
@@ -103,13 +113,15 @@ function cmd_do_new()
     }
    
     $oUser = new User();
-    $sPassword =  substr(base_convert(rand(0, PHP_INT_MAX),10, 36), 0, 9);
+    $sPassword = $aClean['sPassword'];
     $iResult = $oUser->create($aClean['sUserEmail'], $sPassword,
-                              $aClean['sUserRealname'], $aClean['sWineRelease'] );
+                              $aClean['sUserRealname'], $aClean['sLightsparkRelease'] );
 
     if($iResult == SUCCESS)
     {
-        mail_appdb($oUser->sEmail, "New account", "Your password is ".$sPassword);
+        mail_appdb($oUser->sEmail, 'New account', "Your password is $sPassword");
+        addmsg("Your account has been created with email {$oUser->sEmail}. " .
+            'You can log in with the password you provided.', "green");
         util_redirect_and_exit(apidb_fullurl());
     }
     else if($iResult == USER_CREATE_EXISTS)
