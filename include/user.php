@@ -24,7 +24,7 @@ class User {
     var $sRealname;
     var $sStamp;
     var $sDateCreated;
-    var $sWineRelease;
+    var $sLightsparkRelease;
     var $bInactivityWarned;
 
     /**
@@ -48,7 +48,7 @@ class User {
                 $this->sRealname = $oRow->realname;
                 $this->sStamp = $oRow->stamp;
                 $this->sDateCreated = $oRow->created;
-                $this->sWineRelease = $oRow->CVSrelease;
+                $this->sLightsparkRelease = $oRow->CVSrelease;
                 $this->bInactivityWarned = $oRow->inactivity_warned;
             }
         }
@@ -119,7 +119,7 @@ class User {
             $this->sRealname = $oRow->realname;
             $this->sStamp = $oRow->stamp;
             $this->sDateCreated = $oRow->created;
-            $this->sWineRelease = $oRow->CVSrelease;
+            $this->sLightsparkRelease = $oRow->CVSrelease;
 
             // if we used an old style password, update the users password
             if($bUsedOldStylePassword)
@@ -157,7 +157,7 @@ class User {
      * Creates a new user.
      * returns SUCCESS on success, USER_CREATE_EXISTS if the user already exists
      */
-    function create($sEmail, $sPassword, $sRealname, $sWineRelease)
+    function create($sEmail, $sPassword, $sRealname, $sLightsparkRelease)
     {
         if(User::exists($sEmail))
         {
@@ -166,14 +166,14 @@ class User {
         {
             $hResult = query_parameters("INSERT INTO user_list (realname, email, CVSrelease, password, stamp,".
                                         "created) VALUES ('?', '?', '?', SHA1('?'), ?, ?)",
-                                        $sRealname, $sEmail, $sWineRelease, $sPassword, "NOW()", "NOW()");
+                                        $sRealname, $sEmail, $sLightsparkRelease, $sPassword, "NOW()", "NOW()");
 
             if(!$hResult) return USER_CREATE_FAILED;
 
             $retval = $this->login($sEmail, $sPassword);
             if($retval == SUCCESS)
                 $this->setPref("comments:mode", "threaded"); /* set the users default comments:mode to threaded */
-            $this->logout();
+//            $this->logout();
 
             return $retval;
         }
@@ -210,10 +210,10 @@ class User {
                 return USER_UPDATE_FAILED;
         }
 
-        if ($this->sWineRelease && ($this->sWineRelease != $oUser->sWineRelease))
+        if ($this->sLightsparkRelease && ($this->sLightsparkRelease != $oUser->sLightsparkRelease))
         {
             if (!query_parameters("UPDATE user_list SET CVSrelease = '?' WHERE userid = '?'",
-                                  $this->sWineRelease, $this->iUserId))
+                                  $this->sLightsparkRelease, $this->iUserId))
                 return USER_UPDATE_FAILED;
         }
 
