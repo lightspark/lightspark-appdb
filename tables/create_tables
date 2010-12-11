@@ -13,4 +13,5 @@ cat create_apidb_base.sql appdb_tables.sql \
     user_privs.sql app_category.sql \
     maintainers.sql buglinks.sql monitors.sql \
     error_log.sql distributions.sql testResults.sql \
+    outbox.sql sessions.sql
  | mysql -p -u root

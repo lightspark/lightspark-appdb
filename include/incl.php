@@ -4,11 +4,11 @@
 /*************************************************/
 
 // get modules
-ini_set("memory_limit","64M");
+//ini_set("memory_limit","64M");
 require_once(BASE."include/config.php");
 require(BASE."include/util.php");
 require(BASE."include/user.php");
-require(BASE."include/session.php");
+require(BASE."include/session_db.php");
 require(BASE."include/menu.php");
 require(BASE."include/html.php");
 require(BASE."include/error_log.php");
@@ -297,5 +297,7 @@ if($_SESSION['current']->showDebuggingInfos()) error_reporting(E_ALL ^ E_NOTICE)
 
 // include filter.php to filter all REQUEST input
 require(BASE."include/filter.php");
+
+require_once(BASE."include/queuemail.php");
 
 ?>

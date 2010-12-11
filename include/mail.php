@@ -1,5 +1,6 @@
 <?php
 require_once(BASE."include/config.php");
+require_once(BASE."include/queuemail.php");
 
 function mail_appdb($sEmailList,$sSubject,$sMsg)
 {
@@ -37,7 +38,7 @@ function mail_appdb($sEmailList,$sSubject,$sMsg)
     }
 
     $sMsg = html_entity_decode($sMsg);
-    $bResult = mail(APPDB_SENDER_EMAIL, "[AppDB] ".$sSubject, $sMsg, $sHeaders,
+    $bResult = queuemail(APPDB_SENDER_EMAIL, "[AppDB] ".$sSubject, $sMsg, $sHeaders,
                     "-f".APPDB_SENDER_EMAIL);
     if($bResult)
         addmsg("E-mail sent", "green");
