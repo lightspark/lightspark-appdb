@@ -8,7 +8,7 @@ allow from all
 DirectoryIndex index.php
 
 # 404 not found document
-ErrorDocument 404 http://www.winehq.org/site/404
+#ErrorDocument 404 http://www.winehq.org/site/404
 
 # Modify the PHP configuration (global vars, etc.)
 php_value register_globals 0
