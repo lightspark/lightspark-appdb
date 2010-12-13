@@ -14,7 +14,6 @@ function mail_appdb($sEmailList,$sSubject,$sMsg)
     $sHeaders  = "MIME-Version: 1.0\r\n";
     $sHeaders .= "From: AppDB <".APPDB_SENDER_EMAIL.">\r\n";
     $sHeaders .= "Reply-to: AppDB <".APPDB_SENDER_EMAIL.">\r\n";
-    $sHeaders .= "Bcc: $sEmailListComma\r\n";
     $sHeaders .= "X-Priority: 3\r\n";
     $sHeaders .= "X-Mailer: ".APPDB_OWNER." mailer\r\n";
     $sMsg  = trim(ereg_replace("\r\n","\n",$sMsg));
@@ -38,8 +37,16 @@ function mail_appdb($sEmailList,$sSubject,$sMsg)
     }
 
     $sMsg = html_entity_decode($sMsg);
-    $bResult = queuemail(APPDB_SENDER_EMAIL, "[AppDB] ".$sSubject, $sMsg, $sHeaders,
-                    "-f".APPDB_SENDER_EMAIL);
+    if(defined("QUEUE_EMAIL"))
+    {
+        $bResult = queuemail($sEmailListComma, "[AppDB] ".$sSubject, $sMsg, $sHeaders,
+            "-f".APPDB_SENDER_EMAIL);
+    }
+    else
+    {
+        $bResult = mail($sEmailListComma, "[AppDB] ".$sSubject, $sMsg, $sHeaders,
+            "-f".APPDB_SENDER_EMAIL);
+    }
     if($bResult)
         addmsg("E-mail sent", "green");
     else 

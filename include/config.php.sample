@@ -30,6 +30,9 @@ define("BUGZILLA_ROOT",""); // path to bugzilla
 //if(!defined("PRINT_EMAIL"))
 // define("PRINT_EMAIL", true); // print email, see mail_appdb() in include/mail.php
 
+// Use this define to queue sent emails in the database for later sending by a cronjob
+//define("QUEUE_EMAIL", true);
+
 // How old (days) a test report has to before it is judged to be aged
 define("TESTDATA_AGED_THRESHOLD", 175);
 
@@ -55,4 +58,3 @@ define("BUGZILLA_DBHOST","localhost");
 define("BUGZILLA_DB","bugs");
 define("BUGZILLA_PRODUCT_ID","1");
 ?>
-
