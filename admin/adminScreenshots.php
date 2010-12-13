@@ -62,6 +62,7 @@ $ItemsPerPage = min($ItemsPerPage,100);
 $totalPages = ceil(screenshot::objectGetEntriesCount('accepted')/$ItemsPerPage);
 $currentPage = min($currentPage,$totalPages);
 $offset = (($currentPage-1) * $ItemsPerPage);
+if($offset < 0) $offset = 0;
 
 
 /* display page selection links */
