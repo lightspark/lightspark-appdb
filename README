@@ -1,3 +1,19 @@
+Lightspark Application Database
+#------------------------------------------------------------------------#
+Authors:
+    Timon Van Overveldt <timonvo@users.sf.net>
+
+This application is based on the original work on WineHQ's Application Database.
+
+The main differences are accomodating limited features available in
+SourceForge's Project Web:
+    - no sending of mail (see incl/queuemail.php)
+    - no memcached (see incl/session_db.php)
+
+Besides these changes the branding is different and some features are omitted/replaced.
+
+#==========================ORIGINAL README===============================#
+
 WineHQ Application Database
 #------------------------------------------------------------------------#
 Authors:
